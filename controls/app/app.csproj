@@ -19,6 +19,21 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="index.html" />
+    <Content Include="lib\platypus.css">
+      <DependentUpon>platypus.less</DependentUpon>
+    </Content>
+    <Content Include="lib\platypus.less" />
+    <None Include="viewcontrols\main\main.viewcontrol.less" />
+    <Content Include="lib\platypus.min.css">
+      <DependentUpon>platypus.css</DependentUpon>
+    </Content>
+    <Content Include="viewcontrols\main\main.viewcontrol.css">
+      <DependentUpon>main.viewcontrol.less</DependentUpon>
+    </Content>
+    <Content Include="viewcontrols\main\main.viewcontrol.html" />
+    <Content Include="viewcontrols\main\main.viewcontrol.min.css">
+      <DependentUpon>main.viewcontrol.css</DependentUpon>
+    </Content>
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -29,6 +44,11 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="lib\platypus.ts" />
+    <TypeScriptCompile Include="viewcontrols\main\main.viewcontrol.ts" />
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>
@@ -45,7 +65,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>61250</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:61250/</IISUrl>
+          <IISUrl>http://localhost:61250/app</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -58,6 +78,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
