@@ -45,6 +45,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="..\controls\**\*.ts">
+      <Link>controls\%(RecursiveDir)%(Filename)%.ts</Link>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="lib\platypus.ts" />
     <TypeScriptCompile Include="viewcontrols\main\main.viewcontrol.ts" />
   </ItemGroup>
