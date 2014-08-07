@@ -6,15 +6,15 @@
         templateString = '<div class="plat-checkbox-container"><span class="mark"></span></div>';
 
         isChecked = false;
-        checkType: string;
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
 
-        private __markElement: Element;
+        _checkType: string;
+        _markElement: Element;
 
         initialize(): void {
             var options = this.options.value,
                 utils = this.$utils,
-                mark = this.checkType = (utils.isNull(options) || !utils.isString(options.mark)) ? 'check' : options.mark;
+                mark = this._checkType = (utils.isNull(options) || !utils.isString(options.mark)) ? 'check' : options.mark;
 
             switch (mark.toLowerCase()) {
                 case 'check':
@@ -54,7 +54,7 @@
         }
 
         loaded(): void {
-            this.__markElement = this.element.firstElementChild.firstElementChild;
+            this._markElement = this.element.firstElementChild.firstElementChild;
         }
 
         setProperty(newValue: any, oldValue?: any): void {
@@ -83,11 +83,11 @@
         _toggleMark(setProperty?: boolean): void {
             var isChecked = !this.isChecked,
                 element = <HTMLInputElement>this.element,
-                markElement = this.$utils.isNull(this.__markElement) ?
+                markElement = this.$utils.isNull(this._markElement) ?
                 element.firstElementChild.firstElementChild :
-                this.__markElement;
+                this._markElement;
 
-            this.dom.toggleClass(markElement, this.checkType);
+            this.dom.toggleClass(markElement, this._checkType);
             element.checked = isChecked;
             if (setProperty === true) {
                 this.propertyChanged(isChecked, this.isChecked);
