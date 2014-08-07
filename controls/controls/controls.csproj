@@ -54,6 +54,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
     <TypeScriptCompile Include="lib\platypus.d.ts" />
+    <TypeScriptCompile Include="radio\radio.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="checkbox\checkbox.css">
@@ -75,12 +76,21 @@
     <Content Include="less\variables.min.css">
       <DependentUpon>variables.css</DependentUpon>
     </Content>
+    <Content Include="radio\radio.css">
+      <DependentUpon>radio.less</DependentUpon>
+    </Content>
+    <Content Include="radio\radio.min.css">
+      <DependentUpon>radio.css</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="less\platypus.less" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="less\variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="radio\radio.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

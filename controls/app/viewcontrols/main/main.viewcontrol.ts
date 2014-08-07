@@ -5,7 +5,7 @@ module app {
         context = {
             text: <string>null,
             password: <string>null,
-            test: 'matt',
+            test: <any>null,
             check: true
         };
 
@@ -21,9 +21,11 @@ module app {
         }
 
         loaded() {
+            var context = this.context;
         }
 
         foo(ev: any) {
+            console.log(this.context.test);
         }
     }
 

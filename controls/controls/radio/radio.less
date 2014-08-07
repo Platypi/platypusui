@@ -1,0 +1,39 @@
+﻿#RadioVars {
+    @radioSize: 1em;
+    @radioProportion: 3/5;
+    @radioBorderSize: @radioSize / 10;
+}
+
+[plat-control="plat-radio"] {
+    #RadioVars;
+    #Colors;
+    display: inline;
+
+    .plat-radio-container {
+        display: inline-block;
+        position: relative;
+        width: @radioSize;
+        height: @radioSize;
+        border: @radioBorderSize solid @radioBorderColor;
+        overflow: hidden;
+        .border-radius(@radioSize);
+
+        .mark {
+            &.radio {
+                &::after {
+                    content: "";
+                    position: absolute;
+                    background-color: @radioMarkColor;
+                    height: @radioSize * @radioProportion;
+                    width: @radioSize * @radioProportion;
+                    left: 100% * (1-@radioProportion) / 2;
+                    top: 100% * (1-@radioProportion) / 2;
+                    .border-radius(@radioSize * @radioProportion);
+                }
+            }
+        }
+    }
+}
+
+@import '../less/variables';
+@import '../less/platypus';
