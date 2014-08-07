@@ -7,8 +7,9 @@
 
         isChecked = false;
         checkType: string;
-        markElement: Element;
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
+
+        private __markElement: Element;
 
         initialize(): void {
             var options = this.options.value,
@@ -53,7 +54,7 @@
         }
 
         loaded(): void {
-            this.markElement = this.element.firstElementChild.firstElementChild;
+            this.__markElement = this.element.firstElementChild.firstElementChild;
         }
 
         setProperty(newValue: any, oldValue?: any): void {
@@ -82,9 +83,9 @@
         _toggleMark(setProperty?: boolean): void {
             var isChecked = !this.isChecked,
                 element = <HTMLInputElement>this.element,
-                markElement = this.$utils.isNull(this.markElement) ?
+                markElement = this.$utils.isNull(this.__markElement) ?
                 element.firstElementChild.firstElementChild :
-                this.markElement;
+                this.__markElement;
 
             this.dom.toggleClass(markElement, this.checkType);
             element.checked = isChecked;
