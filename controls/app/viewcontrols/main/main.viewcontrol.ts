@@ -4,7 +4,9 @@ module app {
         templateUrl = 'viewcontrols/main/main.viewcontrol.html';
         context = {
             text: <string>null,
-            password: <string>null
+            password: <string>null,
+            test: 'matt',
+            check: true
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
@@ -22,8 +24,6 @@ module app {
         }
 
         foo(ev: any) {
-            console.log(ev.currentTarget.checked);
-            console.log(ev.target.checked);
         }
     }
 

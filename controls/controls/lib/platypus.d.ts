@@ -5636,6 +5636,11 @@ declare module plat {
             * element's property is changed.
             */
             public _propertyChanged(): void;
+            /**
+            * Checks if the associated Template Control is a BindablePropertyControl and
+            * initializes all listeners accordingly.
+            */
+            public _observeBindableProperty(): void;
             private __setValue(newValue);
             private __initializeRadio();
             private __initializeSelect();
@@ -5674,7 +5679,7 @@ declare module plat {
             * for property changes.
             */
             public _listeners: {
-                (newValue: any, oldValue: any): void;
+                (newValue: any, oldValue?: any): void;
             }[];
             /**
             * The function to stop listening for property changes.
@@ -5708,13 +5713,13 @@ declare module plat {
             * @param value The new value of the evaluated expression.
             * @param oldValue The old value of the evaluated expression.
             */
-            public _callListeners(newValue: any, oldValue: any): void;
+            public _callListeners(newValue: any, oldValue?: any): void;
             /**
             * Adds a listener as defined by the Template Control.
             *
             * @param listener The listener added by the Template Control.
             */
-            public _addListener(listener: (newValue: any, oldValue: any) => void): IRemoveListener;
+            public _addListener(listener: (newValue: any, oldValue?: any) => void): IRemoveListener;
             /**
             * Evaluates the attribute's value.
             */
@@ -6386,6 +6391,66 @@ declare module plat {
             * no context is specified, the control.context will be used.
             */
             evaluateExpression? (expression: expressions.IParsedExpression, context?: any): any;
+        }
+        class BindablePropertyControl extends TemplateControl implements IBindablePropertyControl {
+            /**
+            * The set of functions added externally that listens
+            * for property changes.
+            */
+            public _listeners: {
+                (newValue: any, oldValue?: any): void;
+            }[];
+            /**
+            * Adds a listener to be called when the bindable property changes.
+            *
+            * @param listener The function that acts as a listener.
+            */
+            public observeProperty(listener: (newValue: any, oldValue?: any) => void): IRemoveListener;
+            /**
+            * A function that lets the BindablePropertyControl know when the context's value of the bindable
+            * property has changed.
+            *
+            * @param newValue The new value of the bindable property.
+            * @param oldValue The old value of the bindable property.
+            * @param firstTime A boolean signifying whether this is the first set of the property.
+            */
+            public setProperty(newValue: any, oldValue?: any, firstTime?: boolean): void;
+            /**
+            * A function that signifies when BindablePropertyControl's bindable property has changed.
+            *
+            * @param newValue The new value of the property after the change.
+            * @param oldValue The old value of the property prior to the change.
+            */
+            public propertyChanged(newValue: any, oldValue?: any): void;
+            /**
+            * Removes references to the listeners
+            * defined externally.
+            */
+            public dispose(): void;
+        }
+        interface IBindablePropertyControl extends ITemplateControl {
+            /**
+            * Adds a listener to be called when the bindable property changes.
+            *
+            * @param listener The function that acts as a listener.
+            */
+            observeProperty(listener: (newValue: any, oldValue?: any) => void): IRemoveListener;
+            /**
+            * A function that lets the BindablePropertyControl know when the context's value of the bindable
+            * property has changed.
+            *
+            * @param newValue The new value of the bindable property.
+            * @param oldValue The old value of the bindable property.
+            * @param firstTime A boolean signifying whether this is the first set of the property.
+            */
+            setProperty(newValue: any, oldValue?: any, firstTime?: boolean): void;
+            /**
+            * A function that signifies when BindablePropertyControl's bindable property has changed.
+            *
+            * @param newValue The new value of the property after the change.
+            * @param oldValue The old value of the property prior to the change.
+            */
+            propertyChanged(newValue: any, oldValue?: any): void;
         }
         /**
         * A control used in a controls.Viewport for simulated page navigation. The
