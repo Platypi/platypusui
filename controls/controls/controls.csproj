@@ -33,7 +33,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>61244</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:61244/</IISUrl>
+          <IISUrl>http://localhost:61250/controls</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -51,6 +51,36 @@
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <TypeScriptCompile Include="checkbox\checkbox.ts" />
+    <TypeScriptCompile Include="lib\platypus.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="checkbox\checkbox.css">
+      <DependentUpon>checkbox.less</DependentUpon>
+    </Content>
+    <Content Include="checkbox\checkbox.less" />
+    <Content Include="checkbox\checkbox.min.css">
+      <DependentUpon>checkbox.css</DependentUpon>
+    </Content>
+    <Content Include="less\platypus.css">
+      <DependentUpon>platypus.less</DependentUpon>
+    </Content>
+    <Content Include="less\platypus.min.css">
+      <DependentUpon>platypus.css</DependentUpon>
+    </Content>
+    <Content Include="less\variables.css">
+      <DependentUpon>variables.less</DependentUpon>
+    </Content>
+    <Content Include="less\variables.min.css">
+      <DependentUpon>variables.css</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="less\platypus.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="less\variables.less" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

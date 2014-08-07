@@ -21,11 +21,9 @@ module app {
         loaded() {
         }
 
-        foo() {
-            var context = this.context;
-            console.log(context.text);
-            console.log(context.password);
-            console.log('');
+        foo(ev: any) {
+            console.log(ev.currentTarget.checked);
+            console.log(ev.target.checked);
         }
     }
 

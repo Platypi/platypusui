@@ -19,14 +19,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="index.html" />
-    <Content Include="lib\platypus.css">
-      <DependentUpon>platypus.less</DependentUpon>
-    </Content>
-    <Content Include="lib\platypus.less" />
     <None Include="viewcontrols\main\main.viewcontrol.less" />
-    <Content Include="lib\platypus.min.css">
-      <DependentUpon>platypus.css</DependentUpon>
-    </Content>
+    <Content Include="lib\platypus.min.js" />
     <Content Include="viewcontrols\main\main.viewcontrol.css">
       <DependentUpon>main.viewcontrol.less</DependentUpon>
     </Content>
@@ -48,7 +42,6 @@
     <TypeScriptCompile Include="..\controls\**\*.ts">
       <Link>controls\%(RecursiveDir)%(Filename)%.ts</Link>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="lib\platypus.ts" />
     <TypeScriptCompile Include="viewcontrols\main\main.viewcontrol.ts" />
   </ItemGroup>
   <ItemGroup />

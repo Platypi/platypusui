@@ -1,0 +1,65 @@
+﻿#CheckboxVars {
+    @checkboxSize: 1em;
+    @checkboxBorderSize: 0.1em;
+}
+
+[plat-control="plat-checkbox"] {
+    #CheckboxVars;
+    width: @checkboxSize;
+    height: @checkboxSize;
+    border: @checkboxBorderSize solid black;
+    position: relative;
+    overflow: hidden;
+
+    .plat-checkbox-container {
+        &.check,
+        &.x {
+            &::before,
+            &::after {
+                #Colors;
+                content: "";
+                position: absolute;
+                background-color: @checkboxColor;
+                height: @checkboxBorderSize * 1.5;
+                .border-radius(@checkboxBorderSize * 1.5);
+            }
+        }
+
+        &.check {
+            &::before {
+                left: -1%;
+                top: 72.5%;
+                width: @checkboxSize / 2.5;
+                .rotate(45deg);
+            }
+
+            &::after {
+                left: 3.25%;
+                top: 42.5%;
+                width: @checkboxSize * 1.15;
+                .rotate(-55deg);
+            }
+        }
+
+        &.x {
+            &::before,
+            &::after {
+                #Colors;
+                left: -10%;
+                top: 42.5%;
+                width: @checkboxSize * 1.2;
+            }
+
+            &::before {
+                .rotate(45deg);
+            }
+
+            &::after {
+                .rotate(-45deg);
+            }
+        }
+    }
+}
+
+@import '../less/variables';
+@import '../less/platypus';
