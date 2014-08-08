@@ -1,4 +1,4 @@
-﻿module platypusui {
+﻿module platui {
     /**
      * A Template Control that standardizes the HTML5 radio button.
      */
@@ -6,7 +6,10 @@
         /**
          * The Radio's template string.
          */
-        templateString = '<div class="plat-radio-container"><span class="mark"></span></div>';
+        templateString =
+        '<div class="plat-radio-container">' +
+            '<span class="mark"></span>' +
+        '</div>';
 
         /**
          * The radio groups name if a radio group is present.
@@ -16,7 +19,7 @@
         /**
          * The check type to be placed in the element.
          */
-        _checkType = 'radio';
+        _targetType = 'radio';
 
         /**
          * Adds a listener for the tap event and checks for a 
@@ -48,7 +51,7 @@
             }
 
             var isChecked = newValue === this._getValue(),
-                wasChecked = this.isChecked;
+                wasChecked = this.isActive;
 
             if (isChecked === wasChecked) {
                 return;
@@ -65,7 +68,7 @@
          * @param oldValue The old value of the property prior to the change.
          */
         propertyChanged(newValue: any, oldValue?: any): void {
-            if (this.isChecked) {
+            if (this.isActive) {
                 super.propertyChanged(this._getValue());
             }
         }
@@ -77,7 +80,7 @@
          * @param ev The tap event object.
          */
         _onTap(ev: plat.ui.IGestureEvent): void {
-            if (this.isChecked) {
+            if (this.isActive) {
                 return;
             }
 
@@ -91,8 +94,8 @@
          * property should be updated.
          */
         _toggleMark(setProperty?: boolean): void {
-            super._toggleMark(setProperty);
-            if (this.isChecked) {
+            super._toggle(setProperty);
+            if (this.isActive) {
                 var name = this.groupName;
                 this.dispatchEvent('__plat-radio-' + name, plat.events.EventManager.DIRECT);
                 var remover = this.on('__plat-radio-' + name, () => {

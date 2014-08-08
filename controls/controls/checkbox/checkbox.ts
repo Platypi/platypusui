@@ -1,35 +1,22 @@
-﻿module platypusui {
+﻿module platui {
     /**
      * A Template Control that standardizes the HTML5 checkbox.
      */
-    export class Checkbox extends plat.ui.BindablePropertyControl {
-        $utils: plat.IUtils = plat.acquire(plat.IUtils);
+    export class Checkbox extends Toggle {
         $document: Document = plat.acquire(plat.Document);
 
         /**
          * The Checkbox's template string.
          */
-        templateString = '<div class="plat-checkbox-container"><span class="mark"></span></div>';
-
-        /**
-         * A boolean value indicating whether the control is actively checked or selected.
-         */
-        isChecked = false;
+        templateString =
+        '<div class="plat-checkbox-container">' +
+            '<span class="mark"></span>' +
+        '</div>';
 
         /**
          * The plat-options for this control.
          */
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
-
-        /**
-         * The check type to be placed in the element.
-         */
-        _checkType: string;
-
-        /**
-         * The element used to create the check mark.
-         */
-        _markElement: Element;
 
         /**
          * Initializes the mark and adds a listener for the tap event.
@@ -38,7 +25,7 @@
             var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
                 options = optionObj.value,
                 utils = this.$utils,
-                mark = this._checkType = (utils.isNull(options) || !utils.isString(options.mark)) ? 'check' : options.mark;
+                mark = this._targetType = (utils.isNull(options) || !utils.isString(options.mark)) ? 'check' : options.mark;
 
             switch (mark.toLowerCase()) {
                 case 'check':
@@ -50,7 +37,7 @@
                     break;
             }
 
-            this.addEventListener(this.element, '$tap', this._onTap.bind(this));
+            super.initialize();
         }
 
         /**
@@ -90,64 +77,7 @@
          */
         loaded(): void {
             this._setChecked();
-            this._markElement = this.element.firstElementChild.firstElementChild;
-        }
-
-        /**
-         * The function called when the bindable property is set externally.
-         * 
-         * @param newValue The new value of the bindable property.
-         * @param oldValue The old value of the bindable property.
-         * @param setProperty A boolean value indicating whether we should set 
-         * the property if we need to toggle the check mark value.
-         */
-        setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
-            if (newValue === oldValue) {
-                return;
-            }
-
-            var isChecked = !!newValue;
-            if (isChecked === this.isChecked) {
-                return;
-            }
-
-            this._toggleMark(setProperty);
-        }
-
-        /**
-         * The callback for a tap event.
-         * 
-         * @param ev The tap event object.
-         */
-        _onTap(ev: plat.ui.IGestureEvent): void {
-            var domEvent = plat.acquire(plat.ui.IDomEventInstance),
-                element = this.element;
-
-            this._toggleMark(true);
-
-            domEvent.initialize(element, 'change');
-            domEvent.trigger();
-        }
-
-        /**
-         * Toggles the mark and updates the bindable property if needed.
-         * 
-         * @param setProperty A boolean value stating whether the bindable 
-         * property should be updated.
-         */
-        _toggleMark(setProperty?: boolean): void {
-            var wasChecked = this.isChecked,
-                isChecked = !wasChecked,
-                element = <HTMLInputElement>this.element,
-                markElement = this.$utils.isNull(this._markElement) ?
-                element.firstElementChild.firstElementChild :
-                this._markElement;
-
-            this.dom.toggleClass(markElement, this._checkType);
-            this.isChecked = element.checked = isChecked;
-            if (setProperty === true) {
-                this.propertyChanged(isChecked, wasChecked);
-            }
+            super.loaded();
         }
 
         /**

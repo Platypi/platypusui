@@ -1,0 +1,47 @@
+﻿#ProgressRingVars {
+    @ringDiameter: 3em;
+    @ringAnimation: PLAT-SPIN;
+    @ringSpinSpeed: 500ms;
+    @ringThickness: @ringDiameter / 10;
+}
+
+[plat-control="plat-ring"] {
+    #ProgressRingVars;
+    #Colors;
+    display: inline-block;
+    .box-sizing(border-box);
+
+    .plat-progress-container {
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+
+        .ring {
+            width: @ringDiameter;
+            height: @ringDiameter;
+            border-left: @ringThickness solid fade(@ringColor, 75%);
+            border-bottom: @ringThickness solid fade(@ringColor, 10%);
+            border-right: @ringThickness solid fade(@ringColor, 10%);
+            border-top: @ringThickness solid fade(@ringColor, 10%);
+            .border-radius(@ringDiameter);
+            .animation(@ringAnimation, @ringSpinSpeed, linear, 0s, infinite);
+        }
+    }
+}
+
+.spin();
+.spin() {
+    #ProgressRingVars;
+    #KeyFrames > .keyFrames(@ringAnimation);
+    .frames(@prefix) {
+        from {
+            .transform(rotate(0deg), @prefix);
+        }
+        to {
+            .transform(rotate(359deg), @prefix);
+        }
+    }
+}
+
+@import '../../less/variables';
+@import '../../less/platypus';
