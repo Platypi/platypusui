@@ -1,0 +1,55 @@
+﻿#DrawerVars {
+    @drawerLength: 75%;
+    @drawerTransition: all 200ms;
+}
+
+[plat-control="plat-drawer"] {
+    #DrawerVars;
+    #Colors;
+    position: absolute;
+    z-index: -1;
+    overflow: auto;
+    background-color: @drawerColor;
+    -webkit-backface-visibility: hidden;
+    .box-sizing(border-box);
+
+    &.right,
+    &.left {
+        width: @drawerLength;
+        height: 100%;
+        top: 0;
+    }
+
+    &.up,
+    &.down {
+        width: 100%;
+        height: @drawerLength;
+        left: 0;
+    }
+
+    &.right {
+        left: 0;
+    }
+
+    &.left {
+        right: 0;
+    }
+
+    &.down {
+        top: 0;
+    }
+
+    &.up {
+        bottom: 0;
+    }
+}
+
+.plat-drawer-transition {
+    #DrawerVars;
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: none;
+    .transition(@drawerTransition);
+}
+
+@import '../less/variables';
+@import '../less/platypus';

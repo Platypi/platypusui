@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
+    <TypeScriptCompile Include="drawer\drawer.ts" />
     <TypeScriptCompile Include="lib\platypus.d.ts" />
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />
@@ -66,6 +67,12 @@
     <Content Include="checkbox\checkbox.less" />
     <Content Include="checkbox\checkbox.min.css">
       <DependentUpon>checkbox.css</DependentUpon>
+    </Content>
+    <Content Include="drawer\drawer.css">
+      <DependentUpon>drawer.less</DependentUpon>
+    </Content>
+    <Content Include="drawer\drawer.min.css">
+      <DependentUpon>drawer.css</DependentUpon>
     </Content>
     <Content Include="less\platypus.css">
       <DependentUpon>platypus.less</DependentUpon>
@@ -116,7 +123,9 @@
   <ItemGroup>
     <Content Include="toggle\toggle.less" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="drawer\drawer.less" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="progress\indeterminate\progressring\progressring.less" />
   </ItemGroup>
