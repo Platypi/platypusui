@@ -1,0 +1,31 @@
+﻿#ProgressBarVars {
+    @barHeight: 1em;
+    @barBorderSize: @barHeight / 10;
+    @barTransition: none;
+}
+
+[plat-control="plat-progress"] {
+    #ProgressBarVars;
+    #Colors;
+    width: 100%;
+    .box-sizing(border-box);
+
+    .plat-progress-container {
+        position: relative;
+        height: @barHeight - @barBorderSize; // quirky IE issue with inner div height
+        width: 100%;
+        overflow: hidden;
+        border: @barBorderSize solid @barBorderColor;
+        .border-radius(@barHeight);
+
+        .bar {
+            background-color: @barColor;
+            width: 0;
+            height: @barHeight;
+            .transition(@barTransition);
+        }
+    }
+}
+
+@import '../../../less/variables';
+@import '../../../less/platypus';

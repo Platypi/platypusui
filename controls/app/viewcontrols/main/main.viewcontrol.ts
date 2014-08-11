@@ -6,7 +6,8 @@ module app {
             text: <string>null,
             password: <string>null,
             test: <any>null,
-            check: true
+            check: true,
+            progress: 0
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
@@ -24,8 +25,12 @@ module app {
             var context = this.context;
         }
 
-        foo(ev: any) {
+        foo(ev?: any) {
             console.log(this.context.test);
+        }
+
+        bar(ev?: any) {
+            this.context.progress += 0.01;
         }
     }
 
