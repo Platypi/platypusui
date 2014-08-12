@@ -1,0 +1,57 @@
+﻿#ModalVars {
+    @modalLength: 80%;
+    @modalTransition: all 200ms;
+}
+
+[plat-control="plat-modal"] {
+    #ModalVars;
+    #Colors;
+    position: absolute;
+    overflow: auto;
+    background-color: @drawerColor;
+    -webkit-backface-visibility: hidden;
+    .box-sizing(border-box);
+
+    &.right,
+    &.left {
+        width: @modalLength;
+        height: 100%;
+        top: 0;
+    }
+
+    &.up,
+    &.down {
+        width: 100%;
+        height: @modalLength;
+        left: 0;
+    }
+
+    &.right {
+        left: 0;
+    }
+
+    &.left {
+        right: 0;
+    }
+
+    &.down {
+        top: 0;
+    }
+
+    &.up {
+        bottom: 0;
+    }
+}
+
+.plat-modal-transition-prep {
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: none;
+}
+
+.plat-modal-transition {
+    #ModalVars;
+    .transition(@modalTransition);
+}
+
+@import '../less/variables';
+@import '../less/platypus';
