@@ -5,7 +5,7 @@ module app {
         context = {
             text: <string>null,
             password: <string>null,
-            test: <any>null,
+            test: 'wassup',
             check: true,
             progress: 0
         };

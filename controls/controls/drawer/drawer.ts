@@ -3,6 +3,9 @@
         __drawerControllerFetchEvent = '__platDrawerControllerFetch',
         __drawerFoundEvent = '__platDrawerFound';
 
+    /**
+     * A Template Control that acts as a global drawer.
+     */
     export class Drawer extends plat.ui.TemplateControl {
         $utils: plat.IUtils = plat.acquire(plat.IUtils);
 
@@ -16,17 +19,40 @@
         /**
          * Check for a direction and initialize event handling.
          */
-        initialize(): void {
+        loaded(): void {
             var element = this.element,
+                $utils = this.$utils,
                 optionObj = this.options,
-                options = this.$utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
+                options = $utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
                 direction = this.__currentDirection = options.direction || 'right',
-                name = element.hasAttribute('plat-name') ? element.getAttribute('plat-name') : null;
+                name = options.name,
+                templateUrl = options.templateUrl;
 
             this.dom.addClass(element, direction);
+            if ($utils.isString(templateUrl)) {
+                plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
+                    this.innerTemplate = template;
+                    this.__initializeEvents(name, direction);
+                });
+                return;
+            }
+
             this.__initializeEvents(name, direction);
         }
 
+        /**
+         * Removes the innerHTML from the DOM and saves it.
+         */
+        setTemplate(): void {
+            var childNodes = Array.prototype.slice.call(this.element.childNodes);
+            if (childNodes.length > 0) {
+                this.innerTemplate = this.dom.appendChildren(childNodes);
+            }
+        }
+
+        /**
+         * Changes the placement and implied direction of the drawer.
+         */
         _changeDirection(direction: string): void {
             if (this.$utils.isNull(direction) || direction === this.__currentDirection) {
                 return;
@@ -43,19 +69,25 @@
 
         private __initializeEvents(name: string, direction: string): void {
             var $utils = this.$utils,
-                isString = $utils.isString;
+                element = this.element,
+                isString = $utils.isString,
+                innerTemplate = this.innerTemplate,
+                DIRECT = plat.events.EventManager.DIRECT;
 
-            this.on(__drawerControllerFetchEvent, (event: plat.events.IDispatchEventInstance, controllerArg: any) => {
+            this.on(__drawerControllerFetchEvent,
+                (event: plat.events.IDispatchEventInstance, controllerArg: IDrawerHandshakeEvent) => {
                 if (isString(name) && isString(controllerArg.name) && name !== controllerArg.name) {
                     return;
                 } else if (isString(controllerArg.direction)) {
-                    this._changeDirection(controllerArg.direction);
+                    direction = controllerArg.direction;
+                    this._changeDirection(direction);
                 }
 
-                this.dispatchEvent(__drawerFoundEvent, plat.events.EventManager.DIRECT, {
+                this.dispatchEvent(__drawerFoundEvent, DIRECT, {
                     name: name,
                     direction: direction,
-                    element: this.element
+                    element: element,
+                    template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null
                 });
             });
         }
@@ -63,6 +95,9 @@
 
     plat.register.control('plat-drawer', Drawer);
 
+    /**
+     * A Template Control that manipulates and controls a global drawer.
+     */
     export class DrawerController extends plat.ui.TemplateControl {
         $utils: plat.IUtils = plat.acquire(plat.IUtils);
         $compat: plat.ICompat = plat.acquire(plat.ICompat);
@@ -71,7 +106,7 @@
         /**
          * The plat-options for the DrawerController.
          */
-        options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
+        options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         /**
          * A boolean value indicating whether the drawer is currently open.
@@ -104,6 +139,7 @@
         private __removePrimaryTrack: plat.IRemoveListener;
         private __removeSecondaryTrack: plat.IRemoveListener;
         private __rootElement: HTMLElement;
+        private __templateUrl: string;
         private __directionHash: plat.IObject<string> = {
             right: 'left',
             left: 'right',
@@ -119,8 +155,9 @@
                 optionObj = this.options,
                 options = this.$utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
                 direction = options.direction,
-                name = element.hasAttribute('plat-name') ? element.getAttribute('plat-name') : null;
+                name = options.name;
 
+            this.__templateUrl = options.templateUrl;
             this.__initializeEvents(name, direction);
         }
 
@@ -222,6 +259,11 @@
             this.close();
         }
 
+        /**
+         * Adds swipe events to the controller element.
+         * 
+         * @param direction The direction of opening for the drawer.
+         */
         _addSwipeEvents(direction: string): void {
             var openEvent = '$swipe' + direction,
                 closeEvent = '$swipe' + this.__directionHash[direction],
@@ -238,11 +280,12 @@
             });
         }
 
+        /**
+         * Adds primary and secondary tracking events to the controller element.
+         * 
+         * @param direction The direction of opening for the drawer.
+         */
         _addEventListeners(direction: string): void {
-            if (!this.__controllerIsValid(direction)) {
-                return;
-            }
-
             var element = this.element,
                 primaryTrack = '$track' + direction,
                 secondaryTrack = '$track' + this.__directionHash[direction],
@@ -268,6 +311,9 @@
             }
         }
 
+        /**
+         * Removes all event listeners.
+         */
         _removeEventListeners(): void {
             var isFunction = this.$utils.isFunction;
             if (isFunction(this.__removePrimaryTrack)) {
@@ -291,6 +337,11 @@
             }
         }
 
+        /**
+         * The $touchend event handler.
+         * 
+         * @param ev The touch event.
+         */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
             if (this.__hasSwiped) {
                 this.__hasSwiped = false;
@@ -325,6 +376,12 @@
             this.reset();
         }
 
+        /**
+         * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
+         * depending on the defined 'direction.'
+         * 
+         * @param ev The $tracking event.
+         */
         _track(ev: plat.ui.IGestureEvent): void {
             var elementToMove = this.__rootElement,
                 drawerElement = this._drawerElement,
@@ -368,30 +425,64 @@
             var element = this.element,
                 $utils = this.$utils,
                 isString = $utils.isString,
-                hasDirection = isString(direction);
+                needsDirection = !isString(direction);
 
             this.__setTransform();
 
-            if (hasDirection) {
-                return this._addEventListeners(direction.toLowerCase());
-            }
-
-            var eventRemover = this.on(__drawerFoundEvent, (event: plat.events.IDispatchEventInstance, drawerArg: any) => {
+            var eventRemover = this.on(__drawerFoundEvent,
+                (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
                 if (isString(name) && isString(drawerArg.name) && name !== drawerArg.name) {
                     return;
                 }
 
+                eventRemover();
+
                 this._drawerElement = drawerArg.element;
 
-                if (!hasDirection && isString(drawerArg.direction)) {
-                    this._addEventListeners(drawerArg.direction.toLowerCase());
+                if (needsDirection) {
+                    if (isString(drawerArg.direction)) {
+                        direction = drawerArg.direction;
+                    } else {
+                        var Exception = plat.acquire(plat.IExceptionStatic);
+                        Exception.warn('Direction is incorrectly defined for "plat-drawer" or "plat-drawer-controller."' +
+                            ' Please ensure it is a string.');
+                        return;
+                    }
                 }
 
-                eventRemover();
+                if (!this.__controllerIsValid(direction)) {
+                    return;
+                }
+
+                this._addEventListeners(direction.toLowerCase());
+                this.__determineTemplate(drawerArg.template);
             });
 
             this.dispatchEvent(__drawerControllerFetchEvent, plat.events.EventManager.DIRECT, {
-                name: name
+                name: name,
+                direction: direction
+            });
+        }
+
+        private __determineTemplate(fragment?: Node): void {
+            var $utils = this.$utils;
+
+            if ($utils.isString(this.__templateUrl)) {
+                plat.ui.TemplateControl.determineTemplate(this, this.__templateUrl).then((template) => {
+                    this.bindableTemplates.add('drawer', template);
+                    this.__bindTemplate();
+                });
+            } else if ($utils.isNode(fragment)) {
+                this.bindableTemplates.add('drawer', fragment);
+                this.__bindTemplate();
+            }
+        }
+
+        private __bindTemplate(): void {
+            var drawerElement = this._drawerElement;
+            this.bindableTemplates.bind('drawer').then((template) => {
+                this.dom.clearNode(drawerElement);
+                drawerElement.appendChild(template);
             });
         }
 
@@ -428,9 +519,13 @@
                 Exception.warn('Could not find a corresponding plat-drawer for this "plat-drawer-controller"');
                 return false;
             } else if (isNull(rootElement)) {
-                Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Cannot have a "plat-drawer-controller" inside a root control with a null element.');
-                return false;
+                var parent = this.root.parent;
+                if (isNull(parent) || isNull(parent.element)) {
+                    Exception = plat.acquire(plat.IExceptionStatic);
+                    Exception.warn('Cannot have a "plat-drawer-controller" inside a root control with a null element.');
+                    return false;
+                }
+                rootElement = this.__rootElement = parent.element;
             }
 
             dom.addClass(rootElement, 'plat-drawer-transition-prep');
@@ -444,11 +539,47 @@
 
     plat.register.control('plat-drawer-controller', DrawerController);
 
+    /**
+     * The drawer options capable of being placed on the 'plat-drawer' and/or the 
+     * 'plat-drawer-controller' as 'plat-options.'
+     */
     export interface IDrawerOptions {
-        direction: string;
+        /**
+         * The name of the drawer / drawer-controller pair.
+         */
+        name?: string;
+
+        /**
+         * The direction of drawer opening.
+         */
+        direction?: string;
+
+        /**
+         * The url of the drawer's intended template.
+         */
+        templateUrl?: string;
     }
 
-    export interface IDrawerControllerOptions {
-        direction: string;
+    /**
+     * An interface for the drawer's event object used during the 
+     * drawer / drawer-controller handshake.
+     */
+    interface IDrawerHandshakeEvent {
+        /**
+         * The name of the drawer / drawer-controller pair.
+         */
+        name?: string;
+        /**
+         * The direction of drawer opening.
+         */
+        direction?: string;
+        /**
+         * The global drawer element.
+         */
+        element?: HTMLElement;
+        /**
+         * The intended template of the global drawer element.
+         */
+        template?: Node;
     }
 }
