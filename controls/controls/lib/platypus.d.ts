@@ -5,8 +5,6 @@
 * PlatypusTS is licensed under the GPL-3.0 found at
 * http://opensource.org/licenses/GPL-3.0
 *
-*
-*
 */
 declare module plat {
     module register {
@@ -5641,6 +5639,7 @@ declare module plat {
             * initializes all listeners accordingly.
             */
             public _observeBindableProperty(): void;
+            private __setBindableProperty(newValue, oldValue?, firstTime?);
             private __setValue(newValue);
             private __initializeRadio();
             private __initializeSelect();
@@ -7095,7 +7094,7 @@ declare module plat {
             private __listeners;
             private __control;
             public initialize(control: IControl, attributes: IObject<string>): void;
-            public observe(key: string, listener: (newValue: any, oldValue: any) => void): IRemoveListener;
+            public observe(key: string, listener: (newValue: any, oldValue?: any) => void): IRemoveListener;
             /**
             * Used to show an attribute has been changed and forces listeners to be fired.
             *

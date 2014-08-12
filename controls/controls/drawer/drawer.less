@@ -1,5 +1,5 @@
 ﻿#DrawerVars {
-    @drawerLength: 75%;
+    @drawerLength: 80%;
     @drawerTransition: all 200ms;
 }
 
@@ -44,10 +44,13 @@
     }
 }
 
-.plat-drawer-transition {
-    #DrawerVars;
+.plat-drawer-transition-prep {
     -webkit-backface-visibility: hidden;
     -webkit-perspective: none;
+}
+
+.plat-drawer-transition {
+    #DrawerVars;
     .transition(@drawerTransition);
 }
 

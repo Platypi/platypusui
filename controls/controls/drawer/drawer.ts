@@ -124,6 +124,20 @@
             this.__initializeEvents(name, direction);
         }
 
+        /**
+         * Remove the transition class off the root element.
+         */
+        dispose(): void {
+            var dom = this.dom,
+                rootElement = this.__rootElement;
+
+            dom.removeClass(rootElement, 'plat-drawer-transition');
+            dom.removeClass(rootElement, 'plat-drawer-transition-prep');
+        }
+
+        /**
+         * Opens the drawer.
+         */
         open(): void {
             var elementToMove = this.__rootElement,
                 drawerElement = this._drawerElement,
@@ -160,10 +174,11 @@
             }
 
             this.isOpen = true;
-            this._removeSwipeOpen();
-            this._addSwipeClose(direction);
         }
 
+        /**
+         * Closes the drawer.
+         */
         close(): void {
             var elementToMove = this.__rootElement,
                 drawerElement = this._drawerElement,
@@ -181,10 +196,11 @@
             }
 
             this.isOpen = false;
-            this._removeSwipeClose();
-            this._addSwipeOpen(this._direction);
         }
 
+        /**
+         * Toggles the drawer's open/closed state.
+         */
         toggle(): void {
             if (this.isOpen) {
                 this.close();
@@ -194,7 +210,10 @@
             this.open();
         }
 
-        _reset(): void {
+        /**
+         * Resets the drawer to it's current open/closed state.
+         */
+        reset(): void {
             if (this.isOpen) {
                 this.open();
                 return;
@@ -203,34 +222,20 @@
             this.close();
         }
 
-        _addSwipeOpen(direction: string): void {
-            var event = '$swipe' + direction;
-            this.__removeSwipeOpen = this.addEventListener(this.element, event, () => {
+        _addSwipeEvents(direction: string): void {
+            var openEvent = '$swipe' + direction,
+                closeEvent = '$swipe' + this.__directionHash[direction],
+                element = this.element;
+
+            this.__removeSwipeOpen = this.addEventListener(element, openEvent, () => {
                 this.__hasSwiped = true;
                 this.open();
             });
-        }
 
-        _removeSwipeOpen(): void {
-            if (this.$utils.isFunction(this.__removeSwipeOpen)) {
-                this.__removeSwipeOpen();
-                this.__removeSwipeOpen = null;
-            }
-        }
-
-        _addSwipeClose(direction: string): void {
-            var event = '$swipe' + this.__directionHash[direction];
-            this.__removeSwipeClose = this.addEventListener(this.element, event, () => {
+            this.__removeSwipeClose = this.addEventListener(element, closeEvent, () => {
                 this.__hasSwiped = true;
                 this.close();
             });
-        }
-
-        _removeSwipeClose(): void {
-            if (this.$utils.isFunction(this.__removeSwipeClose)) {
-                this.__removeSwipeClose();
-                this.__removeSwipeClose = null;
-            }
         }
 
         _addEventListeners(direction: string): void {
@@ -245,10 +250,12 @@
 
             this._direction = direction;
 
+            // remove event listeners first in case we want to later be able to dynamically change direction of drawer.
             this._removeEventListeners();
             this.__removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn);
             this.__removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn);
-            this._addSwipeOpen(direction);
+            this._addSwipeEvents(direction);
+
             if (this.$utils.isNull(this._lastTouch)) {
                 this._lastTouch = { x: 0, y: 0 };
                 this.addEventListener(element, '$touchstart', (ev: plat.ui.IGestureEvent) => {
@@ -310,12 +317,12 @@
                     return;
             }
 
-            if (Math.abs(distanceMoved) > Math.ceil(totalDistance * 3 / 4)) {
+            if (Math.abs(distanceMoved) > Math.ceil(totalDistance / 2)) {
                 this.toggle();
                 return;
             }
 
-            this._reset();
+            this.reset();
         }
 
         _track(ev: plat.ui.IGestureEvent): void {
@@ -327,6 +334,11 @@
                 translation: string;
             switch (this._direction) {
                 case 'up':
+                    distanceMoved = this.isOpen ?
+                        (-drawerElement.offsetHeight) + ev.clientY - this._lastTouch.y :
+                        ev.clientY - this._lastTouch.y;
+                    translation = 'translate3d(0,' + distanceMoved + 'px,0)';
+                    break;
                 case 'down':
                     distanceMoved = this.isOpen ?
                         drawerElement.offsetHeight + ev.clientY - this._lastTouch.y :
@@ -334,6 +346,11 @@
                     translation = 'translate3d(0,' + distanceMoved + 'px,0)';
                     break;
                 case 'left':
+                    distanceMoved = this.isOpen ?
+                        (-drawerElement.offsetWidth) + ev.clientX - this._lastTouch.x :
+                        ev.clientX - this._lastTouch.x;
+                    translation = 'translate3d(' + distanceMoved + 'px,0,0)';
+                    break;
                 case 'right':
                     distanceMoved = this.isOpen ?
                         drawerElement.offsetWidth + ev.clientX - this._lastTouch.x :
@@ -399,7 +416,8 @@
         private __controllerIsValid(direction: string): boolean {
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic,
-                rootElement = this.__rootElement = this.root.element;
+                rootElement = this.__rootElement = this.root.element,
+                dom = this.dom;
 
             if (isNull(this.__directionHash[direction])) {
                 Exception = plat.acquire(plat.IExceptionStatic);
@@ -415,8 +433,9 @@
                 return false;
             }
 
+            dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this.addEventListener(rootElement, this.$compat.animationEvents.$transitionEnd, () => {
-                this.dom.removeClass(rootElement, 'plat-drawer-transition');
+                dom.removeClass(rootElement, 'plat-drawer-transition');
             });
 
             return true;
