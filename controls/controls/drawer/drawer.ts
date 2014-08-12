@@ -15,6 +15,7 @@
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         private __currentDirection: string;
+        private __useContext: boolean;
 
         /**
          * Check for a direction and initialize event handling.
@@ -25,6 +26,7 @@
                 optionObj = this.options,
                 options = $utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
                 direction = this.__currentDirection = options.direction || 'right',
+                useContext = this.__useContext = options.useContext === true,
                 name = options.name,
                 templateUrl = options.templateUrl;
 
@@ -32,9 +34,16 @@
             if ($utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
                     this.innerTemplate = template;
+                    if (this.__useContext) {
+                        this.bindableTemplates.add('drawer', template.cloneNode(true));
+                        this.__bindTemplate();
+                    }
                     this.__initializeEvents(name, direction);
                 });
                 return;
+            } else if (useContext && $utils.isNode(this.innerTemplate)) {
+                this.bindableTemplates.add('drawer', this.innerTemplate.cloneNode(true));
+                this.__bindTemplate();
             }
 
             this.__initializeEvents(name, direction);
@@ -72,6 +81,7 @@
                 element = this.element,
                 isString = $utils.isString,
                 innerTemplate = this.innerTemplate,
+                useContext = this.__useContext,
                 DIRECT = plat.events.EventManager.DIRECT;
 
             this.on(__drawerControllerFetchEvent,
@@ -87,8 +97,23 @@
                     name: name,
                     direction: direction,
                     element: element,
+                    useContext: useContext,
                     template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null
                 });
+            });
+
+            this.dispatchEvent(__drawerFoundEvent, DIRECT, {
+                name: name,
+                direction: direction,
+                element: element,
+                useContext: useContext,
+                template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null
+            });
+        }
+
+        private __bindTemplate(): void {
+            this.bindableTemplates.bind('drawer').then((template) => {
+                this.element.appendChild(template);
             });
         }
     }
@@ -134,6 +159,7 @@
         _lastTouch: plat.ui.IPoint;
 
         private __hasSwiped = false;
+        private __useContext: boolean;
         private __removeSwipeOpen: plat.IRemoveListener;
         private __removeSwipeClose: plat.IRemoveListener;
         private __removePrimaryTrack: plat.IRemoveListener;
@@ -157,6 +183,7 @@
                 direction = options.direction,
                 name = options.name;
 
+            this.__useContext = options.useContext === true;
             this.__templateUrl = options.templateUrl;
             this.__initializeEvents(name, direction);
         }
@@ -455,6 +482,11 @@
                 }
 
                 this._addEventListeners(direction.toLowerCase());
+
+                if (!this.__useContext && drawerArg.useContext === true) {
+                    return;
+                }
+
                 this.__determineTemplate(drawerArg.template);
             });
 
@@ -558,6 +590,11 @@
          * The url of the drawer's intended template.
          */
         templateUrl?: string;
+
+        /**
+         * A boolean value stating whether to use this context or not.
+         */
+        useContext?: boolean;
     }
 
     /**
@@ -581,5 +618,9 @@
          * The intended template of the global drawer element.
          */
         template?: Node;
+        /**
+         * A boolean value stating whether to use this context or not.
+         */
+        useContext?: boolean;
     }
 }
