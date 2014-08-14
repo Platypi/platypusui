@@ -12,6 +12,7 @@ module app {
 
         text: plat.controls.INamedElement<HTMLElement, void>;
         password: plat.controls.INamedElement<HTMLElement, void>;
+        modal: plat.controls.INamedElement<Element, platui.Modal>;
 
         navigatedTo(route: plat.web.IRoute<any>) {
             if (route.path.length === 0) {
@@ -31,6 +32,10 @@ module app {
 
         bar(ev?: any) {
             this.context.progress += 0.01;
+        }
+
+        toggle() {
+            this.modal.control.toggle();
         }
     }
 

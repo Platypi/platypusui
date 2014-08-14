@@ -14,23 +14,26 @@
          */
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
-        private __currentDirection: string;
+        private __currentTransition: string;
         private __useContext: boolean;
 
         /**
-         * Check for a direction and initialize event handling.
+         * Check for a transition direction and initialize event handling.
          */
         loaded(): void {
             var element = this.element,
                 $utils = this.$utils,
                 optionObj = this.options,
                 options = $utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
-                direction = this.__currentDirection = options.direction || 'right',
-                useContext = this.__useContext = options.useContext === true,
-                name = options.name,
+                transition = this.__currentTransition = options.transition || 'right',
+                useContext = this.__useContext =
+                    (options.useContext === true) ||
+                    element.hasAttribute('plat-context') ||
+                    element.hasAttribute('data-plat-context'),
+                id = options.id,
                 templateUrl = options.templateUrl;
 
-            this.dom.addClass(element, direction);
+            this.dom.addClass(element, transition);
             if ($utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
                     this.innerTemplate = template;
@@ -38,7 +41,7 @@
                         this.bindableTemplates.add('drawer', template.cloneNode(true));
                         this.__bindTemplate();
                     }
-                    this.__initializeEvents(name, direction);
+                    this.__initializeEvents(id, transition);
                 });
                 return;
             } else if (useContext && $utils.isNode(this.innerTemplate)) {
@@ -46,7 +49,7 @@
                 this.__bindTemplate();
             }
 
-            this.__initializeEvents(name, direction);
+            this.__initializeEvents(id, transition);
         }
 
         /**
@@ -60,23 +63,23 @@
         }
 
         /**
-         * Changes the placement and implied direction of the drawer.
+         * Changes the placement and implied transition direction of the drawer.
          */
-        _changeDirection(direction: string): void {
-            if (this.$utils.isNull(direction) || direction === this.__currentDirection) {
+        _changeDirection(transition: string): void {
+            if (this.$utils.isNull(transition) || transition === this.__currentTransition) {
                 return;
             }
 
             var dom = this.dom,
                 element = this.element;
 
-            dom.removeClass(element, this.__currentDirection);
-            dom.addClass(element, direction);
+            dom.removeClass(element, this.__currentTransition);
+            dom.addClass(element, transition);
 
-            this.__currentDirection = direction;
+            this.__currentTransition = transition;
         }
 
-        private __initializeEvents(name: string, direction: string): void {
+        private __initializeEvents(id: string, transition: string): void {
             var $utils = this.$utils,
                 element = this.element,
                 isString = $utils.isString,
@@ -86,16 +89,16 @@
 
             this.on(__drawerControllerFetchEvent,
                 (event: plat.events.IDispatchEventInstance, controllerArg: IDrawerHandshakeEvent) => {
-                if (isString(name) && isString(controllerArg.name) && name !== controllerArg.name) {
+                if (isString(id) && isString(controllerArg.id) && id !== controllerArg.id) {
                     return;
-                } else if (isString(controllerArg.direction)) {
-                    direction = controllerArg.direction;
-                    this._changeDirection(direction);
+                } else if (isString(controllerArg.transition)) {
+                    transition = controllerArg.transition;
+                    this._changeDirection(transition);
                 }
 
                 this.dispatchEvent(__drawerFoundEvent, DIRECT, {
-                    name: name,
-                    direction: direction,
+                    id: id,
+                    transition: transition,
                     element: element,
                     useContext: useContext,
                     template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null
@@ -103,8 +106,8 @@
             });
 
             this.dispatchEvent(__drawerFoundEvent, DIRECT, {
-                name: name,
-                direction: direction,
+                id: id,
+                transition: transition,
                 element: element,
                 useContext: useContext,
                 template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null
@@ -134,14 +137,9 @@
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         /**
-         * A boolean value indicating whether the drawer is currently open.
+         * The transition direction of control for this DrawerController.
          */
-        isOpen = false;
-
-        /**
-         * The direction of control for this DrawerController.
-         */
-        _direction: string;
+        _transition: string;
 
         /**
          * The DrawerController's corresponding Drawer element.
@@ -159,6 +157,8 @@
         _lastTouch: plat.ui.IPoint;
 
         private __hasSwiped = false;
+        private __isOpen = false;
+        private __inTouch = false;
         private __useContext: boolean;
         private __removeSwipeOpen: plat.IRemoveListener;
         private __removeSwipeClose: plat.IRemoveListener;
@@ -166,7 +166,7 @@
         private __removeSecondaryTrack: plat.IRemoveListener;
         private __rootElement: HTMLElement;
         private __templateUrl: string;
-        private __directionHash: plat.IObject<string> = {
+        private __transitionHash: plat.IObject<string> = {
             right: 'left',
             left: 'right',
             up: 'down',
@@ -180,12 +180,12 @@
             var element = this.element,
                 optionObj = this.options,
                 options = this.$utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
-                direction = options.direction,
-                name = options.name;
+                transition = options.transition,
+                id = options.id;
 
             this.__useContext = options.useContext === true;
             this.__templateUrl = options.templateUrl;
-            this.__initializeEvents(name, direction);
+            this.__initializeEvents(id, transition);
         }
 
         /**
@@ -213,9 +213,8 @@
 
             this.dom.addClass(elementToMove, 'plat-drawer-transition');
 
-            var translation: string,
-                direction = this._direction;
-            switch (direction) {
+            var translation: string;
+            switch (this._transition) {
                 case 'up':
                     translation = 'translate3d(0,' + (-drawerElement.offsetHeight) + 'px,0)';
                     break;
@@ -233,11 +232,7 @@
             }
 
             elementToMove.style[<any>this._transform] = translation;
-            if (this.isOpen) {
-                return;
-            }
-
-            this.isOpen = true;
+            this.__isOpen = true;
         }
 
         /**
@@ -255,18 +250,14 @@
             this.dom.addClass(elementToMove, 'plat-drawer-transition');
 
             elementToMove.style[<any>this._transform] = '';
-            if (!this.isOpen) {
-                return;
-            }
-
-            this.isOpen = false;
+            this.__isOpen = false;
         }
 
         /**
          * Toggles the drawer's open/closed state.
          */
         toggle(): void {
-            if (this.isOpen) {
+            if (this.__isOpen) {
                 this.close();
                 return;
             }
@@ -278,7 +269,7 @@
          * Resets the drawer to it's current open/closed state.
          */
         reset(): void {
-            if (this.isOpen) {
+            if (this.__isOpen) {
                 this.open();
                 return;
             }
@@ -287,13 +278,20 @@
         }
 
         /**
+         * Indicates whether the drawer is currently open.
+         */
+        isOpen(): boolean {
+            return this.__isOpen;
+        }
+
+        /**
          * Adds swipe events to the controller element.
          * 
-         * @param direction The direction of opening for the drawer.
+         * @param transition The transition direction of opening for the drawer.
          */
-        _addSwipeEvents(direction: string): void {
-            var openEvent = '$swipe' + direction,
-                closeEvent = '$swipe' + this.__directionHash[direction],
+        _addSwipeEvents(transition: string): void {
+            var openEvent = '$swipe' + transition,
+                closeEvent = '$swipe' + this.__transitionHash[transition],
                 element = this.element;
 
             this.__removeSwipeOpen = this.addEventListener(element, openEvent, () => {
@@ -310,25 +308,26 @@
         /**
          * Adds primary and secondary tracking events to the controller element.
          * 
-         * @param direction The direction of opening for the drawer.
+         * @param transition The transition direction of opening for the drawer.
          */
-        _addEventListeners(direction: string): void {
+        _addEventListeners(transition: string): void {
             var element = this.element,
-                primaryTrack = '$track' + direction,
-                secondaryTrack = '$track' + this.__directionHash[direction],
+                primaryTrack = '$track' + transition,
+                secondaryTrack = '$track' + this.__transitionHash[transition],
                 trackFn = this._track.bind(this);
 
-            this._direction = direction;
+            this._transition = transition;
 
-            // remove event listeners first in case we want to later be able to dynamically change direction of drawer.
+            // remove event listeners first in case we want to later be able to dynamically change transition direction of drawer.
             this._removeEventListeners();
             this.__removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn);
             this.__removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn);
-            this._addSwipeEvents(direction);
+            this._addSwipeEvents(transition);
 
             if (this.$utils.isNull(this._lastTouch)) {
                 this._lastTouch = { x: 0, y: 0 };
                 this.addEventListener(element, '$touchstart', (ev: plat.ui.IGestureEvent) => {
+                    this.__inTouch = true;
                     this._lastTouch = {
                         x: ev.clientX,
                         y: ev.clientY
@@ -370,17 +369,19 @@
          * @param ev The touch event.
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            if (this.__hasSwiped) {
-                this.__hasSwiped = false;
+            if (!this.__inTouch) {
+                return;
+            } else if (this.__hasSwiped) {
+                this.__hasSwiped = this.__inTouch = false;
                 return;
             }
 
-            var drawerElement = this._drawerElement,
-                $utils = this.$utils;
+            this.__inTouch = false;
 
-            var distanceMoved: number,
+            var drawerElement = this._drawerElement,
+                distanceMoved: number,
                 totalDistance: number;
-            switch (this._direction) {
+            switch (this._transition) {
                 case 'up':
                 case 'down':
                     totalDistance = drawerElement.offsetHeight;
@@ -405,7 +406,7 @@
 
         /**
          * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
-         * depending on the defined 'direction.'
+         * depending on the defined 'transition' direction.
          * 
          * @param ev The $tracking event.
          */
@@ -416,27 +417,27 @@
 
             var distanceMoved: number,
                 translation: string;
-            switch (this._direction) {
+            switch (this._transition) {
                 case 'up':
-                    distanceMoved = this.isOpen ?
+                    distanceMoved = this.__isOpen ?
                         (-drawerElement.offsetHeight) + ev.clientY - this._lastTouch.y :
                         ev.clientY - this._lastTouch.y;
                     translation = 'translate3d(0,' + distanceMoved + 'px,0)';
                     break;
                 case 'down':
-                    distanceMoved = this.isOpen ?
+                    distanceMoved = this.__isOpen ?
                         drawerElement.offsetHeight + ev.clientY - this._lastTouch.y :
                         ev.clientY - this._lastTouch.y;
                     translation = 'translate3d(0,' + distanceMoved + 'px,0)';
                     break;
                 case 'left':
-                    distanceMoved = this.isOpen ?
+                    distanceMoved = this.__isOpen ?
                         (-drawerElement.offsetWidth) + ev.clientX - this._lastTouch.x :
                         ev.clientX - this._lastTouch.x;
                     translation = 'translate3d(' + distanceMoved + 'px,0,0)';
                     break;
                 case 'right':
-                    distanceMoved = this.isOpen ?
+                    distanceMoved = this.__isOpen ?
                         drawerElement.offsetWidth + ev.clientX - this._lastTouch.x :
                         ev.clientX - this._lastTouch.x;
                     translation = 'translate3d(' + distanceMoved + 'px,0,0)';
@@ -448,17 +449,17 @@
             elementToMove.style[<any>this._transform] = translation;
         }
 
-        private __initializeEvents(name: string, direction: string): void {
+        private __initializeEvents(id: string, transition: string): void {
             var element = this.element,
                 $utils = this.$utils,
                 isString = $utils.isString,
-                needsDirection = !isString(direction);
+                needsDirection = !isString(transition);
 
             this.__setTransform();
 
             var eventRemover = this.on(__drawerFoundEvent,
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
-                if (isString(name) && isString(drawerArg.name) && name !== drawerArg.name) {
+                if (isString(id) && isString(drawerArg.id) && id !== drawerArg.id) {
                     return;
                 }
 
@@ -467,21 +468,21 @@
                 this._drawerElement = drawerArg.element;
 
                 if (needsDirection) {
-                    if (isString(drawerArg.direction)) {
-                        direction = drawerArg.direction;
+                    if (isString(drawerArg.transition)) {
+                        transition = drawerArg.transition;
                     } else {
                         var Exception = plat.acquire(plat.IExceptionStatic);
-                        Exception.warn('Direction is incorrectly defined for "plat-drawer" or "plat-drawer-controller."' +
+                        Exception.warn('Transition direction is incorrectly defined for "plat-drawer" or "plat-drawer-controller."' +
                             ' Please ensure it is a string.');
                         return;
                     }
                 }
 
-                if (!this.__controllerIsValid(direction)) {
+                if (!this.__controllerIsValid(transition)) {
                     return;
                 }
 
-                this._addEventListeners(direction.toLowerCase());
+                this._addEventListeners(transition.toLowerCase());
 
                 if (!this.__useContext && drawerArg.useContext === true) {
                     return;
@@ -491,8 +492,8 @@
             });
 
             this.dispatchEvent(__drawerControllerFetchEvent, plat.events.EventManager.DIRECT, {
-                name: name,
-                direction: direction
+                id: id,
+                transition: transition
             });
         }
 
@@ -536,15 +537,16 @@
             this._transform = 'transform';
         }
 
-        private __controllerIsValid(direction: string): boolean {
+        private __controllerIsValid(transition: string): boolean {
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic,
                 rootElement = this.__rootElement = this.root.element,
                 dom = this.dom;
 
-            if (isNull(this.__directionHash[direction])) {
+            if (isNull(this.__transitionHash[transition])) {
                 Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Incorrect direction: "' + direction + '" defined for "plat-drawer" or "plat-drawer-controller"');
+                Exception.warn('Incorrect transition direction: "' + transition +
+                    '" defined for "plat-drawer" or "plat-drawer-controller"');
                 return false;
             } else if (isNull(this._drawerElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
@@ -577,14 +579,14 @@
      */
     export interface IDrawerOptions {
         /**
-         * The name of the drawer / drawer-controller pair.
+         * The unique ID of the drawer / drawer-controller pair.
          */
-        name?: string;
+        id?: string;
 
         /**
-         * The direction of drawer opening.
+         * The transition direction of drawer opening.
          */
-        direction?: string;
+        transition?: string;
 
         /**
          * The url of the drawer's intended template.
@@ -603,13 +605,13 @@
      */
     interface IDrawerHandshakeEvent {
         /**
-         * The name of the drawer / drawer-controller pair.
+         * The unique ID of the drawer / drawer-controller pair.
          */
-        name?: string;
+        id?: string;
         /**
-         * The direction of drawer opening.
+         * The transition direction of drawer opening.
          */
-        direction?: string;
+        transition?: string;
         /**
          * The global drawer element.
          */
