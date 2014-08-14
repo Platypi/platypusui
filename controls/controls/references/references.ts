@@ -43,4 +43,3 @@ var __Promise = '$Promise',
     __DrawerControllerFetchEvent = '__platDrawerControllerFetch',
     __DrawerFoundEvent = '__platDrawerFound';
 /* tslint:enable:no-unused-variable */
- 

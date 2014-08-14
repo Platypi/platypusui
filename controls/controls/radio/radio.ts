@@ -59,7 +59,7 @@
                 return;
             }
 
-            this._toggleMark(setProperty);
+            this._toggle(setProperty);
         }
 
         /**
@@ -95,13 +95,13 @@
          * @param setProperty A boolean value stating whether the bindable 
          * property should be updated.
          */
-        _toggleMark(setProperty?: boolean): void {
+        _toggle(setProperty?: boolean): void {
             super._toggle(setProperty);
             if (this.isActive) {
                 var name = this.groupName;
                 this.dispatchEvent(__RadioPrefix + name, plat.events.EventManager.DIRECT);
                 var remover = this.on(__RadioPrefix + name, () => {
-                    this._toggleMark();
+                    this._toggle();
                     remover();
                 });
             }

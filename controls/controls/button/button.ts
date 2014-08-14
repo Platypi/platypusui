@@ -23,6 +23,12 @@
                 span: HTMLSpanElement,
                 match: Array<string>;
 
+            if (childNodes.length === 0) {
+                span = $document.createElement('span');
+                element.insertBefore(span, null);
+                return;
+            }
+
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
                 if (childNode.nodeType === Node.TEXT_NODE) {
@@ -43,7 +49,14 @@
          */
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
-                options = optionObj.value || <IButtonOptions>{};
+                options = optionObj.value || <IButtonOptions>{},
+                type = options.type;
+
+            if (!type) {
+                return;
+            }
+
+            this.dom.addClass(this.element, type);
         }
     }
 

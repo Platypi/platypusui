@@ -5,12 +5,11 @@
     .box-sizing(border-box);
 
     .plat-toggle-container {
-        display: inline-block;
-        position: relative;
         width: @toggleWidth;
         height: @toggleHeight;
-        border: @toggleBorderSize solid @toggleColor;
+        position: relative;
         overflow: hidden;
+        border: @toggleBorderSize solid @toggleBorderColor;
         .border-radius(@toggleHeight);
 
         .slider {
@@ -34,8 +33,12 @@
                 background-color: @knobColor;
                 .border-radius(@knobDiameter);
             }
+        }
 
-            &.slide {
+        &.slide {
+            border-color: @toggleActivatedBorderColor;
+
+            .slider {
                 left: 0;
                 background-color: @toggleActiveColor;
             }

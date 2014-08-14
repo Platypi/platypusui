@@ -8,6 +8,20 @@
     cursor: pointer;
     .border-radius(@buttonBorderRadius);
     .box-sizing(border-box);
+
+    &.back {
+        border: none;
+
+        *:first-child::before {
+            /// TODO: replace with icon font.
+            content: "<";
+            margin-right: 0.25em;
+        }
+    }
+
+    &.neutral {
+
+    }
 }
 
 @import '../less/variables';

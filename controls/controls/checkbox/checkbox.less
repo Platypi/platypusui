@@ -9,57 +9,57 @@
     }
 
     .plat-checkbox-container {
-        display: inline-block;
         position: relative;
         width: @checkboxSize;
         height: @checkboxSize;
-        border: @checkboxBorderSize solid @checkboxBorderColor;
         overflow: hidden;
+        border: @checkboxBorderSize solid @checkboxBorderColor;
+        .border-radius(@checkboxSize);
 
-        .mark {
-            &.check,
-            &.x {
-                &::before,
-                &::after {
-                    content: "";
-                    position: absolute;
-                    background-color: @checkboxMarkColor;
-                    height: @checkboxBorderSize * 1.5;
-                    .border-radius(@checkboxBorderSize * 1.5);
-                }
+        &.check,
+        &.x {
+            border-color: @checkboxActiveBorderColor;
+
+            .mark::before,
+            .mark::after {
+                content: "";
+                position: absolute;
+                background-color: @checkboxMarkColor;
+                height: @checkboxMarkThickness;
+                .border-radius(@checkboxMarkThickness);
+            }
+        }
+
+        &.check {
+            .mark::before {
+                left: 5%;
+                top: 60%;
+                width: @checkboxSize / 2.5;
+                .rotate(45deg);
             }
 
-            &.check {
-                &::before {
-                    left: -1%;
-                    top: 72.5%;
-                    width: @checkboxSize / 2.5;
-                    .rotate(45deg);
-                }
+            .mark::after {
+                left: 28%;
+                top: 51%;
+                width: @checkboxSize / 1.5;
+                .rotate(-45deg);
+            }
+        }
 
-                &::after {
-                    left: 3.25%;
-                    top: 42.5%;
-                    width: @checkboxSize * 1.15;
-                    .rotate(-55deg);
-                }
+        &.x {
+            .mark::before,
+            .mark::after {
+                left: 17.5%;
+                top: 48.5%;
+                width: @checkboxSize / 1.5;
             }
 
-            &.x {
-                &::before,
-                &::after {
-                    left: -10%;
-                    top: 42.5%;
-                    width: @checkboxSize * 1.2;
-                }
+            .mark::before {
+                .rotate(45deg);
+            }
 
-                &::before {
-                    .rotate(45deg);
-                }
-
-                &::after {
-                    .rotate(-45deg);
-                }
+            .mark::after {
+                .rotate(-45deg);
             }
         }
     }

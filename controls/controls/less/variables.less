@@ -16,11 +16,13 @@
 /// Toggle
 #ToggleVars {
     @toggleColor: @neutralColor;
-    @toggleActiveColor: lime;
+    @toggleActiveColor: @primaryColor;
     @toggleWidth: 4em;
     @toggleRatio: 1/3;
     @toggleHeight: @toggleWidth * @toggleRatio;
-    @toggleBorderSize: @toggleHeight / 10;
+    @toggleBorderSize: 1px;
+    @toggleBorderColor: @toggleColor;
+    @toggleActivatedBorderColor: @toggleActiveColor;
     @transitionTime: 250ms;
     @toggleTransitionArgs: left @transitionTime, background-color @transitionTime;
     @knobColor: @toggleColor;
@@ -30,18 +32,21 @@
 /// Checkbox
 #CheckboxVars {
     @checkboxBorderColor: black;
-    @checkboxMarkColor: black;
+    @checkboxActiveBorderColor: @primaryColor;
+    @checkboxMarkColor: @checkboxActiveBorderColor;
     @checkboxSize: 1em;
-    @checkboxBorderSize: @checkboxSize / 10;
+    @checkboxBorderSize: 1px;
+    @checkboxMarkThickness: @checkboxBorderSize;
 }
 
 /// Radio
 #RadioVars {
     @radioBorderColor: black;
-    @radioMarkColor: black;
+    @radioActiveBorderColor: @primaryColor;
+    @radioMarkColor: @radioActiveBorderColor;
     @radioSize: 1em;
     @radioProportion: 3/5;
-    @radioBorderSize: @radioSize / 10;
+    @radioBorderSize: 1px;
 }
 
 /// Drawer
@@ -69,7 +74,7 @@
     @barBorderColor: @neutralColor;
     @barColor: @primaryColor;
     @barHeight: 1em;
-    @barBorderSize: @barHeight / 10;
+    @barBorderSize: 1px;
     @barTransition: none;
 }
 

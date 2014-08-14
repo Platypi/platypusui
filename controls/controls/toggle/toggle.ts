@@ -38,7 +38,7 @@
          * Sets the slider element.
          */
         loaded(): void {
-            this._targetElement = this.element.firstElementChild.firstElementChild;
+            this._targetElement = this.element.firstElementChild;
         }
 
         /**
@@ -86,8 +86,7 @@
             var wasActive = this.isActive,
                 isActive = !wasActive,
                 element = <HTMLInputElement>this.element,
-                sliderElement = this._targetElement ||
-                element.firstElementChild.firstElementChild;
+                sliderElement = this._targetElement || element.firstElementChild;
 
             this._activate(sliderElement);
             this.isActive = element.checked = isActive;

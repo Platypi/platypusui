@@ -9,26 +9,24 @@
     }
 
     .plat-radio-container {
-        display: inline-block;
         position: relative;
         width: @radioSize;
         height: @radioSize;
-        border: @radioBorderSize solid @radioBorderColor;
         overflow: hidden;
+        border: @radioBorderSize solid @radioBorderColor;
         .border-radius(@radioSize);
 
-        .mark {
-            &.radio {
-                &::after {
-                    content: "";
-                    position: absolute;
-                    background-color: @radioMarkColor;
-                    height: @radioSize * @radioProportion;
-                    width: @radioSize * @radioProportion;
-                    left: 100% * (1-@radioProportion) / 2;
-                    top: 100% * (1-@radioProportion) / 2;
-                    .border-radius(@radioSize * @radioProportion);
-                }
+        &.radio {
+            border-color: @radioActiveBorderColor;
+            .mark::after {
+                content: "";
+                position: absolute;
+                background-color: @radioMarkColor;
+                height: @radioSize * @radioProportion;
+                width: @radioSize * @radioProportion;
+                left: 100% * (1-@radioProportion) / 2;
+                top: 100% * (1-@radioProportion) / 2;
+                .border-radius(@radioSize * @radioProportion);
             }
         }
     }
