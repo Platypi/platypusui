@@ -24,7 +24,8 @@
         initialize(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
                 options = optionObj.value || <ICheckboxOptions>{},
-                mark = this._targetType = this.$utils.isString(options.mark) ? options.mark : 'check';
+                mark = this._targetType = options.mark || 'check',
+                type = options.type || 'primary';
 
             switch (mark.toLowerCase()) {
                 case 'check':
@@ -36,6 +37,7 @@
                     break;
             }
 
+            this.dom.addClass(this.element, type);
             super.initialize();
         }
 
@@ -125,5 +127,10 @@
          * The type of mark to place in the checkbox.
          */
         mark: string;
+
+        /**
+         * The type of checkbox (i.e. - primary, secondary, etc).
+         */
+        type: string;
     }
 }

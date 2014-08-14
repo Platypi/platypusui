@@ -31,12 +31,21 @@
 
 /// Checkbox
 #CheckboxVars {
+    @checkboxBackgroundColor: transparent;
     @checkboxBorderColor: black;
     @checkboxActiveBorderColor: @primaryColor;
     @checkboxMarkColor: @checkboxActiveBorderColor;
     @checkboxSize: 1em;
     @checkboxBorderSize: 1px;
     @checkboxMarkThickness: @checkboxBorderSize;
+    .secondaryCheckboxMarkColor(@property; @color) {
+        & when (@color = transparent) {
+            @{property}: white;
+        }
+        & when not (@color = transparent) {
+            @{property}: @color;
+        }
+    }
 }
 
 /// Radio

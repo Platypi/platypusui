@@ -12,6 +12,7 @@
         position: relative;
         width: @checkboxSize;
         height: @checkboxSize;
+        background-color: @checkboxBackgroundColor;
         overflow: hidden;
         border: @checkboxBorderSize solid @checkboxBorderColor;
         .border-radius(@checkboxSize);
@@ -24,7 +25,6 @@
             .mark::after {
                 content: "";
                 position: absolute;
-                background-color: @checkboxMarkColor;
                 height: @checkboxMarkThickness;
                 .border-radius(@checkboxMarkThickness);
             }
@@ -60,6 +60,32 @@
 
             .mark::after {
                 .rotate(-45deg);
+            }
+        }
+    }
+
+    &.primary {
+        .plat-checkbox-container {
+            &.check,
+            &.x {
+                .mark::before,
+                .mark::after {
+                    background-color: @checkboxMarkColor;
+                }
+            }
+        }
+    }
+
+    &.secondary {
+        .plat-checkbox-container {
+            &.check,
+            &.x {
+                background-color: @checkboxMarkColor;
+
+                .mark::before,
+                .mark::after {
+                    .secondaryCheckboxMarkColor(background-color; @checkboxBackgroundColor);
+                }
             }
         }
     }
