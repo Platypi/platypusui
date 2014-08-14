@@ -6,8 +6,15 @@
     border: @buttonBorderSize solid @buttonBorderColor;
     outline: none;
     cursor: pointer;
-    .border-radius(@buttonBorderRadius);
     .box-sizing(border-box);
+
+    &.primary {
+        .border-radius(@buttonPrimaryBorderRadius);
+    }
+
+    &.secondary {
+        .border-radius(@buttonSecondaryBorderRadius);
+    }
 
     &.back {
         border: none;
@@ -17,10 +24,6 @@
             content: "<";
             margin-right: 0.25em;
         }
-    }
-
-    &.neutral {
-
     }
 }
 

@@ -50,11 +50,7 @@
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
                 options = optionObj.value || <IButtonOptions>{},
-                type = options.type;
-
-            if (!type) {
-                return;
-            }
+                type = options.type || 'primary';
 
             this.dom.addClass(this.element, type);
         }
