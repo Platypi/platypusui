@@ -10,7 +10,8 @@
         position: relative;
         overflow: hidden;
         background-color: @toggleBackgroundColor;
-        border: @toggleBorderSize solid @toggleBorderColor;
+        border: @toggleBorderSize solid;
+        .toggleBorderColor(border-color);
         .border-radius(@toggleHeight);
 
         .slider {

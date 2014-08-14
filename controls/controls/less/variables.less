@@ -16,6 +16,8 @@
 
 /// Toggle
 #ToggleVars {
+    // set this var to for a custom border color
+    @toggleBorderColor: undefined;
     @toggleBackgroundColor: transparent;
     @toggleColor: @neutralColor;
     @toggleActiveColor: @primaryColor;
@@ -23,16 +25,28 @@
     @toggleRatio: 1/3;
     @toggleHeight: @toggleWidth * @toggleRatio;
     @toggleBorderSize: 1px;
-    @toggleBorderColor: @toggleColor;
     @toggleActivatedBorderColor: @toggleActiveColor;
     @transitionTime: 250ms;
     @toggleTransitionArgs: left @transitionTime, background-color @transitionTime;
     @knobColor: @toggleColor;
     @knobPadding: 1px;
+    .toggleBorderColor(@property) when (@toggleBorderColor = undefined) {
+        & when (@toggleBackgroundColor = transparent) {
+            @{property}: @toggleColor;
+        }
+        & when not (@toggleBackgroundColor = transparent) {
+            @{property}: @toggleBackgroundColor;
+        }
+    }
+    .toggleBorderColor(@property) when (default()) {
+        @{property}: @toggleBorderColor;
+    }
 }
 
 /// Checkbox
 #CheckboxVars {
+    // set this var to for a custom secondary checkbox mark color
+    @checkboxSecondaryMarkColor: undefined;
     @checkboxBackgroundColor: transparent;
     @checkboxBorderColor: black;
     @checkboxActiveBorderColor: @primaryColor;
@@ -40,13 +54,16 @@
     @checkboxSize: 1em;
     @checkboxBorderSize: 1px;
     @checkboxMarkThickness: @checkboxBorderSize;
-    .secondaryCheckboxMarkColor(@property; @color) {
-        & when (@color = transparent) {
+    .secondaryCheckboxMarkColor(@property) when (@checkboxSecondaryMarkColor = undefined) {
+        & when (@checkboxBackgroundColor = transparent) {
             @{property}: white;
         }
-        & when not (@color = transparent) {
-            @{property}: @color;
+        & when not (@checkboxBackgroundColor = transparent) {
+            @{property}: @checkboxBackgroundColor;
         }
+    }
+    .secondaryCheckboxMarkColor(@property) when (default()) {
+        @{property}: @checkboxSecondaryMarkColor;
     }
 }
 
