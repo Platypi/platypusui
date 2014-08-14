@@ -1,13 +1,9 @@
 ﻿module platui {
-    var __drawerControllerInitEvent = '__platDrawerControllerInit',
-        __drawerControllerFetchEvent = '__platDrawerControllerFetch',
-        __drawerFoundEvent = '__platDrawerFound';
-
     /**
      * A Template Control that acts as a global drawer.
      */
     export class Drawer extends plat.ui.TemplateControl {
-        $utils: plat.IUtils = plat.acquire(plat.IUtils);
+        $utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
          * The plat-options for the Drawer.
@@ -23,13 +19,13 @@
         loaded(): void {
             var element = this.element,
                 $utils = this.$utils,
-                optionObj = this.options,
-                options = $utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
+                optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
+                options = optionObj.value || <IDrawerOptions>{},
                 transition = this.__currentTransition = options.transition || 'right',
                 useContext = this.__useContext =
                     (options.useContext === true) ||
-                    element.hasAttribute('plat-context') ||
-                    element.hasAttribute('data-plat-context'),
+                    element.hasAttribute(__Context) ||
+                    element.hasAttribute('data-' + __Context),
                 id = options.id,
                 templateUrl = options.templateUrl;
 
@@ -87,7 +83,7 @@
                 useContext = this.__useContext,
                 DIRECT = plat.events.EventManager.DIRECT;
 
-            this.on(__drawerControllerFetchEvent,
+            this.on(__DrawerControllerFetchEvent,
                 (event: plat.events.IDispatchEventInstance, controllerArg: IDrawerHandshakeEvent) => {
                 if (isString(id) && isString(controllerArg.id) && id !== controllerArg.id) {
                     return;
@@ -96,7 +92,7 @@
                     this._changeDirection(transition);
                 }
 
-                this.dispatchEvent(__drawerFoundEvent, DIRECT, {
+                this.dispatchEvent(__DrawerFoundEvent, DIRECT, {
                     id: id,
                     transition: transition,
                     element: element,
@@ -105,7 +101,7 @@
                 });
             });
 
-            this.dispatchEvent(__drawerFoundEvent, DIRECT, {
+            this.dispatchEvent(__DrawerFoundEvent, DIRECT, {
                 id: id,
                 transition: transition,
                 element: element,
@@ -121,15 +117,15 @@
         }
     }
 
-    plat.register.control('plat-drawer', Drawer);
+    plat.register.control(__Drawer, Drawer);
 
     /**
      * A Template Control that manipulates and controls a global drawer.
      */
     export class DrawerController extends plat.ui.TemplateControl {
-        $utils: plat.IUtils = plat.acquire(plat.IUtils);
-        $compat: plat.ICompat = plat.acquire(plat.ICompat);
-        $document: Document = plat.acquire(plat.Document);
+        $utils: plat.IUtils = plat.acquire(__Utils);
+        $compat: plat.ICompat = plat.acquire(__Compat);
+        $document: Document = plat.acquire(__Document);
 
         /**
          * The plat-options for the DrawerController.
@@ -178,8 +174,8 @@
          */
         loaded(): void {
             var element = this.element,
-                optionObj = this.options,
-                options = this.$utils.isObject(optionObj) ? optionObj.value : <IDrawerOptions>{},
+                optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
+                options = optionObj.value || <IDrawerOptions>{},
                 transition = options.transition,
                 id = options.id;
 
@@ -290,8 +286,8 @@
          * @param transition The transition direction of opening for the drawer.
          */
         _addSwipeEvents(transition: string): void {
-            var openEvent = '$swipe' + transition,
-                closeEvent = '$swipe' + this.__transitionHash[transition],
+            var openEvent = __$swipe + transition,
+                closeEvent = __$swipe + this.__transitionHash[transition],
                 element = this.element;
 
             this.__removeSwipeOpen = this.addEventListener(element, openEvent, () => {
@@ -312,8 +308,8 @@
          */
         _addEventListeners(transition: string): void {
             var element = this.element,
-                primaryTrack = '$track' + transition,
-                secondaryTrack = '$track' + this.__transitionHash[transition],
+                primaryTrack = __$track + transition,
+                secondaryTrack = __$track + this.__transitionHash[transition],
                 trackFn = this._track.bind(this);
 
             this._transition = transition;
@@ -326,14 +322,14 @@
 
             if (this.$utils.isNull(this._lastTouch)) {
                 this._lastTouch = { x: 0, y: 0 };
-                this.addEventListener(element, '$touchstart', (ev: plat.ui.IGestureEvent) => {
+                this.addEventListener(element, __$touchstart, (ev: plat.ui.IGestureEvent) => {
                     this.__inTouch = true;
                     this._lastTouch = {
                         x: ev.clientX,
                         y: ev.clientY
                     };
                 });
-                this.addEventListener(this.$document, '$touchend', this._touchEnd.bind(this));
+                this.addEventListener(this.$document, __$touchend, this._touchEnd.bind(this));
             }
         }
 
@@ -457,7 +453,7 @@
 
             this.__setTransform();
 
-            var eventRemover = this.on(__drawerFoundEvent,
+            var eventRemover = this.on(__DrawerFoundEvent,
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
                 if (isString(id) && isString(drawerArg.id) && id !== drawerArg.id) {
                     return;
@@ -472,7 +468,8 @@
                         transition = drawerArg.transition;
                     } else {
                         var Exception = plat.acquire(plat.IExceptionStatic);
-                        Exception.warn('Transition direction is incorrectly defined for "plat-drawer" or "plat-drawer-controller."' +
+                        Exception.warn('Transition direction is incorrectly defined for "' +
+                            __Drawer + '" or "' + __DrawerController + '."' +
                             ' Please ensure it is a string.');
                         return;
                     }
@@ -491,7 +488,7 @@
                 this.__determineTemplate(drawerArg.template);
             });
 
-            this.dispatchEvent(__drawerControllerFetchEvent, plat.events.EventManager.DIRECT, {
+            this.dispatchEvent(__DrawerControllerFetchEvent, plat.events.EventManager.DIRECT, {
                 id: id,
                 transition: transition
             });
@@ -546,17 +543,17 @@
             if (isNull(this.__transitionHash[transition])) {
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Incorrect transition direction: "' + transition +
-                    '" defined for "plat-drawer" or "plat-drawer-controller"');
+                    '" defined for "' + __Drawer + '" or "' + __DrawerController + '."');
                 return false;
             } else if (isNull(this._drawerElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Could not find a corresponding plat-drawer for this "plat-drawer-controller"');
+                Exception.warn('Could not find a corresponding "' + __Drawer + '" for this "' + __DrawerController + '."');
                 return false;
             } else if (isNull(rootElement)) {
                 var parent = this.root.parent;
                 if (isNull(parent) || isNull(parent.element)) {
                     Exception = plat.acquire(plat.IExceptionStatic);
-                    Exception.warn('Cannot have a "plat-drawer-controller" inside a root control with a null element.');
+                    Exception.warn('Cannot have a "' + __DrawerController + '" inside a root control with a null element.');
                     return false;
                 }
                 rootElement = this.__rootElement = parent.element;
@@ -571,7 +568,7 @@
         }
     }
 
-    plat.register.control('plat-drawer-controller', DrawerController);
+    plat.register.control(__DrawerController, DrawerController);
 
     /**
      * The drawer options capable of being placed on the 'plat-drawer' and/or the 

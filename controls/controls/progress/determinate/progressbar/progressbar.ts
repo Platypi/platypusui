@@ -1,6 +1,6 @@
 ﻿module platui {
     export class ProgressBar extends plat.ui.BindablePropertyControl {
-        $utils: plat.IUtils = plat.acquire(plat.IUtils);
+        $utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
          * The ProgressBar's template string.
@@ -40,12 +40,12 @@
         loaded(): void {
             var context = this.context,
                 element = this.element,
-                usingPlatBind = element.hasAttribute('plat-bind');
+                usingPlatBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
 
             if ((!this.$utils.isNumber(context) || context > 1 || context < 0) && !usingPlatBind) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('The context of a "plat-progress" control must be a number between 0 and 1, ' +
-                    'or a "plat-bind" control must be used.');
+                Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1, ' +
+                    'or a "' + __Bind + '" control must be used.');
                 return;
             }
 
@@ -88,5 +88,5 @@
         }
     }
 
-    plat.register.control('plat-progress', ProgressBar);
+    plat.register.control(__ProgressBar, ProgressBar);
 }

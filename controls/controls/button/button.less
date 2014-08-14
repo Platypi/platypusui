@@ -1,0 +1,14 @@
+﻿[plat-control="plat-button"] {
+    #ButtonVars;
+    display: inline-block;
+    background-color: @buttonBackgroundColor;
+    color: @buttonColor;
+    border: @buttonBorderSize solid @buttonBorderColor;
+    outline: none;
+    cursor: pointer;
+    .border-radius(@buttonBorderRadius);
+    .box-sizing(border-box);
+}
+
+@import '../less/variables';
+@import '../less/platypus';

@@ -3,7 +3,7 @@
      * A Template Control that standardizes the HTML5 checkbox.
      */
     export class Checkbox extends Toggle {
-        $document: Document = plat.acquire(plat.Document);
+        $document: Document = plat.acquire(__Document);
 
         /**
          * The Checkbox's template string.
@@ -23,17 +23,16 @@
          */
         initialize(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
-                options = optionObj.value,
-                utils = this.$utils,
-                mark = this._targetType = (utils.isNull(options) || !utils.isString(options.mark)) ? 'check' : options.mark;
+                options = optionObj.value || <ICheckboxOptions>{},
+                mark = this._targetType = this.$utils.isString(options.mark) ? options.mark : 'check';
 
             switch (mark.toLowerCase()) {
                 case 'check':
                 case 'x':
                     break;
                 default:
-                    var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                    Exception.warn('Invalid mark option specified for plat-checkbox. Defaulting to checkmark.');
+                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                    Exception.warn('Invalid mark option specified for' + __Checkbox + '. Defaulting to checkmark.');
                     break;
             }
 
@@ -55,13 +54,14 @@
                 element = this.element,
                 childNodes = Array.prototype.slice.call(innerTemplate.childNodes),
                 childNode: Node,
-                span: HTMLSpanElement;
+                span: HTMLSpanElement,
+                match: Array<string>;
 
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
                 if (childNode.nodeType === Node.TEXT_NODE) {
-                    var match = childNode.textContent.trim().match(/[^\r\n]/g);
-                    if (!isNull(match) && match.length > 0) {
+                    match = childNode.textContent.trim().match(/[^\r\n]/g);
+                    if (match !== null && match.length > 0) {
                         span = $document.createElement('span');
                         span.insertBefore(childNode, null);
                         element.insertBefore(span, null);
@@ -85,11 +85,14 @@
          */
         _setChecked(): void {
             var element = this.element;
-            if (element.hasAttribute('checked')) {
+            if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
                 this._convertAttribute(true);
-            } else if (element.hasAttribute('plat-checked')) {
-                this._convertAttribute(element.getAttribute('plat-checked'));
-                this.attributes.observe('platChecked', this._convertAttribute);
+            } else if (element.hasAttribute(__Checked)) {
+                this._convertAttribute(element.getAttribute(__Checked));
+                this.attributes.observe(__CamelChecked, this._convertAttribute);
+            } else if (element.hasAttribute('data-' + __Checked)) {
+                this._convertAttribute(element.getAttribute('data-' + __Checked));
+                this.attributes.observe(__CamelChecked, this._convertAttribute);
             }
         }
 
@@ -112,7 +115,7 @@
         }
     }
 
-    plat.register.control('plat-checkbox', Checkbox);
+    plat.register.control(__Checkbox, Checkbox);
 
     /**
      * The plat-options interface for the Checkbox control.

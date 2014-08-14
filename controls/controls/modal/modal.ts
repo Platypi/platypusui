@@ -1,7 +1,7 @@
 ﻿module platui {
     export class Modal extends plat.ui.TemplateControl {
-        $utils: plat.IUtils = plat.acquire(plat.IUtils);
-        $compat: plat.ICompat = plat.acquire(plat.ICompat);
+        $utils: plat.IUtils = plat.acquire(__Utils);
+        $compat: plat.ICompat = plat.acquire(__Compat);
 
         /**
          * The Modal's template string.
@@ -28,8 +28,8 @@
          * Check for templateUrl and set if needed. Hide the modal.
          */
         initialize(): void {
-            var optionObj = this.options,
-                options = this.$utils.isObject(optionObj) ? optionObj.value : <IModalOptions>{};
+            var optionObj = this.options || <plat.observable.IObservableProperty<IModalOptions>>{},
+                options = optionObj.value || <IModalOptions>{};
 
             this.templateUrl = options.templateUrl;
             this.dom.addClass(this.element, 'hide');
@@ -39,9 +39,10 @@
          * Add the innerTemplate to the modal element.
          */
         setTemplate(): void {
-            var modal = this.__modalElement = <HTMLElement>this.element.firstElementChild;
-            if (this.$utils.isNode(this.innerTemplate)) {
-                modal.appendChild(this.innerTemplate);
+            var modal = this.__modalElement = <HTMLElement>this.element.firstElementChild,
+                innerTemplate = this.innerTemplate;
+            if (this.$utils.isNode(innerTemplate)) {
+                modal.appendChild(innerTemplate);
             }
         }
 
@@ -62,7 +63,7 @@
             } else if ($utils.isNull(this.__transitionHash[transition])) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Custom transition direction: "' + transition +
-                    '" defined for "plat-modal." Please ensure a transition is defined to avoid errors.');
+                    '" defined for "' + __Modal + '." Please ensure a transition is defined to avoid errors.');
             }
 
             this.__transitionEnd = this.$compat.animationEvents.$transitionEnd;
@@ -126,7 +127,7 @@
         }
     }
 
-    plat.register.control('plat-modal', Modal);
+    plat.register.control(__Modal, Modal);
 
     /**
      * The modal options capable of being placed on the 'plat-modal' as 'plat-options.'

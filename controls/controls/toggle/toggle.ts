@@ -1,6 +1,6 @@
 ﻿module platui {
     export class Toggle extends plat.ui.BindablePropertyControl {
-        $utils: plat.IUtils = plat.acquire(plat.IUtils);
+        $utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
          * The Toggle's template string.
@@ -31,7 +31,7 @@
          * Adds a listener for the tap event.
          */
         initialize(): void {
-            this.addEventListener(this.element, '$tap', this._onTap.bind(this));
+            this.addEventListener(this.element, __$tap, this._onTap.bind(this));
         }
 
         /**
@@ -104,5 +104,5 @@
         }
     }
 
-    plat.register.control('plat-toggle', Toggle);
+    plat.register.control(__Toggle, Toggle);
 }

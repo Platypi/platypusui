@@ -30,11 +30,13 @@
 
             if (element.hasAttribute('name')) {
                 this.groupName = element.getAttribute('name');
-            } else if (element.hasAttribute('plat-bind')) {
-                this.groupName = element.getAttribute('plat-bind');
+            } else if (element.hasAttribute(__Bind)) {
+                this.groupName = element.getAttribute(__Bind);
+            } else if (element.hasAttribute('data-' + __Bind)) {
+                this.groupName = element.getAttribute('data-' + __Bind);
             }
 
-            this.addEventListener(element, '$tap', this._onTap.bind(this));
+            this.addEventListener(element, __$tap, this._onTap.bind(this));
         }
         
         /**
@@ -97,8 +99,8 @@
             super._toggle(setProperty);
             if (this.isActive) {
                 var name = this.groupName;
-                this.dispatchEvent('__plat-radio-' + name, plat.events.EventManager.DIRECT);
-                var remover = this.on('__plat-radio-' + name, () => {
+                this.dispatchEvent(__RadioPrefix + name, plat.events.EventManager.DIRECT);
+                var remover = this.on(__RadioPrefix + name, () => {
                     this._toggleMark();
                     remover();
                 });
@@ -138,5 +140,5 @@
         }
     }
 
-    plat.register.control('plat-radio', Radio);
+    plat.register.control(__Radio, Radio);
 }

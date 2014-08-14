@@ -52,6 +52,7 @@
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="button\button.ts" />
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
     <TypeScriptCompile Include="drawer\drawer.ts" />
     <TypeScriptCompile Include="lib\platypus.d.ts" />
@@ -59,9 +60,16 @@
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />
     <TypeScriptCompile Include="radio\radio.ts" />
+    <TypeScriptCompile Include="references\references.ts" />
     <TypeScriptCompile Include="toggle\toggle.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="button\button.css">
+      <DependentUpon>button.less</DependentUpon>
+    </Content>
+    <Content Include="button\button.min.css">
+      <DependentUpon>button.css</DependentUpon>
+    </Content>
     <Content Include="checkbox\checkbox.css">
       <DependentUpon>checkbox.less</DependentUpon>
     </Content>
@@ -141,6 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="modal\modal.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="button\button.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

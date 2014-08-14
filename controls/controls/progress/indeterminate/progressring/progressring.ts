@@ -9,5 +9,5 @@
         '</div>';
     }
 
-    plat.register.control('plat-ring', ProgressRing);
+    plat.register.control(__ProgressRing, ProgressRing);
 }
