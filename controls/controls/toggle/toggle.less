@@ -21,22 +21,23 @@
             left: -1 * (@toggleWidth - @knobDiameter);
             width: @toggleWidth;
             height: 100%;
-            background-color: @toggleActiveColor;
-            .border-radius(@knobDiameter + 0.1em);
+            .border-radius(@knobDiameter);
             .transition(@toggleTransitionArgs);
 
             .knob {
+                @knobDiameterAdjust: 2 * @knobPadding;
                 position: absolute;
-                top: 0;
-                right: 0;
-                height: @knobDiameter;
-                width: @knobDiameter;
-                background-color: @toggleColor;
+                top: @knobPadding;
+                right: @knobPadding;
+                height: ~'calc(@{knobDiameter} - @{knobDiameterAdjust})';
+                width: ~'calc(@{knobDiameter} - @{knobDiameterAdjust})';
+                background-color: @knobColor;
                 .border-radius(@knobDiameter);
             }
 
             &.slide {
                 left: 0;
+                background-color: @toggleActiveColor;
             }
         }
     }
