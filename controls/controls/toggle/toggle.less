@@ -1,14 +1,5 @@
-﻿#ToggleVars {
-    @toggleWidth: 4em;
-    @toggleRatio: 1/3;
-    @toggleHeight: @toggleWidth * @toggleRatio;
-    @toggleBorderSize: @toggleHeight / 10;
-    @toggleTransitionArgs: left 250ms;
-}
-
-[plat-control="plat-toggle"] {
+﻿[plat-control="plat-toggle"] {
     #ToggleVars;
-    #Colors;
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);

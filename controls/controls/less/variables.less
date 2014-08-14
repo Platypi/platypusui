@@ -1,31 +1,71 @@
-﻿#Colors {
-    /// Common
-    @primaryColor: orange;
-    @secondaryColor: dodgerblue;
-    
-    /// Toggle
-    @toggleColor: gray;
+﻿/// Common
+
+@primaryColor: orange;
+@secondaryColor: dodgerblue;
+@neutralColor: gray;
+
+/// Toggle
+#ToggleVars {
+    @toggleColor: @neutralColor;
     @toggleActiveColor: lime;
-    
-    /// Checkbox
+    @toggleWidth: 4em;
+    @toggleRatio: 1/3;
+    @toggleHeight: @toggleWidth * @toggleRatio;
+    @toggleBorderSize: @toggleHeight / 10;
+    @toggleTransitionArgs: left 250ms;
+}
+
+/// Checkbox
+#CheckboxVars {
     @checkboxBorderColor: black;
     @checkboxMarkColor: black;
-    
-    /// Radio Button
+    @checkboxSize: 1em;
+    @checkboxBorderSize: @checkboxSize / 10;
+}
+
+/// Radio
+#RadioVars {
     @radioBorderColor: black;
     @radioMarkColor: black;
-    
-    /// Progress Ring
-    @ringColor: @primaryColor;
-    
-    /// Progress Bar
-    @barBorderColor: gray;
-    @barColor: @primaryColor;
-    
-    /// Drawer
-    @drawerColor: gray;
-    
-    /// Modal
+    @radioSize: 1em;
+    @radioProportion: 3/5;
+    @radioBorderSize: @radioSize / 10;
+}
+
+/// Drawer
+#DrawerVars {
+    @drawerColor: @neutralColor;
+    @drawerLength: 80%;
+    @drawerTransition: all 200ms;
+}
+
+/// Modal
+#ModalVars {
     @modalColor: white;
     @modalBackgroundColor: rgba(0,0,0,0.75);
+    @modalWidth: 50%;
+    @modalHeight: 50%;
+    @modalLeftTransition: right 500ms;
+    @modalRightTransition: left 500ms;
+    @modalUpTransition: bottom 500ms;
+    @modalDownTransition: top 500ms;
+    @modalFadeTransition: opacity 500ms;
+}
+
+/// Progress Bar
+#ProgressBarVars {
+    @barBorderColor: @neutralColor;
+    @barColor: @primaryColor;
+    @barHeight: 1em;
+    @barBorderSize: @barHeight / 10;
+    @barTransition: none;
+}
+
+/// Progress Ring
+#ProgressRingVars {
+    @ringColor: @primaryColor;
+    @ringDiameter: 3em;
+    @ringAnimation: PLAT-SPIN;
+    @ringSpinSpeed: 500ms;
+    @ringThickness: @ringDiameter / 10;
 }
