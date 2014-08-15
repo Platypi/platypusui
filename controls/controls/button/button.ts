@@ -13,6 +13,32 @@
         options: plat.observable.IObservableProperty<IButtonOptions>;
 
         /**
+         * The radio groups name if a radio group is present.
+         */
+        groupName = '';
+
+        /**
+         * Boolean value showing the selected state of this Button.
+         */
+        _isSelected: boolean;
+        
+        /**
+         * Adds a listener for the tap event and checks for a 
+         * radio group.
+         */
+        initialize(): void {
+            var element = this.element;
+
+            if (element.hasAttribute('name')) {
+                this._addEventListeners(element.getAttribute('name'));
+            } else if (element.hasAttribute(__Bind)) {
+                this._addEventListeners(element.getAttribute(__Bind));
+            } else if (element.hasAttribute('data-' + __Bind)) {
+                this._addEventListeners(element.getAttribute('data-' + __Bind));
+            }
+        }
+
+        /**
          * Wrap all inner text nodes in spans.
          */
         setTemplate(): void {
@@ -53,6 +79,37 @@
                 type = options.type || 'primary';
 
             this.dom.addClass(this.element, type);
+        }
+
+        /**
+         * Add event listeners for selection.
+         */
+        _addEventListeners(name: string): void {
+            var element = this.element,
+                dom = this.dom;
+
+            this.groupName = name;
+            this._isSelected = false;
+            this.addEventListener(element, __$tap, this._onTap.bind(this));
+            this.on(__ButtonPrefix + name, () => {
+                if (this._isSelected) {
+                    dom.removeClass(element, 'selected');
+                    this._isSelected = false;
+                }
+            });
+        }
+
+        /**
+         * Place the pushed button in a selected state.
+         */
+        _onTap(): void {
+            if (this._isSelected) {
+                return;
+            }
+
+            this.dom.addClass(this.element, 'selected');
+            this.dispatchEvent(__ButtonPrefix + this.groupName, plat.events.EventManager.DIRECT);
+            this._isSelected = true;
         }
     }
 

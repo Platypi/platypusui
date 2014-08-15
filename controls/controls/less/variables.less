@@ -6,12 +6,25 @@
 
 /// Button
 #ButtonVars {
+    // set this var to for a custom button text color when active or selected.
+    @buttonActiveColor: undefined;
     @buttonBackgroundColor: transparent;
-    @buttonColor: black;
+    @buttonColor: @primaryColor;
     @buttonBorderSize: 1px;
-    @buttonBorderColor: black;
+    @buttonBorderColor: @primaryColor;
     @buttonPrimaryBorderRadius: 2px;
     @buttonSecondaryBorderRadius: 0.5em;
+    .buttonActiveColor(@property) when (@buttonActiveColor = undefined) {
+        & when (@buttonBackgroundColor = transparent) {
+            @{property}: white;
+        }
+        & when not (@buttonBackgroundColor = transparent) {
+            @{property}: @buttonBackgroundColor;
+        }
+    }
+    .buttonActiveColor(@property) when (default()) {
+        @{property}: @buttonActiveColor;
+    }
 }
 
 /// Toggle
