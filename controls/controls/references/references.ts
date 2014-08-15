@@ -21,6 +21,7 @@ var __Promise = '$Promise',
     __ProgressRing = __Plat + 'ring',
     __Radio = __Plat + 'radio',
     __Toggle = __Plat + 'toggle',
+    __Range = __Plat + 'range',
 
     /**
      * Referenced Controls / Vars

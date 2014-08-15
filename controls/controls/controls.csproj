@@ -60,6 +60,7 @@
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />
     <TypeScriptCompile Include="radio\radio.ts" />
+    <TypeScriptCompile Include="range\range.ts" />
     <TypeScriptCompile Include="references\references.ts" />
     <TypeScriptCompile Include="toggle\toggle.ts" />
   </ItemGroup>
@@ -119,6 +120,12 @@
     <Content Include="radio\radio.min.css">
       <DependentUpon>radio.css</DependentUpon>
     </Content>
+    <Content Include="range\range.css">
+      <DependentUpon>range.less</DependentUpon>
+    </Content>
+    <Content Include="range\range.min.css">
+      <DependentUpon>range.css</DependentUpon>
+    </Content>
     <Content Include="toggle\toggle.css">
       <DependentUpon>toggle.less</DependentUpon>
     </Content>
@@ -152,6 +159,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="button\button.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="range\range.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

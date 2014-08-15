@@ -1,5 +1,6 @@
 ﻿[plat-control="plat-button"] {
     #ButtonVars;
+    position: relative;
     display: inline-block;
     background-color: @buttonBackgroundColor;
     color: @buttonColor;
@@ -7,11 +8,13 @@
     outline: none;
     cursor: pointer;
     .box-sizing(border-box);
-
-    &:active,
-    &.selected {
-        background-color: @buttonColor;
-        .buttonActiveColor(color);
+    
+    &:not(.back) {
+        &:active,
+        &.selected {
+            background-color: @buttonColor;
+            .buttonActiveColor(color);
+        }
     }
 
     &.primary {
@@ -25,10 +28,42 @@
     &.back {
         border: none;
 
-        *:first-child::before {
-            /// TODO: replace with icon font.
-            content: "<";
-            margin-right: 0.25em;
+        *:first-child {
+            margin-left: 0.5em;
+
+            &::before {
+                content: "\2039";
+                position: absolute;
+                top: -0.375em;
+                left: 0;
+                font-size: 200%;
+            }
+        }
+    }
+
+    &.confirm {
+        *:last-child {
+            margin-right: 2em;
+
+            &::after {
+                content: "\2713";
+                position: absolute;
+                right: 0.4em;
+            }
+        }
+    }
+
+    &.cancel {
+        *:last-child {
+            margin-right: 2em;
+
+            &::after {
+                content: "\00d7";
+                position: absolute;
+                top: -0.125em;
+                right: 0.25em;
+                font-size: 150%;
+            }
         }
     }
 }
