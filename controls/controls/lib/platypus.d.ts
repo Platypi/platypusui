@@ -775,6 +775,23 @@ declare module plat {
         public camelCase(str: string): string;
     }
     /**
+    * The Type for a util iterator callback method.
+    */
+    interface IIterator<T, U> {
+        /**
+        * @param value The value for an object during an iteration.
+        * @param index The index where the value can be found.
+        * @param obj The object passed into the util method.
+        */
+        (value: T, index: number, obj: any): U;
+        /**
+        * @param value The value for an object during an iteration.
+        * @param key The key where the value can be found.
+        * @param obj The object passed into the util method.
+        */
+        (value: T, key: string, obj: any): U;
+    }
+    /**
     * The Type for referencing the '$Utils' injectable as a dependency.
     */
     function IUtils(): IUtils;
@@ -1138,7 +1155,7 @@ declare module plat {
     * The Type for referencing the '$Document' injectable as a dependency.
     * Used so that the Window can be mocked.
     */
-    function Document($Window: Window): Document;
+    function Document($Window?: Window): Document;
     module expressions {
         /**
         * A class for keeping track of commonly used regular expressions.
@@ -4395,6 +4412,28 @@ declare module plat {
         */
         public addEventListener(element: Window, type: string, listener: ui.IGestureListener, useCapture?: boolean): IRemoveListener;
         /**
+        * Adds an event listener of the specified type to the specified element. Removal of the
+        * event is handled automatically upon disposal.
+        *
+        * @param element The element to add the event listener to.
+        * @param type The type of event to listen to.
+        * @param listener The listener to fire when the event occurs.
+        * @param useCapture Whether to fire the event on the capture or the bubble phase
+        * of event propagation.
+        */
+        public addEventListener(element: Node, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+        /**
+        * Adds an event listener of the specified type to the specified element. Removal of the
+        * event is handled automatically upon disposal.
+        *
+        * @param element The window object.
+        * @param type The type of event to listen to.
+        * @param listener The listener to fire when the event occurs.
+        * @param useCapture Whether to fire the event on the capture or the bubble phase
+        * of event propagation.
+        */
+        public addEventListener(element: Window, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+        /**
         * Allows an IControl to observe any property on its context and receive updates when
         * the property is changed.
         *
@@ -4700,6 +4739,28 @@ declare module plat {
         */
         addEventListener? (element: Window, type: string, listener: ui.IGestureListener, useCapture?: boolean): IRemoveListener;
         /**
+        * Adds an event listener of the specified type to the specified element. Removal of the
+        * event is handled automatically upon disposal.
+        *
+        * @param element The element to add the event listener to.
+        * @param type The type of event to listen to.
+        * @param listener The listener to fire when the event occurs.
+        * @param useCapture Whether to fire the event on the capture or the bubble phase
+        * of event propagation.
+        */
+        addEventListener? (element: Node, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+        /**
+        * Adds an event listener of the specified type to the specified element. Removal of the
+        * event is handled automatically upon disposal.
+        *
+        * @param element The window object.
+        * @param type The type of event to listen to.
+        * @param listener The listener to fire when the event occurs.
+        * @param useCapture Whether to fire the event on the capture or the bubble phase
+        * of event propagation.
+        */
+        addEventListener? (element: Window, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+        /**
         * Allows an IControl to observe any property on its context and receive updates when
         * the property is changed.
         *
@@ -4955,10 +5016,6 @@ declare module plat {
             public event: string;
             public attribute: string;
             /**
-            * Our event handler bound to our own context.
-            */
-            public _listener: EventListener;
-            /**
             * A parsed form of the expression found in the attribute's value.
             */
             public _expression: string[];
@@ -4970,10 +5027,6 @@ declare module plat {
             * Kicks off finding and setting the listener.
             */
             public loaded(): void;
-            /**
-            * Disposes of the event listener.
-            */
-            public dispose(): void;
             /**
             * Sets the event listener.
             */
@@ -5488,14 +5541,6 @@ declare module plat {
             */
             public _setter: (newValue: any, oldValue?: any, firstTime?: boolean) => void;
             /**
-            * The event listener attached to this element.
-            */
-            public _eventListener: () => void;
-            /**
-            * The event listener as a postponed function.
-            */
-            public _postponedEventListener: () => void;
-            /**
             * The expression to evaluate as the bound value.
             */
             public _expression: expressions.IParsedExpression;
@@ -5539,13 +5584,10 @@ declare module plat {
             */
             public _addChangeEventListener(): void;
             /**
-            * Adds the event listener to the element.
-            *
-            * @param event The event type
-            * @param listener The event listener
-            * @param postpone Whether or not to postpone the event listener
+            * Adds a $tap event as the event listener.
+            * Used for input[type=button] and button.
             */
-            public _addEventListener(event: string, listener?: () => void, postpone?: boolean): void;
+            public _addButtonEventListener(): void;
             /**
             * Getter for input[type=checkbox] and input[type=radio]
             */
@@ -5555,6 +5597,10 @@ declare module plat {
             * textarea, and select.
             */
             public _getValue(): string;
+            /**
+            * Getter for button.
+            */
+            public _getTextContent(): string;
             /**
             * Getter for input[type="file"]. Creates a partial IFile
             * element if file is not supported.
@@ -5638,7 +5684,7 @@ declare module plat {
             * Checks if the associated Template Control is a BindablePropertyControl and
             * initializes all listeners accordingly.
             */
-            public _observeBindableProperty(): void;
+            public _observedBindableProperty(): boolean;
             private __setBindableProperty(newValue, oldValue?, firstTime?);
             private __setValue(newValue);
             private __initializeRadio();
@@ -6580,12 +6626,18 @@ declare module plat {
         * It also provides functionality for setting the title of a page.
         */
         class WebViewControl extends BaseViewControl {
-            static titleElement: any;
+            static titleElement: HTMLTitleElement;
+            static descriptionElement: HTMLMetaElement;
             static setTitle(title: string): void;
+            static setDescription(description: string): void;
             /**
             * The title of the page, corresponds to the textContent of the title element in the HTML head.
             */
             public title: string;
+            /**
+            * The title of the page, corresponds to the content of the description meta element in the HTML head.
+            */
+            public description: string;
             /**
             * Specifies the navigator for this control. Used for navigating to other IWebViewControls
             * in a routeport.
@@ -6596,6 +6648,11 @@ declare module plat {
             * Allows the IWebViewControl set its title programmatically and have it reflect in the browser title.
             */
             public setTitle(title: string): void;
+            /**
+            * Allows the IWebViewControl set its description programmatically and
+            * have it reflect in the browser meta description tag.
+            */
+            public setDescription(description: string): void;
         }
         interface IWebViewControl extends IBaseViewControl {
             /**
@@ -6620,6 +6677,8 @@ declare module plat {
             public $DomEvents: IDomEvents;
             public addEventListener(element: Node, type: string, listener: IGestureListener, useCapture?: boolean): IRemoveListener;
             public addEventListener(element: Window, type: string, listener: IGestureListener, useCapture?: boolean): IRemoveListener;
+            public addEventListener(element: Node, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+            public addEventListener(element: Window, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
             public appendChildren(nodeList: Node[]): DocumentFragment;
             public appendChildren(nodeList: NodeList): DocumentFragment;
             public appendChildren(nodeList: Node[], root?: Node): Node;
@@ -6662,7 +6721,36 @@ declare module plat {
             * of event propagation.
             */
             addEventListener(element: Node, type: string, listener: IGestureListener, useCapture?: boolean): IRemoveListener;
+            /**
+            * Adds an event listener of the specified type to the specified element.
+            *
+            * @param element The window object.
+            * @param type The type of event to listen to.
+            * @param listener The listener to fire when the event occurs.
+            * @param useCapture Whether to fire the event on the capture or the bubble phase
+            * of event propagation.
+            */
             addEventListener(element: Window, type: string, listener: IGestureListener, useCapture?: boolean): IRemoveListener;
+            /**
+            * Adds an event listener of the specified type to the specified element.
+            *
+            * @param element The element to add the event listener to.
+            * @param type The type of event to listen to.
+            * @param listener The listener to fire when the event occurs.
+            * @param useCapture Whether to fire the event on the capture or the bubble phase
+            * of event propagation.
+            */
+            addEventListener(element: Node, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+            /**
+            * Adds an event listener of the specified type to the specified element.
+            *
+            * @param element The window object.
+            * @param type The type of event to listen to.
+            * @param listener The listener to fire when the event occurs.
+            * @param useCapture Whether to fire the event on the capture or the bubble phase
+            * of event propagation.
+            */
+            addEventListener(element: Window, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
             /**
             * Takes a Node Array and either adds it to the passed in Node,
             * or creates a DocumentFragment and adds the NodeList to the
@@ -7522,6 +7610,8 @@ declare module plat {
             constructor();
             public addEventListener(element: Node, type: string, listener: IGestureListener, useCapture?: boolean): IRemoveListener;
             public addEventListener(element: Window, type: string, listener: IGestureListener, useCapture?: boolean): IRemoveListener;
+            public addEventListener(element: Node, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+            public addEventListener(element: Window, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
             public dispose(): void;
             /**
             * A listener for touch/mouse start events.
@@ -7607,6 +7697,26 @@ declare module plat {
             * @return {IRemoveListener} A function to remove the added event listener.
             */
             addEventListener(element: Window, type: string, listener: IGestureListener, useCapture?: boolean): IRemoveListener;
+            /**
+            * Add an event listener for the specified event type on the specified element.
+            *
+            * @param element The node listening for the event.
+            * @param type The type of event being listened to.
+            * @param listener The listener to be fired.
+            * @param useCapture Whether to fire the event on the capture or bubble phase of propagation.
+            * @return {IRemoveListener} A function to remove the added event listener.
+            */
+            addEventListener(element: Node, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
+            /**
+            * Add an event listener for the specified event type on the specified element.
+            *
+            * @param element The window object.
+            * @param type The type of event being listened to.
+            * @param listener The listener to be fired.
+            * @param useCapture Whether to fire the event on the capture or bubble phase of propagation.
+            * @return {IRemoveListener} A function to remove the added event listener.
+            */
+            addEventListener(element: Window, type: string, listener: EventListener, useCapture?: boolean): IRemoveListener;
             /**
             * Stops listening for touch events and resets the DomEvents instance.
             */
@@ -7822,7 +7932,7 @@ declare module plat {
             /**
             * An EventListener with the argument as an IGestureEvent.
             */
-            (ev: IGestureEvent): void;
+            (ev?: IGestureEvent): void;
         }
         /**
         * Describes an object to keep track of a single
@@ -8592,7 +8702,7 @@ declare module plat {
                 * An optional URL to specify a template
                 * instead of using the element's innerHTML.
                 */
-                url: string;
+                templateUrl: string;
             }
             class Ignore extends TemplateControl {
                 /**
@@ -10389,5 +10499,15 @@ declare module plat {
     */
     interface IRemoveListener {
         (): void;
+    }
+    /**
+    * Defines a function that will be called whenever a property has changed.
+    */
+    interface IPropertyChangedListener {
+        /**
+        * @param newValue The new value of the observed property.
+        * @param oldValue The previous value of the observed property.
+        */
+        (newValue: any, oldValue: any): void;
     }
 }

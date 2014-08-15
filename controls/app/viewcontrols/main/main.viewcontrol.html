@@ -1,21 +1,27 @@
 ﻿<plat-toggle></plat-toggle>
 <br />
-<plat-button name="test3">primary</plat-button>
-<plat-button name="test3">primary2</plat-button>
-<plat-button name="test3">primary3</plat-button>
+<input type="text" plat-bind="test3" />
 <br />
-<plat-button plat-options="{type: 'secondary'}">secondary</plat-button>
+<plat-button plat-bind="test3">primary</plat-button>
+<plat-button plat-bind="test3">primary2</plat-button>
+<plat-button plat-bind="test3">primary3</plat-button>
+<br />
+<plat-button plat-options="{type: 'secondary'}" plat-tap="foo">secondary</plat-button>
 <br />
 <plat-checkbox plat-options="{mark: 'check', type:'secondary'}"></plat-checkbox>
 <br />
-<plat-radio name="test"></plat-radio>
+<input type="text" plat-bind="test" />
 <br />
-<plat-radio name="test"></plat-radio>
+<plat-radio plat-bind="test">uno</plat-radio>
 <br />
-<plat-radio name="test"></plat-radio>
+<plat-radio plat-bind="test">dos</plat-radio>
 <br />
-<plat-radio name="test2"></plat-radio>
+<plat-radio plat-bind="test">tres</plat-radio>
 <br />
-<plat-radio name="test2"></plat-radio>
+<input type="text" plat-bind="test2" />
 <br />
-<plat-radio name="test2"></plat-radio>
+<plat-radio plat-bind="test2">cuatro</plat-radio>
+<br />
+<plat-radio plat-bind="test2">cinco</plat-radio>
+<br />
+<plat-radio plat-bind="test2">seis</plat-radio>

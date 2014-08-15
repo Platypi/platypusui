@@ -1,5 +1,5 @@
 ﻿module platui {
-    export class Button extends plat.ui.TemplateControl {
+    export class Button extends plat.ui.BindablePropertyControl {
         $document: Document = plat.acquire(__Document);
 
         /**
@@ -107,9 +107,11 @@
                 return;
             }
 
-            this.dom.addClass(this.element, 'selected');
+            var element = this.element;
+            this.dom.addClass(element, 'selected');
             this.dispatchEvent(__ButtonPrefix + this.groupName, plat.events.EventManager.DIRECT);
             this._isSelected = true;
+            this.propertyChanged(element.textContent);
         }
     }
 
