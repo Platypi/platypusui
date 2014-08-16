@@ -322,13 +322,7 @@
 
             if (this.$utils.isNull(this._lastTouch)) {
                 this._lastTouch = { x: 0, y: 0 };
-                this.addEventListener(element, __$touchstart, (ev: plat.ui.IGestureEvent) => {
-                    this.__inTouch = true;
-                    this._lastTouch = {
-                        x: ev.clientX,
-                        y: ev.clientY
-                    };
-                }, false);
+                this.addEventListener(element, __$touchstart, this._touchStart, false);
                 this.addEventListener(this.$document, __$touchend, this._touchEnd, false);
             }
         }
@@ -357,6 +351,19 @@
                 this.__removeSwipeClose();
                 this.__removeSwipeClose = null;
             }
+        }
+
+        /**
+         * Log when the user touches the drawer controller.
+         * 
+         * @param ev The touch event.
+         */
+        _touchStart(ev: plat.ui.IGestureEvent): void {
+            this.__inTouch = true;
+            this._lastTouch = {
+                x: ev.clientX,
+                y: ev.clientY
+            };
         }
 
         /**

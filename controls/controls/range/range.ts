@@ -30,6 +30,13 @@
         _knobElement: HTMLElement;
 
         /**
+         * The last touch start recorded.
+         */
+        _lastTouch: plat.ui.IPoint;
+
+        private __sliderSize: number;
+
+        /**
          * Grab the knob element.
          */
         setTemplate(): void {
@@ -50,6 +57,7 @@
 
             dom.addClass(element, type);
             dom.addClass(element, direction);
+            this.__sliderSize = this._sliderElement.offsetWidth;
             this._initializeEvents(direction);
         }
 
@@ -84,8 +92,21 @@
                     return;
             }
 
+            this.addEventListener(knob, __$touchstart, this._touchStart, false);
             this.addEventListener(knob, trackBack, this._trackBack, false);
             this.addEventListener(knob, trackForward, this._trackForward, false);
+        }
+
+        /**
+         * Log the first touch.
+         * 
+         * @param ev The touch event object.
+         */
+        _touchStart(ev: plat.ui.IGestureEvent): void {
+            this._lastTouch = {
+                x: ev.clientX,
+                y: ev.clientY
+            };
         }
 
         /**
@@ -94,7 +115,8 @@
          * @param ev The $track event object.
          */
         _trackBack(ev: plat.ui.IGestureEvent): void {
-
+            var style = this._sliderElement.style;
+            style.left = -this.__sliderSize + ev.clientX - this._lastTouch.x + 'px';
         }
 
         /**
@@ -103,7 +125,8 @@
          * @param ev The $track event object.
          */
         _trackForward(ev: plat.ui.IGestureEvent): void {
-
+            var style = this._sliderElement.style;
+            style.left = -this.__sliderSize + ev.clientX - this._lastTouch.x + 'px';
         }
     }
 
