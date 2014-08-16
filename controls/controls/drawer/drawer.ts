@@ -293,12 +293,12 @@
             this.__removeSwipeOpen = this.addEventListener(element, openEvent, () => {
                 this.__hasSwiped = true;
                 this.open();
-            });
+            }, false);
 
             this.__removeSwipeClose = this.addEventListener(element, closeEvent, () => {
                 this.__hasSwiped = true;
                 this.close();
-            });
+            }, false);
         }
 
         /**
@@ -310,14 +310,14 @@
             var element = this.element,
                 primaryTrack = __$track + transition,
                 secondaryTrack = __$track + this.__transitionHash[transition],
-                trackFn = this._track.bind(this);
+                trackFn = this._track;
 
             this._transition = transition;
 
             // remove event listeners first in case we want to later be able to dynamically change transition direction of drawer.
             this._removeEventListeners();
-            this.__removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn);
-            this.__removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn);
+            this.__removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
+            this.__removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
             this._addSwipeEvents(transition);
 
             if (this.$utils.isNull(this._lastTouch)) {
@@ -328,8 +328,8 @@
                         x: ev.clientX,
                         y: ev.clientY
                     };
-                });
-                this.addEventListener(this.$document, __$touchend, this._touchEnd.bind(this));
+                }, false);
+                this.addEventListener(this.$document, __$touchend, this._touchEnd, false);
             }
         }
 
@@ -562,7 +562,7 @@
             dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this.addEventListener(rootElement, this.$compat.animationEvents.$transitionEnd, () => {
                 dom.removeClass(rootElement, 'plat-drawer-transition');
-            });
+            }, false);
 
             return true;
         }

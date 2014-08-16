@@ -93,7 +93,7 @@
 
             this.groupName = name;
             this._isSelected = false;
-            this.addEventListener(element, __$tap, this._onTap.bind(this));
+            this.addEventListener(element, __$tap, this._onTap, false);
             this.on(__ButtonPrefix + name, () => {
                 if (this._isSelected) {
                     dom.removeClass(element, 'selected');

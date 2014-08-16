@@ -34,7 +34,7 @@
         setTemplate(): void {
             var element = this.element;
             this._targetElement = element.firstElementChild;
-            this.addEventListener(element, __$tap, this._onTap.bind(this));
+            this.addEventListener(element, __$tap, this._onTap);
         }
 
         /**

@@ -123,10 +123,11 @@
 
         _addHideOnTransitionEnd(): void {
             var element = this.element,
+                dom = this.dom,
                 remove = this.addEventListener(element, this.__transitionEnd, () => {
                     remove();
-                    this.dom.addClass(element, 'hide');
-                });
+                    dom.addClass(element, 'hide');
+                }, false);
         }
     }
 
