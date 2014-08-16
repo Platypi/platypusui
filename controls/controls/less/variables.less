@@ -9,22 +9,25 @@
 @neutralColor: #5e5753;
 @neutralColorLight: fadeout(@neutralColor, 30%);
 @neutralColorPale: fadeout(@neutralColor, 60%);
+@black: #000000;
+@white: #ffffff;
+@transparent: transparent;
 
 /// Button
 #ButtonVars {
     // set this var to for a custom button text color when active or selected.
     @buttonActiveColor: undefined;
-    @buttonBackgroundColor: transparent;
+    @buttonBackgroundColor: @transparent;
     @buttonColor: @primaryColor;
     @buttonBorderSize: 1px;
     @buttonBorderColor: @primaryColor;
     @buttonPrimaryBorderRadius: 2px;
     @buttonSecondaryBorderRadius: 0.5em;
     .buttonActiveColor(@property) when (@buttonActiveColor = undefined) {
-        & when (@buttonBackgroundColor = transparent) {
-            @{property}: white;
+        & when (@buttonBackgroundColor = @transparent) {
+            @{property}: @white;
         }
-        & when not (@buttonBackgroundColor = transparent) {
+        & when not (@buttonBackgroundColor = @transparent) {
             @{property}: @buttonBackgroundColor;
         }
     }
@@ -51,13 +54,13 @@
         border-bottom-color @transitionTime, border-left-color @transitionTime, 
         border-right-color @transitionTime, border-top-color @transitionTime;
     @knobTransitionArgs: left @transitionTime;
-    @knobColor: white;
+    @knobColor: @white;
     @knobBorderSize: 1px;
     .toggleBorderColor(@property) when (@toggleBorderColor = undefined) {
-        & when (@toggleBackgroundColor = transparent) {
+        & when (@toggleBackgroundColor = @transparent) {
             @{property}: @toggleColor;
         }
-        & when not (@toggleBackgroundColor = transparent) {
+        & when not (@toggleBackgroundColor = @transparent) {
             @{property}: @toggleBackgroundColor;
         }
     }
@@ -66,11 +69,11 @@
     }
     .knobBorderColor(@property) when (@knobBorderColor = undefined) {
         & when (@knobColor = @toggleBackgroundColor) {
-            & when (@knobColor = white) {
-                @{property}: black;
+            & when (@knobColor = @white) {
+                @{property}: @black;
             }
-            & when not (@knobColor = white) {
-                @{property}: white;
+            & when not (@knobColor = @white) {
+                @{property}: @white;
             }
         }
         & when not (@knobColor = @toggleBackgroundColor) {
@@ -86,18 +89,18 @@
 #CheckboxVars {
     // set this var to for a custom secondary checkbox mark color
     @checkboxSecondaryMarkColor: undefined;
-    @checkboxBackgroundColor: transparent;
-    @checkboxBorderColor: black;
+    @checkboxBackgroundColor: @transparent;
+    @checkboxBorderColor: @black;
     @checkboxActiveBorderColor: @primaryColor;
     @checkboxMarkColor: @checkboxActiveBorderColor;
     @checkboxSize: 1em;
     @checkboxBorderSize: 1px;
     @checkboxMarkThickness: @checkboxBorderSize;
     .secondaryCheckboxMarkColor(@property) when (@checkboxSecondaryMarkColor = undefined) {
-        & when (@checkboxBackgroundColor = transparent) {
-            @{property}: white;
+        & when (@checkboxBackgroundColor = @transparent) {
+            @{property}: @white;
         }
-        & when not (@checkboxBackgroundColor = transparent) {
+        & when not (@checkboxBackgroundColor = @transparent) {
             @{property}: @checkboxBackgroundColor;
         }
     }
@@ -108,11 +111,12 @@
 
 /// Radio
 #RadioVars {
-    @radioBackgroundColor: transparent;
-    @radioBorderColor: black;
+    @radioBackgroundColor: @transparent;
+    @radioBorderColor: @black;
     @radioActiveBorderColor: @primaryColor;
     @radioMarkColor: @radioActiveBorderColor;
     @radioSize: 1em;
+    // The radio proportion signifies how much space the radio mark takes up.
     @radioProportion: 3/5;
     @radioBorderSize: 1px;
 }
@@ -126,8 +130,8 @@
 
 /// Modal
 #ModalVars {
-    @modalColor: white;
-    @modalBackgroundColor: rgba(0,0,0,0.75);
+    @modalColor: @white;
+    @modalBackgroundColor: fadeout(@black, 25%);
     @modalWidth: 50%;
     @modalHeight: 50%;
     @modalLeftTransition: right 500ms;
