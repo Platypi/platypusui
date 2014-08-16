@@ -115,10 +115,10 @@
     @radioBorderColor: @black;
     @radioActiveBorderColor: @primaryColor;
     @radioMarkColor: @radioActiveBorderColor;
+    @radioMarkPaddingColor: @transparent;
     @radioSize: 1em;
-    // The radio proportion signifies how much space the radio mark takes up.
-    @radioProportion: 3/5;
     @radioBorderSize: 1px;
+    @radioMarkPadding: 1px;
 }
 
 /// Drawer
@@ -158,4 +158,15 @@
     @ringAnimation: PLAT-SPIN;
     @ringSpinSpeed: 500ms;
     @ringThickness: @ringDiameter / 10;
+}
+
+/// Range
+#RangeVars {
+    @rangeBackgroundColor: @primaryColorPale;
+    @rangeFillColor: @primaryColor;
+    @knobBorderColor: @rangeFillColor;
+    @knobPrimaryColor: @rangeFillColor;
+    @knobSecondaryColor: @white;
+    @knobSize: 1em;
+    @knobBorderSize: 1px;
 }

@@ -11,7 +11,7 @@
             '<div class="slider">' +
                 '<div class="knob"></div>' +
             '</div>' +
-            '<div class="indicator"></div>' +
+            //'<div class="indicator"></div>' +
         '</div>';
 
         /**

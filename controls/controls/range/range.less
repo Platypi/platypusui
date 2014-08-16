@@ -1,1 +1,46 @@
-﻿
+﻿[plat-control="plat-range"] {
+    #RangeVars;
+    position: relative;
+    width: 100%;
+    height: @knobSize;
+    .box-sizing(border-box);
+
+    .plat-range-container {
+        overflow: visible;
+        position: absolute;
+
+        .slider {
+            .knob {
+                width: @knobSize;
+                height: @knobSize;
+                border: @knobBorderSize solid @knobBorderColor;
+                .border-radius(@knobSize);
+                .box-sizing(border-box);
+            }
+        }
+    }
+
+    &.primary {
+        .plat-range-container {
+            .slider {
+                .knob {
+                    background-color: @knobPrimaryColor;
+                }
+            }
+        }
+    }
+
+    &.secondary {
+        .plat-range-container {
+            .slider {
+                .knob {
+                    background-color: @knobSecondaryColor;
+                }
+            }
+        }
+    }
+}
+
+@import '../less/variables';
+@import '../less/platypus';
+

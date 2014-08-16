@@ -21,19 +21,19 @@
         background-color: @radioBackgroundColor;
         border: @radioBorderSize solid @radioBorderColor;
         .border-radius(@radioSize);
+        .box-sizing(content-box);
 
         &.radio {
             border-color: @radioActiveBorderColor;
 
-            .mark::after {
-                content: "";
-                position: absolute;
+            .mark {
                 background-color: @radioMarkColor;
-                height: @radioSize * @radioProportion;
-                width: @radioSize * @radioProportion;
-                top: 100% * (1-@radioProportion) / 2;
-                left: 100% * (1-@radioProportion) / 2;
-                .border-radius(@radioSize * @radioProportion);
+                width: @radioSize;
+                height: @radioSize;
+                border: @radioMarkPadding solid @radioMarkPaddingColor;
+                .border-radius(@radioSize);
+                .background-clip(padding-box);
+                .box-sizing(border-box);
             }
         }
     }

@@ -8,7 +8,7 @@
          */
         templateString =
         '<div class="plat-radio-container">' +
-            '<span class="mark"></span>' +
+            '<div class="mark"></div>' +
         '</div>';
 
         /**
