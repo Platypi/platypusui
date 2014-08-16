@@ -33,7 +33,14 @@
                 return;
             }
 
-            this._animateBar();
+            this.setProgress();
+        }
+
+        /**
+         * Grabs the bar element and bar max value.
+         */
+        setTemplate(): void {
+            this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
         }
 
         /**
@@ -43,24 +50,20 @@
         loaded(): void {
             var context = this.context,
                 element = this.element,
-                usingPlatBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
+                usingPlatBind = this.__usingPlatBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
+
+            this._barMax = this._barMax || this._barElement.parentElement.offsetWidth;
 
             if ((!this.$utils.isNumber(context) || context > 1 || context < 0) && !usingPlatBind) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1, ' +
                     'or a "' + __Bind + '" control must be used.');
                 return;
-            }
-
-            var barParent = <HTMLElement>element.firstElementChild;
-            this._barMax = barParent.offsetWidth;
-            this._barElement = <HTMLElement>barParent.firstElementChild;
-            this.__usingPlatBind = usingPlatBind;
-            if (usingPlatBind) {
+            } else if (usingPlatBind) {
                 return;
             }
 
-            this._animateBar();
+            this.setProgress();
         }
 
         /**
@@ -76,18 +79,21 @@
                 return;
             }
 
-            this._animateBar(newValue);
+            this.setProgress(newValue);
         }
 
         /**
-         * Animates the progress bar element.
+         * Sets the progress bar value.
          */
-        _animateBar(value?: boolean): void {
+        setProgress(value?: boolean): void {
             var barValue = value || this.context,
-                barElement = this._barElement || <HTMLElement>this.element.firstElementChild.firstElementChild,
-                barMax = this._barMax || barElement.parentElement.offsetWidth;
+                barMax = this._barMax || (this._barMax = this._barElement.parentElement.offsetWidth);
 
-            barElement.style.width = Math.ceil(barMax * barValue) + 'px';
+            if (!this.$utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
+                return;
+            }
+
+            this._barElement.style.width = Math.ceil(barMax * barValue) + 'px';
         }
     }
 

@@ -32,7 +32,7 @@
         /**
          * Grab the knob element.
          */
-        initialize(): void {
+        setTemplate(): void {
             var slider = this._sliderElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
             this._knobElement = <HTMLElement>slider.firstElementChild;
         }

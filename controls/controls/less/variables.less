@@ -1,14 +1,14 @@
 ﻿/// Common
 
 @primaryColor: #f0862c;
-@primaryColor70: fadeout(@primaryColor, 70%);
-@primaryColor40: fadeout(@primaryColor, 40%);
+@primaryColorLight: fadeout(@primaryColor, 30%);
+@primaryColorPale: fadeout(@primaryColor, 60%);
 @secondaryColor: #5381b6;
-@secondaryColor70: fadeout(@secondaryColor, 70%);
-@secondaryColor40: fadeout(@secondaryColor, 40%);
+@secondaryColorLight: fadeout(@secondaryColor, 30%);
+@secondaryColorPale: fadeout(@secondaryColor, 60%);
 @neutralColor: #5e5753;
-@neutralColor70: fadeout(@neutralColor, 70%);
-@neutralColor40: fadeout(@neutralColor, 40%);
+@neutralColorLight: fadeout(@neutralColor, 30%);
+@neutralColorPale: fadeout(@neutralColor, 60%);
 
 /// Button
 #ButtonVars {
@@ -37,18 +37,22 @@
 #ToggleVars {
     // set this var to for a custom border color
     @toggleBorderColor: undefined;
-    @toggleBackgroundColor: transparent;
+    @knobBorderColor: undefined;
+    @toggleBackgroundColor: @neutralColor;
     @toggleColor: @neutralColor;
     @toggleActiveColor: @primaryColor;
     @toggleWidth: 4em;
+    // the ratio calculates the toggle height as @toggleWidth * @toggleRatio
     @toggleRatio: 1/3;
-    @toggleHeight: @toggleWidth * @toggleRatio;
     @toggleBorderSize: 1px;
     @toggleActivatedBorderColor: @toggleActiveColor;
     @transitionTime: 250ms;
-    @toggleTransitionArgs: left @transitionTime, background-color @transitionTime;
-    @knobColor: @toggleColor;
-    @knobPadding: 1px;
+    @toggleTransitionArgs: background-color @transitionTime, 
+        border-bottom-color @transitionTime, border-left-color @transitionTime, 
+        border-right-color @transitionTime, border-top-color @transitionTime;
+    @knobTransitionArgs: left @transitionTime;
+    @knobColor: white;
+    @knobBorderSize: 1px;
     .toggleBorderColor(@property) when (@toggleBorderColor = undefined) {
         & when (@toggleBackgroundColor = transparent) {
             @{property}: @toggleColor;
@@ -58,6 +62,22 @@
         }
     }
     .toggleBorderColor(@property) when (default()) {
+        @{property}: @toggleBorderColor;
+    }
+    .knobBorderColor(@property) when (@knobBorderColor = undefined) {
+        & when (@knobColor = @toggleBackgroundColor) {
+            & when (@knobColor = white) {
+                @{property}: black;
+            }
+            & when not (@knobColor = white) {
+                @{property}: white;
+            }
+        }
+        & when not (@knobColor = @toggleBackgroundColor) {
+            @{property}: @knobColor;
+        }
+    }
+    .knobBorderColor(@property) when (default()) {
         @{property}: @toggleBorderColor;
     }
 }
@@ -121,7 +141,8 @@
 #ProgressBarVars {
     @barBorderColor: @neutralColor;
     @barColor: @primaryColor;
-    @barHeight: 1em;
+    @barBackgroundColor: @primaryColorPale;
+    @barHeight: 0.25em;
     @barBorderSize: 1px;
     @barTransition: none;
 }

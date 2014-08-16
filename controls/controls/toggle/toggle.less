@@ -5,6 +5,7 @@
     .box-sizing(border-box);
 
     .plat-toggle-container {
+        @toggleHeight: @toggleWidth * @toggleRatio;
         width: @toggleWidth;
         height: @toggleHeight;
         position: relative;
@@ -13,36 +14,29 @@
         border: @toggleBorderSize solid;
         .toggleBorderColor(border-color);
         .border-radius(@toggleHeight);
-
-        .slider {
-            @knobDiameter: @toggleHeight;
-            @knobRadius: @knobDiameter / 2;
+        .transition(@toggleTransitionArgs);
+           
+        @knobDiameter: @toggleHeight; 
+        .knob {
             position: absolute;
             top: 0;
-            left: -1 * (@toggleWidth - @knobDiameter);
-            width: @toggleWidth;
-            height: 100%;
+            left: 0;
+            height: @knobDiameter;
+            width: @knobDiameter;
+            background-color: @knobColor;
+            border: @knobBorderSize solid;
+            .knobBorderColor(border-color);
             .border-radius(@knobDiameter);
-            .transition(@toggleTransitionArgs);
-
-            .knob {
-                @knobDiameterAdjust: 2 * @knobPadding;
-                position: absolute;
-                top: @knobPadding;
-                right: @knobPadding;
-                height: ~'calc(@{knobDiameter} - @{knobDiameterAdjust})';
-                width: ~'calc(@{knobDiameter} - @{knobDiameterAdjust})';
-                background-color: @knobColor;
-                .border-radius(@knobDiameter);
-            }
+            .box-sizing(border-box);
+            .transition(@knobTransitionArgs);
         }
 
         &.slide {
             border-color: @toggleActivatedBorderColor;
+            background-color: @toggleActiveColor;
 
-            .slider {
-                left: 0;
-                background-color: @toggleActiveColor;
+            .knob {
+                left: @toggleWidth - @knobDiameter;
             }
         }
     }

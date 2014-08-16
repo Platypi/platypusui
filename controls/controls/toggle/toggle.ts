@@ -10,9 +10,7 @@
          */
         templateString =
         '<div class="plat-toggle-container">' +
-            '<div class="slider">' +
-                '<div class="knob"></div>' +
-            '</div>' +
+            '<div class="knob"></div>' +
         '</div>';
 
         /**

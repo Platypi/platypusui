@@ -5,8 +5,9 @@
 
     .plat-progress-container {
         position: relative;
-        height: @barHeight - @barBorderSize; // quirky IE issue with inner div height
+        height: ~'calc(@barHeight - @barBorderSize)'; // quirky IE issue with inner div height
         width: 100%;
+        background-color: @barBackgroundColor;
         overflow: hidden;
         border: @barBorderSize solid @barBorderColor;
         .border-radius(@barHeight);

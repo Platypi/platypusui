@@ -162,28 +162,33 @@
     .vendor-loop(border-top-right-radius; @args; @webkit);
     .vendor-loop(border-bottom-left-radius; @args; @webkit);
     .vendor-loop(border-bottom-right-radius; @args; @webkit);
-    .vendor-loop(background-clip; padding-box; @webkit);
 }
 .border-radius(@args; @vendorList: @webMozList) when (@vendorList = @moz) {
     .vendor-loop(border-top-left-radius; @args; @moz);
     .vendor-loop(border-top-right-radius; @args; @moz);
     .vendor-loop(border-bottom-left-radius; @args; @moz);
     .vendor-loop(border-bottom-right-radius; @args; @moz);
-    .vendor-loop(background-clip; padding-box; @moz);
 }
 .border-radius(@args; @vendorList: @webMozList) when (@vendorList = @vanilla) {
     .vendor-loop(border-top-left-radius; @args; @vanilla);
     .vendor-loop(border-top-right-radius; @args; @vanilla);
     .vendor-loop(border-bottom-left-radius; @args; @vanilla);
     .vendor-loop(border-bottom-right-radius; @args; @vanilla);
-    .vendor-loop(background-clip; padding-box; @vanilla);
 }
 .border-radius(@args; @vendorList: @webMozList) when (default()) {
     .vendor-loop(border-top-left-radius; @args; @webList);
     .vendor-loop(border-top-right-radius; @args; @webList);
     .vendor-loop(border-bottom-left-radius; @args; @webList);
     .vendor-loop(border-bottom-right-radius; @args; @webList);
-    .vendor-loop(background-clip; padding-box; @vendorList);
+}
+
+// Background Clip
+
+.background-clip(@box: border-box) {
+    .background-clip(@box; @webMozList);
+}
+.background-clip(@box; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(background-clip; @box; @vendorList);
 }
 
 // Box Shadows
