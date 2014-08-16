@@ -1,4 +1,7 @@
 ﻿module platui {
+    /**
+     * A Template Control for showing indeterminate progress.
+     */
     export class ProgressRing extends plat.ui.TemplateControl {
         /**
          * The ProgressRing's template string.

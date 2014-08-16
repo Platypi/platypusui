@@ -35,8 +35,6 @@
             } else if (element.hasAttribute('data-' + __Bind)) {
                 this.groupName = element.getAttribute('data-' + __Bind);
             }
-
-            this.addEventListener(element, __$tap, this._onTap.bind(this));
         }
         
         /**

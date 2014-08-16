@@ -1,4 +1,7 @@
 ﻿module platui {
+    /**
+     * A Template Control simulating a toggle switch.
+     */
     export class Toggle extends plat.ui.BindablePropertyControl {
         $utils: plat.IUtils = plat.acquire(__Utils);
 
@@ -30,15 +33,10 @@
         /**
          * Adds a listener for the tap event.
          */
-        initialize(): void {
-            this.addEventListener(this.element, __$tap, this._onTap.bind(this));
-        }
-
-        /**
-         * Sets the slider element.
-         */
-        loaded(): void {
-            this._targetElement = this.element.firstElementChild;
+        setTemplate(): void {
+            var element = this.element;
+            this._targetElement = element.firstElementChild;
+            this.addEventListener(element, __$tap, this._onTap.bind(this));
         }
 
         /**
@@ -84,12 +82,10 @@
          */
         _toggle(setProperty?: boolean): void {
             var wasActive = this.isActive,
-                isActive = !wasActive,
-                element = <HTMLInputElement>this.element,
-                sliderElement = this._targetElement || element.firstElementChild;
+                isActive = !wasActive;
 
-            this._activate(sliderElement);
-            this.isActive = element.checked = isActive;
+            this._activate(this._targetElement);
+            this.isActive = (<HTMLInputElement>this.element).checked = isActive;
             if (setProperty === true) {
                 this.propertyChanged(isActive, wasActive);
             }

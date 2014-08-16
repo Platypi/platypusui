@@ -1,4 +1,7 @@
 ﻿module platui {
+    /**
+     * A Template Control for showing incremental progress.
+     */
     export class ProgressBar extends plat.ui.BindablePropertyControl {
         $utils: plat.IUtils = plat.acquire(__Utils);
 

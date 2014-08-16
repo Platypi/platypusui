@@ -1,4 +1,7 @@
 ﻿module platui {
+    /**
+     * A Template Control for standardizing an HTML5 button.
+     */
     export class Button extends plat.ui.BindablePropertyControl {
         $document: Document = plat.acquire(__Document);
 
@@ -117,7 +120,13 @@
 
     plat.register.control(__Button, Button);
 
+    /**
+     * An interface defining the plat-options for the Button control.
+     */
     export interface IButtonOptions {
+        /**
+         * The type of Button.
+         */
         type: string;
     }
 }

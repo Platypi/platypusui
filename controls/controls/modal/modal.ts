@@ -1,4 +1,7 @@
 ﻿module platui {
+    /**
+     * A Template Control for showing a templated and animated overlay.
+     */
     export class Modal extends plat.ui.TemplateControl {
         $utils: plat.IUtils = plat.acquire(__Utils);
         $compat: plat.ICompat = plat.acquire(__Compat);

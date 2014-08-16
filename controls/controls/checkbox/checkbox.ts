@@ -38,13 +38,14 @@
             }
 
             this.dom.addClass(this.element, type);
-            super.initialize();
         }
 
         /**
          * Adds the inner template to the DOM making sure to wrap text nodes in spans.
          */
         setTemplate(): void {
+            super.setTemplate();
+
             var isNull = this.$utils.isNull,
                 innerTemplate = this.innerTemplate;
 
@@ -79,7 +80,6 @@
          */
         loaded(): void {
             this._setChecked();
-            super.loaded();
         }
 
         /**
