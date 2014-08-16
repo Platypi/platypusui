@@ -76,16 +76,9 @@
         }
 
         /**
-         * Checks for the checked attribute and sets the check mark element.
-         */
-        loaded(): void {
-            this._setChecked();
-        }
-
-        /**
          * Checks for checked attributes and handles them accordingly.
          */
-        _setChecked(): void {
+        loaded(): void {
             var element = this.element;
             if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
                 this._convertAttribute(true);
