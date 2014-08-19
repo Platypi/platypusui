@@ -4,9 +4,9 @@
     width: 100%;
     height: @knobSize;
     .box-sizing(border-box);
-
+    
+    @knobRadius: @knobSize / 2;
     .plat-range-container {
-        @knobRadius: @knobSize / 2;
         position: absolute;
         top: 50%;
         left: @knobRadius;
@@ -17,7 +17,6 @@
 
         .slider {
             position: absolute;
-            left: 0;
             width: 0;
             height: 100%;
             background-color: @rangeFillColor;
@@ -26,7 +25,6 @@
             .knob {
                 position: absolute;
                 top: -@knobRadius;
-                right: -@knobRadius;
                 width: @knobSize;
                 height: @knobSize;
                 border: @knobBorderSize solid @knobBorderColor;
@@ -43,7 +41,10 @@
     &.right {
         .plat-range-container {
             .slider {
+                left: 0;
+
                 .knob {
+                    right: -@knobRadius;
                 }
             }
         }
@@ -52,7 +53,10 @@
     &.left {
         .plat-range-container {
             .slider {
+                right: 0;
+
                 .knob {
+                    left: -@knobRadius;
                 }
             }
         }

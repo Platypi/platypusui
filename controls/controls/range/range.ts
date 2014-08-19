@@ -58,6 +58,7 @@
         private __loaded = false;
         private __inTouch = false;
         private __usingBind: boolean;
+        private __transition: string;
 
         /**
          * Check if using context or using bind.
@@ -90,10 +91,10 @@
                 optionMax = options.max,
                 width = this._sliderElement.parentElement.offsetWidth,
                 type = options.type || 'primary',
-                direction = options.direction || 'right';
+                transition = this.__transition = options.transition || 'right';
 
             dom.addClass(element, type);
-            dom.addClass(element, direction);
+            dom.addClass(element, transition);
 
             var bindValue = this.value,
                 value = isNumber(bindValue) ? bindValue : isNumber(optionValue) ? optionValue : min,
@@ -112,7 +113,7 @@
             }
 
             this.__increment = width / (max - min);
-            this._initializeEvents(direction);
+            this._initializeEvents(transition);
             this.setValue(value);
             this.__loaded = true;
         }
@@ -217,7 +218,7 @@
 
             this.__inTouch = false;
 
-            var newOffset = this.__sliderOffset + ev.clientX - this._lastTouch.x;
+            var newOffset = this.__calculateOffset(ev);
             if (newOffset < 0) {
                 this.__sliderOffset = 0;
                 return;
@@ -235,7 +236,7 @@
          * @param ev The $track event object.
          */
         _trackHorizontal(ev: plat.ui.IGestureEvent): void {
-            var width = this.__sliderOffset + ev.clientX - this._lastTouch.x,
+            var width = this.__calculateOffset(ev),
                 value: number;
 
             if (width < 0) {
@@ -264,6 +265,19 @@
 
         private __calculateKnobPosition(value: number): number {
             return (value - this.min) * this.__increment;
+        }
+
+        private __calculateOffset(ev: plat.ui.IGestureEvent): number {
+            switch (this.__transition) {
+                case 'right':
+                    return this.__sliderOffset + ev.clientX - this._lastTouch.x;
+                case 'left':
+                    return this.__sliderOffset + this._lastTouch.x - ev.clientX;
+                case 'up':
+                    return 0;
+                case 'down':
+                    return 0;
+            }
         }
 
         private __setValue(newValue: number, setKnob: boolean, setProperty: boolean): void {
@@ -310,7 +324,7 @@
         /**
          * The direction of the range.
          */
-        direction: string;
+        transition: string;
 
         /**
          * The current value of the range.
