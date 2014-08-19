@@ -17,8 +17,8 @@
 
         .slider {
             position: absolute;
-            left: -100%;
-            width: 100%;
+            left: 0;
+            width: 0;
             height: 100%;
             background-color: @rangeFillColor;
             overflow: visible;
@@ -29,9 +29,14 @@
                 right: -@knobRadius;
                 width: @knobSize;
                 height: @knobSize;
+                background-color: @rangeFillColor;
                 border: @knobBorderSize solid @knobBorderColor;
                 .border-radius(@knobSize);
                 .box-sizing(border-box);
+            }
+
+            &.transition {
+                .transition(@rangeTransition);
             }
         }
     }
