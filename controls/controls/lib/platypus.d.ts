@@ -285,95 +285,97 @@ declare module plat {
         }
     }
     /**
+    * @name plat.acquire
+    * @kind function
+    * @variation 0
+    * @access public
+    * @static
+    *
+    * @description
     * Returns the requested injectable dependency.
     *
-    * @param dependency The dependency Type to return.
-    * @param {T} The requested dependency.
+    * @typeparam {T} The type of the requested dependency.
+    *
+    * @param {() => T} dependency The dependency Type to return.
+    *
+    * @returns T The requested dependency.
     */
     function acquire<T>(dependency: () => T): T;
     /**
+    * @name plat.acquire
+    * @kind function
+    * @variation 1
+    * @access public
+    * @static
+    *
+    * @description
     * Returns the requested injectable dependency.
     *
-    * @param dependency The dependency Type to return.
-    * @param {any} The requested dependency.
+    * @param {Function} dependency The dependency Type to return.
+    *
+    * @returns {any} The requested dependency.
     */
     function acquire(dependency: Function): any;
     /**
+    * @name plat.acquire
+    * @kind function
+    * @variation 2
+    * @access public
+    * @static
+    *
+    * @description
     * Returns the requested injectable dependency.
     *
-    * @param dependency An array of Types specifying the injectable dependencies.
-    * @return {Array<any>} The dependencies, in the order they were requested.
+    * @param {Function} dependency An array of Types specifying the injectable dependencies.
+    *
+    * @returns {Array<any>} The dependencies, in the order they were requested.
     */
     function acquire(dependencies: Function[]): any[];
     /**
+    * @name plat.acquire
+    * @kind function
+    * @variation 3
+    * @access public
+    * @static
+    *
+    * @description
     * Returns the requested injectable dependency.
     *
-    * @param dependency The injectable dependency type to return.
-    * @param {any} The requested dependency.
+    * @param {string} dependency The injectable dependency type to return.
+    *
+    * @returns {any} The requested dependency.
     */
     function acquire(dependency: string): any;
     /**
+    * @name plat.acquire
+    * @kind function
+    * @variation 4
+    * @access public
+    * @static
+    *
+    * @description
     * Gathers dependencies and returns them as an array in the order they were requested.
     *
-    * @param dependencies An array of strings specifying the injectable dependencies.
-    * @return {Array<any>} The dependencies, in the order they were requested.
+    * @param {Array<string>} dependencies An array of strings specifying the injectable dependencies.
+    *
+    * @returns {Array<any>} The dependencies, in the order they were requested.
     */
     function acquire(dependencies: string[]): any[];
     /**
+    * @name plat.acquire
+    * @kind function
+    * @variation 5
+    * @access public
+    * @static
+    *
+    * @description
     * Gathers dependencies and returns them as an array in the order they were requested.
     *
-    * @param dependencies An array of strings or Functions specifying the injectable dependencies.
-    * @return {Array<any>} The dependencies, in the order they were requested.
+    * @param {Array<any>} dependencies An array of strings or Functions specifying the injectable dependencies.
+    *
+    * @returns {Array<any>} The dependencies, in the order they were requested.
     */
     function acquire(dependencies: any[]): any[];
-    /**
-    * Returns the requested dependency or gathers dependencies and passes them back
-    * as an array in the order they were specified.
-    */
-    interface IAcquire {
-        /**
-        * Returns the requested injectable dependency.
-        *
-        * @param dependency The dependency Type to return.
-        * @param {T} The requested dependency.
-        */
-<T>        (dependency: () => T): T;
-        /**
-        * Returns the requested injectable dependency.
-        *
-        * @param dependency The dependency Type to return.
-        * @param {any} The requested dependency.
-        */
-        (dependency: Function): any;
-        /**
-        * Returns the requested injectable dependency.
-        *
-        * @param dependency An array of Types specifying the injectable dependencies.
-        * @return {Array<any>} The dependencies, in the order they were requested.
-        */
-        (dependencies: Function[]): any[];
-        /**
-        * Returns the requested injectable dependency.
-        *
-        * @param dependency The injectable dependency type to return.
-        * @param {any} The requested dependency.
-        */
-        (dependency: string): any;
-        /**
-        * Gathers dependencies and returns them as an array in the order they were requested.
-        *
-        * @param dependencies An array of strings specifying the injectable dependencies.
-        * @return {Array<any>} The dependencies, in the order they were requested.
-        */
-        (dependencies: string[]): any[];
-        /**
-        * Gathers dependencies and returns them as an array in the order they were requested.
-        *
-        * @param dependencies An array of strings or Functions specifying the injectable dependencies.
-        * @return {Array<any>} The dependencies, in the order they were requested.
-        */
-        (dependencies: any[]): any[];
-    }
     /**
     * Manages the throwing and consuming of errors and warnings.
     */
@@ -5156,6 +5158,9 @@ declare module plat {
         class TrackDown extends SimpleEventControl {
             public event: string;
         }
+        class TrackEnd extends SimpleEventControl {
+            public event: string;
+        }
         class Submit extends SimpleEventControl {
             public event: string;
             /**
@@ -7636,6 +7641,7 @@ declare module plat {
             private __handleRelease(ev);
             private __handleSwipe();
             private __handleTrack(ev);
+            private __handleTrackEnd(ev);
             private __handleMappedEvent(ev);
             private __getTypes();
             private __registerTypes();
@@ -8005,6 +8011,10 @@ declare module plat {
             * The string type|number of events associated with the trackdown event.
             */
             $trackdown?: T;
+            /**
+            * The string type|number of events associated with the trackend event.
+            */
+            $trackend?: T;
         }
         /**
         * Describes an object containing information about a single point touched.
@@ -8473,29 +8483,74 @@ declare module plat {
             isJs: boolean;
         }
         module animations {
+            /**
+            * A simple Css Animation class that places the 'plat-animation' class on an
+            * element, checks for animation properties, and waits for the animation to end.
+            */
             class SimpleCssAnimation extends CssAnimation implements ISimpleCssAnimation {
                 public $Window: Window;
+                /**
+                * The class name added to the animated element.
+                */
                 public className: string;
                 public start(): void;
                 public cancel(): void;
             }
+            /**
+            * An interface for extending the SimpleCssAnimation or SimpleCssTransition and allowing for
+            * custom class names to initiate animations or transitions.
+            */
             interface ISimpleCssAnimation extends ICssAnimation {
                 /**
                 * The class name to place on the element.
                 */
                 className: string;
             }
+            /**
+            * An animation control that fades in an element as defined by the included CSS.
+            */
             class FadeIn extends SimpleCssAnimation {
                 public className: string;
             }
+            /**
+            * An animation control that fades out an element as defined by the included CSS.
+            */
             class FadeOut extends SimpleCssAnimation {
                 public className: string;
             }
+            /**
+            * An animation control that causes an element to enter as defined by the included CSS.
+            */
             class Enter extends SimpleCssAnimation {
                 public className: string;
             }
+            /**
+            * An animation control that causes an element to leave as defined by the included CSS.
+            */
             class Leave extends SimpleCssAnimation {
                 public className: string;
+            }
+            /**
+            * A simple Css Animation class that places the 'plat-transition' class on an
+            * element, checks for transition properties, and waits for the transition to end.
+            */
+            class SimpleCssTransition extends CssAnimation implements ISimpleCssAnimation {
+                public $Window: Window;
+                /**
+                * A JavaScript object with key value pairs for adjusting transition values.
+                * (i.e. { width: '800px' } would set the element's width to 800px.
+                */
+                public options: any;
+                /**
+                * The class name added to the animated element.
+                */
+                public className: string;
+                public start(): void;
+                public cancel(): void;
+                /**
+                * Animate the element based on the options passed in
+                */
+                public _animate(): boolean;
             }
         }
         module controls {

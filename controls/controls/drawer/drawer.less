@@ -40,11 +40,11 @@
 .plat-drawer-transition-prep {
     -webkit-backface-visibility: hidden;
     -webkit-perspective: none;
-}
 
-.plat-drawer-transition {
-    #DrawerVars;
-    .transition(@drawerTransition);
+    &.plat-transition {
+        #DrawerVars;
+        .transition(@drawerTransition);
+    }
 }
 
 @import '../less/variables';

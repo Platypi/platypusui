@@ -7,6 +7,7 @@ var __Promise = '$Promise',
     __Document = '$Document',
     __ExceptionStatic = '$ExceptionStatic',
     __Utils = '$Utils',
+    __Animator = '$Animator',
 
     /**
      * Controls
@@ -32,6 +33,11 @@ var __Promise = '$Promise',
     __Bind = __Plat + 'bind',
 
     /**
+     * Animations
+     */
+    __Transition = __Plat + 'transition',
+
+    /**
      * Events
      */
     __$tap = '$tap',
@@ -39,6 +45,7 @@ var __Promise = '$Promise',
     __$touchend = '$touchend',
     __$swipe = '$swipe',
     __$track = '$track',
+    __$trackend = '$trackend',
     __ButtonPrefix = '__plat-button-',
     __RadioPrefix = '__plat-radio-',
     __DrawerControllerInitEvent = '__platDrawerControllerInit',

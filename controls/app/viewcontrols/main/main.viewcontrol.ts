@@ -8,7 +8,7 @@ module app {
             test: <any>null,
             check: true,
             progress: 0,
-            range: 0,
+            range: 25,
             test3: ''
         };
 

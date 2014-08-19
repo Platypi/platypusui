@@ -5,7 +5,7 @@
     export class Range extends plat.ui.BindablePropertyControl {
         $document: Document = plat.acquire(__Document);
         $utils: plat.IUtils = plat.acquire(__Utils);
-        $compat: plat.ICompat = plat.acquire(__Compat);
+        $animator: plat.ui.IAnimator = plat.acquire(__Animator);
 
         /**
          * The template string for the Range control.
@@ -55,10 +55,8 @@
         private __sliderOffset = 0;
         private __maxOffset: number;
         private __increment: number;
-        private __inTouch = false;
         private __loaded = false;
         private __usingBind: boolean;
-        private __transition = this.$compat.animationEvents.$transitionEnd;
 
         /**
          * Check if using context or using bind.
@@ -187,7 +185,7 @@
             this.addEventListener(knob, __$touchstart, this._touchStart, false);
             this.addEventListener(knob, trackBack, track, false);
             this.addEventListener(knob, trackForward, track, false);
-            this.addEventListener(this.$document, __$touchend, this._touchEnd, false);
+            this.addEventListener(knob, __$trackend, this._touchEnd, false);
         }
 
         /**
@@ -196,7 +194,6 @@
          * @param ev The touch event object.
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
-            this.__inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -209,12 +206,6 @@
          * @param ev The $track event object.
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            if (!this.__inTouch) {
-                return;
-            }
-
-            this.__inTouch = false;
-
             var newOffset = this.__sliderOffset + ev.clientX - this._lastTouch.x;
             if (newOffset < 0) {
                 this.__sliderOffset = 0;
@@ -285,15 +276,12 @@
         }
 
         private __setKnob(value: number): void {
-            var sliderElement = this._sliderElement,
-                dom = this.dom,
-                remove = this.addEventListener(sliderElement, this.__transition, () => {
-                    remove();
-                    dom.removeClass(sliderElement, 'transition');
-                });
+            var width = this.__calculateKnobPosition(value);
+            this.$animator.animate(this._sliderElement, __Transition, {
+                width: width + 'px'
+            });
 
-            dom.addClass(sliderElement, 'transition');
-            sliderElement.style.width = this.__calculateKnobPosition(value) + 'px';
+            this.__sliderOffset = width;
         }
     }
 

@@ -126,6 +126,7 @@
         $utils: plat.IUtils = plat.acquire(__Utils);
         $compat: plat.ICompat = plat.acquire(__Compat);
         $document: Document = plat.acquire(__Document);
+        $animator: plat.ui.IAnimator = plat.acquire(__Animator);
 
         /**
          * The plat-options for the DrawerController.
@@ -154,7 +155,7 @@
 
         private __hasSwiped = false;
         private __isOpen = false;
-        private __inTouch = false;
+        private __inTouch: boolean;
         private __useContext: boolean;
         private __removeSwipeOpen: plat.IRemoveListener;
         private __removeSwipeClose: plat.IRemoveListener;
@@ -188,11 +189,7 @@
          * Remove the transition class off the root element.
          */
         dispose(): void {
-            var dom = this.dom,
-                rootElement = this.__rootElement;
-
-            dom.removeClass(rootElement, 'plat-drawer-transition');
-            dom.removeClass(rootElement, 'plat-drawer-transition-prep');
+            this.dom.removeClass(this.__rootElement, 'plat-drawer-transition-prep');
         }
 
         /**
@@ -206,8 +203,6 @@
             if (!isNode(elementToMove) || !isNode(drawerElement)) {
                 return;
             }
-
-            this.dom.addClass(elementToMove, 'plat-drawer-transition');
 
             var translation: string;
             switch (this._transition) {
@@ -227,7 +222,9 @@
                     return;
             }
 
-            elementToMove.style[<any>this._transform] = translation;
+            var animationOptions: plat.IObject<string> = {};
+            animationOptions[this._transform] = translation;
+            this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = true;
         }
 
@@ -243,9 +240,9 @@
                 return;
             }
 
-            this.dom.addClass(elementToMove, 'plat-drawer-transition');
-
-            elementToMove.style[<any>this._transform] = '';
+            var animationOptions: plat.IObject<string> = {};
+            animationOptions[this._transform] = '';
+            this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = false;
         }
 
@@ -321,9 +318,12 @@
             this._addSwipeEvents(transition);
 
             if (this.$utils.isNull(this._lastTouch)) {
+                var touchEnd = this._touchEnd;
+
                 this._lastTouch = { x: 0, y: 0 };
                 this.addEventListener(element, __$touchstart, this._touchStart, false);
-                this.addEventListener(this.$document, __$touchend, this._touchEnd, false);
+                this.addEventListener(element, __$touchend, touchEnd, false);
+                this.addEventListener(element, __$trackend, touchEnd, false);
             }
         }
 
@@ -367,19 +367,17 @@
         }
 
         /**
-         * The $touchend event handler.
+         * The $touchend and $trackend event handler.
          * 
          * @param ev The touch event.
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            if (!this.__inTouch) {
-                return;
-            } else if (this.__hasSwiped) {
-                this.__hasSwiped = this.__inTouch = false;
+            var inTouch = this.__inTouch;
+            this.__inTouch = false;
+            if (!inTouch || this.__hasSwiped) {
+                this.__hasSwiped = false;
                 return;
             }
-
-            this.__inTouch = false;
 
             var drawerElement = this._drawerElement,
                 distanceMoved: number,
@@ -543,9 +541,7 @@
 
         private __controllerIsValid(transition: string): boolean {
             var isNull = this.$utils.isNull,
-                Exception: plat.IExceptionStatic,
-                rootElement = this.__rootElement = this.root.element,
-                dom = this.dom;
+                Exception: plat.IExceptionStatic;
 
             if (isNull(this.__transitionHash[transition])) {
                 Exception = plat.acquire(plat.IExceptionStatic);
@@ -556,22 +552,36 @@
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Could not find a corresponding "' + __Drawer + '" for this "' + __DrawerController + '."');
                 return false;
-            } else if (isNull(rootElement)) {
-                var parent = this.root.parent;
-                if (isNull(parent) || isNull(parent.element)) {
-                    Exception = plat.acquire(plat.IExceptionStatic);
-                    Exception.warn('Cannot have a "' + __DrawerController + '" inside a root control with a null element.');
+            }
+            
+            var rootElement = this.__rootElement = this.__getRootElement(this.root);
+            if (isNull(rootElement)) {
+                Exception = plat.acquire(plat.IExceptionStatic);
+                Exception.warn('Cannot have a "' + __DrawerController +
+                    '" in a hierarchy above the corresponding "' + __Drawer + '."');
                     return false;
-                }
-                rootElement = this.__rootElement = parent.element;
             }
 
-            dom.addClass(rootElement, 'plat-drawer-transition-prep');
-            this.addEventListener(rootElement, this.$compat.animationEvents.$transitionEnd, () => {
-                dom.removeClass(rootElement, 'plat-drawer-transition');
-            }, false);
+            this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
 
             return true;
+        }
+
+        private __getRootElement(root: plat.ui.ITemplateControl): HTMLElement {
+            var $utils = this.$utils,
+                isNode = $utils.isNode;
+            if (!$utils.isObject(root)) {
+                return null;
+            }
+
+            var element = root.element,
+                drawer = this._drawerElement,
+                parent: HTMLElement;
+            while (isNode(element) && !((parent = element.parentElement).contains(drawer))) {
+                element = parent;
+            }
+
+            return element;
         }
     }
 
