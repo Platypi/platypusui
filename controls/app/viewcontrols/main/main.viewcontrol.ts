@@ -8,7 +8,7 @@ module app {
             test: <any>null,
             check: true,
             progress: 0,
-            range: 25,
+            range: 0,
             test3: ''
         };
 
@@ -34,7 +34,7 @@ module app {
 
         bar(ev?: any) {
             this.context.progress += 0.01;
-            this.context.range += 1;
+            this.context.range++;
         }
 
         toggle() {

@@ -56,6 +56,7 @@
         private __maxOffset: number;
         private __increment: number;
         private __loaded = false;
+        private __inTouch = false;
         private __usingBind: boolean;
 
         /**
@@ -185,7 +186,10 @@
             this.addEventListener(knob, __$touchstart, this._touchStart, false);
             this.addEventListener(knob, trackBack, track, false);
             this.addEventListener(knob, trackForward, track, false);
-            this.addEventListener(knob, __$trackend, this._touchEnd, false);
+
+            var touchEnd = this._touchEnd;
+            this.addEventListener(knob, __$trackend, touchEnd, false);
+            this.addEventListener(knob, __$touchend, touchEnd, false);
         }
 
         /**
@@ -194,6 +198,7 @@
          * @param ev The touch event object.
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
+            this.__inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -206,6 +211,12 @@
          * @param ev The $track event object.
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
+            if (!this.__inTouch) {
+                return;
+            }
+
+            this.__inTouch = false;
+
             var newOffset = this.__sliderOffset + ev.clientX - this._lastTouch.x;
             if (newOffset < 0) {
                 this.__sliderOffset = 0;
@@ -225,30 +236,30 @@
          */
         _trackHorizontal(ev: plat.ui.IGestureEvent): void {
             var width = this.__sliderOffset + ev.clientX - this._lastTouch.x,
-                extreme: number;
+                value: number;
 
             if (width < 0) {
-                extreme = this.min;
-                if (extreme - this.value < 0) {
-                    this.__setValue(extreme, false, true);
-                    this._sliderElement.style.width = '0';
+                value = this.min;
+                if (value - this.value >= 0) {
+                    return;
                 }
-                return;
+                width = 0;
             } else if (width > this.__maxOffset) {
-                extreme = this.max;
-                if (extreme - this.value > 0) {
-                    this.__setValue(extreme, false, true);
-                    this._sliderElement.style.width = this.__maxOffset + 'px';
+                value = this.max;
+                if (value - this.value <= 0) {
+                    return;
                 }
-                return;
+                width = this.__maxOffset;
+            } else {
+                value = this.__calculateValue(width);
             }
 
-            this.__setValue(this.__calculateDelta(width), false, true);
+            this.__setValue(value, false, true);
             this._sliderElement.style.width = width + 'px';
         }
 
-        private __calculateDelta(width: number): number {
-            return Math.round(width / this.__increment);
+        private __calculateValue(width: number): number {
+            return (this.min + Math.round(width / this.__increment));
         }
 
         private __calculateKnobPosition(value: number): number {
