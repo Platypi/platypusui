@@ -17,9 +17,6 @@ module.exports = exports = function load(grunt) {
                 license: './license.txt',
                 version: '<%= pkg.version %>',
                 src: './app/index.html',
-                ignore: [
-                    './controls/less/variables.less'
-                ],
                 dest: [
                     './platypus.less'
                 ]

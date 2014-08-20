@@ -1,5 +1,8 @@
 ﻿/// Variables
 
+@defaultFontSize: 16px;
+@defaultViewColor: #ffffff;
+
 @webkit: -webkit-;
 @moz: -moz-;
 @ms: -ms-;
@@ -19,6 +22,7 @@
 @slideOut: slideOut;
 @slideInFadeIn: slideInFadeIn;
 @slideOutFadeOut: slideOutFadeOut;
+
 /// Mixins
 
 // Helper Methods
@@ -460,6 +464,15 @@
     .vendor-loop(transition-timing-function; @function; @vendorList);
 }
 
+/// Misc
+
+.fill() {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
 /// Animations
 
 // Custom Animations
@@ -702,6 +715,19 @@
 
 // Common
 
+html, body {
+    font-size: @defaultFontSize;
+    font-weight: 100;
+    .fill();
+}
+
+[plat-control="plat-routeport"],
+[plat-control="plat-viewport"] {
+    position: relative;
+    background-color: @defaultViewColor;
+    .fill();
+}
+
 [plat-hide] {
     display: none !important;
 }
@@ -726,20 +752,17 @@
     .animation-fill-mode(forwards);
 }
 
-
 .plat-slideout {
     .animation-name(@slideOut);
     .animation-duration(200ms);
     .animation-fill-mode(forwards);
 }
 
-
 .plat-fadein {
     .animation-name(@fadeIn);
     .animation-duration(500ms);
     .animation-fill-mode(forwards);
 }
-
 
 .plat-fadeout {
     .animation-name(@fadeOut);
@@ -753,27 +776,3 @@
 #Animations > .slide(@slideOut; out; left);
 #Animations > .slideAndFade();
 #Animations > .slideAndFade(@slideOutFadeOut; out; left);
-
-.media1400({
-    [plat-control="plat-viewport"].plat-enter {
-        .animation-name(@slideInFadeIn);
-        .animation-duration(750ms);
-        .animation-fill-mode(forwards);
-    }
-
-    [plat-control="plat-viewport"].plat-leave {
-        .animation-name(@slideOutFadeOut);
-        .animation-duration(500ms);
-        .animation-fill-mode(forwards);
-    }
-});
-     
-.media800({
-    [plat-control="plat-viewport"].plat-enter {
-        .animation-name(@fadeIn);
-    }
-
-    [plat-control="plat-viewport"].plat-leave {
-        .animation-name(@fadeOut);
-    }
-});
