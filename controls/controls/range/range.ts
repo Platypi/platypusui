@@ -59,6 +59,7 @@
         private __inTouch = false;
         private __usingBind: boolean;
         private __transition: string;
+        private __lengthProperty: string;
 
         /**
          * Check if using context or using bind.
@@ -89,9 +90,9 @@
                 optionValue = Number(options.value),
                 optionMin = options.min,
                 optionMax = options.max,
-                width = this._sliderElement.parentElement.offsetWidth,
                 type = options.type || 'primary',
-                transition = this.__transition = options.transition || 'right';
+                transition = this.__transition = options.transition || 'right',
+                length = this.__getLength(transition);
 
             dom.addClass(element, type);
             dom.addClass(element, transition);
@@ -103,7 +104,7 @@
 
             // reset value to minimum in case Bind set it to a value
             this.value = min;
-            this.__maxOffset = width;
+            this.__maxOffset = length;
 
             if (min >= max) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
@@ -112,7 +113,7 @@
                 return;
             }
 
-            this.__increment = width / (max - min);
+            this.__increment = length / (max - min);
             this._initializeEvents(transition);
             this.setValue(value);
             this.__loaded = true;
@@ -141,6 +142,8 @@
 
         /**
          * Set the value of the range.
+         * 
+         * @param value The value to set the Range to.
          */
         setValue(value: number): void {
             if (!this.$utils.isNumber(value)) {
@@ -152,23 +155,26 @@
 
         /**
          * Initialize the proper tracking events.
+         * 
+         * @param transition The transition direction specified 
+         * in the plat-options.
          */
-        _initializeEvents(direction: string): void {
+        _initializeEvents(transition: string): void {
             var knob = this._knobElement,
                 trackBack: string,
                 trackForward: string,
-                track: EventListener;
+                track: EventListener = this._track;
 
-            switch (direction) {
+            switch (transition) {
                 case 'right':
                     trackBack = __$track + 'left';
                     trackForward = __$track + 'right';
-                    track = this._trackHorizontal;
+                    track = this._track;
                     break;
                 case 'left':
                     trackBack = __$track + 'right';
                     trackForward = __$track + 'left';
-                    track = this._trackHorizontal;
+                    track = this._track;
                     break;
                 case 'up':
                     trackBack = __$track + 'down';
@@ -180,7 +186,7 @@
                     break;
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid direction "' + direction + '" for "' + __Range + '."');
+                    Exception.warn('Invalid direction "' + transition + '" for "' + __Range + '."');
                     return;
             }
 
@@ -235,28 +241,28 @@
          * 
          * @param ev The $track event object.
          */
-        _trackHorizontal(ev: plat.ui.IGestureEvent): void {
-            var width = this.__calculateOffset(ev),
+        _track(ev: plat.ui.IGestureEvent): void {
+            var length = this.__calculateOffset(ev),
                 value: number;
 
-            if (width < 0) {
+            if (length < 0) {
                 value = this.min;
                 if (value - this.value >= 0) {
                     return;
                 }
-                width = 0;
-            } else if (width > this.__maxOffset) {
+                length = 0;
+            } else if (length > this.__maxOffset) {
                 value = this.max;
                 if (value - this.value <= 0) {
                     return;
                 }
-                width = this.__maxOffset;
+                length = this.__maxOffset;
             } else {
-                value = this.__calculateValue(width);
+                value = this.__calculateValue(length);
             }
 
             this.__setValue(value, false, true);
-            this._sliderElement.style.width = width + 'px';
+            this._sliderElement.style[<any>this.__lengthProperty] = length + 'px';
         }
 
         private __calculateValue(width: number): number {
@@ -274,8 +280,23 @@
                 case 'left':
                     return this.__sliderOffset + this._lastTouch.x - ev.clientX;
                 case 'up':
-                    return 0;
+                    return this.__sliderOffset + this._lastTouch.y - ev.clientY;
                 case 'down':
+                    return this.__sliderOffset + ev.clientY - this._lastTouch.y;
+            }
+        }
+
+        private __getLength(transition: string): number {
+            switch (transition) {
+                case 'right':
+                case 'left':
+                    this.__lengthProperty = 'width';
+                    return this._sliderElement.parentElement.offsetWidth;
+                case 'up':
+                case 'down':
+                    this.__lengthProperty = 'height';
+                    return this._sliderElement.parentElement.offsetHeight;
+                default:
                     return 0;
             }
         }
@@ -301,12 +322,12 @@
         }
 
         private __setKnob(value: number): void {
-            var width = this.__calculateKnobPosition(value);
-            this.$animator.animate(this._sliderElement, __Transition, {
-                width: width + 'px'
-            });
+            var animationOptions: plat.IObject<string> = {},
+                length = this.__calculateKnobPosition(value);
 
-            this.__sliderOffset = width;
+            animationOptions[this.__lengthProperty] = length + 'px';
+            this.$animator.animate(this._sliderElement, __Transition, animationOptions);
+            this.__sliderOffset = length;
         }
     }
 

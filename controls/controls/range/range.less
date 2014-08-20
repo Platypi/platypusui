@@ -2,38 +2,54 @@
     #RangeVars;
     position: relative;
     width: 100%;
-    height: @knobSize;
+    height: 100%;
     .box-sizing(border-box);
     
     @knobRadius: @knobSize / 2;
     .plat-range-container {
+        @rangeLength: ~'calc(100% - @{knobSize})';
         position: absolute;
-        top: 50%;
-        left: @knobRadius;
-        width: ~'calc(100% - @{knobSize})';
-        height: @rangeThickness;
+        width: @rangeLength;
+        height: @rangeLength;
         background-color: @rangeBackgroundColor;
         overflow: visible;
 
         .slider {
             position: absolute;
-            width: 0;
-            height: 100%;
             background-color: @rangeFillColor;
             overflow: visible;
 
             .knob {
                 position: absolute;
-                top: -@knobRadius;
                 width: @knobSize;
                 height: @knobSize;
                 border: @knobBorderSize solid @knobBorderColor;
                 .border-radius(@knobSize);
                 .box-sizing(border-box);
             }
+        }
+    }
+
+    &.right,
+    &.left {
+        height: @knobSize;
+
+        .plat-range-container {
+            top: 50%;
+            left: @knobRadius;
+            height: @rangeThickness;
+
+            .slider {
+                width: 0;
+                height: 100%;
+
+                .knob {
+                    top: -@knobRadius;
+                }
+            }
 
             &.plat-transition {
-                .transition(@rangeTransition);
+                .transition(@rangeHorizontalTransition);
             }
         }
     }
@@ -62,11 +78,26 @@
         }
     }
 
-    &.up {
+    &.up,
+    &.down {
+        width: @knobSize;
+
         .plat-range-container {
+            left: 50%;
+            top: @knobRadius;
+            width: @rangeThickness;
+
             .slider {
+                width: 100%;
+                height: 0;
+
                 .knob {
+                    left: -@knobRadius;
                 }
+            }
+
+            &.plat-transition {
+                .transition(@rangeVerticalTransition);
             }
         }
     }
@@ -74,7 +105,22 @@
     &.down {
         .plat-range-container {
             .slider {
+                top: 0;
+
                 .knob {
+                    bottom: -@knobRadius;
+                }
+            }
+        }
+    }
+
+    &.up {
+        .plat-range-container {
+            .slider {
+                bottom: 0;
+
+                .knob {
+                    top: -@knobRadius;
                 }
             }
         }
