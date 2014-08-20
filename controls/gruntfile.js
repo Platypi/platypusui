@@ -29,8 +29,8 @@ module.exports = exports = function load(grunt) {
     };
     
     grunt.initConfig(config);
-    grunt.loadTasks('../../less-bundle/less-bundle/less-bundle');
     grunt.loadNpmTasks('grunt-ts-bundle');
+    grunt.loadNpmTasks('grunt-less-bundle');
     // By default, run all tests.
     grunt.registerTask('default', ['bundle', 'less']);
 };
