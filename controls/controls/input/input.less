@@ -1,0 +1,47 @@
+﻿@import '../less/variables';
+
+[plat-control="plat-input"] {
+    #InputVars;
+    display: inline-block;
+    width: @inputDefaultWidth;
+    height: 1.75em;
+    .box-sizing(border-box);
+
+    .plat-input-container {
+        position: relative;
+        height: 100%;
+        width: 100%;
+        .box-sizing(border-box);
+
+        input {
+            position: relative;
+            left: 1em;
+            top: 0.4em;
+            width: ~'calc(@{inputDefaultWidth} - 1em)';
+            outline: none;
+            border: none;
+
+            &::-ms-clear {
+                display: none;
+            }
+        }
+    }
+
+    &.primary {
+        .plat-input-container {
+            border-bottom: @inputBorderWidth solid @inputBorderColor;
+        }
+    }
+
+    &.secondary {
+        .plat-input-container {
+            border: @inputBorderWidth solid @inputBorderColor;
+        }
+    }
+
+    &.email {
+
+    }
+}
+
+@import '../less/platypus';

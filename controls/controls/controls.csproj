@@ -55,6 +55,7 @@
     <TypeScriptCompile Include="button\button.ts" />
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
     <TypeScriptCompile Include="drawer\drawer.ts" />
+    <TypeScriptCompile Include="input\input.ts" />
     <TypeScriptCompile Include="lib\platypus.d.ts" />
     <TypeScriptCompile Include="modal\modal.ts" />
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
@@ -83,6 +84,12 @@
     </Content>
     <Content Include="drawer\drawer.min.css">
       <DependentUpon>drawer.css</DependentUpon>
+    </Content>
+    <Content Include="input\input.css">
+      <DependentUpon>input.less</DependentUpon>
+    </Content>
+    <Content Include="input\input.min.css">
+      <DependentUpon>input.css</DependentUpon>
     </Content>
     <Content Include="less\platypus.css">
       <DependentUpon>platypus.less</DependentUpon>
@@ -171,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="select\select.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="input\input.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

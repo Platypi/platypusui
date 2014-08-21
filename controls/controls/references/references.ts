@@ -23,6 +23,7 @@ var __Promise = '$Promise',
     __Radio = __Plat + 'radio',
     __Toggle = __Plat + 'toggle',
     __Range = __Plat + 'range',
+    __Input = __Plat + 'input',
 
     /**
      * Referenced Controls / Vars

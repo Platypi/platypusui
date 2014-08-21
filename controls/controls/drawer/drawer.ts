@@ -27,7 +27,8 @@
                     element.hasAttribute(__Context) ||
                     element.hasAttribute('data-' + __Context),
                 id = options.id,
-                templateUrl = options.templateUrl;
+                templateUrl = options.templateUrl,
+                isElastic = options.elastic === true;
 
             this.dom.addClass(element, transition);
             if ($utils.isString(templateUrl)) {
@@ -37,7 +38,7 @@
                         this.bindableTemplates.add('drawer', template.cloneNode(true));
                         this.__bindTemplate();
                     }
-                    this.__initializeEvents(id, transition);
+                    this.__initializeEvents(id, transition, isElastic);
                 });
                 return;
             } else if (useContext && $utils.isNode(this.innerTemplate)) {
@@ -45,7 +46,7 @@
                 this.__bindTemplate();
             }
 
-            this.__initializeEvents(id, transition);
+            this.__initializeEvents(id, transition, isElastic);
         }
 
         /**
@@ -75,7 +76,7 @@
             this.__currentTransition = transition;
         }
 
-        private __initializeEvents(id: string, transition: string): void {
+        private __initializeEvents(id: string, transition: string, isElastic: boolean): void {
             var $utils = this.$utils,
                 element = this.element,
                 isString = $utils.isString,
@@ -97,7 +98,8 @@
                     transition: transition,
                     element: element,
                     useContext: useContext,
-                    template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null
+                    template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                    elastic: isElastic
                 });
             });
 
@@ -106,7 +108,8 @@
                 transition: transition,
                 element: element,
                 useContext: useContext,
-                template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null
+                template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                elastic: isElastic
             });
         }
 
@@ -155,8 +158,10 @@
 
         private __hasSwiped = false;
         private __isOpen = false;
+        private __isElastic: boolean;
         private __inTouch: boolean;
         private __useContext: boolean;
+        private __maxOffset: number;
         private __removeSwipeOpen: plat.IRemoveListener;
         private __removeSwipeClose: plat.IRemoveListener;
         private __removePrimaryTrack: plat.IRemoveListener;
@@ -180,6 +185,7 @@
                 transition = options.transition,
                 id = options.id;
 
+            this.__isElastic = options.elastic === true;
             this.__useContext = options.useContext === true;
             this.__templateUrl = options.templateUrl;
             this.__initializeEvents(id, transition);
@@ -197,26 +203,25 @@
          */
         open(): void {
             var elementToMove = this.__rootElement,
-                drawerElement = this._drawerElement,
                 isNode = this.$utils.isNode;
 
-            if (!isNode(elementToMove) || !isNode(drawerElement)) {
+            if (!isNode(elementToMove) || !isNode(this._drawerElement)) {
                 return;
             }
 
             var translation: string;
             switch (this._transition) {
                 case 'up':
-                    translation = 'translate3d(0,' + (-drawerElement.offsetHeight) + 'px,0)';
+                    translation = 'translate3d(0,' + (-this.__maxOffset) + 'px,0)';
                     break;
                 case 'down':
-                    translation = 'translate3d(0,' + drawerElement.offsetHeight + 'px,0)';
+                    translation = 'translate3d(0,' + this.__maxOffset + 'px,0)';
                     break;
                 case 'left':
-                    translation = 'translate3d(' + (-drawerElement.offsetWidth) + 'px,0,0)';
+                    translation = 'translate3d(' + (-this.__maxOffset) + 'px,0,0)';
                     break;
                 case 'right':
-                    translation = 'translate3d(' + drawerElement.offsetWidth + 'px,0,0)';
+                    translation = 'translate3d(' + this.__maxOffset + 'px,0,0)';
                     break;
                 default:
                     return;
@@ -380,24 +385,21 @@
             }
 
             var drawerElement = this._drawerElement,
-                distanceMoved: number,
-                totalDistance: number;
+                distanceMoved: number;
             switch (this._transition) {
                 case 'up':
                 case 'down':
-                    totalDistance = drawerElement.offsetHeight;
                     distanceMoved = ev.clientY - this._lastTouch.y;
                     break;
                 case 'left':
                 case 'right':
-                    totalDistance = drawerElement.offsetWidth;
                     distanceMoved = ev.clientX - this._lastTouch.x;
                     break;
                 default:
                     return;
             }
 
-            if (Math.abs(distanceMoved) > Math.ceil(totalDistance / 2)) {
+            if (Math.abs(distanceMoved) > Math.ceil(this.__maxOffset / 2)) {
                 this.toggle();
                 return;
             }
@@ -412,34 +414,30 @@
          * @param ev The $tracking event.
          */
         _track(ev: plat.ui.IGestureEvent): void {
-            var elementToMove = this.__rootElement,
-                drawerElement = this._drawerElement,
-                $utils = this.$utils;
-
             var distanceMoved: number,
                 translation: string;
             switch (this._transition) {
                 case 'up':
                     distanceMoved = this.__isOpen ?
-                        (-drawerElement.offsetHeight) + ev.clientY - this._lastTouch.y :
+                        (-this.__maxOffset) + ev.clientY - this._lastTouch.y :
                         ev.clientY - this._lastTouch.y;
                     translation = 'translate3d(0,' + distanceMoved + 'px,0)';
                     break;
                 case 'down':
                     distanceMoved = this.__isOpen ?
-                        drawerElement.offsetHeight + ev.clientY - this._lastTouch.y :
+                        this.__maxOffset + ev.clientY - this._lastTouch.y :
                         ev.clientY - this._lastTouch.y;
                     translation = 'translate3d(0,' + distanceMoved + 'px,0)';
                     break;
                 case 'left':
                     distanceMoved = this.__isOpen ?
-                        (-drawerElement.offsetWidth) + ev.clientX - this._lastTouch.x :
+                        (-this.__maxOffset) + ev.clientX - this._lastTouch.x :
                         ev.clientX - this._lastTouch.x;
                     translation = 'translate3d(' + distanceMoved + 'px,0,0)';
                     break;
                 case 'right':
                     distanceMoved = this.__isOpen ?
-                        drawerElement.offsetWidth + ev.clientX - this._lastTouch.x :
+                        this.__maxOffset + ev.clientX - this._lastTouch.x :
                         ev.clientX - this._lastTouch.x;
                     translation = 'translate3d(' + distanceMoved + 'px,0,0)';
                     break;
@@ -447,7 +445,7 @@
                     return;
             }
 
-            elementToMove.style[<any>this._transform] = translation;
+            this.__rootElement.style[<any>this._transform] = translation;
         }
 
         private __initializeEvents(id: string, transition: string): void {
@@ -485,6 +483,11 @@
                 }
 
                 this._addEventListeners(transition.toLowerCase());
+                this.__setOffset();
+
+                if ($utils.isUndefined(this.__isElastic)) {
+                    this.__isElastic = drawerArg.elastic === true;
+                }
 
                 if (!this.__useContext && drawerArg.useContext === true) {
                     return;
@@ -583,6 +586,19 @@
 
             return element;
         }
+
+        private __setOffset(): void {
+            switch (this._transition) {
+                case 'up':
+                case 'down':
+                    this.__maxOffset = this._drawerElement.offsetHeight;
+                    break;
+                case 'left':
+                case 'right':
+                    this.__maxOffset = this._drawerElement.offsetWidth;
+                    break;
+            }
+        }
     }
 
     plat.register.control(__DrawerController, DrawerController);
@@ -611,6 +627,12 @@
          * A boolean value stating whether to use this context or not.
          */
         useContext?: boolean;
+
+        /**
+         * Whether the drawer has an elastic effect while sliding. 
+         * Defaults to false.
+         */
+        elastic?: boolean;
     }
 
     /**
@@ -638,5 +660,10 @@
          * A boolean value stating whether to use this context or not.
          */
         useContext?: boolean;
+        /**
+         * Whether the drawer has an elastic effect while sliding. 
+         * Defaults to false.
+         */
+        elastic?: boolean;
     }
 }
