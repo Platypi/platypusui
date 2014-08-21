@@ -123,7 +123,8 @@
 
 /// Drawer
 #DrawerVars {
-    @drawerColor: @neutralColor;
+    @drawerColor: @white;
+    @drawerBackgroundColor: @neutralColor;
     @drawerLength: 80%;
     @drawerTransition: all 300ms;
 }
@@ -172,4 +173,15 @@
     @knobBorderSize: 1px;
     @rangeHorizontalTransition: width 300ms;
     @rangeVerticalTransition: height 300ms;
+}
+
+/// Select
+#SelectVars {
+    @selectBackgroundColor: @transparent;
+    @selectColor: @primaryColor;
+    @selectArrowColor: @neutralColorPale;
+    @selectPadding: 2px;
+    @selectBorderWidth: 1px;
+    @selectBorderColor: @primaryColor;
+    @selectBorderRadius: 2px;
 }

@@ -1,0 +1,70 @@
+﻿@import '../less/variables';
+
+[plat-control="plat-select"] {
+    #SelectVars;
+    display: inline-block;
+    color: @selectColor;
+    background-color: @selectBackgroundColor;
+    outline: none;
+    margin: 0;
+    padding-left: @selectPadding;
+    padding-top: @selectPadding;
+    padding-bottom: @selectPadding;
+    padding-right: ~'calc(2em + @{selectPadding})';
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: inherit;
+    border: @selectBorderWidth solid @selectBorderColor;
+    .border-radius(@selectBorderRadius);
+    .user-select(none);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+
+    @checkedOptionHoverColor: @white;
+    @checkedOptionHoverBackgroundColor: #1e90ff;
+    &::-ms-expand {
+        display: none;
+    }
+
+    &::-ms-value {
+        color: @selectColor;
+        background-color: @selectBackgroundColor;
+    }
+
+    option:checked {
+        color: lighten(@checkedOptionHoverColor, 15%);
+        background-color: lighten(@checkedOptionHoverBackgroundColor, 15%);
+    }
+
+    option:focus,
+    option:active,
+    option:hover {
+        color: @checkedOptionHoverColor;
+        background-color: @checkedOptionHoverBackgroundColor;
+    }
+}
+
+label {
+    font-size: 300%;
+    position: relative;
+    display: inline-block;
+    padding: 0;
+}
+label::after {
+    #SelectVars;
+    content: '<>';
+    position: absolute;
+    display: inline;
+    width: 1em;
+    height: 1em;
+    font-family: "Consolas", monospace;
+    color: @selectArrowColor;
+    top: ~'calc(3px + @{selectPadding})';
+    right: 0;
+    pointer-events: none;
+    .rotate(90deg);
+}
+
+@import '../less/platypus';

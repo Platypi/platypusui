@@ -126,6 +126,12 @@
     <Content Include="range\range.min.css">
       <DependentUpon>range.css</DependentUpon>
     </Content>
+    <Content Include="select\select.css">
+      <DependentUpon>select.less</DependentUpon>
+    </Content>
+    <Content Include="select\select.min.css">
+      <DependentUpon>select.css</DependentUpon>
+    </Content>
     <Content Include="toggle\toggle.css">
       <DependentUpon>toggle.less</DependentUpon>
     </Content>
@@ -162,6 +168,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="range\range.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="select\select.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>
