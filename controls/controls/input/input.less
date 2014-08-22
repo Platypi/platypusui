@@ -9,21 +9,40 @@
 
     .plat-input-container {
         position: relative;
-        height: 100%;
         width: 100%;
+        height: 100%;
         .box-sizing(border-box);
 
         input {
             position: relative;
             left: 1em;
-            top: 0.4em;
-            width: ~'calc(@{inputDefaultWidth} - 1em)';
+            bottom: 0;
+            padding: 0;
+            width: ~'calc(100% - 3em)';
+            height: 100%;
+            vertical-align: bottom;
+            background-color: @transparent;
+            color: @inputTextColor;
             outline: none;
             border: none;
+            font: inherit;
+            .box-sizing(border-box);
 
             &::-ms-clear {
                 display: none;
             }
+        }
+
+        .action {
+            display: inline-block;
+            position: relative;
+            left: 1em;
+            bottom: 0.1em;
+            width: 1em;
+            height: 80%;
+            text-align: right;
+            color: @inputActionColor;
+            cursor: pointer;
         }
     }
 
@@ -40,7 +59,14 @@
     }
 
     &.email {
-
+        .plat-input-container {
+            input {
+                width: ~'calc(100% - 4em)';
+            }
+            .action {
+                width: 2em;
+            }
+        }
     }
 }
 
