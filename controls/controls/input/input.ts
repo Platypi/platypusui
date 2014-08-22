@@ -62,6 +62,25 @@
             this.__initializeAction();
         }
 
+        /**
+         * A function to validate the input. For action='email' it returns 
+         * true if the email can be a valid email address. For all other 
+         * actions it returns true if the input is not empty.
+         */
+        validate(): boolean {
+            var value = this._inputElement.value;
+            if (this.$utils.isEmpty(value)) {
+                return false;
+            }
+
+            switch (this.__action) {
+                case 'email':
+                    return this.__validateEmail(value);
+                default:
+                    return true;
+            }
+        }
+
         private __initializeAction(): void {
             var char = '';
             switch (this.__action) {
@@ -135,6 +154,11 @@
                     }
                     break;
             }
+        }
+
+        private __validateEmail(email: string): boolean {
+            var regex = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return regex.test(email);
         }
 
         private __checkText(): void {
