@@ -3,22 +3,28 @@
 [plat-control="plat-ring"] {
     #ProgressRingVars;
     display: inline-block;
+    width: @ringDiameter;
+    height: @ringDiameter;
     .box-sizing(border-box);
 
     .plat-progress-container {
         display: inline-block;
         position: relative;
+        width: 100%;
+        height: 100%;
         overflow: hidden;
+        .box-sizing(border-box);
 
         .ring {
-            width: @ringDiameter;
-            height: @ringDiameter;
-            border-left: @ringThickness solid fade(@ringColor, 75%);
-            border-bottom: @ringThickness solid fade(@ringColor, 10%);
-            border-right: @ringThickness solid fade(@ringColor, 10%);
-            border-top: @ringThickness solid fade(@ringColor, 10%);
+            width: 100%;
+            height: 100%;
+            border-left: @ringThickness solid @ringSpinnerColor;
+            border-bottom: @ringThickness solid @ringBackground;
+            border-right: @ringThickness solid @ringBackground;
+            border-top: @ringThickness solid @ringBackground;
             .border-radius(@ringDiameter);
-            .animation(@ringAnimation, @ringSpinSpeed, linear, 0s, infinite);
+            .animation(@ringAnimation, @ringSpinFrequency, linear, 0s, infinite);
+            .box-sizing(border-box);
         }
     }
 }

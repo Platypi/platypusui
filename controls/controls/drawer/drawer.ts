@@ -162,11 +162,13 @@
         private __inTouch: boolean;
         private __useContext: boolean;
         private __maxOffset: number;
+        private __removeTap: plat.IRemoveListener;
         private __removeSwipeOpen: plat.IRemoveListener;
         private __removeSwipeClose: plat.IRemoveListener;
         private __removePrimaryTrack: plat.IRemoveListener;
         private __removeSecondaryTrack: plat.IRemoveListener;
         private __rootElement: HTMLElement;
+        private __type: string;
         private __templateUrl: string;
         private __transitionHash: plat.IObject<string> = {
             right: 'left',
@@ -185,6 +187,7 @@
                 transition = options.transition,
                 id = options.id;
 
+            this.__type = options.type;
             this.__isElastic = options.elastic === true;
             this.__useContext = options.useContext === true;
             this.__templateUrl = options.templateUrl;
@@ -192,10 +195,13 @@
         }
 
         /**
-         * Remove the transition class off the root element.
+         * Remove the transition classes off the root element.
          */
         dispose(): void {
-            this.dom.removeClass(this.__rootElement, 'plat-drawer-transition-prep');
+            var dom = this.dom,
+                rootElement = this.__rootElement;
+            dom.removeClass(rootElement, 'plat-drawer-transition-prep');
+            dom.removeClass(rootElement, 'plat-drawer-transition-' + this._transition);
         }
 
         /**
@@ -229,6 +235,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
+            console.log('open');
             this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = true;
         }
@@ -246,7 +253,8 @@
             }
 
             var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = '';
+            animationOptions[this._transform] = 'translate3d(0,0,0)';
+            console.log('close');
             this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = false;
         }
@@ -310,19 +318,30 @@
          */
         _addEventListeners(transition: string): void {
             var element = this.element,
-                primaryTrack = __$track + transition,
-                secondaryTrack = __$track + this.__transitionHash[transition],
-                trackFn = this._track;
+                isNull = this.$utils.isNull,
+                type = this.__type,
+                tapOnly = type === 'tap';
 
             this._transition = transition;
 
             // remove event listeners first in case we want to later be able to dynamically change transition direction of drawer.
             this._removeEventListeners();
+            if (isNull(type) || tapOnly) {
+                this.__removeTap = this.addEventListener(element, __$tap, this.toggle, false);
+                if (tapOnly) {
+                    return;
+                }
+            }
+
+            var primaryTrack = __$track + transition,
+                secondaryTrack = __$track + this.__transitionHash[transition],
+                trackFn = this._track;
+
             this.__removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
             this.__removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
             this._addSwipeEvents(transition);
 
-            if (this.$utils.isNull(this._lastTouch)) {
+            if (isNull(this._lastTouch)) {
                 var touchEnd = this._touchEnd;
 
                 this._lastTouch = { x: 0, y: 0 };
@@ -337,6 +356,11 @@
          */
         _removeEventListeners(): void {
             var isFunction = this.$utils.isFunction;
+            if (isFunction(this.__removeTap)) {
+                this.__removeTap();
+                this.__removeTap = null;
+            }
+
             if (isFunction(this.__removePrimaryTrack)) {
                 this.__removePrimaryTrack();
                 this.__removePrimaryTrack = null;
@@ -382,6 +406,8 @@
             if (!inTouch || this.__hasSwiped) {
                 this.__hasSwiped = false;
                 return;
+            } else if (ev.type === __$touchend && this.__type !== 'slide') {
+                return;
             }
 
             var drawerElement = this._drawerElement,
@@ -414,38 +440,49 @@
          * @param ev The $tracking event.
          */
         _track(ev: plat.ui.IGestureEvent): void {
-            var distanceMoved: number,
-                translation: string;
+            this.__rootElement.style[<any>this._transform] = this.__calculateTranslation(ev);
+        }
+
+        private __calculateTranslation(ev: plat.ui.IGestureEvent): string {
+            var distanceMoved: number;
             switch (this._transition) {
                 case 'up':
                     distanceMoved = this.__isOpen ?
-                        (-this.__maxOffset) + ev.clientY - this._lastTouch.y :
-                        ev.clientY - this._lastTouch.y;
-                    translation = 'translate3d(0,' + distanceMoved + 'px,0)';
-                    break;
+                    this.__checkElasticity((-this.__maxOffset) + ev.clientY - this._lastTouch.y) :
+                    this.__checkElasticity(ev.clientY - this._lastTouch.y);
+                    return 'translate3d(0,' + distanceMoved + 'px,0)';
                 case 'down':
                     distanceMoved = this.__isOpen ?
-                        this.__maxOffset + ev.clientY - this._lastTouch.y :
-                        ev.clientY - this._lastTouch.y;
-                    translation = 'translate3d(0,' + distanceMoved + 'px,0)';
-                    break;
+                    this.__checkElasticity(this.__maxOffset + ev.clientY - this._lastTouch.y) :
+                    this.__checkElasticity(ev.clientY - this._lastTouch.y);
+                    return 'translate3d(0,' + distanceMoved + 'px,0)';
                 case 'left':
                     distanceMoved = this.__isOpen ?
-                        (-this.__maxOffset) + ev.clientX - this._lastTouch.x :
-                        ev.clientX - this._lastTouch.x;
-                    translation = 'translate3d(' + distanceMoved + 'px,0,0)';
-                    break;
+                    this.__checkElasticity((-this.__maxOffset) + ev.clientX - this._lastTouch.x) :
+                    this.__checkElasticity(ev.clientX - this._lastTouch.x);
+                    return 'translate3d(' + distanceMoved + 'px,0,0)';
                 case 'right':
                     distanceMoved = this.__isOpen ?
-                        this.__maxOffset + ev.clientX - this._lastTouch.x :
-                        ev.clientX - this._lastTouch.x;
-                    translation = 'translate3d(' + distanceMoved + 'px,0,0)';
-                    break;
+                    this.__checkElasticity(this.__maxOffset + ev.clientX - this._lastTouch.x) :
+                    this.__checkElasticity(ev.clientX - this._lastTouch.x);
+                    return 'translate3d(' + distanceMoved + 'px,0,0)';
                 default:
-                    return;
+                    return 'translate3d(0,0,0)';
+            }
+        }
+
+        private __checkElasticity(distanceMoved: number): number {
+            if (this.__isElastic) {
+                return distanceMoved;
             }
 
-            this.__rootElement.style[<any>this._transform] = translation;
+            if (distanceMoved < 0) {
+                distanceMoved = 0;
+            } else if (distanceMoved > this.__maxOffset) {
+                distanceMoved = this.__maxOffset;
+            }
+
+            return distanceMoved
         }
 
         private __initializeEvents(id: string, transition: string): void {
@@ -566,6 +603,7 @@
             }
 
             this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
+            this.dom.addClass(rootElement, 'plat-drawer-transition-' + transition);
 
             return true;
         }
@@ -633,6 +671,16 @@
          * Defaults to false.
          */
         elastic?: boolean;
+
+        /**
+         * An option for the drawer-controller specifying how the drawer should 
+         * open.
+         * 'tap': The drawer opens when the controller is tapped.
+         * 'slide': The drawer opens when the controller is dragged.
+         * default: The drawer opens either when the controller is tapped or the 
+         * controller is slid.
+         */
+        type?: string;
     }
 
     /**

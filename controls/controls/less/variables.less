@@ -125,7 +125,11 @@
 #DrawerVars {
     @drawerColor: @white;
     @drawerBackgroundColor: @neutralColor;
+    @drawerShadowColor: @black;
     @drawerLength: 80%;
+    @drawerShadowOffset: 3px;
+    @drawerShadowBlur: 20px;
+    @drawerShadowSpread: 0px;
     @drawerTransition: all 300ms;
 }
 
@@ -155,10 +159,12 @@
 /// Progress Ring
 #ProgressRingVars {
     @ringColor: @primaryColor;
+    @ringSpinnerColor: fade(@ringColor, 75%);
+    @ringBackground: fade(@ringColor, 10%);
     @ringDiameter: 3em;
-    @ringAnimation: PLAT-SPIN;
-    @ringSpinSpeed: 500ms;
     @ringThickness: @ringDiameter / 10;
+    @ringAnimation: PLAT-SPIN;
+    @ringSpinFrequency: 600ms;
 }
 
 /// Range
