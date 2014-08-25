@@ -235,7 +235,6 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            console.log('open');
             this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = true;
         }
@@ -254,7 +253,6 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(0,0,0)';
-            console.log('close');
             this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = false;
         }
@@ -602,8 +600,9 @@
                     return false;
             }
 
-            this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
-            this.dom.addClass(rootElement, 'plat-drawer-transition-' + transition);
+            var dom = this.dom;
+            dom.addClass(rootElement, 'plat-drawer-transition-prep');
+            dom.addClass(rootElement, 'plat-drawer-transition-' + transition);
 
             return true;
         }
