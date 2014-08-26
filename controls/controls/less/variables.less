@@ -20,6 +20,12 @@
 @defaultFontSize: 16px;
 @defaultViewColor: @white;
 
+// Grid Options
+
+@base-percent: 100%;
+@num-columns: 12;
+@column-padding: 10px;
+
 /// Button
 
 #ButtonVars {
@@ -216,4 +222,27 @@
     @inputActionColor: @inputBorderColor;
     @inputBorderWidth: 1px;
     @inputDefaultWidth: 18em;
+}
+
+/// Grid
+
+#Grid {
+    /// Phone Breakpoint
+    @phone-alias: phn;
+    @phone-start: 320px;
+    @phone-end: 499px;
+
+    /// Phablet Breakpoint
+    @phablet-alias: phb;
+    @phablet-start: 500px;
+    @phablet-end: 699px;
+
+    /// Tablet Breakpoint
+    @tablet-alias: tab;
+    @tablet-start: 700px;
+    @tablet-start: 899px;
+
+    /// Desktop Breakpoint
+    @desktop-alias: dsk;
+    @desktop-start: 900px;
 }

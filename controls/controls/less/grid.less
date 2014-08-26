@@ -1,0 +1,93 @@
+/// ======= Grid Mixins ======== ///
+
+.generate-full-width-cols(@size) {
+	#Grid;
+	[class*="col-@{size}"] {
+		width: @base-percent;
+	}
+}
+
+.generate-partial-width-cols(@size; @i: @num-columns) when (@i > 0) {
+	#Grid;
+	.col-@{size}-@{i} {
+		width: @base-percent * (@i / @num-columns);
+	}
+	.generate-partial-width-cols(@size; (@i - 1));
+}
+
+.generate-shiftable-cols(@size; @i: @num-columns) when (@i > 0) {
+	#Grid;
+	.col-@{size}-push-@{i} {
+		left: @base-percent * (@i / @num-columns);
+	}
+	.col-@{size}-pull-@{i} {
+		right: @base-percent * (@i / @num-columns);
+	}
+	.generate-shiftable-cols(@size; (@i - 1));
+}
+
+/// ======= Grid Utility Styles ======== ///
+
+[class*='col-'],
+[class*='col-']:after,
+[class*='col-']:before {
+	margin: 0;
+	padding: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+[class*='col-'] {
+	#Grid;
+	position: relative;
+	float: left;
+	padding: @column-padding;
+}
+
+[class*='col-']:last-of-type {
+	#Grid;
+	padding-right: @column-padding;
+	float: right;
+}
+
+.row:after {
+	content: "";
+	display: table;
+	clear: both;
+}
+
+/// ======= Grid Column Generation ======== ///
+& {
+	#Grid;
+
+	/// Phone
+	@media (min-width: @phone-start) {
+		.generate-full-width-cols(@phablet-alias);
+		.generate-full-width-cols(@tablet-alias);
+		.generate-full-width-cols(@desktop-alias);
+		.generate-partial-width-cols(@phone-alias);
+		.generate-shiftable-cols(@phone-alias);
+	}
+
+	/// Phablet
+	@media (min-width: @phablet-start) {
+		.generate-full-width-cols(@tablet-alias);
+		.generate-full-width-cols(@desktop-alias);
+		.generate-partial-width-cols(@phablet-alias);
+		.generate-shiftable-cols(@phablet-alias);
+	}
+
+	/// Tablet
+	@media (min-width: @tablet-start) {
+		.generate-full-width-cols(@desktop-alias);
+		.generate-partial-width-cols(@tablet-alias);
+		.generate-shiftable-cols(@tablet-alias);
+	}
+
+	/// Desktop
+	@media (min-width: @desktop-start) {
+		.generate-partial-width-cols(@desktop-alias);	
+		.generate-shiftable-cols(@desktop-alias);
+	}
+}
