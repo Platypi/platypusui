@@ -92,6 +92,24 @@
     <Content Include="input\input.min.css">
       <DependentUpon>input.css</DependentUpon>
     </Content>
+    <Content Include="less\animations.css">
+      <DependentUpon>animations.less</DependentUpon>
+    </Content>
+    <Content Include="less\animations.min.css">
+      <DependentUpon>animations.css</DependentUpon>
+    </Content>
+    <Content Include="less\media.css">
+      <DependentUpon>media.less</DependentUpon>
+    </Content>
+    <Content Include="less\media.min.css">
+      <DependentUpon>media.css</DependentUpon>
+    </Content>
+    <Content Include="less\mixins.css">
+      <DependentUpon>mixins.less</DependentUpon>
+    </Content>
+    <Content Include="less\mixins.min.css">
+      <DependentUpon>mixins.css</DependentUpon>
+    </Content>
     <Content Include="less\platypus.css">
       <DependentUpon>platypus.less</DependentUpon>
     </Content>
@@ -182,6 +200,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="input\input.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="less\animations.less" />
+    <Content Include="less\media.less" />
+    <Content Include="less\mixins.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

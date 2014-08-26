@@ -1,5 +1,7 @@
 ﻿/// Common
 
+// Color
+
 @primaryColor: #f0862c;
 @primaryColorLight: fadeout(@primaryColor, 30%);
 @primaryColorPale: fadeout(@primaryColor, 60%);
@@ -13,7 +15,13 @@
 @white: #ffffff;
 @transparent: transparent;
 
+// Defaults
+
+@defaultFontSize: 16px;
+@defaultViewColor: @white;
+
 /// Button
+
 #ButtonVars {
     // set this var to for a custom button text color when active or selected.
     @buttonActiveColor: undefined;
@@ -37,6 +45,7 @@
 }
 
 /// Toggle
+
 #ToggleVars {
     // set this var to for a custom border color
     @toggleBorderColor: undefined;
@@ -86,6 +95,7 @@
 }
 
 /// Checkbox
+
 #CheckboxVars {
     // set this var to for a custom secondary checkbox mark color
     @checkboxSecondaryMarkColor: undefined;
@@ -110,6 +120,7 @@
 }
 
 /// Radio
+
 #RadioVars {
     @radioBackgroundColor: @transparent;
     @radioBorderColor: @black;
@@ -122,6 +133,7 @@
 }
 
 /// Drawer
+
 #DrawerVars {
     @drawerColor: @white;
     @drawerBackgroundColor: @neutralColor;
@@ -134,6 +146,7 @@
 }
 
 /// Modal
+
 #ModalVars {
     @modalColor: @white;
     @modalBackgroundColor: fadeout(@black, 25%);
@@ -147,6 +160,7 @@
 }
 
 /// Progress Bar
+
 #ProgressBarVars {
     @barBorderColor: @neutralColor;
     @barColor: @primaryColor;
@@ -157,6 +171,7 @@
 }
 
 /// Progress Ring
+
 #ProgressRingVars {
     @ringColor: @primaryColor;
     @ringSpinnerColor: fade(@ringColor, 75%);
@@ -168,6 +183,7 @@
 }
 
 /// Range
+
 #RangeVars {
     @rangeBackgroundColor: @primaryColorPale;
     @rangeFillColor: @primaryColor;
@@ -182,6 +198,7 @@
 }
 
 /// Select
+
 #SelectVars {
     @selectBackgroundColor: @transparent;
     @selectColor: @primaryColor;
@@ -192,6 +209,7 @@
 }
 
 /// Input
+
 #InputVars {
     @inputBorderColor: @primaryColor;
     @inputTextColor: @black;
