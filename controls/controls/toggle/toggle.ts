@@ -31,26 +31,18 @@
         /**
          * Sets the proper class name on the button.
          * 
-         * @param {string} className The class name to set on the button element.
+         * @param {string} className? The class name to set on the element.
+         * @param {string} element? The element to set the class names on. Defaults to this 
+         * control's element.
          */
-        setClasses(className: string): void;
-        /**
-         * Sets the proper class name on the button.
-         * 
-         * @param {Array<string>} classNames An array of class names to set on the element.
-         */
-        setClasses(classNames: Array<string>): void;
-        setClasses(classNames: any): void {
-            var $utils = this.$utils;
-            if ($utils.isString(classNames)) {
-                this.dom.addClass(this.element, classNames);
-            } else if ($utils.isArray(classNames)) {
-                var dom = this.dom,
-                    element = this.element,
-                    length = classNames.length;
-                for (var i = 0; i < length; ++i) {
-                    dom.addClass(element, classNames[i]);
-                }
+        setClasses(className?: string, element?: Element): void {
+            var dom = this.dom,
+                element = element || this.element;
+
+            dom.addClass(element, __Toggle);
+
+            if (this.$utils.isString(className)) {
+                dom.addClass(element, className);
             }
         }
 
@@ -58,7 +50,7 @@
          * Set the plat-toggle class name.
          */
         initialize(): void {
-            this.setClasses(__Toggle);
+            this.setClasses();
         }
 
         /**

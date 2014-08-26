@@ -19,6 +19,24 @@
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
 
         /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className? The class name to set on the element.
+         * @param {string} element? The element to set the class names on. Defaults to this 
+         * control's element.
+         */
+        setClasses(className?: string, element?: Element): void {
+            var dom = this.dom,
+                element = element || this.element;
+
+            dom.addClass(element, __Checkbox);
+
+            if (this.$utils.isString(className)) {
+                dom.addClass(element, className);
+            }
+        }
+
+        /**
          * Initializes the mark and adds a listener for the tap event.
          */
         initialize(): void {
@@ -37,7 +55,7 @@
                     break;
             }
 
-            this.setClasses([__Checkbox, type]);
+            this.setClasses(type);
         }
 
         /**

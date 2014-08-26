@@ -64,10 +64,19 @@
         /**
          * Sets the proper class name on the button.
          * 
-         * @param {string} className The class name to set on the button element.
+         * @param {string} className? The class name to set on the element.
+         * @param {string} element? The element to set the class names on. Defaults to this 
+         * control's element.
          */
-        setClasses(className: string): void {
-            this.dom.addClass(this.element, className);
+        setClasses(className?: string, element?: Element): void {
+            var dom = this.dom,
+                element = element || this.element;
+
+            dom.addClass(element, __Range);
+
+            if (this.$utils.isString(className)) {
+                dom.addClass(element, className);
+            }
         }
 
         /**
@@ -76,7 +85,7 @@
         initialize(): void {
             var element = this.element;
             this.__usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
-            this.setClasses(__Range);
+            this.setClasses();
         }
 
         /**

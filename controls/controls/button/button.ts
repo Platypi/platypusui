@@ -28,10 +28,19 @@
         /**
          * Sets the proper class name on the button.
          * 
-         * @param {string} className The class name to set on the button element.
+         * @param {string} className? The class name to set on the button element.
+         * @param {string} element? The element to set the class on. Defaults to this 
+         * control's element.
          */
-        setClasses(className: string): void {
-            this.dom.addClass(this.element, className);
+        setClasses(className?: string, element?: Element): void {
+            var dom = this.dom,
+                element = element || this.element;
+
+            dom.addClass(element, __Button);
+
+            if (!!className) {
+                dom.addClass(element, className);
+            }
         }
         
         /**
@@ -49,7 +58,7 @@
                 this._addEventListeners(element.getAttribute('data-' + __Bind));
             }
 
-            this.setClasses(__Button);
+            this.setClasses();
         }
 
         /**

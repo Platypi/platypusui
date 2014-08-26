@@ -22,6 +22,24 @@
         _targetType = 'radio';
 
         /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className? The class name to set on the element.
+         * @param {string} element? The element to set the class names on. Defaults to this 
+         * control's element.
+         */
+        setClasses(className?: string, element?: Element): void {
+            var dom = this.dom,
+                element = element || this.element;
+
+            dom.addClass(element, __Radio);
+
+            if (this.$utils.isString(className)) {
+                dom.addClass(element, className);
+            }
+        }
+
+        /**
          * Adds a listener for the tap event and checks for a 
          * radio group.
          */
@@ -36,7 +54,7 @@
                 this.groupName = element.getAttribute('data-' + __Bind);
             }
 
-            this.setClasses(__Radio);
+            this.setClasses();
         }
         
         /**

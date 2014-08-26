@@ -64,12 +64,13 @@ module platui {
         /**
          * Sets the classes on the proper elements.
          * 
-         * @param {any} classNames The class name or class names to set on the control.
-         * @param {Element} element The element to set the class name on. Should default to 
+         * @param {any} classNames? An optional, additional class name or class names to set on the control 
+         * in addition to its standard set.
+         * @param {Element} element? The element to set the class name on. Should default to 
          * the control's element if not specified.
          * 
          * @returns {void}
          */
-        setClasses(classNames: any, element?: Element): void;
+        setClasses(classNames?: any, element?: Element): void;
     }
 }

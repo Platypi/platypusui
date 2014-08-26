@@ -30,18 +30,19 @@
         /**
          * Sets the proper class name on the button.
          * 
-         * @param {Array<string>} classNames An array of class names to set on the element.
+         * @param {string} className? The class name to set on the element.
+         * @param {string} element? The element to set the class names on. Defaults to this 
+         * control's element.
          */
-        setClasses(classNames: Array<string>): void {
-            if (!this.$utils.isArray(classNames)) {
-                return;
-            }
-
+        setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
-                element = this.element,
-                length = classNames.length;
-            for (var i = 0; i < length; ++i) {
-                dom.addClass(element, classNames[i]);
+                element = element || this.element;
+
+            dom.addClass(element, __Modal);
+            dom.addClass(element, 'hide');
+
+            if (this.$utils.isString(className)) {
+                dom.addClass(element, className);
             }
         }
 
@@ -53,7 +54,7 @@
                 options = optionObj.value || <IModalOptions>{};
 
             this.templateUrl = options.templateUrl;
-            this.setClasses([__Modal, 'hide']);
+            this.setClasses();
         }
 
         /**
