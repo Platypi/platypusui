@@ -25,10 +25,7 @@
                 element = element || this.element;
 
             dom.addClass(element, __Drawer);
-
-            if (this.$utils.isString(className)) {
-                dom.addClass(element, className);
-            }
+            dom.addClass(element, className);
         }
 
         /**

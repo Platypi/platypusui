@@ -23,10 +23,7 @@
                 element = element || this.element;
 
             dom.addClass(element, __ProgressRing);
-
-            if (!!className) {
-                dom.addClass(element, className);
-            }
+            dom.addClass(element, className);
         }
 
         /**

@@ -37,10 +37,7 @@
                 element = element || this.element;
 
             dom.addClass(element, __Button);
-
-            if (!!className) {
-                dom.addClass(element, className);
-            }
+            dom.addClass(element, className);
         }
         
         /**

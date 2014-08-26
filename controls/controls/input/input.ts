@@ -48,10 +48,7 @@
                 element = element || this.element;
 
             dom.addClass(element, __Input);
-
-            if (this.$utils.isString(className)) {
-                dom.addClass(element, className);
-            }
+            dom.addClass(element, className);
         }
 
         /**

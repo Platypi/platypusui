@@ -40,10 +40,7 @@
 
             dom.addClass(element, __Modal);
             dom.addClass(element, 'hide');
-
-            if (this.$utils.isString(className)) {
-                dom.addClass(element, className);
-            }
+            dom.addClass(element, className);
         }
 
         /**
