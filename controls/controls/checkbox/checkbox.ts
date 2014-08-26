@@ -37,7 +37,7 @@
                     break;
             }
 
-            this.dom.addClass(this.element, type);
+            this.setClasses([__Checkbox, type]);
         }
 
         /**

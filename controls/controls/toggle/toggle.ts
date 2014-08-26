@@ -2,7 +2,7 @@
     /**
      * A Template Control simulating a toggle switch.
      */
-    export class Toggle extends plat.ui.BindablePropertyControl {
+    export class Toggle extends plat.ui.BindablePropertyControl implements IUIControl {
         $utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
@@ -27,6 +27,39 @@
          * The element used to create the targeted effect.
          */
         _targetElement: Element;
+
+        /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className The class name to set on the button element.
+         */
+        setClasses(className: string): void;
+        /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {Array<string>} classNames An array of class names to set on the element.
+         */
+        setClasses(classNames: Array<string>): void;
+        setClasses(classNames: any): void {
+            var $utils = this.$utils;
+            if ($utils.isString(classNames)) {
+                this.dom.addClass(this.element, classNames);
+            } else if ($utils.isArray(classNames)) {
+                var dom = this.dom,
+                    element = this.element,
+                    length = classNames.length;
+                for (var i = 0; i < length; ++i) {
+                    dom.addClass(element, classNames[i]);
+                }
+            }
+        }
+
+        /**
+         * Set the plat-toggle class name.
+         */
+        initialize(): void {
+            this.setClasses(__Toggle);
+        }
 
         /**
          * Adds a listener for the tap event.

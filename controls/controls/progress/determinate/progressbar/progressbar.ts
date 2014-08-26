@@ -26,14 +26,19 @@
         private __usingPlatBind = false;
 
         /**
-         * Animates the bar on a context changed.
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className The class name to set on the button element.
          */
-        contextChanged(): void {
-            if (this.__usingPlatBind) {
-                return;
-            }
+        setClasses(className: string): void {
+            this.dom.addClass(this.element, className);
+        }
 
-            this.setProgress();
+        /**
+         * Set the class name
+         */
+        initialize(): void {
+            this.setClasses(__ProgressBar);
         }
 
         /**
@@ -60,6 +65,17 @@
                     'or a "' + __Bind + '" control must be used.');
                 return;
             } else if (usingPlatBind) {
+                return;
+            }
+
+            this.setProgress();
+        }
+
+        /**
+         * Animates the bar on a context changed.
+         */
+        contextChanged(): void {
+            if (this.__usingPlatBind) {
                 return;
             }
 

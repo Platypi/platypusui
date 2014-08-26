@@ -2,7 +2,7 @@
     /**
      * A Template Control for showing a templated and animated overlay.
      */
-    export class Modal extends plat.ui.TemplateControl {
+    export class Modal extends plat.ui.TemplateControl implements IUIControl {
         $utils: plat.IUtils = plat.acquire(__Utils);
         $compat: plat.ICompat = plat.acquire(__Compat);
 
@@ -28,6 +28,24 @@
         };
 
         /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {Array<string>} classNames An array of class names to set on the element.
+         */
+        setClasses(classNames: Array<string>): void {
+            if (!this.$utils.isArray(classNames)) {
+                return;
+            }
+
+            var dom = this.dom,
+                element = this.element,
+                length = classNames.length;
+            for (var i = 0; i < length; ++i) {
+                dom.addClass(element, classNames[i]);
+            }
+        }
+
+        /**
          * Check for templateUrl and set if needed. Hide the modal.
          */
         initialize(): void {
@@ -35,7 +53,7 @@
                 options = optionObj.value || <IModalOptions>{};
 
             this.templateUrl = options.templateUrl;
-            this.dom.addClass(this.element, 'hide');
+            this.setClasses([__Modal, 'hide']);
         }
 
         /**

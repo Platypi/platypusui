@@ -23,6 +23,7 @@ var __Promise = '$Promise',
     __Radio = __Plat + 'radio',
     __Toggle = __Plat + 'toggle',
     __Range = __Plat + 'range',
+    __Select = __Plat + 'select',
     __Input = __Plat + 'input',
 
     /**
@@ -53,3 +54,22 @@ var __Promise = '$Promise',
     __DrawerControllerFetchEvent = '__platDrawerControllerFetch',
     __DrawerFoundEvent = '__platDrawerFound';
 /* tslint:enable:no-unused-variable */
+
+module platui {
+    /**
+     * An interface a control should implement if they plan on using 
+     * class based CSS to style the UI.
+     */
+    export interface IUIControl {
+        /**
+         * Sets the classes on the proper elements.
+         * 
+         * @param {any} classNames The class name or class names to set on the control.
+         * @param {Element} element The element to set the class name on. Should default to 
+         * the control's element if not specified.
+         * 
+         * @returns {void}
+         */
+        setClasses(classNames: any, element?: Element): void;
+    }
+}

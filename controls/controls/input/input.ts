@@ -1,5 +1,5 @@
 ﻿module platui {
-    export class Input extends plat.ui.BindablePropertyControl {
+    export class Input extends plat.ui.BindablePropertyControl implements IUIControl {
         $utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
@@ -35,6 +35,22 @@
         private __action: string;
         private __actionChar: string;
         private __actionHandler: EventListener;
+
+        /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className The class name to set on the button element.
+         */
+        setClasses(className: string): void {
+            this.dom.addClass(this.element, className);
+        }
+
+        /**
+         * Set the class name
+         */
+        initialize(): void {
+            this.setClasses(__Input);
+        }
 
         /**
          * Set all HTMLElement references.

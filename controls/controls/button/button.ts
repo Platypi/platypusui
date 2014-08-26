@@ -2,7 +2,7 @@
     /**
      * A Template Control for standardizing an HTML5 button.
      */
-    export class Button extends plat.ui.BindablePropertyControl {
+    export class Button extends plat.ui.BindablePropertyControl implements IUIControl {
         $document: Document = plat.acquire(__Document);
 
         /**
@@ -24,6 +24,15 @@
          * Boolean value showing the selected state of this Button.
          */
         _isSelected: boolean;
+
+        /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className The class name to set on the button element.
+         */
+        setClasses(className: string): void {
+            this.dom.addClass(this.element, className);
+        }
         
         /**
          * Adds a listener for the tap event and checks for a 
@@ -39,6 +48,8 @@
             } else if (element.hasAttribute('data-' + __Bind)) {
                 this._addEventListeners(element.getAttribute('data-' + __Bind));
             }
+
+            this.setClasses(__Button);
         }
 
         /**

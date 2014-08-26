@@ -2,7 +2,7 @@
     /**
      * A Template Control that acts as a global drawer.
      */
-    export class Drawer extends plat.ui.TemplateControl {
+    export class Drawer extends plat.ui.TemplateControl implements IUIControl {
         $utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
@@ -12,6 +12,22 @@
 
         private __currentTransition: string;
         private __useContext: boolean;
+
+        /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className The class name to set on the button element.
+         */
+        setClasses(className: string): void {
+            this.dom.addClass(this.element, className);
+        }
+
+        /**
+         * Set the class name
+         */
+        initialize(): void {
+            this.setClasses(__Drawer);
+        }
 
         /**
          * Check for a transition direction and initialize event handling.
@@ -480,7 +496,7 @@
                 distanceMoved = this.__maxOffset;
             }
 
-            return distanceMoved
+            return distanceMoved;
         }
 
         private __initializeEvents(id: string, transition: string): void {

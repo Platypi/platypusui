@@ -2,7 +2,7 @@
     /**
      * A Template Control that standardizes an HTML5 input[type="range"].
      */
-    export class Range extends plat.ui.BindablePropertyControl {
+    export class Range extends plat.ui.BindablePropertyControl implements IUIControl {
         $document: Document = plat.acquire(__Document);
         $utils: plat.IUtils = plat.acquire(__Utils);
         $animator: plat.ui.IAnimator = plat.acquire(__Animator);
@@ -62,11 +62,21 @@
         private __lengthProperty: string;
 
         /**
+         * Sets the proper class name on the button.
+         * 
+         * @param {string} className The class name to set on the button element.
+         */
+        setClasses(className: string): void {
+            this.dom.addClass(this.element, className);
+        }
+
+        /**
          * Check if using context or using bind.
          */
         initialize(): void {
             var element = this.element;
             this.__usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
+            this.setClasses(__Range);
         }
 
         /**

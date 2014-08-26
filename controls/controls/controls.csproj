@@ -63,6 +63,7 @@
     <TypeScriptCompile Include="radio\radio.ts" />
     <TypeScriptCompile Include="range\range.ts" />
     <TypeScriptCompile Include="references\references.ts" />
+    <TypeScriptCompile Include="select\select.ts" />
     <TypeScriptCompile Include="toggle\toggle.ts" />
   </ItemGroup>
   <ItemGroup>

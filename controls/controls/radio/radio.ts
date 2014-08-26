@@ -35,6 +35,8 @@
             } else if (element.hasAttribute('data-' + __Bind)) {
                 this.groupName = element.getAttribute('data-' + __Bind);
             }
+
+            this.setClasses(__Radio);
         }
         
         /**
