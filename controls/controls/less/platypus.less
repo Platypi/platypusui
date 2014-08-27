@@ -11,6 +11,10 @@ html, body {
     position: relative;
     background-color: @defaultViewColor;
     .fill();
+
+    & > *:only-child {
+        .fill();
+    }
 }
 
 [plat-hide] {
