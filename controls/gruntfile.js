@@ -32,14 +32,34 @@ module.exports = exports = function load(grunt) {
         },
         lessCompile: {
             main: {
-                files: {
-                    src: 'controls/**/*.less'
-                }
+                expand: true,
+                cwd: 'controls',
+                src: '**/*.less',
+                dest: 'controls',
+                ext: '.css'
             }
         },
         open: {
             dev: {
-                path: 'http://localhost:8080/index.html'
+                path: 'http://localhost:8080/app/index.html'
+            }
+        },
+        typescript: {
+            base: {
+                src: ['controls/**/*.ts'],
+                options: {
+                    target: 'ES5',
+                }
+            }
+        },
+        watch: {
+            ts: {
+                files: 'controls/**/*.ts',
+                tasks: ['typescript']
+            },
+            less: {
+                files: 'controls/**/*.less',
+                tasks: ['lessCompile']
             }
         },
         pkg: grunt.file.readJSON('package.json')
@@ -47,14 +67,16 @@ module.exports = exports = function load(grunt) {
     
     grunt.initConfig(config);
     grunt.loadNpmTasks('grunt-ts-bundle');
+    grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.renameTask('less', 'lessCompile');
     grunt.loadNpmTasks('grunt-less-bundle');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
     grunt.registerTask('default', ['bundle', 'less']);
-    grunt.registerTask('serve', ['connect', 'open']);  
-    grunt.registerTask('compile', ['lessCompile']);
+    grunt.registerTask('dev', ['connect', 'open', 'watch']);  
+    grunt.registerTask('compile', ['lessCompile', 'typescript']);
 };
