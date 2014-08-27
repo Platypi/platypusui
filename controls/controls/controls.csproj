@@ -98,6 +98,12 @@
     <Content Include="less\animations.min.css">
       <DependentUpon>animations.css</DependentUpon>
     </Content>
+    <Content Include="less\grid.css">
+      <DependentUpon>grid.less</DependentUpon>
+    </Content>
+    <Content Include="less\grid.min.css">
+      <DependentUpon>grid.css</DependentUpon>
+    </Content>
     <Content Include="less\media.css">
       <DependentUpon>media.less</DependentUpon>
     </Content>
@@ -205,6 +211,9 @@
     <Content Include="less\animations.less" />
     <Content Include="less\media.less" />
     <Content Include="less\mixins.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="less\grid.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

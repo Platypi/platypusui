@@ -9,12 +9,11 @@
     
     @knobRadius: @knobSize / 2;
     .plat-range-container {
-        @rangeLength: ~'calc(100% - @{knobSize})';
         position: absolute;
-        width: @rangeLength;
-        height: @rangeLength;
         background-color: @rangeBackgroundColor;
         overflow: visible;
+        .calc(width; '100% - @{knobSize}');
+        .calc(height; '100% - @{knobSize}');
 
         .slider {
             position: absolute;

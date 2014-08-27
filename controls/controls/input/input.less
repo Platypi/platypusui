@@ -18,7 +18,6 @@
             left: 1em;
             bottom: 0;
             padding: 0;
-            width: ~'calc(100% - 3em)';
             height: 100%;
             vertical-align: bottom;
             background-color: @transparent;
@@ -27,6 +26,7 @@
             border: none;
             font: inherit;
             .box-sizing(border-box);
+            .calc(width; '100% - 3em');
 
             &::-ms-clear {
                 display: none;
@@ -61,7 +61,7 @@
     &.email {
         .plat-input-container {
             input {
-                width: ~'calc(100% - 4em)';
+                .calc(width; '100% - 4em');
             }
             .action {
                 width: 2em;
