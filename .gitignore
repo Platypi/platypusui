@@ -17,6 +17,8 @@
 *.js
 *.js.map
 !gruntfile.js
+controls/platypus.less
+controls/platypusui.ts
 
 # Build results
 [Dd]ebug/
