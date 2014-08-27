@@ -496,6 +496,11 @@
 
 /// Misc
 
+.calc(@prop; @val) {
+  @{prop}: -webkit-calc(~'@{val}');
+  @{prop}: calc(~'@{val}');
+}
+
 .fill() {
     width: 100%;
     height: 100%;
