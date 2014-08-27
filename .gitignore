@@ -6,6 +6,18 @@
 *.user
 *.sln.docstates
 
+### OSX ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Project Related
+*.css
+*.css.map
+*.js
+*.js.map
+!gruntfile.js
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
