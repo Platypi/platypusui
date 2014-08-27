@@ -6,10 +6,14 @@
 *.user
 *.sln.docstates
 
-### OSX ###
+# OSX
 .DS_Store
 .AppleDouble
 .LSOverride
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
 
 # Project Related
 *.css

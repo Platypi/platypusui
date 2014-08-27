@@ -37,6 +37,13 @@ module.exports = exports = function load(grunt) {
                 src: '**/*.less',
                 dest: 'controls',
                 ext: '.css'
+            },
+            app: {
+                expand: true,
+                cwd: 'app',
+                src: '**/*.less',
+                dest: 'app',
+                ext: '.css'
             }
         },
         open: {
@@ -50,15 +57,21 @@ module.exports = exports = function load(grunt) {
                 options: {
                     target: 'ES5',
                 }
+            },
+            app: {
+                src: ['app/**/*.ts'],
+                options: {
+                    target: 'ES5'
+                }
             }
         },
         watch: {
             ts: {
-                files: 'controls/**/*.ts',
+                files: '**/*.ts',
                 tasks: ['typescript']
             },
             less: {
-                files: 'controls/**/*.less',
+                files: '**/*.less',
                 tasks: ['lessCompile']
             }
         },
