@@ -1,17 +1,281 @@
-﻿<plat-toggle plat-bind="check"></plat-toggle>
-<br />
-<plat-checkbox plat-bind="check">hello</plat-checkbox>
-<br />
-<input type="text" plat-bind="text" />
-<br />
-<plat-radio plat-bind="text">h1</plat-radio>
-<br />
-<plat-radio plat-bind="text">h2</plat-radio>
-<br />
-<plat-radio plat-bind="text">h3</plat-radio>
-<br />
-<plat-progress plat-bind="progress" style="width: 400px;"></plat-progress>
-<br />
-<button plat-tap="bar">bar</button>
-<br /><br />
-<span>&nbsp;&nbsp;&nbsp;</span><plat-input plat-options="{action: 'email'}"></plat-input>
+﻿<div class="container">
+	<!-- Form/Input -->
+	<div class="demo-area">
+	    <h2>Forms</h2>
+	    <input type="checkbox" id="forms" />
+	    <label for="forms"></label>
+	    <div class="demo-stage">
+	    	<plat-toggle plat-bind="check"></plat-toggle>
+			<br />
+			<plat-checkbox plat-bind="check">hello</plat-checkbox>
+			<br />
+			<input type="text" plat-bind="text" />
+			<br />
+			<plat-radio plat-bind="text">h1</plat-radio>
+			<br />
+			<plat-radio plat-bind="text">h2</plat-radio>
+			<br />
+			<plat-radio plat-bind="text">h3</plat-radio>
+			<br />
+			<br /><br />
+			<span>&nbsp;&nbsp;&nbsp;</span><plat-input plat-options="{action: 'email'}"></plat-input>
+	    </div>
+	</div>
+
+	<!-- Progress Bars -->
+	<div class="demo-area">
+	    <h2>Progress Bars</h2>
+	    <input type="checkbox" id="progress" />
+	    <label for="progress"></label>
+	    <div class="demo-stage">
+	    	<plat-progress plat-bind="progress" style="width: 400px;"></plat-progress>
+			<br />
+			<button plat-tap="bar">Progress!</button>
+	    </div>
+	</div>
+
+	<!-- Typography -->
+	<div class="demo-area">
+	    <h2>Typography</h2>
+	    <input type="checkbox" id="typography" />
+	    <label for="typography"></label>
+	    <div class="demo-stage">
+	    	
+	    </div>
+	</div>
+
+	<!-- Grid -->
+	<div class="demo-area">
+	    <h2>Grid</h2>
+	    <input type="checkbox" id="grid" />
+	    <label for="grid"></label>
+	    <div class="demo-stage">
+	    	<h3>Desktop</h3>
+			<div class="row">
+				<div class="col-dsk-12">
+					<div>col-dsk-12</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-dsk-9">
+					<div>col-dsk-9</div>
+				</div>
+				<div class="col-dsk-3">
+					<div>col-dsk-3</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-dsk-4 col-dsk-push-8">
+					<div>col-dsk-4 col-dsk-push-8</div>
+				</div>
+				<div class="col-dsk-8 col-dsk-pull-4">
+					<div>col-dsk-8 col-dsk-pull-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-dsk-6">
+					<div>col-dsk-6</div>
+				</div>
+				<div class="col-dsk-6">
+					<div>col-dsk-6</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-dsk-4">
+					<div>col-dsk-4</div>
+				</div>
+				<div class="col-dsk-4">
+					<div>col-dsk-4</div>
+				</div>
+				<div class="col-dsk-4">
+					<div>col-dsk-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-dsk-3 col-phb-6">
+					<div>col-dsk-3 col-phb-6</div>
+				</div>
+				<div class="col-dsk-3 col-phb-6">
+					<div>col-dsk-3 col-phb-6</div>
+				</div>
+				<div class="col-dsk-3 col-phb-6">
+					<div>col-dsk-3 col-phb-6</div>
+				</div>
+				<div class="col-dsk-3 col-phb-6">
+					<div>col-dsk-3 col-phb-6</div>
+				</div>
+			</div>
+			
+			<!-- Tablet -->
+			<h3>Tablet</h3>
+			<div class="row">
+				<div class="col-tab-12">
+					<div>col-tab-12</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-tab-9">
+					<div>col-tab-9</div>
+				</div>
+				<div class="col-tab-3">
+					<div>col-tab-3</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-tab-8">
+					<div>col-tab-8</div>
+				</div>
+				<div class="col-tab-4">
+					<div>col-tab-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-tab-6">
+					<div>col-tab-6</div>
+				</div>
+				<div class="col-tab-6">
+					<div>col-tab-6</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-tab-4">
+					<div>col-tab-4</div>
+				</div>
+				<div class="col-tab-4">
+					<div>col-tab-4</div>
+				</div>
+				<div class="col-tab-4">
+					<div>col-tab-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-tab-3">
+					<div>col-tab-3</div>
+				</div>
+				<div class="col-tab-3">
+					<div>col-tab-3</div>
+				</div>
+				<div class="col-tab-3">
+					<div>col-tab-3</div>
+				</div>
+				<div class="col-tab-3">
+					<div>col-tab-3</div>
+				</div>
+			</div>
+			
+			<!-- Phablet -->
+			<h3>Phablet</h3>
+			<div class="row">
+				<div class="col-phb-12">
+					<div>col-phb-12</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phb-9">
+					<div>col-phb-9</div>
+				</div>
+				<div class="col-phb-3">
+					<div>col-phb-3</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phb-8">
+					<div>col-phb-8</div>
+				</div>
+				<div class="col-phb-4">
+					<div>col-phb-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phb-6">
+					<div>col-phb-6</div>
+				</div>
+				<div class="col-phb-6">
+					<div>col-phb-6</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phb-4">
+					<div>col-phb-4</div>
+				</div>
+				<div class="col-phb-4">
+					<div>col-phb-4</div>
+				</div>
+				<div class="col-phb-4">
+					<div>col-phb-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phb-3">
+					<div>col-phb-3</div>
+				</div>
+				<div class="col-phb-3">
+					<div>col-phb-3</div>
+				</div>
+				<div class="col-phb-3">
+					<div>col-phb-3</div>
+				</div>
+				<div class="col-phb-3">
+					<div>col-phb-3</div>
+				</div>
+			</div>
+			
+			<!-- Phone -->
+			<h3>Phone</h3>
+			<div class="row">
+				<div class="col-phn-12">
+					<div>col-phn-12</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phn-9">
+					<div>col-phn-9</div>
+				</div>
+				<div class="col-phn-3">
+					<div>col-phn-3</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phn-8">
+					<div>col-phn-8</div>
+				</div>
+				<div class="col-phn-4">
+					<div>col-phn-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phn-6">
+					<div>col-phn-6</div>
+				</div>
+				<div class="col-phn-6">
+					<div>col-phn-6</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phn-4">
+					<div>col-phn-4</div>
+				</div>
+				<div class="col-phn-4">
+					<div>col-phn-4</div>
+				</div>
+				<div class="col-phn-4">
+					<div>col-phn-4</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-phn-3 col-phb-4">
+					<div>col-phn-3 col-phb-4</div>
+				</div>
+				<div class="col-phn-3 col-phb-4">
+					<div>col-phn-3 col-phb-4</div>
+				</div>
+				<div class="col-phn-3 col-phb-4">
+					<div>col-phn-3 col-phb-4</div>
+				</div>
+				<div class="col-phn-3 col-phb-4">
+					<div>col-phn-3 col-phb-4</div>
+				</div>
+			</div>
+	    </div>
+	</div>
+</div>

@@ -7,6 +7,10 @@ html, body {
     margin: 0;
 }
 
+.container {
+    padding: 3em 5em;
+}
+
 [plat-control="plat-routeport"],
 [plat-control="test"] {
     position: relative;
@@ -47,4 +51,36 @@ html, body {
     background-color: #dddddd;
     padding: 10px;
     border-radius: 5px;
+}
+
+.demo-area {
+    position: relative;
+    margin-bottom: 2em;
+
+    label {
+        position: absolute;
+        right: 0; top: 0.5em;
+        height: 0; width: 0;
+        border-bottom: 8px solid transparent;
+        border-top: 8px solid transparent;
+        border-left: 11px solid #dddddd;
+    }
+
+    .demo-stage {
+        display: none;
+    }
+
+    [type=checkbox] {
+        display: none;
+    }
+
+    [type=checkbox]:checked ~ .demo-stage {
+        display: block;
+    }
+
+    [type=checkbox]:checked ~ label {
+        -webkit-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
 }
