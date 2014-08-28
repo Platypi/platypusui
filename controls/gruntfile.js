@@ -71,7 +71,7 @@ module.exports = exports = function load(grunt) {
             },
             less: {
                 files: '**/*.less',
-                tasks: ['less']
+                tasks: ['lessCompile']
             }
         },
         pkg: grunt.file.readJSON('package.json'),

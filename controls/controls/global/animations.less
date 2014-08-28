@@ -1,7 +1,38 @@
-@import 'global/variables';
-@import 'global/mixins';
-@import 'animations.variables';
-@import 'animations.mixins';
+@import 'variables.less';
+@import 'mixins.less';
+
+/// ======= Globally-Used Animations ======== ///
+
+.plat-slidein {
+    .animation-name(@slideIn);
+    .animation-duration(250ms);
+    .animation-fill-mode(forwards);
+}
+
+.plat-slideout {
+    .animation-name(@slideOut);
+    .animation-duration(200ms);
+    .animation-fill-mode(forwards);
+}
+
+.plat-fadein {
+    .animation-name(@fadeIn);
+    .animation-duration(500ms);
+    .animation-fill-mode(forwards);
+}
+
+.plat-fadeout {
+    .animation-name(@fadeOut);
+    .animation-duration(100ms);
+    .animation-fill-mode(forwards);
+}
+
+#Animations > .fade();
+#Animations > .fade(@fadeIn; in);
+#Animations > .slide();
+#Animations > .slide(@slideOut; out; left);
+#Animations > .slideAndFade();
+#Animations > .slideAndFade(@slideOutFadeOut; out; left);
 
 /// Custom Animations
 #KeyFrames {
