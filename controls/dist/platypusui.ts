@@ -1,6 +1,5 @@
 /* tslint:disable */
 /**
- * PlatypusUI v0.0.1 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the GPL-3.0 found at  

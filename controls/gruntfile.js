@@ -57,7 +57,8 @@ module.exports = exports = function load(grunt) {
         usebanner: {
             main: {
                 options: {
-                    banner: '/* PlatypusUI v<%= pkg.version %> (http://getplatypi.com) */'
+                    banner: '/* PlatypusUI v<%= pkg.version %> (http://getplatypi.com)' +
+                    '\n<%= license %> */'
                 },
                 files: {
                     src: ['dist/platypus.min.css']
@@ -75,9 +76,12 @@ module.exports = exports = function load(grunt) {
                 tasks: ['less']
             }
         },
-        pkg: grunt.file.readJSON('package.json')
+        pkg: grunt.file.readJSON('package.json'),
+        license: grunt.file.read('license.txt')
     };
-    
+
+
+
     grunt.initConfig(config);
     grunt.loadNpmTasks('grunt-ts-bundle');
     grunt.loadNpmTasks('grunt-typescript');
