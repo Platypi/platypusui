@@ -7,7 +7,7 @@ module.exports = exports = function load(grunt) {
                 version: '<%= pkg.version %>',
                 src: './app/index.html',
                 dest: [
-                    './dist/platypusui.ts'
+                    '../dist/platypusui.ts'
                 ],
                 disableLint: true
             }
@@ -22,11 +22,21 @@ module.exports = exports = function load(grunt) {
         },
         less: {
             main: {
+                license: './license.txt',
+                version: '<%= pkg.version %>',
+                src: './app/index.html',
+                dest: [
+                    '../dist/platypus.less'
+                ]
+            }
+        },
+        lessCompile: {
+            main: {
                 options: {
                     cleancss: true
                 },
                 files: {
-                    'dist/platypus.min.css': 'dist/platypus.less'
+                    '../dist/platypus.min.css': 'controls/lib/platypus.less'
                 }
             },
             app: {
@@ -54,17 +64,6 @@ module.exports = exports = function load(grunt) {
                 }
             }
         },
-        usebanner: {
-            main: {
-                options: {
-                    banner: '/* PlatypusUI v<%= pkg.version %> (http://getplatypi.com) */'
-                },
-                files: {
-                    src: ['dist/platypus.min.css']
-                }
-            }
-
-        },
         watch: {
             ts: {
                 files: '**/*.ts',
@@ -82,15 +81,15 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-ts-bundle');
     grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-contrib-less');
-    
-    // grunt.loadNpmTasks('grunt-less-bundle');
+    grunt.renameTask('less', 'lessCompile');
+
+    grunt.loadNpmTasks('grunt-less-bundle');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-banner');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['bundle', 'less','usebanner']);
+    grunt.registerTask('default', ['bundle', 'less', 'lessCompile']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
-    grunt.registerTask('compile', ['less', 'typescript']);
+    grunt.registerTask('compile', ['lessCompile', 'typescript']);
 };

@@ -128,6 +128,12 @@
     <Content Include="less\variables.min.css">
       <DependentUpon>variables.css</DependentUpon>
     </Content>
+    <Content Include="lib\platypus.css">
+      <DependentUpon>platypus.less</DependentUpon>
+    </Content>
+    <Content Include="lib\platypus.min.css">
+      <DependentUpon>platypus.css</DependentUpon>
+    </Content>
     <Content Include="modal\modal.css">
       <DependentUpon>modal.less</DependentUpon>
     </Content>
@@ -214,6 +220,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="less\grid.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="less\typography.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\platypus.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>
