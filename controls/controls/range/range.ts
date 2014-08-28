@@ -5,7 +5,7 @@
     export class Range extends plat.ui.BindablePropertyControl implements IUIControl {
         $document: Document = plat.acquire(__Document);
         $utils: plat.IUtils = plat.acquire(__Utils);
-        $animator: plat.ui.IAnimator = plat.acquire(__Animator);
+        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
          * The template string for the Range control.
