@@ -1,0 +1,18 @@
+#ProgressBarVars {
+    @barBorderColor: @neutralColor;
+    @barColor: @primaryColor;
+    @barBackgroundColor: @primaryColorPale;
+    @barHeight: 0.25em;
+    @barBorder: none;
+    @barTransition: none;
+}
+
+#ProgressRingVars {
+    @ringColor: @primaryColor;
+    @ringSpinnerColor: fade(@ringColor, 75%);
+    @ringBackground: fade(@ringColor, 10%);
+    @ringDiameter: 3em;
+    @ringThickness: @ringDiameter / 10;
+    @ringAnimation: PLAT-SPIN;
+    @ringSpinFrequency: 600ms;
+}

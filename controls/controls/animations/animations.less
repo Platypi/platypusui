@@ -1,14 +1,9 @@
-﻿/// Animation Vars
-
-@fadeIn: fadeIn;
-@fadeOut: fadeOut;
-@slideIn: slideIn;
-@slideOut: slideOut;
-@slideInFadeIn: slideInFadeIn;
-@slideOutFadeOut: slideOutFadeOut;
+@import 'global/variables';
+@import 'global/mixins';
+@import 'animations.variables';
+@import 'animations.mixins';
 
 /// Custom Animations
-
 #KeyFrames {
     .keyFrames(@name) {
         @-webkit-keyframes @name {
@@ -128,5 +123,3 @@
         }
     }
 }
-
-@import 'mixins';

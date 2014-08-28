@@ -1,0 +1,22 @@
+#CheckboxVars {
+    // set this var to for a custom secondary checkbox mark color
+    @checkboxSecondaryMarkColor: undefined;
+    @checkboxBackgroundColor: @transparent;
+    @checkboxBorderColor: @black;
+    @checkboxActiveBorderColor: @primaryColor;
+    @checkboxMarkColor: @checkboxActiveBorderColor;
+    @checkboxSize: 1em;
+    @checkboxBorderSize: 1px;
+    @checkboxMarkThickness: @checkboxBorderSize;
+    .secondaryCheckboxMarkColor(@property) when (@checkboxSecondaryMarkColor = undefined) {
+        & when (@checkboxBackgroundColor = @transparent) {
+            @{property}: @white;
+        }
+        & when not (@checkboxBackgroundColor = @transparent) {
+            @{property}: @checkboxBackgroundColor;
+        }
+    }
+    .secondaryCheckboxMarkColor(@property) when (default()) {
+        @{property}: @checkboxSecondaryMarkColor;
+    }
+}

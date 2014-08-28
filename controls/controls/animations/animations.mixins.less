@@ -1,0 +1,62 @@
+.animation(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none) {
+    .animation(@name; @duration; @function; @delay; @count; @direction; @mode; @webMozList);
+}
+.animation(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation; @name @duration @function @delay @count @direction @mode; @vendorList);
+}
+
+.animation-delay(@delay) {
+    .animation-delay(@delay; @webMozList);
+}
+.animation-delay(@delay; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-delay; @delay; @vendorList);
+}
+
+.animation-direction(@direction) {
+    .animation-direction(@direction; @webMozList);
+}
+.animation-direction(@direction; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-direction; @direction; @vendorList);
+}
+
+.animation-duration(@duration) {
+    .animation-duration(@duration; @webMozList);
+}
+.animation-duration(@duration; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-duration; @duration; @vendorList);
+}
+
+.animation-fill-mode(@mode) {
+    .animation-fill-mode(@mode; @webMozList);
+}
+.animation-fill-mode(@mode; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-fill-mode; @mode; @vendorList);
+}
+
+.animation-iteration-count(@count) {
+    .animation-iteration-count(@count; @webMozList);
+}
+.animation-iteration-count(@count; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-iteration-count; @count; @vendorList);
+}
+
+.animation-name(@name) {
+    .animation-name(@name; @webMozList);
+}
+.animation-name(@name; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-name; @name; @vendorList);
+}
+
+.animation-play-state(@state) {
+    .animation-play-state(@state; @webMozList);
+}
+.animation-play-state(@state; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-play-state; @state; @vendorList);
+}
+
+.animation-timing-function(@function) {
+    .animation-timing-function(@function; @webMozList);
+}
+.animation-timing-function(@function; @vendorList: @webMozList) when (default()) {
+    .vendor-loop(animation-timing-function; @function; @vendorList);
+}

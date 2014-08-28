@@ -16,7 +16,7 @@ module.exports = exports = function load(grunt) {
             server: {
                 options: {
                     port: 8080,
-                    base: './'
+                    base: '../'
                 }
             }
         },
@@ -47,7 +47,7 @@ module.exports = exports = function load(grunt) {
         },
         open: {
             dev: {
-                path: 'http://localhost:8080/app/index.html'
+                path: 'http://localhost:8080/controls/app/index.html'
             }
         },
         typescript: {

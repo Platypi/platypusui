@@ -1,0 +1,25 @@
+.generate-full-width-cols(@size) {
+	#Grid;
+	[class*="col-@{size}"] {
+		width: @base-percent;
+	}
+}
+
+.generate-partial-width-cols(@size; @i: @num-columns) when (@i > 0) {
+	#Grid;
+	.col-@{size}-@{i} {
+		width: @base-percent * (@i / @num-columns);
+	}
+	.generate-partial-width-cols(@size; (@i - 1));
+}
+
+.generate-shiftable-cols(@size; @i: @num-columns) when (@i > 0) {
+	#Grid;
+	.col-@{size}-push-@{i} {
+		left: @base-percent * (@i / @num-columns);
+	}
+	.col-@{size}-pull-@{i} {
+		right: @base-percent * (@i / @num-columns);
+	}
+	.generate-shiftable-cols(@size; (@i - 1));
+}
