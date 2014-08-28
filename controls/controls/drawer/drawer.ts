@@ -151,7 +151,7 @@
         $utils: plat.IUtils = plat.acquire(__Utils);
         $compat: plat.ICompat = plat.acquire(__Compat);
         $document: Document = plat.acquire(__Document);
-        $animator: plat.ui.IAnimator = plat.acquire(__Animator);
+        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
          * The plat-options for the DrawerController.
