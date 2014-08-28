@@ -23,6 +23,7 @@
 !gruntfile.js
 controls/platypus.less
 controls/platypusui.ts
+dist/
 
 # Build results
 [Dd]ebug/
