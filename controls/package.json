@@ -15,7 +15,8 @@
     "grunt-open": "^0.2.3",
     "grunt-contrib-less": "^0.11.4",
     "grunt-typescript": "^0.3.8",
-    "grunt-contrib-watch": "^0.6.1"
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-banner": "^0.2.3"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

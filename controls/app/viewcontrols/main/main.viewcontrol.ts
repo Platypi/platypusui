@@ -1,4 +1,4 @@
-/// <reference path='../../lib/platypus.ts' />
+/// <reference path='../../../controls/lib/platypus.d.ts' />
 /// <reference path='../../../platypusui.ts' />
 module app {
     export class MainViewControl extends plat.ui.WebViewControl {

@@ -1,4 +1,4 @@
-/// <reference path='../../lib/platypus.ts' />
+/// <reference path='../../../controls/lib/platypus.d.ts' />
 module app {
     export class GridViewControl extends plat.ui.WebViewControl {
         title = 'Grid';

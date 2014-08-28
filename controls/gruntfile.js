@@ -7,7 +7,7 @@ module.exports = exports = function load(grunt) {
                 version: '<%= pkg.version %>',
                 src: './app/index.html',
                 dest: [
-                    './platypusui.ts'
+                    './dist/platypusui.ts'
                 ],
                 disableLint: true
             }
@@ -22,28 +22,17 @@ module.exports = exports = function load(grunt) {
         },
         less: {
             main: {
-                license: './license.txt',
-                version: '<%= pkg.version %>',
-                src: './app/index.html',
-                dest: [
-                    './platypus.less'
-                ]
-            }
-        },
-        lessCompile: {
-            main: {
-                expand: true,
-                cwd: 'controls',
-                src: '**/*.less',
-                dest: 'controls',
-                ext: '.css'
+                options: {
+                    cleancss: true
+                },
+                files: {
+                    'dist/platypus.min.css': 'dist/platypus.less'
+                }
             },
             app: {
-                expand: true,
-                cwd: 'app',
-                src: '**/*.less',
-                dest: 'app',
-                ext: '.css'
+                files: {
+                    'app/viewcontrols/app.viewcontrol.css': 'app/viewcontrols/app.viewcontrol.less'
+                }
             }
         },
         open: {
@@ -65,6 +54,17 @@ module.exports = exports = function load(grunt) {
                 }
             }
         },
+        usebanner: {
+            main: {
+                options: {
+                    banner: '/* PlatypusUI v<%= pkg.version %> (http://getplatypi.com) */'
+                },
+                files: {
+                    src: ['dist/platypus.min.css']
+                }
+            }
+
+        },
         watch: {
             ts: {
                 files: '**/*.ts',
@@ -72,7 +72,7 @@ module.exports = exports = function load(grunt) {
             },
             less: {
                 files: '**/*.less',
-                tasks: ['lessCompile']
+                tasks: ['less']
             }
         },
         pkg: grunt.file.readJSON('package.json')
@@ -82,14 +82,15 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-ts-bundle');
     grunt.loadNpmTasks('grunt-typescript');
     grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.renameTask('less', 'lessCompile');
-    grunt.loadNpmTasks('grunt-less-bundle');
+    
+    // grunt.loadNpmTasks('grunt-less-bundle');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-banner');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['bundle', 'less']);
+    grunt.registerTask('default', ['bundle', 'less','usebanner']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
-    grunt.registerTask('compile', ['lessCompile', 'typescript']);
+    grunt.registerTask('compile', ['less', 'typescript']);
 };
