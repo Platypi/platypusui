@@ -20,11 +20,11 @@
   <ItemGroup>
     <Content Include="index.html" />
     <Content Include="lib\platypus.min.js" />
-    <Content Include="viewcontrols\grid\grid.viewcontrol.html" />
     <Content Include="viewcontrols\main\main.viewcontrol.html" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="viewcontrols\app.viewcontrol.less" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -36,7 +36,6 @@
     <TypeScriptCompile Include="..\controls\**\*.ts">
       <Link>controls\%(RecursiveDir)%(Filename)%.ts</Link>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="viewcontrols\grid\grid.viewcontrol.ts" />
     <TypeScriptCompile Include="viewcontrols\main\main.viewcontrol.ts" />
   </ItemGroup>
   <ItemGroup />
