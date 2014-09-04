@@ -1,29 +1,71 @@
 ﻿module platui {
     /**
-     * A Template Control that standardizes the HTML5 checkbox.
+     * @name Checkbox
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {platui.Toggle}
+     * 
+     * @description
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} that standardizes the HTML5 checkbox.
      */
     export class Checkbox extends Toggle {
-        $document: Document = plat.acquire(__Document);
-
         /**
-         * The Checkbox's template string.
+         * @name $document
+         * @memberof platui.Checkbox
+         * @kind property
+         * @access public
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        $document: Document = plat.acquire(__Document);
+        
+        /**
+         * @name templateString
+         * @memberof platui.Checkbox
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The HTML template.
          */
         templateString =
         '<div class="plat-checkbox-container">' +
             '<span class="mark"></span>' +
         '</div>';
-
+        
         /**
-         * The plat-options for this control.
+         * @name options
+         * @memberof platui.Checkbox
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.observable.IObservableProperty<platui.ICheckboxOptions>}
+         * 
+         * @description
+         * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
-
+        
         /**
-         * Sets the proper class name on the button.
+         * @name setClasses
+         * @memberof platui.Checkbox
+         * @kind function
+         * @access public
          * 
-         * @param {string} className? The class name to set on the element.
-         * @param {string} element? The element to set the class names on. Defaults to this 
+         * @description
+         * Sets the proper class name on this control.
+         * 
+         * @param {string} className? The class name to set on the button element.
+         * @param {string} element? The element to set the class on. Defaults to this 
          * control's element.
+         * 
+         * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
@@ -32,9 +74,17 @@
             dom.addClass(element, __Checkbox);
             dom.addClass(element, className);
         }
-
+        
         /**
+         * @name initialize
+         * @memberof platui.Checkbox
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Initializes the mark and adds a listener for the tap event.
+         * 
+         * @returns {void}
          */
         initialize(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
@@ -54,9 +104,17 @@
 
             this.setClasses(type);
         }
-
+        
         /**
+         * @name setTemplate
+         * @memberof platui.Checkbox
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Adds the inner template to the DOM making sure to wrap text nodes in spans.
+         * 
+         * @returns {void}
          */
         setTemplate(): void {
             super.setTemplate();
@@ -89,9 +147,17 @@
                 }
             }
         }
-
+        
         /**
+         * @name loaded
+         * @memberof platui.Checkbox
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Checks for checked attributes and handles them accordingly.
+         * 
+         * @returns {void}
          */
         loaded(): void {
             var element = this.element;
@@ -105,13 +171,21 @@
                 this.attributes.observe(__CamelChecked, this._convertAttribute);
             }
         }
-
+        
         /**
+         * @name _convertAttribute
+         * @memberof platui.Checkbox
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * A function for handling the attribute value conversion for updating the 
          * bound property.
          * 
-         * @param newValue The newValue of the attribute to convert.
-         * @param oldValue The oldValue of the attribute to convert.
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         * 
+         * @returns {void}
          */
         _convertAttribute(newValue: any, oldValue?: any): void {
             var $utils = this.$utils;
@@ -126,18 +200,39 @@
     }
 
     plat.register.control(__Checkbox, Checkbox);
-
+    
     /**
-     * The plat-options interface for the Checkbox control.
+     * @name ICheckboxOptions
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * The available {@link plat.controls.Options|options} for the {@link platui.Checkbox|Checkbox} control.
      */
     export interface ICheckboxOptions {
         /**
-         * The type of mark to place in the checkbox.
+         * @name mark
+         * @memberof platui.ICheckboxOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The type of mark to place inside the {@link platui.Checkbox|Checkbox}.
          */
         mark: string;
-
+        
         /**
-         * The type of checkbox (i.e. - primary, secondary, etc).
+         * @name type
+         * @memberof platui.ICheckboxOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The type of {@link platui.Checkbox|Checkbox} (e.g. - primary, secondary, etc).
          */
         type: string;
     }

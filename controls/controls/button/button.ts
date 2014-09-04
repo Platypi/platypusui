@@ -1,36 +1,104 @@
-﻿module platui {
+﻿/**
+ * @name platui
+ * @kind namespace
+ * @access public
+ * 
+ * @description
+ * The entry point into the platypus UI controls library.
+ */
+module platui {
     /**
-     * A Template Control for standardizing an HTML5 button.
+     * @name Button
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {plat.ui.BindablePropertyControl}
+     * @implements {platui.IUIControl}
+     * 
+     * @description
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} that standardizes an HTML5 button.
      */
     export class Button extends plat.ui.BindablePropertyControl implements IUIControl {
-        $document: Document = plat.acquire(__Document);
-
         /**
-         * The element to replace the button control with.
+         * @name $document
+         * @memberof platui.Button
+         * @kind property
+         * @access public
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        $document: Document = plat.acquire(__Document);
+        
+        /**
+         * @name replaceWith
+         * @memberof platui.Button
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * Replaces the <plat-button> node with 
+         * a <button> node.
          */
         replaceWith = 'button';
-
+        
         /**
-         * The plat-options for the Button.
+         * @name options
+         * @memberof platui.Button
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.observable.IObservableProperty<platui.IButtonOptions>}
+         * 
+         * @description
+         * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IButtonOptions>;
-
+        
         /**
-         * The radio groups name if a radio group is present.
+         * @name groupName
+         * @memberof platui.Button
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The button groups name if a button group is present.
          */
         groupName = '';
-
+        
         /**
-         * Boolean value showing the selected state of this Button.
+         * @name _isSelected
+         * @memberof platui.Button
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A boolean value showing the selected state of this {@link platui.Button|Button}.
          */
         _isSelected: boolean;
-
+        
         /**
-         * Sets the proper class name on the button.
+         * @name setClasses
+         * @memberof platui.Button
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Sets the proper class name on this control.
          * 
          * @param {string} className? The class name to set on the button element.
          * @param {string} element? The element to set the class on. Defaults to this 
          * control's element.
+         * 
+         * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
@@ -41,8 +109,16 @@
         }
         
         /**
+         * @name initialize
+         * @memberof platui.Button
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Adds a listener for the tap event and checks for a 
-         * radio group.
+         * button group.
+         * 
+         * @returns {void}
          */
         initialize(): void {
             var element = this.element;
@@ -57,9 +133,17 @@
 
             this.setClasses();
         }
-
+        
         /**
+         * @name setTemplate
+         * @memberof platui.Button
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Wrap all inner text nodes in spans.
+         * 
+         * @returns {void}
          */
         setTemplate(): void {
             var $document = this.$document,
@@ -89,9 +173,17 @@
                 }
             }
         }
-
+        
         /**
+         * @name loaded
+         * @memberof platui.Button
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Determine the button type and apply the proper classes.
+         * 
+         * @returns {void}
          */
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
@@ -100,9 +192,17 @@
 
             this.dom.addClass(this.element, type);
         }
-
+        
         /**
+         * @name _addEventListeners
+         * @memberof platui.Button
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * Add event listeners for selection.
+         * 
+         * @returns {void}
          */
         _addEventListeners(name: string): void {
             var element = this.element,
@@ -118,9 +218,17 @@
                 }
             });
         }
-
+        
         /**
+         * @name _onTap
+         * @memberof platui.Button
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * Place the pushed button in a selected state.
+         * 
+         * @returns {void}
          */
         _onTap(): void {
             if (this._isSelected) {
@@ -136,13 +244,26 @@
     }
 
     plat.register.control(__Button, Button);
-
+    
     /**
-     * An interface defining the plat-options for the Button control.
+     * @name IButtonOptions
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * The available {@link plat.controls.Options|options} for the {@link platui.Button|Button} control.
      */
     export interface IButtonOptions {
         /**
-         * The type of Button.
+         * @name type
+         * @memberof platui.IButtonOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The type of {@link platui.Button|Button} (e.g. - primary, secondary, etc).
          */
         type: string;
     }

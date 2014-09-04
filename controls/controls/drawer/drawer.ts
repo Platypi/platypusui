@@ -1,24 +1,81 @@
 ﻿module platui {
     /**
-     * A Template Control that acts as a global drawer.
+     * @name Drawer
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {plat.ui.TemplateControl}
+     * @implements {platui.IUIControl}
+     * 
+     * @description
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} that acts as a global drawer.
      */
     export class Drawer extends plat.ui.TemplateControl implements IUIControl {
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
         /**
-         * The plat-options for the Drawer.
+         * @name $utils
+         * @memberof platui.Drawer
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        $utils: plat.IUtils = plat.acquire(__Utils);
+        
+        /**
+         * @name options
+         * @memberof platui.Drawer
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.observable.IObservableProperty<platui.IDrawerOptions>}
+         * 
+         * @description
+         * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IDrawerOptions>;
-
-        private __currentTransition: string;
-        private __useContext: boolean;
-
+        
         /**
-         * Sets the proper class name on the button.
+         * @name __currentTransition
+         * @memberof platui.Drawer
+         * @kind property
+         * @access private
          * 
-         * @param {string} className? The class name to set on the element.
-         * @param {string} element? The element to set the class names on. Defaults to this 
+         * @type {string}
+         * 
+         * @description
+         * The transition direction of the {@link platui.Drawer|Drawer}.
+         */
+        private __currentTransition: string;
+        /**
+         * @name __useContext
+         * @memberof platui.Drawer
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not to use the inherited context of this global {@link platui.Drawer|Drawer}.
+         */
+        private __useContext: boolean;
+        
+        /**
+         * @name setClasses
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Sets the proper class name on this control.
+         * 
+         * @param {string} className? The class name to set on the button element.
+         * @param {string} element? The element to set the class on. Defaults to this 
          * control's element.
+         * 
+         * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
@@ -27,16 +84,50 @@
             dom.addClass(element, __Drawer);
             dom.addClass(element, className);
         }
-
+        
         /**
-         * Set the class name
+         * @name initialize
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Set the class name.
+         * 
+         * @returns {void}
          */
         initialize(): void {
             this.setClasses();
         }
 
         /**
+         * @name setTemplate
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Removes the innerHTML from the DOM and saves it.
+         * 
+         * @returns {void}
+         */
+        setTemplate(): void {
+            var childNodes = Array.prototype.slice.call(this.element.childNodes);
+            if (childNodes.length > 0) {
+                this.innerTemplate = this.dom.appendChildren(childNodes);
+            }
+        }
+        
+        /**
+         * @name loaded
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Check for a transition direction and initialize event handling.
+         * 
+         * @returns {void}
          */
         loaded(): void {
             var element = this.element,
@@ -70,19 +161,19 @@
 
             this.__initializeEvents(id, transition, isElastic);
         }
-
+        
         /**
-         * Removes the innerHTML from the DOM and saves it.
-         */
-        setTemplate(): void {
-            var childNodes = Array.prototype.slice.call(this.element.childNodes);
-            if (childNodes.length > 0) {
-                this.innerTemplate = this.dom.appendChildren(childNodes);
-            }
-        }
-
-        /**
-         * Changes the placement and implied transition direction of the drawer.
+         * @name _changeDirection
+         * @memberof platui.Drawer
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Changes the placement and implied transition direction of the {@link platui.Drawer|Drawer}.
+         * 
+         * @param {string} transition The new transition direction to change to.
+         * 
+         * @returns {void}
          */
         _changeDirection(transition: string): void {
             if (this.$utils.isNull(transition) || transition === this.__currentTransition) {
@@ -97,7 +188,23 @@
 
             this.__currentTransition = transition;
         }
-
+        
+        /**
+         * @name __initializeEvents
+         * @memberof platui.Drawer
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Initializes and dispatches pub sub events.
+         * 
+         * @param {string} id The ID of this {@link platui.Drawer|Drawer} if used.
+         * @param {string} transition The transition direction.
+         * @param {boolean} isElastic Whether or not the {@link platui.Drawer|Drawer} has an 
+         * elastic transition effect.
+         * 
+         * @returns {void}
+         */
         private __initializeEvents(id: string, transition: string, isElastic: boolean): void {
             var $utils = this.$utils,
                 element = this.element,
@@ -134,7 +241,18 @@
                 elastic: isElastic
             });
         }
-
+        
+        /**
+         * @name __bindTemplate
+         * @memberof platui.Drawer
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Binds the added HTML template to this control's inherited context.
+         * 
+         * @returns {void}
+         */
         private __bindTemplate(): void {
             this.bindableTemplates.bind('drawer').then((template) => {
                 this.element.appendChild(template);
@@ -143,64 +261,332 @@
     }
 
     plat.register.control(__Drawer, Drawer);
-
+    
     /**
-     * A Template Control that manipulates and controls a global drawer.
+     * @name DrawerController
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {plat.ui.TemplateControl}
+     * @implements {platui.IUIControl}
+     * 
+     * @description
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} that manipulates and controls a global drawer.
      */
     export class DrawerController extends plat.ui.TemplateControl {
-        $utils: plat.IUtils = plat.acquire(__Utils);
-        $compat: plat.ICompat = plat.acquire(__Compat);
-        $document: Document = plat.acquire(__Document);
-        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
-
         /**
-         * The plat-options for the DrawerController.
+         * @name $utils
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        $utils: plat.IUtils = plat.acquire(__Utils);
+        /**
+         * @name $compat
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        $compat: plat.ICompat = plat.acquire(__Compat);
+        /**
+         * @name $document
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        $document: Document = plat.acquire(__Document);
+        /**
+         * @name $animator
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         */
+        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        
+        /**
+         * @name options
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.observable.IObservableProperty<platui.IDrawerOptions>}
+         * 
+         * @description
+         * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IDrawerOptions>;
-
+        
         /**
-         * The transition direction of control for this DrawerController.
+         * @name _transition
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The transition direction of the global {@link platui.Drawer|Drawer} associated 
+         * with this control.
          */
         _transition: string;
-
+        
         /**
-         * The DrawerController's corresponding Drawer element.
+         * @name _drawerElement
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The HTMLElement of the global {@link platui.Drawer|Drawer} associated 
+         * with this control.
          */
         _drawerElement: HTMLElement;
-
+        
         /**
-         * The CSS3 transform property.
+         * @name _transform
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The current browser's CSS3 transform property.
          */
         _transform: string;
-
+        
         /**
+         * @name _lastTouch
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.IPoint}
+         * 
+         * @description
          * The last touch start recorded.
          */
         _lastTouch: plat.ui.IPoint;
-
+        
+        /**
+         * @name __hasSwiped
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the user has swiped.
+         */
         private __hasSwiped = false;
+        /**
+         * @name __isOpen
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the {@link platui.Drawer|Drawer} is open.
+         */
         private __isOpen = false;
+        /**
+         * @name __isElastic
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the {@link platui.Drawer|Drawer} is elastic.
+         */
         private __isElastic: boolean;
+        /**
+         * @name __inTouch
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the user is currently touching the screen.
+         */
         private __inTouch: boolean;
+        /**
+         * @name __useContext
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not to use this control's inherited context.
+         */
         private __useContext: boolean;
+        /**
+         * @name __maxOffset
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The max offset to transform the {@link platui.Drawer|Drawer's} element.
+         */
         private __maxOffset: number;
+        /**
+         * @name __removeTap
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the tap event listener.
+         */
         private __removeTap: plat.IRemoveListener;
+        /**
+         * @name __removeSwipeOpen
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the swipe open event listener.
+         */
         private __removeSwipeOpen: plat.IRemoveListener;
+        /**
+         * @name __removeSwipeClose
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the swipe close event listener.
+         */
         private __removeSwipeClose: plat.IRemoveListener;
+        /**
+         * @name __removePrimaryTrack
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the primary track (open) event listener.
+         */
         private __removePrimaryTrack: plat.IRemoveListener;
+        /**
+         * @name __removeSecondaryTrack
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the secondary track (close) event listener.
+         */
         private __removeSecondaryTrack: plat.IRemoveListener;
+        /**
+         * @name __rootElement
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The root element to translate.
+         */
         private __rootElement: HTMLElement;
+        /**
+         * @name __type
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The type of {@link platui.Drawer|Drawer} 
+         * (i.e. the method by which the {@link platui.Drawer|Drawer} opens and closes).
+         */
         private __type: string;
+        /**
+         * @name __templateUrl
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {string}
+         * 
+         * @description
+         * A URL that points to the HTML template.
+         */
         private __templateUrl: string;
+        /**
+         * @name __transitionHash
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access private
+         * 
+         * @type {string}
+         * 
+         * @description
+         * An object to quickly access the transition close direction based on a transition open direction.
+         */
         private __transitionHash: plat.IObject<string> = {
             right: 'left',
             left: 'right',
             up: 'down',
             down: 'up'
         };
-
+        
         /**
+         * @name loaded
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Initialize the track events on the element.
+         * 
+         * @returns {void}
          */
         loaded(): void {
             var element = this.element,
@@ -215,9 +601,17 @@
             this.__templateUrl = options.templateUrl;
             this.__initializeEvents(id, transition);
         }
-
+        
         /**
+         * @name dispose
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Remove the transition classes off the root element.
+         * 
+         * @returns {void}
          */
         dispose(): void {
             var dom = this.dom,
@@ -225,9 +619,17 @@
             dom.removeClass(rootElement, 'plat-drawer-transition-prep');
             dom.removeClass(rootElement, 'plat-drawer-transition-' + this._transition);
         }
-
+        
         /**
-         * Opens the drawer.
+         * @name open
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Opens the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {void}
          */
         open(): void {
             var elementToMove = this.__rootElement,
@@ -260,9 +662,17 @@
             this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = true;
         }
-
+        
         /**
-         * Closes the drawer.
+         * @name close
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Closes the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {void}
          */
         close(): void {
             var elementToMove = this.__rootElement,
@@ -278,9 +688,17 @@
             this.$animator.animate(elementToMove, __Transition, animationOptions);
             this.__isOpen = false;
         }
-
+        
         /**
-         * Toggles the drawer's open/closed state.
+         * @name toggle
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
+         * 
+         * @returns {void}
          */
         toggle(): void {
             if (this.__isOpen) {
@@ -290,9 +708,17 @@
 
             this.open();
         }
-
+        
         /**
-         * Resets the drawer to it's current open/closed state.
+         * @name reset
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
+         * 
+         * @returns {void}
          */
         reset(): void {
             if (this.__isOpen) {
@@ -302,18 +728,34 @@
 
             this.close();
         }
-
+        
         /**
-         * Indicates whether the drawer is currently open.
+         * @name isOpen
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Indicates whether the {@link platui.Drawer|Drawer} is currently open.
+         * 
+         * @returns {boolean} Whether or not the {@link platui.Drawer|Drawer} is currently open.
          */
         isOpen(): boolean {
             return this.__isOpen;
         }
-
+        
         /**
+         * @name _addSwipeEvents
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * Adds swipe events to the controller element.
          * 
-         * @param transition The transition direction of opening for the drawer.
+         * @param {string} transition The transition direction of opening for the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {void}
          */
         _addSwipeEvents(transition: string): void {
             var openEvent = __$swipe + transition,
@@ -330,11 +772,19 @@
                 this.close();
             }, false);
         }
-
+        
         /**
+         * @name _addSwipeEvents
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * Adds primary and secondary tracking events to the controller element.
          * 
-         * @param transition The transition direction of opening for the drawer.
+         * @param {string} transition The transition direction of opening for the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {void}
          */
         _addEventListeners(transition: string): void {
             var element = this.element,
@@ -370,9 +820,17 @@
                 this.addEventListener(element, __$trackend, touchEnd, false);
             }
         }
-
+        
         /**
+         * @name _removeEventListeners
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * Removes all event listeners.
+         * 
+         * @returns {void}
          */
         _removeEventListeners(): void {
             var isFunction = this.$utils.isFunction;
@@ -401,11 +859,19 @@
                 this.__removeSwipeClose = null;
             }
         }
-
+        
         /**
-         * Log when the user touches the drawer controller.
+         * @name _touchStart
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
          * 
-         * @param ev The touch event.
+         * @description
+         * Log when the user touches the {@link platui.DrawerController|DrawerController}.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The touch event.
+         * 
+         * @returns {void}
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
             this.__inTouch = true;
@@ -414,11 +880,19 @@
                 y: ev.clientY
             };
         }
-
+        
         /**
+         * @name _touchEnd
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * The $touchend and $trackend event handler.
          * 
-         * @param ev The touch event.
+         * @param {plat.ui.IGestureEvent} ev The touch event.
+         * 
+         * @returns {void}
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
             var inTouch = this.__inTouch;
@@ -452,17 +926,38 @@
 
             this.reset();
         }
-
+        
         /**
-         * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
-         * depending on the defined 'transition' direction.
+         * @name _track
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
          * 
-         * @param ev The $tracking event.
+         * @description
+         * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
+         * depending on the defined "transition" direction.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $tracking event.
+         * 
+         * @returns {void}
          */
         _track(ev: plat.ui.IGestureEvent): void {
             this.__rootElement.style[<any>this._transform] = this.__calculateTranslation(ev);
         }
-
+        
+        /**
+         * @name __calculateTranslation
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Calculates the translation value for setting the transform value.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $tracking event.
+         * 
+         * @returns {string} The translation value.
+         */
         private __calculateTranslation(ev: plat.ui.IGestureEvent): string {
             var distanceMoved: number;
             switch (this._transition) {
@@ -490,7 +985,21 @@
                     return 'translate3d(0,0,0)';
             }
         }
-
+        
+        /**
+         * @name __checkElasticity
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Checks for elasticity and potentially readjusts the user's 
+         * distance moved.
+         * 
+         * @param {number} distanceMoved The distance the user's finger moved.
+         * 
+         * @returns {number} The potentially recalcuated distance moved.
+         */
         private __checkElasticity(distanceMoved: number): number {
             if (this.__isElastic) {
                 return distanceMoved;
@@ -504,7 +1013,21 @@
 
             return distanceMoved;
         }
-
+        
+        /**
+         * @name __initializeEvents
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Initializes and dispatches pub sub events.
+         * 
+         * @param {string} id The ID of this {@link platui.DrawerController|DrawerController} if used.
+         * @param {string} transition The transition direction.
+         * 
+         * @returns {void}
+         */
         private __initializeEvents(id: string, transition: string): void {
             var element = this.element,
                 $utils = this.$utils,
@@ -558,7 +1081,21 @@
                 transition: transition
             });
         }
-
+        
+        /**
+         * @name __determineTemplate
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Determines the proper HTML template, binds it, and inserts it if needed.
+         * 
+         * @param {Node} fragment? A Node to insert as the {@link platui.Drawer|Drawer's} HTML template 
+         * if no templateUrl is present on this {@link platui.DrawerController|DrawerController}.
+         * 
+         * @returns {void}
+         */
         private __determineTemplate(fragment?: Node): void {
             var $utils = this.$utils;
 
@@ -572,7 +1109,18 @@
                 this.__bindTemplate();
             }
         }
-
+        
+        /**
+         * @name __bindTemplate
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Binds the added HTML template to this control's inherited context.
+         * 
+         * @returns {void}
+         */
         private __bindTemplate(): void {
             var drawerElement = this._drawerElement;
             this.bindableTemplates.bind('drawer').then((template) => {
@@ -580,7 +1128,18 @@
                 drawerElement.appendChild(template);
             });
         }
-
+        
+        /**
+         * @name __setTransform
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Obtains the current browser's transform property value.
+         * 
+         * @returns {void}
+         */
         private __setTransform(): void {
             var style = this.element.style,
                 isUndefined = this.$utils.isUndefined;
@@ -598,7 +1157,20 @@
 
             this._transform = 'transform';
         }
-
+        
+        /**
+         * @name __controllerIsValid
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Checks if this control has all valid properties.
+         * 
+         * @param {string} transition The transition direction of the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {boolean} Whether or not this control is valid.
+         */
         private __controllerIsValid(transition: string): boolean {
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic;
@@ -628,7 +1200,20 @@
 
             return true;
         }
-
+        
+        /**
+         * @name __getRootElement
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Obtains the root element to translate.
+         * 
+         * @param {plat.ui.ITemplateControl} root The control to start searching at.
+         * 
+         * @returns {HTMLElement} The root element.
+         */
         private __getRootElement(root: plat.ui.ITemplateControl): HTMLElement {
             var $utils = this.$utils,
                 isNode = $utils.isNode;
@@ -645,7 +1230,18 @@
 
             return element;
         }
-
+        
+        /**
+         * @name __setOffset
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Sets the max offset to translate the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {void}
+         */
         private __setOffset(): void {
             switch (this._transition) {
                 case 'up':
@@ -661,76 +1257,185 @@
     }
 
     plat.register.control(__DrawerController, DrawerController);
-
+    
     /**
-     * The drawer options capable of being placed on the 'plat-drawer' and/or the 
-     * 'plat-drawer-controller' as 'plat-options.'
+     * @name IDrawerOptions
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * The available {@link plat.controls.Options|options} for the {@link platui.Drawer|Drawer} control 
+     * and/or the {@link platui.DrawerController|DrawerController} control.
      */
     export interface IDrawerOptions {
         /**
-         * The unique ID of the drawer / drawer-controller pair.
+         * @name id
+         * @memberof platui.IDrawerOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The unique ID of the {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} pair.
          */
         id?: string;
-
+        
         /**
-         * The transition direction of drawer opening.
+         * @name transition
+         * @memberof platui.IDrawerOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The transition direction of {@link platui.Drawer|Drawer} opening.
          */
         transition?: string;
-
+        
         /**
-         * The url of the drawer's intended template.
+         * @name templateUrl
+         * @memberof platui.IDrawerOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The URL of the {@link platui.Drawer|Drawer's} intended template.
          */
         templateUrl?: string;
-
+        
         /**
-         * A boolean value stating whether to use this context or not.
+         * @name useContext
+         * @memberof platui.IDrawerOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A boolean value stating whether to use the associated control's context or not.
          */
         useContext?: boolean;
-
+        
         /**
-         * Whether the drawer has an elastic effect while sliding. 
+         * @name elastic
+         * @memberof platui.IDrawerOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the {@link platui.Drawer|Drawer} has an elastic effect while sliding. 
          * Defaults to false.
          */
         elastic?: boolean;
-
+        
         /**
-         * An option for the drawer-controller specifying how the drawer should 
+         * @name elastic
+         * @memberof platui.IDrawerOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * An option for the {@link platui.DrawerController|DrawerController} specifying how the drawer should 
          * open.
-         * 'tap': The drawer opens when the controller is tapped.
-         * 'slide': The drawer opens when the controller is dragged.
+         * 
+         * @remarks
+         * "tap": The drawer opens when the controller is tapped.
+         * "slide": The drawer opens when the controller is dragged.
          * default: The drawer opens either when the controller is tapped or the 
          * controller is slid.
          */
         type?: string;
     }
-
+    
     /**
-     * An interface for the drawer's event object used during the 
-     * drawer / drawer-controller handshake.
+     * @name IDrawerHandshakeEvent
+     * @memberof platui
+     * @kind interface
+     * @exported false
+     * 
+     * @description
+     * An interface for the {@link platui.Drawer|Drawer's} event object used during the 
+     * {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} handshake.
      */
     interface IDrawerHandshakeEvent {
         /**
-         * The unique ID of the drawer / drawer-controller pair.
+         * @name id
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The unique ID of the {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} pair.
          */
         id?: string;
         /**
-         * The transition direction of drawer opening.
+         * @name transition
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The transition direction of {@link platui.Drawer|Drawer} opening.
          */
         transition?: string;
         /**
-         * The global drawer element.
+         * @name element
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The global {@link platui.Drawer|Drawer} element.
          */
         element?: HTMLElement;
         /**
-         * The intended template of the global drawer element.
+         * @name template
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {Node}
+         * 
+         * @description
+         * The intended template of the global {@link platui.Drawer|Drawer} element.
          */
         template?: Node;
         /**
-         * A boolean value stating whether to use this context or not.
+         * @name useContext
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A boolean value stating whether to use the associated control's context or not.
          */
         useContext?: boolean;
         /**
-         * Whether the drawer has an elastic effect while sliding. 
+         * @name elastic
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the {@link platui.Drawer|Drawer} has an elastic effect while sliding. 
          * Defaults to false.
          */
         elastic?: boolean;
