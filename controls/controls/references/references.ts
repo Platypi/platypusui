@@ -57,14 +57,25 @@ var __Promise = '$Promise',
 
 module platui {
     /**
+     * @name IUIControl
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
      * An interface a control should implement if they plan on using 
      * class based CSS to style the UI.
      */
     export interface IUIControl {
         /**
+         * @name setClasses
+         * @memberof platui.IUIControl
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Sets the classes on the proper elements.
          * 
-         * @param {any} classNames? An optional, additional class name or class names to set on the control 
+         * @param {string} className? An optional, additional class name or class names to set on the control 
          * in addition to its standard set.
          * @param {Element} element? The element to set the class name on. Should default to 
          * the control's element if not specified.

@@ -125,11 +125,12 @@
          * @access public
          * 
          * @description
-         * Sets the proper class name on this control.
+         * Sets the classes on the proper elements.
          * 
-         * @param {string} className? The class name to set on the button element.
-         * @param {Element} element? The element to set the class on. Defaults to this 
-         * control's element.
+         * @param {string} className? An optional, additional class name or class names to set on the control 
+         * in addition to its standard set.
+         * @param {Element} element? The element to set the class name on. Should default to 
+         * the control's element if not specified.
          * 
          * @returns {void}
          */
