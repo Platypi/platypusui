@@ -16,7 +16,7 @@ module platui {
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that standardizes an HTML5 button.
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes an HTML5 button.
      */
     export class Button extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
@@ -95,7 +95,7 @@ module platui {
          * Sets the proper class name on this control.
          * 
          * @param {string} className? The class name to set on the button element.
-         * @param {string} element? The element to set the class on. Defaults to this 
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
          * 
          * @returns {void}
@@ -265,6 +265,6 @@ module platui {
          * @description
          * The type of {@link platui.Button|Button} (e.g. - "primary", "secondary", etc).
          */
-        type: string;
+        type?: string;
     }
 }

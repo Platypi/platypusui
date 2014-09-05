@@ -7,7 +7,7 @@
      * @extends {platui.Toggle}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that standardizes the HTML5 checkbox.
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes the HTML5 checkbox.
      */
     export class Checkbox extends Toggle {
         /**
@@ -62,7 +62,7 @@
          * Sets the proper class name on this control.
          * 
          * @param {string} className? The class name to set on the button element.
-         * @param {string} element? The element to set the class on. Defaults to this 
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
          * 
          * @returns {void}
@@ -221,7 +221,7 @@
          * @description
          * The type of mark to place inside the {@link platui.Checkbox|Checkbox}.
          */
-        mark: string;
+        mark?: string;
         
         /**
          * @name type
@@ -234,6 +234,6 @@
          * @description
          * The type of {@link platui.Checkbox|Checkbox} (e.g. - "primary", "secondary", etc).
          */
-        type: string;
+        type?: string;
     }
 }

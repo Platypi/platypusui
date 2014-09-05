@@ -72,7 +72,7 @@
          * Sets the proper class name on this control.
          * 
          * @param {string} className? The class name to set on the button element.
-         * @param {string} element? The element to set the class on. Defaults to this 
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
          * 
          * @returns {void}

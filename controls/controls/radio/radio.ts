@@ -1,32 +1,71 @@
 ﻿module platui {
     /**
-     * A Template Control that standardizes the HTML5 radio button.
+     * @name ProgressRing
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {platui.Checkbox}
+     * 
+     * @description
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes the HTML5 radio button.
      */
     export class Radio extends Checkbox {
         /**
-         * The Radio's template string.
+         * @name templateString
+         * @memberof platui.Radio
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The HTML template represented as a string.
          */
         templateString =
         '<div class="plat-radio-container">' +
             '<div class="mark"></div>' +
         '</div>';
-
+        
         /**
+         * @name groupName
+         * @memberof platui.Radio
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
          * The radio groups name if a radio group is present.
          */
         groupName = '';
         
         /**
+         * @name _targetType
+         * @memberof platui.Radio
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
          * The check type to be placed in the element.
          */
         _targetType = 'radio';
-
+        
         /**
-         * Sets the proper class name on the button.
+         * @name setClasses
+         * @memberof platui.Radio
+         * @kind function
+         * @access public
          * 
-         * @param {string} className? The class name to set on the element.
-         * @param {string} element? The element to set the class names on. Defaults to this 
+         * @description
+         * Sets the proper class name on this control.
+         * 
+         * @param {string} className? The class name to set on the button element.
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
+         * 
+         * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
@@ -35,10 +74,18 @@
             dom.addClass(element, __Radio);
             dom.addClass(element, className);
         }
-
+        
         /**
+         * @name initialize
+         * @memberof platui.Radio
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Adds a listener for the tap event and checks for a 
          * radio group.
+         * 
+         * @returns {void}
          */
         initialize(): void {
             var element = this.element;
@@ -55,12 +102,20 @@
         }
         
         /**
+         * @name setProperty
+         * @memberof platui.Radio
+         * @kind function
+         * @access public
+         * 
+         * @description
          * The function called when the bindable property is set externally.
          * 
-         * @param newValue The new value of the bindable property.
-         * @param oldValue The old value of the bindable property.
-         * @param setProperty A boolean value indicating whether we should set 
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
+         * @param {boolean} setProperty? A boolean value indicating whether we should set 
          * the property if we need to toggle the check mark value.
+         * 
+         * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
             if (newValue === oldValue) {
@@ -76,25 +131,41 @@
 
             this._toggle(setProperty);
         }
-
+        
         /**
+         * @name propertyChanged
+         * @memberof platui.Radio
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Checks if the radio has been selected and only notifies of a bindable 
          * property changed if it has.
          * 
-         * @param newValue The new value of the property after the change.
-         * @param oldValue The old value of the property prior to the change.
+         * @param {any} newValue The new value of the property after the change.
+         * @param {any} oldValue? The old value of the property prior to the change.
+         * 
+         * @returns {void}
          */
         propertyChanged(newValue: any, oldValue?: any): void {
             if (this.isActive) {
                 super.propertyChanged(this._getValue());
             }
         }
-
+        
         /**
-         * The callback for a tap event. Only fires the event if the radio 
+         * @name _onTap
+         * @memberof platui.Radio
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The callback for a tap event. Only fires the event if the {@link platui.Radio|Radio}  
          * has been selected.
          * 
-         * @param ev The tap event object.
+         * @param {plat.ui.IGestureEvent} ev The tap event object.
+         * 
+         * @returns {void}
          */
         _onTap(ev: plat.ui.IGestureEvent): void {
             if (this.isActive) {
@@ -103,12 +174,20 @@
 
             super._onTap(ev);
         }
-
+        
         /**
+         * @name _toggle
+         * @memberof platui.Radio
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * Toggles the mark and updates the bindable property if needed.
          * 
-         * @param setProperty A boolean value stating whether the bindable 
+         * @param {boolean} setProperty? A boolean value stating whether the bindable 
          * property should be updated.
+         * 
+         * @returns {void}
          */
         _toggle(setProperty?: boolean): void {
             super._toggle(setProperty);
@@ -121,13 +200,21 @@
                 });
             }
         }
-
+        
         /**
+         * @name _convertAttribute
+         * @memberof platui.Radio
+         * @kind function
+         * @access protected
+         * 
+         * @description
          * A function for handling the attribute value conversion for updating the 
          * bound property.
          * 
-         * @param newValue The newValue of the attribute to convert.
-         * @param oldValue The oldValue of the attribute to convert.
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         * 
+         * @returns {void}
          */
         _convertAttribute(newValue: any, oldValue?: any): void {
             var $utils = this.$utils;
@@ -144,10 +231,18 @@
                 this.setProperty(this._getValue(), null, true);
             }
         }
-
+        
         /**
-         * Grabs the value of this radio buttons bindable property. It first checks for 
+         * @name _getValue
+         * @memberof platui.Radio
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Grabs the value of this {@link platui.Radio|Radio's} bindable property. It first checks for 
          * the "value" attribute, and defaults to the elements textContent if it's unavailable.
+         * 
+         * @returns {string} Returns the bindable value of this control.
          */
         _getValue(): string {
             var element = this.element;

@@ -1,14 +1,63 @@
 ﻿module platui {
     /**
-     * A Template Control that standardizes an HTML5 input[type="range"].
+     * @name ProgressRing
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {platui.Checkbox}
+     * @implements {platui.IUIControl}
+     * 
+     * @description
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes an HTML5 input[type="range"].
      */
     export class Range extends plat.ui.BindablePropertyControl implements IUIControl {
+        /**
+         * @name $document
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
         $document: Document = plat.acquire(__Document);
+        /**
+         * @name $utils
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
         $utils: plat.IUtils = plat.acquire(__Utils);
+        /**
+         * @name $animator
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         */
         $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
-         * The template string for the Range control.
+         * @name templateString
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The HTML template represented as a string.
          */
         templateString =
         '<div class="plat-range-container">' +
@@ -16,57 +65,211 @@
                 '<div class="knob"></div>' +
             '</div>' +
         '</div>';
-
+        
         /**
-         * The plat-options for the Button.
+         * @name options
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.observable.IObservableProperty<platui.IRangeOptions>}
+         * 
+         * @description
+         * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IRangeOptions>;
-
+        
         /**
+         * @name value
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
          * The current value of the range.
          */
         value: number;
-
+        
         /**
+         * @name min
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
          * The min value of the range.
          */
         min: number;
-
+        
         /**
+         * @name max
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
          * The max value of the range.
          */
         max: number;
-
+        
         /**
+         * @name _sliderElement
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
          * The HTMLElement representing the slider.
          */
         _sliderElement: HTMLElement;
-
+        
         /**
+         * @name _knobElement
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
          * The HTMLElement representing the knob.
          */
         _knobElement: HTMLElement;
-
+        
         /**
+         * @name _lastTouch
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.IPoint}
+         * 
+         * @description
          * The last touch start recorded.
          */
         _lastTouch: plat.ui.IPoint;
-
-        private __sliderOffset = 0;
-        private __maxOffset: number;
-        private __increment: number;
-        private __loaded = false;
-        private __inTouch = false;
-        private __usingBind: boolean;
-        private __transition: string;
-        private __lengthProperty: string;
-
+        
         /**
-         * Sets the proper class name on the button.
+         * @name __sliderOffset
+         * @memberof platui.Range
+         * @kind property
+         * @access private
          * 
-         * @param {string} className? The class name to set on the element.
-         * @param {string} element? The element to set the class names on. Defaults to this 
+         * @type {number}
+         * 
+         * @description
+         * The current slider offset.
+         */
+        private __sliderOffset = 0;
+        /**
+         * @name __maxOffset
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The maximum slider offset.
+         */
+        private __maxOffset: number;
+        /**
+         * @name __increment
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The slider's pixel based increment value.
+         */
+        private __increment: number;
+        /**
+         * @name __loaded
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the slider has already been loaded. Useful for when 
+         * the {@link plat.controls.Bind|Bind} tries to set a value.
+         */
+        private __loaded = false;
+        /**
+         * @name __inTouch
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the user is currently touching the screen.
+         */
+        private __inTouch = false;
+        /**
+         * @name __usingBind
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the control is bound to a context value with a 
+         * {@link plat.controls.Bind|Bind} control.
+         */
+        private __usingBind: boolean;
+        /**
+         * @name __transition
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The transition direction of this control.
+         */
+        private __transition: string;
+        /**
+         * @name __lengthProperty
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {string}
+         * 
+         * @description
+         * Denotes whether we're using height or width as the length of the slider.
+         */
+        private __lengthProperty: string;
+        
+        /**
+         * @name setClasses
+         * @memberof platui.Range
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Sets the proper class name on this control.
+         * 
+         * @param {string} className? The class name to set on the button element.
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
+         * 
+         * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
@@ -75,26 +278,50 @@
             dom.addClass(element, __Range);
             dom.addClass(element, className);
         }
-
+        
         /**
-         * Check if using context or using bind.
+         * @name initialize
+         * @memberof platui.Range
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Check if using the {@link plat.controls.Bind|Bind} control.
+         * 
+         * @returns {void}
          */
         initialize(): void {
             var element = this.element;
             this.__usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
             this.setClasses();
         }
-
+        
         /**
+         * @name setTemplate
+         * @memberof platui.Range
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Grab the knob element.
+         * 
+         * @returns {void}
          */
         setTemplate(): void {
             var slider = this._sliderElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
             this._knobElement = <HTMLElement>slider.firstElementChild;
         }
-
+        
         /**
+         * @name loaded
+         * @memberof platui.Range
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Determine the button type and apply the proper classes.
+         * 
+         * @returns {void}
          */
         loaded(): void {
             var dom = this.dom,
@@ -130,16 +357,24 @@
             }
 
             this.__increment = length / (max - min);
-            this._initializeEvents(transition);
+            this.__initializeEvents(transition);
             this.setValue(value);
             this.__loaded = true;
         }
-
+        
         /**
+         * @name setProperty
+         * @memberof platui.Range
+         * @kind function
+         * @access public
+         * 
+         * @description
          * The function called when the Range's bindable property is set externally.
          * 
-         * @param newValue The new value of the bindable property.
-         * @param oldValue The old value of the bindable property.
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
+         * 
+         * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any): void {
             if (newValue === oldValue || newValue === this.value) {
@@ -155,11 +390,19 @@
 
             this.value = newValue;
         }
-
+        
         /**
-         * Set the value of the range.
+         * @name setValue
+         * @memberof platui.Range
+         * @kind function
+         * @access public
          * 
-         * @param value The value to set the Range to.
+         * @description
+         * Set the value of the {@link platui.Range|Range}.
+         * 
+         * @param {number} value The value to set the {@link platui.Range|Range} to.
+         * 
+         * @returns {void}
          */
         setValue(value: number): void {
             if (!this.$utils.isNumber(value)) {
@@ -168,14 +411,111 @@
 
             this.__setValue(value, true, true);
         }
+        
+        /**
+         * @name _touchStart
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Log the first touch.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The touch event object.
+         * 
+         * @returns {void}
+         */
+        _touchStart(ev: plat.ui.IGestureEvent): void {
+            this.__inTouch = true;
+            this._lastTouch = {
+                x: ev.clientX,
+                y: ev.clientY
+            };
+        }
+        
+        /**
+         * @name _touchEnd
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Set the new slider offset.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $trackend event object.
+         * 
+         * @returns {void}
+         */
+        _touchEnd(ev: plat.ui.IGestureEvent): void {
+            if (!this.__inTouch) {
+                return;
+            }
+
+            this.__inTouch = false;
+
+            var newOffset = this.__calculateOffset(ev);
+            if (newOffset < 0) {
+                this.__sliderOffset = 0;
+                return;
+            } else if (newOffset > this.__maxOffset) {
+                this.__sliderOffset = this.__maxOffset;
+                return;
+            }
+
+            this.__sliderOffset = newOffset;
+        }
+        
+        /**
+         * @name _track
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Track the knob movement.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $track event object.
+         * 
+         * @returns {void}
+         */
+        _track(ev: plat.ui.IGestureEvent): void {
+            var length = this.__calculateOffset(ev),
+                value: number;
+
+            if (length < 0) {
+                value = this.min;
+                if (value - this.value >= 0) {
+                    return;
+                }
+                length = 0;
+            } else if (length > this.__maxOffset) {
+                value = this.max;
+                if (value - this.value <= 0) {
+                    return;
+                }
+                length = this.__maxOffset;
+            } else {
+                value = this.__calculateValue(length);
+            }
+
+            this.__setValue(value, false, true);
+            this._sliderElement.style[<any>this.__lengthProperty] = length + 'px';
+        }
 
         /**
+         * @name __initializeEvents
+         * @memberof platui.Range
+         * @kind function
+         * @access private
+         * 
+         * @description
          * Initialize the proper tracking events.
          * 
-         * @param transition The transition direction specified 
-         * in the plat-options.
+         * @param {string} transition The transition direction of the control.
+         * 
+         * @returns {void}
          */
-        _initializeEvents(transition: string): void {
+        private __initializeEvents(transition: string): void {
             var knob = this._knobElement,
                 trackBack: string,
                 trackForward: string,
@@ -214,81 +554,54 @@
             this.addEventListener(knob, __$trackend, touchEnd, false);
             this.addEventListener(knob, __$touchend, touchEnd, false);
         }
-
+        
         /**
-         * Log the first touch.
+         * @name __calculateValue
+         * @memberof platui.Range
+         * @kind function
+         * @access private
          * 
-         * @param ev The touch event object.
-         */
-        _touchStart(ev: plat.ui.IGestureEvent): void {
-            this.__inTouch = true;
-            this._lastTouch = {
-                x: ev.clientX,
-                y: ev.clientY
-            };
-        }
-
-        /**
-         * Set the new slider offset.
+         * @description
+         * Calculates the current value based on knob position and slider width.
          * 
-         * @param ev The $track event object.
-         */
-        _touchEnd(ev: plat.ui.IGestureEvent): void {
-            if (!this.__inTouch) {
-                return;
-            }
-
-            this.__inTouch = false;
-
-            var newOffset = this.__calculateOffset(ev);
-            if (newOffset < 0) {
-                this.__sliderOffset = 0;
-                return;
-            } else if (newOffset > this.__maxOffset) {
-                this.__sliderOffset = this.__maxOffset;
-                return;
-            }
-
-            this.__sliderOffset = newOffset;
-        }
-
-        /**
-         * Track the knob movement.
+         * @param {number} width The current width of the slider.
          * 
-         * @param ev The $track event object.
+         * @returns {number} The current value of the {link platui.Range|Range}.
          */
-        _track(ev: plat.ui.IGestureEvent): void {
-            var length = this.__calculateOffset(ev),
-                value: number;
-
-            if (length < 0) {
-                value = this.min;
-                if (value - this.value >= 0) {
-                    return;
-                }
-                length = 0;
-            } else if (length > this.__maxOffset) {
-                value = this.max;
-                if (value - this.value <= 0) {
-                    return;
-                }
-                length = this.__maxOffset;
-            } else {
-                value = this.__calculateValue(length);
-            }
-
-            this.__setValue(value, false, true);
-            this._sliderElement.style[<any>this.__lengthProperty] = length + 'px';
-        }
-
         private __calculateValue(width: number): number {
             return (this.min + Math.round(width / this.__increment));
         }
-
+        
+        /**
+         * @name __calculateKnobPosition
+         * @memberof platui.Range
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Calculates knob position based on current value.
+         * 
+         * @param {number} value The current value of the {link platui.Range|Range}.
+         * 
+         * @returns {number} The current position of the knob in pixels.
+         */
         private __calculateKnobPosition(value: number): number {
             return (value - this.min) * this.__increment;
         }
-
+        
+        /**
+         * @name __calculateOffset
+         * @memberof platui.Range
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Calculates the new offset of the slider based on the old offset and the distance moved.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $track or $trackend event object.
+         * 
+         * @returns {number} The current position of the knob in pixels.
+         */
         private __calculateOffset(ev: plat.ui.IGestureEvent): number {
             switch (this.__transition) {
                 case 'right':
@@ -301,7 +614,20 @@
                     return this.__sliderOffset + ev.clientY - this._lastTouch.y;
             }
         }
-
+        
+        /**
+         * @name __getLength
+         * @memberof platui.Range
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Gets the property to use for and the current length of the slider.
+         * 
+         * @param {string} transition The control's transition direction.
+         * 
+         * @returns {number} The length of the slider.
+         */
         private __getLength(transition: string): number {
             switch (transition) {
                 case 'right':
@@ -316,7 +642,22 @@
                     return 0;
             }
         }
-
+        
+        /**
+         * @name __setValue
+         * @memberof platui.Range
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Sets the value of the {@link platui.Range|Range}.
+         * 
+         * @param {number} newValue The new value to set.
+         * @param {boolean} setKnob Whether or not we need to set the knob position.
+         * @param {boolean} setProperty Whether or not we need to fire a propertyChanged event.
+         * 
+         * @returns {void}
+         */
         private __setValue(newValue: number, setKnob: boolean, setProperty: boolean): void {
             var value = this.value;
             if (newValue === value) {
@@ -329,17 +670,31 @@
 
             this.value = newValue;
             if (setKnob) {
-                this.__setKnob(newValue);
+                this.__setKnob();
             }
 
             if (setProperty) {
                 this.propertyChanged(newValue, value);
             }
         }
-
-        private __setKnob(value: number): void {
+        
+        /**
+         * @name __setKnob
+         * @memberof platui.Range
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Animates and sets the knob position.
+         * 
+         * @param {number} value? The value to use to calculate the knob position. If no value is 
+         * specified, the current {@link platui.Range|Range's} value will be used.
+         * 
+         * @returns {void}
+         */
+        private __setKnob(value?: number): void {
             var animationOptions: plat.IObject<string> = {},
-                length = this.__calculateKnobPosition(value);
+                length = this.__calculateKnobPosition((value || this.value));
 
             animationOptions[this.__lengthProperty] = length + 'px';
             this.$animator.animate(this._sliderElement, __Transition, animationOptions);
@@ -348,34 +703,79 @@
     }
 
     plat.register.control(__Range, Range);
-
+    
     /**
-     * An interface defining the plat-options for the Range control.
+     * @name ICheckboxOptions
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * The available {@link plat.controls.Options|options} for the {@link platui.Range|Range} control.
      */
     export interface IRangeOptions {
         /**
-         * The type of range.
+         * @name type
+         * @memberof platui.IRangeOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The type of {@link platui.Range|Range} (e.g. - "primary", "secondary", etc).
          */
-        type: string;
-
+        type?: string;
+        
         /**
-         * The direction of the range.
+         * @name transition
+         * @memberof platui.IRangeOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The transition direction of the {@link platui.Range|Range}.
          */
-        transition: string;
-
+        transition?: string;
+        
         /**
-         * The current value of the range.
+         * @name value
+         * @memberof platui.IRangeOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The current value of the {@link platui.Range|Range}.
          */
-        value: number;
-
+        value?: number;
+        
         /**
-         * The min value of the range.
+         * @name min
+         * @memberof platui.IRangeOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The min value of the {@link platui.Range|Range}.
          */
-        min: number;
-
+        min?: number;
+        
         /**
-         * The max value of the range.
+         * @name max
+         * @memberof platui.IRangeOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The max value of the {@link platui.Range|Range}.
          */
-        max: number;
+        max?: number;
     }
 }

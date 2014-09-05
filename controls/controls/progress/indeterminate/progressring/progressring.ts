@@ -1,22 +1,46 @@
 ﻿module platui {
     /**
-     * A Template Control for showing indeterminate progress.
+     * @name ProgressRing
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {plat.ui.TemplateControl}
+     * @implements {platui.IUIControl}
+     * 
+     * @description
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} for showing indeterminate progress.
      */
-    export class ProgressRing extends plat.ui.TemplateControl {
+    export class ProgressRing extends plat.ui.TemplateControl implements IUIControl {
         /**
-         * The ProgressRing's template string.
+         * @name templateString
+         * @memberof platui.ProgressRing
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The HTML template represented as a string.
          */
         templateString =
         '<div class="plat-progress-container">' +
             '<div class="ring"></div>' +
         '</div>';
-
+        
         /**
-         * Sets the proper class name on the button.
+         * @name setClasses
+         * @memberof platui.ProgressRing
+         * @kind function
+         * @access public
          * 
-         * @param {string} className? The class name to set on the element.
-         * @param {string} element? The element to set the class on. Defaults to this 
+         * @description
+         * Sets the proper class name on this control.
+         * 
+         * @param {string} className? The class name to set on the button element.
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
+         * 
+         * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
@@ -25,9 +49,17 @@
             dom.addClass(element, __ProgressRing);
             dom.addClass(element, className);
         }
-
+        
         /**
-         * Set the class name
+         * @name setClasses
+         * @memberof platui.ProgressRing
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Set the class name.
+         * 
+         * @returns {void}
          */
         initialize(): void {
             this.setClasses();

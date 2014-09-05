@@ -1,36 +1,99 @@
 ﻿module platui {
     /**
-     * A Template Control for showing incremental progress.
+     * @name ProgressBar
+     * @memberof platui
+     * @kind class
+     * 
+     * @extends {plat.ui.BindablePropertyControl}
+     * @implements {platui.IUIControl}
+     * 
+     * @description
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} for showing incremental progress.
      */
-    export class ProgressBar extends plat.ui.BindablePropertyControl {
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
+    export class ProgressBar extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * The ProgressBar's template string.
+         * @name $utils
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        $utils: plat.IUtils = plat.acquire(__Utils);
+        
+        /**
+         * @name templateString
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The HTML template represented as a string.
          */
         templateString =
         '<div class="plat-progress-container">' +
             '<div class="bar"></div>' +
         '</div>';
-
+        
         /**
+         * @name _barElement
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
          * The animated bar element.
          */
         _barElement: HTMLElement;
-
+        
         /**
+         * @name _barMax
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
          * The max value of the bar.
          */
         _barMax: number;
-
-        private __usingPlatBind = false;
-
+        
         /**
-         * Sets the proper class name on the button.
+         * @name __usingBind
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access private
          * 
-         * @param {string} className? The class name to set on the element.
-         * @param {string} element? The element to set the class names on. Defaults to this 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the control is bound to a context value with a 
+         * {@link plat.controls.Bind|Bind} control.
+         */
+        private __usingBind = false;
+        
+        /**
+         * @name setClasses
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Sets the proper class name on this control.
+         * 
+         * @param {string} className? The class name to set on the button element.
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
+         * 
+         * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
             var dom = this.dom,
@@ -39,29 +102,53 @@
             dom.addClass(element, __ProgressBar);
             dom.addClass(element, className);
         }
-
+        
         /**
-         * Set the class name
+         * @name initialize
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Set the class name.
+         * 
+         * @returns {void}
          */
         initialize(): void {
             this.setClasses(__ProgressBar);
         }
-
+        
         /**
+         * @name setTemplate
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Grabs the bar element and bar max value.
+         * 
+         * @returns {void}
          */
         setTemplate(): void {
             this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
         }
-
+        
         /**
+         * @name loaded
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Checks to make sure the context is correctly set or a plat-bind is being used, 
          * then does the initial animation of the bar.
+         * 
+         * @returns {void}
          */
         loaded(): void {
             var context = this.context,
                 element = this.element,
-                usingPlatBind = this.__usingPlatBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
+                usingPlatBind = this.__usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
 
             this._barMax = this._barMax || this._barElement.parentElement.offsetWidth;
 
@@ -76,25 +163,41 @@
 
             this.setProgress();
         }
-
+        
         /**
+         * @name contextChanged
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Animates the bar on a context changed.
+         * 
+         * @returns {void}
          */
         contextChanged(): void {
-            if (this.__usingPlatBind) {
+            if (this.__usingBind) {
                 return;
             }
 
             this.setProgress();
         }
-
+        
         /**
+         * @name setProperty
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         * 
+         * @description
          * The function called when the bindable property is set externally.
          * 
-         * @param newValue The new value of the bindable property.
-         * @param oldValue The old value of the bindable property.
-         * @param setProperty A boolean value indicating whether we should set 
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
+         * @param {boolean} setProperty? A boolean value indicating whether we should set 
          * the property if we need to toggle the check mark value.
+         * 
+         * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
             if (newValue === oldValue) {
@@ -103,11 +206,22 @@
 
             this.setProgress(newValue);
         }
-
+        
         /**
+         * @name setProgress
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         * 
+         * @description
          * Sets the progress bar value.
+         * 
+         * @param {number} value? The decimal number between 0 and 1 to set as the 
+         * bar percentage (e.g. - 0.5 would be 50% complete).
+         * 
+         * @returns {void}
          */
-        setProgress(value?: boolean): void {
+        setProgress(value?: number): void {
             var barValue = value || this.context,
                 barMax = this._barMax || (this._barMax = this._barElement.parentElement.offsetWidth);
 

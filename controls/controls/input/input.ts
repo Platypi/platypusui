@@ -8,7 +8,7 @@
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that standardizes and styles 
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes and styles 
      * an HTML input[type="text"].
      */
     export class Input extends plat.ui.BindablePropertyControl implements IUIControl {
@@ -155,7 +155,7 @@
          * Sets the proper class name on this control.
          * 
          * @param {string} className? The class name to set on the button element.
-         * @param {string} element? The element to set the class on. Defaults to this 
+         * @param {Element} element? The element to set the class on. Defaults to this 
          * control's element.
          * 
          * @returns {void}
@@ -503,7 +503,7 @@
          * @description
          * The type of {@link platui.Input|Input} (e.g. - "primary", "secondary", etc).
          */
-        type: string;
+        type?: string;
         
         /**
          * @name action
@@ -516,6 +516,6 @@
          * @description
          * The action of the {@link platui.Input|Input} control (e.g. - "email").
          */
-        action: string;
+        action?: string;
     }
 }
