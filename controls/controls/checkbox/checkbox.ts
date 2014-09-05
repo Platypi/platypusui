@@ -32,7 +32,7 @@
          * @type {string}
          * 
          * @description
-         * The HTML template.
+         * The HTML template represented as a string.
          */
         templateString =
         '<div class="plat-checkbox-container">' +
@@ -232,7 +232,7 @@
          * @type {string}
          * 
          * @description
-         * The type of {@link platui.Checkbox|Checkbox} (e.g. - primary, secondary, etc).
+         * The type of {@link platui.Checkbox|Checkbox} (e.g. - "primary", "secondary", etc).
          */
         type: string;
     }

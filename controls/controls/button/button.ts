@@ -263,7 +263,7 @@ module platui {
          * @type {string}
          * 
          * @description
-         * The type of {@link platui.Button|Button} (e.g. - primary, secondary, etc).
+         * The type of {@link platui.Button|Button} (e.g. - "primary", "secondary", etc).
          */
         type: string;
     }
