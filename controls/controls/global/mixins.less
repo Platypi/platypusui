@@ -183,14 +183,27 @@
 
 /// Gradients
 
-.gradient(@default: #F5F5F5; @start: #EEE; @stop: #FFF) {
+.gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
     .gradient(@default; @start; @stop; @webMozMsList);
 }
-.gradient(@default: #F5F5F5; @start: #EEE; @stop: #FFF; @vendorList: @webMozMsList) when (default()) {
+.gradient(@default: #ffffff; @start: #000000; @stop: #ffffff; @vendorList: @webMozMsList) when (default()) {
     .linear-gradient-top(@default; @start; 0%; @stop; 100%; @vendorList);
 }
 
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) when (default()) {
+.horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
+    .horizontal-gradient(@default; @start; @stop; @webMozMsList);
+}
+.horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff; @vendorList: @webMozMsList) when (default()) {
+    .linear-gradient-left(@default; @start; 0%; @stop; 100%; @vendorList);
+}
+
+.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2) when (default()) {
+    @gradient-value: top, @color1 @stop1, @color2 @stop2;
+    background-color: @default;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+}
+.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) {
     @gradient-value: top, @color1 @stop1, @color2 @stop2;
     background-color: @default;
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
@@ -264,6 +277,12 @@
     background-color: @default;
     background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
     .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+}
+.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) {
+    @gradient-value: left, @color1 @stop1, @color2 @stop2;
+    background-color: @default;
+    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+    .value-looper(background-image; linear-gradient; @gradient-value; @vendor; length(@vendor));
 }
 .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @webkit) {
     @gradient-value: left, @color1 @stop1, @color2 @stop2;
