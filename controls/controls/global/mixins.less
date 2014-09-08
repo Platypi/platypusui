@@ -190,11 +190,11 @@
     .linear-gradient-top(@default; @start; 0%; @stop; 100%; @vendorList);
 }
 
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2) when (default()) {
+.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) when (default()) {
     @gradient-value: top, @color1 @stop1, @color2 @stop2;
     background-color: @default;
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+    .value-looper(background-image; linear-gradient; @gradient-value; @vendor; length(@vendor));
 }
 .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @webkit) {
     @gradient-value: top, @color1 @stop1, @color2 @stop2;
