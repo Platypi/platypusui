@@ -73,6 +73,12 @@
     <Content Include="button\button.min.css">
       <DependentUpon>button.css</DependentUpon>
     </Content>
+    <Content Include="button\button.variables.css">
+      <DependentUpon>button.variables.less</DependentUpon>
+    </Content>
+    <Content Include="button\button.variables.min.css">
+      <DependentUpon>button.variables.css</DependentUpon>
+    </Content>
     <Content Include="checkbox\checkbox.css">
       <DependentUpon>checkbox.less</DependentUpon>
     </Content>
@@ -80,11 +86,83 @@
     <Content Include="checkbox\checkbox.min.css">
       <DependentUpon>checkbox.css</DependentUpon>
     </Content>
+    <Content Include="checkbox\checkbox.variables.css">
+      <DependentUpon>checkbox.variables.less</DependentUpon>
+    </Content>
+    <Content Include="checkbox\checkbox.variables.min.css">
+      <DependentUpon>checkbox.variables.css</DependentUpon>
+    </Content>
     <Content Include="drawer\drawer.css">
       <DependentUpon>drawer.less</DependentUpon>
     </Content>
     <Content Include="drawer\drawer.min.css">
       <DependentUpon>drawer.css</DependentUpon>
+    </Content>
+    <Content Include="drawer\drawer.variables.css">
+      <DependentUpon>drawer.variables.less</DependentUpon>
+    </Content>
+    <Content Include="drawer\drawer.variables.min.css">
+      <DependentUpon>drawer.variables.css</DependentUpon>
+    </Content>
+    <Content Include="global\animations.css">
+      <DependentUpon>animations.less</DependentUpon>
+    </Content>
+    <Content Include="global\animations.min.css">
+      <DependentUpon>animations.css</DependentUpon>
+    </Content>
+    <Content Include="global\gestures.css">
+      <DependentUpon>gestures.less</DependentUpon>
+    </Content>
+    <Content Include="global\gestures.min.css">
+      <DependentUpon>gestures.css</DependentUpon>
+    </Content>
+    <Content Include="global\media.css">
+      <DependentUpon>media.less</DependentUpon>
+    </Content>
+    <Content Include="global\media.min.css">
+      <DependentUpon>media.css</DependentUpon>
+    </Content>
+    <Content Include="global\mixins.css">
+      <DependentUpon>mixins.less</DependentUpon>
+    </Content>
+    <Content Include="global\mixins.min.css">
+      <DependentUpon>mixins.css</DependentUpon>
+    </Content>
+    <Content Include="global\platypus.css">
+      <DependentUpon>platypus.less</DependentUpon>
+    </Content>
+    <Content Include="global\platypus.min.css">
+      <DependentUpon>platypus.css</DependentUpon>
+    </Content>
+    <Content Include="global\typography.css">
+      <DependentUpon>typography.less</DependentUpon>
+    </Content>
+    <Content Include="global\typography.min.css">
+      <DependentUpon>typography.css</DependentUpon>
+    </Content>
+    <Content Include="global\variables.css">
+      <DependentUpon>variables.less</DependentUpon>
+    </Content>
+    <Content Include="global\variables.min.css">
+      <DependentUpon>variables.css</DependentUpon>
+    </Content>
+    <Content Include="grid\grid.css">
+      <DependentUpon>grid.less</DependentUpon>
+    </Content>
+    <Content Include="grid\grid.min.css">
+      <DependentUpon>grid.css</DependentUpon>
+    </Content>
+    <Content Include="grid\grid.mixins.css">
+      <DependentUpon>grid.mixins.less</DependentUpon>
+    </Content>
+    <Content Include="grid\grid.mixins.min.css">
+      <DependentUpon>grid.mixins.css</DependentUpon>
+    </Content>
+    <Content Include="grid\grid.variables.css">
+      <DependentUpon>grid.variables.less</DependentUpon>
+    </Content>
+    <Content Include="grid\grid.variables.min.css">
+      <DependentUpon>grid.variables.css</DependentUpon>
     </Content>
     <Content Include="input\input.css">
       <DependentUpon>input.less</DependentUpon>
@@ -92,41 +170,11 @@
     <Content Include="input\input.min.css">
       <DependentUpon>input.css</DependentUpon>
     </Content>
-    <Content Include="less\animations.css">
-      <DependentUpon>animations.less</DependentUpon>
+    <Content Include="input\input.variables.css">
+      <DependentUpon>input.variables.less</DependentUpon>
     </Content>
-    <Content Include="less\animations.min.css">
-      <DependentUpon>animations.css</DependentUpon>
-    </Content>
-    <Content Include="less\grid.css">
-      <DependentUpon>grid.less</DependentUpon>
-    </Content>
-    <Content Include="less\grid.min.css">
-      <DependentUpon>grid.css</DependentUpon>
-    </Content>
-    <Content Include="less\media.css">
-      <DependentUpon>media.less</DependentUpon>
-    </Content>
-    <Content Include="less\media.min.css">
-      <DependentUpon>media.css</DependentUpon>
-    </Content>
-    <Content Include="less\mixins.css">
-      <DependentUpon>mixins.less</DependentUpon>
-    </Content>
-    <Content Include="less\mixins.min.css">
-      <DependentUpon>mixins.css</DependentUpon>
-    </Content>
-    <Content Include="less\platypus.css">
-      <DependentUpon>platypus.less</DependentUpon>
-    </Content>
-    <Content Include="less\platypus.min.css">
-      <DependentUpon>platypus.css</DependentUpon>
-    </Content>
-    <Content Include="less\variables.css">
-      <DependentUpon>variables.less</DependentUpon>
-    </Content>
-    <Content Include="less\variables.min.css">
-      <DependentUpon>variables.css</DependentUpon>
+    <Content Include="input\input.variables.min.css">
+      <DependentUpon>input.variables.css</DependentUpon>
     </Content>
     <Content Include="lib\platypus.css">
       <DependentUpon>platypus.less</DependentUpon>
@@ -140,6 +188,12 @@
     <Content Include="modal\modal.min.css">
       <DependentUpon>modal.css</DependentUpon>
     </Content>
+    <Content Include="modal\modal.variables.css">
+      <DependentUpon>modal.variables.less</DependentUpon>
+    </Content>
+    <Content Include="modal\modal.variables.min.css">
+      <DependentUpon>modal.variables.css</DependentUpon>
+    </Content>
     <Content Include="progress\determinate\progressbar\progressbar.css">
       <DependentUpon>progressbar.less</DependentUpon>
     </Content>
@@ -152,11 +206,23 @@
     <Content Include="progress\indeterminate\progressring\progressring.min.css">
       <DependentUpon>progressring.css</DependentUpon>
     </Content>
+    <Content Include="progress\progress.variables.css">
+      <DependentUpon>progress.variables.less</DependentUpon>
+    </Content>
+    <Content Include="progress\progress.variables.min.css">
+      <DependentUpon>progress.variables.css</DependentUpon>
+    </Content>
     <Content Include="radio\radio.css">
       <DependentUpon>radio.less</DependentUpon>
     </Content>
     <Content Include="radio\radio.min.css">
       <DependentUpon>radio.css</DependentUpon>
+    </Content>
+    <Content Include="radio\radio.variables.css">
+      <DependentUpon>radio.variables.less</DependentUpon>
+    </Content>
+    <Content Include="radio\radio.variables.min.css">
+      <DependentUpon>radio.variables.css</DependentUpon>
     </Content>
     <Content Include="range\range.css">
       <DependentUpon>range.less</DependentUpon>
@@ -164,11 +230,23 @@
     <Content Include="range\range.min.css">
       <DependentUpon>range.css</DependentUpon>
     </Content>
+    <Content Include="range\range.variables.css">
+      <DependentUpon>range.variables.less</DependentUpon>
+    </Content>
+    <Content Include="range\range.variables.min.css">
+      <DependentUpon>range.variables.css</DependentUpon>
+    </Content>
     <Content Include="select\select.css">
       <DependentUpon>select.less</DependentUpon>
     </Content>
     <Content Include="select\select.min.css">
       <DependentUpon>select.css</DependentUpon>
+    </Content>
+    <Content Include="select\select.variables.css">
+      <DependentUpon>select.variables.less</DependentUpon>
+    </Content>
+    <Content Include="select\select.variables.min.css">
+      <DependentUpon>select.variables.css</DependentUpon>
     </Content>
     <Content Include="toggle\toggle.css">
       <DependentUpon>toggle.less</DependentUpon>
@@ -176,12 +254,12 @@
     <Content Include="toggle\toggle.min.css">
       <DependentUpon>toggle.css</DependentUpon>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="less\platypus.less" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="less\variables.less" />
+    <Content Include="toggle\toggle.variables.css">
+      <DependentUpon>toggle.variables.less</DependentUpon>
+    </Content>
+    <Content Include="toggle\toggle.variables.min.css">
+      <DependentUpon>toggle.variables.css</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="radio\radio.less" />
@@ -214,18 +292,51 @@
     <Content Include="input\input.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="less\animations.less" />
-    <Content Include="less\media.less" />
-    <Content Include="less\mixins.less" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="less\grid.less" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="less\typography.less" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="lib\platypus.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="toggle\toggle.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="select\select.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="range\range.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="radio\radio.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="progress\progress.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="modal\modal.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="input\input.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="grid\grid.less" />
+    <Content Include="grid\grid.mixins.less" />
+    <Content Include="grid\grid.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="global\animations.less" />
+    <Content Include="global\gestures.less" />
+    <Content Include="global\media.less" />
+    <Content Include="global\mixins.less" />
+    <Content Include="global\platypus.less" />
+    <Content Include="global\typography.less" />
+    <Content Include="global\variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="drawer\drawer.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="checkbox\checkbox.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="button\button.variables.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

@@ -36,7 +36,7 @@ module.exports = exports = function load(grunt) {
                     cleancss: true
                 },
                 files: {
-                    '../dist/platypus.min.css': 'controls/lib/platypus.less'
+                    'controls/lib/platypus.min.css': 'controls/lib/platypus.less'
                 }
             },
             app: {
