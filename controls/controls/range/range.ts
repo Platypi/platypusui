@@ -194,6 +194,18 @@
          */
         private __increment: number;
         /**
+         * @name __step
+         * @memberof platui.Range
+         * @kind property
+         * @access private
+         * 
+         * @type {number}
+         * 
+         * @description
+         * Denotes the incremental step value of the {@link platui.Range|Range's} value property.
+         */
+        private __step: number;
+        /**
          * @name __loaded
          * @memberof platui.Range
          * @kind property
@@ -334,6 +346,7 @@
                 optionValue = Number(options.value),
                 optionMin = options.min,
                 optionMax = options.max,
+                step = options.step,
                 type = options.type || 'primary',
                 transition = this.__transition = options.transition || 'right',
                 length = this.__getLength(transition);
@@ -349,15 +362,15 @@
             // reset value to minimum in case Bind set it to a value
             this.value = min;
             this.__maxOffset = length;
+            this.__step = isNumber(step) ? (step > 0 ? step : 1) : 1;
 
             if (min >= max) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
                 Exception.warn('"' + __Range + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
-                return;
             }
 
-            this.__increment = length / (max - min);
+            this.__setIncrement();
             this.__initializeEvents(transition);
             this.setValue(value);
             this.__loaded = true;
@@ -454,12 +467,13 @@
 
             this.__inTouch = false;
 
-            var newOffset = this.__calculateOffset(ev);
+            var newOffset = this.__calculateOffset(ev),
+                maxOffset = this.__maxOffset || (this.__maxOffset = this.__getLength(this.__transition));
             if (newOffset < 0) {
                 this.__sliderOffset = 0;
                 return;
-            } else if (newOffset > this.__maxOffset) {
-                this.__sliderOffset = this.__maxOffset;
+            } else if (newOffset > maxOffset) {
+                this.__sliderOffset = maxOffset;
                 return;
             }
 
@@ -481,7 +495,8 @@
          */
         _track(ev: plat.ui.IGestureEvent): void {
             var length = this.__calculateOffset(ev),
-                value: number;
+                value: number,
+                maxOffset = this.__maxOffset || (this.__maxOffset = this.__getLength(this.__transition));
 
             if (length < 0) {
                 value = this.min;
@@ -489,12 +504,12 @@
                     return;
                 }
                 length = 0;
-            } else if (length > this.__maxOffset) {
+            } else if (length > maxOffset) {
                 value = this.max;
                 if (value - this.value <= 0) {
                     return;
                 }
-                length = this.__maxOffset;
+                length = maxOffset;
             } else {
                 value = this.__calculateValue(length);
             }
@@ -570,7 +585,10 @@
          * @returns {number} The current value of the {link platui.Range|Range}.
          */
         private __calculateValue(width: number): number {
-            return (this.min + Math.round(width / this.__increment));
+            var increment = this.__increment || this.__setIncrement(),
+                step = this.__step;
+
+            return (this.min + Math.round(width / increment / step) * step);
         }
         
         /**
@@ -587,7 +605,8 @@
          * @returns {number} The current position of the knob in pixels.
          */
         private __calculateKnobPosition(value: number): number {
-            return (value - this.min) * this.__increment;
+            var increment = this.__increment || this.__setIncrement();
+            return (value - this.min) * increment;
         }
         
         /**
@@ -645,6 +664,21 @@
         }
         
         /**
+         * @name __setIncrement
+         * @memberof platui.Range
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Sets the increment for sliding the range.
+         * 
+         * @returns {number} The slider's increment value.
+         */
+        private __setIncrement(): number {
+            return (this.__increment = this.__maxOffset / (this.max - this.min));
+        }
+        
+        /**
          * @name __setValue
          * @memberof platui.Range
          * @kind function
@@ -663,10 +697,12 @@
             var value = this.value;
             if (newValue === value) {
                 return;
-            } else if (newValue > this.max) {
+            } else if (newValue >= this.max) {
                 newValue = this.max;
-            } else if (newValue < this.min) {
+            } else if (newValue <= this.min) {
                 newValue = this.min;
+            } else if (Math.abs(newValue - value) < this.__step) {
+                return;
             }
 
             this.value = newValue;
@@ -746,7 +782,7 @@
          * @kind property
          * @access public
          * 
-         * @type {string}
+         * @type {number}
          * 
          * @description
          * The current value of the {@link platui.Range|Range}.
@@ -759,7 +795,7 @@
          * @kind property
          * @access public
          * 
-         * @type {string}
+         * @type {number}
          * 
          * @description
          * The min value of the {@link platui.Range|Range}.
@@ -772,11 +808,24 @@
          * @kind property
          * @access public
          * 
-         * @type {string}
+         * @type {number}
          * 
          * @description
          * The max value of the {@link platui.Range|Range}.
          */
         max?: number;
+
+        /**
+         * @name step
+         * @memberof platui.IRangeOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The incremental step value of the {@link platui.Range|Range}.
+         */
+        step?: number;
     }
 }
