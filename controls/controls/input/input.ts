@@ -577,6 +577,41 @@
         }
 
         /**
+         * @name __checkText
+         * @memberof platui.Input
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Checks the current state of the default action and handles accordingly.
+         * 
+         * @returns {void}
+         */
+        private __checkText(): void {
+            var char = this.__typeChar;
+
+            if (char === 'x') {
+                if (this._inputElement.value === '') {
+                    this.__typeChar = '';
+                }
+            } else if (this._inputElement.value !== '') {
+                this.__typeChar = 'x';
+            }
+
+            var newChar = this.__typeChar;
+            if (char !== newChar) {
+                var actionElement = this._actionElement;
+                actionElement.textContent = newChar;
+                if (newChar === '') {
+                    this.dom.addClass(actionElement, 'hide');
+                    return;
+                }
+
+                this.dom.removeClass(actionElement, 'hide');
+            }
+        }
+
+        /**
          * @name __checkPassword
          * @memberof platui.Input
          * @kind function
@@ -671,44 +706,9 @@
                 this.dom.removeClass(actionElement, 'hide');
             }
         }
-        
-        /**
-         * @name __checkText
-         * @memberof platui.Input
-         * @kind function
-         * @access private
-         * 
-         * @description
-         * Checks the current state of the default action and handles accordingly.
-         * 
-         * @returns {void}
-         */
-        private __checkText(): void {
-            var char = this.__typeChar;
-
-            if (char === 'x') {
-                if (this._inputElement.value === '') {
-                    this.__typeChar = '';
-                }
-            } else if (this._inputElement.value !== '') {
-                this.__typeChar = 'x';
-            }
-
-            var newChar = this.__typeChar;
-            if (char !== newChar) {
-                var actionElement = this._actionElement;
-                actionElement.textContent = newChar;
-                if (newChar === '') {
-                    this.dom.addClass(actionElement, 'hide');
-                    return;
-                }
-
-                this.dom.removeClass(actionElement, 'hide');
-            }
-        }
 
         /**
-         * @name __onKeyDown
+         * @name __onInput
          * @memberof platui.Input
          * @kind function
          * @access private
