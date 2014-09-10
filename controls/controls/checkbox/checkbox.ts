@@ -91,7 +91,7 @@
             var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
                 options = optionObj.value || <ICheckboxOptions>{},
                 mark = this._targetType = options.mark || 'check',
-                type = options.type || 'primary';
+                style = options.style || 'primary';
 
             switch (mark.toLowerCase()) {
                 case 'check':
@@ -103,7 +103,7 @@
                     break;
             }
 
-            this.setClasses(type);
+            this.setClasses(style);
         }
         
         /**
@@ -225,7 +225,7 @@
         mark?: string;
         
         /**
-         * @name type
+         * @name style
          * @memberof platui.ICheckboxOptions
          * @kind property
          * @access public
@@ -233,8 +233,8 @@
          * @type {string}
          * 
          * @description
-         * The type of {@link platui.Checkbox|Checkbox} (e.g. - "primary", "secondary", etc).
+         * The style of {@link platui.Checkbox|Checkbox} (e.g. - "primary", "secondary", etc).
          */
-        type?: string;
+        style?: string;
     }
 }

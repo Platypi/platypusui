@@ -27,11 +27,19 @@
             outline: none;
             border: none;
             font: inherit;
+            -webkit-appearance: none;
             .box-sizing(border-box);
             .calc(width; '100% - 3em');
 
-            &::-ms-clear {
+            &::-ms-clear,
+            &::-ms-reveal {
                 display: none;
+            }
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
             }
         }
 
@@ -45,6 +53,10 @@
             text-align: right;
             color: @inputActionColor;
             cursor: pointer;
+
+            &.hide {
+                display: none;
+            }
         }
     }
 

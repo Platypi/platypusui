@@ -9,7 +9,7 @@
      * 
      * @description
      * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes and styles 
-     * an HTML input[type="text"].
+     * an HTML input element of various types.
      */
     export class Input extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
@@ -26,6 +26,19 @@
         $utils: plat.IUtils = plat.acquire(__Utils);
         
         /**
+         * @name $compat
+         * @memberof platui.Input
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        $compat: plat.ICompat = plat.acquire(__Compat);
+        
+        /**
          * @name templateString
          * @memberof platui.Input
          * @kind property
@@ -39,7 +52,7 @@
         templateString =
         '<div class="plat-input-container">' +
             '<div class="image"></div>' +
-            '<input type="text" plat-keyup="__onKeyup" />' +
+            '<input type="text" />' +
             '<div class="action"></div>' +
         '</div>';
         
@@ -96,7 +109,7 @@
         _actionElement: HTMLElement;
         
         /**
-         * @name __action
+         * @name __type
          * @memberof platui.Input
          * @kind property
          * @access private
@@ -104,11 +117,11 @@
          * @type {string}
          * 
          * @description
-         * The control's action (e.g. - "email").
+         * The control's type (e.g. - "email").
          */
-        private __action: string;
+        private __type: string;
         /**
-         * @name __actionChar
+         * @name __pattern
          * @memberof platui.Input
          * @kind property
          * @access private
@@ -116,24 +129,24 @@
          * @type {string}
          * 
          * @description
-         * The control's action character (e.g. - an "x" to delete 
+         * A regular expression string to regulate what text is allowed to be entered.
+         */
+        private __pattern: RegExp;
+        /**
+         * @name __typeChar
+         * @memberof platui.Input
+         * @kind property
+         * @access private
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The control's type character (e.g. - an "x" to delete 
          * input text).
          */
-        private __actionChar: string;
+        private __typeChar: string;
         /**
-         * @name __actionRegex
-         * @memberof platui.Input
-         * @kind property
-         * @access private
-         * 
-         * @type {RegExp}
-         * 
-         * @description
-         * The control's action regular expression used for validation.
-         */
-        private __actionRegex: RegExp;
-        /**
-         * @name __actionHandler
+         * @name __typeHandler
          * @memberof platui.Input
          * @kind property
          * @access private
@@ -141,9 +154,9 @@
          * @type {EventListener}
          * 
          * @description
-         * A function to handle the action event.
+         * A function to handle the type event.
          */
-        private __actionHandler: EventListener;
+        private __typeHandler: EventListener;
         
         /**
          * @name setClasses
@@ -196,10 +209,27 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var image = this._imageElement = <HTMLElement>this.element.firstElementChild.firstElementChild,
-                input = this._inputElement = <HTMLInputElement>image.nextElementSibling;
+            var element = this.element,
+                image = this._imageElement = <HTMLElement>element.firstElementChild.firstElementChild,
+                input = this._inputElement = <HTMLInputElement>image.nextElementSibling,
+                attributes = element.attributes,
+                length = attributes.length,
+                attrRegex = /plat-(?!control|hide)/,
+                attribute: Attr;
 
             this._actionElement = <HTMLElement>input.nextElementSibling;
+
+            for (var i = 0; i < length; ++i) {
+                attribute = attributes[i];
+                if (attrRegex.test(attribute.name)) {
+                    input.setAttribute(attribute.name, attribute.value);
+                }
+            }
+
+            var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
+            if (!this.$utils.isEmpty(placeholder)) {
+                input.placeholder = placeholder;
+            }
         }
         
         /**
@@ -209,7 +239,7 @@
          * @access public
          * 
          * @description
-         * Set the type and initialize the action.
+         * Set the style and initialize the action.
          * 
          * @returns {void}
          */
@@ -218,12 +248,22 @@
                 options = optionObj.value || <IInputOptions>{},
                 dom = this.dom,
                 element = this.element,
-                type = options.type || 'primary',
-                action = this.__action = options.action || 'normal';
+                style = options.style || 'primary',
+                type = this.__type = options.type || 'text',
+                pattern = options.pattern;
 
+            dom.addClass(element, style);
             dom.addClass(element, type);
-            dom.addClass(element, action);
-            this.__initializeAction();
+
+            if (this.$utils.isString(pattern)) {
+                if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
+                    pattern = pattern.slice(1, -1);
+                }
+
+                this.__pattern = new RegExp(pattern);
+            }
+
+            this._initializeType();
         }
         
         /**
@@ -240,17 +280,7 @@
          * @returns {boolean} Whether or not the user's input is valid.
          */
         validate(): boolean {
-            var value = this._inputElement.value;
-            if (this.$utils.isEmpty(value)) {
-                return false;
-            }
-
-            switch (this.__action) {
-                case 'email':
-                    return this.__validateEmail(value);
-                default:
-                    return true;
-            }
+            return this.__pattern.test(this._inputElement.value);
         }
         
         /**
@@ -265,9 +295,15 @@
          * @returns {void}
          */
         clear(): void {
-            var inputElement = this._inputElement;
-            inputElement.value = '';
-            this._actionElement.textContent = this.__actionChar = '';
+            var value = this._inputElement.value;
+            if (value === '') {
+                return;
+            }
+
+            var actionElement = this._actionElement;
+            this.propertyChanged('', value);
+            actionElement.textContent = this.__typeChar = '';
+            this.dom.addClass(actionElement, 'hide');
         }
         
         /**
@@ -277,7 +313,7 @@
          * @access public
          * 
          * @description
-         * Focuses the input[type="text"].
+         * Focuses the input.
          * 
          * @returns {void}
          */
@@ -292,41 +328,136 @@
          * @access public
          * 
          * @description
-         * Blurs the input[type="text"].
+         * Blurs the input.
          * 
          * @returns {void}
          */
         blur(): void {
             this._inputElement.blur();
         }
-        
+
         /**
-         * @name __initializeAction
+         * @name value
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access public
          * 
          * @description
-         * Initializes the action.
+         * Returns the current value of {@link platui.Input|Input} control.
+         * 
+         * @returns {string} The current value of the {@link platui.Input|Input} control.
+         */
+        value(): string {
+            return this._inputElement.value;
+        }
+        
+        /**
+         * @name _initializeType
+         * @memberof platui.Input
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Initializes the type.
          * 
          * @returns {void}
          */
-        private __initializeAction(): void {
-            switch (this.__action) {
+        _initializeType(): void {
+            var type = this.__type;
+            switch (type) {
                 case 'email':
-                    this.__actionHandler = this.__handleEmail;
-                    this.__actionRegex = new RegExp('^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|' +
-                        '(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|' +
-                        '(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+                    this.__typeHandler = this.__handleEmail;
+                    this.__pattern = this.__pattern || new RegExp('^(([^<>()[\\]\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\.,;:\\s@\\"]+)*)|' +
+                        '(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|' +
+                        '(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
+                    break;
+                case 'tel':
+                    this.__pattern = this.__pattern || /^\+|[0-9.-\s]+/;
+                    this.__typeHandler = this.__erase;
+                    break;
+                case 'number':
+                    this.__pattern = this.__pattern || /[0-9.,]+/;
+                    this.__typeHandler = this.__erase;
+                    type = 'tel';
                     break;
                 default:
-                    this.__actionHandler = this.__erase;
+                    this.__pattern = this.__pattern || /[\S\s]*/;
+                    this.__typeHandler = this.__erase;
                     break;
             }
 
+            this._inputElement.type = type;
+
             var actionElement = this._actionElement;
-            actionElement.textContent = this.__actionChar = '';
-            this.addEventListener(actionElement, __$tap, this.__actionHandler);
+            actionElement.textContent = this.__typeChar = '';
+            this.dom.addClass(actionElement, 'hide');
+            this.addEventListener(actionElement, __$tap, this.__typeHandler);
+            this._addTextEventListener();
+        }
+
+        /**
+         * @name _addTextEventListener
+         * @memberof platui.Input
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds a text event listener to the input element.
+         * 
+         * @returns {void}
+         */
+        _addTextEventListener(): void {
+            var input = this._inputElement,
+                $compat = this.$compat,
+                $utils = this.$utils,
+                composing = false,
+                timeout: plat.IRemoveListener,
+                eventListener = () => {
+                    if (composing) {
+                        return;
+                    }
+
+                    this.__onInput();
+                },
+                postponedEventListener = () => {
+                    if ($utils.isFunction(timeout)) {
+                        return;
+                    }
+
+                    timeout = $utils.postpone(() => {
+                        eventListener();
+                        timeout = null;
+                    });
+                };
+
+            if ($utils.isUndefined($compat.ANDROID)) {
+                this.addEventListener(input, 'compositionstart', () => (composing = true), false);
+                this.addEventListener(input, 'compositionend', () => {
+                    composing = false;
+                    eventListener();
+                }, false);
+            }
+
+            if ($compat.hasEvent('input')) {
+                this.addEventListener(input, 'input', eventListener, false);
+            } else {
+                this.addEventListener(input, 'keydown', (ev: KeyboardEvent) => {
+                    var key = ev.keyCode;
+
+                    if (key === 91 ||
+                        key === 92 ||
+                        (key > 15 && key < 28) ||
+                        (key > 32 && key < 41)) {
+                        return;
+                    }
+
+                    postponedEventListener();
+                }, false);
+                this.addEventListener(input, 'cut', postponedEventListener, false);
+                this.addEventListener(input, 'paste', postponedEventListener, false);
+            }
+
+            this.addEventListener(input, 'change', eventListener, false);
         }
         
         /**
@@ -359,16 +490,10 @@
         private __handleEmail(): void {
             var inputElement = this._inputElement,
                 value = inputElement.value,
-                char = this.__actionChar;
+                char = this.__typeChar;
 
-            if (char === 'x') {
-                inputElement.value = '';
-            } else {
-                inputElement.value += this.__actionChar;
-            }
-
+            this.propertyChanged(char === 'x' ? '' : value + char, value);
             this.__checkEmail();
-            this.propertyChanged(inputElement.value, value);
             inputElement.focus();
         }
         
@@ -384,54 +509,53 @@
          * @returns {void}
          */
         private __checkEmail(): void {
-            var value = this._inputElement.value;
-            switch (this.__actionChar) {
+            var value = this._inputElement.value,
+                char = this.__typeChar;
+
+            switch (char) {
                 case '@':
                     if (value.indexOf('@') !== -1) {
                         if (value.indexOf('.com') !== -1) {
-                            this._actionElement.textContent = this.__actionChar = 'x';
+                            this.__typeChar = 'x';
                             break;
                         }
-                        this._actionElement.textContent = this.__actionChar = '.com';
+                        this.__typeChar = '.com';
                     }
                     break;
                 case '.com':
                     if (value.indexOf('@') === -1) {
-                        this._actionElement.textContent = this.__actionChar = '@';
+                        this.__typeChar = '@';
                     } else if (value.indexOf('.com') !== -1) {
-                        this._actionElement.textContent = this.__actionChar = 'x';
+                        this.__typeChar = 'x';
                     }
                     break;
                 case 'x':
                     if (value === '') {
-                        this._actionElement.textContent = this.__actionChar = '';
+                        this.__typeChar = '';
                     } else if (value.indexOf('@') === -1) {
-                        this._actionElement.textContent = this.__actionChar = '@';
+                        this.__typeChar = '@';
                     } else if (value.indexOf('.com') === -1) {
-                        this._actionElement.textContent = this.__actionChar = '.com';
+                        this.__typeChar = '.com';
                     }
                     break;
                 default:
                     if (value.indexOf('@') === -1) {
-                        this._actionElement.textContent = this.__actionChar = '@';
+                        this.__typeChar = '@';
                     }
                     break;
             }
-        }
-        
-        /**
-         * @name __validateEmail
-         * @memberof platui.Input
-         * @kind function
-         * @access private
-         * 
-         * @description
-         * The validate function for the "email" action.
-         * 
-         * @returns {void}
-         */
-        private __validateEmail(email: string): boolean {
-            return this.__actionRegex.test(email);
+
+            var newChar = this.__typeChar;
+            if (char !== newChar) {
+                var actionElement = this._actionElement;
+                actionElement.textContent = newChar;
+                if (newChar === '') {
+                    this.dom.addClass(actionElement, 'hide');
+                    return;
+                }
+
+                this.dom.removeClass(actionElement, 'hide');
+            }
         }
         
         /**
@@ -446,19 +570,32 @@
          * @returns {void}
          */
         private __checkText(): void {
-            if (this.__actionChar === 'x') {
-                if (this._inputElement.value === '') {
-                    this._actionElement.textContent = this.__actionChar = '';
+            var value = this._inputElement.value,
+                char = this.__typeChar;
+
+            if (char === 'x') {
+                if (value === '') {
+                    this.__typeChar = '';
                 }
-            } else {
-                if (this._inputElement.value !== '') {
-                    this._actionElement.textContent = this.__actionChar = 'x';
+            } else if (value !== '') {
+                this.__typeChar = 'x';
+            }
+
+            var newChar = this.__typeChar;
+            if (char !== newChar) {
+                var actionElement = this._actionElement;
+                actionElement.textContent = newChar;
+                if (newChar === '') {
+                    this.dom.addClass(actionElement, 'hide');
+                    return;
                 }
+
+                this.dom.removeClass(actionElement, 'hide');
             }
         }
-        
+
         /**
-         * @name __onKeyup
+         * @name __onKeyDown
          * @memberof platui.Input
          * @kind function
          * @access private
@@ -466,14 +603,25 @@
          * @description
          * The event handler upon user text input.
          * 
-         * @param {KeyboardEvent} ev The "keyup" event object.
-         * 
          * @returns {void}
          */
-        private __onKeyup(ev: KeyboardEvent): void {
-            switch (this.__action) {
+        private __onInput(): void {
+            switch (this.__type) {
                 case 'email':
                     this.__checkEmail();
+                    break;
+                case 'tel':
+                case 'number':
+                    var input = this._inputElement,
+                        value = input.value,
+                        last = value.length - 1;
+
+                    if (last >= 0 && (!this.__pattern.test(value[last]) ||
+                        !(last === 0 || this.__type !== 'tel' || value[last] !== '+'))) {
+                        this.propertyChanged(value.slice(0, -1), value);
+                    }
+
+                    this.__checkText();
                     break;
                 default:
                     this.__checkText();
@@ -494,6 +642,19 @@
      */
     export interface IInputOptions {
         /**
+         * @name style
+         * @memberof platui.IInputOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The style of {@link platui.Input|Input} (e.g. - "primary", "secondary", etc).
+         */
+        style?: string;
+        
+        /**
          * @name type
          * @memberof platui.IInputOptions
          * @kind property
@@ -502,12 +663,13 @@
          * @type {string}
          * 
          * @description
-         * The type of {@link platui.Input|Input} (e.g. - "primary", "secondary", etc).
+         * The type of the {@link platui.Input|Input} control (e.g. - "text", "password", "email", etc). 
+         * Defaults to "text".
          */
         type?: string;
-        
+
         /**
-         * @name action
+         * @name pattern
          * @memberof platui.IInputOptions
          * @kind property
          * @access public
@@ -515,8 +677,8 @@
          * @type {string}
          * 
          * @description
-         * The action of the {@link platui.Input|Input} control (e.g. - "email").
+         * A regular expression string to regulate what text is allowed to be entered.
          */
-        action?: string;
+        pattern?: string;
     }
 }

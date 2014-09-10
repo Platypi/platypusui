@@ -1336,7 +1336,7 @@
         elastic?: boolean;
         
         /**
-         * @name elastic
+         * @name type
          * @memberof platui.IDrawerOptions
          * @kind property
          * @access public
@@ -1345,7 +1345,7 @@
          * 
          * @description
          * An option for the {@link platui.DrawerController|DrawerController} specifying how the drawer should 
-         * open.
+         * open. Can be specified as either "tap" or "slide", but it's default behavior is both.
          * 
          * @remarks
          * "tap": The drawer opens when the controller is tapped.

@@ -1,5 +1,5 @@
 /**
-* PlatypusTS v0.9.0 (http://getplatypi.com)
+* PlatypusTS v0.9.1 (http://getplatypi.com)
 * Copyright 2014 Platypi, LLC. All rights reserved.
 *
 * PlatypusTS is licensed under the GPL-3.0 found at
@@ -18,172 +18,306 @@ declare module plat {
     */
     module register {
         /**
-        * Registers the IApp with the framework. The framework will instantiate the IApp when needed, and wire up
-        * the Application Lifecycle events. The dependencies array corresponds to injectables that will be
+        * @name app
+        * @memberof plat.register
+        * @kind function
+        * @access public
+        *
+        * @description
+        * Registers the {@link plat.IApp|IApp} with the framework. The framework will instantiate the {@link plat.IApp|IApp}
+        * when needed, and wire up the Application Lifecycle events. The dependencies array corresponds to injectables that will be
         * passed into the Constructor of the app.
         *
-        * @param name The name of your app.
-        * @param Type The constructor for the IApp.
-        * @param dependencies An array of strings representing the dependencies needed for the app injector.
+        * @param {string} name The name of your app.
+        * @param {new (...args: any[]) => plat.IApp} Type The constructor for the {@link plat.IApp|IApp}.
+        * @param {Array<any>} dependencies? An array of strings representing the dependencies needed for the app injector.
+        *
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function app(name: string, Type: new(...args: any[]) => IApp, dependencies?: any[]): typeof register;
         /**
-        * Registers an IControl with the framework. The framework will instantiate the IControl when needed. The
-        * dependencies array corresponds to injectables that will be passed into the Constructor of the control.
+        * @name control
+        * @memberof plat.register
+        * @kind function
+        * @access public
         *
-        * @param name The control type, corresponding to the HTML notation for creating a new IControl (e.g. 'plat-foreach').
-        * @param Type The constructor for the IControl.
-        * @param dependencies An array of strings representing the dependencies needed for the IControl injector.
+        * @description
+        * Registers an {@link plat.IControl|IControl} with the framework. The framework will instantiate the
+        * {@link plat.IControl|IControl} when needed. The dependencies array corresponds to injectables that
+        * will be passed into the Constructor of the control.
+        *
+        * @param {string} name The control type, corresponding to the HTML notation for creating a new IControl (e.g. 'plat-foreach').
+        * @param {new (...args: any[]) => plat.IControl} Type The constructor for the {@link plat.IControl|IControl}.
+        * @param {Array<any>} dependencies? An array of strings representing the dependencies needed for the {@link plat.IControl|IControl}
+        * injector.
         *
         * @example plat.register.control('my-tap', MyTap, [plat.expressions.IParser]);
+        *
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function control(name: string, Type: new(...args: any[]) => IControl, dependencies?: any[]): typeof register;
         /**
-        * Registers a ViewControl with the framework. The framework will instantiate the control when needed. The
-        * dependencies array corresponds to injectables that will be passed into the Constructor of the control.
+        * @name viewControl
+        * @memberof plat.register
+        * @kind function
+        * @access public
+        * @variation 0
         *
-        * @param name The control type, corresponding to the HTML notation for creating a new IViewControl. Used for navigation
-        * to the specified ViewControl.
-        * @param Type The constructor for the IViewControl.
-        * @param dependencies An optional array of strings representing the dependencies needed for the IViewControl injector.
+        * @description
+        * Registers an {@link plat.ui.IViewControl|IViewControl} with the framework. The framework will
+        * instantiate the control when needed. The dependencies array corresponds to injectables that will be
+        * passed into the Constructor of the control.
+        *
+        * @param {string} name The control type, corresponding to the HTML notation for creating a new
+        * {@link plat.ui.IViewControl|IViewControl}. Used for navigation to the specified {@link plat.ui.IViewControl|IViewControl}.
+        * @param {new (...args: any[]) => plat.ui.IViewControl} Type The constructor for the {@link plat.ui.IViewControl|IViewControl}.
+        * @param {Array<any>} dependencies? An optional array of strings representing the dependencies needed for the
+        * {@link plat.ui.IViewControl|IViewControl} injector.
         *
         * @example plat.register.viewControl('my-view-control', MyViewControl);
+        *
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function viewControl(name: string, Type: new(...args: any[]) => ui.IViewControl, dependencies?: any[]): typeof register;
         /**
-        * Registers a WebViewControl with the framework. The framework will instantiate the control when needed. The
-        * dependencies array corresponds to injectables that will be passed into the Constructor of the control.
+        * @name viewControl
+        * @memberof plat.register
+        * @kind function
+        * @access public
+        * @variation 1
         *
-        * @param name The control type, corresponding to the HTML notation for creating a new IWebViewControl. Used for navigation
-        * to the specified WebViewControl.
-        * @param Type The constructor for the IWebViewControl.
-        * @param dependencies An optional array of strings representing the dependencies needed for the IWebViewControl injector.
-        * @param routes Optional route strings (or regular expressions) used for matching a URL to the registered IWebViewControl.
+        * @description
+        * Registers an {@link plat.ui.IWebViewControl|WebViewControl} with the framework. The framework will instantiate the
+        * control when needed. The dependencies array corresponds to injectables that will be passed into the Constructor of the control.
+        *
+        * @param {string} name The control type, corresponding to the HTML notation for creating a new
+        * {@link plat.ui.IWebViewControl|WebViewControl}. Used for navigation to the specified {@link plat.ui.IWebViewControl|WebViewControl}.
+        * @param {new (...args: any[]) => ui.IWebViewControl} Type The constructor for the {@link plat.ui.IWebViewControl|WebViewControl}.
+        * @param {Array<any>} dependencies? An optional array of strings representing the dependencies needed for the
+        * {@link plat.ui.IWebViewControl|WebViewControl} injector.
+        * @param {Array<any>} routes? Optional route strings (or regular expressions) used for matching a URL to the
+        * registered {@link plat.ui.IWebViewControl|WebViewControl}.
         *
         * @example plat.register.viewControl('my-view-control', MyViewControl, null, ['customers/:customer(/:ordernumber)']);
+        *
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function viewControl(name: string, Type: new(...args: any[]) => ui.IWebViewControl, dependencies: any[], routes: any[]): typeof register;
         /**
+        * @name injectable
+        * @memberof plat.register
+        * @kind function
+        * @access public
+        * @variation 0
+        *
+        * @description
         * Registers an injectable with the framework. Injectables are objects that can be used for dependency injection into other objects.
         * The dependencies array corresponds to injectables that will be passed into the Constructor of the injectable.
         *
-        * @param name The name of the injector, used when another component is specifying dependencies.
-        * @param dependencies An array of strings representing the dependencies needed for the injectable's injector.
-        * @param Type The constructor for the injectable. The injectable will only be instantiated once during the application
-        * lifetime.
-        * @param injectableType Specifies the type of injectable, either plat.register.injectable.SINGLETON,
-        * plat.register.injectable.STATIC, plat.register.injectable.INSTANCE, plat.register.injectable.FACTORY,
-        * plat.register.injectable.CLASS (defaults to plat.register.injectable.SINGLETON).
+        * @param {string} name The name of the injector, used when another component is specifying dependencies.
+        * @param {new (...args: any[]) => any} Type The constructor for the injectable. The injectable will only be
+        * instantiated once during the application lifetime.
+        * @param {Array<any>} dependencies? An array of strings representing the dependencies needed for the injectable's injector.
+        * @param {string} injectableType? Specifies the type of injectable, either {@link plat.register.injectable.SINGLETON|SINGLETON},
+        * {@link plat.register.injectable.STATIC|STATIC}, {@link plat.register.injectable.INSTANCE|INSTANCE},
+        * {@link plat.register.injectable.FACTORY|FACTORY}, {@link plat.register.injectable.CLASS|CLASS}
+        * (defaults to {@link plat.register.injectable.SINGLETON|SINGLETON}).
         *
-        * @example plat.register.injectable('$CacheFactory', [plat.expressions.IParser], Cache);
-        * @example plat.register.injectable('database', MyDatabase, null, register.injectable.INSTANCE);
+        * @example
+        * plat.register.injectable('$CacheFactory', [plat.expressions.IParser], Cache);
+        * plat.register.injectable('database', MyDatabase, null, plat.register.injectable.INSTANCE);
+        *
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function injectable(name: string, Type: new(...args: any[]) => any, dependencies?: any[], injectableType?: string): typeof register;
         /**
+        * @name injectable
+        * @memberof plat.register
+        * @kind function
+        * @access public
+        * @variation 1
+        *
+        * @description
         * Registers an injectable with the framework. Injectables are objects that can be used for dependency injection into other objects.
-        * The dependencies array corresponds to injectables that will be passed into the injectable method.
+        * The dependencies array corresponds to injectables that will be passed into the Constructor of the injectable.
         *
-        * @param name The name of the injector, used when another component is specifying dependencies.
-        * @param dependencies An array of strings representing the dependencies needed for the injectable's injector.
-        * @param Type The constructor for the injectable. The injectable will only be instantiated once during the application
-        * lifetime.
-        * @param injectableType Specifies the type of injectable, either plat.register.injectable.SINGLETON,
-        * plat.register.injectable.STATIC, plat.register.injectable.INSTANCE, plat.register.injectable.FACTORY,
-        * plat.register.injectable.CLASS (defaults to plat.register.injectable.SINGLETON).
+        * @param {string} name The name of the injector, used when another component is specifying dependencies.
+        * @param {(...args: any[]) => any} method A method that returns the injectable.
+        * @param {Array<any>} dependencies? An array of strings representing the dependencies needed for the injectable's injector.
+        * @param {string} injectableType? Specifies the type of injectable, either {@link plat.register.injectable.SINGLETON|SINGLETON},
+        * {@link plat.register.injectable.STATIC|STATIC}, {@link plat.register.injectable.INSTANCE|INSTANCE},
+        * {@link plat.register.injectable.FACTORY|FACTORY}, {@link plat.register.injectable.CLASS|CLASS}
+        * (defaults to {@link plat.register.injectable.SINGLETON|SINGLETON}).
         *
-        * @returns {register} The object that contains the register methods (for method chaining).
+        * @example
+        * plat.register.injectable('$CacheFactory', [plat.expressions.IParser],
+        *     function(parser: plat.expressions.IParser) { return { ... }; });
+        * plat.register.injectable('database', function() { return new Database(); }, null, register.injectable.INSTANCE);
         *
-        * @example plat.register.injectable('$CacheFactory', [plat.expressions.IParser],
-        *  function(parser: plat.expressions.IParser) { return { ... }; });
-        * @example plat.register.injectable('database', function() { return new Database(); }, null, register.injectable.INSTANCE);
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function injectable(name: string, method: (...args: any[]) => any, dependencies?: any[], injectableType?: string): typeof register;
         /**
-        * A function for registering an injectable that also contains constants for injectable type.
+        * @name injectable
+        * @memberof plat.register
+        * @kind namespace
+        * @access public
+        *
+        * @description
+        * Contains constants for injectable type.
         */
         module injectable {
             /**
+            * @name STATIC
+            * @memberof plat.register.injectable
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {string}
+            *
+            * @description
             * Static injectables will be injected before the application loads. This provides a way to create
             * a static constructor and load dependencies into static class properties.
             */
             var STATIC: string;
             /**
+            * @name SINGLETON
+            * @memberof plat.register.injectable
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {string}
+            *
+            * @description
             * Singleton injectables will contain a constructor. A Singleton injectable will be instantiated once and
             * used throughout the application lifetime. It will be instantiated when another component is injected
             * and lists it as a dependency.
             */
             var SINGLETON: string;
             /**
+            * @name INSTANCE
+            * @memberof plat.register.injectable
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {string}
+            *
+            * @description
             * Instance injectables will contain a constructor. An Instance injectable will be instantiated multiple times
             * throughout the application lifetime. It will be instantiated whenever another component is injected
             * and lists it as a dependency.
             */
             var INSTANCE: string;
             /**
+            * @name FACTORY
+            * @memberof plat.register.injectable
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {string}
+            *
+            * @description
             * Factory injectables will not contain a constructor but will instead contain a method for obtaining an
             * instance, such as getInstance() or create(). It will be injected before the application loads, similar to a Static
             * injectable.
             */
             var FACTORY: string;
             /**
+            * @name CLASS
+            * @memberof plat.register.injectable
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {string}
+            *
+            * @description
             * Class injectables are essentially a direct reference to a class's constructor. It may contain both
             * static and instance methods as well as a constructor for creating a new instance.
             */
             var CLASS: string;
         }
         /**
+        * @name animation
+        * @memberof plat.register
+        * @kind function
+        * @access public
+        * @variation 0
+        *
+        * @description
         * Adds a CSS animation denoted by its name. If you wish to also support legacy browsers, make sure to register a
         * JS implementation as well.
         *
-        * @param name The unique idenitifer of the animation.
-        * @param Type The constructor for the custom animation.
-        * @param dependencies Any dependencies that need to be injected into the animation at
+        * @param {string} name The unique idenitifer of the animation.
+        * @param {new (...args: any[]) => plat.ui.animations.ICssAnimation} Type The constructor for the custom animation.
+        * @param {Array<any>} dependencies? Any dependencies that need to be injected into the animation at
         * instantiation.
-        * @param animationType The type of animation. Both the intended type and default value are plat.register.animation.CSS.
+        * @param {string} animationType The type of animation. Both the intended type and default value are
+        * {@link plat.register.animation.CSS|CSS}.
+        *
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function animation(name: string, Type: new(...args: any[]) => ui.animations.ICssAnimation, dependencies?: any[], animationType?: 'css'): typeof register;
-        /**
-        * Adds a CSS animation denoted by its name. If you wish to also support legacy browsers, make sure to register a
-        * JS implementation as well.
-        *
-        * @param name The unique idenitifer of the animation.
-        * @param Type The constructor for the custom animation.
-        * @param dependencies Any dependencies that need to be injected into the animation at
-        * instantiation.
-        * @param animationType The type of animation. Both the intended type and default value are plat.register.animation.CSS.
-        */
         function animation(name: string, Type: new(...args: any[]) => ui.animations.ICssAnimation, dependencies?: any[], animationType?: string): typeof register;
         /**
+        * @name animation
+        * @memberof plat.register
+        * @kind function
+        * @access public
+        * @variation 1
+        *
+        * @description
         * Adds a JS animation denoted by its name. If  Intended to be used when JS animation implementations for legacy browsers
         * is desired.
         *
-        * @param name The unique idenitifer of the animation.
-        * @param Type The constructor for the custom animation.
-        * @param dependencies Any dependencies that need to be injected into the animation at
+        * @param {string} name The unique idenitifer of the animation.
+        * @param {new (...args: any[]) => plat.ui.animations.IJsAnimation} Type The constructor for the custom animation.
+        * @param {Array<any>} dependencies? Any dependencies that need to be injected into the animation at
         * instantiation.
-        * @param animationType The type of animation. The intended type is plat.register.animation.JS.
+        * @param {string} animationType The type of animation. Both the intended type and default value are
+        * {@link plat.register.animation.JS|JS}.
+        *
+        * @returns {plat.register} The object that contains the register methods (for method chaining).
         */
         function animation(name: string, Type: new(...args: any[]) => ui.animations.IJsAnimation, dependencies: any[], animationType: 'js'): typeof register;
-        /**
-        * Adds a JS animation denoted by its name. If  Intended to be used when JS animation implementations for legacy browsers
-        * is desired.
-        *
-        * @param name The unique idenitifer of the animation.
-        * @param Type The constructor for the custom animation.
-        * @param dependencies Any dependencies that need to be injected into the animation at
-        * instantiation.
-        * @param animationType The type of animation. The intended type is plat.register.animation.JS.
-        */
         function animation(name: string, Type: new(...args: any[]) => ui.animations.IJsAnimation, dependencies: any[], animationType: string): typeof register;
         /**
-        * A function for registering animations that also contains constants for animation type.
+        * @name animation
+        * @memberof plat.register
+        * @kind namespace
+        * @access public
+        *
+        * @description
+        * Contains constants for animation type.
         */
         module animation {
             /**
+            * @name CSS
+            * @memberof plat.register.animation
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {string}
+            *
+            * @description
             * A CSS animation.
             */
             var CSS: string;
             /**
+            * @name CSS
+            * @memberof plat.register.animation
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {string}
+            *
+            * @description
             * A JavaScript animation.
             */
             var JS: string;
@@ -1382,17 +1516,67 @@ declare module plat {
         */
         public vendorPrefix: IVendorPrefix;
         /**
+        * @name IE
+        * @memberof plat.Compat
+        * @kind property
+        * @access public
+        *
+        * @type {number}
+        *
+        * @description
+        * The version of Internet Explorer being used. If not Internet Explorer, the value is undefined.
+        */
+        public IE: number;
+        /**
+        * @name ANDROID
+        * @memberof plat.Compat
+        * @kind property
+        * @access public
+        *
+        * @type {number}
+        *
+        * @description
+        * The version of Android being used. If not Android, the value is undefined.
+        */
+        public ANDROID: number;
+        /**
+        * @name __events
+        * @memberof plat.Compat
+        * @kind property
+        * @access public
+        *
+        * @type {plat.IObject<boolean>}
+        *
+        * @description
+        * An object containing all event lookups.
+        */
+        private __events;
+        /**
         * @name constructor
         * @memberof plat.Compat
         * @kind function
         * @access public
         *
         * @description
-        * Define everything
+        * Define everything.
         *
         * @returns {void}
         */
         constructor();
+        /**
+        * @name hasEvent
+        * @memberof plat.Compat
+        * @kind function
+        * @access public
+        *
+        * @description
+        * Check whether or not an event exists.
+        *
+        * @param {string} event The event to check the existence of.
+        *
+        * @returns {boolean} Whether or not the event exists.
+        */
+        public hasEvent(event: string): boolean;
         /**
         * @name __defineBooleans
         * @memberof plat.Compat
@@ -1400,7 +1584,7 @@ declare module plat {
         * @access private
         *
         * @description
-        * Define booleans
+        * Define booleans.
         *
         * @returns {void}
         */
@@ -1679,6 +1863,44 @@ declare module plat {
         * An object containing information regarding any potential vendor prefix.
         */
         vendorPrefix: IVendorPrefix;
+        /**
+        * @name IE
+        * @memberof plat.ICompat
+        * @kind property
+        * @access public
+        *
+        * @type {number}
+        *
+        * @description
+        * The version of Internet Explorer being used. If not Internet Explorer, the value is undefined.
+        */
+        IE: number;
+        /**
+        * @name ANDROID
+        * @memberof plat.ICompat
+        * @kind property
+        * @access public
+        *
+        * @type {number}
+        *
+        * @description
+        * The version of Android being used. If not Android, the value is undefined.
+        */
+        ANDROID: number;
+        /**
+        * @name hasEvent
+        * @memberof plat.ICompat
+        * @kind function
+        * @access public
+        *
+        * @description
+        * Check whether or not an event exists.
+        *
+        * @param {string} event The event to check the existence of.
+        *
+        * @returns {boolean} Whether or not the event exists.
+        */
+        hasEvent(event: string): boolean;
     }
     /**
     * @name IMappedEvents
@@ -3152,55 +3374,53 @@ declare module plat {
     function Document($Window?: Window): Document;
     module expressions {
         /**
+        * @name Regex
+        * @memberof plat.expressions
+        * @kind class
+        *
+        * @implements {plat.expressions.IRegex}
+        *
+        * @description
         * A class for keeping track of commonly used regular expressions.
         */
         class Regex implements IRegex {
+            /**
+            * @name markupRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * A regular expression for finding markup in a string.
+            */
             public markupRegex: RegExp;
-            public argumentRegex: RegExp;
-            public aliasRegex: RegExp;
-            public initialUrlRegex: RegExp;
-            public protocolRegex: RegExp;
-            public invalidVariableRegex: RegExp;
-            public fileNameRegex: RegExp;
-            public shiftedKeyRegex: RegExp;
-            public newLineRegex : RegExp;
-            public optionalRouteRegex : RegExp;
-            public namedParameterRouteRegex : RegExp;
-            public wildcardRouteRegex : RegExp;
-            public escapeRouteRegex : RegExp;
-            public camelCaseRegex : RegExp;
-            public whiteSpaceRegex : RegExp;
-            public quotationRegex : RegExp;
             /**
-            * Creates the markup regular expression
-            */
-            constructor();
-        }
-        /**
-        * The Type for referencing the '$Regex' injectable as a dependency.
-        */
-        function IRegex(): IRegex;
-        /**
-        * An object containing commonly used regular expressions.
-        */
-        interface IRegex {
-            /**
-            * The regular expression for matching or removing all newline characters.
-            */
-            newLineRegex: RegExp;
-            /**
-            * The regular expression for finding markup in a string.
-            */
-            markupRegex: RegExp;
-            /**
-            * Finds the arguments in a method expression
+            * @name argumentRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds the arguments in a method expression.
             *
             * @example
-            *   // outputs ["('foo', 'bar', 'baz')", "'foo', 'bar', 'baz'"]
-            *   exec("myFunction('foo', 'bar', 'baz')");
+            * // outputs ["('foo', 'bar', 'baz')", "'foo', 'bar', 'baz'"]
+            * exec("myFunction('foo', 'bar', 'baz')");
             */
-            argumentRegex: RegExp;
+            public argumentRegex: RegExp;
             /**
+            * @name aliasRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
             * Given a string, finds the root alias name if that string is an
             * alias path.
             *
@@ -3209,268 +3429,1156 @@ declare module plat {
             *   exec('@context.foo');
             *
             * @example
-            *   // outputs null
-            *   exec('@context');
+            * // outputs null
+            * exec('@context');
             */
-            aliasRegex: RegExp;
+            public aliasRegex: RegExp;
             /**
-            * Finds optional parameters in a route string.
+            * @name initialUrlRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
             *
-            * @example
-            *   // outputs ['(/foo)', '/foo']
-            *   exec('(/foo)/bar');
+            * @type {RegExp}
             *
-            * @example
-            *  // outputs ['(/foo)', '/foo']
-            *  exec('(/foo))');
-            */
-            optionalRouteRegex: RegExp;
-            /**
-            * Finds named parameters in a route string.
-            *
-            * @example
-            *   // outputs [':foo']
-            *   exec('/:foo/bar')
-            *
-            *   // outputs [':foo']
-            *   exec('(/:foo)/bar');
-            */
-            namedParameterRouteRegex: RegExp;
-            /**
-            * Finds an alphanumeric wildcard match in a route string.
-            *
-            * @example
-            *   // outputs ['*bar']
-            *   exec('/foo/*bar/baz')
-            */
-            wildcardRouteRegex: RegExp;
-            /**
-            * Finds invalid characters in a route string.
-            *
-            * @example
-            *  // outputs ['?']
-            *  exec('/foo/bar?query=baz');
-            */
-            escapeRouteRegex: RegExp;
-            /**
+            * @description
             * Finds '/*.html' or '/*.htm' in a url. Useful for removing
             * the html file out of the url.
             *
             * @example
-            *   // outputs ['/index.html']
-            *   exec('http://localhost:8080/index.html');
+            * // outputs ['/index.html']
+            * exec('http://localhost:8080/index.html');
             */
-            initialUrlRegex: RegExp;
+            public initialUrlRegex: RegExp;
             /**
-            * Finds a protocol delimeter in a string (e.g. ://)
+            * @name protocolRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds a protocol delimeter in a string (e.g. ://).
             */
-            protocolRegex: RegExp;
+            public protocolRegex: RegExp;
             /**
+            * @name invalidVariableRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Looks for any invalid variable syntax.
+            */
+            public invalidVariableRegex: RegExp;
+            /**
+            * @name fileNameRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Grabs the file name from a file path.
+            */
+            public fileNameRegex: RegExp;
+            /**
+            * @name shiftedKeyRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Determines if a character is correlated with a shifted key code.
+            */
+            public shiftedKeyRegex: RegExp;
+            /**
+            * @name newLineRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * A regular expression for matching or removing all newline characters.
+            */
+            public newLineRegex : RegExp;
+            /**
+            * @name optionalRouteRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds optional parameters in a route string.
+            *
+            * @example
+            * // outputs ['(/foo)', '/foo']
+            * exec('(/foo)/bar');
+            *
+            * // outputs ['(/foo)', '/foo']
+            * exec('(/foo))');
+            */
+            public optionalRouteRegex : RegExp;
+            /**
+            * @name namedParameterRouteRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds named parameters in a route string.
+            *
+            * @example
+            * // outputs [':foo']
+            * exec('/:foo/bar')
+            *
+            * // outputs [':foo']
+            * exec('(/:foo)/bar');
+            */
+            public namedParameterRouteRegex : RegExp;
+            /**
+            * @name namedParameterRouteRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds an alphanumeric wildcard match in a route string.
+            *
+            * @example
+            * // outputs ['*bar']
+            * exec('/foo/*bar/baz');
+            */
+            public wildcardRouteRegex : RegExp;
+            /**
+            * @name escapeRouteRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds invalid characters in a route string.
+            *
+            * @example
+            * // outputs ['?']
+            * exec('/foo/bar?query=baz');
+            */
+            public escapeRouteRegex : RegExp;
+            /**
+            * @name camelCaseRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
             * Finds delimeters for spinal-case, snake_case, and dot.case.
             * useful for converting to camelCase. Also can turn a string
             * into camelCase with space as a delimeter.
             *
             * @example
-            *   // outputs ['-o', '-', 'o']
-            *   exec('plat-options')
+            * // outputs ['-o', '-', 'o']
+            * exec('plat-options');
+            *
+            * // outputs ['.c', '.', 'c']
+            * exec('plat.config');
+            *
+            * // outputs ['_v', '_', 'v']
+            * exec('plat_var');
+            *
+            * // outputs [' W', ' ', 'W']
+            * exec('Hello World');
+            */
+            public camelCaseRegex : RegExp;
+            /**
+            * @name whiteSpaceRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds all whitespace and newline characters
+            * not in string literals. Needs to be combined
+            * with string replace function using $1 argument.
+            */
+            public whiteSpaceRegex : RegExp;
+            /**
+            * @name quotationRegex
+            * @memberof plat.expressions.Regex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds all single and double quotes.
+            */
+            public quotationRegex : RegExp;
+            /**
+            * @name constructor
+            * @memberof plat.expressions.Regex
+            * @kind function
+            * @access public
+            *
+            * @description
+            * The constructor for a {@link plat.expressions.Regex|Regex}. Creates the markup regular expression.
+            *
+            * @returns {plat.expressions.Regex}
+            */
+            constructor();
+        }
+        /**
+        * The Type for referencing the '$Regex' injectable as a dependency.
+        */
+        function IRegex(): IRegex;
+        /**
+        * @name IRegex
+        * @memberof plat.expressions
+        * @kind interface
+        *
+        * @description
+        * An object containing commonly used regular expressions.
+        */
+        interface IRegex {
+            /**
+            * @name newLineRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * A regular expression for matching or removing all newline characters.
+            */
+            newLineRegex: RegExp;
+            /**
+            * @name markupRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * A regular expression for finding markup in a string.
+            */
+            markupRegex: RegExp;
+            /**
+            * @name argumentRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds the arguments in a method expression.
             *
             * @example
-            *   // outputs ['.c', '.', 'c']
-            *   exec('plat.config')
+            * // outputs ["('foo', 'bar', 'baz')", "'foo', 'bar', 'baz'"]
+            * exec("myFunction('foo', 'bar', 'baz')");
+            */
+            argumentRegex: RegExp;
+            /**
+            * @name aliasRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Given a string, finds the root alias name if that string is an
+            * alias path.
             *
             * @example
-            *   // outputs ['_v', '_', 'v']
-            *   exec('plat_var')
+            *   // outputs ['context']
+            *   exec('@context.foo');
             *
             * @example
-            *   // outputs [' W', ' ', 'W']
-            *   exec('Hello World')
+            * // outputs null
+            * exec('@context');
+            */
+            aliasRegex: RegExp;
+            /**
+            * @name optionalRouteRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds optional parameters in a route string.
+            *
+            * @example
+            * // outputs ['(/foo)', '/foo']
+            * exec('(/foo)/bar');
+            *
+            * // outputs ['(/foo)', '/foo']
+            * exec('(/foo))');
+            */
+            optionalRouteRegex: RegExp;
+            /**
+            * @name namedParameterRouteRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds named parameters in a route string.
+            *
+            * @example
+            * // outputs [':foo']
+            * exec('/:foo/bar')
+            *
+            * // outputs [':foo']
+            * exec('(/:foo)/bar');
+            */
+            namedParameterRouteRegex: RegExp;
+            /**
+            * @name namedParameterRouteRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds an alphanumeric wildcard match in a route string.
+            *
+            * @example
+            * // outputs ['*bar']
+            * exec('/foo/*bar/baz');
+            */
+            wildcardRouteRegex: RegExp;
+            /**
+            * @name escapeRouteRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds invalid characters in a route string.
+            *
+            * @example
+            * // outputs ['?']
+            * exec('/foo/bar?query=baz');
+            */
+            escapeRouteRegex: RegExp;
+            /**
+            * @name initialUrlRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds '/*.html' or '/*.htm' in a url. Useful for removing
+            * the html file out of the url.
+            *
+            * @example
+            * // outputs ['/index.html']
+            * exec('http://localhost:8080/index.html');
+            */
+            initialUrlRegex: RegExp;
+            /**
+            * @name protocolRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds a protocol delimeter in a string (e.g. ://).
+            */
+            protocolRegex: RegExp;
+            /**
+            * @name camelCaseRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Finds delimeters for spinal-case, snake_case, and dot.case.
+            * useful for converting to camelCase. Also can turn a string
+            * into camelCase with space as a delimeter.
+            *
+            * @example
+            * // outputs ['-o', '-', 'o']
+            * exec('plat-options');
+            *
+            * // outputs ['.c', '.', 'c']
+            * exec('plat.config');
+            *
+            * // outputs ['_v', '_', 'v']
+            * exec('plat_var');
+            *
+            * // outputs [' W', ' ', 'W']
+            * exec('Hello World');
             */
             camelCaseRegex: RegExp;
             /**
+            * @name whiteSpaceRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
             * Finds all whitespace and newline characters
             * not in string literals. Needs to be combined
             * with string replace function using $1 argument.
             */
             whiteSpaceRegex: RegExp;
             /**
+            * @name quotationRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {RegExp}
+            *
+            * @description
             * Finds all single and double quotes.
             */
             quotationRegex: RegExp;
             /**
+            * @name invalidVariableRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
             * Looks for any invalid variable syntax.
             */
             invalidVariableRegex: RegExp;
             /**
+            * @name fileNameRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
             * Grabs the file name from a file path.
             */
             fileNameRegex: RegExp;
+            /**
+            * @name shiftedKeyRegex
+            * @memberof plat.expressions.IRegex
+            * @kind property
+            * @access public
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * Determines if a character is correlated with a shifted key code.
+            */
             shiftedKeyRegex: RegExp;
         }
         /**
-        * Responsible for taking a javascript expression string and
-        * finding all its tokens (i.e. delimiters, operators, etc).
+        * @name Tokenizer
+        * @memberof plat.expressions
+        * @kind class
+        *
+        * @implements {plat.expressions.ITokenizer}
+        *
+        * @description
+        * A class that is responsible for taking in a JavaScript expression string and
+        * finding all of its tokens (i.e. delimiters, operators, etc).
         */
         class Tokenizer implements ITokenizer {
             /**
+            * @name _input
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access protected
+            *
+            * @type {string}
+            *
+            * @description
             * The input string to tokenize.
             */
             public _input: string;
-            private __previousChar;
-            private __variableRegex;
-            private __outputQueue;
-            private __operatorStack;
-            private __argCount;
-            private __objArgCount;
-            private __lastColonChar;
-            private __lastCommaChar;
-            public createTokens(input: string): IToken[];
-            private __handleAplhaNumeric(index, char);
-            private __handlePeriod(index, char);
-            private __handleLeftBrace(char);
-            private __handleRightBrace(char);
-            private __handleLeftBracket(char);
-            private __handleRightBracket(char);
-            private __handleLeftParenthesis(char);
-            private __handleRightParenthesis(char);
-            private __handleComma(char);
-            private __handleStringLiteral(index, char);
-            private __handleQuestion(char);
-            private __handleColon(char, ternary);
-            private __handleOtherOperator(index, char);
-            private __popRemainingOperators();
-            private __determineOperator(operator);
-            private __determinePrecedence(operator);
-            private __removeFnFromStack(argCount);
             /**
-            * Determines character type
+            * @name __previousChar
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
             *
-            * @param char The character to check
-            * @param isNumberLike Whether or not the character resembles a number
+            * @type {string}
+            *
+            * @description
+            * The previous character during tokenization.
+            */
+            private __previousChar;
+            /**
+            * @name __variableRegex
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
+            *
+            * @type {RegExp}
+            *
+            * @description
+            * A regular expression for determining if a potential variable is valid syntax.
+            */
+            private __variableRegex;
+            /**
+            * @name __outputQueue
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
+            *
+            * @type {Array<plat.expressions.IToken>}
+            *
+            * @description
+            * A queue used for determining the output of the tokenization.
+            */
+            private __outputQueue;
+            /**
+            * @name __operatorStack
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
+            *
+            * @type {Array<plat.expressions.IToken>}
+            *
+            * @description
+            * A stack used for determining operator precedence and aiding with the evaluation
+            * operands.
+            */
+            private __operatorStack;
+            /**
+            * @name __argCount
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
+            *
+            * @type {Array<any>}
+            *
+            * @description
+            * A collection used for determining argument count for certain operations.
+            */
+            private __argCount;
+            /**
+            * @name __objArgCount
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
+            *
+            * @type {Array<any>}
+            *
+            * @description
+            * A collection used for determining argument count for certain object literal operations.
+            */
+            private __objArgCount;
+            /**
+            * @name __lastColonChar
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
+            *
+            * @type {Array<string>}
+            *
+            * @description
+            * The last character encountered while in an operation dealing with the colon operator.
+            * Needs to be an array due to the possibility of nested colon operations.
+            */
+            private __lastColonChar;
+            /**
+            * @name __lastCommaChar
+            * @memberof plat.expressions.Tokenizer
+            * @kind property
+            * @access private
+            *
+            * @type {Array<string>}
+            *
+            * @description
+            * The last character encountered while in an operation dealing with commas.
+            * Needs to be an array due to the possibility of nested comma operations.
+            */
+            private __lastCommaChar;
+            /**
+            * @name createTokens
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Takes in an expression string and outputs a tokenized collection of
+            * {@link plat.expressions.IToken|ITokens}.
+            *
+            * @param {string} input The JavaScript expression string to tokenize.
+            *
+            * @returns {Array<plat.expressions.IToken>} The tokenized collection of
+            * {@link plat.expressions.IToken|ITokens}.
+            */
+            public createTokens(input: string): IToken[];
+            /**
+            * @name _checkType
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Determines character type.
+            *
+            * @param {string} char The character to check.
+            * @param {boolean} isNumberLike Whether or not the character resembles a number.
+            *
+            * @returns {boolean} Whether or not the character corresponds with its type.
             */
             public _checkType(char: string, isNumberLike: boolean): boolean;
             /**
+            * @name _lookAhead
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Looks ahead in the expression to group similar character types.
             *
-            * @param index The current index in the expression string
-            * @param isNumberLike Whether or not the character resembles a number
-            * @param array A temporary array used to aggregate similar character types.
-            * @returns {number} The new index in the expression string
+            * @param {string} char The current character in the expression string.
+            * @param {number} index The current index in the expression string.
+            * @param {boolean} isNumberLike Whether or not the character resembles a number.
+            *
+            * @returns {string} The grouped characters.
             */
-            public _lookAhead(index: number, isNumberLike: boolean, array: string[]): number;
+            public _lookAhead(char: string, index: number, isNumberLike: boolean): string;
             /**
+            * @name _lookAheadForOperatorFn
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Looks ahead in the expression to try and complete the
             * current operator.
             *
-            * @param char The operator to find
-            * @param index The current index in the expression string
+            * @param {string} char The operator to find.
+            * @param {number} index The current index in the expression string.
+            *
+            * @returns {string} The completed current operator.
             */
-            public _lookAheadForOperatorFn(char: string, index: number): ILookAheadResult;
+            public _lookAheadForOperatorFn(char: string, index: number): string;
             /**
+            * @name _lookAheadForDelimiter
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Looks ahead in the expression until it comes to the ending
             * character to try and complete a particular sequence
-            * (e.g. - a string literal).
+            * (e.g. - a string literal). Also strips the first and last
+            * characters of the result (i.e. removes the delimiters).
             *
-            * @param char The starting character
-            * @param endChar The ending character
-            * @param index The current index in the expression string
-            * @param includeDelimiter Whether or not to include the delimiter
-            * in the result
+            * @param {string} endChar The ending character.
+            * @param {number} index The current index in the expression string.
+            *
+            * @returns {string} The resultant inner character string between
+            * the first character and end character being looked ahead for.
             */
-            public _lookAheadForDelimiter(char: string, endChar: string, index: number, includeDelimiter?: boolean): ILookAheadResult;
+            public _lookAheadForDelimiter(endChar: string, index: number): string;
             /**
+            * @name _popStackForVal
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Pops the operator stack onto the output queue until a particular
             * operator value is reached.
             *
-            * @param topOperator The top of the operator stack
-            * @param char The operator value being searched for
-            * @param error The error to throw in the case that the expression
+            * @param {plat.expressions.IToken} topOperator The top of the operator stack.
+            * @param {string} char The operator value being searched for.
+            * @param {string} error The error to throw in the case that the expression
             * is invalid.
-            */
-            public _popStackForVal(topOperator: any, char: string, error: string): void;
-            /**
-            * Check if the 'val' property is equal to a particular character.
             *
-            * @param obj The obj whose 'val' property to compare
-            * @param char The char to compare with
+            * @returns {void}
             */
-            public _isValEqual(obj: any, char: string): boolean;
+            public _popStackForVal(topOperator: IToken, char: string, error: string): void;
             /**
-            * Check if the 'val' property is not equal to a particular character.
+            * @name _isValEqual
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
             *
-            * @param obj The obj whose 'val' property to compare
-            * @param char The char to compare with
+            * @description
+            * Check if the "val" property on an {@link plat.expressions.IToken|IToken}
+            * is present in a particular character string.
+            *
+            * @param {plat.expressions.IToken} obj The {@link plat.expressions.IToken|IToken}
+            * with the "val" property to compare.
+            * @param {string} char The char to compare with.
+            *
+            * @returns {boolean} Whether or not the val is equal to the input character.
             */
-            public _isValUnequal(obj: any, char: string): boolean;
+            public _isValEqual(obj: IToken, char: string): boolean;
             /**
-            * Reset the tokenizer's properties.
+            * @name _isValUnequal
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Check if the "val" property on an {@link plat.expressions.IToken|IToken}
+            * is not present in a particular character string.
+            *
+            * @param {plat.expressions.IToken} obj The {@link plat.expressions.IToken|IToken}
+            * with the "val" property to compare.
+            * @param {string} char The char to compare with.
+            *
+            * @returns {boolean} Whether or not the val is not equal to the input character.
+            */
+            public _isValUnequal(obj: IToken, char: string): boolean;
+            /**
+            * @name _resetTokenizer
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Resets all the tokenizer's properties.
+            *
+            * @returns {void}
             */
             public _resetTokenizer(): void;
             /**
-            * Throw an exception in the case of an error.
+            * @name _resetTokenizer
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
             *
-            * @param error The error message to throw
+            * @description
+            * Throws a fatal exception in the case of an error.
+            *
+            * @param {string} error The error message to throw.
+            *
+            * @returns {void}
             */
             public _throwError(error: string): void;
             /**
+            * @name _isNumeric
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Checks if a single character is numeric.
             *
-            * @param char The character to check.
+            * @param {string} char The character to check.
+            *
+            * @returns {boolean} Whether or not the character is numeric.
             */
             public _isNumeric(char: string): boolean;
             /**
+            * @name _isSpace
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Checks if a single character is a space.
             *
-            * @param char The character to check.
+            * @param {string} char The character to check.
+            *
+            * @returns {boolean} Whether or not the character is a space.
             */
             public _isSpace(char: string): boolean;
             /**
-            * Checks if a single character is an alphabetical
-            * type character.
+            * @name _isAlphaNumeric
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
             *
-            * @param char The character to check.
-            */
-            public _isAlpha(char: string): boolean;
-            /**
+            * @description
             * Checks if a single character is alphanumeric.
             *
-            * @param char The character to check.
+            * @param {string} char The character to check.
+            *
+            * @returns {boolean} Whether or not the character is alphanumeric.
             */
             public _isAlphaNumeric(char: string): boolean;
             /**
-            * Checks if a string has proper javascript variable syntax.
+            * @name _isStringValidVariable
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access protected
             *
-            * @param input The string to check.
+            * @description
+            * Checks if a string has proper JavaScript variable syntax.
+            *
+            * @param {string} input The string to check.
+            *
+            * @returns {boolean} Whether or not the input string could be a valid
+            * JavaScript variable.
             */
             public _isStringValidVariable(input: string): boolean;
+            /**
+            * @name __handleAplhaNumeric
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing an alphanumeric character.
+            *
+            * @param {number} index The current index in the string being tokenized.
+            * @param {string} char The current char.
+            *
+            * @returns {number} The new index to pick up tokenization from.
+            */
+            private __handleAplhaNumeric(index, char);
+            /**
+            * @name __handlePeriod
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "." character.
+            *
+            * @param {number} index The current index in the string being tokenized.
+            * @param {string} char The current char.
+            *
+            * @returns {number} The new index to pick up tokenization from.
+            */
+            private __handlePeriod(index, char);
+            /**
+            * @name __handleLeftBrace
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "{" character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleLeftBrace(char);
+            /**
+            * @name __handleRightBrace
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "}" character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleRightBrace(char);
+            /**
+            * @name __handleLeftBracket
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "[" character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleLeftBracket(char);
+            /**
+            * @name __handleRightBracket
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "]" character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleRightBracket(char);
+            /**
+            * @name __handleLeftParenthesis
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "(" character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleLeftParenthesis(char);
+            /**
+            * @name __handleRightParenthesis
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a ")" character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleRightParenthesis(char);
+            /**
+            * @name __handleComma
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "," character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleComma(char);
+            /**
+            * @name __handleStringLiteral
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a string literal.
+            *
+            * @param {number} index The current index in the string being tokenized.
+            * @param {string} char The current char.
+            *
+            * @returns {number} The new index to pick up tokenization from.
+            */
+            private __handleStringLiteral(index, char);
+            /**
+            * @name __handleQuestion
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a "?" character.
+            *
+            * @param {string} char The current char.
+            *
+            * @returns {void}
+            */
+            private __handleQuestion(char);
+            /**
+            * @name __handleColon
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing a ":" character.
+            *
+            * @param {string} char The current char.
+            * @param {number} ternary The current ternary counter. Increments when a ternary is found,
+            * decrements when a ternary is completed. It can be very useful when there is nested ternaries.
+            *
+            * @returns {number} The potentially modified ternary counter.
+            */
+            private __handleColon(char, ternary);
+            /**
+            * @name __handleOtherOperator
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles tokenizing all other operators.
+            *
+            * @param {number} index The current index in the string being tokenized.
+            * @param {string} char The current char.
+            *
+            * @returns {number} The new index to pick up tokenization from.
+            */
+            private __handleOtherOperator(index, char);
+            /**
+            * @name __popRemainingOperators
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Pops operators left on the operator stack onto the output queue
+            * checking for mismatches.
+            *
+            * @returns {void}
+            */
+            private __popRemainingOperators();
+            /**
+            * @name __determineOperator
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Grabs essential token details for a given operator.
+            *
+            * @param {string} operator The operator whose details are being requested.
+            *
+            * @returns {plat.expressions.ITokenDetails} Essential information regarding the
+            * operator including precedence, associativity, and an evaluation function denoted as
+            * an {@link plat.expressions.ITokenDetails|ITokenDetails} object.
+            */
+            private __determineOperator(operator);
+            /**
+            * @name __determinePrecedence
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Determines the precedence of a given operator in relation to other operators
+            * in the operator stack and places it in the operator stack.
+            *
+            * @param {string} operator The operator whose precedence is being determined.
+            *
+            * @returns {void}
+            */
+            private __determinePrecedence(operator);
+            /**
+            * @name __removeFnFromStack
+            * @memberof plat.expressions.Tokenizer
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Removes a reference to a function that is present in the operator stack and places
+            * it in the output queue.
+            *
+            * @param {number} argCount The current local argument count used with functions,
+            * arrays, and object literals.
+            *
+            * @returns {boolean} Whether or not the function had at least one argument.
+            */
+            private __removeFnFromStack(argCount);
         }
         /**
         * The Type for referencing the '$Tokenizer' injectable as a dependency.
         */
         function ITokenizer(): ITokenizer;
         /**
-        * Describes an object used to find tokens for an expression and create ITokens.
+        * @name ITokenizer
+        * @memberof plat.expressions
+        * @kind interface
+        *
+        * @description
+        * Describes an object used to find tokens for an expression and create
+        * {@link plat.expressions.ITokens|ITokens}.
         */
         interface ITokenizer {
             /**
-            * Takes in an expression string and outputs ITokens.
+            * @name createTokens
+            * @memberof plat.expressions.ITokenizer
+            * @kind function
+            * @access public
             *
-            * @param input The expression string to tokenize.
+            * @description
+            * Takes in an expression string and outputs a tokenized collection of
+            * {@link plat.expressions.IToken|ITokens}.
+            *
+            * @param {string} input The JavaScript expression string to tokenize.
+            *
+            * @returns {Array<plat.expressions.IToken>} The tokenized collection of
+            * {@link plat.expressions.IToken|ITokens}.
             */
             createTokens(input: string): IToken[];
         }
         /**
-        * Describes a token in an expression.
+        * @name IToken
+        * @memberof plat.expressions
+        * @kind interface
+        *
+        * @description
+        * Describes a single token in a string expression.
         */
         interface IToken {
             /**
+            * @name val
+            * @memberof plat.expressions.IToken
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
             * The string or number value of the token.
             */
             val: any;
             /**
+            * @name val
+            * @memberof plat.expressions.IToken
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
             * Denotes the type of token, as well as the number
             * of arguments for a function if it is the token.
             *
+            * @remarks
             * If -2: Denotes a function name unless indexed into with [].
             * If -1: Denotes a variable or empty array literal.
             * If 0: Denotes a number, keyword, object indexer (.[]), string literal,
@@ -3483,106 +4591,473 @@ declare module plat {
             args: number;
         }
         /**
+        * @name ITokenDetails
+        * @memberof plat.expressions
+        * @kind interface
+        *
+        * @description
         * Provides all the necessary details on how to evaluate a token.
         */
         interface ITokenDetails {
             /**
+            * @name precedence
+            * @memberof plat.expressions.ITokenDetails
+            * @kind property
+            * @access public
+            *
+            * @type {number}
+            *
+            * @description
             * The precedence that this token takes with respect to the
             * evaluation order.
             */
             precedence: number;
             /**
+            * @name associativity
+            * @memberof plat.expressions.ITokenDetails
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
             * Whether or not the token associates with the expression on
             * their left or right.
             */
             associativity: string;
             /**
+            * @name fn
+            * @memberof plat.expressions.ITokenDetails
+            * @kind property
+            * @access public
+            *
+            * @type {Function}
+            *
+            * @description
             * A function used to evaluate an operator expression.
             */
             fn: Function;
         }
         /**
-        * An object describing the result of looking ahead in the expression.
-        */
-        interface ILookAheadResult {
-            /**
-            * The resultant string after after looking ahead
-            */
-            char: string;
-            /**
-            * The new current index in the expression string
-            */
-            index: number;
-        }
-        /**
-        * Parses javascript expression strings and creates IParsedExpressions.
+        * @name Parser
+        * @memberof plat.expressions
+        * @kind class
+        *
+        * @implements {plat.expressions.IParser}
+        *
+        * @description
+        * A class for parsing JavaScript expression strings and creating
+        * {@link plat.expressions.IParsedExpression|IParsedExpressions}.
         */
         class Parser implements IParser {
+            /**
+            * @name $Tokenizer
+            * @memberof plat.expressions.Parser
+            * @kind property
+            * @access public
+            *
+            * @type {plat.expressions.ITokenizer}
+            *
+            * @description
+            * Reference to the {@link plat.expressions.ITokenizer|ITokenizer} injectable.
+            */
             public $Tokenizer: ITokenizer;
             /**
-            * A single expression's token representation created by the Tokenizer.
+            * @name _tokens
+            * @memberof plat.expressions.Parser
+            * @kind property
+            * @access protected
+            *
+            * @type {Array<plat.expressions.IToken>}
+            *
+            * @description
+            * A single expression's token representation created by a {@link plat.expressions.ITokenizer|ITokenizer}.
             */
             public _tokens: IToken[];
-            private __cache;
-            private __codeArray;
-            private __identifiers;
-            private __tempIdentifiers;
-            private __aliases;
-            private __uniqueAliases;
-            public parse(input: string): IParsedExpression;
             /**
-            * Evaluate the current token array.
+            * @name __cache
+            * @memberof plat.expressions.Parser
+            * @kind property
+            * @access private
             *
-            * @param input The input string to evaluate.
+            * @type {plat.IObject<plat.expressions.IParsedExpression>}
+            *
+            * @description
+            * An expression cache. Used so that a JavaScript expression is only ever parsed once.
             */
-            public _evaluate(input: string): IParsedExpression;
+            private __cache;
+            /**
+            * @name __codeArray
+            * @memberof plat.expressions.Parser
+            * @kind property
+            * @access private
+            *
+            * @type {Array<string>}
+            *
+            * @description
+            * A dynamically built string array that represents the evaluation function.
+            */
+            private __codeArray;
+            /**
+            * @name __identifiers
+            * @memberof plat.expressions.Parser
+            * @kind property
+            * @access private
+            *
+            * @type {Array<string>}
+            *
+            * @description
+            * A list of all the identifiers discovered in the JavaScript expression string.
+            */
+            private __identifiers;
+            /**
+            * @name __tempIdentifiers
+            * @memberof plat.expressions.Parser
+            * @kind property
+            * @access private
+            *
+            * @type {Array<string>}
+            *
+            * @description
+            * A temporary list of identifiers found used to build and evaluate each actual identifier.
+            */
+            private __tempIdentifiers;
+            /**
+            * @name __aliases
+            * @memberof plat.expressions.Parser
+            * @kind property
+            * @access private
+            *
+            * @type {plat.IObject<boolean>}
+            *
+            * @description
+            * An object whose keys represent a list of all unique aliases found in the JavaScript expression string.
+            */
+            private __aliases;
+            /**
+            * @name parse
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Parses a JavaScript expression string.
+            *
+            * @param {string} expression The JavaScript expression string to parse.
+            *
+            * @returns {plat.expressions.IParsedExpression} The parsed expression containing detailed
+            * information about the expression as well as a way to evaluate its value.
+            */
+            public parse(expression: string): IParsedExpression;
+            /**
+            * @name clearCache
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access public
+            *
+            * @description
+            * If a key is passed in, it clears that single value in the expression cache. If no
+            * key is present, the entire expression cache will be cleared.
+            *
+            * @param {string} key? An optional key that will clear its stored value in the expression
+            * cache if passed in.
+            *
+            * @returns {void}
+            */
+            public clearCache(key?: string): void;
+            /**
+            * @name _evaluate
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Evaluate the current {@link plat.expressions.IToken|IToken} array.
+            *
+            * @param {string} expression The JavaScript expression to evaluate.
+            *
+            * @returns {plat.expressions.IParsedExpression} The parsed expression containing detailed
+            * information about the expression as well as a way to evaluate its value.
+            */
+            public _evaluate(expression: string): IParsedExpression;
+            /**
+            * @name __convertPrimitive
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles a token that is a primitive value.
+            *
+            * @param {number} index The current index in the {@link plat.expressions.IToken|IToken} array.
+            * @param {string} token The current {@link plat.expressions.IToken|IToken} value.
+            * @param {number} args The current {@link plat.expressions.IToken|IToken} args.
+            *
+            * @returns {string} The correctly evaluated primitive.
+            */
             private __convertPrimitive(index, token, args);
+            /**
+            * @name __convertFunction
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles a potential function or object that needs to be indexed into.
+            *
+            * @param {number} index The current index in the {@link plat.expressions.IToken|IToken} array.
+            * @param {string} token The current {@link plat.expressions.IToken|IToken} value.
+            * @param {boolean} useLocalContext Whether or not we need to use an already parsed object as the current context.
+            *
+            * @returns {string} The correctly evaluated object or function represented as a string.
+            */
             private __convertFunction(index, token, useLocalContext);
+            /**
+            * @name __convertObject
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles an object literal.
+            *
+            * @param {number} args The current {@link plat.expressions.IToken|IToken} args.
+            *
+            * @returns {string} The correctly evaluated object literal represented as a string.
+            */
             private __convertObject(args);
+            /**
+            * @name __convertArrayLiteral
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles an Array literal.
+            *
+            * @param {number} args The current {@link plat.expressions.IToken|IToken} args.
+            *
+            * @returns {string} The correctly evaluated Array literal represented as a string.
+            */
             private __convertArrayLiteral(args);
+            /**
+            * @name __handleFunction
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles an accessor type function token "()".
+            *
+            * @param {number} index The current index in the {@link plat.expressions.IToken|IToken} array.
+            * @param {number} args The current {@link plat.expressions.IToken|IToken} args.
+            * @param {boolean} useLocalContext Whether or not we need to use an already parsed object as the current context.
+            *
+            * @returns {boolean} Whether we need to use the current parsed object as the new current context.
+            */
             private __handleFunction(index, args, useLocalContext);
-            private __indexIntoObject(index, useLocalContext);
+            /**
+            * @name __indexIntoObject
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles an accessor type token that is for indexing (i.e. "." or "[]").
+            *
+            * @param {number} index The current index in the {@link plat.expressions.IToken|IToken} array.
+            * @param {string} token The current {@link plat.expressions.IToken|IToken} value.
+            * @param {boolean} useLocalContext Whether or not we need to use an already parsed object as the current context.
+            *
+            * @returns {boolean} Whether we need to use the current parsed object as the new current context.
+            */
+            private __indexIntoObject(index, token, useLocalContext);
+            /**
+            * @name __handleQuestion
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles the "?" operator.
+            *
+            * @returns {void}
+            */
             private __handleQuestion();
+            /**
+            * @name __handleColon
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles the ":" operator.
+            *
+            * @returns {void}
+            */
             private __handleColon();
+            /**
+            * @name __handleOperator
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Handles all other operators.
+            *
+            * @param {string} token The current {@link plat.expressions.IToken|IToken} value.
+            * @param {number} args The current {@link plat.expressions.IToken|IToken} args.
+            *
+            * @returns {void}
+            */
             private __handleOperator(token, args);
+            /**
+            * @name __findInitialContext
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Safely finds an initial context.
+            *
+            * @param {any} context The context object.
+            * @param {any} aliases Any aliases that may exist.
+            * @param {string} token The property used to find the initial context.
+            * @param {any} undefined An undefined argument.
+            *
+            * @returns {any} The correct initial context.
+            */
             private __findInitialContext(context, aliases, token, undefined?);
+            /**
+            * @name __indexIntoContext
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Safely drills down into a specified context with a given token.
+            *
+            * @param {any} context The context object.
+            * @param {string} token The property used to drill into the context.
+            * @param {any} undefined An undefined argument.
+            *
+            * @returns {any} The property of the context denoted by the token.
+            */
             private __indexIntoContext(context, token, undefined?);
             /**
-            * Peek at the next token.
+            * @name _peek
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
             *
-            * @param index The current index.
+            * @description
+            * Peek at the next {@link plat.expressions.IToken|IToken}.
+            *
+            * @param {number} index The index before the desired {@link plat.expressions.IToken|IToken}
+            * in the array.
+            *
+            * @returns {plat.expressions.IToken} The next {@link plat.expressions.IToken|IToken}
+            * in the {@link plat.expressions.IToken|IToken} array.
             */
             public _peek(index: number): IToken;
             /**
+            * @name _lookBack
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Look back at the previous {@link plat.expressions.IToken|IToken}.
+            *
+            * @param {number} index The index after the desired {@link plat.expressions.IToken|IToken}
+            * in the array.
+            *
+            * @returns {plat.expressions.IToken} The previous {@link plat.expressions.IToken|IToken}
+            * in the {@link plat.expressions.IToken|IToken} array.
+            */
+            public _lookBack(index: number): IToken;
+            /**
+            * @name _popRemainingIdentifiers
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Evaluate and remove the leftover identifiers.
+            *
+            * @returns {void}
             */
             public _popRemainingIdentifiers(): void;
             /**
+            * @name _makeIdentifiersUnique
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Remove duplicate identifiers.
+            *
+            * @returns {void}
             */
             public _makeIdentifiersUnique(): void;
             /**
-            * Check if the 'val' property is equal to a particular character.
+            * @name _isValEqual
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
             *
-            * @param obj The obj whose 'val' property to compare
-            * @param char The char to compare with
+            * @description
+            * Check if the "val" property on an {@link plat.expressions.IToken|IToken}
+            * is present in a particular character string.
+            *
+            * @param {plat.expressions.IToken} obj The {@link plat.expressions.IToken|IToken}
+            * with the "val" property to compare.
+            * @param {string} char The char to compare with.
+            *
+            * @returns {boolean} Whether or not the val is equal to the input character.
             */
-            public _isValEqual(obj: any, char: string): boolean;
+            public _isValEqual(obj: IToken, char: string): boolean;
             /**
-            * Check if the 'val' property is not equal to a particular character.
+            * @name _isValUnequal
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
             *
-            * @param obj The obj whose 'val' property to compare
-            * @param char The char to compare with
+            * @description
+            * Check if the "val" property on an {@link plat.expressions.IToken|IToken}
+            * is not present in a particular character string.
+            *
+            * @param {plat.expressions.IToken} obj The {@link plat.expressions.IToken|IToken}
+            * with the "val" property to compare.
+            * @param {string} char The char to compare with.
+            *
+            * @returns {boolean} Whether or not the val is not equal to the input character.
             */
             public _isValUnequal(obj: any, char: string): boolean;
             /**
-            * Reset the parser's properties.
+            * @name _resetParser
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Resets all the parser's properties.
+            *
+            * @returns {void}
             */
             public _resetParser(): void;
             /**
-            * Throw an exception in the case of an error.
+            * @name _throwError
+            * @memberof plat.expressions.Parser
+            * @kind function
+            * @access protected
             *
-            * @param error The error message to throw
+            * @description
+            * Throws a fatal exception in the case of an error.
+            *
+            * @param {string} error The error message to throw.
+            *
+            * @returns {void}
             */
             public _throwError(error: string): void;
         }
@@ -3591,46 +5066,122 @@ declare module plat {
         */
         function IParser(): IParser;
         /**
-        * Describes an object that can parse an expression string and turn it into an
-        * IParsedExpression. The intended external interface for the '$Parser'
-        * injectable.
+        * @name IParser
+        * @memberof plat.expressions
+        * @kind interface
+        *
+        * @description
+        * Describes an object that can parse a JavaScript expression string and turn it into an
+        * {@link plat.expressions.IParsedExpression|IParsedExpression}.
         */
         interface IParser {
             /**
-            * Takes in an expression string and outputs an IParsedExpression.
+            * @name parse
+            * @memberof plat.expressions.IParser
+            * @kind function
+            * @access public
             *
-            * @param input An expression string to parse.
+            * @description
+            * Parses a JavaScript expression string.
+            *
+            * @param {string} expression The JavaScript expression string to parse.
+            *
+            * @returns {plat.expressions.IParsedExpression} The parsed expression containing detailed
+            * information about the expression as well as a way to evaluate its value.
             */
             parse(expression: string): IParsedExpression;
+            /**
+            * @name clearCache
+            * @memberof plat.expressions.IParser
+            * @kind function
+            * @access public
+            *
+            * @description
+            * If a key is passed in, it clears that single value in the expression cache. If no
+            * key is present, the entire expression cache will be cleared.
+            *
+            * @param {string} key? An optional key that will clear its stored value in the expression
+            * cache if passed in.
+            *
+            * @returns {void}
+            */
+            clearCache(key?: string): void;
         }
         /**
-        * Describes an object that is the result of parsing an expression string. Provides a
-        * way to evaluate the expression with a context.
+        * @name IParsedExpression
+        * @memberof plat.expressions
+        * @kind interface
+        *
+        * @description
+        * Describes an object that is the result of parsing a JavaScript expression string. It contains detailed
+        * information about the expression as well as a way to evaluate the expression with a context.
         */
         interface IParsedExpression {
             /**
+            * @name evaluate
+            * @memberof plat.expressions.IParsedExpression
+            * @kind function
+            * @access public
+            *
+            * @description
             * A method for evaluating an expression with a context.
             *
-            * @param context The primary context for evaluation.
-            * @param aliases An object containing resource alias values. All keys must begin with '@'.
+            * @param {any} context? The primary context for evaluation.
+            * @param {any} aliases? An object containing resource alias values. All keys must begin with '@'.
+            *
+            * @returns {any} The evaluated object or primitive.
             */
             evaluate(context?: any, aliases?: any): any;
             /**
+            * @name expression
+            * @memberof plat.expressions.IParsedExpression
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
             * The original expression string.
             */
             expression: string;
             /**
-            * Contains all the identifiers found in an expression.  Useful for determining
+            * @name identifiers
+            * @memberof plat.expressions.IParsedExpression
+            * @kind property
+            * @access public
+            *
+            * @type {Array<string>}
+            *
+            * @description
+            * Contains all the identifiers found in an expression. Useful for determining
             * properties to watch on a context.
             */
             identifiers: string[];
             /**
-            * Contains all the aliases (denoted by an identifier with '@' as the first character) for this IParsedExpression.
+            * @name aliases
+            * @memberof plat.expressions.IParsedExpression
+            * @kind property
+            * @access public
+            *
+            * @type {Array<string>}
+            *
+            * @description
+            * Contains all the aliases (denoted by an identifier with '@' as the first character) for this
+            * {@link plat.expressions.IParsedExpression|IParsedExpression}.
             */
             aliases: string[];
             /**
+            * @name oneTime
+            * @memberof plat.expressions.IParsedExpression
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
             * Specifies whether or not you want to do a one-time binding on identifiers
-            * for this expression. Typically this is added to a clone of the IParsedExpression.
+            * for this expression. Typically this is added to a clone of this
+            * {@link plat.expressions.IParsedExpression|IParsedExpression}.
             */
             oneTime?: boolean;
         }
@@ -3787,7 +5338,7 @@ declare module plat {
             * @description
             * The constructor for a {@link plat.web.Browser|Browser}. Assigns a uid and subscribes to the 'beforeLoad' event.
             *
-            * @returns {plat.web.Browser} A {@link plat.web.Browser|Browser} instance.
+            * @returns {plat.web.Browser}
             */
             constructor();
             /**
@@ -4374,7 +5925,7 @@ declare module plat {
             * The constructor for a {@link plat.web.UrlUtils|UrlUtils} instance.
             * Handles parsing the initial URL and obtain the base URL if necessary.
             *
-            * @returns {plat.web.UrlUtils} A {@link plat.web.UrlUtils|UrlUtils} instance.
+            * @returns {plat.web.UrlUtils}
             */
             constructor();
             /**
@@ -4824,7 +6375,7 @@ declare module plat {
             * @description
             * The constructor for a {@link plat.web.Router|Router}. Assigns a uid and subscribes to the 'urlChanged' event.
             *
-            * @returns {plat.web.Router} A {@link plat.web.Router|Router} instance.
+            * @returns {plat.web.Router}
             */
             constructor();
             /**
@@ -7340,49 +8891,200 @@ declare module plat {
     */
     module storage {
         /**
-        * A Cache class, for use with the $CacheFactory injectable. Used for storing objects.
-        * Takes in a generic type corresponding to the type of objects it contains.
+        * @name Cache
+        * @memberof plat.storage
+        * @kind class
         *
+        * @implements {plat.storage.ICache<T>}
+        *
+        * @description
+        * A Cache class, for use with the {@link plat.storage.ICacheFactory|ICacheFactory} injectable.
+        * Used for storing objects. Takes in a generic type corresponding to the type of objects it contains.
+        *
+        * @typeparam {any} T The type of objects stored in the cache.
         */
         class Cache<T> implements ICache<T> {
             /**
-            * Method for creating a new Cache. Takes a generic type to denote the
-            * type of objects stored in the new Cache.  If the Cache already exists
-            * in the $CacheFactory, a new Cache will not be created.
-            *
+            * @name create
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
             * @static
-            * @param id The id of the new Cache.
-            * @param options ICacheOptions for customizing the Cache.
+            *
+            * @description
+            * Method for creating a new cache object. Takes a generic type to denote the
+            * type of objects stored in the new cache.  If a cache with the same ID already exists
+            * in the {@link plat.storage.ICacheFactory|ICacheFactory}, a new cache will not be created.
+            *
+            * @param {string} id The ID of the new Cache.
+            * @param {plat.storage.ICacheOptions} options {@link plat.storage.ICacheOptions|ICacheOptions}
+            * for customizing the Cache.
+            *
+            * @typeparam {any} T Denotes the type of objects stored in the new Cache.
+            *
+            * @returns {plat.storage.ICache<T>} The new cache.
             */
             static create<T>(id: string, options?: ICacheOptions): ICache<T>;
             /**
-            * Gets a cache out of the $CacheFactory if it exists.
-            *
+            * @name fetch
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
             * @static
-            * @param id The identifier used to search for the cache.
             *
-            * @returns {Cache<T>|undefined}
+            * @description
+            * Gets a cache out of the {@link plat.storage.ICacheFactory|ICacheFactory} if it exists.
+            *
+            * @param {string} id The identifier used to search for the cache.
+            *
+            * @typeparam {any} T Denotes the type of objects stored in the new Cache.
+            *
+            * @returns {plat.storage.ICache<T>} The cache with the input ID or undefined if it does not exist.
             */
             static fetch<T>(id: string): ICache<T>;
             /**
-            * Clears the CacheFactory and all of its caches.
-            *
+            * @name clear
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
             * @static
+            *
+            * @description
+            * Clears the {@link plat.storage.ICacheFactory|ICacheFactory} and all of its caches.
+            *
+            * @returns {void}
             */
             static clear(): void;
+            /**
+            * @name __size
+            * @memberof plat.storage.Cache
+            * @kind property
+            * @access private
+            *
+            * @type {number}
+            *
+            * @description
+            * The size of this cache specified by its ID.
+            */
             private __size;
+            /**
+            * @name __id
+            * @memberof plat.storage.Cache
+            * @kind property
+            * @access private
+            *
+            * @type {string}
+            *
+            * @description
+            * The ID of this cache.
+            */
             private __id;
+            /**
+            * @name __options
+            * @memberof plat.storage.Cache
+            * @kind property
+            * @access private
+            *
+            * @type {plat.storage.ICacheOptions}
+            *
+            * @description
+            * The options for this cache.
+            */
             private __options;
             /**
-            * @param id The id to use to retrieve the cache from the CacheFactory.
-            * @param options The ICacheOptions for customizing the cache.
+            * @name constructor
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * The constructor for a {@link plat.storage.Cache|Cache}.
+            *
+            * @param {string} id The id to use to retrieve the cache from the {@link plat.storage.ICacheFactory|ICacheFactory}.
+            * @param {plat.storage.ICacheOptions} options The {@link plat.storage.ICacheOptions|ICacheOptions} for customizing the cache.
+            *
+            * @returns {plat.storage.Cache} A new {@link plat.storage.Cache|Cache} instance specified by the ID.
             */
             constructor(id: string, options?: ICacheOptions);
+            /**
+            * @name info
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Retrieves the {@link plat.storage.ICacheInfo|ICacheInfo} about this cache
+            * (i.e. ID, size, options)
+            *
+            * @returns {plat.storage.ICacheInfo} The information about this cache.
+            */
             public info(): ICacheInfo;
+            /**
+            * @name put
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for inserting an object into an {@link plat.storage.ICache|ICache}.
+            *
+            * @param {string} key The key to use for storage/retrieval of the object.
+            * @param {T} value The value to store with the associated key.
+            *
+            * @returns {T} The value inserted into an {@link plat.storage.ICache|ICache}.
+            */
             public put(key: string, value: T): T;
+            /**
+            * @name read
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for retrieving an object from an {@link plat.storage.ICache|ICache}.
+            *
+            * @param key The key to search for in an {@link plat.storage.ICache|ICache}.
+            *
+            * @returns {T} The value found at the associated key. Returns undefined for a cache miss.
+            */
             public read(key: string): T;
+            /**
+            * @name remove
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for removing an object from an {@link plat.storage.ICache|ICache}.
+            *
+            * @param {string} key The key to remove from the {@link plat.storage.ICache|ICache}.
+            *
+            * @returns {void}
+            */
             public remove(key: string): void;
+            /**
+            * @name clear
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for clearing an {@link plat.storage.ICache|ICache}, removing all of its keys.
+            *
+            * @returns {void}
+            */
             public clear(): void;
+            /**
+            * @name dispose
+            * @memberof plat.storage.Cache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for removing an {@link plat.storage.ICache|ICache} from the {@link plat.storage.ICacheFactory|ICacheFactory}.
+            *
+            * @returns {void}
+            */
             public dispose(): void;
         }
         /**
@@ -7390,72 +9092,156 @@ declare module plat {
         */
         function ICacheFactory(): ICacheFactory;
         /**
+        * @name ICacheFactory
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @description
         * Used to manage all the defined caches for the current application session.
         */
         interface ICacheFactory {
             /**
-            * Method for creating a new ICache. Takes a generic type to denote the
-            * type of objects stored in the new ICache.  If the ICache already exists
-            * in the ICacheStatic, a new ICache will not be created.
+            * @name create
+            * @memberof plat.storage.ICacheFactory
+            * @kind function
+            * @access public
+            * @static
             *
-            * @param id The id of the new ICache.
-            * @param options ICacheOptions for customizing the ICache.
+            * @description
+            * Method for creating a new cache object. Takes a generic type to denote the
+            * type of objects stored in the new cache.  If a cache with the same ID already exists
+            * in the {@link plat.storage.ICacheFactory|ICacheFactory}, a new cache will not be created.
             *
-            * @returns {ICache} The newly created ICache object.
+            * @param {string} id The ID of the new Cache.
+            * @param {plat.storage.ICacheOptions} options {@link plat.storage.ICacheOptions|ICacheOptions}
+            * for customizing the Cache.
+            *
+            * @typeparam {any} T Denotes the type of objects stored in the new Cache.
+            *
+            * @returns {plat.storage.ICache<T>} The new cache.
             */
             create<T>(id: string, options?: ICacheOptions): ICache<T>;
             /**
-            * Gets a cache out of the ICacheStatic if it exists.
+            * @name fetch
+            * @memberof plat.storage.ICacheFactory
+            * @kind function
+            * @access public
+            * @static
             *
-            * @param id The identifier used to search for the cache.
+            * @description
+            * Gets a cache out of the {@link plat.storage.ICacheFactory|ICacheFactory} if it exists.
             *
-            * @returns {ICache|undefined}
+            * @param {string} id The identifier used to search for the cache.
+            *
+            * @typeparam {any} T Denotes the type of objects stored in the new Cache.
+            *
+            * @returns {plat.storage.ICache<T>} The cache with the input ID or undefined if it does not exist.
             */
             fetch<T>(id: string): ICache<T>;
             /**
-            * Clears the ICacheStatic and all of its caches.
+            * @name clear
+            * @memberof plat.storage.ICacheFactory
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
+            * Clears the {@link plat.storage.ICacheFactory|ICacheFactory} and all of its caches.
+            *
+            * @returns {void}
             */
             clear(): void;
         }
         /**
-        * The ICache interface describing a cache. Takes in a generic type
+        * @name ICache
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @description
+        * Describes a cache. Takes in a generic type
         * corresponding to the type of objects stored in the cache.
+        *
+        * @typeparam {any} T The type of objects stored in this cache.
         */
         interface ICache<T> {
             /**
-            * Method for accessing information about an ICache.
+            * @name info
+            * @memberof plat.storage.ICache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Retrieves the {@link plat.storage.ICacheInfo|ICacheInfo} about this cache
+            * (i.e. ID, size, options)
+            *
+            * @returns {plat.storage.ICacheInfo} The information about this cache.
             */
             info(): ICacheInfo;
             /**
-            * Method for inserting an object into an ICache.
+            * @name put
+            * @memberof plat.storage.ICache
+            * @kind function
+            * @access public
             *
-            * @param key The key to use for storage/retrieval of the object.
-            * @param value The value to store with the associated key.
+            * @description
+            * Method for inserting an object into an {@link plat.storage.ICache|ICache}.
             *
-            * @returns {T} The value inserted into an ICache.
+            * @param {string} key The key to use for storage/retrieval of the object.
+            * @param {T} value The value to store with the associated key.
+            *
+            * @returns {T} The value inserted into an {@link plat.storage.ICache|ICache}.
             */
             put(key: string, value: T): T;
             /**
-            * Method for retrieving an object from an ICache.
+            * @name read
+            * @memberof plat.storage.ICache
+            * @kind function
+            * @access public
             *
-            * @param key The key to search for in an ICache.
+            * @description
+            * Method for retrieving an object from an {@link plat.storage.ICache|ICache}.
             *
-            * @returns {T|undefined} The value found at the associated key.
-            * Returns undefined for an ICache miss.
+            * @param key The key to search for in an {@link plat.storage.ICache|ICache}.
+            *
+            * @returns {T} The value found at the associated key. Returns undefined for a cache miss.
             */
             read(key: string): T;
             /**
-            * Method for removing an object from an ICache.
+            * @name remove
+            * @memberof plat.storage.ICache
+            * @kind function
+            * @access public
             *
-            * @param key The key to remove from an ICache.
+            * @description
+            * Method for removing an object from an {@link plat.storage.ICache|ICache}.
+            *
+            * @param {string} key The key to remove from the {@link plat.storage.ICache|ICache}.
+            *
+            * @returns {void}
             */
             remove(key: string): void;
             /**
-            * Method for clearing an ICache, removing all of its keys.
+            * @name clear
+            * @memberof plat.storage.ICache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for clearing an {@link plat.storage.ICache|ICache}, removing all of its keys.
+            *
+            * @returns {void}
             */
             clear(): void;
             /**
-            * Method for removing an ICache from the $CacheFactory.
+            * @name dispose
+            * @memberof plat.storage.ICache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for removing an {@link plat.storage.ICache|ICache} from the {@link plat.storage.ICacheFactory|ICacheFactory}.
+            *
+            * @returns {void}
             */
             dispose(): void;
         }
@@ -7464,10 +9250,23 @@ declare module plat {
         */
         function IManagerCache(): ICache<processing.INodeManager>;
         /**
+        * @name ICacheOptions
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @description
         * Options for a cache.
         */
         interface ICacheOptions {
             /**
+            * @name timeout
+            * @memberof plat.storage.ICacheOptions
+            * @kind property
+            * @access public
+            *
+            * @type {number}
+            *
+            * @description
             * Specifies a timeout for a cache value. When a value
             * is put in the cache, it will be valid for the given
             * period of time (in milliseconds). After the timeout
@@ -7477,34 +9276,142 @@ declare module plat {
             timeout?: number;
         }
         /**
-        * Contains information about an ICache.
+        * @name ICacheInfo
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @description
+        * Contains information about an {@link plat.storage.ICache|ICache}.
         */
         interface ICacheInfo {
             /**
-            * A unique id for the ICache object, used to
-            * retrieve the ICache out of the $CacheFactory.
+            * @name id
+            * @memberof plat.storage.ICacheInfo
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * A unique id for the {@link plat.storage.ICache|ICache} object, used to
+            * retrieve the {@link plat.storage.ICache|ICache} out of the {@link plat.storage.ICacheFactory|ICacheFactory}.
             */
             id: string;
             /**
-            * Represents the number of items in the ICache.
+            * @name size
+            * @memberof plat.storage.ICacheInfo
+            * @kind property
+            * @access public
+            *
+            * @type {number}
+            *
+            * @description
+            * Represents the number of items in the {@link plat.storage.ICache|ICache}.
             */
             size: number;
             /**
-            * Represents the ICacheOptions that the ICache is
-            * using.
+            * @name options
+            * @memberof plat.storage.ICacheInfo
+            * @kind property
+            * @access public
+            *
+            * @type {plat.storage.ICacheOptions}
+            *
+            * @description
+            * Represents the {@link plat.storage.ICacheOptions|ICacheOptions} that the
+            * {@link plat.storage.ICache|ICache} is using.
             */
             options: ICacheOptions;
         }
         /**
+        * @name TemplateCache
+        * @memberof plat.storage
+        * @kind class
+        *
+        * @extends {plat.storage.Cache<any>}
+        * @implements {plat.storage.ITemplateCache}
+        *
+        * @description
         * Used for caching compiled nodes. This class will
         * clone a template when you put it in the cache. It will
         * also clone the template when you retrieve it.
         */
-        class TemplateCache extends Cache<any> implements ITemplateCache {
+        class TemplateCache extends Cache<async.IThenable<DocumentFragment>> implements ITemplateCache {
+            /**
+            * @name $Promise
+            * @memberof plat.storage.TemplateCache
+            * @kind property
+            * @access public
+            *
+            * @type {plat.async.IPromise}
+            *
+            * @description
+            * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+            */
             public $Promise: async.IPromise;
+            /**
+            * @name constructor
+            * @memberof plat.storage.TemplateCache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * The constructor for a {@link plat.storage.TemplateCache|TemplateCache}. Creates a new {@link plat.storage.ICache|ICache}
+            * with the ID "__templateCache".
+            *
+            * @returns {plat.storage.TemplateCache}
+            */
             constructor();
+            /**
+            * @name put
+            * @memberof plat.storage.TemplateCache
+            * @kind function
+            * @access public
+            * @variation 0
+            *
+            * @description
+            * Stores a Node in the cache as a DocumentFragment.
+            *
+            * @param {string} key The key to use for storage/retrieval of the object.
+            * @param {Node} value The Node.
+            *
+            * @returns {plat.async.IThenable<DocumentFragment>} A promise that resolves with a
+            * DocumentFragment containing the input Node.
+            */
             public put(key: string, value: Node): async.IThenable<DocumentFragment>;
+            /**
+            * @name put
+            * @memberof plat.storage.TemplateCache
+            * @kind function
+            * @access public
+            * @variation 1
+            *
+            * @description
+            * Stores a {@link plat.async.IPromise|IPromise} in the cache.
+            *
+            * @param {string} key The key to use for storage/retrieval of the object.
+            * @param {plat.async.IThenable<Node>} value {@link plat.async.Promise|Promise} that
+            * should resolve with a Node.
+            *
+            * @returns {plat.async.IThenable<DocumentFragment>} A {@link plat.async.Promise|Promise} that resolves when
+            * the input {@link plat.async.Promise|Promise} resolves.
+            */
             public put(key: string, value: async.IThenable<Node>): async.IThenable<DocumentFragment>;
+            /**
+            * @name read
+            * @memberof plat.storage.TemplateCache
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Method for retrieving a Node from this cache. The DocumentFragment that resolves from the returned
+            * {@link plat.async.Promise|Promise} will be cloned to avoid manipulating the cached template.
+            *
+            * @param {string} key The key to search for in this cache.
+            *
+            * @returns {plat.async.IThenable<DocumentFragment>} The {@link plat.async.Promise|Promise} found at the associated key.
+            * Returns undefined for a cache miss.
+            */
             public read(key: string): async.IThenable<DocumentFragment>;
         }
         /**
@@ -7512,91 +9419,300 @@ declare module plat {
         */
         function ITemplateCache(): ITemplateCache;
         /**
-        * Interface for TemplateCache, used to manage all templates. Returns a unique template
+        * @name ITemplateCache
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @extends {plat.storage.ICache<plat.async.IThenable<DocumentFragment>>}
+        *
+        * @description
+        * Used to manage all templates. Returns a unique template
         * for every read, to avoid having to call cloneNode.
         */
         interface ITemplateCache extends ICache<async.IThenable<DocumentFragment>> {
             /**
+            * @name put
+            * @memberof plat.storage.ITemplateCache
+            * @kind function
+            * @access public
+            * @variation 0
+            *
+            * @description
             * Stores a Node in the cache as a DocumentFragment.
             *
-            * @param key The key used to store the value.
-            * @param value The Node.
+            * @param {string} key The key to use for storage/retrieval of the object.
+            * @param {Node} value The Node.
+            *
+            * @returns {plat.async.IThenable<DocumentFragment>} A promise that resolves with a
+            * DocumentFragment containing the input Node.
             */
             put(key: string, value: Node): async.IThenable<DocumentFragment>;
             /**
-            * Stores a Promise in the cache.
+            * @name put
+            * @memberof plat.storage.ITemplateCache
+            * @kind function
+            * @access public
+            * @variation 1
             *
-            * @param key The key used to store the value.
-            * @param value The Promise.
+            * @description
+            * Stores a {@link plat.async.IPromise|IPromise} in the cache.
+            *
+            * @param {string} key The key to use for storage/retrieval of the object.
+            * @param {plat.async.IThenable<Node>} value {@link plat.async.Promise|Promise} that
+            * should resolve with a Node.
+            *
+            * @returns {plat.async.IThenable<DocumentFragment>} A {@link plat.async.Promise|Promise} that resolves when
+            * the input {@link plat.async.Promise|Promise} resolves.
             */
             put(key: string, value: async.IThenable<Node>): async.IThenable<DocumentFragment>;
             /**
-            * Method for retrieving a Node from an ITemplateCache. The returned DocumentFragment will be
-            * cloned to avoid manipulating the cached template.
+            * @name read
+            * @memberof plat.storage.ITemplateCache
+            * @kind function
+            * @access public
             *
-            * @param key The key to search for in an ITemplateCache.
+            * @description
+            * Method for retrieving a Node from this cache. The DocumentFragment that resolves from the returned
+            * {@link plat.async.Promise|Promise} will be cloned to avoid manipulating the cached template.
+            *
+            * @param {string} key The key to search for in this cache.
+            *
+            * @returns {plat.async.IThenable<DocumentFragment>} The {@link plat.async.Promise|Promise} found at the associated key.
+            * Returns undefined for a cache miss.
             */
             read(key: string): async.IThenable<DocumentFragment>;
         }
         /**
+        * @name BaseStorage
+        * @memberof plat.storage
+        * @kind class
+        *
+        * @implements {plat.storage.IBaseStorage}
+        *
+        * @description
         * A base class for storing data with a designated storage type.
         */
         class BaseStorage implements IBaseStorage {
-            constructor();
-            public length : number;
-            public clear(): void;
-            public getItem<T>(key: string): T;
-            public key(index: number): string;
-            public removeItem(key: string): void;
-            public setItem(key: string, data: any): void;
-        }
-        /**
-        * An object designed for storing data with a designated storage type.
-        */
-        interface IBaseStorage {
             /**
+            * @name constructor
+            * @memberof plat.storage.BaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
+            * The constructor for a {@link plat.storage.BaseStorage|BaseStorage}.
+            *
+            * @returns {plat.storage.BaseStorage}
+            */
+            constructor();
+            /**
+            * @name length
+            * @memberof plat.storage.BaseStorage
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {number}
+            *
+            * @description
             * Returns the number of items in storage.
             */
-            length: number;
+            public length : number;
             /**
+            * @name clear
+            * @memberof plat.storage.BaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Clears storage, deleting all of its keys.
+            *
+            * @returns {void}
             */
-            clear(): void;
+            public clear(): void;
             /**
+            * @name getItem
+            * @memberof plat.storage.BaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Gets an item out of storage with the assigned key.
             *
-            * @param key The key of the item to retrieve from storage.
+            * @param {string} key The key of the item to retrieve from storage.
+            *
+            * @typeparam {any} T The type of item being retrieved.
+            *
             * @returns {T} The item retrieved from storage.
             */
-            getItem<T>(key: string): T;
+            public getItem<T>(key: string): T;
             /**
+            * @name key
+            * @memberof plat.storage.BaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Allows for iterating over storage keys with an index. When
             * called with an index, it will return the key at that index in
             * storage.
             *
-            * @param index The index used to retrieve the associated key.
+            * @param {number} index The index used to retrieve the associated key.
+            *
+            * @returns {string} The key at the given index.
+            */
+            public key(index: number): string;
+            /**
+            * @name removeItem
+            * @memberof plat.storage.BaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Searches in storage for an item and removes it if it
+            * exists.
+            *
+            * @param {string} key The key of the item to remove from storage.
+            *
+            * @returns {void}
+            */
+            public removeItem(key: string): void;
+            /**
+            * @name setItem
+            * @memberof plat.storage.BaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Adds data to storage with the designated key.
+            *
+            * @param {string} key The key of the item to store in storage.
+            * @param {any} data The data to store in storage with the key.
+            *
+            * @returns {void}
+            */
+            public setItem(key: string, data: any): void;
+        }
+        /**
+        * @name IBaseStorage
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @description
+        * An object designed for storing data with a designated storage type.
+        */
+        interface IBaseStorage {
+            /**
+            * @name length
+            * @memberof plat.storage.IBaseStorage
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {number}
+            *
+            * @description
+            * Returns the number of items in storage.
+            */
+            length: number;
+            /**
+            * @name clear
+            * @memberof plat.storage.IBaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Clears storage, deleting all of its keys.
+            *
+            * @returns {void}
+            */
+            clear(): void;
+            /**
+            * @name getItem
+            * @memberof plat.storage.IBaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Gets an item out of storage with the assigned key.
+            *
+            * @param {string} key The key of the item to retrieve from storage.
+            *
+            * @typeparam {any} T The type of item being retrieved.
+            *
+            * @returns {T} The item retrieved from storage.
+            */
+            getItem<T>(key: string): T;
+            /**
+            * @name key
+            * @memberof plat.storage.IBaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Allows for iterating over storage keys with an index. When
+            * called with an index, it will return the key at that index in
+            * storage.
+            *
+            * @param {number} index The index used to retrieve the associated key.
+            *
             * @returns {string} The key at the given index.
             */
             key(index: number): string;
             /**
+            * @name removeItem
+            * @memberof plat.storage.IBaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Searches in storage for an item and removes it if it
             * exists.
             *
-            * @param key the Key of the item to remove from storage.
+            * @param {string} key The key of the item to remove from storage.
+            *
+            * @returns {void}
             */
             removeItem(key: string): void;
             /**
+            * @name setItem
+            * @memberof plat.storage.IBaseStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Adds data to storage with the designated key.
             *
-            * @param key The key of the item to store in storage.
-            * @param data The data to store in storage with the key.
+            * @param {string} key The key of the item to store in storage.
+            * @param {any} data The data to store in storage with the key.
+            *
+            * @returns {void}
             */
             setItem(key: string, data: any): void;
         }
         /**
-        * A class used to wrap local storage into an injectable.
+        * @name LocalStorage
+        * @memberof plat.storage
+        * @kind class
+        *
+        * @extends {plat.storage.BaseStorage}
+        * @implements {plat.storage.ILocalStorage}
+        *
+        * @description
+        * A class used to wrap HTML5 localStorage into an injectable.
         */
         class LocalStorage extends BaseStorage implements ILocalStorage {
+            /**
+            * @name __storage
+            * @memberof plat.storage.LocalStorage
+            * @kind property
+            * @access private
+            *
+            * @type {Storage}
+            *
+            * @description
+            * Reference to HTML5 localStorage.
+            */
             private __storage;
         }
         /**
@@ -7604,52 +9720,125 @@ declare module plat {
         */
         function ILocalStorage(): ILocalStorage;
         /**
+        * @name ILocalStorage
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @description
         * Describes an object used to wrap local storage into an injectable.
         */
         interface ILocalStorage {
             /**
+            * @name length
+            * @memberof plat.storage.ILocalStorage
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {number}
+            *
+            * @description
             * Returns the number of items in localStorage.
             */
             length: number;
             /**
+            * @name clear
+            * @memberof plat.storage.ILocalStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Clears localStorage, deleting all of its keys.
+            *
+            * @returns {void}
             */
             clear(): void;
             /**
-            * Gets an item out of local storage with the assigned key.
+            * @name getItem
+            * @memberof plat.storage.ILocalStorage
+            * @kind function
+            * @access public
             *
-            * @param key The key of the item to retrieve from localStorage.
-            * @returns {T} The item retrieved from localStorage.
+            * @description
+            * Gets an item out of localStorage with the assigned key.
+            *
+            * @param {string} key The key of the item to retrieve from localStorage.
+            *
+            * @typeparam {any} T The type of item being retrieved.
+            *
+            * @returns {T} The item retrieved from storage.
             */
             getItem<T>(key: string): T;
             /**
+            * @name key
+            * @memberof plat.storage.ILocalStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Allows for iterating over localStorage keys with an index. When
             * called with an index, it will return the key at that index in
             * localStorage.
             *
-            * @param index The index used to retrieve the associated key.
+            * @param {number} index The index used to retrieve the associated key.
+            *
             * @returns {string} The key at the given index.
             */
             key(index: number): string;
             /**
+            * @name removeItem
+            * @memberof plat.storage.ILocalStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Searches in localStorage for an item and removes it if it
             * exists.
             *
-            * @param key the Key of the item to remove from localStorage.
+            * @param {string} key The key of the item to remove from storage.
+            *
+            * @returns {void}
             */
             removeItem(key: string): void;
             /**
+            * @name setItem
+            * @memberof plat.storage.ILocalStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Adds data to localStorage with the designated key.
             *
-            * @param key The key of the item to store in localStorage.
-            * @param data The data to store in localStorage with the key.
+            * @param {string} key The key of the item to store in localStorage.
+            * @param {any} data The data to store in localStorage with the key.
+            *
+            * @returns {void}
             */
             setItem(key: string, data: any): void;
         }
         /**
+        * @name SessionStorage
+        * @memberof plat.storage
+        * @kind class
+        *
+        * @extends {plat.storage.BaseStorage}
+        * @implements {plat.storage.ISessionStorage}
+        *
+        * @description
         * A class for wrapping SessionStorage as an injectable.
         */
         class SessionStorage extends BaseStorage implements ISessionStorage {
+            /**
+            * @name __storage
+            * @memberof plat.storage.LocalStorage
+            * @kind property
+            * @access private
+            *
+            * @type {Storage}
+            *
+            * @description
+            * Reference to HTML5 sessionStorage.
+            */
             private __storage;
         }
         /**
@@ -7657,45 +9846,99 @@ declare module plat {
         */
         function ISessionStorage(): ISessionStorage;
         /**
+        * @name ISessionStorage
+        * @memberof plat.storage
+        * @kind interface
+        *
+        * @description
         * Describes an object used to wrap session storage into an injectable.
         */
         interface ISessionStorage {
             /**
+            * @name length
+            * @memberof plat.storage.ISessionStorage
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {number}
+            *
+            * @description
             * Returns the number of items in sessionStorage.
             */
             length: number;
             /**
+            * @name clear
+            * @memberof plat.storage.ISessionStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Clears sessionStorage, deleting all of its keys.
+            *
+            * @returns {void}
             */
             clear(): void;
             /**
-            * Gets an item out of session storage with the assigned key.
+            * @name getItem
+            * @memberof plat.storage.ISessionStorage
+            * @kind function
+            * @access public
             *
-            * @param key The key of the item to retrieve from sessionStorage.
-            * @returns {T} The item retrieved from sessionStorage.
+            * @description
+            * Gets an item out of sessionStorage with the assigned key.
+            *
+            * @param {string} key The key of the item to retrieve from sessionStorage.
+            *
+            * @typeparam {any} T The type of item being retrieved.
+            *
+            * @returns {T} The item retrieved from storage.
             */
             getItem<T>(key: string): T;
             /**
+            * @name key
+            * @memberof plat.storage.ISessionStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Allows for iterating over sessionStorage keys with an index. When
             * called with an index, it will return the key at that index in
             * sessionStorage.
             *
-            * @param index The index used to retrieve the associated key.
+            * @param {number} index The index used to retrieve the associated key.
+            *
             * @returns {string} The key at the given index.
             */
             key(index: number): string;
             /**
+            * @name removeItem
+            * @memberof plat.storage.ISessionStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Searches in sessionStorage for an item and removes it if it
             * exists.
             *
-            * @param key the Key of the item to remove from sessionStorage.
+            * @param {string} key The key of the item to remove from storage.
+            *
+            * @returns {void}
             */
             removeItem(key: string): void;
             /**
+            * @name setItem
+            * @memberof plat.storage.ISessionStorage
+            * @kind function
+            * @access public
+            *
+            * @description
             * Adds data to sessionStorage with the designated key.
             *
-            * @param key The key of the item to store in sessionStorage.
-            * @param data The data to store in sessionStorage with the key.
+            * @param {string} key The key of the item to store in sessionStorage.
+            * @param {any} data The data to store in sessionStorage with the key.
+            *
+            * @returns {void}
             */
             setItem(key: string, data: any): void;
         }
@@ -7711,194 +9954,595 @@ declare module plat {
     */
     module observable {
         /**
-        * Manages observable properties on control.
-        * Facilitates in data-binding and managing context inheritance.
+        * @name ContextManager
+        * @memberof plat.observable
+        * @kind class
+        *
+        * @implements {plat.observable.IContextManager}
+        *
+        * @description
+        * A class for managing both context inheritance and observable properties on controls and
+        * facilitating in data-binding.
         */
         class ContextManager implements IContextManager {
             /**
+            * @name observedArrayListeners
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {plat.IObject<plat.IObject<Array<(ev: plat.observable.IArrayMethodInfo<any>) => void>>>}
+            *
+            * @description
             * A set of functions to be fired when a particular observed array is mutated.
             */
             static observedArrayListeners: IObject<IObject<{
                 (ev: IArrayMethodInfo<any>): void;
             }[]>>;
             /**
-            * Gets the ContextManager associated to the given control. If no
-            * ContextManager exists, one is created for that control.
-            *
+            * @name getManager
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
             * @static
-            * @param control The control on which to locate the ContextManager
+            *
+            * @description
+            * Gets the {@link plat.observable.IContextManager|IContextManager} associated to the given control. If no
+            * {@link plat.observable.IContextManager|IContextManager} exists, one is created for that control.
+            *
+            * @param {plat.IControl} control The control on which to locate the {@link plat.observable.IContextManager|IContextManager}.
+            *
+            * @returns {plat.observable.IContextManager} The {@link plat.observable.IContextManager|IContextManager}
+            * associated with the input control.
             */
             static getManager(control: IControl): IContextManager;
             /**
-            * Removes all the listeners for a given control's uid.
-            *
+            * @name dispose
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
             * @static
-            * @param control The control whose manager is being disposed.
-            * @param persist Whether or not the control's context needs to
+            *
+            * @description
+            * Removes all the listeners for a given control's unique ID.
+            *
+            * @param {plat.IControl} control The control whose manager is being disposed.
+            * @param {boolean} persist? Whether or not the control's context needs to
             * be persisted post-disposal or can be set to null.
+            *
+            * @returns {void}
             */
             static dispose(control: IControl, persist?: boolean): void;
             /**
+            * @name removeArrayListeners
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Removes all listeners for an Array associated with a given uid.
             *
-            * @static
-            * @param absoluteIdentifier The identifier used to locate the array.
-            * @param uid The uid used to search for listeners.
+            * @param {string} absoluteIdentifier The identifier used to locate the array.
+            * @param {string} uid The uid used to search for listeners.
+            *
+            * @returns {void}
             */
             static removeArrayListeners(absoluteIdentifier: string, uid: string): void;
             /**
+            * @name getContext
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Safely retrieves the local context given a root context and an Array of
             * property strings.
             *
-            * @static
-            * @param rootContext The root object in which to find a local context.
-            * @param split The string array containing properties used to index into
+            * @param {any} rootContext The root object in which to find a local context.
+            * @param {Array<string>} split The string array containing properties used to index into
             * the rootContext.
+            *
+            * @returns {any} The narrowed down context.
             */
             static getContext(rootContext: any, split: string[]): any;
             /**
+            * @name defineProperty
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Defines an object property with the associated value. Useful for unobserving objects.
             *
-            * @param obj The object on which to define the property.
-            * @param key The property key.
-            * @param value The value used to define the property.
-            * @param enumerable Whether or not the property should be enumerable (able to be iterated
+            * @param {any} obj The object on which to define the property.
+            * @param {string} key The property key.
+            * @param {any} value The value used to define the property.
+            * @param {boolean} enumerable? Whether or not the property should be enumerable (able to be iterated
             * over in a loop)
-            * @param configurable Whether or not the property is able to be reconfigured.
+            * @param {boolean} configurable? Whether or not the property is able to be reconfigured.
+            *
+            * @returns {void}
             */
             static defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void;
             /**
-            * Defines an object property with only a getter function. Useful for creating constant values
-            * or overwriting constant values.
+            * @name defineGetter
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            * @static
             *
-            * @param obj The object on which to define the property.
-            * @param key The property key.
-            * @param value The value used to define the property.
-            * @param enumerable Whether or not the property should be enumerable (able to be iterated
+            * @description
+            * Defines an object property with the associated value. Useful for unobserving objects.
+            *
+            * @param {any} obj The object on which to define the property.
+            * @param {string} key The property key.
+            * @param {any} value The value used to define the property.
+            * @param {boolean} enumerable? Whether or not the property should be enumerable (able to be iterated
             * over in a loop)
-            * @param configurable Whether or not the property is able to be reconfigured.
+            * @param {boolean} configurable? Whether or not the property is able to be reconfigured.
+            *
+            * @returns {void}
             */
             static defineGetter(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void;
             /**
+            * @name pushRemoveListener
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Pushes the function for removing an observed property upon adding the property.
             *
-            * @static
-            * @param identifer The identifier for which the remove listener is being pushed.
-            * @param uid The uid of the control observing the identifier.
-            * @param listener The function for removing the observed property.
+            * @param {string} identifer The identifier for which the remove listener is being pushed.
+            * @param {string} uid The unique ID of the control observing the identifier.
+            * @param {plat.IRemoveListener} listener The function for removing the observed property.
+            *
+            * @returns {void}
             */
             static pushRemoveListener(identifier: string, uid: string, listener: IRemoveListener): void;
             /**
-            * Removes a specified identifier from being observed for a given set of control uids.
-            *
+            * @name removeIdentifier
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
             * @static
-            * @param uids The set of uids for which to remove the specified identifier.
-            * @param identifier The identifier to stop observing.
+            *
+            * @description
+            * Removes a specified identifier from being observed for a given set of control IDs.
+            *
+            * @param {Array<string>} uids The set of unique Ids for which to remove the specified identifier.
+            * @param {string} identifier The identifier to stop observing.
+            *
+            * @returns {void}
             */
             static removeIdentifier(uids: string[], identifier: string): void;
             /**
+            * @name createContext
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Ensures that an identifier path will exist on a given control. Will create
             * objects/arrays if necessary.
             *
-            * @param control The control on which to create the context.
-            * @param identifier The period-delimited identifier string used to create
+            * @param {plat.ui.ITemplateControl} control The {@link plat.ui.ITemplateControl|ITemplateControl}
+            * on which to create the context.
+            * @param {string} identifier The period-delimited identifier string used to create
             * the context path.
+            *
+            * @returns {any} The newly created context object.
             */
             static createContext(control: ui.ITemplateControl, identifier: string): any;
+            /**
+            * @name __managers
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            * @static
+            *
+            * @type {plat.IObject<plat.observable.IContextManager>}
+            *
+            * @description
+            * An object for quickly accessing a previously created {@link plat.observable.IContextManager|IContextManager}.
+            */
             private static __managers;
+            /**
+            * @name __controls
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            * @static
+            *
+            * @type {plat.IObject<plat.IObject<Array<plat.IRemoveListener>>>}
+            *
+            * @description
+            * An object for storing functions to remove listeners for observed identifiers.
+            */
             private static __controls;
+            /**
+            * @name $Compat
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ICompat}
+            *
+            * @description
+            * Reference to the {@link plat.ICompat|ICompat} injectable.
+            */
             public $Compat: ICompat;
+            /**
+            * @name context
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
+            * The root context associated with and to be managed by this
+            * {@link plat.observable.IContextManager|IContextManager}.
+            */
             public context: any;
+            /**
+            * @name __identifiers
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            *
+            * @type {plat.IObject<Array<plat.observable.IListener>>}
+            *
+            * @description
+            * An object for quickly accessing callbacks associated with a given identifier.
+            */
             private __identifiers;
+            /**
+            * @name __identifierHash
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            *
+            * @type {plat.IObject<Array<string>>}
+            *
+            * @description
+            * An object for quickly accessing child context associations (helps with
+            * notifying child properties).
+            */
             private __identifierHash;
+            /**
+            * @name __lengthListeners
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            *
+            * @type {plat.IObject<plat.observable.IListener>}
+            *
+            * @description
+            * An object for storing listeners for Array length changes.
+            */
             private __lengthListeners;
+            /**
+            * @name __contextObjects
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            *
+            * @type {plat.IObject<any>}
+            *
+            * @description
+            * An object for quickly accessing previously accessed or observed objects and properties.
+            */
             private __contextObjects;
+            /**
+            * @name __isArrayFunction
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Whether or not the property currently being modified is due to an observed array function.
+            */
             private __isArrayFunction;
+            /**
+            * @name __observedIdentifier
+            * @memberof plat.observable.ContextManager
+            * @kind property
+            * @access private
+            *
+            * @type {string}
+            *
+            * @description
+            * If attempting to observe a property that is already being observed, this will be set to the
+            * already observed identifier.
+            */
             private __observedIdentifier;
+            /**
+            * @name getContext
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Safely retrieves the local context for this manager given an Array of
+            * property strings.
+            *
+            * @param {Array<string>} split The string array containing properties used to index into
+            * the context.
+            *
+            * @returns {any} The obtained context.
+            */
             public getContext(split: string[]): any;
+            /**
+            * @name observe
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Given a period-delimited identifier, observes an object and calls the given listener when the
+            * object changes.
+            *
+            * @param {string} absoluteIdentifier The period-delimited identifier noting the property to be observed.
+            * @param {plat.observable.IListener} observableListener An object implmenting IObservableListener. The listener will be
+            * notified of object changes.
+            *
+            * @returns {plat.IRemoveListener} A function to stop observing the object identified by the absoluteIdentifier.
+            */
             public observe(absoluteIdentifier: string, observableListener: IListener): IRemoveListener;
+            /**
+            * @name observeArray
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Observes an array and calls the listener when certain functions are called on
+            * that array. The watched functions are push, pop, shift, splice, unshift, sort,
+            * and reverse.
+            *
+            * @param {string} uid The unique ID of the object observing the array.
+            * @param {(ev: plat.observable.IArrayMethodInfo<any>) => void} listener The callback for when an observed Array
+            * function has been called.
+            * @param {string} absoluteIdentifier The identifier from the root context used to find the array.
+            * @param {Array<any>} array The array to be observed.
+            * @param {Array<any>} oldArray The old array to stop observing.
+            *
+            * @returns {plat.IRemoveListener} A function to stop observing the array identified by the absoluteIdentifier.
+            */
             public observeArray(uid: string, listener: (ev: IArrayMethodInfo<any>) => void, absoluteIdentifier: string, array: any[], oldArray: any[]): IRemoveListener;
+            /**
+            * @name dispose
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Disposes the memory for an {@link plat.observable.IContextManager|IContextManager}.
+            *
+            * @returns {void}
+            */
             public dispose(): void;
             /**
-            * Gets the immediate context of identifier by splitting on '.'
+            * @name _getImmediateContext
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Gets the immediate context of identifier by splitting on "."
             * and observes the objects along the way.
             *
-            * @param identifier The identifier being observed.
+            * @param {string} identifier The identifier being observed.
+            *
+            * @returns {any} The immediate context denoted by the identifier.
             */
             public _getImmediateContext(identifier: string): any;
             /**
+            * @name _getValues
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Obtains the old value and new value of a given context
             * property on a property changed event.
             *
-            * @param split The split identifier of the property that changed.
-            * @param newRootContext The new context.
-            * @param oldRootContext The old context.
+            * @param {Array<string>} split The split identifier of the property that changed.
+            * @param {any} newRootContext The new context.
+            * @param {any} oldRootContext The old context.
+            *
+            * @returns {{ newValue: any; oldValue: any; }} An object containing the old value and new value of a
+            * property upon a potential context change.
             */
             public _getValues(split: string[], newRootContext: any, oldRootContext: any): {
                 newValue: any;
                 oldValue: any;
             };
             /**
+            * @name _notifyChildProperties
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Notifies all child properties being observed that a parent property
             * has changed.
             *
-            * @param identifier The identifier for the property that changed.
-            * @param newValue The new value of the property.
-            * @param oldValue The old value of the property.
+            * @param {string} identifier The identifier for the property that changed.
+            * @param {any} newValue The new value of the property.
+            * @param {any} oldValue The old value of the property.
+            *
+            * @returns {void}
             */
             public _notifyChildProperties(identifier: string, newValue: any, oldValue: any): void;
             /**
+            * @name _addObservableListener
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Adds a listener to be fired for a particular identifier.
             *
-            * @param absoluteIdentifier The identifier being observed.
-            * @param observableListener The function and associated uid to be fired
+            * @param {string} absoluteIdentifier The identifier being observed.
+            * @param {plat.observable.IListener} observableListener The function and associated unique ID to be fired
             * for this identifier.
+            *
+            * @returns {plat.IRemoveListener} A function for removing the given listener for the given absoluteIdentifier.
             */
             public _addObservableListener(absoluteIdentifier: string, observableListener: IListener): IRemoveListener;
             /**
+            * @name _define
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Observes a property on a given context specified by an identifier.
             *
-            * @param identifier The full identifier path for the property being observed.
-            * @param immediateContext The object whose property will be observed.
-            * @param key The property key for the value on the immediateContext that's
+            * @param {string} identifier The full identifier path for the property being observed.
+            * @param {any} immediateContext The object whose property will be observed.
+            * @param {string} key The property key for the value on the immediateContext that's
             * being observed.
+            *
+            * @returns {void}
             */
             public _define(identifier: string, immediateContext: any, key: string): void;
             /**
+            * @name _overwriteArrayFunction
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Intercepts an array function for observation.
             *
-            * @param absoluteIdentifier The full identifier path for the observed array.
-            * @param method The array method being called.
+            * @param {string} absoluteIdentifier The full identifier path for the observed array.
+            * @param {string} method The array method being called.
+            *
+            * @returns {(...args: any[]) => any} A function that acts as an intercept for an observed
+            * array function.
             */
             public _overwriteArrayFunction(absoluteIdentifier: string, method: string): (...args: any[]) => any;
             /**
+            * @name _removeCallback
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Removes a single listener callback
             *
-            * @param identifier The identifier attached to the callbacks.
-            * @param listener The observable listener to remove.
+            * @param {string} identifier The identifier attached to the callbacks.
+            * @param {plat.observable.IListener} listener The observable listener to remove.
+            *
+            * @returns {void}
             */
             public _removeCallback(identifier: string, listener: IListener): void;
             /**
+            * @name _hasIdentifier
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Checks if the specified identifier is already being
             * observed in this context.
             *
-            * @param identifier The identifier being observed.
+            * @param {string} identifier The identifier being observed.
+            *
+            * @returns {boolean} Whether or not the identiifer is already being observed.
             */
             public _hasIdentifier(identifier: string): boolean;
             /**
+            * @name _execute
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Executes the listeners for the specified identifier on
             * this context.
             *
-            * @param identifier The identifier attached to the callbacks.
-            * @param value The new value on this context specified by
+            * @param {string} identifier The identifier attached to the callbacks.
+            * @param {any} value The new value on this context specified by
             * the identifier.
-            * @param oldValue The old value on this context specified by
+            * @param {any} oldValue The old value on this context specified by
             * the identifier.
+            *
+            * @returns {void}
             */
             public _execute(identifier: string, value: any, oldValue: any): void;
+            /**
+            * @name __defineObject
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Defines a getter and setter for an object using Object.defineProperty.
+            *
+            * @param {string} identifier The identifier of the object being defined.
+            * @param {any} immediateContext The parent object of the object being defined.
+            * @param {string} key The property key of the object being defined.
+            *
+            * @returns {void}
+            */
             private __defineObject(identifier, immediateContext, key);
+            /**
+            * @name __definePrimitive
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Defines a getter and setter for a primitive using Object.defineProperty.
+            *
+            * @param {string} identifier The identifier of the primitive being defined.
+            * @param {any} immediateContext The parent object of the primitive being defined.
+            * @param {string} key The property key of the primitive being defined.
+            *
+            * @returns {void}
+            */
             private __definePrimitive(identifier, immediateContext, key);
+            /**
+            * @name __add
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Adds and associates a listener with a given identifier.
+            *
+            * @param {string} identifier The identifier to attach the listener.
+            * @param {plat.observable.IListener} observableListener The listener being added.
+            *
+            * @returns {void}
+            */
             private __add(identifier, observableListener);
+            /**
+            * @name __addHashValues
+            * @memberof plat.observable.ContextManager
+            * @kind function
+            * @access private
+            *
+            * @description
+            * Adds a mapping for an identifier which allows quick access to it
+            * if a parent context is changed.
+            *
+            * @param {string} identifier The identifier to map.
+            *
+            * @returns {void}
+            */
             private __addHashValues(identifier);
         }
         /**
@@ -7906,188 +10550,389 @@ declare module plat {
         */
         function IContextManagerStatic(): IContextManagerStatic;
         /**
-        * The external interface for the '$ContextManagerStatic' injectable.
+        * @name IContextManagerStatic
+        * @memberof plat.observable
+        * @kind interface
+        *
+        * @description
+        * Creates and manages {@link plat.observable.IContextManager|IContextManagers} and has
+        * additional helper functions for observing objects and primitives.
         */
         interface IContextManagerStatic {
             /**
-            * A set of functions to be fired when a particular observed array is mutated.
-            *
+            * @name observedArrayListeners
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind property
+            * @access public
             * @static
+            *
+            * @type {plat.IObject<plat.IObject<Array<(ev: plat.observable.IArrayMethodInfo<any>) => void>>>}
+            *
+            * @description
+            * A set of functions to be fired when a particular observed array is mutated.
             */
             observedArrayListeners: IObject<IObject<{
                 (ev: IArrayMethodInfo<any>): void;
             }[]>>;
             /**
-            * Gets the ContextManager associated to the given control. If no
-            * ContextManager exists, one is created for that control.
-            *
+            * @name getManager
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
             * @static
-            * @param control The control on which to locate the ContextManager
+            *
+            * @description
+            * Gets the {@link plat.observable.IContextManager|IContextManager} associated to the given control. If no
+            * {@link plat.observable.IContextManager|IContextManager} exists, one is created for that control.
+            *
+            * @param {plat.IControl} control The control on which to locate the {@link plat.observable.IContextManager|IContextManager}.
+            *
+            * @returns {plat.observable.IContextManager} The {@link plat.observable.IContextManager|IContextManager}
+            * associated with the input control.
             */
             getManager(control: IControl): IContextManager;
-            getManager(control: any): IContextManager;
             /**
-            * Removes all the listeners for a given control's uid.
-            *
+            * @name dispose
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
             * @static
-            * @param control The control whose manager is being disposed.
-            * @param persist Whether or not the control's context needs to
+            *
+            * @description
+            * Removes all the listeners for a given control's unique ID.
+            *
+            * @param {plat.IControl} control The control whose manager is being disposed.
+            * @param {boolean} persist? Whether or not the control's context needs to
             * be persisted post-disposal or can be set to null.
+            *
+            * @returns {void}
             */
             dispose(control: IControl, persist?: boolean): void;
             /**
+            * @name removeArrayListeners
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Removes all listeners for an Array associated with a given uid.
             *
-            * @static
-            * @param absoluteIdentifier The identifier used to locate the array.
-            * @param uid The uid used to search for listeners.
+            * @param {string} absoluteIdentifier The identifier used to locate the array.
+            * @param {string} uid The uid used to search for listeners.
+            *
+            * @returns {void}
             */
             removeArrayListeners(absoluteIdentifier: string, uid: string): void;
             /**
+            * @name getContext
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Safely retrieves the local context given a root context and an Array of
             * property strings.
             *
-            * @static
-            * @param rootContext The root object in which to find a local context.
-            * @param split The string array containing properties used to index into
+            * @param {any} rootContext The root object in which to find a local context.
+            * @param {Array<string>} split The string array containing properties used to index into
             * the rootContext.
+            *
+            * @returns {any} The narrowed down context.
             */
             getContext(rootContext: any, split: string[]): void;
             /**
+            * @name defineProperty
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Defines an object property with the associated value. Useful for unobserving objects.
             *
-            * @static
-            * @param obj The object on which to define the property.
-            * @param key The property key.
-            * @param value The value used to define the property.
-            * @param enumerable Whether or not the property should be enumerable (able to be iterated
+            * @param {any} obj The object on which to define the property.
+            * @param {string} key The property key.
+            * @param {any} value The value used to define the property.
+            * @param {boolean} enumerable? Whether or not the property should be enumerable (able to be iterated
             * over in a loop)
-            * @param configurable Whether or not the property is able to be reconfigured.
+            * @param {boolean} configurable? Whether or not the property is able to be reconfigured.
+            *
+            * @returns {void}
             */
             defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void;
             /**
-            * Defines an object property as a getter with the associated value. Useful for unobserving objects.
-            *
+            * @name defineGetter
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
             * @static
-            * @param obj The object on which to define the property.
-            * @param key The property key.
-            * @param value The value used to define the property.
-            * @param enumerable Whether or not the property should be enumerable (able to be iterated
+            *
+            * @description
+            * Defines an object property with the associated value. Useful for unobserving objects.
+            *
+            * @param {any} obj The object on which to define the property.
+            * @param {string} key The property key.
+            * @param {any} value The value used to define the property.
+            * @param {boolean} enumerable? Whether or not the property should be enumerable (able to be iterated
             * over in a loop)
-            * @param configurable Whether or not the property is able to be reconfigured.
+            * @param {boolean} configurable? Whether or not the property is able to be reconfigured.
+            *
+            * @returns {void}
             */
             defineGetter(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void;
             /**
+            * @name pushRemoveListener
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Pushes the function for removing an observed property upon adding the property.
             *
-            * @static
-            * @param identifer The identifier for which the remove listener is being pushed.
-            * @param uid The uid of the control observing the identifier.
-            * @param listener The function for removing the observed property.
+            * @param {string} identifer The identifier for which the remove listener is being pushed.
+            * @param {string} uid The unique ID of the control observing the identifier.
+            * @param {plat.IRemoveListener} listener The function for removing the observed property.
+            *
+            * @returns {void}
             */
             pushRemoveListener(identifier: string, uid: string, listener: IRemoveListener): void;
             /**
-            * Removes a specified identifier from being observed for a given set of control uids.
-            *
+            * @name removeIdentifier
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
             * @static
-            * @param uids The set of uids for which to remove the specified identifier.
-            * @param identifier The identifier to stop observing.
+            *
+            * @description
+            * Removes a specified identifier from being observed for a given set of control IDs.
+            *
+            * @param {Array<string>} uids The set of unique Ids for which to remove the specified identifier.
+            * @param {string} identifier The identifier to stop observing.
+            *
+            * @returns {void}
             */
             removeIdentifier(uids: string[], identifier: string): void;
             /**
+            * @name createContext
+            * @memberof plat.observable.IContextManagerStatic
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Ensures that an identifier path will exist on a given control. Will create
             * objects/arrays if necessary.
             *
-            * @static
-            * @param control The control on which to create the context.
-            * @param identifier The period-delimited identifier string used to create
+            * @param {plat.ui.ITemplateControl} control The {@link plat.ui.ITemplateControl|ITemplateControl}
+            * on which to create the context.
+            * @param {string} identifier The period-delimited identifier string used to create
             * the context path.
+            *
+            * @returns {any} The newly created context object.
             */
             createContext(control: ui.ITemplateControl, identifier: string): any;
         }
         /**
+        * @name IContextManager
+        * @memberof plat.observable
+        * @kind interface
+        *
+        * @description
         * Describes an object that manages observing properties on any object.
         */
         interface IContextManager {
             /**
-            * The context to be managed.
+            * @name context
+            * @memberof plat.observable.IContextManager
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
+            * The root context associated with and to be managed by this
+            * {@link plat.observable.IContextManager|IContextManager}.
             */
             context: any;
             /**
-            * Safely retrieves the local context for this ContextManager given an Array of
+            * @name getContext
+            * @memberof plat.observable.IContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Safely retrieves the local context for this manager given an Array of
             * property strings.
             *
-            * @param split The string array containing properties used to index into
+            * @param {Array<string>} split The string array containing properties used to index into
             * the context.
+            *
+            * @returns {any} The obtained context.
             */
             getContext(split: string[]): any;
             /**
+            * @name observe
+            * @memberof plat.observable.IContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
             * Given a period-delimited identifier, observes an object and calls the given listener when the
             * object changes.
             *
-            * @param absoluteIdentifier The period-delimited identifier noting the property to be observed.
-            * @param observableListener An object implmenting IObservableListener. The listener will be
+            * @param {string} absoluteIdentifier The period-delimited identifier noting the property to be observed.
+            * @param {plat.observable.IListener} observableListener An object implmenting IObservableListener. The listener will be
             * notified of object changes.
+            *
+            * @returns {plat.IRemoveListener} A function to stop observing the object identified by the absoluteIdentifier.
             */
             observe(identifier: string, observableListener: IListener): IRemoveListener;
             /**
+            * @name observeArray
+            * @memberof plat.observable.IContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
             * Observes an array and calls the listener when certain functions are called on
             * that array. The watched functions are push, pop, shift, splice, unshift, sort,
             * and reverse.
             *
-            * @param uid The uid of the object observing the array.
-            * @param listener The callback for when an observed Array function has been called.
-            * @param absoluteIdentifier The identifier from the root context used to find the array.
-            * @param array The array to be observed.
-            * @param oldArray The old array to stop observing.
+            * @param {string} uid The unique ID of the object observing the array.
+            * @param {(ev: plat.observable.IArrayMethodInfo<any>) => void} listener The callback for when an observed Array
+            * function has been called.
+            * @param {string} absoluteIdentifier The identifier from the root context used to find the array.
+            * @param {Array<any>} array The array to be observed.
+            * @param {Array<any>} oldArray The old array to stop observing.
+            *
+            * @returns {plat.IRemoveListener} A function to stop observing the array identified by the absoluteIdentifier.
             */
             observeArray(uid: string, listener: (ev: IArrayMethodInfo<any>) => void, absoluteIdentifier: string, array: any[], oldArray: any[]): IRemoveListener;
             /**
-            * Disposes the memory for an IContextManager.
+            * @name dispose
+            * @memberof plat.observable.IContextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Disposes the memory for an {@link plat.observable.IContextManager|IContextManager}.
+            *
+            * @returns {void}
             */
             dispose(): void;
         }
         /**
+        * @name IListener
+        * @memberof plat.observable
+        * @kind interface
+        *
+        * @description
         * An object specifying a listener callback function and a unique id to use to manage the
         * listener.
         */
         interface IListener {
             /**
+            * @name listener
+            * @memberof plat.observable.IListener
+            * @kind function
+            * @access public
+            *
+            * @description
             * A listener method called when the object it is observing is changed.
             *
-            * @param value The new value of the object.
-            * @param oldValue The previous value of the object.
+            * @param {any} value The new value of the object.
+            * @param {any} oldValue The previous value of the object.
+            *
+            * @returns {void}
             */
             listener(value: any, oldValue: any): void;
             /**
+            * @name uid
+            * @memberof plat.observable.IListener
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
             * A unique id used to manage the listener.
             */
             uid: string;
         }
         /**
+        * @name IArrayMethodInfo
+        * @memberof plat.observable
+        * @kind interface
+        *
+        * @description
         * An object for Array method info. Takes a
         * generic type to denote the type of array it uses.
+        *
+        * @typeparam T Denotes the type of array it uses.
         */
         interface IArrayMethodInfo<T> {
             /**
+            * @name method
+            * @memberof plat.observable.IArrayMethodInfo
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
             * The method name that was called. Possible values are:
             * 'push', 'pop', 'reverse', 'shift', 'sort', 'splice',
             * and 'unshift'
             */
             method: string;
             /**
+            * @name returnValue
+            * @memberof plat.observable.IArrayMethodInfo
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
             * The value returned from the called function.
             */
             returnValue: any;
             /**
+            * @name oldArray
+            * @memberof plat.observable.IArrayMethodInfo
+            * @kind property
+            * @access public
+            *
+            * @type {Array<T>}
+            *
+            * @description
             * The previous value of the array.
             */
             oldArray: T[];
             /**
+            * @name newArray
+            * @memberof plat.observable.IArrayMethodInfo
+            * @kind property
+            * @access public
+            *
+            * @type {Array<T>}
+            *
+            * @description
             * The new value of the array.
             */
             newArray: T[];
             /**
+            * @name arguments
+            * @memberof plat.observable.IArrayMethodInfo
+            * @kind property
+            * @access public
+            *
+            * @type {Array<any>}
+            *
+            * @description
             * The arguments passed into the array function.
             */
             arguments: any[];
@@ -10006,19 +12851,6 @@ declare module plat {
         */
         public uid: string;
         /**
-        * @name name
-        * @memberof plat.Control
-        * @kind property
-        * @access public
-        * @readonly
-        *
-        * @type {string}
-        *
-        * @description
-        * The name of a {@link plat.Control|Control}.
-        */
-        public name: string;
-        /**
         * @name type
         * @memberof plat.Control
         * @kind property
@@ -10257,8 +13089,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the property.
         * @param {string} property The property identifier to watch for changes.
-        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method
+        * will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the property.
         */
@@ -10278,8 +13110,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the property.
         * @param {number} property The property identifier to watch for changes.
-        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method
+        * will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the property.
         */
@@ -10300,8 +13132,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the array as a property.
         * @param {string} property The array property identifier to watch for changes.
-        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called.
+        * This method will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the array.
         */
@@ -10322,8 +13154,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the array as a property.
         * @param {number} property The array property identifier to watch for changes.
-        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called.
+        * This method will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the array.
         */
@@ -10489,11 +13321,13 @@ declare module plat {
         * @access public
         *
         * @description
-        * Registers a listener for a {@link plat.events.DispatchEvent|DispatchEvent}. The listener will be called when a {@link plat.events.DispatchEvent|DispatchEvent} is
-        * propagating over the control. Any number of listeners can exist for a single event name.
+        * Registers a listener for a {@link plat.events.DispatchEvent|DispatchEvent}. The listener will be called when a
+        * {@link plat.events.DispatchEvent|DispatchEvent} is propagating over the control. Any number of listeners can exist
+        * for a single event name.
         *
         * @param {string} name The name of the event, cooinciding with the {@link plat.events.DispatchEvent|DispatchEvent} name.
-        * @param {(ev: plat.events.IDispatchEventInstance, ...args: Array<any>) => void} listener The method called when the {@link plat.events.DispatchEvent|DispatchEvent} is fired.
+        * @param {(ev: plat.events.IDispatchEventInstance, ...args: Array<any>) => void} listener The method called when the
+        * {@link plat.events.DispatchEvent|DispatchEvent} is fired.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop listening for this event.
         */
@@ -10642,19 +13476,6 @@ declare module plat {
         * A unique id, created during instantiation and found on every {@link plat.Control|Control}.
         */
         uid: string;
-        /**
-        * @name name
-        * @memberof plat.IControl
-        * @kind property
-        * @access public
-        * @readonly
-        *
-        * @type {string}
-        *
-        * @description
-        * The name of a {@link plat.Control|Control}.
-        */
-        name?: string;
         /**
         * @name type
         * @memberof plat.IControl
@@ -10880,8 +13701,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the property.
         * @param {string} property The property identifier to watch for changes.
-        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed.
+        * This method will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the property.
         */
@@ -10901,8 +13722,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the property.
         * @param {number} property The property identifier to watch for changes.
-        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed.
+        * This method will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the property.
         */
@@ -10923,8 +13744,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the array as a property.
         * @param {string} property The array property identifier to watch for changes.
-        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called.
+        * This method will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the array.
         */
@@ -10945,8 +13766,8 @@ declare module plat {
         *
         * @param {any} context The immediate parent object containing the array as a property.
         * @param {number} property The array property identifier to watch for changes.
-        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called. This method will have its 'this'
-        * context set to the control instance.
+        * @param {(ev: plat.observable.IArrayMethodInfo<T>) => void} listener The method called when an array-changing method is called.
+        * This method will have its 'this' context set to the control instance.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop observing the array.
         */
@@ -11112,11 +13933,13 @@ declare module plat {
         * @access public
         *
         * @description
-        * Registers a listener for a {@link plat.events.DispatchEvent|DispatchEvent}. The listener will be called when a {@link plat.events.DispatchEvent|DispatchEvent} is
-        * propagating over the control. Any number of listeners can exist for a single event name.
+        * Registers a listener for a {@link plat.events.DispatchEvent|DispatchEvent}. The listener will be called when a
+        * {@link plat.events.DispatchEvent|DispatchEvent} is propagating over the control. Any number of listeners can
+        * exist for a single event name.
         *
         * @param {string} name The name of the event, cooinciding with the {@link plat.events.DispatchEvent|DispatchEvent} name.
-        * @param {(ev: plat.events.IDispatchEventInstance, ...args: Array<any>) => void} listener The method called when the {@link plat.events.DispatchEvent|DispatchEvent} is fired.
+        * @param {(ev: plat.events.IDispatchEventInstance, ...args: Array<any>) => void} listener The method called when the
+        * {@link plat.events.DispatchEvent|DispatchEvent} is fired.
         *
         * @returns {plat.IRemoveListener} A function to call in order to stop listening for this event.
         */
@@ -13150,6 +15973,19 @@ declare module plat {
             */
             public $ContextManagerStatic: observable.IContextManagerStatic;
             /**
+            * @name $Compat
+            * @memberof plat.controls.Bind
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {plat.ICompat}
+            *
+            * @description
+            * Reference to the {@link plat.ICompat|ICompat} injectable.
+            */
+            public $Compat: ICompat;
+            /**
             * @name $document
             * @memberof plat.controls.Bind
             * @kind property
@@ -14168,19 +17004,18 @@ declare module plat {
             * @kind function
             * @access public
             * @static
-            * @variation 0
             *
             * @description
             * Notifies a control that its context has been changed by
             * calling the "control.contextChanged" method if it exists.
             *
-            * @param {plat.IControl} control The control whose context changed.
+            * @param {plat.ui.ITemplateControl} control The control whose context changed.
             * @param {any} newValue The new value of the control's context.
             * @param {any} oldValue The old value of the control's context.
             *
             * @returns {void}
             */
-            static contextChanged(control: IControl, newValue: any, oldValue: any): void;
+            static contextChanged(control: ITemplateControl, newValue: any, oldValue: any): void;
             /**
             * @name setContextResources
             * @memberof plat.ui.TemplateControl
@@ -14313,6 +17148,20 @@ declare module plat {
             * The context of an {@link plat.ui.ITemplateControl|ITemplateControl}, used for inheritance and data-binding.
             */
             public context: any;
+            /**
+            * @name name
+            * @memberof plat.ui.TemplateControl
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {string}
+            *
+            * @description
+            * The name of a {@link plat.ui.ITemplateControl|ITemplateControl} if a {@link plat.controls.Name|Name}
+            * control is involved.
+            */
+            public name: string;
             /**
             * @name absoluteContextPath
             * @memberof plat.ui.TemplateControl
@@ -14801,26 +17650,6 @@ declare module plat {
             * @kind function
             * @access public
             * @static
-            * @variation 0
-            *
-            * @description
-            * Notifies a control that its context has been changed by
-            * calling the "control.contextChanged" method if it exists.
-            *
-            * @param {plat.IControl} control The control whose context changed.
-            * @param {any} newValue The new value of the control's context.
-            * @param {any} oldValue The old value of the control's context.
-            *
-            * @returns {void}
-            */
-            contextChanged(control: IControl, newValue: any, oldValue: any): void;
-            /**
-            * @name contextChanged
-            * @memberof plat.ui.ITemplateControlFactory
-            * @kind function
-            * @access public
-            * @static
-            * @variation 1
             *
             * @description
             * Notifies a control that its context has been changed by
@@ -14952,6 +17781,20 @@ declare module plat {
             * The context of an {@link plat.ui.ITemplateControl|ITemplateControl}, used for inheritance and data-binding.
             */
             context?: any;
+            /**
+            * @name name
+            * @memberof plat.ui.ITemplateControl
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {string}
+            *
+            * @description
+            * The name of a {@link plat.ui.ITemplateControl|ITemplateControl} if a {@link plat.controls.Name|Name}
+            * control is involved and placed on its element.
+            */
+            name?: string;
             /**
             * @name absoluteContextPath
             * @memberof plat.ui.ITemplateControl
@@ -17883,14 +20726,14 @@ declare module plat {
             * @kind function
             * @access public
             * @static
-            * @variation 0
             *
             * @description
             * Binds the resources in a resource instance. This involves injecting
             * the injectable resources, creating object/observable resources, and
             * binding functions to the associated control's instance.
             *
-            * @param {plat.ui.IResources} resourcesInstance The instance of the IResources object.
+            * @param {plat.ui.IResources} resourcesInstance The instance of the
+            * {@link plat.ui.IResources|IResources} object to bind.
             *
             * @returns {void}
             */
@@ -18218,7 +21061,6 @@ declare module plat {
             * @kind function
             * @access public
             * @static
-            * @variation 0
             *
             * @description
             * Binds the resources in a resource instance. This involves injecting
@@ -18230,24 +21072,6 @@ declare module plat {
             * @returns {void}
             */
             bindResources(resourcesInstance: IResources): void;
-            /**
-            * @name bindResources
-            * @memberof plat.ui.IResourcesFactory
-            * @kind function
-            * @access public
-            * @static
-            * @variation 1
-            *
-            * @description
-            * Binds the resources in a resource instance. This involves injecting
-            * the injectable resources, creating object/observable resources, and
-            * binding functions to the associated control's instance.
-            *
-            * @param {plat.ui.Resources} resourcesInstance The Resources  instance.
-            *
-            * @returns {void}
-            */
-            bindResources(resourcesInstance: Resources): void;
             /**
             * @name dispose
             * @memberof plat.ui.IResourcesFactory
@@ -18966,7 +21790,7 @@ declare module plat {
             * @description
             * Retrieve the type of touch events for this browser and create the default gesture style.
             *
-            * @returns {plat.ui.DomEvents} The {@link plat.ui.DomEvents|DomEvents} instance.
+            * @returns {plat.ui.DomEvents}
             */
             constructor();
             /**
@@ -22115,7 +24939,7 @@ declare module plat {
                 public className: string;
             }
             /**
-            * @name SimpleCssAnimation
+            * @name SimpleCssTransition
             * @memberof plat.ui.animations
             * @kind class
             *
@@ -24217,16 +27041,135 @@ declare module plat {
     */
     module processing {
         /**
+        * @name Compiler
+        * @memberof plat.processing
+        * @kind class
+        *
+        * @implements {plat.processing.ICompiler}
+        *
+        * @description
         * Responsible for iterating through the DOM and collecting controls.
         */
         class Compiler implements ICompiler {
+            /**
+            * @name $ElementManagerFactory
+            * @memberof plat.processing.Compiler
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.IElementManagerFactory}
+            *
+            * @description
+            * Reference to the {@link plat.processing.IElementManagerFactory|IElementManagerFactory} injectable.
+            */
             public $ElementManagerFactory: IElementManagerFactory;
+            /**
+            * @name $TextManagerFactory
+            * @memberof plat.processing.Compiler
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.IElementManagerFactory}
+            *
+            * @description
+            * Reference to the {@link plat.processing.ITextManagerFactory|ITextManagerFactory} injectable.
+            */
             public $TextManagerFactory: ITextManagerFactory;
+            /**
+            * @name $CommentManagerFactory
+            * @memberof plat.processing.Compiler
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.ICommentManagerFactory}
+            *
+            * @description
+            * Reference to the {@link plat.processing.ICommentManagerFactory|ICommentManagerFactory} injectable.
+            */
             public $CommentManagerFactory: ICommentManagerFactory;
+            /**
+            * @name $ManagerCache
+            * @memberof plat.processing.Compiler
+            * @kind property
+            * @access public
+            *
+            * @type {plat.storage.ICache<processing.IElementManager>}
+            *
+            * @description
+            * Reference to a cache injectable that stores {@link plat.processing.IElementManager|IElementManagers}.
+            */
             public $ManagerCache: storage.ICache<INodeManager>;
+            /**
+            * @name compile
+            * @memberof plat.processing.Compiler
+            * @kind function
+            * @access public
+            * @variation 0
+            *
+            * @description
+            * Goes through the child Nodes of the given Node, finding elements that contain controls as well as
+            * text that contains markup.
+            *
+            * @param {Node} node The node whose childNodes are going to be compiled.
+            * @param {plat.ui.ITemplateControl} control? The parent control for the given Node. The parent must implement the
+            * {@link plat.ui.ITemplateControl|ITemplateControl interface} since only they can contain templates.
+            *
+            * @returns {void}
+            */
             public compile(node: Node, control?: ui.ITemplateControl): void;
+            /**
+            * @name compile
+            * @memberof plat.processing.Compiler
+            * @kind function
+            * @access public
+            * @variation 1
+            *
+            * @description
+            * Goes through the Node array, finding elements that contain controls as well as
+            * text that contains markup.
+            *
+            * @param {Array<Node>} nodes The nodes that are going to be compiled.
+            * @param {plat.ui.ITemplateControl} control? The parent control for the given Node. The parent must implement the
+            * {@link plat.ui.ITemplateControl|ITemplateControl interface} since only they can contain templates.
+            *
+            * @returns {void}
+            */
             public compile(nodes: Node[], control?: ui.ITemplateControl): void;
+            /**
+            * @name compile
+            * @memberof plat.processing.Compiler
+            * @kind function
+            * @access public
+            * @variation 2
+            *
+            * @description
+            * Goes through the NodeList, finding elements that contain controls as well as
+            * text that contains markup.
+            *
+            * @param {NodeList} nodes The NodeList that is going to be compiled.
+            * @param {plat.ui.ITemplateControl} control? The parent control for the given Node. The parent must implement the
+            * {@link plat.ui.ITemplateControl|ITemplateControl interface} since only they can contain templates.
+            *
+            * @returns {void}
+            */
             public compile(nodes: NodeList, control?: ui.ITemplateControl): void;
+            /**
+            * @name _compileNodes
+            * @memberof plat.processing.Compiler
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Iterates through the array of nodes creating {@link plat.processing.IElementManager|IElementManagers} on Element
+            * nodes, {@link plat.processing.ITextManager|ITextManagers} on text nodes, and
+            * {@link plat.processing.ICommentManager|ICommentManagers} on comment nodes.
+            *
+            * @param {Array<Node>} nodes The array of nodes to be compiled.
+            * @param {plat.processing.IElementManager} manager The parent {@link plat.processing.IElementManager|IElementManagers}
+            * for the given array of nodes.
+            *
+            * @returns {void}
+            */
             /**
             * Iterates through the array of nodes creating Element Managers on Element
             * nodes, Text Managers on text nodes, and Comment Managers on comment nodes.
@@ -24241,108 +27184,348 @@ declare module plat {
         */
         function ICompiler(): ICompiler;
         /**
+        * @name ICompiler
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
         * Describes an object that iterates through the DOM and collects controls.
         */
         interface ICompiler {
             /**
-            * Goes through the childNodes of the given Node, finding elements that contain controls as well as
+            * @name compile
+            * @memberof plat.processing.ICompiler
+            * @kind function
+            * @access public
+            * @variation 0
+            *
+            * @description
+            * Goes through the child Nodes of the given Node, finding elements that contain controls as well as
             * text that contains markup.
             *
-            * @param node The node whose childNodes are going to be compiled.
-            * @param control The parent control for the given Node. The parent must implement ui.ITemplateControl
-            * since only controls that implement ui.ITemplateControl can contain templates.
+            * @param {Node} node The node whose childNodes are going to be compiled.
+            * @param {plat.ui.ITemplateControl} control? The parent control for the given Node. The parent must implement the
+            * {@link plat.ui.ITemplateControl|ITemplateControl interface} since only they can contain templates.
+            *
+            * @returns {void}
             */
             compile(node: Node, control?: ui.ITemplateControl): void;
             /**
+            * @name compile
+            * @memberof plat.processing.ICompiler
+            * @kind function
+            * @access public
+            * @variation 1
+            *
+            * @description
             * Goes through the Node array, finding elements that contain controls as well as
             * text that contains markup.
             *
-            * @param nodes The Node array to be compiled.
-            * @param control The parent control for the given Node array. The parent must implement ui.ITemplateControl
-            * since only controls that implement ui.ITemplateControl are responsible for creating DOM.
+            * @param {Array<Node>} nodes The nodes that are going to be compiled.
+            * @param {plat.ui.ITemplateControl} control? The parent control for the given Node. The parent must implement the
+            * {@link plat.ui.ITemplateControl|ITemplateControl interface} since only they can contain templates.
+            *
+            * @returns {void}
             */
             compile(nodes: Node[], control?: ui.ITemplateControl): void;
             /**
+            * @name compile
+            * @memberof plat.processing.ICompiler
+            * @kind function
+            * @access public
+            * @variation 2
+            *
+            * @description
             * Goes through the NodeList, finding elements that contain controls as well as
             * text that contains markup.
             *
-            * @param nodes The NodeList to be compiled.
-            * @param control The parent control for the given NodeList. The parent must implement ui.ITemplateControl
-            * since only controls that implement ui.ITemplateControl are responsible for creating DOM.
+            * @param {NodeList} nodes The NodeList that is going to be compiled.
+            * @param {plat.ui.ITemplateControl} control? The parent control for the given Node. The parent must implement the
+            * {@link plat.ui.ITemplateControl|ITemplateControl interface} since only they can contain templates.
+            *
+            * @returns {void}
             */
             compile(nodes: NodeList, control?: ui.ITemplateControl): void;
         }
         /**
-        * A NodeManager is responsible for data binding a data context to a Node.
+        * @name NodeManager
+        * @memberof plat.processing
+        * @kind class
+        *
+        * @implements {plat.processing.INodeManager}
+        *
+        * @description
+        * Responsible for data binding a data context to a Node.
         */
         class NodeManager implements INodeManager {
+            /**
+            * @name $ContextManagerStatic
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {plat.observable.IContextManagerStatic}
+            *
+            * @description
+            * Reference to the {@link plat.observable.IContextManagerStatic|IContextManagerStatic} injectable.
+            */
             static $ContextManagerStatic: observable.IContextManagerStatic;
+            /**
+            * @name $Parser
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {plat.expressions.IParser}
+            *
+            * @description
+            * Reference to the {@link plat.expressions.IParser|IParser} injectable.
+            */
             static $Parser: expressions.IParser;
+            /**
+            * @name $TemplateControlFactory
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {plat.ui.ITemplateControlFactory}
+            *
+            * @description
+            * Reference to the {@link ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
+            */
             static $TemplateControlFactory: ui.ITemplateControlFactory;
             /**
-            * Given an IParsedExpression array, creates an array of unique identifers
-            * to use with binding. This allows us to avoid creating multiple listeners
-            * for the identifier and node.
-            *
+            * @name findUniqueIdentifiers
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
             * @static
-            * @param expressions An IParsedExpression array to search for identifiers.
-            * @returns {Array<string>} An array of identifiers.
+            *
+            * @description
+            * Given an {@link plat.expressions.IParsedExpression|IParsedExpression} array, creates an array of unique identifers
+            * to use with binding. This allows us to avoid creating multiple listeners for the identifier and node.
+            *
+            * @param {Array<plat.expressions.IParsedExpression>} expressions An array of parsed expressions to search for identifiers.
+            *
+            * @returns {Array<string>} An array of unique identifiers.
             */
             static findUniqueIdentifiers(expressions: expressions.IParsedExpression[]): string[];
             /**
+            * @name hasMarkup
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Determines if a string has the markup notation.
             *
-            * @param text The text string in which to search for markup.
-            * @returns {Boolean} Indicates whether or not there is markup.
+            * @param {string} text The text string in which to search for markup.
+            *
+            * @returns {boolean} Indicates whether or not there is markup.
             */
             static hasMarkup(text: string): boolean;
             /**
-            * Given a string, finds markup in the string and creates an IParsedExpression array.
-            *
+            * @name findMarkup
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
             * @static
-            * @param text The text string to parse.
+            *
+            * @description
+            * Given a string, finds markup in the string and creates an array of
+            * {@link plat.expressions.IParsedExpression|IParsedExpression}.
+            *
+            * @param {string} text The text string in which to search for markup.
+            *
+            * @returns {Array<plat.expressions.IParsedExpression>} An array of parsed expressions that
+            * composes the output given a proper context.
             */
             static findMarkup(text: string): expressions.IParsedExpression[];
             /**
-            * Takes in data context and an IParsedExpression array and outputs a string of the evaluated
-            * expressions.
-            *
+            * @name build
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
             * @static
-            * @param expressions The IParsedExpression array to evaluate.
-            * @param control The IControl used to parse the expressions.
-            * @returns {string} The evaluated expressions.
+            *
+            * @description
+            * Takes in a control with a data context and an array of {@link plat.expressions.IParsedExpression|IParsedExpression}
+            * and outputs a string of the evaluated expressions.
+            *
+            * @param {Array<plat.expressions.IParsedExpression>} expressions The composition array to evaluate.
+            * @param {plat.ui.ITemplateControl} control? The {@link plat.ui.ITemplateControl|ITemplateControl} used to parse
+            * the expressions.
+            *
+            * @returns {string} The output text with all markup bound.
             */
             static build(expressions: expressions.IParsedExpression[], control?: ui.ITemplateControl): string;
             /**
+            * @name observeIdentifiers
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Registers a listener to be notified of a change in any associated identifier.
             *
-            * @static
-            * @param identifiers An Array of identifiers to observe.
-            * @param control The control associated to the identifiers.
-            * @param listener The listener to call when any identifier property changes.
+            * @param {Array<string>} identifiers An Array of identifiers to observe.
+            * @param {plat.ui.ITemplateControl} control The {@link plat.ui.ITemplateControl|ITemplateControl} associated
+            * to the identifiers.
+            * @param {(...args: Array<any>) => void} listener The listener to call when any identifier property changes.
+            *
+            * @returns {void}
             */
             static observeIdentifiers(identifiers: string[], control: ui.ITemplateControl, listener: (...args: any[]) => void): void;
             /**
+            * @name _markupRegex
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access protected
+            * @static
+            *
+            * @type {RegExp}
+            *
+            * @description
             * A regular expression for finding markup
             */
             static _markupRegex: RegExp;
             /**
+            * @name _newLineRegex
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access protected
+            * @static
+            *
+            * @type {RegExp}
+            *
+            * @description
             * A regular expression for finding newline characters.
             */
             static _newLineRegex: RegExp;
             /**
-            * Wraps constant text as an IParsedExpression.
+            * @name _wrapExpression
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access protected
+            * @static
             *
-            * @param text The text to wrap.
+            * @description
+            * Wraps constant text as a static {@link plat.expressions.IParsedExpression|IParsedExpression}.
+            *
+            * @param text The text to wrap into a static expression.
+            *
+            * @returns {plat.expressions.IParsedExpression} The wrapped, static expression.
             */
             static _wrapExpression(text: string): expressions.IParsedExpression;
+            /**
+            * @name type
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * The type of {@link plat.processing.INodeManager|INodeManager}.
+            */
             public type: string;
-            public isClone: boolean;
+            /**
+            * @name nodeMap
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.INodeMap}
+            *
+            * @description
+            * The {@link plat.processing.INodeMap|INodeMap} for this {@link plat.processing.INodeManager|INodeManager}.
+            * Contains the compiled Node.
+            */
             public nodeMap: INodeMap;
+            /**
+            * @name parent
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.IElementManager}
+            *
+            * @description
+            * The parent {@link plat.processing.IElementManager|IElementManager}.
+            */
             public parent: IElementManager;
+            /**
+            * @name isClone
+            * @memberof plat.processing.NodeManager
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Whether or not this {@link plat.processing.INodeManager|INodeManager} is a clone.
+            */
+            public isClone: boolean;
+            /**
+            * @name initialize
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Initializes the manager's properties.
+            *
+            * @param {plat.processing.INodeMap} nodeMap The mapping associated with this manager. We have to use an
+            * Used to treat all {@link plat.processing.INodeManager|INodeManagers} the same.
+            * @param {plat.processing.IElementManager} parent The parent {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {void}
+            */
             public initialize(nodeMap: INodeMap, parent: IElementManager): void;
+            /**
+            * @name getParentControl
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Retrieves the parent control associated with the parent manager.
+            *
+            * @returns {plat.ui.ITemplateControl} The parent {@link plat.ui.ITemplateControl|ITemplateControl}.
+            */
             public getParentControl(): ui.ITemplateControl;
+            /**
+            * @name clone
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Clones this {@link plat.processing.INodeManager|INodeManager} with the new node.
+            *
+            * @param {Node} newNode The new node associated with the new manager.
+            * @param {plat.processing.IElementManager} parentManager The parent
+            * {@link plat.processing.IElementManager|IElementManager} for the clone.
+            *
+            * @returns {number} The number of nodes to advance while node traversal is in progress.
+            */
             public clone(newNode: Node, parentManager: IElementManager): number;
+            /**
+            * @name bind
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * The function used for data-binding a data context to the DOM.
+            *
+            * @returns {void}
+            */
             public bind(): void;
         }
         /**
@@ -24350,341 +27533,1073 @@ declare module plat {
         */
         function INodeManagerStatic($Regex?: expressions.IRegex, $ContextManagerStatic?: observable.IContextManagerStatic, $Parser?: expressions.IParser, $TemplateControlFactory?: ui.ITemplateControlFactory): INodeManagerStatic;
         /**
-        * The external interface for the '$NodeManagerStatic' injectable.
+        * @name INodeManagerStatic
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
+        * Performs essential Node management and binding functions.
         */
         interface INodeManagerStatic {
             /**
-            * Given an IParsedExpression array, creates an array of unique identifers
-            * to use with binding. This allows us to avoid creating multiple listeners
-            * for the identifier and node.
-            *
+            * @name findUniqueIdentifiers
+            * @memberof plat.processing.INodeManagerStatic
+            * @kind function
+            * @access public
             * @static
-            * @param expressions An IParsedExpression array to search for identifiers.
-            * @returns {Array<string>} An array of identifiers.
+            *
+            * @description
+            * Given an {@link plat.expressions.IParsedExpression|IParsedExpression} array, creates an array of unique identifers
+            * to use with binding. This allows us to avoid creating multiple listeners for the identifier and node.
+            *
+            * @param {Array<plat.expressions.IParsedExpression>} expressions An array of parsed expressions to search for identifiers.
+            *
+            * @returns {Array<string>} An array of unique identifiers.
             */
             findUniqueIdentifiers(expressions: expressions.IParsedExpression[]): string[];
             /**
+            * @name hasMarkup
+            * @memberof plat.processing.INodeManagerStatic
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Determines if a string has the markup notation.
             *
-            * @param text The text string in which to search for markup.
-            * @returns {Boolean} Indicates whether or not there is markup.
+            * @param {string} text The text string in which to search for markup.
+            *
+            * @returns {boolean} Indicates whether or not there is markup.
             */
             hasMarkup(text: string): boolean;
             /**
-            * Given a string, finds markup in the string and creates an IParsedExpression array.
-            *
+            * @name findMarkup
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
             * @static
-            * @param text The text string to parse.
-            * @returns {Array<IParsedExpression>}
+            *
+            * @description
+            * Given a string, finds markup in the string and creates an array of
+            * {@link plat.expressions.IParsedExpression|IParsedExpression}.
+            *
+            * @param {string} text The text string in which to search for markup.
+            *
+            * @returns {Array<plat.expressions.IParsedExpression>} An array of parsed expressions that
+            * composes the output given a proper context.
             */
             findMarkup(text: string): expressions.IParsedExpression[];
             /**
-            * Takes in data context and an IParsedExpression array and outputs a string of the evaluated
-            * expressions.
-            *
+            * @name build
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
             * @static
-            * @param expressions The IParsedExpression array to evaluate.
-            * @param control The IControl used to parse the expressions.
-            * @returns {string} The evaluated expressions.
+            *
+            * @description
+            * Takes in a control with a data context and an array of {@link plat.expressions.IParsedExpression|IParsedExpression}
+            * and outputs a string of the evaluated expressions.
+            *
+            * @param {Array<plat.expressions.IParsedExpression>} expressions The composition array to evaluate.
+            * @param {plat.ui.ITemplateControl} control? The {@link plat.ui.ITemplateControl|ITemplateControl} used to parse
+            * the expressions.
+            *
+            * @returns {string} The output text with all markup bound.
             */
             build(expressions: expressions.IParsedExpression[], control?: ui.ITemplateControl): string;
             /**
+            * @name observeIdentifiers
+            * @memberof plat.processing.NodeManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Registers a listener to be notified of a change in any associated identifier.
             *
-            * @static
-            * @param identifiers An Array of identifiers to observe.
-            * @param control The control associated to the identifiers.
-            * @param listener The listener to call when any identifier property changes.
+            * @param {Array<string>} identifiers An Array of identifiers to observe.
+            * @param {plat.ui.ITemplateControl} control The {@link plat.ui.ITemplateControl|ITemplateControl} associated
+            * to the identifiers.
+            * @param {(...args: Array<any>) => void} listener The listener to call when any identifier property changes.
+            *
+            * @returns {void}
             */
             observeIdentifiers(identifiers: string[], control: ui.ITemplateControl, listener: (...args: any[]) => void): void;
         }
         /**
+        * @name INodeManager
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
         * Describes an object that takes a Node and provides a way to data-bind to that node.
         */
         interface INodeManager {
             /**
-            * The type of INodeManager
+            * @name type
+            * @memberof plat.processing.INodeManager
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * The type of {@link plat.processing.INodeManager|INodeManager}.
             */
             type: string;
             /**
-            * The INodeMap for this INodeManager. Contains the compiled Node.
+            * @name nodeMap
+            * @memberof plat.processing.INodeManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.INodeMap}
+            *
+            * @description
+            * The {@link plat.processing.INodeMap|INodeMap} for this {@link plat.processing.INodeManager|INodeManager}.
+            * Contains the compiled Node.
             */
             nodeMap?: INodeMap;
             /**
-            * The parent manager for this INodeManager.
+            * @name parent
+            * @memberof plat.processing.INodeManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.IElementManager}
+            *
+            * @description
+            * The parent {@link plat.processing.IElementManager|IElementManager}.
             */
             parent?: IElementManager;
             /**
-            * Retrieves the parent control associated with the parent manager.
-            */
-            getParentControl? (): ui.ITemplateControl;
-            /**
-            * Clones this NodeManager with the new node.
+            * @name isClone
+            * @memberof plat.processing.INodeManager
+            * @kind property
+            * @access public
             *
-            * @param newNode The node used to clone this NodeManager.
-            * @param parentManager The parent IElementManager for the clone.
-            */
-            clone? (newNode: Node, parentManager: IElementManager): number;
-            /**
-            * Initializes the object's properties.
+            * @type {boolean}
             *
-            * @param nodeMap The INodeMap associated with this TextManager. We have to use an
-            * INodeMap instead of an INode so we can treat all INodeManagers the same.
-            * @param parent The parent IElementManager.
+            * @description
+            * Whether or not this {@link plat.processing.INodeManager|INodeManager} is a clone.
+            */
+            isClone?: boolean;
+            /**
+            * @name initialize
+            * @memberof plat.processing.INodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Initializes the manager's properties.
+            *
+            * @param {plat.processing.INodeMap} nodeMap The mapping associated with this manager. We have to use an
+            * Used to treat all {@link plat.processing.INodeManager|INodeManagers} the same.
+            * @param {plat.processing.IElementManager} parent The parent {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {void}
             */
             initialize? (nodeMap: INodeMap, parent: IElementManager): void;
             /**
+            * @name getParentControl
+            * @memberof plat.processing.INodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Retrieves the parent control associated with the parent manager.
+            *
+            * @returns {plat.ui.ITemplateControl} The parent {@link plat.ui.ITemplateControl|ITemplateControl}.
+            */
+            getParentControl? (): ui.ITemplateControl;
+            /**
+            * @name clone
+            * @memberof plat.processing.INodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Clones this {@link plat.processing.INodeManager|INodeManager} with the new node.
+            *
+            * @param {Node} newNode The new node associated with the new manager.
+            * @param {plat.processing.IElementManager} parentManager The parent
+            * {@link plat.processing.IElementManager|IElementManager} for the clone.
+            *
+            * @returns {number} The number of nodes to advance while node traversal is in progress.
+            */
+            clone? (newNode: Node, parentManager: IElementManager): number;
+            /**
+            * @name bind
+            * @memberof plat.processing.INodeManager
+            * @kind function
+            * @access public
+            *
+            * @description
             * The function used for data-binding a data context to the DOM.
+            *
+            * @returns {void}
             */
             bind(): void;
         }
         /**
+        * @name INode
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
         * Describes a compiled Node.
         */
         interface INode {
             /**
+            * @name control
+            * @memberof plat.processing.INode
+            * @kind property
+            * @access public
+            *
+            * @type {plat.IControl}
+            *
+            * @description
             * The control associated with the Node, if one exists.
             */
             control?: IControl;
             /**
+            * @name node
+            * @memberof plat.processing.INode
+            * @kind property
+            * @access public
+            *
+            * @type {Node}
+            *
+            * @description
             * The Node that is compiled.
             */
             node?: Node;
             /**
+            * @name nodeName
+            * @memberof plat.processing.INode
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
             * The name of the Node.
             */
             nodeName?: string;
             /**
-            * Any IParsedExpressions contained in the Node.
+            * @name expressions
+            * @memberof plat.processing.INode
+            * @kind property
+            * @access public
+            *
+            * @type {Array<plat.expressions.IParsedExpression>}
+            *
+            * @description
+            * Any {@link plat.expressions.IParsedExpressions|IParsedExpressions} contained in the Node.
             */
             expressions?: expressions.IParsedExpression[];
             /**
+            * @name identifiers
+            * @memberof plat.processing.INode
+            * @kind property
+            * @access public
+            *
+            * @type {Array<string>}
+            *
+            * @description
             * Unique identifiers contained in the Node.
             */
             identifiers?: string[];
             /**
+            * @name injector
+            * @memberof plat.processing.INode
+            * @kind property
+            * @access public
+            *
+            * @type {plat.dependency.IInjector<plat.IControl>}
+            *
+            * @description
             * The injector for a control associated with the Node, if one exists.
             */
             injector?: dependency.IInjector<IControl>;
         }
         /**
+        * @name IUiControlNode
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @extends {plat.processing.INode}
+        *
+        * @description
         * Defines the interface for a compiled Element.
         */
         interface IUiControlNode extends INode {
             /**
+            * @name control
+            * @memberof plat.processing.IUiControlNode
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.ITemplateControl}
+            *
+            * @description
             * The control associated with the Element, if one exists.
             */
             control: ui.ITemplateControl;
             /**
-            * The resources element defined as the control element's first
+            * @name resourceElement
+            * @memberof plat.processing.IUiControlNode
+            * @kind property
+            * @access public
+            *
+            * @type {HTMLElement}
+            *
+            * @description
+            * The resources element, if one exists, defined as the control element's first
             * element child.
             */
             resourceElement?: HTMLElement;
         }
         /**
+        * @name INodeMap
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
         * Describes a compiled Element with all
         * associated nodes contained within its tag.
         */
         interface INodeMap {
             /**
+            * @name element
+            * @memberof plat.processing.INodeMap
+            * @kind property
+            * @access public
+            *
+            * @type {HTMLElement}
+            *
+            * @description
             * The Element that is compiled.
             */
             element?: HTMLElement;
             /**
+            * @name nodes
+            * @memberof plat.processing.INodeMap
+            * @kind property
+            * @access public
+            *
+            * @type {Array<plat.processing.INode>}
+            *
+            * @description
             * The compiled attribute Nodes for the Element.
             */
             nodes: INode[];
             /**
+            * @name attributes
+            * @memberof plat.processing.INodeMap
+            * @kind property
+            * @access public
+            *
+            * @type {plat.IObject<string>}
+            *
+            * @description
             * An object of key/value attribute pairs.
             */
             attributes?: IObject<string>;
             /**
-            * The plat-context path for the next UIControl, if specified.
+            * @name childContext
+            * @memberof plat.processing.INodeMap
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * The relative context path for the node's corresponding
+            * {@link plat.ui.ITemplateControl|ITemplateControl}, if specified.
             */
             childContext?: string;
             /**
-            * Indicates whether or not a IControl was found on the Element.
+            * @name hasControl
+            * @memberof plat.processing.INodeMap
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Indicates whether or not an {@link plat.IControl|IControl} was found on the Element.
             */
             hasControl?: boolean;
             /**
-            * The INode for the UIControl, if one was found for the Element.
+            * @name uiControlNode
+            * @memberof plat.processing.INodeMap
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.IUiControlNode}
+            *
+            * @description
+            * A type of {@link plat.processing.INode|INode} for a node that contains a {@link plat.ui.ITemplateControl|ITemplateControl},
+            * if one was found for the Element.
             */
             uiControlNode?: IUiControlNode;
         }
         /**
+        * @name ElementManager
+        * @memberof plat.processing
+        * @kind class
+        *
+        * @extends {plat.processing.NodeManager}
+        * @implements {plat.processing.IElementManager}
+        *
+        * @description
         * A class used to manage element nodes. Provides a way for compiling and binding the
-        * element/template. Also provides methods for cloning an ElementManager.
+        * element/template. Also provides methods for cloning an
+        * {@link plat.processing.IElementManager|IElementManager}.
         */
         class ElementManager extends NodeManager implements IElementManager {
+            /**
+            * @name $Document
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {Document}
+            *
+            * @description
+            * Reference to the Document injectable.
+            */
             static $Document: Document;
+            /**
+            * @name $ManagerCache
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.storage.ICache<processing.IElementManager>}
+            *
+            * @description
+            * Reference to a cache injectable that stores {@link plat.processing.IElementManager|IElementManagers}.
+            */
             static $ManagerCache: storage.ICache<IElementManager>;
+            /**
+            * @name $ResourcesFactory
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.IResourcesFactory}
+            *
+            * @description
+            * Reference to the {@link plat.ui.IResourcesFactory|IResourcesFactory} injectable.
+            */
             static $ResourcesFactory: ui.IResourcesFactory;
+            /**
+            * @name $BindableTemplatesFactory
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.IBindableTemplatesFactory}
+            *
+            * @description
+            * Reference to the {@link plat.ui.IBindableTemplatesFactory|IBindableTemplatesFactory} injectable.
+            */
             static $BindableTemplatesFactory: ui.IBindableTemplatesFactory;
             /**
-            * Determines if the associated Element has controls that need to be instantiated or Attr nodes
-            * containing text markup. If controls exist or markup is found a new ElementManager will be created,
-            * else an empty INodeManager will be added to the Array of INodeManagers.
-            *
+            * @name create
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
             * @static
-            * @param element The Element to use to identifier markup and controls.
-            * @param parent The parent ui.ITemplateControl used for context inheritance.
+            *
+            * @description
+            * Determines if the associated Element has controls that need to be instantiated or Attr nodes
+            * containing text markup. If controls exist or markup is found a new
+            * {@link plat.processing.ElementManager|ElementManager} will be created,
+            * else an empty {@link plat.processing.INodeManager|INodeManager} will be added to the Array of
+            * {@link plat.processing.INodeManager|INodeManagers}.
+            *
+            * @param {Element} element The Element to use to identifier markup and controls.
+            * @param {plat.processing.IElementManager} parent? The parent {@link plat.processing.IElementManager|IElementManager}
+            * used for context inheritance.
+            *
+            * @returns {plat.processing.IElementManager}
             */
             static create(element: Element, parent?: IElementManager): IElementManager;
             /**
-            * Looks through the Node's child nodes to try and find any
-            * defined Resources in a <plat-resources> tags.
+            * @name locateResources
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            * @static
             *
-            * @param node The node who may have Resources as a child node.
+            * @description
+            * Looks through the Node's child nodes to try and find any
+            * defined {@link plat.ui.IResources|IResources} in a <plat-resources> tags.
+            *
+            * @param {Node} node The node whose child nodes may contain {@link plat.ui.IResources|IResources}.
+            *
+            * @returns {HTMLElement} The HTML element that represents the defined {@link plat.ui.IResources|IResources}.
             */
             static locateResources(node: Node): HTMLElement;
             /**
-            * Clones an ElementManager with a new element.
-            *
+            * @name clone
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
             * @static
-            * @param sourceManager The original IElementManager.
-            * @param parent The parent IElementManager for the new clone.
-            * @param element The new element to associate with the clone.
-            * @param newControl An optional control to associate with the clone.
-            * @param nodeMap The nodeMap used to clone this ElementManager.
+            *
+            * @description
+            * Clones an {@link plat.processing.IElementManager|IElementManager} with a new element.
+            *
+            * @param {plat.processing.IElementManager} sourceManager The original {@link plat.processing.IElementManager|IElementManager}.
+            * @param {plat.processing.IElementManager} parent The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the new clone.
+            * @param {Element} element The new element to associate with the clone.
+            * @param {plat.ui.ITemplateControl} newControl? An optional control to associate with the clone.
+            * @param {plat.processing.INodeMap} nodeMap? The {@link plat.processing.INodeMap} used to clone this
+            * {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.processing.IElementManager} The cloned {@link plat.processing.IElementManager|IElementManager}.
             */
             static clone(sourceManager: IElementManager, parent: IElementManager, element: Element, newControl?: ui.ITemplateControl, nodeMap?: INodeMap): IElementManager;
             /**
-            * Clones a UI Control with a new nodeMap.
-            *
+            * @name cloneUiControl
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
             * @static
-            * @param sourceMap The source INodeMap used to clone the UI Control
-            * @param parent The parent control of the clone.
+            *
+            * @description
+            * Clones an {@link plat.ui.ITemplateControl|ITemplateControl} with a new {@link plat.processing.INodeMap|INodeMap}.
+            *
+            * @param {plat.processing.INodeMap} sourceMap The source {@link plat.processing.INodeMap|INodeMap} used to clone the
+            * {@link plat.ui.ITemplateControl|ITemplateControl}.
+            * @param {plat.ui.ITemplateControl} parent The parent control of the clone.
+            *
+            * @returns {plat.ui.ITemplateControl} The cloned {@link plat.ui.ITemplateControl|ITemplateControl}.
             */
             static cloneUiControl(sourceMap: INodeMap, parent: ui.ITemplateControl): ui.ITemplateControl;
             /**
-            * Creates new nodes for an INodeMap corresponding to the element associated with the nodeMap or
-            * the passed-in element.
-            *
+            * @name createAttributeControls
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
             * @static
-            * @param nodeMap The nodeMap to populate with attribute nodes.
-            * @param parent The parent control for the new attribute controls.
-            * @param templateControl The TemplateControl linked to these AttributeControls if
-            * one exists.
-            * @param newElement An optional element to use for attributes (used in cloning).
-            * @param isClone Whether or not these controls are clones.
+            *
+            * @description
+            * Creates new {@link plat.processing.INode|INodes} corresponding to the element
+            * associated with the {@link plat.processing.INodeMap|INodeMap} or the passed-in element.
+            *
+            * @param {plat.processing.INodeMap} nodeMap The {@link plat.processing.INodeMap|INodeMap} that contains
+            * the attribute nodes.
+            * @param {plat.ui.ITemplateControl} parent The parent {@link plat.ui.ITemplateControl|ITemplateControl} for
+            * the newly created controls.
+            * @param {plat.ui.ITemplateControl} templateControl? The {@link plat.ui.ITemplateControl|ITemplateControl}
+            * linked to these created controls if one exists.
+            * @param {Element} newElement? An optional element to use for attributes (used in cloning).
+            * @param {boolean} isClone? Whether or not these controls are clones.
+            *
+            * @returns {Array<plat.processing.INode>} An array of the newly created {@link plat.processing.INode|INodes}.
             */
             static createAttributeControls(nodeMap: INodeMap, parent: ui.ITemplateControl, templateControl?: ui.ITemplateControl, newElement?: Element, isClone?: boolean): INode[];
             /**
-            * Returns an instance of an ElementManager.
+            * @name getInstance
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
+            * Returns a new instance of an {@link plat.processing.ElementManager|ElementManager}.
+            *
+            * @returns {plat.processing.IElementManager}
             */
             static getInstance(): IElementManager;
             /**
-            * Iterates over the attributes NamedNodeMap, creating an INodeMap. The INodeMap
-            * will contain injectors for all the IControls as well as parsed expressions
+            * @name _collectAttributes
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            * @static
+            *
+            * @description
+            * Iterates over the attributes (NamedNodeMap), creating an {@link plat.processing.INodeMap|INodeMap}.
+            * This map will contain injectors for all the {@link plat.IControls|IControls} as well as parsed expressions
             * and identifiers found for each Attribute (useful for data binding).
             *
-            * @static
-            * @param attributes A NamedNodeMap to compile into an INodeMap
-            * @returns {INodeMap} The compiled NamedNodeMap
+            * @param {NamedNodeMap} attributes The attributes used to create the {@link plat.processing.INodeMap|INodeMap}.
+            *
+            * @returns {plat.processing.INodeMap} The compiled {@link plat.processing.INodeMap|INodeMap}.
             */
             static _collectAttributes(attributes: NamedNodeMap): INodeMap;
             /**
+            * @name _copyAttributeNodes
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            * @static
+            *
+            * @description
             * Used to copy the attribute nodes during the cloning process.
             *
-            * @static
-            * @param nodes The compiled INodes to be cloned.
-            * @returns {INodeMap} The cloned array of INodes.
+            * @param {Array<plat.processing.INode>} nodes The compiled {@link plat.processing.INode|INodes}
+            * to be cloned.
+            *
+            * @returns {Array<plat.processing.INode>} The cloned array of {@link plat.processing.INode|INodes}.
             */
             static _copyAttributeNodes(nodes: INode[]): INode[];
             /**
-            * Clones an INode with a new node.
-            *
+            * @name _cloneNode
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
             * @static
-            * @param sourceNode The original INode.
-            * @param node The new node used for cloning.
-            * @param newControl An optional new control to associate with the cloned node.
-            * @returns {INode} The clones INode.
+            *
+            * @description
+            * Clones an {@link plat.processing.INode|INode} with a new node.
+            *
+            * @param {plat.processing.INode} sourceNode The original {@link plat.processing.INode|INode}.
+            * @param {Node} node The new node used for cloning.
+            * @param {plat.ui.ITemplateControl} newControl? An optional new control to associate with the cloned node.
+            *
+            * @returns {plat.processing.INode} The cloned {@link plat.processing.INode|INode}.
             */
             static _cloneNode(sourceNode: INode, node: Node, newControl?: ui.ITemplateControl): INode;
             /**
-            * Clones an INodeMap with a new element.
-            *
+            * @name _cloneNodeMap
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
             * @static
-            * @param sourceMap The original INodeMap.
-            * @param element The new Element used for cloning.
-            * @param newControl An optional new control to associate with the element.
-            * @returns {INodeMap} The cloned INodeMap.
+            *
+            * @description
+            * Clones an {@link plat.processing.INodeMap|INodeMap} with a new element.
+            *
+            * @param {plat.processing.INodeMap} sourceMap The original {@link plat.processing.INodeMap|INodeMap}.
+            * @param {Element} element The new Element used for cloning.
+            * @param {plat.ui.ITemplateControl} parent The {@link plat.ui.ITemplateControl|ITemplateControl} associated
+            * with the parent {@link plat.processing.IElementManager|IElementManager}.
+            * @param {plat.ui.ITemplateControl} newControl? An optional new {@link plat.ui.ITemplateControl|ITemplateControl}
+            * to associate with the element.
+            *
+            * @returns {plat.processing.INodeMap} The cloned {@link plat.processing.INodeMap|INodeMap}.
             */
             static _cloneNodeMap(sourceMap: INodeMap, element: Element, parent: ui.ITemplateControl, newControl?: ui.ITemplateControl): INodeMap;
+            /**
+            * @name $Promise
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.async.IPromise}
+            *
+            * @description
+            * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+            */
             public $Promise: async.IPromise;
+            /**
+            * @name $Compiler
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.ICompiler}
+            *
+            * @description
+            * Reference to the {@link plat.processing.ICompiler|ICompiler} injectable.
+            */
             public $Compiler: ICompiler;
+            /**
+            * @name $ContextManagerStatic
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.observable.IContextManagerStatic}
+            *
+            * @description
+            * Reference to the {@link plat.observable.IContextManagerStatic|IContextManagerStatic} injectable.
+            */
             public $ContextManagerStatic: observable.IContextManagerStatic;
+            /**
+            * @name $CommentManagerFactory
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.processing.ICommentManagerFactory}
+            *
+            * @description
+            * Reference to the {@link plat.processing.ICommentManagerFactory|ICommentManagerFactory} injectable.
+            */
             public $CommentManagerFactory: ICommentManagerFactory;
+            /**
+            * @name $ControlFactory
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.IControlFactory}
+            *
+            * @description
+            * Reference to the {@link plat.IControlFactory|IControlFactory} injectable.
+            */
             public $ControlFactory: IControlFactory;
+            /**
+            * @name $TemplateControlFactory
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.ITemplateControlFactory}
+            *
+            * @description
+            * Reference to the {@link plat.ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
+            */
             public $TemplateControlFactory: ui.ITemplateControlFactory;
+            /**
+            * @name children
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {Array<plat.processing.INodeManager>}
+            *
+            * @description
+            * The child managers for this manager.
+            */
             public children: INodeManager[];
+            /**
+            * @name type
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * Specifies the type for this {@link plat.processing.INodeManager|INodeManager}.
+            * It's value is "element".
+            */
             public type: string;
+            /**
+            * @name replace
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Specifies whether or not this manager has a {@link plat.ui.ITemplateControl|ITemplateControl} which has a
+            * replaceWith property set to null or empty string.
+            */
             public replace: boolean;
-            public replaceNodeLength: number;
+            /**
+            * @name hasOwnContext
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Indicates whether the {@link plat.ui.ITemplateControl|ITemplateControl} for this manager has its own context
+            * or inherits it from a parent.
+            */
             public hasOwnContext: boolean;
+            /**
+            * @name replaceNodeLength
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {number}
+            *
+            * @description
+            * The length of a replaced control, indicates the number of nodes to slice
+            * out of the parent's childNodes.
+            */
+            public replaceNodeLength: number;
+            /**
+            * @name loadedPromise
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.async.IThenable<void>}
+            *
+            * @description
+            * In the event that a control has its own context, we need a promise to fullfill
+            * when the control is loaded to avoid loading its parent control first.
+            */
             public loadedPromise: async.IThenable<void>;
+            /**
+            * @name templatePromise
+            * @memberof plat.processing.ElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.async.IThenable<void>}
+            *
+            * @description
+            * A promise that is set when an {@link plat.ui.ITemplateControl|ITemplateControl} specifies a templateUrl
+            * and its HTML needs to be asynchronously obtained.
+            */
             public templatePromise: async.IThenable<void>;
+            /**
+            * @name clone
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Clones the {@link plat.processing.IElementManager|IElementManager} with a new node.
+            *
+            * @param {Node} newNode The new element used to clone the ElementManager.
+            * @param {plat.processing.IElementManager} parentManager The parent manager for the clone.
+            * @param {plat.processing.INodeMap} nodeMap? An optional INodeMap to clone a ui control if needed.
+            *
+            * @returns {number} The number of nodes to advance while node traversal is in progress.
+            */
             public clone(newNode: Node, parentManager: IElementManager, nodeMap?: INodeMap): number;
+            /**
+            * @name initialize
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Initializes both the manager itself and all the controls associated to the manager's
+            * {@link plat.processing.NodeMap|NodeMap}.
+            *
+            * @param {plat.processing.INodeMap} nodeMap A map of the nodes (element and attributes)
+            * associated with this {@link plat.processing.IElementManager|IElementManager}.
+            * @param {plat.processing.IElementManager} parent The parent
+            * {@link plat.processing.IElementManager|IElementManager}.
+            * @param {boolean} dontInitialize? Specifies whether or not the initialize method should
+            * be called for a {@link plat.ui.ITemplateControl|ITemplateControl} if one is attached
+            * to this {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {void}
+            */
             public initialize(nodeMap: INodeMap, parent: IElementManager, dontInitialize?: boolean): void;
+            /**
+            * @name bind
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Links the data context to the DOM (data-binding).
+            *
+            * @returns {Array<plat.IControl>} An array of the controls contained within this
+            * {@link plat.processing.IElementManager|IElementManager's} associated
+            * {@link plat.processing.INodeMap|INodeMap}.
+            */
             public bind(): IControl[];
+            /**
+            * @name setUiControlTemplate
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Sets the template for an manager by obtaining any needed HTML templates and
+            * calling its associated {@link plat.ui.ITemplateControl|ITemplateControl's}
+            * setTemplate method.
+            *
+            * @param {string} templateUrl? The URL for the associated {@link plat.ui.ITemplateControl|ITemplateControl's}
+            * HTML template.
+            *
+            * @returns {void}
+            */
             public setUiControlTemplate(templateUrl?: string): void;
+            /**
+            * @name getUiControl
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Retrieves the {@link plat.ui.ITemplateControl|ITemplateControl} instance
+            * associated with this {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.ui.ITemplateControl} The {@link plat.ui.ITemplateControl|ITemplateControl} instance
+            * associated with this {@link plat.processing.IElementManager|IElementManager}.
+            */
             public getUiControl(): ui.ITemplateControl;
+            /**
+            * @name fulfillTemplate
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Fullfills any template promises and finishes the compile phase for the HTML template associated
+            * with this {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.async.IThenable<void>} A promise that resolves when this manager's template and all
+            * child manager's templates have been fulfilled.
+            */
             public fulfillTemplate(): async.IThenable<void>;
+            /**
+            * @name bindAndLoad
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Binds context to the DOM and loads controls.
+            *
+            * @returns {plat.async.IThenable<void>} A promise that resolves when this manager's controls and all
+            * child manager's controls have been bound and loaded.
+            */
             public bindAndLoad(): async.IThenable<void>;
+            /**
+            * @name observeRootContext
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Observes the root context for controls that specify their own context, and initiates
+            * a load upon a successful set of the context.
+            *
+            * @param {plat.ui.ITemplateControl} root The {@link plat.ui.ITemplateControl|ITemplateControl} specifying its own context.
+            * @param {() => async.IThenable<void>} loadMethod The function to initiate the loading of the root control and its
+            * children.
+            *
+            * @returns {void}
+            */
             public observeRootContext(root: ui.ITemplateControl, loadMethod: () => async.IThenable<void>): void;
             /**
-            * Observes the identifiers associated with this ElementManager's INodes.
+            * @name _observeControlIdentifiers
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
             *
-            * @param nodes The array of INodes to iterate through.
-            * @param parent The parent ITemplateControl for context.
-            * @param controls The array of controls whose attributes will need to be updated
+            * @description
+            * Observes the identifiers associated with this manager's {@link plat.processing.INode|INodes}.
+            *
+            * @param {Array<plat.processing.INode>} nodes The array of {@link plat.processing.INode|INodes} to iterate through.
+            * @param {plat.ui.ITemplateControl} parent The parent {@link plat.ui.ITemplateControl|ITemplateControl} for context.
+            * @param {Array<plat.IControl>} controls The array of controls whose attributes will need to be updated
             * upon the context changing.
+            *
+            * @returns {void}
             */
             public _observeControlIdentifiers(nodes: INode[], parent: ui.ITemplateControl, controls: IControl[]): void;
             /**
-            * Loads the AttributeControls associated with this ElementManager and
-            * attaches the corresponding ITemplateControl if available.
+            * @name _loadControls
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
             *
-            * @param controls The array of controls to load.
-            * @param templateControl The ITemplateControl associated with this
-            * ElementManager.
+            * @description
+            * Loads the potential attribute based controls associated with this
+            * {@link plat.processing.IElementManager|IElementManager} and
+            * attaches the corresponding {@link plat.ui.ITemplateControl|ITemplateControl} if available.
+            *
+            * @param {Array<plat.controls.IAttributeControl>} controls The array of attribute based controls to load.
+            * @param {plat.ui.ITemplateControl} templateControl The {@link plat.ui.ITemplateControl|ITemplateControl}
+            * associated with this manager.
+            *
+            * @returns {void}
             */
             public _loadControls(controls: controls.IAttributeControl[], templateControl: ui.ITemplateControl): void;
             /**
+            * @name _fulfillAndLoad
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Fulfills the template promise prior to binding and loading the control.
+            *
+            * @returns {plat.async.IThenable<void>} A promise that fulfills when this manager and
+            * its associated controls are bound and loaded.
             */
             public _fulfillAndLoad(): async.IThenable<void>;
             /**
-            * Populates the ITemplateControl properties associated with this ElementManager
+            * @name _populateUiControl
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Populates the {@link plat.ui.ITemplateControl|ITemplateControl} properties associated with this manager
             * if one exists.
+            *
+            * @returns {void}
             */
             public _populateUiControl(): void;
             /**
-            * Removes the ITemplateControl's element. Called if its replaceWith property is
+            * @name _replaceElement
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * Removes the {@link plat.ui.ITemplateControl|ITemplateControl's} element. Called if its replaceWith property is
             * null or empty string.
             *
-            * @param control The ITemplateControl whose element will be removed.
-            * @param nodeMap The INodeMap associated with this ElementManager.
+            * @param {plat.ui.ITemplateControl} control The {@link plat.ui.ITemplateControl|ITemplateControl} whose element
+            * will be removed.
+            * @param {plat.processing.INodeMap} nodeMap The {@link plat.processing.INodeMap|INodeMap} associated with this manager.
+            *
+            * @returns {void}
             */
             public _replaceElement(control: ui.ITemplateControl, nodeMap: INodeMap): void;
             /**
+            * @name _initializeControl
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Initializes a control's template and compiles the control.
             *
-            * @param uiControl The ITemplateControl associated with this ElementManager.
-            * @param template The uiControl's template.
+            * @param {plat.ui.ITemplateControl} uiControl The {@link plat.ui.ITemplateControl|ITemplateControl}
+            * associated with this manager.
+            * @param {DocumentFragment} template The associated {@link plat.ui.ITemplateControl|ITemplateControl's}
+            * template.
+            *
+            * @returns {void}
             */
             public _initializeControl(uiControl: ui.ITemplateControl, template: DocumentFragment): void;
             /**
+            * @name _attributeChanged
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * A function to handle updating an attribute on all controls that have it
             * as a property upon a change in its value.
             *
-            * @param node The INode where the change occurred.
-            * @param parent The parent ITemplateControl used for context.
-            * @param controls The controls that have the changed attribute as a property.
+            * @param {plat.processing.INode} node The {@link plat.processing.INode|INode} where the change occurred.
+            * @param {plat.ui.ITemplateControl} parent The parent {@link plat.ui.ITemplateControl|ITemplateControl} used for context.
+            * @param {Array<plat.IControl>} controls The controls that have the changed attribute as a property.
+            *
+            * @returns {void}
             */
             public _attributeChanged(node: INode, parent: ui.ITemplateControl, controls: IControl[]): void;
             /**
+            * @name _fulfillChildTemplates
+            * @memberof plat.processing.ElementManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Runs through all the children of this manager and calls fulfillTemplate.
+            *
+            * @returns {plat.async.IThenable<void>} A promise that fullfills when all
+            * child managers have fullfilled their templates.
             */
             public _fulfillChildTemplates(): async.IThenable<void>;
         }
@@ -24693,202 +28608,478 @@ declare module plat {
         */
         function IElementManagerFactory($Document?: Document, $ManagerCache?: storage.ICache<IElementManager>, $ResourcesFactory?: ui.IResourcesFactory, $BindableTemplatesFactory?: ui.IBindableTemplatesFactory): IElementManagerFactory;
         /**
+        * @name IElementManagerFactory
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
         * Creates and manages a class for dealing with Element nodes.
         */
         interface IElementManagerFactory {
             /**
-            * Determines if the associated Element has controls that need to be instantiated or Attr nodes
-            * containing text markup. If controls exist or markup is found a new ElementManager will be created,
-            * else an empty INodeManager will be added to the Array of INodeManagers.
-            *
+            * @name create
+            * @memberof plat.processing.IElementManagerFactory
+            * @kind function
+            * @access public
             * @static
-            * @param element The Element to use to identifier markup and controls.
-            * @param parent The parent ui.ITemplateControl used for context inheritance.
+            *
+            * @description
+            * Determines if the associated Element has controls that need to be instantiated or Attr nodes
+            * containing text markup. If controls exist or markup is found a new
+            * {@link plat.processing.ElementManager|ElementManager} will be created,
+            * else an empty {@link plat.processing.INodeManager|INodeManager} will be added to the Array of
+            * {@link plat.processing.INodeManager|INodeManagers}.
+            *
+            * @param {Element} element The Element to use to identifier markup and controls.
+            * @param {plat.processing.IElementManager} parent? The parent {@link plat.processing.IElementManager|IElementManager}
+            * used for context inheritance.
+            *
+            * @returns {plat.processing.IElementManager}
             */
             create(element: Element, parent?: IElementManager): IElementManager;
             /**
-            * Creates new nodes for an INodeMap corresponding to the element associated with the nodeMap or
-            * the passed-in element.
-            *
+            * @name createAttributeControls
+            * @memberof plat.processing.IElementManagerFactory
+            * @kind function
+            * @access public
             * @static
-            * @param nodeMap The nodeMap to populate with attribute nodes.
-            * @param parent The parent control for the new attribute controls.
-            * @param templateControl The TemplateControl linked to these AttributeControls if
-            * one exists.
-            * @param newElement An optional element to use for attributes (used in cloning).
-            * @param isClone Whether or not these controls are clones.
+            *
+            * @description
+            * Creates new {@link plat.processing.INode|INodes} corresponding to the element
+            * associated with the {@link plat.processing.INodeMap|INodeMap} or the passed-in element.
+            *
+            * @param {plat.processing.INodeMap} nodeMap The {@link plat.processing.INodeMap|INodeMap} that contains
+            * the attribute nodes.
+            * @param {plat.ui.ITemplateControl} parent The parent {@link plat.ui.ITemplateControl|ITemplateControl} for
+            * the newly created controls.
+            * @param {plat.ui.ITemplateControl} templateControl? The {@link plat.ui.ITemplateControl|ITemplateControl}
+            * linked to these created controls if one exists.
+            * @param {Element} newElement? An optional element to use for attributes (used in cloning).
+            * @param {boolean} isClone? Whether or not these controls are clones.
+            *
+            * @returns {Array<plat.processing.INode>} An array of the newly created {@link plat.processing.INode|INodes}.
             */
             createAttributeControls(nodeMap: INodeMap, parent: ui.ITemplateControl, templateControl?: ui.ITemplateControl, newElement?: Element, isClone?: boolean): INode[];
             /**
-            * Clones a UI Control with a new nodeMap.
-            *
+            * @name cloneUiControl
+            * @memberof plat.processing.IElementManagerFactory
+            * @kind function
+            * @access public
             * @static
-            * @param sourceMap The source INodeMap used to clone the UI Control
-            * @param parent The parent control of the clone.
+            *
+            * @description
+            * Clones an {@link plat.ui.ITemplateControl|ITemplateControl} with a new {@link plat.processing.INodeMap|INodeMap}.
+            *
+            * @param {plat.processing.INodeMap} sourceMap The source {@link plat.processing.INodeMap|INodeMap} used to clone the
+            * {@link plat.ui.ITemplateControl|ITemplateControl}.
+            * @param {plat.ui.ITemplateControl} parent The parent control of the clone.
+            *
+            * @returns {plat.ui.ITemplateControl} The cloned {@link plat.ui.ITemplateControl|ITemplateControl}.
             */
             cloneUiControl(sourceMap: INodeMap, parent: ui.ITemplateControl): ui.ITemplateControl;
             /**
-            * Clones an ElementManager with a new element.
-            *
+            * @name clone
+            * @memberof plat.processing.IElementManagerFactory
+            * @kind function
+            * @access public
             * @static
-            * @param sourceManager The original IElementManager.
-            * @param parent The parent IElementManager for the new clone.
-            * @param element The new element to associate with the clone.
-            * @param newControl An optional control to associate with the clone.
-            * @param nodeMap The nodeMap used to clone this ElementManager.
+            *
+            * @description
+            * Clones an {@link plat.processing.IElementManager|IElementManager} with a new element.
+            *
+            * @param {plat.processing.IElementManager} sourceManager The original {@link plat.processing.IElementManager|IElementManager}.
+            * @param {plat.processing.IElementManager} parent The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the new clone.
+            * @param {Element} element The new element to associate with the clone.
+            * @param {plat.ui.ITemplateControl} newControl? An optional control to associate with the clone.
+            * @param {plat.processing.INodeMap} nodeMap? The {@link plat.processing.INodeMap} used to clone this
+            * {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.processing.IElementManager} The cloned {@link plat.processing.IElementManager|IElementManager}.
             */
             clone(sourceManager: IElementManager, parent: IElementManager, element: Element, newControl?: ui.ITemplateControl, nodeMap?: INodeMap): IElementManager;
             /**
-            * Looks through the Node's child nodes to try and find any
-            * defined Resources in a <plat-resources> tags.
-            *
+            * @name locateResources
+            * @memberof plat.processing.IElementManagerFactory
+            * @kind function
+            * @access public
             * @static
-            * @param node The node who may have Resources as a child node.
+            *
+            * @description
+            * Looks through the Node's child nodes to try and find any
+            * defined {@link plat.ui.IResources|IResources} in a <plat-resources> tags.
+            *
+            * @param {Node} node The node whose child nodes may contain {@link plat.ui.IResources|IResources}.
+            *
+            * @returns {HTMLElement} The HTML element that represents the defined {@link plat.ui.IResources|IResources}.
             */
             locateResources(node: Node): HTMLElement;
             /**
-            * Returns a new instance of an IElementManager
-            *
+            * @name getInstance
+            * @memberof plat.processing.IElementManagerFactory
+            * @kind function
+            * @access public
             * @static
+            *
+            * @description
+            * Returns a new instance of an {@link plat.processing.ElementManager|ElementManager}.
+            *
+            * @returns {plat.processing.IElementManager}
             */
             getInstance(): IElementManager;
         }
         /**
-        * An ElementManager is responsible for initializing and data-binding controls associated to an Element.
+        * @name IElementManager
+        * @memberof plat.processing
+        * @kind interface
         *
+        * @extends {plat.processing.INodeManager}
+        *
+        * @description
+        * Responsible for initializing and data-binding controls associated to an Element.
         */
         interface IElementManager extends INodeManager {
             /**
+            * @name children
+            * @memberof plat.processing.IElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {Array<plat.processing.INodeManager>}
+            *
+            * @description
             * The child managers for this manager.
             */
             children: INodeManager[];
             /**
-            * Specifies whether or not this manager has a uiControl which has
-            * replaceWith set to null or empty string.
+            * @name replace
+            * @memberof plat.processing.IElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Specifies whether or not this manager has a {@link plat.ui.ITemplateControl|ITemplateControl} which has a
+            * replaceWith property set to null or empty string.
             */
             replace: boolean;
             /**
-            * The length of a replaced control, indiates the number of nodes to slice
+            * @name replaceNodeLength
+            * @memberof plat.processing.IElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {number}
+            *
+            * @description
+            * The length of a replaced control, indicates the number of nodes to slice
             * out of the parent's childNodes.
             */
             replaceNodeLength: number;
             /**
-            * Indicates whether the control for this manager hasOwnContext.
+            * @name hasOwnContext
+            * @memberof plat.processing.IElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Indicates whether the {@link plat.ui.ITemplateControl|ITemplateControl} for this manager has its own context
+            * or inherits it from a parent.
             */
             hasOwnContext: boolean;
             /**
-            * Lets us know when an ElementManager is a cloned manager, or the compiled
-            * manager from BindableTemplates. We do not want to bindAndLoad compiled
+            * @name isClone
+            * @memberof plat.processing.IElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Lets us know when an {@link plat.processing.IElementManager|IElementManager} is a cloned manager, or the compiled
+            * manager from {@link plat.ui.IBindableTemplates|IBindableTemplates}. We do not want to bind and load compiled
             * managers that are clones.
             */
             isClone: boolean;
             /**
-            * In the event that a control hasOwnContext, we need a promise to fullfill
+            * @name loadedPromise
+            * @memberof plat.processing.IElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.async.IThenable<void>}
+            *
+            * @description
+            * In the event that a control has its own context, we need a promise to fullfill
             * when the control is loaded to avoid loading its parent control first.
             */
             loadedPromise: async.IThenable<void>;
             /**
-            * A templatePromise set when a uiControl specifies a templateUrl.
+            * @name templatePromise
+            * @memberof plat.processing.IElementManager
+            * @kind property
+            * @access public
+            *
+            * @type {plat.async.IThenable<void>}
+            *
+            * @description
+            * A promise that is set when an {@link plat.ui.ITemplateControl|ITemplateControl} specifies a templateUrl
+            * and its HTML needs to be asynchronously obtained.
             */
             templatePromise: async.IThenable<void>;
             /**
-            * Clones the IElementManager with a new node.
+            * @name clone
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
             *
-            * @param newNode The new element used to clone the ElementManager.
-            * @param parentManager The parent for the clone.
-            * @param nodeMap An optional INodeMap to clone a ui control if needed.
+            * @description
+            * Clones the {@link plat.processing.IElementManager|IElementManager} with a new node.
+            *
+            * @param {Node} newNode The new element used to clone the ElementManager.
+            * @param {plat.processing.IElementManager} parentManager The parent manager for the clone.
+            * @param {plat.processing.INodeMap} nodeMap? An optional INodeMap to clone a ui control if needed.
+            *
+            * @returns {number} The number of nodes to advance while node traversal is in progress.
             */
             clone(newNode: Node, parentManager: IElementManager, nodeMap?: INodeMap): number;
             /**
-            * Initializes all the controls associated to the ElementManager's nodeMap.
-            * The INodeManager array must be passed in because if this ElementManager is
-            * used for transclusion, it can't rely on one INodeManager array.
+            * @name initialize
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
             *
-            * @param parent The parent IElementManager.
-            * @param dontInitialize Specifies whether or not the initialize method should
-            * be called for a control.
-            * @param dontInitialize Specifies whether or not the initialize method should
-            * be called for a control.
+            * @description
+            * Initializes both the manager itself and all the controls associated to the manager's
+            * {@link plat.processing.NodeMap|NodeMap}.
+            *
+            * @param {plat.processing.INodeMap} nodeMap A map of the nodes (element and attributes)
+            * associated with this {@link plat.processing.IElementManager|IElementManager}.
+            * @param {plat.processing.IElementManager} parent The parent
+            * {@link plat.processing.IElementManager|IElementManager}.
+            * @param {boolean} dontInitialize? Specifies whether or not the initialize method should
+            * be called for a {@link plat.ui.ITemplateControl|ITemplateControl} if one is attached
+            * to this {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {void}
             */
             initialize(nodeMap: INodeMap, parent: IElementManager, dontInitialize?: boolean): void;
             /**
-            * Observes the root context for controls that specify their own context, and initiates
-            * a load upon a successful set of the context.
+            * @name bind
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
             *
-            * @param root The ITemplateControl specifying its own context.
-            * @param loadMethod The function to initiate the loading of the root control and its
-            * children.
-            */
-            observeRootContext(root: ui.ITemplateControl, loadMethod: () => async.IThenable<void>): void;
-            /**
+            * @description
             * Links the data context to the DOM (data-binding).
+            *
+            * @returns {Array<plat.IControl>} An array of the controls contained within this
+            * {@link plat.processing.IElementManager|IElementManager's} associated
+            * {@link plat.processing.INodeMap|INodeMap}.
             */
             bind(): void;
             /**
-            * Sets the template for an ElementManager by calling its associated UI Control's
+            * @name setUiControlTemplate
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Sets the template for an manager by obtaining any needed HTML templates and
+            * calling its associated {@link plat.ui.ITemplateControl|ITemplateControl's}
             * setTemplate method.
             *
-            * @param templateUrl An optional templateUrl used to override the control's template.
+            * @param {string} templateUrl? The URL for the associated {@link plat.ui.ITemplateControl|ITemplateControl's}
+            * HTML template.
+            *
+            * @returns {void}
             */
             setUiControlTemplate(templateUrl?: string): void;
             /**
-            * Retrieves the UI control instance for this ElementManager.
+            * @name getUiControl
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Retrieves the {@link plat.ui.ITemplateControl|ITemplateControl} instance
+            * associated with this {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.ui.ITemplateControl} The {@link plat.ui.ITemplateControl|ITemplateControl} instance
+            * associated with this {@link plat.processing.IElementManager|IElementManager}.
             */
             getUiControl(): ui.ITemplateControl;
             /**
-            * Fullfills any template template promises and finishes the compile phase
-            * for the template associated to this ElementManager.
+            * @name fulfillTemplate
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Fullfills any template promises and finishes the compile phase for the HTML template associated
+            * with this {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.async.IThenable<void>} A promise that resolves when this manager's template and all
+            * child manager's templates have been fulfilled.
             */
             fulfillTemplate(): async.IThenable<void>;
             /**
+            * @name observeRootContext
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Observes the root context for controls that specify their own context, and initiates
+            * a load upon a successful set of the context.
+            *
+            * @param {plat.ui.ITemplateControl} root The {@link plat.ui.ITemplateControl|ITemplateControl} specifying its own context.
+            * @param {() => async.IThenable<void>} loadMethod The function to initiate the loading of the root control and its
+            * children.
+            *
+            * @returns {void}
+            */
+            observeRootContext(root: ui.ITemplateControl, loadMethod: () => async.IThenable<void>): void;
+            /**
+            * @name bindAndLoad
+            * @memberof plat.processing.IElementManager
+            * @kind function
+            * @access public
+            *
+            * @description
             * Binds context to the DOM and loads controls.
+            *
+            * @returns {plat.async.IThenable<void>} A promise that resolves when this manager's controls and all
+            * child manager's controls have been bound and loaded.
             */
             bindAndLoad(): async.IThenable<void>;
         }
         /**
+        * @name TextManager
+        * @memberof plat.processing
+        * @kind class
+        *
+        * @extends {plat.processing.NodeManager}
+        * @implements {plat.processing.ITextManager}
+        *
+        * @description
         * The class responsible for initializing and data-binding values to text nodes.
         */
         class TextManager extends NodeManager implements ITextManager {
             /**
-            * Determines if a text node has markup, and creates a TextManager if it does.
-            * A TextManager or empty TextManager will be added to the managers array.
-            *
+            * @name create
+            * @memberof plat.processing.TextManager
+            * @kind function
+            * @access public
             * @static
-            * @param node The Node used to find markup.
-            * @param parent The parent ITemplateControl for the node.
+            *
+            * @description
+            * Determines if a text node has markup, and creates a {@link plat.processing.ITextManager|ITextManager} if it does.
+            * An {@link plat.processing.ITextManager|ITextManager} responsible for markup in the passed in node or an empty
+            * {@link plat.processing.ITextManager|ITextManager} if not markup is found will be added to the managers array.
+            *
+            * @param {Node} node The Node used to find markup.
+            * @param {plat.processing.IElementManager} parent The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the node.
+            *
+            * @returns {plat.processing.TextManager} The newly created {@link plat.processing.ITextManager|ITextManager}
+            * responsible for the passed in Text Node.
             */
             static create(node: Node, parent: IElementManager): ITextManager;
             /**
-            * Clones an INodeMap with a new text node.
-            *
+            * @name _cloneNodeMap
+            * @memberof plat.processing.TextManager
+            * @kind function
+            * @access protected
             * @static
-            * @param sourceMap The original INodeMap.
-            * @param newNode The new text node used for cloning.
+            *
+            * @description
+            * Clones an {@link plat.processing.INodeMap|INodeMap} with a new text node.
+            *
+            * @param {plat.processing.INodeMap} sourceMap The original {@link plat.processing.INodeMap|INodeMap}.
+            * @param {Node} newNode The new text node used for cloning.
+            *
+            * @returns {plat.processing.INodeMap} The cloned {@link plat.processing.INodeMap|INodeMap}.
             */
             static _cloneNodeMap(sourceMap: INodeMap, newNode: Node): INodeMap;
             /**
-            * Clones a TextManager with a new text node.
-            *
+            * @name _clone
+            * @memberof plat.processing.TextManager
+            * @kind function
+            * @access protected
             * @static
-            * @param sourceManager The original INodeManager.
-            * @param node The new text node to associate with the clone.
-            * @param parent The parent IElementManager for the new clone.
+            *
+            * @description
+            * Clones a {@link plat.processing.ITextManager|ITextManager} with a new text node.
+            *
+            * @param {plat.processing.INodeManager} sourceManager The original {@link plat.processing.INodeManager|INodeManager}.
+            * @param {Node} node The new text node to associate with the clone.
+            * @param {plat.processing.IElementManager} parent The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the new clone.
+            *
+            * @returns {plat.processing.ITextManager} The cloned {@link plat.processing.ITextManager|ITextManager}.
             */
             static _clone(sourceManager: INodeManager, node: Node, parent: IElementManager): ITextManager;
             /**
-            * Specifies the type for this INodeManager.
+            * @name type
+            * @memberof plat.processing.TextManager
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * Specifies the type for this {@link plat.processing.INodeManager|INodeManager}.
+            * It's value is "text".
             */
             public type: string;
+            /**
+            * @name clone
+            * @memberof plat.processing.TextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Clones this {@link plat.processing.ITextManager|ITextManager} with a new node.
+            *
+            * @param {Node} newNode The new node attached to the cloned {@link plat.processing.ITextManager|ITextManager}.
+            * @param {plat.processing.IElementManager} parentManager The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the clone.
+            *
+            * @returns {number} The number of nodes to advance while node traversal is in progress (returns 1).
+            */
             public clone(newNode: Node, parentManager: IElementManager): number;
+            /**
+            * @name bind
+            * @memberof plat.processing.TextManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * The function used for data-binding a data context to the DOM.
+            *
+            * @returns {void}
+            */
             public bind(): void;
             /**
+            * @name _setText
+            * @memberof plat.processing.TextManager
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Builds the node expression and sets the value.
             *
-            * @param Node The associated node whose value will be set.
-            * @param control The control whose context will be used to bind
+            * @param {Node} Node The associated node whose value will be set.
+            * @param {plat.ui.ITemplateControl} control The control whose context will be used to bind
             * the data.
-            * @param expressions An array of parsed expressions used to build
+            * @param {Array<plat.expressions.IParsedExpression>} expressions An array of parsed expressions used to build
             * the node value.
+            *
+            * @returns {void}
             */
             public _setText(node: Node, control: ui.ITemplateControl, expressions: expressions.IParsedExpression[]): void;
         }
@@ -24897,52 +29088,135 @@ declare module plat {
         */
         function ITextManagerFactory(): ITextManagerFactory;
         /**
-        * Creates and manages a class for dealing with Text nodes.
+        * @name ITextManagerFactory
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
+        * Creates and manages a class for dealing with DOM Text Nodes.
         */
         interface ITextManagerFactory {
             /**
-            * Determines if a text node has markup, and creates a TextManager if it does.
-            * A TextManager or empty TextManager will be added to the managers array.
-            *
+            * @name create
+            * @memberof plat.processing.ITextManagerFactory
+            * @kind function
+            * @access public
             * @static
-            * @param node The Node used to find markup.
-            * @param parent The parent ui.ITemplateControl for the node.
+            *
+            * @description
+            * Determines if a text node has markup, and creates a {@link plat.processing.ITextManager|ITextManager} if it does.
+            * An {@link plat.processing.ITextManager|ITextManager} responsible for markup in the passed in node or an empty
+            * {@link plat.processing.ITextManager|ITextManager} if not markup is found will be added to the managers array.
+            *
+            * @param {Node} node The Node used to find markup.
+            * @param {plat.processing.IElementManager} parent The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the node.
+            *
+            * @returns {plat.processing.TextManager} The newly created {@link plat.processing.ITextManager|ITextManager}
+            * responsible for the passed in Text Node.
             */
             create(node: Node, parent?: IElementManager): ITextManager;
         }
         /**
+        * @name ITextManager
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @extends {plat.processing.INodeManager}
+        *
+        * @description
         * An object responsible for initializing and data-binding values to text nodes.
         */
         interface ITextManager extends INodeManager {
             /**
-            * Clones this ITextManager with a new node.
+            * @name clone
+            * @memberof plat.processing.ITextManager
+            * @kind function
+            * @access public
             *
-            * @param newNode The new node attached to the cloned ITextManager.
-            * @param parentManager The parent IElementManager for the clone.
+            * @description
+            * Clones this {@link plat.processing.ITextManager|ITextManager} with a new node.
+            *
+            * @param {Node} newNode The new node attached to the cloned {@link plat.processing.ITextManager|ITextManager}.
+            * @param {plat.processing.IElementManager} parentManager The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the clone.
+            *
+            * @returns {number} The number of nodes to advance while traversing is in progress.
             */
             clone(newNode: Node, parentManager: IElementManager): number;
             /**
+            * @name bind
+            * @memberof plat.processing.ITextManager
+            * @kind function
+            * @access public
+            *
+            * @description
             * The function used for data-binding a data context to the DOM.
+            *
+            * @returns {void}
             */
             bind(): void;
         }
         /**
+        * @name CommentManager
+        * @memberof plat.processing
+        * @kind class
+        *
+        * @extends {plat.processing.NodeManager}
+        * @implements {plat.processing.ICommentManager}
+        *
+        * @description
         * A class used to manage Comment nodes. Provides a way to
         * clone a Comment node.
         */
         class CommentManager extends NodeManager implements ICommentManager {
             /**
+            * @name create
+            * @memberof plat.processing.CommentManager
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Creates a new CommentManager for the given Comment node.
             *
-            * @static
-            * @param node The Comment to associate with the new manager.
-            * @param parent The parent IElementManager.
+            * @param {Node} node The Comment to associate with the new manager.
+            * @param {plat.processing.IElementManager} parent The parent
+            * {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.processing.ICommentManager} The newly created {@link plat.processing.ICommentManager|ICommentManager}
+            * responsible for the passed in Comment Node.
             */
             static create(node: Node, parent: IElementManager): ICommentManager;
             /**
-            * Specifies the type of INodeManager.
+            * @name type
+            * @memberof plat.processing.CommentManager
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * Specifies the type for this {@link plat.processing.INodeManager|INodeManager}.
+            * It's value is "comment".
             */
             public type: string;
+            /**
+            * @name clone
+            * @memberof plat.processing.CommentManager
+            * @kind function
+            * @access public
+            *
+            * @description
+            * A method for cloning this manager with a new Comment.
+            *
+            * @param {Node} newNode The new Comment node to associate with the cloned
+            * manager.
+            * @param {plat.processing.IElementManager} parentManager The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the clone.
+            *
+            * @returns {number} The number of nodes to advance while node traversal is in progress (returns 1).
+            */
             public clone(newNode: Node, parentManager: IElementManager): number;
         }
         /**
@@ -24950,28 +29224,59 @@ declare module plat {
         */
         function ICommentManagerFactory(): ICommentManagerFactory;
         /**
+        * @name ICommentManagerFactory
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @description
         * Creates and manages a class for dealing with Comment nodes.
         */
         interface ICommentManagerFactory {
             /**
+            * @name create
+            * @memberof plat.processing.ICommentManagerFactory
+            * @kind function
+            * @access public
+            * @static
+            *
+            * @description
             * Creates a new CommentManager for the given Comment node.
             *
-            * @static
-            * @param node The Comment to associate with the new manager.
-            * @param parent The parent IElementManager.
+            * @param {Node} node The Comment to associate with the new manager.
+            * @param {plat.processing.IElementManager} parent The parent
+            * {@link plat.processing.IElementManager|IElementManager}.
+            *
+            * @returns {plat.processing.ICommentManager} The newly created {@link plat.processing.ICommentManager|ICommentManager}
+            * responsible for the passed in Comment Node.
             */
             create(node: Node, parent: IElementManager): ICommentManager;
         }
         /**
+        * @name ICommentManager
+        * @memberof plat.processing
+        * @kind interface
+        *
+        * @extends {plat.processing.INodeManager}
+        *
+        * @description
         * An object used to manage Comment nodes.
         */
         interface ICommentManager extends INodeManager {
             /**
-            * A method for cloning this CommentManager.
+            * @name clone
+            * @memberof plat.processing.ICommentManager
+            * @kind function
+            * @access public
             *
-            * @param newNode The new Comment node to associate with the cloned
+            * @description
+            * A method for cloning this manager with a new Comment.
+            *
+            * @param {Node} newNode The new Comment node to associate with the cloned
             * manager.
-            * @param parentManager The parent IElementManager for the new clone.
+            * @param {plat.processing.IElementManager} parentManager The parent {@link plat.processing.IElementManager|IElementManager}
+            * for the clone.
+            *
+            * @returns {number} The number of nodes to advance while node traversal is in progress.
             */
             clone(newNode: Node, parentManager: IElementManager): number;
         }
@@ -24987,152 +29292,596 @@ declare module plat {
     */
     module navigation {
         /**
-        * A class that defines the base Navigation properties and methods.
+        * @name BaseNavigator
+        * @memberof plat.navigation
+        * @kind class
+        *
+        * @implements {plat.navigation.IBaseNavigator}
+        *
+        * @description
+        * A class that defines the base navigation properties and methods.
         */
         class BaseNavigator implements IBaseNavigator {
+            /**
+            * @name $EventManagerStatic
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.events.IEventManagerStatic}
+            *
+            * @description
+            * Reference to the {@link plat.events.IEventManagerStatic|IEventManagerStatic} injectable.
+            */
             public $EventManagerStatic: events.IEventManagerStatic;
+            /**
+            * @name $NavigationEventStatic
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.events.INavigationEventStatic}
+            *
+            * @description
+            * Reference to the {@link plat.events.INavigationEventStatic|INavigationEventStatic} injectable.
+            */
             public $NavigationEventStatic: events.INavigationEventStatic;
+            /**
+            * @name $BaseViewControlFactory
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.IBaseViewControlFactory}
+            *
+            * @description
+            * Reference to the {@link plat.ui.IBaseViewControlFactory|IBaseViewControlFactory} injectable.
+            */
             public $BaseViewControlFactory: ui.IBaseViewControlFactory;
+            /**
+            * @name $ContextManagerStatic
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.observable.IContextManagerStatic}
+            *
+            * @description
+            * Reference to the {@link plat.observable.IContextManagerStatic|IContextManagerStatic} injectable.
+            */
             public $ContextManagerStatic: observable.IContextManagerStatic;
+            /**
+            * @name uid
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {string}
+            *
+            * @description
+            * A unique ID used to identify this navigator.
+            */
             public uid: string;
+            /**
+            * @name baseport
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.controls.IBaseport}
+            *
+            * @description
+            * Every navigator will have an {@link plat.ui.controls.IBaseport|IBaseport} with which to communicate and
+            * facilitate navigation.
+            */
             public baseport: ui.controls.IBaseport;
+            /**
+            * @name currentState
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.navigation.IBaseNavigationState}
+            *
+            * @description
+            * Specifies the current state of navigation. This state should contain
+            * enough information for it to be pushed onto the history stack when
+            * necessary.
+            */
             public currentState: IBaseNavigationState;
+            /**
+            * @name navigating
+            * @memberof plat.navigation.BaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Set to true during "navigate" (i.e. while navigation is in progress), set to false during
+            * "navigated" (i.e. after a navigation has successfully occurred).
+            */
             public navigating: boolean;
             /**
-            * Define unique id and subscribe to the 'goBack' event
+            * @name constructor
+            * @memberof plat.navigation.BaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * The constructor for a {@link plat.navigation.BaseNavigator|BaseNavigator}.
+            * Defines a unique id and subscribes to the "goBack" event.
+            *
+            * @returns {plat.navigation.BaseNavigator}
             */
             constructor();
+            /**
+            * @name initialize
+            * @memberof plat.navigation.BaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Initializes this navigator. The {plat.ui.controls.IBaseport|IBaseport} will call this method and pass
+            * itself in so the navigator can store it and use it to facilitate navigation.
+            *
+            * @param {plat.ui.controls.IBaseport} baseport The {plat.ui.controls.IBaseport|IBaseport}
+            * associated with this {@link plat.navigation.IBaseNavigator|IBaseNavigator}.
+            *
+            * @returns {void}
+            */
             public initialize(baseport: ui.controls.IBaseport): void;
-            public navigate(navigationParameter: any, options: IBaseNavigationOptions): void;
+            /**
+            * @name navigate
+            * @memberof plat.navigation.BaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Allows an {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent to the new {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {any} navigationParameter? An optional navigation parameter to send to the next
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            * @param {plat.navigation.IBaseNavigationOptions} options? Optional
+            * {@link plat.navigation.IBaseNavigationOptions|IBaseNavigationOptions} used for navigation.
+            *
+            * @returns {void}
+            */
+            public navigate(navigationParameter?: any, options?: IBaseNavigationOptions): void;
+            /**
+            * @name navigated
+            * @memberof plat.navigation.BaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Called by the {plat.ui.controls.IBaseport|IBaseport} to make the
+            * {@link plat.navigation.IBaseNavigator|IBaseNavigator} aware of a successful
+            * navigation. The {@link plat.navigation.IBaseNavigator|IBaseNavigator} will
+            * in-turn send the app.navigated event.
+            *
+            * @param {plat.ui.IBaseViewControl} control The {@link plat.ui.IBaseViewControl|IBaseViewControl}
+            * to which the navigation occurred.
+            * @param {any} parameter The navigation parameter sent to the control.
+            * @param {plat.navigation.IBaseNavigationOptions} options The
+            * {@link plat.navigation.IBaseNavigationOptions|IBaseNavigationOptions} used during navigation.
+            *
+            * @returns {void}
+            */
             public navigated(control: ui.IBaseViewControl, parameter: any, options: IBaseNavigationOptions): void;
+            /**
+            * @name goBack
+            * @memberof plat.navigation.BaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Every navigator must implement this method, defining what happens when an
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} wants to go back.
+            *
+            * @param {plat.navigation.IBaseBackNavigationOptions} options? Optional backwards navigation options of type
+            * {@link plat.navigation.IBaseBackNavigationOptions|IBaseBackNavigationOptions}.
+            *
+            * @returns {void}
+            */
             public goBack(options?: IBaseBackNavigationOptions): void;
+            /**
+            * @name dispose
+            * @memberof plat.navigation.BaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Cleans up memory.
+            *
+            * @returns {void}
+            */
             public dispose(): void;
             /**
-            * Sends a NavigationEvent with the given parameters.  The 'sender' property of the event will be the
-            * navigator.
+            * @name _sendEvent
+            * @memberof plat.navigation.BaseNavigator
+            * @kind function
+            * @access protected
             *
-            * @param name The name of the event to send.
-            * @param target The target of the event, could be a view control or a route depending upon the navigator and
-            * event name.
-            * @param options The IBaseNavigationOptions used during navigation
-            * @param cancelable Whether or not the event can be cancelled, preventing further navigation.
+            * @description
+            * Sends an {@link plat.events.INavigationEvent|INavigationEvent} with the given parameters.
+            * The 'sender' property of the event will be this navigator.
+            *
+            * @param {string} name The name of the event to send.
+            * @param {any} target The target of the event, could be an {@link plat.ui.IBaseViewControl|IBaseViewControl}
+            * or a route depending upon this navigator and event name.
+            * @param {plat.navigation.IBaseNavigationOptions} options The
+            * {@link plat.navigation.IBaseNavigationOptions|IBaseNavigationOptions} used during navigation
+            * @param {boolean} cancelable Whether or not the event can be cancelled, preventing further navigation.
+            *
+            * @returns {plat.events.INavigationEvent<any>} The {@link plat.events.INavigationEvent|INavigationEvent} to
+            * dispatch.
             */
             public _sendEvent(name: string, target: any, type: string, parameter: any, options: IBaseNavigationOptions, cancelable: boolean): events.INavigationEvent<any>;
         }
         /**
-        * Defines the methods that a Navigator must implement.
+        * @name IBaseNavigator
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @description
+        * Defines the methods that a type of navigator must implement.
         */
         interface IBaseNavigator {
             /**
-            * A unique identifier used to identify this navigator.
+            * @name uid
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind property
+            * @access public
+            * @readonly
+            *
+            * @type {string}
+            *
+            * @description
+            * A unique ID used to identify this navigator.
             */
             uid: string;
             /**
-            * Every navigator will have a viewport with which to communicate and
+            * @name baseport
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.controls.IBaseport}
+            *
+            * @description
+            * Every navigator will have an {@link plat.ui.controls.IBaseport|IBaseport} with which to communicate and
             * facilitate navigation.
             */
             baseport: ui.controls.IBaseport;
             /**
-            * Set to true during navigate, set to false during navigated.
-            */
-            navigating: boolean;
-            /**
+            * @name currentState
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.navigation.IBaseNavigationState}
+            *
+            * @description
             * Specifies the current state of navigation. This state should contain
             * enough information for it to be pushed onto the history stack when
             * necessary.
             */
             currentState: IBaseNavigationState;
             /**
-            * Initializes a Navigator. The viewport will call this method and pass itself in so
-            * the navigator can store it and use it to facilitate navigation. Also subscribes to
-            * 'routeChanged' and 'beforeRouteChange' events in the case of a RoutingNavigator.
+            * @name navigating
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind property
+            * @access public
             *
-            * @param baseport The baseport instance this navigator will be attached to.
+            * @type {boolean}
+            *
+            * @description
+            * Set to true during "navigate" (i.e. while navigation is in progress), set to false during
+            * "navigated" (i.e. after a navigation has successfully occurred).
+            */
+            navigating: boolean;
+            /**
+            * @name initialize
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Initializes this navigator. The {plat.ui.controls.IBaseport|IBaseport} will call this method and pass
+            * itself in so the navigator can store it and use it to facilitate navigation.
+            *
+            * @param {plat.ui.controls.IBaseport} baseport The {plat.ui.controls.IBaseport|IBaseport}
+            * associated with this {@link plat.navigation.IBaseNavigator|IBaseNavigator}.
+            *
+            * @returns {void}
             */
             initialize(baseport: ui.controls.IBaseport): void;
             /**
-            * Allows a ui.IBaseViewControl to navigate to another ui.IBaseViewControl. Also allows for
-            * navigation parameters to be sent to the new ui.IBaseViewControl.
+            * @name navigate
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind function
+            * @access public
             *
-            * @param navigationParameter An optional navigation parameter to send to the next ui.IBaseViewControl.
-            * @param options Optional IBaseNavigationOptions used for navigation.
+            * @description
+            * Allows an {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent to the new {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {any} navigationParameter? An optional navigation parameter to send to the next
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            * @param {plat.navigation.IBaseNavigationOptions} options? Optional
+            * {@link plat.navigation.IBaseNavigationOptions|IBaseNavigationOptions} used for navigation.
+            *
+            * @returns {void}
             */
-            navigate(navigationParameter: any, options?: IBaseNavigationOptions): void;
+            navigate(navigationParameter?: any, options?: IBaseNavigationOptions): void;
             /**
-            * Called by the Viewport to make the Navigator aware of a successful navigation. The Navigator will
-            * in-turn call the app.navigated event.
+            * @name navigated
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind function
+            * @access public
             *
-            * @param control The ui.IBaseViewControl to which the navigation occurred.
-            * @param parameter The navigation parameter sent to the control.
-            * @param options The INavigationOptions used during navigation.
+            * @description
+            * Called by the {plat.ui.controls.IBaseport|IBaseport} to make the
+            * {@link plat.navigation.IBaseNavigator|IBaseNavigator} aware of a successful
+            * navigation. The {@link plat.navigation.IBaseNavigator|IBaseNavigator} will
+            * in-turn send the app.navigated event.
+            *
+            * @param {plat.ui.IBaseViewControl} control The {@link plat.ui.IBaseViewControl|IBaseViewControl}
+            * to which the navigation occurred.
+            * @param {any} parameter The navigation parameter sent to the control.
+            * @param {plat.navigation.IBaseNavigationOptions} options The
+            * {@link plat.navigation.IBaseNavigationOptions|IBaseNavigationOptions} used during navigation.
+            *
+            * @returns {void}
             */
             navigated(control: ui.IBaseViewControl, parameter: any, options: IBaseNavigationOptions): void;
             /**
-            * Every navigator must implement this method, defining what happens when a view
-            * control wants to go back.
+            * @name goBack
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind function
+            * @access public
             *
-            * @param options Optional backwards navigation options of type IBaseBackNavigationOptions.
+            * @description
+            * Every navigator must implement this method, defining what happens when an
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} wants to go back.
+            *
+            * @param {plat.navigation.IBaseBackNavigationOptions} options? Optional backwards navigation options of type
+            * {@link plat.navigation.IBaseBackNavigationOptions|IBaseBackNavigationOptions}.
+            *
+            * @returns {void}
             */
             goBack(options?: IBaseBackNavigationOptions): void;
             /**
-            * Clean up memory
+            * @name dispose
+            * @memberof plat.navigation.IBaseNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Cleans up memory.
+            *
+            * @returns {void}
             */
             dispose(): void;
         }
         /**
-        * Options that you can submit to the navigator in order
+        * @name IBaseNavigationOptions
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @description
+        * Options that you can submit to an {@link plat.navigation.IBaseNavigator|IBaseNavigator} in order
         * to customize navigation.
         */
         interface IBaseNavigationOptions {
             /**
-            * Allows a ui.IBaseViewControl to leave itself out of the
+            * @name replace
+            * @memberof plat.navigation.IBaseNavigationOptions
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * Allows an {@link plat.ui.IBaseViewControl|IBaseViewControl} to leave itself out of the
             * navigation history.
             */
             replace?: boolean;
         }
         /**
-        * Options that you can submit to the navigator during a backward
+        * @name IBaseBackNavigationOptions
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @description
+        * Options that you can submit to an {@link plat.navigation.IBaseNavigator|IBaseNavigator} during a backward
         * navigation in order to customize the navigation.
         */
         interface IBaseBackNavigationOptions {
             /**
-            * Lets the Navigator know to navigate back a specific length
+            * @name length
+            * @memberof plat.navigation.IBaseBackNavigationOptions
+            * @kind property
+            * @access public
+            *
+            * @type {number}
+            *
+            * @description
+            * Lets the {@link plat.navigation.IBaseNavigator|IBaseNavigator} know to navigate back a specific length
             * in history.
             */
             length?: number;
         }
         /**
-        * Defines the base interface needing to be implemented in the history.
+        * @name IBaseNavigationState
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @description
+        * Defines the base interface that needs to be implemented in the navigation history.
         */
         interface IBaseNavigationState {
             /**
-            * The view control associated with a history entry.
+            * @name control
+            * @memberof plat.navigation.IBaseNavigationState
+            * @kind property
+            * @access public
+            *
+            * @type {plat.ui.IBaseViewControl}
+            *
+            * @description
+            * The {@link plat.ui.IBaseViewControl|IBaseViewControl} associated with a history entry.
             */
             control: ui.IBaseViewControl;
         }
         /**
-        * The Navigator class allows ui.IViewControls to navigate within a Viewport.
-        * Every Viewport has its own Navigator instance, allowing multiple navigators to
+        * @name Navigator
+        * @memberof plat.navigation
+        * @kind class
+        *
+        * @extends plat.navigation.BaseNavigator
+        * @implements {plat.navigation.INavigatorInstance}
+        *
+        * @description
+        * Allows {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate within a
+        * {@link plat.ui.controls.Viewport|Viewport}. Every {@link plat.ui.controls.Viewport|Viewport}
+        * has its own {@link plat.navigation.Navigator|Navigator} instance, allowing multiple navigators to
         * coexist in one app.
         */
         class Navigator extends BaseNavigator implements INavigatorInstance {
+            /**
+            * @name history
+            * @memberof plat.navigation.Navigator
+            * @kind property
+            * @access public
+            *
+            * @type {Array<plat.navigation.IBaseNavigationState>}
+            *
+            * @description
+            * Contains the navigation history stack for the associated {@link plat.ui.controls.Viewport|Viewport}.
+            */
             public history: IBaseNavigationState[];
-            public navigate(Constructor?: new(...args: any[]) => ui.IViewControl, options?: INavigationOptions): void;
-            public navigate(injector?: dependency.IInjector<ui.IViewControl>, options?: INavigationOptions): void;
+            /**
+            * @name navigate
+            * @memberof plat.navigation.Navigator
+            * @kind function
+            * @access public
+            * @variation 0
+            *
+            * @description
+            * Allows an {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent along with the navigation.
+            *
+            * @param {new (...args: any[]) => ui.IBaseViewControl} Constructor The Constructor for the new
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. This navigator will find the injector for
+            * the Constructor and create a new instance of the control.
+            * @param {plat.navigation.INavigationOptions} options? Optional
+            * {@link plat.navigation.INavigationOptions|INavigationOptions} used for navigation.
+            *
+            * @returns {void}
+            */
+            public navigate(Constructor: new(...args: any[]) => ui.IBaseViewControl, options?: INavigationOptions): void;
+            /**
+            * @name navigate
+            * @memberof plat.navigation.Navigator
+            * @kind function
+            * @access public
+            * @variation 1
+            *
+            * @description
+            * Allows an {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent along with the navigation.
+            *
+            * @param {new (...args: any[]) => plat.ui.IBaseViewControl} injector The {@link plat.dependency.IInjector|IInjector}
+            * for the new {@link plat.ui.IBaseViewControl|IBaseViewControl}. This navigator will create a new instance of the control.
+            * @param {plat.navigation.INavigationOptions} options? Optional
+            * {@link plat.navigation.INavigationOptions|INavigationOptions} used for navigation.
+            *
+            * @returns {void}
+            */
+            public navigate(injector: dependency.IInjector<ui.IBaseViewControl>, options?: INavigationOptions): void;
+            /**
+            * @name goBack
+            * @memberof plat.navigation.Navigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Returns to the last visited {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {plat.navigation.IBackNavigationOptions} options? Optional
+            * {@link plat.navigation.IBackNavigationOptions|IBackNavigationOptions} allowing the
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} to customize navigation. Enables
+            * navigating back to a specified point in history as well as specifying a new templateUrl
+            * to use at the next {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @returns {void}
+            */
             public goBack(options?: IBackNavigationOptions): void;
+            /**
+            * @name goBack
+            * @memberof plat.navigation.Navigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Lets the caller know if there are {@link plat.ui.IBaseViewControl|IBaseViewControl} in the history,
+            * meaning the caller is safe to perform a backward navigation.
+            *
+            * @returns {boolean} Whether or not a backwards navigation can occur.
+            */
             public canGoBack(): boolean;
+            /**
+            * @name clearHistory
+            * @memberof plat.navigation.Navigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Clears the navigation history, disposing all the controls.
+            *
+            * @returns {void}
+            */
             public clearHistory(): void;
             /**
+            * @name _findInHistory
+            * @memberof plat.navigation.Navigator
+            * @kind function
+            * @access protected
+            *
+            * @description
             * Finds the given constructor in the history stack. Returns the index in the history where
             * the constructor is found, or -1 if no constructor is found.
             *
-            * @param Constructor The view control constructor to search for in the history stack.
+            * @param {new (...args: any[]) => plat.ui.IBaseViewControl} Constructor The
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} constructor to search for in the history stack.
+            *
+            * @returns {number} The index in the history where the input Constructor was found.
             */
-            public _findInHistory(Constructor: new(...args: any[]) => ui.IViewControl): number;
+            public _findInHistory(Constructor: new(...args: any[]) => ui.IBaseViewControl): number;
             /**
-            * This method takes in a length and navigates back in the history, returning the view control
-            * associated with length + 1 entries back in the history.  It disposes all the view controls
-            * encapsulated in the length.
+            * @name _goBackLength
+            * @memberof plat.navigation.Navigator
+            * @kind function
+            * @access protected
+            *
+            * @description
+            * This method takes in a length and navigates back in the history, returning the
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} associated with length + 1 entries
+            * back in the history.  It disposes all the {@link plat.ui.IBaseViewControl|IBaseViewControls}
+            * encapsulated in the length, but does not dispose the current {@link plat.ui.IBaseViewControl|IBaseViewControls}.
+            *
+            * @param {number} length The number of entries to go back in the history stack.
+            *
+            * @returns {plat.navigation.IBaseNavigationState} The new current navigation state as a
+            * {@link plat.navigation.IBaseNavigationState|IBaseNavigationState}.
             */
             public _goBackLength(length?: number): IBaseNavigationState;
         }
@@ -25141,98 +29890,369 @@ declare module plat {
         */
         function INavigatorInstance(): INavigatorInstance;
         /**
-        * An object implementing INavigator allows ui.IViewControls to implement methods
-        * used to navigate within a Viewport.
+        * @name INavigatorInstance
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @extends {plat.navigation.IBaseNavigator}
+        *
+        * @description
+        * An object that allows {@link plat.ui.IBaseViewControl|IBaseViewControl} to implement methods
+        * used to navigate within a {@link plat.ui.controls.Viewport|Viewport}.
         */
         interface INavigatorInstance extends IBaseNavigator {
             /**
-            * Contains the navigation history stack for the associated Viewport.
+            * @name history
+            * @memberof plat.navigation.INavigatorInstance
+            * @kind property
+            * @access public
+            *
+            * @type {Array<plat.navigation.IBaseNavigationState>}
+            *
+            * @description
+            * Contains the navigation history stack for the associated {@link plat.ui.controls.Viewport|Viewport}.
             */
             history: IBaseNavigationState[];
             /**
-            * Allows a ui.IViewControl to navigate to another ui.IViewControl. Also allows for
-            * navigation parameters to be sent to the new ui.IViewControl.
+            * @name navigate
+            * @memberof plat.navigation.INavigatorInstance
+            * @kind function
+            * @access public
+            * @variation 0
             *
-            * @param Constructor The Constructor for the new ui.IViewControl. The Navigator will find the injector
-            * for the Constructor and create a new instance of the control.
-            * @param options Optional IBaseNavigationOptions used for Navigation.
+            * @description
+            * Allows an {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent along with the navigation.
+            *
+            * @param {new (...args: any[]) => ui.IBaseViewControl} Constructor The Constructor for the new
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. This navigator will find the injector for
+            * the Constructor and create a new instance of the control.
+            * @param {plat.navigation.INavigationOptions} options? Optional
+            * {@link plat.navigation.INavigationOptions|INavigationOptions} used for navigation.
+            *
+            * @returns {void}
             */
-            navigate(Constructor?: new(...args: any[]) => ui.IViewControl, options?: INavigationOptions): void;
-            navigate(injector?: dependency.IInjector<ui.IViewControl>, options?: INavigationOptions): void;
+            navigate(Constructor: new(...args: any[]) => ui.IBaseViewControl, options?: INavigationOptions): void;
             /**
-            * Returns to the last visited ui.IViewControl.
+            * @name navigate
+            * @memberof plat.navigation.INavigatorInstance
+            * @kind function
+            * @access public
+            * @variation 1
             *
-            * @param options Optional IBackNavigationOptions allowing the ui.IViewControl
-            * to customize navigation. Enables navigating back to a specified point in history as well
-            * as specifying a new templateUrl to use at the next ui.IViewControl.
+            * @description
+            * Allows an {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent along with the navigation.
+            *
+            * @param {new (...args: any[]) => plat.ui.IBaseViewControl} injector The {@link plat.dependency.IInjector|IInjector}
+            * for the new {@link plat.ui.IBaseViewControl|IBaseViewControl}. This navigator will create a new instance of the control.
+            * @param {plat.navigation.INavigationOptions} options? Optional
+            * {@link plat.navigation.INavigationOptions|INavigationOptions} used for navigation.
+            *
+            * @returns {void}
+            */
+            navigate(injector: dependency.IInjector<ui.IBaseViewControl>, options?: INavigationOptions): void;
+            /**
+            * @name goBack
+            * @memberof plat.navigation.INavigatorInstance
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Returns to the last visited {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {plat.navigation.IBackNavigationOptions} options? Optional
+            * {@link plat.navigation.IBackNavigationOptions|IBackNavigationOptions} allowing the
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} to customize navigation. Enables
+            * navigating back to a specified point in history as well as specifying a new templateUrl
+            * to use at the next {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @returns {void}
             */
             goBack(options?: IBackNavigationOptions): void;
             /**
-            * Lets the caller know if there are ui.IViewControls in the history, meaning the caller
-            * is safe to perform a backward navigation.
+            * @name goBack
+            * @memberof plat.navigation.INavigatorInstance
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Lets the caller know if there are {@link plat.ui.IBaseViewControl|IBaseViewControl} in the history,
+            * meaning the caller is safe to perform a backward navigation.
+            *
+            * @returns {boolean} Whether or not a backwards navigation can occur.
             */
             canGoBack(): boolean;
             /**
+            * @name clearHistory
+            * @memberof plat.navigation.INavigatorInstance
+            * @kind function
+            * @access public
+            *
+            * @description
             * Clears the navigation history, disposing all the controls.
+            *
+            * @returns {void}
             */
             clearHistory(): void;
         }
         /**
-        * Options that you can submit to the Navigator in order
+        * @name INavigationOptions
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @extends {plat.navigation.IBaseNavigationOptions}
+        *
+        * @description
+        * Options that you can submit to an {@link plat.navigation.INavigatorInstance|INavigatorInstance} in order
         * to customize navigation.
         */
         interface INavigationOptions extends IBaseNavigationOptions {
             /**
-            * An optional parameter to send to the next ui.IViewControl.
+            * @name parameter
+            * @memberof plat.navigation.INavigationOptions
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
+            * An optional parameter to send to the next {@link plat.ui.IBaseViewControl|IBaseViewControl}.
             */
             parameter?: any;
         }
         /**
-        * Options that you can submit to the Navigator during a backward
+        * @name IBackNavigationOptions
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @extends {plat.navigation.IBaseBackNavigationOptions}
+        *
+        * @description
+        * Options that you can submit to an {@link plat.navigation.INavigatorInstance|INavigatorInstance} during a backward
         * navigation in order to customize the navigation.
         */
         interface IBackNavigationOptions extends IBaseBackNavigationOptions {
             /**
-            * An optional parameter to send to the next ui.IViewControl.
+            * @name parameter
+            * @memberof plat.navigation.IBackNavigationOptions
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
+            * An optional parameter to send to the next {@link plat.ui.IBaseViewControl|IBaseViewControl}.
             */
             parameter?: any;
             /**
-            * A ui.IViewControl Constructor that the Navigator will
-            * use to navigate. The Navigator will search for an instance
-            * of the ui.IViewControl in its history and navigate to it.
+            * @name ViewControl
+            * @memberof plat.navigation.IBackNavigationOptions
+            * @kind property
+            * @access public
+            *
+            * @type {new (...args: any[]) => plat.ui.IBaseViewControl}
+            *
+            * @description
+            * An {@link plat.ui.IBaseViewControl|IBaseViewControl} Constructor that the
+            * {@link plat.navigation.INavigatorInstance|INavigatorInstance} will use to navigate.
+            * The {@link plat.navigation.INavigatorInstance|INavigatorInstance} will search for an instance
+            * of the {@link plat.ui.IBaseViewControl|IBaseViewControl} in its history and navigate to it.
             */
-            ViewControl?: new(...args: any[]) => ui.IViewControl;
+            ViewControl?: new(...args: any[]) => ui.IBaseViewControl;
         }
         /**
-        * A Navigator class that utilizes routing capabilities. It is associated with a
-        * Routeport, thus only allowing one RoutingNavigator per app.
+        * @name RoutingNavigator
+        * @memberof plat.navigation
+        * @kind class
+        *
+        * @extends plat.navigation.BaseNavigator
+        * @implements {plat.navigation.IRoutingNavigator}
+        *
+        * @description
+        * A type of navigator class that utilizes routing capabilities. It is directly associated with a
+        * {@link plat.ui.controls.Routeport|Routeport}, thus only allowing one
+        * {@link plat.navigation.RoutingNavigator|RoutingNavigator} per app.
         */
         class RoutingNavigator extends BaseNavigator implements IRoutingNavigator {
+            /**
+            * @name $Router
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {Window}
+            *
+            * @description
+            * Reference to the {@link plat.web.IRouter|IRouter} injectable.
+            */
             public $Router: web.IRouter;
+            /**
+            * @name $Window
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {Window}
+            *
+            * @description
+            * Reference to the Window injectable.
+            */
             public $Window: Window;
             /**
-            * The routing information for the Routeport's current state.
+            * @name currentState
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.navigation.IRouteNavigationState}
+            *
+            * @description
+            * The routing information for the {@link plat.ui.controls.Routeport|Routeport's} current state.
             */
             public currentState: IRouteNavigationState;
+            /**
+            * @name __removeListeners
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind property
+            * @access private
+            *
+            * @type {Array<plat.IRemoveListener>}
+            *
+            * @description
+            * A collection of listeners for removing event based listeners.
+            */
             private __removeListeners;
+            /**
+            * @name __historyLength
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind property
+            * @access private
+            *
+            * @type {number}
+            *
+            * @description
+            * The history length. Used to keep track of potential app shutdown.
+            */
             private __historyLength;
+            /**
+            * @name initialize
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Initializes this navigator. The {plat.ui.controls.Routeport|Routeport} will call this method and pass
+            * itself in so the navigator can store it and use it to facilitate navigation. Also subscribes to
+            * 'routeChanged' and 'beforeRouteChange' events.
+            *
+            * @param {plat.ui.controls.IBaseport} baseport The {plat.ui.controls.Routeport|Routeport}
+            * associated with this {@link plat.navigation.IRoutingNavigator|IRoutingNavigator}.
+            *
+            * @returns {void}
+            */
             public initialize(baseport: ui.controls.IBaseport): void;
+            /**
+            * @name navigate
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Allows a {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent to the new {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {string} path The URL path to navigate to.
+            * @param {plat.web.IRouteNavigationOptions} options? Optional {@link plat.web.IRouteNavigationOptions|IRouteNavigationOptions}
+            * for ignoring the current ui.IBaseViewControl in the history as well as specifying a new templateUrl
+            * for the next {@link plat.ui.IBaseViewControl|IBaseViewControl} to use.
+            *
+            * @returns {void}
+            */
             public navigate(path: string, options?: web.IRouteNavigationOptions): void;
+            /**
+            * @name navigated
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Called by the {@link plat.ui.controls.Routeport|Routeport} to make the Navigator aware of a successful navigation.
+            *
+            * @param {plat.ui.IBaseViewControl} control The {@link plat.ui.IBaseViewControl|IBaseViewControl} to which the
+            * navigation occurred.
+            * @param {plat.web.IRoute<any>} parameter The navigation parameter sent to the control.
+            * @param {plat.web.IRouteNavigationOptions} options The options used during navigation.
+            *
+            * @returns {void}
+            */
             public navigated(control: ui.IBaseViewControl, parameter: web.IRoute<any>, options: web.IRouteNavigationOptions): void;
+            /**
+            * @name goBack
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Returns to the last visited {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {plat.navigation.IBaseBackNavigationOptions} options? Optional
+            * {@link plat.navigation.IBaseBackNavigationOptions|IBaseBackNavigationOptions} allowing the
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} to customize navigation. Enables navigating
+            * back to a specified point in history as well as specifying a new templateUrl to use at the
+            * next {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @returns {void}
+            */
             public goBack(options?: IBaseBackNavigationOptions): void;
+            /**
+            * @name dispose
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Cleans up memory.
+            *
+            * @returns {void}
+            */
             public dispose(): void;
             /**
+            * @name _beforeRouteChange
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind function
+            * @access protected
+            *
+            * @description
             * The method called prior to a route change event.
             *
-            * @param ev The INavigationEvent containing information regarding the ViewControl, the routing information,
-            * and the Router.
+            * @param {plat.events.INavigationEvent<plat.web.IRoute<any>>} ev The
+            * {@link plat.events.INavigationEvent|INavigationEvent} containing information regarding
+            * the {@link plat.ui.IBaseViewControl|IBaseViewControl}, the routing information,
+            * and the {@link plat.web.Router|Router}.
+            *
+            * @returns {void}
             */
             public _beforeRouteChange(ev: events.INavigationEvent<web.IRoute<any>>): void;
             /**
-            * The method called when a route change is successfully performed and ViewControl navigation can occur.
+            * @name _onRouteChanged
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind function
+            * @access protected
             *
-            * @param ev The INavigationEvent containing information regarding the ViewControl, the routing infomration,
-            * and the Router.
+            * @description
+            * The method called when a route change is successfully performed and
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} navigation can occur.
+            *
+            * @param {plat.events.INavigationEvent<plat.web.IRoute<any>>} ev The
+            * {@link plat.navigation.INavigationEvent|INavigationEvent} containing information regarding
+            * the {@link plat.ui.IBaseViewControl|IBaseViewControl}, the routing information,
+            * and the {@link plat.web.Router|Router}.
+            *
+            * @returns {void}
             */
             public _onRouteChanged(ev: events.INavigationEvent<web.IRoute<any>>): void;
         }
@@ -25241,43 +30261,94 @@ declare module plat {
         */
         function IRoutingNavigator(): IRoutingNavigator;
         /**
-        * Defines the methods that a Navigator must implement if it chooses to utilize
+        * @name IRoutingNavigator
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @extends {plat.navigation.IBaseNavigator}
+        *
+        * @description
+        * Defines the methods that a navigator must implement if it chooses to utilize
         * routing capabilities.
         */
         interface IRoutingNavigator extends IBaseNavigator {
             /**
-            * Allows a ui.IBaseViewControl to navigate to another ui.IBaseViewControl. Also allows for
-            * navigation parameters to be sent to the new ui.IBaseViewControl.
+            * @name navigate
+            * @memberof plat.navigation.IRoutingNavigator
+            * @kind function
+            * @access public
             *
-            * @param path The url path to navigate to.
-            * @param options Optional INavigationOptions for ignoring the current ui.IBaseViewControl in the history as
-            * well as specifying a new templateUrl for the next ui.IBaseViewControl to use.
+            * @description
+            * Allows a {@link plat.ui.IBaseViewControl|IBaseViewControl} to navigate to another
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl}. Also allows for
+            * navigation parameters to be sent to the new {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {string} path The URL path to navigate to.
+            * @param {plat.web.IRouteNavigationOptions} options? Optional {@link plat.web.IRouteNavigationOptions|IRouteNavigationOptions}
+            * for ignoring the current ui.IBaseViewControl in the history as well as specifying a new templateUrl
+            * for the next {@link plat.ui.IBaseViewControl|IBaseViewControl} to use.
+            *
+            * @returns {void}
             */
             navigate(path: string, options?: web.IRouteNavigationOptions): void;
             /**
-            * Called by the Viewport to make the Navigator aware of a successful navigation. The Navigator will
-            * in-turn call the app.navigated event.
+            * @name navigated
+            * @memberof plat.navigation.IRoutingNavigator
+            * @kind function
+            * @access public
             *
-            * @param control The ui.IBaseViewControl to which the navigation occurred.
-            * @param parameter The navigation parameter sent to the control.
-            * @param options The INavigationOptions used during navigation.
+            * @description
+            * Called by the {@link plat.ui.controls.Routeport|Routeport} to make the Navigator aware of a successful navigation.
+            *
+            * @param {plat.ui.IBaseViewControl} control The {@link plat.ui.IBaseViewControl|IBaseViewControl} to which the
+            * navigation occurred.
+            * @param {plat.web.IRoute<any>} parameter The navigation parameter sent to the control.
+            * @param {plat.web.IRouteNavigationOptions} options The options used during navigation.
+            *
+            * @returns {void}
             */
             navigated(control: ui.IBaseViewControl, parameter: web.IRoute<any>, options: web.IRouteNavigationOptions): void;
             /**
-            * Returns to the last visited ui.IBaseViewControl.
+            * @name goBack
+            * @memberof plat.navigation.IRoutingNavigator
+            * @kind function
+            * @access public
             *
-            * @param options Optional IBackNavigationOptions allowing the ui.IBaseViewControl
-            * to customize navigation. Enables navigating back to a specified point in history as well
-            * as specifying a new templateUrl to use at the next ui.IBaseViewControl.
+            * @description
+            * Returns to the last visited {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @param {plat.navigation.IBaseBackNavigationOptions} options? Optional
+            * {@link plat.navigation.IBaseBackNavigationOptions|IBaseBackNavigationOptions} allowing the
+            * {@link plat.ui.IBaseViewControl|IBaseViewControl} to customize navigation. Enables navigating
+            * back to a specified point in history as well as specifying a new templateUrl to use at the
+            * next {@link plat.ui.IBaseViewControl|IBaseViewControl}.
+            *
+            * @returns {void}
             */
             goBack(options?: IBaseBackNavigationOptions): void;
         }
         /**
+        * @name IRouteNavigationState
+        * @memberof plat.navigation
+        * @kind interface
+        *
+        * @extends {plat.navigation.IBaseNavigationState}
+        *
+        * @description
         * Defines the route type interface implemented for current state and last state.
         */
         interface IRouteNavigationState extends IBaseNavigationState {
             /**
-            * The associated route information.
+            * @name route
+            * @memberof plat.navigation.RoutingNavigator
+            * @kind property
+            * @access public
+            *
+            * @type {plat.web.IRoute<any>}
+            *
+            * @description
+            * The associated route information in the form of an
+            * {@link plat.web.IRoute|IRoute}.
             */
             route: web.IRoute<any>;
         }

@@ -182,16 +182,16 @@ module platui {
          * @access public
          * 
          * @description
-         * Determine the button type and apply the proper classes.
+         * Determine the button style and apply the proper classes.
          * 
          * @returns {void}
          */
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
                 options = optionObj.value || <IButtonOptions>{},
-                type = options.type || 'primary';
+                style = options.style || 'primary';
 
-            this.dom.addClass(this.element, type);
+            this.dom.addClass(this.element, style);
         }
         
         /**
@@ -256,7 +256,7 @@ module platui {
      */
     export interface IButtonOptions {
         /**
-         * @name type
+         * @name style
          * @memberof platui.IButtonOptions
          * @kind property
          * @access public
@@ -264,8 +264,8 @@ module platui {
          * @type {string}
          * 
          * @description
-         * The type of {@link platui.Button|Button} (e.g. - "primary", "secondary", etc).
+         * The style of {@link platui.Button|Button} (e.g. - "primary", "secondary", etc).
          */
-        type?: string;
+        style?: string;
     }
 }
