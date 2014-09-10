@@ -5,13 +5,13 @@
      * @kind class
      * 
      * @extends {plat.ui.BindablePropertyControl}
-     * @implements {platui.IUIControl}
+     * @implements {platui.IUIControl, platui.IFormControl}
      * 
      * @description
      * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes and styles 
      * an HTML input element of various types.
      */
-    export class Input extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Input extends plat.ui.BindablePropertyControl implements IUIControl, IFormControl {
         /**
          * @name $utils
          * @memberof platui.Input
@@ -157,6 +157,30 @@
          * A function to handle the type event.
          */
         private __typeHandler: EventListener;
+        /**
+         * @name __actionHandler
+         * @memberof platui.Input
+         * @kind property
+         * @access private
+         * 
+         * @type {() => void}
+         * 
+         * @description
+         * A function to check the current action state and handle accordingly.
+         */
+        private __actionHandler: () => void;
+        /**
+         * @name __inTouch
+         * @memberof platui.Input
+         * @kind property
+         * @access private
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the user is currently touching the screen.
+         */
+        private __inTouch = false;
         
         /**
          * @name setClasses
@@ -363,35 +387,50 @@
          * @returns {void}
          */
         _initializeType(): void {
-            var type = this.__type;
+            var type = this.__type,
+                event = __$tap,
+                actionElement = this._actionElement;
+
             switch (type) {
                 case 'email':
-                    this.__typeHandler = this.__handleEmail;
                     this.__pattern = this.__pattern || new RegExp('^(([^<>()[\\]\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\.,;:\\s@\\"]+)*)|' +
                         '(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|' +
                         '(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
+                    this.__actionHandler = this.__checkEmail.bind(this);
+                    this.__typeHandler = this.__handleEmail;
+                    break;
+                case 'password':
+                    var hidePassword = this.__handlePasswordHide;
+                    this.__pattern = this.__pattern || /[\S\s]*/;
+                    this.__actionHandler = this.__checkPassword.bind(this);
+                    this.__typeHandler = this.__handlePasswordShow;
+                    this.addEventListener(actionElement, __$touchend, hidePassword);
+                    this.addEventListener(actionElement, __$trackend, hidePassword);
+                    event = __$touchstart;
                     break;
                 case 'tel':
                     this.__pattern = this.__pattern || /^\+|[0-9.-\s]+/;
+                    this.__actionHandler = this.__checkText.bind(this);
                     this.__typeHandler = this.__erase;
                     break;
                 case 'number':
                     this.__pattern = this.__pattern || /[0-9.,]+/;
+                    this.__actionHandler = this.__checkText.bind(this);
                     this.__typeHandler = this.__erase;
                     type = 'tel';
                     break;
                 default:
                     this.__pattern = this.__pattern || /[\S\s]*/;
+                    this.__actionHandler = this.__checkText.bind(this);
                     this.__typeHandler = this.__erase;
                     break;
             }
 
             this._inputElement.type = type;
 
-            var actionElement = this._actionElement;
             actionElement.textContent = this.__typeChar = '';
             this.dom.addClass(actionElement, 'hide');
-            this.addEventListener(actionElement, __$tap, this.__typeHandler);
+            this.addEventListener(actionElement, event, this.__typeHandler);
             this._addTextEventListener();
         }
 
@@ -475,6 +514,46 @@
             this.clear();
             this.focus();
         }
+
+        /**
+         * @name __handlePasswordShow
+         * @memberof platui.Input
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * The action handler for the "password" type when showing the 
+         * password text.
+         * 
+         * @returns {void}
+         */
+        private __handlePasswordShow(): void {
+            this.__inTouch = true;
+            this._inputElement.type = 'text';
+        }
+
+        /**
+         * @name __handlePasswordHide
+         * @memberof platui.Input
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * The action handler for the "password" type when hiding the 
+         * password text.
+         * 
+         * @returns {void}
+         */
+        private __handlePasswordHide(): void {
+            if (!this.__inTouch) {
+                return;
+            }
+            this.__inTouch = false;
+
+            var inputElement = this._inputElement;
+            inputElement.type = this.__type;
+            inputElement.focus();
+        }
         
         /**
          * @name __handleEmail
@@ -483,7 +562,7 @@
          * @access private
          * 
          * @description
-         * The action handler for the "email" action.
+         * The action handler for the "email" type.
          * 
          * @returns {void}
          */
@@ -495,6 +574,41 @@
             this.propertyChanged(char === 'x' ? '' : value + char, value);
             this.__checkEmail();
             inputElement.focus();
+        }
+
+        /**
+         * @name __checkPassword
+         * @memberof platui.Input
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Checks the current state of the password action and handles accordingly.
+         * 
+         * @returns {void}
+         */
+        private __checkPassword(): void {
+            var char = this.__typeChar;
+
+            if (char === '?') {
+                if (this._inputElement.value === '') {
+                    this.__typeChar = '';
+                }
+            } else if (this._inputElement.value !== '') {
+                this.__typeChar = '?';
+            }
+
+            var newChar = this.__typeChar;
+            if (char !== newChar) {
+                var actionElement = this._actionElement;
+                actionElement.textContent = newChar;
+                if (newChar === '') {
+                    this.dom.addClass(actionElement, 'hide');
+                    return;
+                }
+
+                this.dom.removeClass(actionElement, 'hide');
+            }
         }
         
         /**
@@ -570,14 +684,13 @@
          * @returns {void}
          */
         private __checkText(): void {
-            var value = this._inputElement.value,
-                char = this.__typeChar;
+            var char = this.__typeChar;
 
             if (char === 'x') {
-                if (value === '') {
+                if (this._inputElement.value === '') {
                     this.__typeChar = '';
                 }
-            } else if (value !== '') {
+            } else if (this._inputElement.value !== '') {
                 this.__typeChar = 'x';
             }
 
@@ -607,9 +720,6 @@
          */
         private __onInput(): void {
             switch (this.__type) {
-                case 'email':
-                    this.__checkEmail();
-                    break;
                 case 'tel':
                 case 'number':
                     var input = this._inputElement,
@@ -620,13 +730,10 @@
                         !(last === 0 || this.__type !== 'tel' || value[last] !== '+'))) {
                         this.propertyChanged(value.slice(0, -1), value);
                     }
-
-                    this.__checkText();
-                    break;
-                default:
-                    this.__checkText();
                     break;
             }
+
+            this.__actionHandler();
         }
     }
 

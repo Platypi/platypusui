@@ -82,4 +82,22 @@
             }
         }
     }
+
+    &.password {
+        .plat-input-container {
+            .action {
+                width: 1.2em;
+                height: 1.2em;
+                text-align: center;
+                vertical-align: bottom;
+                border: 1px solid @inputActionColor;
+                .border-radius(1.2em);
+
+                &:active {
+                    background-color: @inputActionColor;
+                    color: @white;
+                }
+            }
+        }
+    }
 }

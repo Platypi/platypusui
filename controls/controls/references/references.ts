@@ -84,4 +84,27 @@ module platui {
          */
         setClasses(classNames?: any, element?: Element): void;
     }
+    
+    /**
+     * @name IFormControl
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * An interface a control should implement if validation is necessary.
+     */
+    export interface IFormControl {
+        /**
+         * @name validate
+         * @memberof platui.IFormControl
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * A function to validate user input.
+         * 
+         * @returns {boolean} Whether or not the user input is valid.
+         */
+        validate(): boolean;
+    }
 }
