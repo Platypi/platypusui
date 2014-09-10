@@ -264,7 +264,11 @@ module platui {
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Button|Button} (e.g. - "primary", "secondary", etc).
+         * The style of {@link platui.Button|Button}.
+         * 
+         * @remarks
+         * - "primary"
+         * - "secondary"
          */
         style?: string;
     }

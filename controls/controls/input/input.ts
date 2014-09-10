@@ -757,7 +757,11 @@
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Input|Input} (e.g. - "primary", "secondary", etc).
+         * The style of {@link platui.Input|Input}.
+         * 
+         * @remarks
+         * - "primary"
+         * - "secondary"
          */
         style?: string;
         
@@ -770,8 +774,15 @@
          * @type {string}
          * 
          * @description
-         * The type of the {@link platui.Input|Input} control (e.g. - "text", "password", "email", etc). 
+         * The type of the {@link platui.Input|Input} control. 
          * Defaults to "text".
+         * 
+         * @remarks
+         * - "text"
+         * - "password"
+         * - "email"
+         * - "number"
+         * - "tel"
          */
         type?: string;
 

@@ -233,7 +233,11 @@
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Checkbox|Checkbox} (e.g. - "primary", "secondary", etc).
+         * The style of {@link platui.Checkbox|Checkbox}.
+         * 
+         * @remarks
+         * - "primary"
+         * - "secondary"
          */
         style?: string;
     }
