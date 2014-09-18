@@ -135,12 +135,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Modal);
-            dom.addClass(element, 'hide');
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Modal + ' hide ' + (className || ''));
         }
         
         /**
@@ -198,10 +193,11 @@
                 dom = this.dom,
                 modalElement = this._modalElement,
                 options = $utils.isObject(optionObj) ? optionObj.value : <IModalOptions>{},
-                transition = options.transition;
+                transition = options.transition,
+                style = options.style || 'full';
 
-            if (!this.$utils.isString(transition) || transition === 'none') {
-                dom.addClass(modalElement, 'plat-no-transition');
+            if (!$utils.isString(transition) || transition === 'none') {
+                dom.addClass(modalElement, style + ' plat-no-transition');
                 return;
             } else if ($utils.isNull(this.__transitionHash[transition])) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
@@ -210,8 +206,7 @@
             }
 
             this.__transitionEnd = this.$compat.animationEvents.$transitionEnd;
-            dom.addClass(modalElement, 'plat-modal-transition');
-            dom.addClass(modalElement, transition);
+            dom.addClass(modalElement, transition + ' plat-modal-transition ' + style);
         }
         
         /**
@@ -227,10 +222,11 @@
          */
         show(): void {
             var dom = this.dom;
+
             dom.removeClass(this.element, 'hide');
-            this.$utils.postpone(() => {
+            this.$utils.defer(() => {
                 dom.addClass(this._modalElement, 'activate');
-            });
+            }, 25);
 
             this.__isVisible = true;
         }
@@ -248,6 +244,7 @@
          */
         hide(): void {
             var dom = this.dom;
+
             dom.removeClass(this._modalElement, 'activate');
             if (this.$utils.isString(this.__transitionEnd)) {
                 this._addHideOnTransitionEnd();
@@ -327,6 +324,28 @@
      */
     export interface IModalOptions {
         /**
+         * @name style
+         * @memberof platui.IModalOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The style of {@link platui.Modal|Modal}. 
+         * Defaults to "full".
+         * 
+         * @remarks
+         * - "full" - The {@link platui.Modal|Modal} fills the whole screen.
+         * - "half" - The {@link platui.Modal|Modal} fills half the screen and its position is 
+         * specified by the defined LESS variables. The top and left positioning refer to the midpoint 
+         * of the {@link platui.Modal|Modal}.
+         * - "custom" - The {@link platui.Modal|Modal} is specified by the defined LESS variables. The 
+         * top and left positioning refer to the midpoint of the {@link platui.Modal|Modal}.
+         */
+        style?: string;
+
+        /**
          * @name transition
          * @memberof platui.IModalOptions
          * @kind property
@@ -335,7 +354,16 @@
          * @type {string}
          * 
          * @description
-         * The transition type/direction the {@link platui.Modal|Modal} will enter with.
+         * The transition type/direction the {@link platui.Modal|Modal} will enter with. 
+         * Defaults to "none".
+         * 
+         * @remarks
+         * - "none"
+         * - "left"
+         * - "right"
+         * - "up"
+         * - "down"
+         * - "fade"
          */
         transition?: string;
         

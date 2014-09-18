@@ -285,11 +285,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Range);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Range + ' ' + (className || ''));
         }
         
         /**
@@ -347,12 +343,11 @@
                 optionMin = options.min,
                 optionMax = options.max,
                 step = options.step,
-                type = options.type || 'primary',
+                style = options.style || 'primary',
                 transition = this.__transition = options.transition || 'right',
                 length = this.__getLength(transition);
 
-            dom.addClass(element, type);
-            dom.addClass(element, transition);
+            dom.addClass(element, style + ' ' + transition);
 
             var bindValue = this.value,
                 value = isNumber(bindValue) ? bindValue : isNumber(optionValue) ? optionValue : min,
@@ -751,7 +746,7 @@
      */
     export interface IRangeOptions {
         /**
-         * @name type
+         * @name style
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
@@ -759,9 +754,14 @@
          * @type {string}
          * 
          * @description
-         * The type of {@link platui.Range|Range} (e.g. - "primary", "secondary", etc).
+         * The style of {@link platui.Range|Range}. 
+         * Defaults to "primary".
+         * 
+         * @remarks
+         * - "primary"
+         * - "secondary"
          */
-        type?: string;
+        style?: string;
         
         /**
          * @name transition
@@ -772,7 +772,14 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of the {@link platui.Range|Range}.
+         * The transition direction of the {@link platui.Range|Range}. 
+         * Defaults to "right".
+         * 
+         * @remarks
+         * - "right"
+         * - "left"
+         * - "up"
+         * - "down"
          */
         transition?: string;
         

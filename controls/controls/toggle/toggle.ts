@@ -96,11 +96,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Toggle);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Toggle + ' ' + (className || ''));
         }
         
         /**
@@ -218,7 +214,7 @@
          * @access protected
          * 
          * @description
-         * A function to activate the given element by setting the toggling the 
+         * A function to activate the given element by toggling the 
          * class specified as the target type.
          * 
          * @param {Element} element The element to activate.

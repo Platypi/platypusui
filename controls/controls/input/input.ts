@@ -199,11 +199,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Input);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Input + ' ' + (className || ''));
         }
         
         /**
@@ -757,7 +753,8 @@
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Input|Input}.
+         * The style of {@link platui.Input|Input}. 
+         * Defaults to "primary".
          * 
          * @remarks
          * - "primary"

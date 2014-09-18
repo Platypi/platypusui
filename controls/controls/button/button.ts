@@ -102,11 +102,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Button);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Button + ' ' + (className || ''));
         }
         
         /**
@@ -264,7 +260,8 @@ module platui {
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Button|Button}.
+         * The style of {@link platui.Button|Button}. 
+         * Defaults to "primary".
          * 
          * @remarks
          * - "primary"

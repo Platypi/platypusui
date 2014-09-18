@@ -51,6 +51,19 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
+
+        /**
+         * @name _targetTypeSet
+         * @memberof platui.Checkbox
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the target type has been set already or not.
+         */
+        _targetTypeSet = false;
         
         /**
          * @name setClasses
@@ -69,41 +82,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Checkbox);
-            dom.addClass(element, className);
-        }
-        
-        /**
-         * @name initialize
-         * @memberof platui.Checkbox
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Initializes the mark and adds a listener for the tap event.
-         * 
-         * @returns {void}
-         */
-        initialize(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
-                options = optionObj.value || <ICheckboxOptions>{},
-                mark = this._targetType = options.mark || 'check',
-                style = options.style || 'primary';
-
-            switch (mark.toLowerCase()) {
-                case 'check':
-                case 'x':
-                    break;
-                default:
-                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid mark option specified for' + __Checkbox + '. Defaulting to checkmark.');
-                    break;
-            }
-
-            this.setClasses(style);
+            this.dom.addClass(element || this.element, __Checkbox + ' ' + (className || ''));
         }
         
         /**
@@ -156,20 +135,66 @@
          * @access public
          * 
          * @description
-         * Checks for checked attributes and handles them accordingly.
+         * Checks for checked attributes and handles them accordingly. Also, 
+         * initializes the mark and adds a listener for the tap event.
          * 
          * @returns {void}
          */
         loaded(): void {
+            var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
+                options = optionObj.value || <ICheckboxOptions>{},
+                previousType = this._targetType,
+                dom = this.dom,
+                mark = this._targetType = options.mark || 'check',
+                style = options.style || 'primary';
+
+            this._convertChecked();
+
+            switch (mark.toLowerCase()) {
+                case 'check':
+                case 'x':
+                    break;
+                default:
+                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                    Exception.warn('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.');
+                    mark = this._targetType = 'check';
+                    break;
+            }
+
+            if (this._targetTypeSet) {
+                var target = this._targetElement;
+                dom.removeClass(target, previousType);
+                this._activate(target);
+            }
+
+            this._targetTypeSet = true;
+            dom.addClass(this.element, style);
+        }
+
+        /**
+         * @name _convertChecked
+         * @memberof platui.Checkbox
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * A function for checking "checked" attributes and handling them accordingly.
+         * 
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         * 
+         * @returns {void}
+         */
+        _convertChecked(): void {
             var element = this.element;
-            if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
-                this._convertAttribute(true);
-            } else if (element.hasAttribute(__Checked)) {
+            if (element.hasAttribute(__Checked)) {
                 this._convertAttribute(element.getAttribute(__Checked));
                 this.attributes.observe(__CamelChecked, this._convertAttribute);
             } else if (element.hasAttribute('data-' + __Checked)) {
                 this._convertAttribute(element.getAttribute('data-' + __Checked));
                 this.attributes.observe(__CamelChecked, this._convertAttribute);
+            } else if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
+                this._convertAttribute(true);
             }
         }
         
@@ -197,6 +222,29 @@
             }
 
             this.setProperty(newValue === 'true', oldValue === 'true', true);
+        }
+
+        /**
+         * @name _activate
+         * @memberof platui.Checkbox
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * A function to activate the given element by toggling the 
+         * class specified as the target type.
+         * 
+         * @param {Element} element The element to activate.
+         * 
+         * @returns {void}
+         */
+        _activate(element: Element): void {
+            if (this._targetTypeSet) {
+                this.dom.toggleClass(element, this._targetType);
+                return;
+            }
+
+            this._targetTypeSet = true;
         }
     }
 
@@ -233,7 +281,8 @@
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Checkbox|Checkbox}.
+         * The style of {@link platui.Checkbox|Checkbox}. 
+         * Defaults to "primary".
          * 
          * @remarks
          * - "primary"

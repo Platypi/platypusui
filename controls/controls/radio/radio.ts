@@ -51,6 +51,19 @@
          * The check type to be placed in the element.
          */
         _targetType = 'radio';
+
+        /**
+         * @name _targetTypeSet
+         * @memberof platui.Radio
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the target type has been set already or not.
+         */
+        _targetTypeSet = true;
         
         /**
          * @name setClasses
@@ -69,26 +82,21 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Radio);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Radio + ' ' + (className || ''));
         }
         
         /**
-         * @name initialize
+         * @name loaded
          * @memberof platui.Radio
          * @kind function
          * @access public
          * 
          * @description
-         * Adds a listener for the tap event and checks for a 
-         * radio group.
+         * Checks for a radio group and converts "checked" attributes.
          * 
          * @returns {void}
          */
-        initialize(): void {
+        loaded(): void {
             var element = this.element;
 
             if (element.hasAttribute('name')) {
@@ -99,7 +107,7 @@
                 this.groupName = element.getAttribute('data-' + __Bind);
             }
 
-            this.setClasses();
+            this._convertChecked();
         }
         
         /**

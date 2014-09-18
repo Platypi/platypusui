@@ -29,11 +29,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Select);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Select + ' ' + (className || ''));
         }
         
         /**

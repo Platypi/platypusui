@@ -44,21 +44,17 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __ProgressRing);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __ProgressRing + ' ' + (className || ''));
         }
         
         /**
-         * @name setClasses
+         * @name initialize
          * @memberof platui.ProgressRing
          * @kind function
          * @access public
          * 
          * @description
-         * Set the class name.
+         * Set the animation.
          * 
          * @returns {void}
          */

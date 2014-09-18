@@ -79,11 +79,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            var dom = this.dom,
-                element = element || this.element;
-
-            dom.addClass(element, __Drawer);
-            dom.addClass(element, className);
+            this.dom.addClass(element || this.element, __Drawer + ' ' + (className || ''));
         }
         
         /**
@@ -615,10 +611,7 @@
          * @returns {void}
          */
         dispose(): void {
-            var dom = this.dom,
-                rootElement = this.__rootElement;
-            dom.removeClass(rootElement, 'plat-drawer-transition-prep');
-            dom.removeClass(rootElement, 'plat-drawer-transition-' + this._transition);
+            this.dom.removeClass(this.__rootElement, 'plat-drawer-transition-prep plat-drawer-transition-' + this._transition);
         }
         
         /**
@@ -1195,9 +1188,7 @@
                     return false;
             }
 
-            var dom = this.dom;
-            dom.addClass(rootElement, 'plat-drawer-transition-prep');
-            dom.addClass(rootElement, 'plat-drawer-transition-' + transition);
+            this.dom.addClass(rootElement, 'plat-drawer-transition-prep plat-drawer-transition-' + transition);
 
             return true;
         }
@@ -1291,7 +1282,14 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of {@link platui.Drawer|Drawer} opening.
+         * The transition direction of {@link platui.Drawer|Drawer} opening. 
+         * Defaults to "right".
+         * 
+         * @remarks
+         * - "right"
+         * - "left"
+         * - "up"
+         * - "down"
          */
         transition?: string;
         

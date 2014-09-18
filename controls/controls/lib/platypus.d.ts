@@ -4525,7 +4525,7 @@ declare module plat {
         *
         * @description
         * Describes an object used to find tokens for an expression and create
-        * {@link plat.expressions.ITokens|ITokens}.
+        * {@link plat.expressions.IToken|ITokens}.
         */
         interface ITokenizer {
             /**
@@ -5377,12 +5377,12 @@ declare module plat {
             * @access public
             *
             * @description
-            * Creates a new {@link plat.web.IUrlUtils|IUrlUtils} object.
+            * Creates a new {@link plat.web.IUrlUtilsInstance|IUrlUtilsInstance} object.
             *
             * @param url? The URL to associate with the new {@link plat.web.UrlUtils|UrlUtils}
             * instance.
             *
-            * @returns {@link plat.web.IUrlUtils|IUrlUtils} The new {@link plat.web.IUrlUtils|IUrlUtils} object.
+            * @returns {@link plat.web.IUrlUtilsInstance|IUrlUtilsInstance} The new {@link plat.web.IUrlUtilsInstance|IUrlUtilsInstance} object.
             */
             public urlUtils(url?: string): IUrlUtilsInstance;
             /**
@@ -5508,12 +5508,12 @@ declare module plat {
             * @access public
             *
             * @description
-            * Creates a new {@link plat.web.IUrlUtils|IUrlUtils} object.
+            * Creates a new {@link plat.web.IUrlUtilsInstance|IUrlUtilsInstance} object.
             *
             * @param url? The URL to associate with the new {@link plat.web.UrlUtils|UrlUtils}
             * instance.
             *
-            * @returns {@link plat.web.IUrlUtils|IUrlUtils} The new {@link plat.web.IUrlUtils|IUrlUtils} object.
+            * @returns {@link plat.web.IUrlUtilsInstance|IUrlUtilsInstance} The new {@link plat.web.IUrlUtilsInstance|IUrlUtilsInstance} object.
             */
             urlUtils(url?: string): IUrlUtilsInstance;
             /**
@@ -8719,13 +8719,13 @@ declare module plat {
             *
             * @description
             * A wrapper method for the Http class that creates and executes a new Http with
-            * the specified {@link plat.async.IAjaxOptions|IAjaxOptions}. This function will check if
+            * the specified {@link plat.async.IHttpConfig|IHttpConfig}. This function will check if
             * XMLHttpRequest level 2 is present, and will default to JSONP if it isn't and
             * the request is cross-domain.
             *
             * @typeparam {any} R The type of the {@link plat.async.IAjaxPromise|IAjaxPromise}
             *
-            * @param {plat.async.IHttpConfig} options The {@link plat.async.IAjaxOptions|IAjaxOptions} for either the XMLHttpRequest
+            * @param {plat.async.IHttpConfig} options The {@link plat.async.IHttpConfig|IHttpConfig} for either the XMLHttpRequest
             * or the JSONP callback.
             *
             * @returns {plat.async.IAjaxPromise} A promise, when fulfilled
@@ -8816,13 +8816,13 @@ declare module plat {
             *
             * @description
             * A wrapper method for the Http class that creates and executes a new Http with
-            * the specified {@link plat.async.IAjaxOptions|IAjaxOptions}. This function will check if
+            * the specified {@link plat.async.IHttpConfig|IHttpConfig}. This function will check if
             * XMLHttpRequest level 2 is present, and will default to JSONP if it isn't and
             * the request is cross-domain.
             *
             * @typeparam {any} R The type of the {@link plat.async.IAjaxPromise|IAjaxPromise}
             *
-            * @param {plat.async.IHttpConfig} options The {@link plat.async.IAjaxOptions|IAjaxOptions} for either the XMLHttpRequest
+            * @param {plat.async.IHttpConfig} options The {@link plat.async.IHttpConfig|IHttpConfig} for either the XMLHttpRequest
             * or the JSONP callback.
             *
             * @returns {plat.async.AjaxPromise} A promise, when fulfilled
@@ -11417,7 +11417,7 @@ declare module plat {
             * @type {Document}
             *
             * @description
-            * Reference to the {@link plat.Document|Document} injectable.
+            * Reference to the Document injectable.
             */
             static $Document: Document;
             /**
@@ -11430,7 +11430,7 @@ declare module plat {
             * @type {Window}
             *
             * @description
-            * Reference to the {@link plat.Window|Window} injectable.
+            * Reference to the Window injectable.
             */
             static $Window: Window;
             /**
@@ -11818,7 +11818,7 @@ declare module plat {
             * @type {Document}
             *
             * @description
-            * Reference to the {@link plat.Document|Document} injectable.
+            * Reference to the Document injectable.
             */
             $Document: Document;
             /**
@@ -11831,7 +11831,7 @@ declare module plat {
             * @type {Window}
             *
             * @description
-            * Reference to the {@link plat.Window|Window} injectable.
+            * Reference to the Window injectable.
             */
             $Window: Window;
             /**
@@ -12307,29 +12307,154 @@ declare module plat {
             sendEvent(event: IDispatchEventInstance, args?: any[]): void;
         }
         /**
+        * @name NavigationEvent
+        * @memberof plat.events
+        * @kind class
+        *
+        * @extends {plat.events.DispatchEvent}
+        * @implements {plat.events.INavigationEvent}
+        *
+        * @description
         * A class used by the Navigator to dispatch Navigation events. Allows anyone to listen
         * for navigation events and respond to them, even canceling them if necessary.
         *
-        * @generic P Corresponds to the type of event parameter.
+        * @typeparam {any} P Corresponds to the type of event parameter.
         */
         class NavigationEvent<P> extends DispatchEvent implements INavigationEvent<P> {
+            /**
+            * @name $EventManagerStatic
+            * @memberof plat.events.NavigationEvent
+            * @kind property
+            * @access public
+            * @static
+            *
+            * @type {plat.events.IEventManagerStatic}
+            *
+            * @description
+            * Reference to the {@link plat.events.IEventManagerStatic|IEventManagerStatic} injectable.
+            */
             static $EventManagerStatic: IEventManagerStatic;
             /**
-            * Dispatches an event with the specified target type.
+            * @name dispatch
+            * @memberof plat.events.NavigationEvent
+            * @kind function
+            * @access public
+            * @static
             *
-            * @param name The name of the event (e.g. 'beforeNavigate')
-            * @param sender The object sending the event.
-            * @param eventOptions An object implementing INavigationEvent, specifying what all event listeners
+            * @description
+            * Creates a new NavigationEvent and fires it.
+            *
+            * @typeparam {any} P The type of event parameter sent in this event.
+            *
+            * @param {string} name The name of the event (e.g. 'beforeNavigate')
+            * @param {any} sender The object sending the event.
+            * @param {plat.events.INavigationEventOptions<P>} eventOptions An object implementing INavigationEvent, specifying what all event listeners
             * will be passed.
+            *
+            * @returns {plat.events.INavigationEvent} The event after it has been propagated.
             */
             static dispatch<P>(name: string, sender: any, eventOptions: INavigationEventOptions<P>): INavigationEvent<P>;
+            /**
+            * @name parameter
+            * @memberof plat.events.NavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {P}
+            *
+            * @description
+            * The navigation parameter being dispatched.
+            */
             public parameter: P;
+            /**
+            * @name parameter
+            * @memberof plat.events.NavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {plat.navigation.IBaseNavigationOptions}
+            *
+            * @description
+            * The navigation options for the event.
+            */
             public options: navigation.IBaseNavigationOptions;
+            /**
+            * @name target
+            * @memberof plat.events.NavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
+            * The navigation event target. Its type depends on the type of Navigation event.
+            */
             public target: any;
+            /**
+            * @name type
+            * @memberof plat.events.NavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * Specifies the type of {@link plat.ui.IBaseViewControl|IBaseViewControl} for the event.
+            */
             public type: string;
+            /**
+            * @name cancelable
+            * @memberof plat.events.NavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * States whether or not this event is able to be cancelled. Some navigation events can be
+            * cancelled, preventing further navigation.
+            */
             public cancelable: boolean;
+            /**
+            * @name cancelled
+            * @memberof plat.events.NavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
+            * States whether or not this event has been cancelled.
+            */
             public cancelled: boolean;
+            /**
+            * @name initialize
+            * @memberof plat.events.NavigationEvent
+            * @kind function
+            * @access public
+            *
+            * @description
+            * Initializes the event members.
+            *
+            * @param {string} name The name of the event.
+            * @param {any} sender The object that initiated the event.
+            * @param {string} direction='direct' This will always be a direct event no matter what is sent in.
+            *
+            * @returns {void}
+            */
+            public initialize(name: string, sender: any, direction?: 'direct', eventOptions?: INavigationEventOptions<P>): void;
             public initialize(name: string, sender: any, direction?: string, eventOptions?: INavigationEventOptions<P>): void;
+            /**
+            * @name cancel
+            * @memberof plat.events.NavigationEvent
+            * @kind function
+            * @access public
+            *
+            * @description
+            * If the event is {@link plat.events.NavigationEvent.cancelable|cancelable}, calling this method will cancel the event.
+            *
+            * @returns {void}
+            */
             public cancel(): void;
         }
         /**
@@ -12337,101 +12462,220 @@ declare module plat {
         */
         function INavigationEventStatic($EventManagerStatic?: IEventManagerStatic): INavigationEventStatic;
         /**
+        * @name INavigationEventStatic
+        * @memberof plat.events
+        * @kind interface
+        *
+        * @description
         * The intended external interface for the '$NavigationEventStatic' injectable.
         */
         interface INavigationEventStatic {
             /**
-            * Dispatches an event with the specified target type.
+            * @name dispatch
+            * @memberof plat.events.INavigationEventStatic
+            * @kind function
+            * @access public
             *
-            * @generic P Corresponds to the type of the event parameter.
+            * @description
+            * Creates a new {@link plat.events.INavigationEvent|INavigationEvent} and fires it.
             *
-            * @param name The name of the event (e.g. 'beforeNavigate')
-            * @param sender The object sending the event.
-            * @param eventOptions An object implementing INavigationEvent, specifying what all event listeners
+            * @typeparam {any} P The type of event parameter sent in this event.
+            *
+            * @param {string} name The name of the event (e.g. 'beforeNavigate')
+            * @param {any} sender The object sending the event.
+            * @param {plat.events.INavigationEventOptions<P>} eventOptions An object implementing INavigationEvent, specifying what all event listeners
             * will be passed.
+            *
+            * @returns {plat.events.INavigationEvent} The event after it has been propagated.
             */
             dispatch<P>(name: string, sender: any, eventOptions: INavigationEventOptions<P>): INavigationEvent<P>;
         }
         /**
-        * Describes an object used by the Navigator to dispatch Navigation events.
+        * @name INavigationEvent
+        * @memberof plat.events
+        * @kind interface
+        *
+        * @extends {plat.events.IDispatchEventInstance}
+        *
+        * @description
+        * A class used by the Navigator to dispatch Navigation events. Allows anyone to listen
+        * for navigation events and respond to them, even canceling them if necessary.
+        *
+        * @typeparam {any} P Corresponds to the type of event parameter.
         */
         interface INavigationEvent<P> extends IDispatchEventInstance {
             /**
-            * Navigation parameter, used to send objects from one view control to another.
+            * @name parameter
+            * @memberof plat.events.INavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {P}
+            *
+            * @description
+            * The navigation parameter being dispatched.
             */
             parameter: P;
             /**
-            * The INavigationOptions in use for the navigation.
+            * @name parameter
+            * @memberof plat.events.INavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {plat.navigation.IBaseNavigationOptions}
+            *
+            * @description
+            * The navigation options for the event.
             */
             options: navigation.IBaseNavigationOptions;
             /**
+            * @name target
+            * @memberof plat.events.INavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
             * The navigation event target. Its type depends on the type of Navigation event.
             */
             target: any;
             /**
-            * Specifies the type of IViewControl for the Route Event.
+            * @name type
+            * @memberof plat.events.INavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * Specifies the type of {@link plat.ui.IBaseViewControl|IBaseViewControl} for the event.
             */
             type: string;
             /**
-            * The sender of the event.
-            */
-            sender: any;
-            /**
+            * @name cancelable
+            * @memberof plat.events.INavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
             * States whether or not this event is able to be cancelled. Some navigation events can be
             * cancelled, preventing further navigation.
             */
-            cancelable?: boolean;
+            cancelable: boolean;
             /**
+            * @name cancelled
+            * @memberof plat.events.INavigationEvent
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
             * States whether or not this event has been cancelled.
             */
-            cancelled?: boolean;
+            cancelled: boolean;
             /**
-            * If the event is cancelable (ev.cancelable), calling this method will cancel the event.
-            */
-            cancel(): void;
-            /**
+            * @name initialize
+            * @memberof plat.events.INavigationEvent
+            * @kind function
+            * @access public
+            *
+            * @description
             * Initializes the event members.
             *
-            * @param name The name of the event.
-            * @param sender The object that initiated the event.
-            * @param direction='direct' Equivalent to EventManager.direction.DIRECT.
+            * @param {string} name The name of the event.
+            * @param {any} sender The object that initiated the event.
+            * @param {string} direction='direct' This will always be a direct event no matter what is sent in.
             *
-            * @see EventManager.direction
+            * @returns {void}
             */
             initialize(name: string, sender: any, direction?: 'direct', eventOptions?: INavigationEventOptions<P>): any;
-            /**
-            * Initializes the event members.
-            *
-            * @param name The name of the event.
-            * @param sender The object that initiated the event.
-            * @param direction This will always be a direct event no matter what is sent in.
-            *
-            * @see EventManager.direction
-            */
             initialize(name: string, sender: any, direction?: string, eventOptions?: INavigationEventOptions<P>): any;
+            /**
+            * @name cancel
+            * @memberof plat.events.INavigationEvent
+            * @kind function
+            * @access public
+            *
+            * @description
+            * If the event is {@link plat.events.INavigationEvent.cancelable|cancelable}, calling this method will cancel the event.
+            *
+            * @returns {void}
+            */
+            cancel(): void;
         }
         /**
+        * @name INavigationEventOptions
+        * @memberof plat.events
+        * @kind interface
+        *
+        * @description
         * Describes options for an INavigationEvent. The generic parameter specifies the
         * target type for the event.
+        *
+        * @typeparam {any} P Corresponds to the type of event parameter.
         */
         interface INavigationEventOptions<P> {
             /**
-            * Navigation parameter, used to send objects from one view control to another.
+            * @name parameter
+            * @memberof plat.events.INavigationEventOptions
+            * @kind property
+            * @access public
+            *
+            * @type {P}
+            *
+            * @description
+            * The navigation parameter being dispatched.
             */
             parameter: P;
             /**
-            * The INavigationOptions in use for the navigation.
+            * @name parameter
+            * @memberof plat.events.INavigationEventOptions
+            * @kind property
+            * @access public
+            *
+            * @type {plat.navigation.IBaseNavigationOptions}
+            *
+            * @description
+            * The navigation options for the event.
             */
             options: navigation.IBaseNavigationOptions;
             /**
+            * @name target
+            * @memberof plat.events.INavigationEventOptions
+            * @kind property
+            * @access public
+            *
+            * @type {any}
+            *
+            * @description
             * The navigation event target. Its type depends on the type of Navigation event.
             */
             target: any;
             /**
-            * Specifies the type of IViewControl for the Route Event.
+            * @name type
+            * @memberof plat.events.INavigationEventOptions
+            * @kind property
+            * @access public
+            *
+            * @type {string}
+            *
+            * @description
+            * Specifies the type of {@link plat.ui.IBaseViewControl|IBaseViewControl} for the event.
             */
             type: string;
             /**
+            * @name cancelable
+            * @memberof plat.events.INavigationEventOptions
+            * @kind property
+            * @access public
+            *
+            * @type {boolean}
+            *
+            * @description
             * States whether or not this event is able to be cancelled. Some navigation events can be
             * cancelled, preventing further navigation.
             */
@@ -14413,7 +14657,7 @@ declare module plat {
         /**
         * @name ISimpleEventControl
         * @memberof plat.controls
-        * @kind class
+        * @kind interface
         *
         * @extends {plat.controls.IAttributeControl}
         *
@@ -15622,7 +15866,7 @@ declare module plat {
         /**
         * @name ISetAttributeControl
         * @memberof plat.controls
-        * @kind class
+        * @kind interface
         *
         * @extends {plat.controls.IAttributeControl}
         *
@@ -16498,7 +16742,7 @@ declare module plat {
             * @access private
             *
             * @description
-            * Checks to see if a {@link plat.ui.control.Select|Select} is loading items.
+            * Checks to see if a {@link plat.ui.controls.Select|Select} is loading items.
             *
             * @returns {boolean} Whether or not the select is loading items.
             */
@@ -19231,10 +19475,10 @@ declare module plat {
             * @access public
             *
             * @description
-            * Adds a class to the specified element.
+            * Adds a class or multiple classes to the specified element.
             *
             * @param {Element} element The element to which the class name is being added.
-            * @param {string} className The class name to add to the element.
+            * @param {string} className The class name or space delimited class names to add to the element.
             *
             * @returns {void}
             */
@@ -19246,10 +19490,10 @@ declare module plat {
             * @access public
             *
             * @description
-            * Removes a class from the specified element.
+            * Removes a class or multiple classes from the specified element.
             *
             * @param {Element} element The element from which the class name is being removed.
-            * @param {string} className The class name to remove from the element.
+            * @param {string} className The class name or space delimited class names to remove from the element.
             *
             * @returns {void}
             */
@@ -19261,10 +19505,10 @@ declare module plat {
             * @access public
             *
             * @description
-            * Toggles a class from the specified element.
+            * Toggles a class or multiple classes from the specified element.
             *
             * @param {Element} element The element on which the class name is being toggled.
-            * @param {string} className The class name to toggle on the element.
+            * @param {string} className The class name or space delimited class names to toggle on the element.
             *
             * @returns {void}
             */
@@ -19276,12 +19520,13 @@ declare module plat {
             * @access public
             *
             * @description
-            * Returns whether or not an element has a particular class assigned to it.
+            * Returns whether or not an element has a particular class or classes assigned to it.
             *
             * @param {Element} element The element on which the class name is being checked.
-            * @param {string} className The class name to check on the element.
+            * @param {string} className The class name or space delimited class names to check on the element.
             *
-            * @returns {void}
+            * @returns {boolean} Whether or not the element has the class name or all of the class names
+            * specified in the className argument.
             */
             public hasClass(element: Element, className: string): boolean;
         }
@@ -19682,10 +19927,10 @@ declare module plat {
             * @access public
             *
             * @description
-            * Adds a class to the specified element.
+            * Adds a class or multiple classes to the specified element.
             *
             * @param {Element} element The element to which the class name is being added.
-            * @param {string} className The class name to add to the element.
+            * @param {string} className The class name or space delimited class names to add to the element.
             *
             * @returns {void}
             */
@@ -19697,10 +19942,10 @@ declare module plat {
             * @access public
             *
             * @description
-            * Removes a class from the specified element.
+            * Removes a class or multiple classes from the specified element.
             *
             * @param {Element} element The element from which the class name is being removed.
-            * @param {string} className The class name to remove from the element.
+            * @param {string} className The class name or space delimited class names to remove from the element.
             *
             * @returns {void}
             */
@@ -19712,10 +19957,10 @@ declare module plat {
             * @access public
             *
             * @description
-            * Toggles a class from the specified element.
+            * Toggles a class or multiple classes from the specified element.
             *
             * @param {Element} element The element on which the class name is being toggled.
-            * @param {string} className The class name to toggle on the element.
+            * @param {string} className The class name or space delimited class names to toggle on the element.
             *
             * @returns {void}
             */
@@ -19727,14 +19972,15 @@ declare module plat {
             * @access public
             *
             * @description
-            * Returns whether or not an element has a particular class assigned to it.
+            * Returns whether or not an element has a particular class or classes assigned to it.
             *
             * @param {Element} element The element on which the class name is being checked.
-            * @param {string} className The class name to check on the element.
+            * @param {string} className The class name or space delimited class names to check on the element.
             *
-            * @returns {void}
+            * @returns {boolean} Whether or not the element has the class name or all of the class names
+            * specified in the className argument.
             */
-            hasClass(element: Element, className: string): void;
+            hasClass(element: Element, className: string): boolean;
         }
         /**
         * @name ICustomElementProperty
@@ -19782,7 +20028,7 @@ declare module plat {
         * @description
         * An interface for describing an Element with an ICustomElementProperty attached. Primarily
         * used for element interaction with {@link plat.ui.DomEvents|DomEvents} and the
-        * {@link plat.ui.Animator|Animator}.
+        * {@link plat.ui.animations.Animator|Animator}.
         */
         interface ICustomElement extends HTMLElement {
             /**
@@ -27294,7 +27540,7 @@ declare module plat {
             * @type {plat.ui.ITemplateControlFactory}
             *
             * @description
-            * Reference to the {@link ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
+            * Reference to the {@link plat.ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
             */
             static $TemplateControlFactory: ui.ITemplateControlFactory;
             /**
@@ -27795,7 +28041,7 @@ declare module plat {
             * @type {Array<plat.expressions.IParsedExpression>}
             *
             * @description
-            * Any {@link plat.expressions.IParsedExpressions|IParsedExpressions} contained in the Node.
+            * Any {@link plat.expressions.IParsedExpression|IParsedExpressions} contained in the Node.
             */
             expressions?: expressions.IParsedExpression[];
             /**
@@ -28128,7 +28374,7 @@ declare module plat {
             *
             * @description
             * Iterates over the attributes (NamedNodeMap), creating an {@link plat.processing.INodeMap|INodeMap}.
-            * This map will contain injectors for all the {@link plat.IControls|IControls} as well as parsed expressions
+            * This map will contain injectors for all the {@link plat.IControl|IControls} as well as parsed expressions
             * and identifiers found for each Attribute (useful for data binding).
             *
             * @param {NamedNodeMap} attributes The attributes used to create the {@link plat.processing.INodeMap|INodeMap}.
@@ -28375,7 +28621,7 @@ declare module plat {
             *
             * @description
             * Initializes both the manager itself and all the controls associated to the manager's
-            * {@link plat.processing.NodeMap|NodeMap}.
+            * {@link plat.processing.INodeMap|INodeMap}.
             *
             * @param {plat.processing.INodeMap} nodeMap A map of the nodes (element and attributes)
             * associated with this {@link plat.processing.IElementManager|IElementManager}.
@@ -28854,7 +29100,7 @@ declare module plat {
             *
             * @description
             * Initializes both the manager itself and all the controls associated to the manager's
-            * {@link plat.processing.NodeMap|NodeMap}.
+            * {@link plat.processing.INodeMap|INodeMap}.
             *
             * @param {plat.processing.INodeMap} nodeMap A map of the nodes (element and attributes)
             * associated with this {@link plat.processing.IElementManager|IElementManager}.
