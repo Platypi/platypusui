@@ -6,84 +6,377 @@
     #ModalVars;
     width: 100%;
     height: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    overflow: hidden;
-    z-index: 1000;
+    z-index: 999999;
     -webkit-backface-visibility: hidden;
     .box-sizing(border-box);
+    .misc-webkit-touch();
+    .user-select();
+    .touch-action();
 
     .plat-modal-container {
-        width: @modalWidth;
-        height: @modalHeight;
         position: absolute;
         background-color: @modalBackgroundColor;
         color: @modalColor;
         overflow: auto;
         
-        &.plat-no-transition {
-            top: 50%;
-            left: 50%;
-            .translateAccelerate(-50%;-50%);
+        &.plat-no-transition,
+        &.plat-modal-transition.fade {
+            &.full {
+                top: 0;
+                left: 0;
+            }
+
+            &.halfwidth {
+                top: 0;
+                left: @modalLeft;
+
+                &.centered {
+                    left: 50%;
+                    .translateAccelerate(-50%;0);
+                }
+            }
+
+            &.halfheight {
+                top: @modalTop;
+                left: 0;
+
+                &.centered {
+                    top: 50%;
+                    .translateAccelerate(0;-50%);
+                }
+            }
+
+            &.half,
+            &.custom {
+                top: @modalTop;
+                left: @modalLeft;
+
+                &.centered {
+                    .translateAccelerate(-50%;-50%);
+                }
+            }
+
+            &.half {
+                &.centered {
+                    top: 50%;
+                    left: 50%;
+                }
+            }
         }
 
         &.plat-modal-transition {
             &.right {
-                top: 50%;
-                left: -@modalWidth;
-                .translateAccelerate(-50%;-50%);
                 .transition(@modalRightTransition);
 
-                &.activate {
-                    left: 50%;
+                &.full {
+                    top: 0;
+                    left: -100%;
+
+                    &.activate {
+                        left: 0;
+                    }
+                }
+                
+                &.half,
+                &.halfwidth {
+                    top: 0;
+                    left: -50%;
+
+                    &.activate {
+                        left: @modalLeft;
+
+                        &.centered {
+                            left: 50%;
+                        }
+                    }
+                }
+
+                &.halfwidth {
+                    &.centered {
+                        .translateAccelerate(-50%;0);
+                    }
+                }
+
+                &.halfheight {
+                    top: @modalTop;
+                    left: -100%;
+
+                    &.activate {
+                        left: 0;
+                    }
+
+                    &.centered {
+                        top: 50%;
+                        .translateAccelerate(0;-50%);
+                    }
+                }
+
+                &.half {
+                    top: @modalTop;
+
+                    &.centered {
+                        top: 50%;
+                        .translateAccelerate(-50%;-50%);
+                    }
+                }
+
+                &.custom {
+                    top: @modalTop;
+                    left: -@modalWidth;
+
+                    &.activate {
+                        left: @modalLeft;
+                    }
+
+                    &.centered {
+                        .translateAccelerate(-50%;-50%);
+                    }
                 }
             }
 
             &.left {
-                top: 50%;
-                right: -@modalWidth;
-                .translateAccelerate(50%;-50%);
                 .transition(@modalLeftTransition);
 
-                &.activate {
-                    right: 50%;
+                &.full {
+                    top: 0;
+                    right: -100%;
+
+                    &.activate {
+                        right: 0;
+                    }
+                }
+                
+                &.half,
+                &.halfwidth {
+                    top: 0;
+                    right: -50%;
+
+                    &.activate {
+                        right: @modalLeft;
+
+                        &.centered {
+                            right: 50%;
+                        }
+                    }
+                }
+
+                &.halfwidth {
+                    &.centered {
+                        .translateAccelerate(50%;0);
+                    }
+                }
+
+                &.halfheight {
+                    top: @modalTop;
+                    right: -100%;
+
+                    &.activate {
+                        right: 0;
+                    }
+
+                    &.centered {
+                        top: 50%;
+                        .translateAccelerate(0;-50%);
+                    }
+                }
+
+                &.half {
+                    top: @modalTop;
+
+                    &.centered {
+                        top: 50%;
+                        .translateAccelerate(50%;-50%);
+                    }
+                }
+
+                &.custom {
+                    top: @modalTop;
+                    right: -@modalWidth;
+
+                    &.activate {
+                        right: @modalLeft;
+                    }
+
+                    &.centered {
+                        .translateAccelerate(50%;-50%);
+                    }
                 }
             }
 
             &.down {
-                top: -@modalHeight;
-                left: 50%;
-                .translateAccelerate(-50%;-50%);
                 .transition(@modalDownTransition);
 
-                &.activate {
-                    top: 50%;
+                &.full {
+                    top: -100%;
+                    left: 0;
+
+                    &.activate {
+                        top: 0;
+                    }
+                }
+                
+                &.half,
+                &.halfheight {
+                    top: -50%;
+                    left: 0;
+
+                    &.activate {
+                        top: @modalTop;
+
+                        &.centered {
+                            top: 50%;
+                        }
+                    }
+                }
+
+                &.halfheight {
+                    &.centered {
+                        .translateAccelerate(0;-50%);
+                    }
+                }
+
+                &.halfwidth {
+                    top: -100%;
+                    left: @modalLeft;
+
+                    &.activate {
+                        top: 0;
+                    }
+
+                    &.centered {
+                        left: 50%;
+                        .translateAccelerate(-50%;0);
+                    }
+                }
+
+                &.half {
+                    left: @modalLeft;
+
+                    &.centered {
+                        left: 50%;
+                        .translateAccelerate(-50%;-50%);
+                    }
+                }
+
+                &.custom {
+                    top: -@modalHeight;
+                    left: @modalLeft;
+
+                    &.activate {
+                        top: @modalTop;
+                    }
+
+                    &.centered {
+                        .translateAccelerate(-50%;-50%);
+                    }
                 }
             }
 
             &.up {
-                bottom: -@modalHeight;
-                left: 50%;
-                .translateAccelerate(-50%;50%);
                 .transition(@modalUpTransition);
 
-                &.activate {
-                    bottom: 50%;
+                &.full {
+                    bottom: -100%;
+                    left: 0;
+
+                    &.activate {
+                        bottom: 0;
+                    }
+                }
+                
+                &.half,
+                &.halfheight {
+                    bottom: -50%;
+                    left: 0;
+
+                    &.activate {
+                        bottom: @modalTop;
+
+                        &.centered {
+                            bottom: 50%;
+                        }
+                    }
+                }
+
+                &.halfheight {
+                    &.centered {
+                        .translateAccelerate(0;50%);
+                    }
+                }
+
+                &.halfwidth {
+                    bottom: -100%;
+                    left: @modalLeft;
+
+                    &.activate {
+                        bottom: 0;
+                    }
+
+                    &.centered {
+                        left: 50%;
+                        .translateAccelerate(-50%;0);
+                    }
+                }
+
+                &.half {
+                    left: @modalLeft;
+
+                    &.centered {
+                        left: 50%;
+                        .translateAccelerate(-50%;50%);
+                    }
+                }
+
+                &.custom {
+                    bottom: -@modalHeight;
+                    left: @modalLeft;
+
+                    &.activate {
+                        bottom: @modalTop;
+                    }
+
+                    &.centered {
+                        .translateAccelerate(-50%;50%);
+                    }
                 }
             }
 
             &.fade {
-                top: 50%;
-                left: 50%;
                 opacity: 0;
-                .translateAccelerate(-50%;-50%);
                 .transition(@modalFadeTransition);
 
                 &.activate {
                     opacity: 1;
                 }
             }
+        }
+
+        &.full {
+            width: 100%;
+            height: 100%;
+        }
+
+        &.halfwidth {
+            width: 50%;
+            height: 100%;
+        }
+
+        &.halfheight {
+            width: 100%;
+            height: 50%;
+        }
+
+        &.half {
+            width: 50%;
+            height: 50%;
+        }
+
+        &.custom {
+            width: @modalWidth;
+            height: @modalHeight;
         }
     }
 

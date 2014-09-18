@@ -190,13 +190,14 @@
         loaded(): void {
             var optionObj = this.options,
                 $utils = this.$utils,
+                isString = $utils.isString,
                 dom = this.dom,
                 modalElement = this._modalElement,
                 options = $utils.isObject(optionObj) ? optionObj.value : <IModalOptions>{},
                 transition = options.transition,
-                style = options.style || 'full';
+                style = isString(options.style) ? options.style.toLowerCase() : 'full';
 
-            if (!$utils.isString(transition) || transition === 'none') {
+            if (!isString(transition) || transition === 'none') {
                 dom.addClass(modalElement, style + ' plat-no-transition');
                 return;
             } else if ($utils.isNull(this.__transitionHash[transition])) {
@@ -337,11 +338,21 @@
          * 
          * @remarks
          * - "full" - The {@link platui.Modal|Modal} fills the whole screen.
+         * - "halfWidth" - The {@link platui.Modal|Modal} fills the whole screen lengthwise and 
+         * half the screen in width. When combined as "halfWidth centered" it will place the 
+         * control in the middle of the screen horizontally. Otherwise, its position is specified 
+         * by the defined LESS variables.
+         * - "halfHeight" - The {@link platui.Modal|Modal} fills half the screen lengthwise and 
+         * the whole screen in width. When combined as "halfHeight centered" it will place the 
+         * control in the middle of the screen vertically. Otherwise, its position is specified 
+         * by the defined LESS variables.
          * - "half" - The {@link platui.Modal|Modal} fills half the screen and its position is 
          * specified by the defined LESS variables. The top and left positioning refer to the midpoint 
-         * of the {@link platui.Modal|Modal}.
-         * - "custom" - The {@link platui.Modal|Modal} is specified by the defined LESS variables. The 
-         * top and left positioning refer to the midpoint of the {@link platui.Modal|Modal}.
+         * of the {@link platui.Modal|Modal}. When combined as "half centered" the control will be 
+         * placed dead center in the middle of the screen.
+         * - "custom" - The {@link platui.Modal|Modal's} size and positioning is specified by the 
+         * defined LESS variables. When combined as "custom centered" the top and left positioning 
+         * refer to the midpoint of the control.
          */
         style?: string;
 

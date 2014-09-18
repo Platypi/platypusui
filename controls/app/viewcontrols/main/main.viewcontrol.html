@@ -303,8 +303,11 @@
             <button plat-tap="toggle">Show Modal!</button>
         </div>
     </div>
-    <plat-modal plat-name="modal" plat-options="{ style: 'custom centered', transition: 'down' }">
-        <div class="modal-container">
+    <plat-modal plat-name="modal" plat-options="{ style: 'halfwidth centered', transition: 'up' }">
+        <div style="background-color: red;">
+            header
+        </div>
+        <div style="height: 100%;background-color:white;">
             <div class="inner-container">
                 <button plat-tap="toggle">Hello Modo!</button>
             </div>
