@@ -3,7 +3,7 @@
 @import 'modal.variables.less';
 
 .plat-modal {
-    #ModalVars;
+    #Modal;
     width: 100%;
     height: 100%;
     position: fixed;
@@ -18,8 +18,8 @@
 
     .plat-modal-container {
         position: absolute;
-        background-color: @modalBackgroundColor;
-        color: @modalColor;
+        background-color: @background-color;
+        color: @color;
         overflow: auto;
         
         &.plat-no-transition,
@@ -31,7 +31,7 @@
 
             &.halfwidth {
                 top: 0;
-                left: @modalLeft;
+                left: @left;
 
                 &.centered {
                     left: 50%;
@@ -40,7 +40,7 @@
             }
 
             &.halfheight {
-                top: @modalTop;
+                top: @top;
                 left: 0;
 
                 &.centered {
@@ -51,8 +51,8 @@
 
             &.half,
             &.custom {
-                top: @modalTop;
-                left: @modalLeft;
+                top: @top;
+                left: @left;
 
                 &.centered {
                     .translateAccelerate(-50%;-50%);
@@ -69,7 +69,7 @@
 
         &.plat-modal-transition {
             &.right {
-                .transition(@modalRightTransition);
+                .transition(@right-transition);
 
                 &.full {
                     top: 0;
@@ -86,7 +86,7 @@
                     left: -50%;
 
                     &.activate {
-                        left: @modalLeft;
+                        left: @left;
 
                         &.centered {
                             left: 50%;
@@ -101,7 +101,7 @@
                 }
 
                 &.halfheight {
-                    top: @modalTop;
+                    top: @top;
                     left: -100%;
 
                     &.activate {
@@ -115,7 +115,7 @@
                 }
 
                 &.half {
-                    top: @modalTop;
+                    top: @top;
 
                     &.centered {
                         top: 50%;
@@ -124,11 +124,11 @@
                 }
 
                 &.custom {
-                    top: @modalTop;
-                    left: -@modalWidth;
+                    top: @top;
+                    left: -@width;
 
                     &.activate {
-                        left: @modalLeft;
+                        left: @left;
                     }
 
                     &.centered {
@@ -138,7 +138,7 @@
             }
 
             &.left {
-                .transition(@modalLeftTransition);
+                .transition(@left-transition);
 
                 &.full {
                     top: 0;
@@ -155,7 +155,7 @@
                     right: -50%;
 
                     &.activate {
-                        right: @modalLeft;
+                        right: @left;
 
                         &.centered {
                             right: 50%;
@@ -170,7 +170,7 @@
                 }
 
                 &.halfheight {
-                    top: @modalTop;
+                    top: @top;
                     right: -100%;
 
                     &.activate {
@@ -184,7 +184,7 @@
                 }
 
                 &.half {
-                    top: @modalTop;
+                    top: @top;
 
                     &.centered {
                         top: 50%;
@@ -193,11 +193,11 @@
                 }
 
                 &.custom {
-                    top: @modalTop;
-                    right: -@modalWidth;
+                    top: @top;
+                    right: -@width;
 
                     &.activate {
-                        right: @modalLeft;
+                        right: @left;
                     }
 
                     &.centered {
@@ -207,7 +207,7 @@
             }
 
             &.down {
-                .transition(@modalDownTransition);
+                .transition(@down-transition);
 
                 &.full {
                     top: -100%;
@@ -224,7 +224,7 @@
                     left: 0;
 
                     &.activate {
-                        top: @modalTop;
+                        top: @top;
 
                         &.centered {
                             top: 50%;
@@ -240,7 +240,7 @@
 
                 &.halfwidth {
                     top: -100%;
-                    left: @modalLeft;
+                    left: @left;
 
                     &.activate {
                         top: 0;
@@ -253,7 +253,7 @@
                 }
 
                 &.half {
-                    left: @modalLeft;
+                    left: @left;
 
                     &.centered {
                         left: 50%;
@@ -262,11 +262,11 @@
                 }
 
                 &.custom {
-                    top: -@modalHeight;
-                    left: @modalLeft;
+                    top: -@height;
+                    left: @left;
 
                     &.activate {
-                        top: @modalTop;
+                        top: @top;
                     }
 
                     &.centered {
@@ -276,7 +276,7 @@
             }
 
             &.up {
-                .transition(@modalUpTransition);
+                .transition(@up-transition);
 
                 &.full {
                     bottom: -100%;
@@ -293,7 +293,7 @@
                     left: 0;
 
                     &.activate {
-                        bottom: @modalTop;
+                        bottom: @top;
 
                         &.centered {
                             bottom: 50%;
@@ -309,7 +309,7 @@
 
                 &.halfwidth {
                     bottom: -100%;
-                    left: @modalLeft;
+                    left: @left;
 
                     &.activate {
                         bottom: 0;
@@ -322,7 +322,7 @@
                 }
 
                 &.half {
-                    left: @modalLeft;
+                    left: @left;
 
                     &.centered {
                         left: 50%;
@@ -331,11 +331,11 @@
                 }
 
                 &.custom {
-                    bottom: -@modalHeight;
-                    left: @modalLeft;
+                    bottom: -@height;
+                    left: @left;
 
                     &.activate {
-                        bottom: @modalTop;
+                        bottom: @top;
                     }
 
                     &.centered {
@@ -346,7 +346,7 @@
 
             &.fade {
                 opacity: 0;
-                .transition(@modalFadeTransition);
+                .transition(@fade-transition);
 
                 &.activate {
                     opacity: 1;
@@ -375,8 +375,8 @@
         }
 
         &.custom {
-            width: @modalWidth;
-            height: @modalHeight;
+            width: @width;
+            height: @height;
         }
     }
 

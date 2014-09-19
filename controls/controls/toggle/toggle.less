@@ -1,46 +1,47 @@
 ﻿@import '../global/variables.less';
 @import '../global/mixins.less';
 @import 'toggle.variables.less';
+@import 'toggle.mixins.less';
 
 .plat-toggle {
-    #ToggleVars;
+    #Toggle;
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);
 
     .plat-toggle-container {
-        @toggleHeight: @toggleWidth * @toggleRatio;
-        width: @toggleWidth;
-        height: @toggleHeight;
+        @height: @width * @ratio;
+        width: @width;
+        height: @height;
         position: relative;
         overflow: hidden;
-        background-color: @toggleBackgroundColor;
-        border: @toggleBorderSize solid;
-        .toggleBorderColor(border-color);
-        .border-radius(@toggleHeight);
-        .transition(@toggleTransitionArgs);
+        background-color: @background-color;
+        border: @border-size solid;
+        .border-color(border-color);
+        .border-radius(@height);
+        .transition(@transition);
            
-        @knobDiameter: @toggleHeight; 
+        @knob-diameter: @height; 
         .knob {
             position: absolute;
             top: 0;
             left: 0;
-            height: @knobDiameter;
-            width: @knobDiameter;
-            background-color: @knobColor;
-            border: @knobBorderSize solid;
-            .knobBorderColor(border-color);
-            .border-radius(@knobDiameter);
+            height: @knob-diameter;
+            width: @knob-diameter;
+            background-color: @knob-color;
+            border: @knob-border-size solid;
+            .knob-border-color(border-color);
+            .border-radius(@knob-diameter);
             .box-sizing(border-box);
-            .transition(@knobTransitionArgs);
+            .transition(@knob-transition);
         }
 
         &.slide {
-            border-color: @toggleActivatedBorderColor;
-            background-color: @toggleActiveColor;
+            border-color: @checked-border-color;
+            background-color: @checked-color;
 
             .knob {
-                left: @toggleWidth - @knobDiameter;
+                left: @width - @knob-diameter;
             }
         }
     }

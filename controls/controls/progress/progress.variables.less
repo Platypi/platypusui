@@ -1,20 +1,20 @@
 @import '../global/variables.less';
 
-#ProgressBarVars {
-    @barBorderColor: @neutralColor;
-    @barColor: @primaryColor;
-    @barBackgroundColor: @primaryColorPale;
-    @barHeight: 0.25em;
-    @barBorder: none;
-    @barTransition: none;
+#ProgressBar {
+    @border-color: @neutralColor;
+    @fill-color: @primaryColor;
+    @unfilled-color: @primaryColorPale;
+    @height: 0.25em;
+    @border: none;
+    @transition: none;
 }
 
-#ProgressRingVars {
-    @ringColor: @primaryColor;
-    @ringSpinnerColor: fade(@ringColor, 75%);
-    @ringBackground: fade(@ringColor, 10%);
-    @ringDiameter: 3em;
-    @ringThickness: @ringDiameter / 10;
-    @ringAnimation: PLAT-SPIN;
-    @ringSpinFrequency: 600ms;
+#ProgressRing {
+    @ring-color: @primaryColor;
+    @fill-color: fade(@ring-color, 75%);
+    @unfilled-color: fade(@ring-color, 10%);
+    @diameter: 3em;
+    @thickness: @diameter / 10;
+    @animation: PLAT-SPIN;
+    @spin-frequency: 600ms;
 }

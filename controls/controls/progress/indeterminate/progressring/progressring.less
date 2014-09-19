@@ -3,10 +3,10 @@
 @import '../../progress.variables.less';
 
 .plat-ring {
-    #ProgressRingVars;
+    #ProgressRing;
     display: inline-block;
-    width: @ringDiameter;
-    height: @ringDiameter;
+    width: @diameter;
+    height: @diameter;
     .box-sizing(border-box);
 
     .plat-progress-container {
@@ -20,12 +20,12 @@
         .ring {
             width: 100%;
             height: 100%;
-            border-left: @ringThickness solid @ringSpinnerColor;
-            border-bottom: @ringThickness solid @ringBackground;
-            border-right: @ringThickness solid @ringBackground;
-            border-top: @ringThickness solid @ringBackground;
-            .border-radius(@ringDiameter);
-            .animation(@ringAnimation, @ringSpinFrequency, linear, 0s, infinite);
+            border-left: @thickness solid @fill-color;
+            border-bottom: @thickness solid @unfilled-color;
+            border-right: @thickness solid @unfilled-color;
+            border-top: @thickness solid @unfilled-color;
+            .border-radius(@diameter);
+            .animation(@animation, @spin-frequency, linear, 0s, infinite);
             .box-sizing(border-box);
         }
     }
@@ -33,8 +33,8 @@
 
 .spin();
 .spin() {
-    #ProgressRingVars;
-    #KeyFrames > .keyFrames(@ringAnimation);
+    #ProgressRing;
+    #KeyFrames > .keyFrames(@animation);
     .frames(@prefix) {
         from {
             .transform(rotate(0deg), @prefix);

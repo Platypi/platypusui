@@ -1,0 +1,15 @@
+﻿@import 'button.variables.less';
+
+#Button {
+    .active-color(@property) when (@active-color = undefined) {
+        & when (@background-color = @transparent) {
+            @{property}: @white;
+        }
+        & when not (@background-color = @transparent) {
+            @{property}: @background-color;
+        }
+    }
+    .active-color(@property) when (default()) {
+        @{property}: @active-color;
+    }
+}

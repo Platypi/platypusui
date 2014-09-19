@@ -3,9 +3,9 @@
 @import 'input.variables.less';
 
 .plat-input {
-    #InputVars;
+    #Input;
     display: inline-block;
-    width: @inputDefaultWidth;
+    width: @default-width;
     height: 1.75em;
     .box-sizing(border-box);
 
@@ -23,7 +23,7 @@
             height: 100%;
             vertical-align: bottom;
             background-color: @transparent;
-            color: @inputTextColor;
+            color: @text-color;
             outline: none;
             border: none;
             font: inherit;
@@ -51,7 +51,7 @@
             width: 1em;
             height: 80%;
             text-align: right;
-            color: @inputActionColor;
+            color: @action-color;
             cursor: pointer;
 
             &.hide {
@@ -62,13 +62,13 @@
 
     &.primary {
         .plat-input-container {
-            border-bottom: @inputBorderWidth solid @inputBorderColor;
+            border-bottom: @border-width solid @border-color;
         }
     }
 
     &.secondary {
         .plat-input-container {
-            border: @inputBorderWidth solid @inputBorderColor;
+            border: @border-width solid @border-color;
         }
     }
 
@@ -90,11 +90,11 @@
                 height: 1.2em;
                 text-align: center;
                 vertical-align: bottom;
-                border: 1px solid @inputActionColor;
+                border: 1px solid @action-color;
                 .border-radius(1.2em);
 
                 &:active {
-                    background-color: @inputActionColor;
+                    background-color: @action-color;
                     color: @white;
                 }
             }

@@ -1,14 +1,15 @@
 ﻿@import '../global/variables.less';
 @import '../global/mixins.less';
 @import 'button.variables.less';
+@import 'button.mixins.less';
 
 .plat-button {
-    #ButtonVars;
+    #Button;
     position: relative;
     display: inline-block;
-    background-color: @buttonBackgroundColor;
-    color: @buttonColor;
-    border: @buttonBorderSize solid @buttonBorderColor;
+    background-color: @background-color;
+    color: @color;
+    border: @border-size solid @border-color;
     outline: none;
     cursor: pointer;
     .box-sizing(border-box);
@@ -16,17 +17,17 @@
     &:not(.back) {
         &:active,
         &.selected {
-            background-color: @buttonColor;
-            .buttonActiveColor(color);
+            background-color: @color;
+            .active-color(color);
         }
     }
 
     &.primary {
-        .border-radius(@buttonPrimaryBorderRadius);
+        .border-radius(@primary-border-radius);
     }
 
     &.secondary {
-        .border-radius(@buttonSecondaryBorderRadius);
+        .border-radius(@secondary-border-radius);
     }
 
     &.back {

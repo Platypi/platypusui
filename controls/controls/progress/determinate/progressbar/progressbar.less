@@ -3,26 +3,26 @@
 @import '../../progress.variables.less';
 
 .plat-progress {
-    #ProgressBarVars;
+    #ProgressBar;
     width: 100%;
     .box-sizing(border-box);
 
     .plat-progress-container {
         position: relative;
-        height: @barHeight;
+        height: @height;
         width: 100%;
-        background-color: @barBackgroundColor;
+        background-color: @unfilled-color;
         overflow: hidden;
-        border: @barBorder;
-        .border-radius(@barHeight);
+        border: @border;
+        .border-radius(@height);
         .box-sizing(content-box);
 
         .bar {
-            background-color: @barColor;
+            background-color: @fill-color;
             width: 0;
-            height: @barHeight;
-            .border-radius(@barHeight);
-            .transition(@barTransition);
+            height: @height;
+            .border-radius(@height);
+            .transition(@transition);
         }
     }
 }

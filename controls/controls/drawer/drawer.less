@@ -3,18 +3,18 @@
 @import 'drawer.variables.less';
 
 .plat-drawer {
-    #DrawerVars;
+    #Drawer;
     position: absolute;
     overflow: auto;
-    color: @drawerColor;
-    background-color: @drawerBackgroundColor;
+    color: @color;
+    background-color: @background-color;
     -webkit-backface-visibility: hidden;
     .user-select(none);
     .box-sizing(border-box);
 
     &.right,
     &.left {
-        width: @drawerLength;
+        width: @length;
         height: 100%;
         top: 0;
     }
@@ -22,7 +22,7 @@
     &.up,
     &.down {
         width: 100%;
-        height: @drawerLength;
+        height: @length;
         left: 0;
     }
 
@@ -44,27 +44,27 @@
 }
 
 .plat-drawer-transition-prep {
-    #DrawerVars;
+    #Drawer;
     -webkit-backface-visibility: hidden;
     -webkit-perspective: none;
 
     &.plat-drawer-transition-right {
-        .box-shadow(-@drawerShadowOffset 0px @drawerShadowBlur @drawerShadowSpread @drawerShadowColor);
+        .box-shadow(-@shadow-offset 0px @shadow-blur @shadow-spread @shadow-color);
     }
 
     &.plat-drawer-transition-left {
-        .box-shadow(@drawerShadowOffset 0px @drawerShadowBlur @drawerShadowSpread @drawerShadowColor);
+        .box-shadow(@shadow-offset 0px @shadow-blur @shadow-spread @shadow-color);
     }
 
     &.plat-drawer-transition-down {
-        .box-shadow(0px -@drawerShadowOffset @drawerShadowBlur @drawerShadowSpread @drawerShadowColor);
+        .box-shadow(0px -@shadow-offset @shadow-blur @shadow-spread @shadow-color);
     }
 
     &.plat-drawer-transition-up {
-        .box-shadow(0px @drawerShadowOffset @drawerShadowBlur @drawerShadowSpread @drawerShadowColor);
+        .box-shadow(0px @shadow-offset @shadow-blur @shadow-spread @shadow-color);
     }
 
     &.plat-transition {
-        .transition(@drawerTransition);
+        .transition(@transition);
     }
 }

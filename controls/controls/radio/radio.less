@@ -3,7 +3,7 @@
 @import 'radio.variables.less';
 
 .plat-radio {
-    #RadioVars;
+    #Radio;
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);
@@ -19,23 +19,23 @@
     .plat-radio-container {
         position: relative;
         display: inline-block;
-        width: @radioSize;
-        height: @radioSize;
+        width: @diameter;
+        height: @diameter;
         overflow: hidden;
-        background-color: @radioBackgroundColor;
-        border: @radioBorderSize solid @radioBorderColor;
-        .border-radius(@radioSize);
+        background-color: @background-color;
+        border: @border-size solid @border-color;
+        .border-radius(@diameter);
         .box-sizing(content-box);
 
         &.radio {
-            border-color: @radioActiveBorderColor;
+            border-color: @checked-border-color;
 
             .mark {
-                background-color: @radioMarkColor;
-                width: @radioSize;
-                height: @radioSize;
-                border: @radioMarkPadding solid @radioMarkPaddingColor;
-                .border-radius(@radioSize);
+                background-color: @mark-color;
+                width: @diameter;
+                height: @diameter;
+                border: @mark-padding solid @mark-padding-color;
+                .border-radius(@diameter);
                 .background-clip(padding-box);
                 .box-sizing(border-box);
             }

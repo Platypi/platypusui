@@ -1,49 +1,22 @@
 @import '../global/variables.less';
 
-#ToggleVars {
+#Toggle {
     // set this var to for a custom border color
-    @toggleBorderColor: undefined;
-    @knobBorderColor: undefined;
-    @toggleBackgroundColor: @neutralColor;
-    @toggleColor: @neutralColor;
-    @toggleActiveColor: @primaryColor;
-    @toggleWidth: 4em;
-    // the ratio calculates the toggle height as @toggleWidth * @toggleRatio
-    @toggleRatio: 1/3;
-    @toggleBorderSize: 1px;
-    @toggleActivatedBorderColor: @toggleActiveColor;
-    @transitionTime: 250ms;
-    @toggleTransitionArgs: background-color @transitionTime, 
-        border-bottom-color @transitionTime, border-left-color @transitionTime, 
-        border-right-color @transitionTime, border-top-color @transitionTime;
-    @knobTransitionArgs: left @transitionTime;
-    @knobColor: @white;
-    @knobBorderSize: 1px;
-    .toggleBorderColor(@property) when (@toggleBorderColor = undefined) {
-        & when (@toggleBackgroundColor = @transparent) {
-            @{property}: @toggleColor;
-        }
-        & when not (@toggleBackgroundColor = @transparent) {
-            @{property}: @toggleBackgroundColor;
-        }
-    }
-    .toggleBorderColor(@property) when (default()) {
-        @{property}: @toggleBorderColor;
-    }
-    .knobBorderColor(@property) when (@knobBorderColor = undefined) {
-        & when (@knobColor = @toggleBackgroundColor) {
-            & when (@knobColor = @white) {
-                @{property}: @black;
-            }
-            & when not (@knobColor = @white) {
-                @{property}: @white;
-            }
-        }
-        & when not (@knobColor = @toggleBackgroundColor) {
-            @{property}: @knobColor;
-        }
-    }
-    .knobBorderColor(@property) when (default()) {
-        @{property}: @toggleBorderColor;
-    }
+    @border-color: undefined;
+    @background-color: @neutralColor;
+    @color: @neutralColor;
+    @checked-color: @primaryColor;
+    @width: 4em;
+    // the ratio calculates the toggle height as @width * @ratio
+    @ratio: 1/3;
+    @checked-border-color: @checked-color;
+    @border-size: 1px;
+    @transition-time: 250ms;
+    @transition: background-color @transition-time, 
+        border-bottom-color @transition-time, border-left-color @transition-time, 
+        border-right-color @transition-time, border-top-color @transition-time;
+    @knob-transition: left @transition-time;
+    @knob-color: @white;
+    @knob-border-color: undefined;
+    @knob-border-size: 1px;
 }
