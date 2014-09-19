@@ -1,19 +1,19 @@
 ﻿module platui {
     /**
-     * @name ProgressRing
+     * @name Slider
      * @memberof platui
      * @kind class
      * 
-     * @extends {platui.Checkbox}
+     * @extends {plat.ui.BindablePropertyControl}
      * @implements {platui.IUIControl}
      * 
      * @description
      * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes an HTML5 input[type="range"].
      */
-    export class Range extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Slider extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
          * @name $document
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
@@ -25,7 +25,7 @@
         $document: Document = plat.acquire(__Document);
         /**
          * @name $utils
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
@@ -37,7 +37,7 @@
         $utils: plat.IUtils = plat.acquire(__Utils);
         /**
          * @name $animator
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
@@ -50,7 +50,7 @@
 
         /**
          * @name templateString
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
@@ -60,67 +60,67 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-range-container">' +
-            '<div class="slider">' +
-                '<div class="knob"></div>' +
+        '<div class="plat-slider-container">' +
+            '<div class="plat-slider-offset">' +
+                '<div class="plat-knob"></div>' +
             '</div>' +
         '</div>';
         
         /**
          * @name options
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
-         * @type {plat.observable.IObservableProperty<platui.IRangeOptions>}
+         * @type {plat.observable.IObservableProperty<platui.ISliderOptions>}
          * 
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
-        options: plat.observable.IObservableProperty<IRangeOptions>;
+        options: plat.observable.IObservableProperty<ISliderOptions>;
         
         /**
          * @name value
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
          * @type {number}
          * 
          * @description
-         * The current value of the range.
+         * The current value of the {@link platui.Slider|Slider}.
          */
         value: number;
         
         /**
          * @name min
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
          * @type {number}
          * 
          * @description
-         * The min value of the range.
+         * The min value of the {@link platui.Slider|Slider}.
          */
         min: number;
         
         /**
          * @name max
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access public
          * 
          * @type {number}
          * 
          * @description
-         * The max value of the range.
+         * The max value of the {@link platui.Slider|Slider}.
          */
         max: number;
         
         /**
          * @name _sliderElement
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access protected
          * 
@@ -133,7 +133,7 @@
         
         /**
          * @name _knobElement
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access protected
          * 
@@ -146,7 +146,7 @@
         
         /**
          * @name _lastTouch
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access protected
          * 
@@ -159,7 +159,7 @@
         
         /**
          * @name __sliderOffset
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -171,7 +171,7 @@
         private __sliderOffset = 0;
         /**
          * @name __maxOffset
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -183,7 +183,7 @@
         private __maxOffset: number;
         /**
          * @name __increment
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -195,19 +195,19 @@
         private __increment: number;
         /**
          * @name __step
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
          * @type {number}
          * 
          * @description
-         * Denotes the incremental step value of the {@link platui.Range|Range's} value property.
+         * Denotes the incremental step value of the {@link platui.Slider|Slider's} value property.
          */
         private __step: number;
         /**
          * @name __loaded
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -220,7 +220,7 @@
         private __loaded = false;
         /**
          * @name __inTouch
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -232,7 +232,7 @@
         private __inTouch = false;
         /**
          * @name __usingBind
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -245,7 +245,7 @@
         private __usingBind: boolean;
         /**
          * @name __transition
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -257,7 +257,7 @@
         private __transition: string;
         /**
          * @name __lengthProperty
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind property
          * @access private
          * 
@@ -270,7 +270,7 @@
         
         /**
          * @name setClasses
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access public
          * 
@@ -285,12 +285,12 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Range + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Slider + ' ' + (className || ''));
         }
         
         /**
          * @name initialize
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access public
          * 
@@ -307,7 +307,7 @@
         
         /**
          * @name setTemplate
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access public
          * 
@@ -323,7 +323,7 @@
         
         /**
          * @name loaded
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access public
          * 
@@ -337,8 +337,8 @@
                 element = this.element,
                 $utils = this.$utils,
                 isNumber = $utils.isNumber,
-                optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
-                options = optionObj.value || <IRangeOptions>{},
+                optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
+                options = optionObj.value || <ISliderOptions>{},
                 optionValue = Number(options.value),
                 optionMin = options.min,
                 optionMax = options.max,
@@ -361,7 +361,7 @@
 
             if (min >= max) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + __Range + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                Exception.warn('"' + __Slider + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
             }
 
@@ -373,12 +373,12 @@
         
         /**
          * @name setProperty
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access public
          * 
          * @description
-         * The function called when the Range's bindable property is set externally.
+         * The function called when the {@link platui.Slider|Slider's} bindable property is set externally.
          * 
          * @param {any} newValue The new value of the bindable property.
          * @param {any} oldValue? The old value of the bindable property.
@@ -402,14 +402,14 @@
         
         /**
          * @name setValue
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access public
          * 
          * @description
-         * Set the value of the {@link platui.Range|Range}.
+         * Set the value of the {@link platui.Slider|Slider}.
          * 
-         * @param {number} value The value to set the {@link platui.Range|Range} to.
+         * @param {number} value The value to set the {@link platui.Slider|Slider} to.
          * 
          * @returns {void}
          */
@@ -423,7 +423,7 @@
         
         /**
          * @name _touchStart
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access protected
          * 
@@ -444,7 +444,7 @@
         
         /**
          * @name _touchEnd
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access protected
          * 
@@ -477,7 +477,7 @@
         
         /**
          * @name _track
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access protected
          * 
@@ -515,7 +515,7 @@
 
         /**
          * @name __initializeEvents
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
@@ -553,7 +553,7 @@
                     break;
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid direction "' + transition + '" for "' + __Range + '."');
+                    Exception.warn('Invalid direction "' + transition + '" for "' + __Slider + '."');
                     return;
             }
 
@@ -568,7 +568,7 @@
         
         /**
          * @name __calculateValue
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
@@ -577,7 +577,7 @@
          * 
          * @param {number} width The current width of the slider.
          * 
-         * @returns {number} The current value of the {link platui.Range|Range}.
+         * @returns {number} The current value of the {link platui.Slider|Slider}.
          */
         private __calculateValue(width: number): number {
             var increment = this.__increment || this.__setIncrement(),
@@ -588,14 +588,14 @@
         
         /**
          * @name __calculateKnobPosition
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
          * @description
          * Calculates knob position based on current value.
          * 
-         * @param {number} value The current value of the {link platui.Range|Range}.
+         * @param {number} value The current value of the {link platui.Slider|Slider}.
          * 
          * @returns {number} The current position of the knob in pixels.
          */
@@ -606,7 +606,7 @@
         
         /**
          * @name __calculateOffset
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
@@ -632,7 +632,7 @@
         
         /**
          * @name __getLength
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
@@ -660,12 +660,12 @@
         
         /**
          * @name __setIncrement
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
          * @description
-         * Sets the increment for sliding the range.
+         * Sets the increment for sliding the {link platui.Slider|Slider}.
          * 
          * @returns {number} The slider's increment value.
          */
@@ -675,12 +675,12 @@
         
         /**
          * @name __setValue
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
          * @description
-         * Sets the value of the {@link platui.Range|Range}.
+         * Sets the value of the {@link platui.Slider|Slider}.
          * 
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
@@ -712,7 +712,7 @@
         
         /**
          * @name __setKnob
-         * @memberof platui.Range
+         * @memberof platui.Slider
          * @kind function
          * @access private
          * 
@@ -720,7 +720,7 @@
          * Animates and sets the knob position.
          * 
          * @param {number} value? The value to use to calculate the knob position. If no value is 
-         * specified, the current {@link platui.Range|Range's} value will be used.
+         * specified, the current {@link platui.Slider|Slider's} value will be used.
          * 
          * @returns {void}
          */
@@ -734,7 +734,7 @@
         }
     }
 
-    plat.register.control(__Range, Range);
+    plat.register.control(__Slider, Slider);
     
     /**
      * @name ICheckboxOptions
@@ -742,19 +742,19 @@
      * @kind interface
      * 
      * @description
-     * The available {@link plat.controls.Options|options} for the {@link platui.Range|Range} control.
+     * The available {@link plat.controls.Options|options} for the {@link platui.Slider|Slider} control.
      */
-    export interface IRangeOptions {
+    export interface ISliderOptions {
         /**
          * @name style
-         * @memberof platui.IRangeOptions
+         * @memberof platui.ISliderOptions
          * @kind property
          * @access public
          * 
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Range|Range}. 
+         * The style of {@link platui.Slider|Slider}. 
          * Defaults to "primary".
          * 
          * @remarks
@@ -765,14 +765,14 @@
         
         /**
          * @name transition
-         * @memberof platui.IRangeOptions
+         * @memberof platui.ISliderOptions
          * @kind property
          * @access public
          * 
          * @type {string}
          * 
          * @description
-         * The transition direction of the {@link platui.Range|Range}. 
+         * The transition direction of the {@link platui.Slider|Slider}. 
          * Defaults to "right".
          * 
          * @remarks
@@ -785,53 +785,53 @@
         
         /**
          * @name value
-         * @memberof platui.IRangeOptions
+         * @memberof platui.ISliderOptions
          * @kind property
          * @access public
          * 
          * @type {number}
          * 
          * @description
-         * The current value of the {@link platui.Range|Range}.
+         * The current value of the {@link platui.Slider|Slider}.
          */
         value?: number;
         
         /**
          * @name min
-         * @memberof platui.IRangeOptions
+         * @memberof platui.ISliderOptions
          * @kind property
          * @access public
          * 
          * @type {number}
          * 
          * @description
-         * The min value of the {@link platui.Range|Range}.
+         * The min value of the {@link platui.Slider|Slider}.
          */
         min?: number;
         
         /**
          * @name max
-         * @memberof platui.IRangeOptions
+         * @memberof platui.ISliderOptions
          * @kind property
          * @access public
          * 
          * @type {number}
          * 
          * @description
-         * The max value of the {@link platui.Range|Range}.
+         * The max value of the {@link platui.Slider|Slider}.
          */
         max?: number;
 
         /**
          * @name step
-         * @memberof platui.IRangeOptions
+         * @memberof platui.ISliderOptions
          * @kind property
          * @access public
          * 
          * @type {number}
          * 
          * @description
-         * The incremental step value of the {@link platui.Range|Range}.
+         * The incremental step value of the {@link platui.Slider|Slider}.
          */
         step?: number;
     }

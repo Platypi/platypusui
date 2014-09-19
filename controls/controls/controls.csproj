@@ -61,7 +61,7 @@
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />
     <TypeScriptCompile Include="radio\radio.ts" />
-    <TypeScriptCompile Include="range\range.ts" />
+    <TypeScriptCompile Include="slider\slider.ts" />
     <TypeScriptCompile Include="references\references.ts" />
     <TypeScriptCompile Include="select\select.ts" />
     <TypeScriptCompile Include="toggle\toggle.ts" />
@@ -236,17 +236,17 @@
     <Content Include="radio\radio.variables.min.css">
       <DependentUpon>radio.variables.css</DependentUpon>
     </Content>
-    <Content Include="range\range.css">
-      <DependentUpon>range.less</DependentUpon>
+    <Content Include="slider\slider.css">
+      <DependentUpon>slider.less</DependentUpon>
     </Content>
-    <Content Include="range\range.min.css">
-      <DependentUpon>range.css</DependentUpon>
+    <Content Include="slider\slider.min.css">
+      <DependentUpon>slider.css</DependentUpon>
     </Content>
-    <Content Include="range\range.variables.css">
-      <DependentUpon>range.variables.less</DependentUpon>
+    <Content Include="slider\slider.variables.css">
+      <DependentUpon>slider.variables.less</DependentUpon>
     </Content>
-    <Content Include="range\range.variables.min.css">
-      <DependentUpon>range.variables.css</DependentUpon>
+    <Content Include="slider\slider.variables.min.css">
+      <DependentUpon>slider.variables.css</DependentUpon>
     </Content>
     <Content Include="select\select.css">
       <DependentUpon>select.less</DependentUpon>
@@ -301,7 +301,7 @@
     <Content Include="button\button.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="range\range.less" />
+    <Content Include="slider\slider.less" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="select\select.less" />
@@ -319,7 +319,7 @@
     <Content Include="select\select.variables.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="range\range.variables.less" />
+    <Content Include="slider\slider.variables.less" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="radio\radio.variables.less" />
