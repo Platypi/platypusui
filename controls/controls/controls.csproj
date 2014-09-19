@@ -61,6 +61,7 @@
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />
     <TypeScriptCompile Include="radio\radio.ts" />
+    <TypeScriptCompile Include="range\range.ts" />
     <TypeScriptCompile Include="slider\slider.ts" />
     <TypeScriptCompile Include="references\references.ts" />
     <TypeScriptCompile Include="select\select.ts" />
