@@ -737,7 +737,7 @@
     plat.register.control(__Slider, Slider);
     
     /**
-     * @name ICheckboxOptions
+     * @name ISliderOptions
      * @memberof platui
      * @kind interface
      * 
@@ -776,10 +776,10 @@
          * Defaults to "right".
          * 
          * @remarks
-         * - "right"
-         * - "left"
-         * - "up"
-         * - "down"
+         * - "right" - the minimum is all the way to the left and the maximum is all the way to the right.
+         * - "left" - the minimum is all the way to the right and the maximum is all the way to the left.
+         * - "up" - the minimum is at the bottom and the maximum is at the top.
+         * - "down" - the minimum is at the top and the maximum is at the bottom.
          */
         transition?: string;
         
