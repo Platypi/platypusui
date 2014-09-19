@@ -62,13 +62,15 @@
 
     &.primary {
         .plat-input-container {
-            border-bottom: @border-width solid @border-color;
+            border-bottom: @primary-border-bottom;
+            .border-radius(@primary-border-radius);
         }
     }
 
     &.secondary {
         .plat-input-container {
-            border: @border-width solid @border-color;
+            border: @secondary-border;
+            .border-radius(@secondary-border-radius);
         }
     }
 
