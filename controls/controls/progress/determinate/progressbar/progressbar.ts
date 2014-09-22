@@ -67,10 +67,10 @@
         _barMax: number;
         
         /**
-         * @name __usingBind
+         * @name _usingBind
          * @memberof platui.ProgressBar
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
@@ -78,7 +78,7 @@
          * Whether or not the control is bound to a context value with a 
          * {@link plat.controls.Bind|Bind} control.
          */
-        private __usingBind = false;
+        _usingBind = false;
         
         /**
          * @name setClasses
@@ -145,7 +145,7 @@
         loaded(): void {
             var context = this.context,
                 element = this.element,
-                usingPlatBind = this.__usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
+                usingPlatBind = this._usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
 
             this._barMax = this._barMax || this._barElement.parentElement.offsetWidth;
 
@@ -173,7 +173,7 @@
          * @returns {void}
          */
         contextChanged(): void {
-            if (this.__usingBind) {
+            if (this._usingBind) {
                 return;
             }
 

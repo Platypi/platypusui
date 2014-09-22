@@ -237,6 +237,18 @@
     <Content Include="radio\radio.variables.min.css">
       <DependentUpon>radio.variables.css</DependentUpon>
     </Content>
+    <Content Include="range\range.css">
+      <DependentUpon>range.less</DependentUpon>
+    </Content>
+    <Content Include="range\range.min.css">
+      <DependentUpon>range.css</DependentUpon>
+    </Content>
+    <Content Include="range\range.variables.css">
+      <DependentUpon>range.variables.less</DependentUpon>
+    </Content>
+    <Content Include="range\range.variables.min.css">
+      <DependentUpon>range.variables.css</DependentUpon>
+    </Content>
     <Content Include="slider\slider.css">
       <DependentUpon>slider.less</DependentUpon>
     </Content>
@@ -365,6 +377,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="toggle\toggle.mixins.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="range\range.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="range\range.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

@@ -76,41 +76,43 @@
         _modalElement: HTMLElement;
 
         /**
-         * @name __isVisible
+         * @name _isVisible
          * @memberof platui.Modal
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not the modal is currently visible.
          */
-        private __isVisible = false;
+        _isVisible = false;
+
         /**
-         * @name __transitionEnd
+         * @name _transitionEnd
          * @memberof platui.Modal
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
          * @description
          * The browser's "transitionend" event.
          */
-        private __transitionEnd: string;
+        _transitionEnd: string;
+
         /**
-         * @name __transitionHash
+         * @name _transitionHash
          * @memberof platui.Modal
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {plat.IObject<boolean>}
          * 
          * @description
          * A hash for validating available transitions.
          */
-        private __transitionHash: plat.IObject<boolean> = {
+        _transitionHash: plat.IObject<boolean> = {
             up: true,
             down: true,
             left: true,
@@ -200,13 +202,13 @@
             if (!isString(transition) || transition === 'none') {
                 dom.addClass(modalElement, style + ' plat-no-transition');
                 return;
-            } else if ($utils.isNull(this.__transitionHash[transition])) {
+            } else if ($utils.isNull(this._transitionHash[transition])) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Custom transition direction: "' + transition +
                     '" defined for "' + __Modal + '." Please ensure a transition is defined to avoid errors.');
             }
 
-            this.__transitionEnd = this.$compat.animationEvents.$transitionEnd;
+            this._transitionEnd = this.$compat.animationEvents.$transitionEnd;
             dom.addClass(modalElement, transition + ' plat-modal-transition ' + style);
         }
         
@@ -229,7 +231,7 @@
                 dom.addClass(this._modalElement, 'activate');
             }, 25);
 
-            this.__isVisible = true;
+            this._isVisible = true;
         }
         
         /**
@@ -247,13 +249,13 @@
             var dom = this.dom;
 
             dom.removeClass(this._modalElement, 'activate');
-            if (this.$utils.isString(this.__transitionEnd)) {
+            if (this.$utils.isString(this._transitionEnd)) {
                 this._addHideOnTransitionEnd();
             } else {
                 dom.addClass(this.element, 'hide');
             }
 
-            this.__isVisible = false;
+            this._isVisible = false;
         }
         
         /**
@@ -268,7 +270,7 @@
          * @returns {void}
          */
         toggle(): void {
-            if (this.__isVisible) {
+            if (this._isVisible) {
                 this.hide();
                 return;
             }
@@ -289,7 +291,7 @@
          * and visible, false otherwise.
          */
         isVisible(): boolean {
-            return this.__isVisible;
+            return this._isVisible;
         }
         
         /**
@@ -306,7 +308,7 @@
         _addHideOnTransitionEnd(): void {
             var element = this.element,
                 dom = this.dom,
-                remove = this.addEventListener(element, this.__transitionEnd, () => {
+                remove = this.addEventListener(element, this._transitionEnd, () => {
                     remove();
                     dom.addClass(element, 'hide');
                 }, false);

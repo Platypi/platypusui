@@ -119,7 +119,7 @@
         max: number;
         
         /**
-         * @name _sliderElement
+         * @name _slider
          * @memberof platui.Slider
          * @kind property
          * @access protected
@@ -129,10 +129,10 @@
          * @description
          * The HTMLElement representing the slider.
          */
-        _sliderElement: HTMLElement;
+        _slider: HTMLElement;
         
         /**
-         * @name _knobElement
+         * @name _knob
          * @memberof platui.Slider
          * @kind property
          * @access protected
@@ -142,7 +142,7 @@
          * @description
          * The HTMLElement representing the knob.
          */
-        _knobElement: HTMLElement;
+        _knob: HTMLElement;
         
         /**
          * @name _lastTouch
@@ -156,60 +156,77 @@
          * The last touch start recorded.
          */
         _lastTouch: plat.ui.IPoint;
-        
+
         /**
-         * @name __sliderOffset
+         * @name _maxOffset
          * @memberof platui.Slider
          * @kind property
-         * @access private
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The current slider offset.
-         */
-        private __sliderOffset = 0;
-        /**
-         * @name __maxOffset
-         * @memberof platui.Slider
-         * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {number}
          * 
          * @description
          * The maximum slider offset.
          */
-        private __maxOffset: number;
+        _maxOffset: number;
+
         /**
-         * @name __increment
+         * @name _increment
          * @memberof platui.Slider
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {number}
          * 
          * @description
          * The slider's pixel based increment value.
          */
-        private __increment: number;
+        _increment: number;
+
         /**
-         * @name __step
+         * @name _step
          * @memberof platui.Slider
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {number}
          * 
          * @description
          * Denotes the incremental step value of the {@link platui.Slider|Slider's} value property.
          */
-        private __step: number;
+        _step: number;
+
         /**
-         * @name __loaded
+         * @name _transition
          * @memberof platui.Slider
          * @kind property
-         * @access private
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The transition direction of this control.
+         */
+        _transition: string;
+        
+        /**
+         * @name _sliderOffset
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current slider offset.
+         */
+        _sliderOffset = 0;
+
+        /**
+         * @name _loaded
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
          * 
          * @type {boolean}
          * 
@@ -217,56 +234,31 @@
          * Whether or not the slider has already been loaded. Useful for when 
          * the {@link plat.controls.Bind|Bind} tries to set a value.
          */
-        private __loaded = false;
+        _loaded = false;
         /**
-         * @name __inTouch
+         * @name _inTouch
          * @memberof platui.Slider
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not the user is currently touching the screen.
          */
-        private __inTouch = false;
+        _inTouch = false;
         /**
-         * @name __usingBind
+         * @name _lengthProperty
          * @memberof platui.Slider
          * @kind property
-         * @access private
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the control is bound to a context value with a 
-         * {@link plat.controls.Bind|Bind} control.
-         */
-        private __usingBind: boolean;
-        /**
-         * @name __transition
-         * @memberof platui.Slider
-         * @kind property
-         * @access private
-         * 
-         * @type {string}
-         * 
-         * @description
-         * The transition direction of this control.
-         */
-        private __transition: string;
-        /**
-         * @name __lengthProperty
-         * @memberof platui.Slider
-         * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
          * @description
          * Denotes whether we're using height or width as the length of the slider.
          */
-        private __lengthProperty: string;
+        _lengthProperty: string;
         
         /**
          * @name setClasses
@@ -295,13 +287,11 @@
          * @access public
          * 
          * @description
-         * Check if using the {@link plat.controls.Bind|Bind} control.
+         * Set the proper classes for the control.
          * 
          * @returns {void}
          */
         initialize(): void {
-            var element = this.element;
-            this.__usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
             this.setClasses();
         }
         
@@ -317,8 +307,8 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var slider = this._sliderElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
-            this._knobElement = <HTMLElement>slider.firstElementChild;
+            var slider = this._slider = <HTMLElement>this.element.firstElementChild.firstElementChild;
+            this._knob = <HTMLElement>slider.firstElementChild;
         }
         
         /**
@@ -344,8 +334,8 @@
                 optionMax = options.max,
                 step = options.step,
                 style = options.style || 'primary',
-                transition = this.__transition = options.transition || 'right',
-                length = this.__getLength(transition);
+                transition = this._transition = options.transition || 'right',
+                length = this._getLength(transition);
 
             dom.addClass(element, style + ' ' + transition);
 
@@ -356,8 +346,8 @@
 
             // reset value to minimum in case Bind set it to a value
             this.value = min;
-            this.__maxOffset = length;
-            this.__step = isNumber(step) ? (step > 0 ? step : 1) : 1;
+            this._maxOffset = length;
+            this._step = isNumber(step) ? (step > 0 ? step : 1) : 1;
 
             if (min >= max) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
@@ -365,10 +355,10 @@
                 this.max = min + 1;
             }
 
-            this.__setIncrement();
-            this.__initializeEvents(transition);
+            this._setIncrement();
+            this._initializeEvents(transition);
             this.setValue(value);
-            this.__loaded = true;
+            this._loaded = true;
         }
         
         /**
@@ -392,8 +382,8 @@
                 newValue = this.min;
             }
 
-            if (this.__loaded) {
-                this.__setValue(newValue, true, false);
+            if (this._loaded) {
+                this._setValue(newValue, true, false);
                 return;
             }
 
@@ -418,7 +408,7 @@
                 value = this.min;
             }
 
-            this.__setValue(value, true, true);
+            this._setValue(value, true, true);
         }
         
         /**
@@ -435,7 +425,7 @@
          * @returns {void}
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
-            this.__inTouch = true;
+            this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -456,23 +446,23 @@
          * @returns {void}
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            if (!this.__inTouch) {
+            if (!this._inTouch) {
                 return;
             }
 
-            this.__inTouch = false;
+            this._inTouch = false;
 
-            var newOffset = this.__calculateOffset(ev),
-                maxOffset = this.__maxOffset || (this.__maxOffset = this.__getLength(this.__transition));
+            var newOffset = this._calculateOffset(ev),
+                maxOffset = this._maxOffset || (this._maxOffset = this._getLength(this._transition));
             if (newOffset < 0) {
-                this.__sliderOffset = 0;
+                this._sliderOffset = 0;
                 return;
             } else if (newOffset > maxOffset) {
-                this.__sliderOffset = maxOffset;
+                this._sliderOffset = maxOffset;
                 return;
             }
 
-            this.__sliderOffset = newOffset;
+            this._sliderOffset = newOffset;
         }
         
         /**
@@ -489,9 +479,9 @@
          * @returns {void}
          */
         _track(ev: plat.ui.IGestureEvent): void {
-            var length = this.__calculateOffset(ev),
+            var length = this._calculateOffset(ev),
                 value: number,
-                maxOffset = this.__maxOffset || (this.__maxOffset = this.__getLength(this.__transition));
+                maxOffset = this._maxOffset || (this._maxOffset = this._getLength(this._transition));
 
             if (length < 0) {
                 value = this.min;
@@ -506,18 +496,18 @@
                 }
                 length = maxOffset;
             } else {
-                value = this.__calculateValue(length);
+                value = this._calculateValue(length);
             }
 
-            this.__setValue(value, false, true);
-            this._sliderElement.style[<any>this.__lengthProperty] = length + 'px';
+            this._setValue(value, false, true);
+            this._slider.style[<any>this._lengthProperty] = length + 'px';
         }
 
         /**
-         * @name __initializeEvents
+         * @name _initializeEvents
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Initialize the proper tracking events.
@@ -526,8 +516,8 @@
          * 
          * @returns {void}
          */
-        private __initializeEvents(transition: string): void {
-            var knob = this._knobElement,
+        _initializeEvents(transition: string): void {
+            var knob = this._knob,
                 trackBack: string,
                 trackForward: string,
                 track: EventListener = this._track;
@@ -567,10 +557,10 @@
         }
         
         /**
-         * @name __calculateValue
+         * @name _calculateValue
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Calculates the current value based on knob position and slider width.
@@ -579,18 +569,18 @@
          * 
          * @returns {number} The current value of the {link platui.Slider|Slider}.
          */
-        private __calculateValue(width: number): number {
-            var increment = this.__increment || this.__setIncrement(),
-                step = this.__step;
+        _calculateValue(width: number): number {
+            var increment = this._increment || this._setIncrement(),
+                step = this._step;
 
             return (this.min + Math.round(width / increment / step) * step);
         }
         
         /**
-         * @name __calculateKnobPosition
+         * @name _calculateKnobPosition
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Calculates knob position based on current value.
@@ -599,16 +589,16 @@
          * 
          * @returns {number} The current position of the knob in pixels.
          */
-        private __calculateKnobPosition(value: number): number {
-            var increment = this.__increment || this.__setIncrement();
+        _calculateKnobPosition(value: number): number {
+            var increment = this._increment || this._setIncrement();
             return (value - this.min) * increment;
         }
         
         /**
-         * @name __calculateOffset
+         * @name _calculateOffset
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Calculates the new offset of the slider based on the old offset and the distance moved.
@@ -617,24 +607,24 @@
          * 
          * @returns {number} The current position of the knob in pixels.
          */
-        private __calculateOffset(ev: plat.ui.IGestureEvent): number {
-            switch (this.__transition) {
+        _calculateOffset(ev: plat.ui.IGestureEvent): number {
+            switch (this._transition) {
                 case 'right':
-                    return this.__sliderOffset + ev.clientX - this._lastTouch.x;
+                    return this._sliderOffset + ev.clientX - this._lastTouch.x;
                 case 'left':
-                    return this.__sliderOffset + this._lastTouch.x - ev.clientX;
+                    return this._sliderOffset + this._lastTouch.x - ev.clientX;
                 case 'up':
-                    return this.__sliderOffset + this._lastTouch.y - ev.clientY;
+                    return this._sliderOffset + this._lastTouch.y - ev.clientY;
                 case 'down':
-                    return this.__sliderOffset + ev.clientY - this._lastTouch.y;
+                    return this._sliderOffset + ev.clientY - this._lastTouch.y;
             }
         }
         
         /**
-         * @name __getLength
+         * @name _getLength
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Gets the property to use for and the current length of the slider.
@@ -643,41 +633,41 @@
          * 
          * @returns {number} The length of the slider.
          */
-        private __getLength(transition: string): number {
+        _getLength(transition: string): number {
             switch (transition) {
                 case 'right':
                 case 'left':
-                    this.__lengthProperty = 'width';
-                    return this._sliderElement.parentElement.offsetWidth;
+                    this._lengthProperty = 'width';
+                    return this._slider.parentElement.offsetWidth;
                 case 'up':
                 case 'down':
-                    this.__lengthProperty = 'height';
-                    return this._sliderElement.parentElement.offsetHeight;
+                    this._lengthProperty = 'height';
+                    return this._slider.parentElement.offsetHeight;
                 default:
                     return 0;
             }
         }
         
         /**
-         * @name __setIncrement
+         * @name _setIncrement
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Sets the increment for sliding the {link platui.Slider|Slider}.
          * 
          * @returns {number} The slider's increment value.
          */
-        private __setIncrement(): number {
-            return (this.__increment = this.__maxOffset / (this.max - this.min));
+        _setIncrement(): number {
+            return (this._increment = this._maxOffset / (this.max - this.min));
         }
         
         /**
-         * @name __setValue
+         * @name _setValue
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Sets the value of the {@link platui.Slider|Slider}.
@@ -688,7 +678,7 @@
          * 
          * @returns {void}
          */
-        private __setValue(newValue: number, setKnob: boolean, setProperty: boolean): void {
+        _setValue(newValue: number, setKnob: boolean, setProperty: boolean): void {
             var value = this.value;
             if (newValue === value) {
                 return;
@@ -696,13 +686,13 @@
                 newValue = this.max;
             } else if (newValue <= this.min) {
                 newValue = this.min;
-            } else if (Math.abs(newValue - value) < this.__step) {
+            } else if (Math.abs(newValue - value) < this._step) {
                 return;
             }
 
             this.value = newValue;
             if (setKnob) {
-                this.__setKnob();
+                this._setKnob();
             }
 
             if (setProperty) {
@@ -711,10 +701,10 @@
         }
         
         /**
-         * @name __setKnob
+         * @name _setKnob
          * @memberof platui.Slider
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Animates and sets the knob position.
@@ -724,13 +714,13 @@
          * 
          * @returns {void}
          */
-        private __setKnob(value?: number): void {
+        _setKnob(value?: number): void {
             var animationOptions: plat.IObject<string> = {},
-                length = this.__calculateKnobPosition((value || this.value));
+                length = this._calculateKnobPosition((value || this.value));
 
-            animationOptions[this.__lengthProperty] = length + 'px';
-            this.$animator.animate(this._sliderElement, __Transition, animationOptions);
-            this.__sliderOffset = length;
+            animationOptions[this._lengthProperty] = length + 'px';
+            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this._sliderOffset = length;
         }
     }
 

@@ -109,34 +109,36 @@
         _actionElement: HTMLElement;
         
         /**
-         * @name __type
+         * @name _type
          * @memberof platui.Input
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
          * @description
          * The control's type (e.g. - "email").
          */
-        private __type: string;
+        _type: string;
+
         /**
-         * @name __pattern
+         * @name _pattern
          * @memberof platui.Input
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
          * @description
          * A regular expression string to regulate what text is allowed to be entered.
          */
-        private __pattern: RegExp;
+        _pattern: RegExp;
+
         /**
-         * @name __typeChar
+         * @name _typeChar
          * @memberof platui.Input
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
@@ -144,43 +146,46 @@
          * The control's type character (e.g. - an "x" to delete 
          * input text).
          */
-        private __typeChar: string;
+        _typeChar: string;
+
         /**
-         * @name __typeHandler
+         * @name _typeHandler
          * @memberof platui.Input
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {EventListener}
          * 
          * @description
          * A function to handle the type event.
          */
-        private __typeHandler: EventListener;
+        _typeHandler: EventListener;
+
         /**
-         * @name __actionHandler
+         * @name _actionHandler
          * @memberof platui.Input
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {() => void}
          * 
          * @description
          * A function to check the current action state and handle accordingly.
          */
-        private __actionHandler: () => void;
+        _actionHandler: () => void;
+
         /**
-         * @name __inTouch
+         * @name _inTouch
          * @memberof platui.Input
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether the user is currently touching the screen.
          */
-        private __inTouch = false;
+        _inTouch = false;
         
         /**
          * @name setClasses
@@ -269,7 +274,7 @@
                 dom = this.dom,
                 element = this.element,
                 style = options.style || 'primary',
-                type = this.__type = options.type || 'text',
+                type = this._type = options.type || 'text',
                 pattern = options.pattern;
 
             dom.addClass(element, style);
@@ -280,7 +285,7 @@
                     pattern = pattern.slice(1, -1);
                 }
 
-                this.__pattern = new RegExp(pattern);
+                this._pattern = new RegExp(pattern);
             }
 
             this._initializeType();
@@ -300,7 +305,7 @@
          * @returns {boolean} Whether or not the user's input is valid.
          */
         validate(): boolean {
-            return this.__pattern.test(this._inputElement.value);
+            return this._pattern.test(this._inputElement.value);
         }
         
         /**
@@ -322,7 +327,7 @@
 
             var actionElement = this._actionElement;
             this.propertyChanged('', value);
-            actionElement.textContent = this.__typeChar = '';
+            actionElement.textContent = this._typeChar = '';
             this.dom.addClass(actionElement, 'hide');
         }
         
@@ -383,50 +388,50 @@
          * @returns {void}
          */
         _initializeType(): void {
-            var type = this.__type,
+            var type = this._type,
                 event = __$tap,
                 actionElement = this._actionElement;
 
             switch (type) {
                 case 'email':
-                    this.__pattern = this.__pattern || new RegExp('^(([^<>()[\\]\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\.,;:\\s@\\"]+)*)|' +
+                    this._pattern = this._pattern || new RegExp('^(([^<>()[\\]\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\.,;:\\s@\\"]+)*)|' +
                         '(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|' +
                         '(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
-                    this.__actionHandler = this.__checkEmail.bind(this);
-                    this.__typeHandler = this.__handleEmail;
+                    this._actionHandler = this._checkEmail.bind(this);
+                    this._typeHandler = this._handleEmail;
                     break;
                 case 'password':
-                    var hidePassword = this.__handlePasswordHide;
-                    this.__pattern = this.__pattern || /[\S\s]*/;
-                    this.__actionHandler = this.__checkPassword.bind(this);
-                    this.__typeHandler = this.__handlePasswordShow;
+                    var hidePassword = this._handlePasswordHide;
+                    this._pattern = this._pattern || /[\S\s]*/;
+                    this._actionHandler = this._checkPassword.bind(this);
+                    this._typeHandler = this._handlePasswordShow;
                     this.addEventListener(actionElement, __$touchend, hidePassword);
                     this.addEventListener(actionElement, __$trackend, hidePassword);
                     event = __$touchstart;
                     break;
                 case 'tel':
-                    this.__pattern = this.__pattern || /^\+|[0-9.-\s]+/;
-                    this.__actionHandler = this.__checkText.bind(this);
-                    this.__typeHandler = this.__erase;
+                    this._pattern = this._pattern || /^\+|[0-9.-\s]+/;
+                    this._actionHandler = this._checkText.bind(this);
+                    this._typeHandler = this._erase;
                     break;
                 case 'number':
-                    this.__pattern = this.__pattern || /[0-9.,]+/;
-                    this.__actionHandler = this.__checkText.bind(this);
-                    this.__typeHandler = this.__erase;
+                    this._pattern = this._pattern || /[0-9.,]+/;
+                    this._actionHandler = this._checkText.bind(this);
+                    this._typeHandler = this._erase;
                     type = 'tel';
                     break;
                 default:
-                    this.__pattern = this.__pattern || /[\S\s]*/;
-                    this.__actionHandler = this.__checkText.bind(this);
-                    this.__typeHandler = this.__erase;
+                    this._pattern = this._pattern || /[\S\s]*/;
+                    this._actionHandler = this._checkText.bind(this);
+                    this._typeHandler = this._erase;
                     break;
             }
 
             this._inputElement.type = type;
 
-            actionElement.textContent = this.__typeChar = '';
+            actionElement.textContent = this._typeChar = '';
             this.dom.addClass(actionElement, 'hide');
-            this.addEventListener(actionElement, event, this.__typeHandler);
+            this.addEventListener(actionElement, event, this._typeHandler);
             this._addTextEventListener();
         }
 
@@ -452,7 +457,7 @@
                         return;
                     }
 
-                    this.__onInput();
+                    this._onInput();
                 },
                 postponedEventListener = () => {
                     if ($utils.isFunction(timeout)) {
@@ -496,26 +501,26 @@
         }
         
         /**
-         * @name __erase
+         * @name _erase
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Clears the user's input and focuses the input element.
          * 
          * @returns {void}
          */
-        private __erase(): void {
+        _erase(): void {
             this.clear();
             this.focus();
         }
 
         /**
-         * @name __handlePasswordShow
+         * @name _handlePasswordShow
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * The action handler for the "password" type when showing the 
@@ -523,16 +528,16 @@
          * 
          * @returns {void}
          */
-        private __handlePasswordShow(): void {
-            this.__inTouch = true;
+        _handlePasswordShow(): void {
+            this._inTouch = true;
             this._inputElement.type = 'text';
         }
 
         /**
-         * @name __handlePasswordHide
+         * @name _handlePasswordHide
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * The action handler for the "password" type when hiding the 
@@ -540,61 +545,61 @@
          * 
          * @returns {void}
          */
-        private __handlePasswordHide(): void {
-            if (!this.__inTouch) {
+        _handlePasswordHide(): void {
+            if (!this._inTouch) {
                 return;
             }
-            this.__inTouch = false;
+            this._inTouch = false;
 
             var inputElement = this._inputElement;
-            inputElement.type = this.__type;
+            inputElement.type = this._type;
             inputElement.focus();
         }
         
         /**
-         * @name __handleEmail
+         * @name _handleEmail
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * The action handler for the "email" type.
          * 
          * @returns {void}
          */
-        private __handleEmail(): void {
+        _handleEmail(): void {
             var inputElement = this._inputElement,
                 value = inputElement.value,
-                char = this.__typeChar;
+                char = this._typeChar;
 
             this.propertyChanged(char === 'x' ? '' : value + char, value);
-            this.__checkEmail();
+            this._checkEmail();
             inputElement.focus();
         }
 
         /**
-         * @name __checkText
+         * @name _checkText
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Checks the current state of the default action and handles accordingly.
          * 
          * @returns {void}
          */
-        private __checkText(): void {
-            var char = this.__typeChar;
+        _checkText(): void {
+            var char = this._typeChar;
 
             if (char === 'x') {
                 if (this._inputElement.value === '') {
-                    this.__typeChar = '';
+                    this._typeChar = '';
                 }
             } else if (this._inputElement.value !== '') {
-                this.__typeChar = 'x';
+                this._typeChar = 'x';
             }
 
-            var newChar = this.__typeChar;
+            var newChar = this._typeChar;
             if (char !== newChar) {
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
@@ -608,28 +613,28 @@
         }
 
         /**
-         * @name __checkPassword
+         * @name _checkPassword
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Checks the current state of the password action and handles accordingly.
          * 
          * @returns {void}
          */
-        private __checkPassword(): void {
-            var char = this.__typeChar;
+        _checkPassword(): void {
+            var char = this._typeChar;
 
             if (char === '?') {
                 if (this._inputElement.value === '') {
-                    this.__typeChar = '';
+                    this._typeChar = '';
                 }
             } else if (this._inputElement.value !== '') {
-                this.__typeChar = '?';
+                this._typeChar = '?';
             }
 
-            var newChar = this.__typeChar;
+            var newChar = this._typeChar;
             if (char !== newChar) {
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
@@ -643,54 +648,54 @@
         }
         
         /**
-         * @name __checkEmail
+         * @name _checkEmail
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Checks the current state of the "email" action and handles accordingly.
          * 
          * @returns {void}
          */
-        private __checkEmail(): void {
+        _checkEmail(): void {
             var value = this._inputElement.value,
-                char = this.__typeChar;
+                char = this._typeChar;
 
             switch (char) {
                 case '@':
                     if (value.indexOf('@') !== -1) {
                         if (value.indexOf('.com') !== -1) {
-                            this.__typeChar = 'x';
+                            this._typeChar = 'x';
                             break;
                         }
-                        this.__typeChar = '.com';
+                        this._typeChar = '.com';
                     }
                     break;
                 case '.com':
                     if (value.indexOf('@') === -1) {
-                        this.__typeChar = '@';
+                        this._typeChar = '@';
                     } else if (value.indexOf('.com') !== -1) {
-                        this.__typeChar = 'x';
+                        this._typeChar = 'x';
                     }
                     break;
                 case 'x':
                     if (value === '') {
-                        this.__typeChar = '';
+                        this._typeChar = '';
                     } else if (value.indexOf('@') === -1) {
-                        this.__typeChar = '@';
+                        this._typeChar = '@';
                     } else if (value.indexOf('.com') === -1) {
-                        this.__typeChar = '.com';
+                        this._typeChar = '.com';
                     }
                     break;
                 default:
                     if (value.indexOf('@') === -1) {
-                        this.__typeChar = '@';
+                        this._typeChar = '@';
                     }
                     break;
             }
 
-            var newChar = this.__typeChar;
+            var newChar = this._typeChar;
             if (char !== newChar) {
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
@@ -704,32 +709,32 @@
         }
 
         /**
-         * @name __onInput
+         * @name _onInput
          * @memberof platui.Input
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * The event handler upon user text input.
          * 
          * @returns {void}
          */
-        private __onInput(): void {
-            switch (this.__type) {
+        _onInput(): void {
+            switch (this._type) {
                 case 'tel':
                 case 'number':
                     var input = this._inputElement,
                         value = input.value,
                         last = value.length - 1;
 
-                    if (last >= 0 && (!this.__pattern.test(value[last]) ||
-                        !(last === 0 || this.__type !== 'tel' || value[last] !== '+'))) {
+                    if (last >= 0 && (!this._pattern.test(value[last]) ||
+                        !(last === 0 || this._type !== 'tel' || value[last] !== '+'))) {
                         this.propertyChanged(value.slice(0, -1), value);
                     }
                     break;
             }
 
-            this.__actionHandler();
+            this._actionHandler();
         }
     }
 

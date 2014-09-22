@@ -38,29 +38,29 @@
         options: plat.observable.IObservableProperty<IDrawerOptions>;
         
         /**
-         * @name __currentTransition
+         * @name _currentTransition
          * @memberof platui.Drawer
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
          * @description
          * The transition direction of the {@link platui.Drawer|Drawer}.
          */
-        private __currentTransition: string;
+        _currentTransition: string;
         /**
-         * @name __useContext
+         * @name _useContext
          * @memberof platui.Drawer
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not to use the inherited context of this global {@link platui.Drawer|Drawer}.
          */
-        private __useContext: boolean;
+        _useContext: boolean;
         
         /**
          * @name setClasses
@@ -131,8 +131,8 @@
                 $utils = this.$utils,
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
-                transition = this.__currentTransition = options.transition || 'right',
-                useContext = this.__useContext =
+                transition = this._currentTransition = options.transition || 'right',
+                useContext = this._useContext =
                     (options.useContext === true) ||
                     element.hasAttribute(__Context) ||
                     element.hasAttribute('data-' + __Context),
@@ -144,19 +144,19 @@
             if ($utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
                     this.innerTemplate = template;
-                    if (this.__useContext) {
+                    if (this._useContext) {
                         this.bindableTemplates.add('drawer', template.cloneNode(true));
-                        this.__bindTemplate();
+                        this._bindTemplate();
                     }
-                    this.__initializeEvents(id, transition, isElastic);
+                    this._initializeEvents(id, transition, isElastic);
                 });
                 return;
             } else if (useContext && $utils.isNode(this.innerTemplate)) {
                 this.bindableTemplates.add('drawer', this.innerTemplate.cloneNode(true));
-                this.__bindTemplate();
+                this._bindTemplate();
             }
 
-            this.__initializeEvents(id, transition, isElastic);
+            this._initializeEvents(id, transition, isElastic);
         }
         
         /**
@@ -173,24 +173,24 @@
          * @returns {void}
          */
         _changeDirection(transition: string): void {
-            if (this.$utils.isNull(transition) || transition === this.__currentTransition) {
+            if (this.$utils.isNull(transition) || transition === this._currentTransition) {
                 return;
             }
 
             var dom = this.dom,
                 element = this.element;
 
-            dom.removeClass(element, this.__currentTransition);
+            dom.removeClass(element, this._currentTransition);
             dom.addClass(element, transition);
 
-            this.__currentTransition = transition;
+            this._currentTransition = transition;
         }
         
         /**
-         * @name __initializeEvents
+         * @name _initializeEvents
          * @memberof platui.Drawer
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Initializes and dispatches pub sub events.
@@ -202,12 +202,12 @@
          * 
          * @returns {void}
          */
-        private __initializeEvents(id: string, transition: string, isElastic: boolean): void {
+        _initializeEvents(id: string, transition: string, isElastic: boolean): void {
             var $utils = this.$utils,
                 element = this.element,
                 isString = $utils.isString,
                 innerTemplate = this.innerTemplate,
-                useContext = this.__useContext,
+                useContext = this._useContext,
                 DIRECT = plat.events.EventManager.DIRECT;
 
             this.on(__DrawerControllerFetchEvent,
@@ -240,17 +240,17 @@
         }
         
         /**
-         * @name __bindTemplate
+         * @name _bindTemplate
          * @memberof platui.Drawer
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Binds the added HTML template to this control's inherited context.
          * 
          * @returns {void}
          */
-        private __bindTemplate(): void {
+        _bindTemplate(): void {
             this.bindableTemplates.bind('drawer').then((template) => {
                 this.element.appendChild(template);
             });
@@ -388,154 +388,166 @@
         _lastTouch: plat.ui.IPoint;
         
         /**
-         * @name __hasSwiped
+         * @name _hasSwiped
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not the user has swiped.
          */
-        private __hasSwiped = false;
+        _hasSwiped = false;
+
         /**
-         * @name __isOpen
+         * @name _isOpen
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not the {@link platui.Drawer|Drawer} is open.
          */
-        private __isOpen = false;
+        _isOpen = false;
+
         /**
-         * @name __isElastic
+         * @name _isElastic
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not the {@link platui.Drawer|Drawer} is elastic.
          */
-        private __isElastic: boolean;
+        _isElastic: boolean;
+
         /**
-         * @name __inTouch
+         * @name _inTouch
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not the user is currently touching the screen.
          */
-        private __inTouch: boolean;
+        _inTouch: boolean;
+
         /**
-         * @name __useContext
+         * @name _useContext
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {boolean}
          * 
          * @description
          * Whether or not to use this control's inherited context.
          */
-        private __useContext: boolean;
+        _useContext: boolean;
+
         /**
-         * @name __maxOffset
+         * @name _maxOffset
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {number}
          * 
          * @description
          * The max offset to transform the {@link platui.Drawer|Drawer's} element.
          */
-        private __maxOffset: number;
+        _maxOffset: number;
+
         /**
-         * @name __removeTap
+         * @name _removeTap
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {plat.IRemoveListener}
          * 
          * @description
          * A function for removing the tap event listener.
          */
-        private __removeTap: plat.IRemoveListener;
+        _removeTap: plat.IRemoveListener;
+
         /**
-         * @name __removeSwipeOpen
+         * @name _removeSwipeOpen
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {plat.IRemoveListener}
          * 
          * @description
          * A function for removing the swipe open event listener.
          */
-        private __removeSwipeOpen: plat.IRemoveListener;
+        _removeSwipeOpen: plat.IRemoveListener;
+
         /**
-         * @name __removeSwipeClose
+         * @name _removeSwipeClose
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {plat.IRemoveListener}
          * 
          * @description
          * A function for removing the swipe close event listener.
          */
-        private __removeSwipeClose: plat.IRemoveListener;
+        _removeSwipeClose: plat.IRemoveListener;
+
         /**
-         * @name __removePrimaryTrack
+         * @name _removePrimaryTrack
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {plat.IRemoveListener}
          * 
          * @description
          * A function for removing the primary track (open) event listener.
          */
-        private __removePrimaryTrack: plat.IRemoveListener;
+        _removePrimaryTrack: plat.IRemoveListener;
+
         /**
-         * @name __removeSecondaryTrack
+         * @name _removeSecondaryTrack
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {plat.IRemoveListener}
          * 
          * @description
          * A function for removing the secondary track (close) event listener.
          */
-        private __removeSecondaryTrack: plat.IRemoveListener;
+        _removeSecondaryTrack: plat.IRemoveListener;
+
         /**
-         * @name __rootElement
+         * @name _rootElement
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {HTMLElement}
          * 
          * @description
          * The root element to translate.
          */
-        private __rootElement: HTMLElement;
+        _rootElement: HTMLElement;
+
         /**
-         * @name __type
+         * @name _type
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
@@ -543,31 +555,33 @@
          * The type of {@link platui.Drawer|Drawer} 
          * (i.e. the method by which the {@link platui.Drawer|Drawer} opens and closes).
          */
-        private __type: string;
+        _type: string;
+
         /**
-         * @name __templateUrl
+         * @name _templateUrl
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
          * @description
          * A URL that points to the HTML template.
          */
-        private __templateUrl: string;
+        _templateUrl: string;
+
         /**
-         * @name __transitionHash
+         * @name _transitionHash
          * @memberof platui.DrawerController
          * @kind property
-         * @access private
+         * @access protected
          * 
          * @type {string}
          * 
          * @description
          * An object to quickly access the transition close direction based on a transition open direction.
          */
-        private __transitionHash: plat.IObject<string> = {
+        _transitionHash: plat.IObject<string> = {
             right: 'left',
             left: 'right',
             up: 'down',
@@ -592,11 +606,11 @@
                 transition = options.transition,
                 id = options.id;
 
-            this.__type = options.type;
-            this.__isElastic = options.elastic === true;
-            this.__useContext = options.useContext === true;
-            this.__templateUrl = options.templateUrl;
-            this.__initializeEvents(id, transition);
+            this._type = options.type;
+            this._isElastic = options.elastic === true;
+            this._useContext = options.useContext === true;
+            this._templateUrl = options.templateUrl;
+            this._initializeEvents(id, transition);
         }
         
         /**
@@ -611,7 +625,7 @@
          * @returns {void}
          */
         dispose(): void {
-            this.dom.removeClass(this.__rootElement, 'plat-drawer-transition-prep plat-drawer-transition-' + this._transition);
+            this.dom.removeClass(this._rootElement, 'plat-drawer-transition-prep plat-drawer-transition-' + this._transition);
         }
         
         /**
@@ -626,7 +640,7 @@
          * @returns {void}
          */
         open(): void {
-            var elementToMove = this.__rootElement,
+            var elementToMove = this._rootElement,
                 isNode = this.$utils.isNode;
 
             if (!isNode(elementToMove) || !isNode(this._drawerElement)) {
@@ -636,16 +650,16 @@
             var translation: string;
             switch (this._transition) {
                 case 'up':
-                    translation = 'translate3d(0,' + (-this.__maxOffset) + 'px,0)';
+                    translation = 'translate3d(0,' + (-this._maxOffset) + 'px,0)';
                     break;
                 case 'down':
-                    translation = 'translate3d(0,' + this.__maxOffset + 'px,0)';
+                    translation = 'translate3d(0,' + this._maxOffset + 'px,0)';
                     break;
                 case 'left':
-                    translation = 'translate3d(' + (-this.__maxOffset) + 'px,0,0)';
+                    translation = 'translate3d(' + (-this._maxOffset) + 'px,0,0)';
                     break;
                 case 'right':
-                    translation = 'translate3d(' + this.__maxOffset + 'px,0,0)';
+                    translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
                     break;
                 default:
                     return;
@@ -654,7 +668,7 @@
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
             this.$animator.animate(elementToMove, __Transition, animationOptions);
-            this.__isOpen = true;
+            this._isOpen = true;
         }
         
         /**
@@ -669,7 +683,7 @@
          * @returns {void}
          */
         close(): void {
-            var elementToMove = this.__rootElement,
+            var elementToMove = this._rootElement,
                 drawerElement = this._drawerElement,
                 isNode = this.$utils.isNode;
 
@@ -680,7 +694,7 @@
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(0,0,0)';
             this.$animator.animate(elementToMove, __Transition, animationOptions);
-            this.__isOpen = false;
+            this._isOpen = false;
         }
         
         /**
@@ -695,7 +709,7 @@
          * @returns {void}
          */
         toggle(): void {
-            if (this.__isOpen) {
+            if (this._isOpen) {
                 this.close();
                 return;
             }
@@ -715,7 +729,7 @@
          * @returns {void}
          */
         reset(): void {
-            if (this.__isOpen) {
+            if (this._isOpen) {
                 this.open();
                 return;
             }
@@ -735,7 +749,7 @@
          * @returns {boolean} Whether or not the {@link platui.Drawer|Drawer} is currently open.
          */
         isOpen(): boolean {
-            return this.__isOpen;
+            return this._isOpen;
         }
         
         /**
@@ -753,16 +767,16 @@
          */
         _addSwipeEvents(transition: string): void {
             var openEvent = __$swipe + transition,
-                closeEvent = __$swipe + this.__transitionHash[transition],
+                closeEvent = __$swipe + this._transitionHash[transition],
                 element = this.element;
 
-            this.__removeSwipeOpen = this.addEventListener(element, openEvent, () => {
-                this.__hasSwiped = true;
+            this._removeSwipeOpen = this.addEventListener(element, openEvent, () => {
+                this._hasSwiped = true;
                 this.open();
             }, false);
 
-            this.__removeSwipeClose = this.addEventListener(element, closeEvent, () => {
-                this.__hasSwiped = true;
+            this._removeSwipeClose = this.addEventListener(element, closeEvent, () => {
+                this._hasSwiped = true;
                 this.close();
             }, false);
         }
@@ -783,7 +797,7 @@
         _addEventListeners(transition: string): void {
             var element = this.element,
                 isNull = this.$utils.isNull,
-                type = this.__type,
+                type = this._type,
                 tapOnly = type === 'tap';
 
             this._transition = transition;
@@ -791,18 +805,18 @@
             // remove event listeners first in case we want to later be able to dynamically change transition direction of drawer.
             this._removeEventListeners();
             if (isNull(type) || tapOnly) {
-                this.__removeTap = this.addEventListener(element, __$tap, this.toggle, false);
+                this._removeTap = this.addEventListener(element, __$tap, this.toggle, false);
                 if (tapOnly) {
                     return;
                 }
             }
 
             var primaryTrack = __$track + transition,
-                secondaryTrack = __$track + this.__transitionHash[transition],
+                secondaryTrack = __$track + this._transitionHash[transition],
                 trackFn = this._track;
 
-            this.__removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
-            this.__removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
+            this._removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
+            this._removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
             this._addSwipeEvents(transition);
 
             if (isNull(this._lastTouch)) {
@@ -828,29 +842,29 @@
          */
         _removeEventListeners(): void {
             var isFunction = this.$utils.isFunction;
-            if (isFunction(this.__removeTap)) {
-                this.__removeTap();
-                this.__removeTap = null;
+            if (isFunction(this._removeTap)) {
+                this._removeTap();
+                this._removeTap = null;
             }
 
-            if (isFunction(this.__removePrimaryTrack)) {
-                this.__removePrimaryTrack();
-                this.__removePrimaryTrack = null;
+            if (isFunction(this._removePrimaryTrack)) {
+                this._removePrimaryTrack();
+                this._removePrimaryTrack = null;
             }
 
-            if (isFunction(this.__removeSecondaryTrack)) {
-                this.__removeSecondaryTrack();
-                this.__removeSecondaryTrack = null;
+            if (isFunction(this._removeSecondaryTrack)) {
+                this._removeSecondaryTrack();
+                this._removeSecondaryTrack = null;
             }
 
-            if (isFunction(this.__removeSwipeOpen)) {
-                this.__removeSwipeOpen();
-                this.__removeSwipeOpen = null;
+            if (isFunction(this._removeSwipeOpen)) {
+                this._removeSwipeOpen();
+                this._removeSwipeOpen = null;
             }
 
-            if (isFunction(this.__removeSwipeClose)) {
-                this.__removeSwipeClose();
-                this.__removeSwipeClose = null;
+            if (isFunction(this._removeSwipeClose)) {
+                this._removeSwipeClose();
+                this._removeSwipeClose = null;
             }
         }
         
@@ -868,7 +882,7 @@
          * @returns {void}
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
-            this.__inTouch = true;
+            this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -889,12 +903,12 @@
          * @returns {void}
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var inTouch = this.__inTouch;
-            this.__inTouch = false;
-            if (!inTouch || this.__hasSwiped) {
-                this.__hasSwiped = false;
+            var inTouch = this._inTouch;
+            this._inTouch = false;
+            if (!inTouch || this._hasSwiped) {
+                this._hasSwiped = false;
                 return;
-            } else if (ev.type === __$touchend && this.__type !== 'slide') {
+            } else if (ev.type === __$touchend && this._type !== 'slide') {
                 return;
             }
 
@@ -913,7 +927,7 @@
                     return;
             }
 
-            if (Math.abs(distanceMoved) > Math.ceil(this.__maxOffset / 2)) {
+            if (Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
                 this.toggle();
                 return;
             }
@@ -936,14 +950,14 @@
          * @returns {void}
          */
         _track(ev: plat.ui.IGestureEvent): void {
-            this.__rootElement.style[<any>this._transform] = this.__calculateTranslation(ev);
+            this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
         }
         
         /**
-         * @name __calculateTranslation
+         * @name _calculateTranslation
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Calculates the translation value for setting the transform value.
@@ -952,28 +966,28 @@
          * 
          * @returns {string} The translation value.
          */
-        private __calculateTranslation(ev: plat.ui.IGestureEvent): string {
+        _calculateTranslation(ev: plat.ui.IGestureEvent): string {
             var distanceMoved: number;
             switch (this._transition) {
                 case 'up':
-                    distanceMoved = this.__isOpen ?
-                    this.__checkElasticity((-this.__maxOffset) + ev.clientY - this._lastTouch.y) :
-                    this.__checkElasticity(ev.clientY - this._lastTouch.y);
+                    distanceMoved = this._isOpen ?
+                    this._checkElasticity((-this._maxOffset) + ev.clientY - this._lastTouch.y) :
+                    this._checkElasticity(ev.clientY - this._lastTouch.y);
                     return 'translate3d(0,' + distanceMoved + 'px,0)';
                 case 'down':
-                    distanceMoved = this.__isOpen ?
-                    this.__checkElasticity(this.__maxOffset + ev.clientY - this._lastTouch.y) :
-                    this.__checkElasticity(ev.clientY - this._lastTouch.y);
+                    distanceMoved = this._isOpen ?
+                    this._checkElasticity(this._maxOffset + ev.clientY - this._lastTouch.y) :
+                    this._checkElasticity(ev.clientY - this._lastTouch.y);
                     return 'translate3d(0,' + distanceMoved + 'px,0)';
                 case 'left':
-                    distanceMoved = this.__isOpen ?
-                    this.__checkElasticity((-this.__maxOffset) + ev.clientX - this._lastTouch.x) :
-                    this.__checkElasticity(ev.clientX - this._lastTouch.x);
+                    distanceMoved = this._isOpen ?
+                    this._checkElasticity((-this._maxOffset) + ev.clientX - this._lastTouch.x) :
+                    this._checkElasticity(ev.clientX - this._lastTouch.x);
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
                 case 'right':
-                    distanceMoved = this.__isOpen ?
-                    this.__checkElasticity(this.__maxOffset + ev.clientX - this._lastTouch.x) :
-                    this.__checkElasticity(ev.clientX - this._lastTouch.x);
+                    distanceMoved = this._isOpen ?
+                    this._checkElasticity(this._maxOffset + ev.clientX - this._lastTouch.x) :
+                    this._checkElasticity(ev.clientX - this._lastTouch.x);
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
                 default:
                     return 'translate3d(0,0,0)';
@@ -981,10 +995,10 @@
         }
         
         /**
-         * @name __checkElasticity
+         * @name _checkElasticity
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Checks for elasticity and potentially readjusts the user's 
@@ -994,25 +1008,25 @@
          * 
          * @returns {number} The potentially recalcuated distance moved.
          */
-        private __checkElasticity(distanceMoved: number): number {
-            if (this.__isElastic) {
+        _checkElasticity(distanceMoved: number): number {
+            if (this._isElastic) {
                 return distanceMoved;
             }
 
             if (distanceMoved < 0) {
                 distanceMoved = 0;
-            } else if (distanceMoved > this.__maxOffset) {
-                distanceMoved = this.__maxOffset;
+            } else if (distanceMoved > this._maxOffset) {
+                distanceMoved = this._maxOffset;
             }
 
             return distanceMoved;
         }
         
         /**
-         * @name __initializeEvents
+         * @name _initializeEvents
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Initializes and dispatches pub sub events.
@@ -1022,13 +1036,13 @@
          * 
          * @returns {void}
          */
-        private __initializeEvents(id: string, transition: string): void {
+        _initializeEvents(id: string, transition: string): void {
             var element = this.element,
                 $utils = this.$utils,
                 isString = $utils.isString,
                 needsDirection = !isString(transition);
 
-            this.__setTransform();
+            this._setTransform();
 
             var eventRemover = this.on(__DrawerFoundEvent,
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
@@ -1052,22 +1066,22 @@
                     }
                 }
 
-                if (!this.__controllerIsValid(transition)) {
+                if (!this._controllerIsValid(transition)) {
                     return;
                 }
 
                 this._addEventListeners(transition.toLowerCase());
-                this.__setOffset();
+                this._setOffset();
 
-                if ($utils.isUndefined(this.__isElastic)) {
-                    this.__isElastic = drawerArg.elastic === true;
+                if ($utils.isUndefined(this._isElastic)) {
+                    this._isElastic = drawerArg.elastic === true;
                 }
 
-                if (!this.__useContext && drawerArg.useContext === true) {
+                if (!this._useContext && drawerArg.useContext === true) {
                     return;
                 }
 
-                this.__determineTemplate(drawerArg.template);
+                this._determineTemplate(drawerArg.template);
             });
 
             this.dispatchEvent(__DrawerControllerFetchEvent, plat.events.EventManager.DIRECT, {
@@ -1077,10 +1091,10 @@
         }
         
         /**
-         * @name __determineTemplate
+         * @name _determineTemplate
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Determines the proper HTML template, binds it, and inserts it if needed.
@@ -1090,32 +1104,32 @@
          * 
          * @returns {void}
          */
-        private __determineTemplate(fragment?: Node): void {
+        _determineTemplate(fragment?: Node): void {
             var $utils = this.$utils;
 
-            if ($utils.isString(this.__templateUrl)) {
-                plat.ui.TemplateControl.determineTemplate(this, this.__templateUrl).then((template) => {
+            if ($utils.isString(this._templateUrl)) {
+                plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template) => {
                     this.bindableTemplates.add('drawer', template);
-                    this.__bindTemplate();
+                    this._bindTemplate();
                 });
             } else if ($utils.isNode(fragment)) {
                 this.bindableTemplates.add('drawer', fragment);
-                this.__bindTemplate();
+                this._bindTemplate();
             }
         }
         
         /**
-         * @name __bindTemplate
+         * @name _bindTemplate
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Binds the added HTML template to this control's inherited context.
          * 
          * @returns {void}
          */
-        private __bindTemplate(): void {
+        _bindTemplate(): void {
             var drawerElement = this._drawerElement;
             this.bindableTemplates.bind('drawer').then((template) => {
                 this.dom.clearNode(drawerElement);
@@ -1124,17 +1138,17 @@
         }
         
         /**
-         * @name __setTransform
+         * @name _setTransform
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Obtains the current browser's transform property value.
          * 
          * @returns {void}
          */
-        private __setTransform(): void {
+        _setTransform(): void {
             var style = this.element.style,
                 isUndefined = this.$utils.isUndefined;
 
@@ -1153,10 +1167,10 @@
         }
         
         /**
-         * @name __controllerIsValid
+         * @name _controllerIsValid
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Checks if this control has all valid properties.
@@ -1165,11 +1179,11 @@
          * 
          * @returns {boolean} Whether or not this control is valid.
          */
-        private __controllerIsValid(transition: string): boolean {
+        _controllerIsValid(transition: string): boolean {
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic;
 
-            if (isNull(this.__transitionHash[transition])) {
+            if (isNull(this._transitionHash[transition])) {
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Incorrect transition direction: "' + transition +
                     '" defined for "' + __Drawer + '" or "' + __DrawerController + '."');
@@ -1180,7 +1194,7 @@
                 return false;
             }
             
-            var rootElement = this.__rootElement = this.__getRootElement(this.root);
+            var rootElement = this._rootElement = this._getRootElement(this.root);
             if (isNull(rootElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Cannot have a "' + __DrawerController +
@@ -1194,10 +1208,10 @@
         }
         
         /**
-         * @name __getRootElement
+         * @name _getRootElement
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Obtains the root element to translate.
@@ -1206,7 +1220,7 @@
          * 
          * @returns {HTMLElement} The root element.
          */
-        private __getRootElement(root: plat.ui.ITemplateControl): HTMLElement {
+        _getRootElement(root: plat.ui.ITemplateControl): HTMLElement {
             var $utils = this.$utils,
                 isNode = $utils.isNode;
             if (!$utils.isObject(root)) {
@@ -1224,25 +1238,25 @@
         }
         
         /**
-         * @name __setOffset
+         * @name _setOffset
          * @memberof platui.DrawerController
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
          * Sets the max offset to translate the {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
-        private __setOffset(): void {
+        private _setOffset(): void {
             switch (this._transition) {
                 case 'up':
                 case 'down':
-                    this.__maxOffset = this._drawerElement.offsetHeight;
+                    this._maxOffset = this._drawerElement.offsetHeight;
                     break;
                 case 'left':
                 case 'right':
-                    this.__maxOffset = this._drawerElement.offsetWidth;
+                    this._maxOffset = this._drawerElement.offsetWidth;
                     break;
             }
         }
