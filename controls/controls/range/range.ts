@@ -481,10 +481,10 @@
          * @returns {void}
          */
         _initializeEvents(transition: string): void {
-            var knob = this._lowerKnob,
+            var lowerKnob = this._lowerKnob,
                 upperKnob = this._upperKnob,
-                trackBack: string,
-                trackForward: string,
+                track: string,
+                reverseTrack: string,
                 touchstart = this._touchStart,
                 touchEnd = this._touchEnd,
                 trackLower = this._trackLower,
@@ -492,20 +492,14 @@
 
             switch (transition) {
                 case 'right':
-                    trackBack = __$track + 'left';
-                    trackForward = __$track + 'right';
-                    break;
                 case 'left':
-                    trackBack = __$track + 'right';
-                    trackForward = __$track + 'left';
+                    track = __$track + 'right';
+                    reverseTrack = __$track + 'left';
                     break;
                 case 'up':
-                    trackBack = __$track + 'down';
-                    trackForward = __$track + 'up';
-                    break;
                 case 'down':
-                    trackBack = __$track + 'up';
-                    trackForward = __$track + 'down';
+                    reverseTrack = __$track + 'down';
+                    track = __$track + 'up';
                     break;
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
@@ -513,15 +507,15 @@
                     return;
             }
 
-            this.addEventListener(knob, __$touchstart, touchstart, false);
+            this.addEventListener(lowerKnob, __$touchstart, touchstart, false);
             this.addEventListener(upperKnob, __$touchstart, touchstart, false);
-            this.addEventListener(knob, trackBack, trackLower, false);
-            this.addEventListener(upperKnob, trackForward, trackUpper, false);
-            this.addEventListener(knob, trackForward, trackLower, false);
-            this.addEventListener(upperKnob, trackBack, trackUpper, false);
-            this.addEventListener(knob, __$trackend, touchEnd, false);
+            this.addEventListener(lowerKnob, track, trackLower, false);
+            this.addEventListener(lowerKnob, reverseTrack, trackLower, false);
+            this.addEventListener(upperKnob, track, trackUpper, false);
+            this.addEventListener(upperKnob, reverseTrack, trackUpper, false);
+            this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
-            this.addEventListener(knob, __$touchend, touchEnd, false);
+            this.addEventListener(lowerKnob, __$touchend, touchEnd, false);
             this.addEventListener(upperKnob, __$touchend, touchEnd, false);
         }
 
@@ -581,7 +575,8 @@
                 maxOffset = this._maxOffset || this._setPositionAndLength(this._transition);
 
             if (isLower) {
-                return this._setLowerOffset(newOffset);
+                this._setLowerOffset(newOffset);
+                return;
             }
 
             this._setUpperOffset(newOffset);
@@ -598,21 +593,19 @@
          * 
          * @param {number} offset The new offset.
          * 
-         * @returns {void}
+         * @returns {number} The new lower offset.
          */
-        _setLowerOffset(offset: number): void {
+        _setLowerOffset(offset: number): number {
             var maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
                 upperOffset = this._upperKnobOffset;
 
             if (offset < 0) {
-                this._lowerKnobOffset = 0;
-                return;
-            } else if (offset > maxOffset - upperOffset) {
-                this._lowerKnobOffset = maxOffset - upperOffset;
-                return;
+                return (this._lowerKnobOffset = 0);
+            } else if (offset > upperOffset) {
+                return (this._lowerKnobOffset = upperOffset);
             }
 
-            this._lowerKnobOffset = offset;
+            return (this._lowerKnobOffset = offset);
         }
 
         /**
@@ -626,21 +619,19 @@
          * 
          * @param {number} offset The new offset.
          * 
-         * @returns {void}
+         * @returns {number} The new upper offset.
          */
-        _setUpperOffset(offset: number): void {
+        _setUpperOffset(offset: number): number {
             var maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
                 lowerOffset = this._lowerKnobOffset;
 
-            if (offset < 0) {
-                this._upperKnobOffset = 0;
-                return;
-            } else if (offset > maxOffset - lowerOffset) {
-                this._upperKnobOffset = maxOffset - lowerOffset;
-                return;
+            if (offset > maxOffset) {
+                return (this._upperKnobOffset = maxOffset);
+            } else if (offset < lowerOffset) {
+                return (this._upperKnobOffset = lowerOffset);
             }
 
-            this._upperKnobOffset = offset;
+            return (this._upperKnobOffset = offset);
         }
 
         /**
@@ -659,8 +650,8 @@
         _trackLower(ev: plat.ui.IGestureEvent): void {
             var position = this._calculateOffset(ev, true),
                 value: number,
-                upperOffset = this._upperKnobOffset,
-                maxOffset = this._maxOffset || this._setPositionAndLength(this._transition);
+                maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
+                upperOffset = this._upperKnobOffset || this._setUpperOffset(maxOffset);
 
             if (position < 0) {
                 value = this.min;
@@ -701,8 +692,8 @@
         _trackUpper(ev: plat.ui.IGestureEvent): void {
             var length = this._calculateOffset(ev, false),
                 value: number,
-                lowerOffset = this._lowerKnobOffset,
-                maxOffset = this._maxOffset || this._setPositionAndLength(this._transition);
+                maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
+                lowerOffset = this._lowerKnobOffset;
 
             if (length <= lowerOffset) {
                 value = this.lower;

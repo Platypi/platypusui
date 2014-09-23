@@ -519,27 +519,21 @@
          */
         _initializeEvents(transition: string): void {
             var knob = this._knob,
-                trackBack: string,
-                trackForward: string,
-                track: EventListener = this._track,
+                track: string,
+                reverseTrack: string,
+                trackFn: EventListener = this._track,
                 touchEnd = this._touchEnd;
 
             switch (transition) {
                 case 'right':
-                    trackBack = __$track + 'left';
-                    trackForward = __$track + 'right';
-                    break;
                 case 'left':
-                    trackBack = __$track + 'right';
-                    trackForward = __$track + 'left';
+                    track = __$track + 'right';
+                    reverseTrack = __$track + 'left';
                     break;
                 case 'up':
-                    trackBack = __$track + 'down';
-                    trackForward = __$track + 'up';
-                    break;
                 case 'down':
-                    trackBack = __$track + 'up';
-                    trackForward = __$track + 'down';
+                    track = __$track + 'up';
+                    reverseTrack = __$track + 'down';
                     break;
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
@@ -548,8 +542,8 @@
             }
 
             this.addEventListener(knob, __$touchstart, this._touchStart, false);
-            this.addEventListener(knob, trackBack, track, false);
-            this.addEventListener(knob, trackForward, track, false);
+            this.addEventListener(knob, track, trackFn, false);
+            this.addEventListener(knob, reverseTrack, trackFn, false);
             this.addEventListener(knob, __$trackend, touchEnd, false);
             this.addEventListener(knob, __$touchend, touchEnd, false);
         }
