@@ -1,1 +1,181 @@
-﻿
+﻿@import '../global/variables.less';
+@import '../global/mixins.less';
+@import 'range.variables.less';
+
+.plat-range {
+    #Range;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    .box-sizing(border-box);
+    
+    @lower-knob-radius: @lower-knob-diameter / 2;
+    @upper-knob-radius: @upper-knob-diameter / 2;
+    .plat-range-container {
+        position: absolute;
+        background-color: @background-color;
+        overflow: visible;
+        .calc(width; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
+        .calc(height; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
+
+        .plat-slider-offset {
+            position: absolute;
+            background-color: @fill-color;
+            overflow: visible;
+
+            .plat-lower-knob,
+            .plat-upper-knob {
+                position: absolute;
+                .box-sizing(border-box);
+            }
+
+            .plat-lower-knob {
+                width: @lower-knob-diameter;
+                height: @lower-knob-diameter;
+                .border-radius(@lower-knob-diameter);
+            }
+
+            .plat-upper-knob {
+                width: @upper-knob-diameter;
+                height: @upper-knob-diameter;
+                .border-radius(@upper-knob-diameter);
+            }
+        }
+    }
+
+    &.right,
+    &.left {
+        height: max(@lower-knob-diameter, @upper-knob-radius);
+
+        .plat-range-container {
+            top: 50%;
+            left: @lower-knob-radius;
+            height: @thickness;
+
+            .plat-slider-offset {
+                width: 100%;
+                height: 100%;
+
+                .plat-lower-knob {
+                    top: -@lower-knob-radius;
+                }
+
+                .plat-upper-knob {
+                    top: -@upper-knob-radius;
+                }
+            }
+
+            &.plat-transition {
+                .transition(@horizontal-transition);
+            }
+        }
+    }
+
+    &.right {
+        .plat-range-container {
+            .plat-slider-offset {
+                left: 0;
+
+                .plat-lower-knob {
+                    left: -@lower-knob-radius;
+                }
+
+                .plat-upper-knob {
+                    right: -@upper-knob-radius;
+                }
+            }
+        }
+    }
+
+    &.left {
+        .plat-range-container {
+            .plat-slider-offset {
+                right: 0;
+
+                .plat-lower-knob {
+                    left: -@lower-knob-radius;
+                }
+            }
+        }
+    }
+
+    &.up,
+    &.down {
+        width: @lower-knob-diameter;
+
+        .plat-range-container {
+            left: 50%;
+            top: @lower-knob-radius;
+            width: @thickness;
+
+            .plat-slider-offset {
+                width: 100%;
+                height: 0;
+
+                .plat-lower-knob {
+                    left: -@lower-knob-radius;
+                }
+            }
+
+            &.plat-transition {
+                .transition(@vertical-transition);
+            }
+        }
+    }
+
+    &.down {
+        .plat-range-container {
+            .plat-slider-offset {
+                top: 0;
+
+                .plat-lower-knob {
+                    bottom: -@lower-knob-radius;
+                }
+            }
+        }
+    }
+
+    &.up {
+        .plat-range-container {
+            .plat-slider-offset {
+                bottom: 0;
+
+                .plat-lower-knob {
+                    top: -@lower-knob-radius;
+                }
+            }
+        }
+    }
+
+    &.primary {
+        .plat-range-container {
+            .plat-slider-offset {
+                .plat-lower-knob {
+                    background-color: @lower-knob-primary-color;
+                    border: @lower-knob-border-size solid @lower-knob-primary-border-color;
+                }
+
+                .plat-upper-knob {
+                    background-color: @upper-knob-primary-color;
+                    border: @upper-knob-border-size solid @upper-knob-primary-border-color;
+                }
+            }
+        }
+    }
+
+    &.secondary {
+        .plat-range-container {
+            .plat-slider-offset {
+                .plat-lower-knob {
+                    background-color: @lower-knob-secondary-color;
+                    border: @lower-knob-border-size solid @lower-knob-secondary-border-color;
+                }
+
+                .plat-upper-knob {
+                    background-color: @upper-knob-secondary-color;
+                    border: @upper-knob-border-size solid @upper-knob-secondary-border-color;
+                }
+            }
+        }
+    }
+}

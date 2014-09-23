@@ -210,7 +210,7 @@
         _transition: string;
         
         /**
-         * @name _sliderOffset
+         * @name _knobOffset
          * @memberof platui.Slider
          * @kind property
          * @access protected
@@ -218,9 +218,9 @@
          * @type {number}
          * 
          * @description
-         * The current slider offset.
+         * The current knob offset.
          */
-        _sliderOffset = 0;
+        _knobOffset = 0;
 
         /**
          * @name _loaded
@@ -235,6 +235,7 @@
          * the {@link plat.controls.Bind|Bind} tries to set a value.
          */
         _loaded = false;
+
         /**
          * @name _inTouch
          * @memberof platui.Slider
@@ -247,6 +248,7 @@
          * Whether or not the user is currently touching the screen.
          */
         _inTouch = false;
+
         /**
          * @name _lengthProperty
          * @memberof platui.Slider
@@ -325,8 +327,7 @@
         loaded(): void {
             var dom = this.dom,
                 element = this.element,
-                $utils = this.$utils,
-                isNumber = $utils.isNumber,
+                isNumber = this.$utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
                 options = optionObj.value || <ISliderOptions>{},
                 optionValue = Number(options.value),
@@ -335,7 +336,7 @@
                 step = options.step,
                 style = options.style || 'primary',
                 transition = this._transition = options.transition || 'right',
-                length = this._getLength(transition);
+                length = this._setLength(transition);
 
             dom.addClass(element, style + ' ' + transition);
 
@@ -346,7 +347,6 @@
 
             // reset value to minimum in case Bind set it to a value
             this.value = min;
-            this._maxOffset = length;
             this._step = isNumber(step) ? (step > 0 ? step : 1) : 1;
 
             if (min >= max) {
@@ -397,7 +397,8 @@
          * @access public
          * 
          * @description
-         * Set the value of the {@link platui.Slider|Slider}.
+         * Set the value of the {@link platui.Slider|Slider}. If an invalid value is passed in 
+         * nothing will happen.
          * 
          * @param {number} value The value to set the {@link platui.Slider|Slider} to.
          * 
@@ -405,7 +406,7 @@
          */
         setValue(value: number): void {
             if (!this.$utils.isNumber(value)) {
-                value = this.min;
+                return;
             }
 
             this._setValue(value, true, true);
@@ -453,16 +454,16 @@
             this._inTouch = false;
 
             var newOffset = this._calculateOffset(ev),
-                maxOffset = this._maxOffset || (this._maxOffset = this._getLength(this._transition));
+                maxOffset = this._maxOffset || this._setLength(this._transition);
             if (newOffset < 0) {
-                this._sliderOffset = 0;
+                this._knobOffset = 0;
                 return;
             } else if (newOffset > maxOffset) {
-                this._sliderOffset = maxOffset;
+                this._knobOffset = maxOffset;
                 return;
             }
 
-            this._sliderOffset = newOffset;
+            this._knobOffset = newOffset;
         }
         
         /**
@@ -481,7 +482,7 @@
         _track(ev: plat.ui.IGestureEvent): void {
             var length = this._calculateOffset(ev),
                 value: number,
-                maxOffset = this._maxOffset || (this._maxOffset = this._getLength(this._transition));
+                maxOffset = this._maxOffset || this._setLength(this._transition);
 
             if (length < 0) {
                 value = this.min;
@@ -520,18 +521,17 @@
             var knob = this._knob,
                 trackBack: string,
                 trackForward: string,
-                track: EventListener = this._track;
+                track: EventListener = this._track,
+                touchEnd = this._touchEnd;
 
             switch (transition) {
                 case 'right':
                     trackBack = __$track + 'left';
                     trackForward = __$track + 'right';
-                    track = this._track;
                     break;
                 case 'left':
                     trackBack = __$track + 'right';
                     trackForward = __$track + 'left';
-                    track = this._track;
                     break;
                 case 'up':
                     trackBack = __$track + 'down';
@@ -550,8 +550,6 @@
             this.addEventListener(knob, __$touchstart, this._touchStart, false);
             this.addEventListener(knob, trackBack, track, false);
             this.addEventListener(knob, trackForward, track, false);
-
-            var touchEnd = this._touchEnd;
             this.addEventListener(knob, __$trackend, touchEnd, false);
             this.addEventListener(knob, __$touchend, touchEnd, false);
         }
@@ -610,39 +608,41 @@
         _calculateOffset(ev: plat.ui.IGestureEvent): number {
             switch (this._transition) {
                 case 'right':
-                    return this._sliderOffset + ev.clientX - this._lastTouch.x;
+                    return this._knobOffset + ev.clientX - this._lastTouch.x;
                 case 'left':
-                    return this._sliderOffset + this._lastTouch.x - ev.clientX;
+                    return this._knobOffset + this._lastTouch.x - ev.clientX;
                 case 'up':
-                    return this._sliderOffset + this._lastTouch.y - ev.clientY;
+                    return this._knobOffset + this._lastTouch.y - ev.clientY;
                 case 'down':
-                    return this._sliderOffset + ev.clientY - this._lastTouch.y;
+                    return this._knobOffset + ev.clientY - this._lastTouch.y;
             }
+
+            return 0;
         }
         
         /**
-         * @name _getLength
+         * @name _setLength
          * @memberof platui.Slider
          * @kind function
          * @access protected
          * 
          * @description
-         * Gets the property to use for and the current length of the slider.
+         * Sets the property to use for length and sets the max length of the slider.
          * 
          * @param {string} transition The control's transition direction.
          * 
          * @returns {number} The length of the slider.
          */
-        _getLength(transition: string): number {
+        _setLength(transition: string): number {
             switch (transition) {
                 case 'right':
                 case 'left':
                     this._lengthProperty = 'width';
-                    return this._slider.parentElement.offsetWidth;
+                    return (this._maxOffset = this._slider.parentElement.offsetWidth);
                 case 'up':
                 case 'down':
                     this._lengthProperty = 'height';
-                    return this._slider.parentElement.offsetHeight;
+                    return (this._maxOffset = this._slider.parentElement.offsetHeight);
                 default:
                     return 0;
             }
@@ -720,7 +720,7 @@
 
             animationOptions[this._lengthProperty] = length + 'px';
             this.$animator.animate(this._slider, __Transition, animationOptions);
-            this._sliderOffset = length;
+            this._knobOffset = length;
         }
     }
 
