@@ -537,11 +537,22 @@
                 return;
             }
 
+            var target = <HTMLElement>ev.currentTarget,
+                lastTouch = this._lastTouch;
+            if (!this.$utils.isNull(lastTouch)) {
+                if (lastTouch.target !== target) {
+                    lastTouch.target.style.zIndex = '0';
+                    target.style.zIndex = '1';
+                }
+            } else {
+                target.style.zIndex = '1';
+            }
+
             this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY,
-                target: <HTMLElement>ev.currentTarget
+                target: target
             };
         }
 
@@ -570,7 +581,7 @@
 
             this._inTouch = false;
 
-            var isLower = ev.currentTarget === this._lowerKnob,
+            var isLower = target === this._lowerKnob,
                 newOffset = this._calculateOffset(ev, isLower),
                 maxOffset = this._maxOffset || this._setPositionAndLength(this._transition);
 
@@ -712,7 +723,57 @@
             }
 
             this._setUpper(value, false);
-            this._slider.style[<any>this._lengthProperty] = length + 'px';
+            this._slider.style[<any>this._lengthProperty] = length - lowerOffset + 'px';
+        }
+
+        /**
+         * @name _calculateValue
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Calculates the current value based on knob position and slider width.
+         * 
+         * @param {number} width The current width of the slider.
+         * @param {boolean} isLower Whether the current knob is the lower or the upper knob.
+         * 
+         * @returns {number} The current value of the {link platui.Range|Range}.
+         */
+        _calculateValue(width: number, isLower: boolean): number {
+            var increment = this._increment || this._setIncrement(),
+                step = this._step;
+
+            return (this.min + Math.round(width / increment / step) * step);
+        }
+
+        /**
+         * @name _calculateOffset
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Calculates the new offset of the slider based on the old offset and the distance moved.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $track or $trackend event object.
+         * @param {boolean} isLower Whether the current knob is the lower or the upper knob.
+         * 
+         * @returns {number} The current position of the knob in pixels.
+         */
+        _calculateOffset(ev: plat.ui.IGestureEvent, isLower: boolean): number {
+            switch (this._transition) {
+                case 'right':
+                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + ev.clientX - this._lastTouch.x;
+                case 'left':
+                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + this._lastTouch.x - ev.clientX;
+                case 'up':
+                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + this._lastTouch.y - ev.clientY;
+                case 'down':
+                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + ev.clientY - this._lastTouch.y;
+            }
+
+            return 0;
         }
 
         /**
@@ -783,68 +844,6 @@
             //if (setKnob) {
             //    this._setKnob();
             //}
-        }
-
-        /**
-         * @name _calculateValue
-         * @memberof platui.Range
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Calculates the current value based on knob position and slider width.
-         * 
-         * @param {number} width The current width of the slider.
-         * @param {boolean} isLower Whether the current knob is the lower or the upper knob.
-         * 
-         * @returns {number} The current value of the {link platui.Range|Range}.
-         */
-        _calculateValue(width: number, isLower: boolean): number {
-            var increment = this._increment || this._setIncrement(),
-                step = this._step;
-
-            return (this.min + Math.round(width / increment / step) * step);
-        }
-
-        /**
-         * @name _calculateOffset
-         * @memberof platui.Range
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Calculates the new offset of the slider based on the old offset and the distance moved.
-         * 
-         * @param {plat.ui.IGestureEvent} ev The $track or $trackend event object.
-         * @param {boolean} isLower Whether the current knob is the lower or the upper knob.
-         * 
-         * @returns {number} The current position of the knob in pixels.
-         */
-        _calculateOffset(ev: plat.ui.IGestureEvent, isLower: boolean): number {
-            switch (this._transition) {
-                case 'right':
-                    if (isLower) {
-                        return this._lowerKnobOffset + ev.clientX - this._lastTouch.x;
-                    }
-                    return this._lowerKnobOffset + this._lastTouch.x - ev.clientX;
-                case 'left':
-                    if (isLower) {
-                        return this._lowerKnobOffset + this._lastTouch.x - ev.clientX;
-                    }
-                    return this._lowerKnobOffset + ev.clientX - this._lastTouch.x;
-                case 'up':
-                    if (isLower) {
-                        return this._lowerKnobOffset + this._lastTouch.y - ev.clientY;
-                    }
-                    return this._lowerKnobOffset + ev.clientY - this._lastTouch.y;
-                case 'down':
-                    if (isLower) {
-                        return this._lowerKnobOffset + ev.clientY - this._lastTouch.y;
-                    }
-                    return this._lowerKnobOffset + this._lastTouch.y - ev.clientY;
-            }
-
-            return 0;
         }
 
         /**
