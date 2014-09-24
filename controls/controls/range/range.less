@@ -15,7 +15,6 @@
         position: absolute;
         background-color: @background-color;
         overflow: visible;
-        .calc(width; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
         .calc(height; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
 
         .plat-slider-offset {
@@ -51,6 +50,7 @@
             top: 50%;
             left: @lower-knob-radius;
             height: @thickness;
+            .calc(width; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
 
             .plat-slider-offset {
                 width: 100%;
@@ -97,6 +97,7 @@
             left: 50%;
             top: @lower-knob-radius;
             width: @thickness;
+            .calc(height; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
 
             .plat-slider-offset {
                 width: 100%;

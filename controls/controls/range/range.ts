@@ -501,14 +501,21 @@
          * @returns {void}
          */
         setLower(value: number): void {
-            var $utils = this.$utils;
+            var $utils = this.$utils,
+                isNumber = $utils.isNumber;
+
             if (!$utils.isObject(this.context)) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
                 Exception.warn('Cannot set the lower value of a "' + __Range + '" whose context has ' +
                     'not yet been set to an object.');
                 return;
-            } else if (!$utils.isNumber(value)) {
-                return;
+            } else if (!isNumber(value)) {
+                var numberVal = Number(value);
+                if (isNumber(numberVal)) {
+                    value = numberVal;
+                } else {
+                    return;
+                }
             }
 
             this._setLower(value, true);
@@ -529,14 +536,21 @@
          * @returns {void}
          */
         setUpper(value: number): void {
-            var $utils = this.$utils;
+            var $utils = this.$utils,
+                isNumber = $utils.isNumber;
+
             if (!$utils.isObject(this.context)) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
                 Exception.warn('Cannot set the upper value of a "' + __Range + '" whose context has ' +
                     'not yet been set to an object.');
                 return;
-            } else if (!$utils.isNumber(value)) {
-                return;
+            } else if (!isNumber(value)) {
+                var numberVal = Number(value);
+                if (isNumber(numberVal)) {
+                    value = numberVal;
+                } else {
+                    return;
+                }
             }
 
             this._setUpper(value, true);
