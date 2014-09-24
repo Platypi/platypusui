@@ -58,10 +58,12 @@
 
                 .plat-lower-knob {
                     top: -@lower-knob-radius;
+                    left: -@lower-knob-radius;
                 }
 
                 .plat-upper-knob {
                     top: -@upper-knob-radius;
+                    right: -@upper-knob-radius;
                 }
             }
 
@@ -75,14 +77,6 @@
         .plat-range-container {
             .plat-slider-offset {
                 left: 0;
-
-                .plat-lower-knob {
-                    left: -@lower-knob-radius;
-                }
-
-                .plat-upper-knob {
-                    right: -@upper-knob-radius;
-                }
             }
         }
     }
@@ -91,14 +85,6 @@
         .plat-range-container {
             .plat-slider-offset {
                 right: 0;
-
-                .plat-lower-knob {
-                    left: -@lower-knob-radius;
-                }
-
-                .plat-upper-knob {
-                    right: -@upper-knob-radius;
-                }
             }
         }
     }
@@ -118,6 +104,12 @@
 
                 .plat-lower-knob {
                     left: -@lower-knob-radius;
+                    bottom: -@lower-knob-radius;
+                }
+
+                .plat-upper-knob {
+                    left: -@upper-knob-radius;
+                    top: -@upper-knob-radius;
                 }
             }
 
@@ -131,10 +123,6 @@
         .plat-range-container {
             .plat-slider-offset {
                 top: 0;
-
-                .plat-lower-knob {
-                    bottom: -@lower-knob-radius;
-                }
             }
         }
     }
@@ -143,10 +131,6 @@
         .plat-range-container {
             .plat-slider-offset {
                 bottom: 0;
-
-                .plat-lower-knob {
-                    top: -@lower-knob-radius;
-                }
             }
         }
     }
