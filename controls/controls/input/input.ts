@@ -188,6 +188,19 @@
         _inTouch = false;
         
         /**
+         * @name _usingBind
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the {@link plat.controls.Bind|Bind} control is being used.
+         */
+        _usingBind = false;
+        
+        /**
          * @name setClasses
          * @memberof platui.Input
          * @kind function
@@ -240,14 +253,20 @@
                 attributes = element.attributes,
                 length = attributes.length,
                 attrRegex = /plat-(?!control|hide)/,
-                attribute: Attr;
+                attribute: Attr,
+                name: string;
 
             this._actionElement = <HTMLElement>input.nextElementSibling;
 
             for (var i = 0; i < length; ++i) {
                 attribute = attributes[i];
-                if (attrRegex.test(attribute.name)) {
-                    input.setAttribute(attribute.name, attribute.value);
+                name = attribute.name;
+                if (attrRegex.test(name)) {
+                    if (name === __Bind || name === 'data-' + __Bind) {
+                        this._usingBind = true;
+                    }
+
+                    input.setAttribute(name, attribute.value);
                 }
             }
 
@@ -277,8 +296,7 @@
                 type = this._type = options.type || 'text',
                 pattern = options.pattern;
 
-            dom.addClass(element, style);
-            dom.addClass(element, type);
+            dom.addClass(element, style + ' ' + type);
 
             if (this.$utils.isString(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
@@ -320,13 +338,18 @@
          * @returns {void}
          */
         clear(): void {
-            var value = this._inputElement.value;
+            var inputElement = this._inputElement,
+                value = inputElement.value;
             if (value === '') {
                 return;
             }
 
             var actionElement = this._actionElement;
-            this.propertyChanged('', value);
+            if (this._usingBind) {
+                this.propertyChanged('', value);
+            } else {
+                inputElement.value = '';
+            }
             actionElement.textContent = this._typeChar = '';
             this.dom.addClass(actionElement, 'hide');
         }
@@ -572,7 +595,11 @@
                 value = inputElement.value,
                 char = this._typeChar;
 
-            this.propertyChanged(char === 'x' ? '' : value + char, value);
+            if (this._usingBind) {
+                this.propertyChanged(char === 'x' ? '' : value + char, value);
+            } else {
+                inputElement.value = char === 'x' ? '' : value + char;
+            }
             this._checkEmail();
             inputElement.focus();
         }
@@ -723,13 +750,17 @@
             switch (this._type) {
                 case 'tel':
                 case 'number':
-                    var input = this._inputElement,
-                        value = input.value,
+                    var inputElement = this._inputElement,
+                        value = inputElement.value,
                         last = value.length - 1;
 
                     if (last >= 0 && (!this._pattern.test(value[last]) ||
                         !(last === 0 || this._type !== 'tel' || value[last] !== '+'))) {
-                        this.propertyChanged(value.slice(0, -1), value);
+                        if (this._usingBind) {
+                            this.propertyChanged(value.slice(0, -1), value);
+                        } else {
+                            inputElement.value = value.slice(0, -1);
+                        }
                     }
                     break;
             }
