@@ -314,6 +314,19 @@
          * Denotes whether we're using left, right, top, or bottom as the position of the slider.
          */
         _positionProperty: string;
+        
+        /**
+         * @name _isSelf
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A boolean value specifying that this control is the one modifying the observed context values.
+         */
+        _isSelf = false;
 
         /**
          * @name setClasses
@@ -451,6 +464,7 @@
                 this._setOffsetWithClone();
             }
 
+            this._setLowerKnob(min);
             this._setIncrement();
             this._initializeEvents(transition);
 
@@ -460,10 +474,8 @@
                 return;
             }
 
-            this._setLower(lower, false);
-            this._setUpper(upper, false);
-            this._setLowerKnob(lower);
-            this._setUpperKnob(upper);
+            this.setLower(lower);
+            this.setUpper(upper);
             this._watchContext();
         }
 
@@ -537,7 +549,7 @@
         _watchContext(): void {
             var context = this.context;
             this.observe(context, 'lower', (newValue: number, oldValue: number) => {
-                if (newValue === oldValue) {
+                if (this._isSelf || newValue === oldValue) {
                     return;
                 }
 
@@ -545,7 +557,7 @@
             });
 
             this.observe(context, 'upper', (newValue: number, oldValue: number) => {
-                if (newValue === oldValue) {
+                if (this._isSelf || newValue === oldValue) {
                     return;
                 }
 
@@ -900,7 +912,9 @@
 
             if (newValue === lower) {
                 if (context.lower !== lower) {
+                    this._isSelf = true;
                     context.lower = lower;
+                    this._isSelf = false;
                 }
                 return;
             } else if (newValue >= this.max) {
@@ -913,7 +927,9 @@
                 return;
             }
 
+            this._isSelf = true;
             this.lower = context.lower = newValue;
+            this._isSelf = false;
             if (setKnob) {
                 this._setLowerKnob();
             }
@@ -939,7 +955,9 @@
 
             if (newValue === upper) {
                 if (context.upper !== upper) {
+                    this._isSelf = true;
                     context.upper = upper;
+                    this._isSelf = false;
                 }
                 return;
             } else if (newValue >= this.max) {
@@ -952,7 +970,9 @@
                 return;
             }
 
+            this._isSelf = true;
             this.upper = context.upper = newValue;
+            this._isSelf = false;
             if (setKnob) {
                 this._setUpperKnob();
             }
