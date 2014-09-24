@@ -460,7 +460,8 @@
             this._inTouch = false;
 
             var newOffset = this._calculateOffset(ev),
-                maxOffset = this._maxOffset || this._setLength();
+                maxOffset = this._maxOffset;
+
             if (newOffset < 0) {
                 this._knobOffset = 0;
                 return;
@@ -487,8 +488,8 @@
          */
         _track(ev: plat.ui.IGestureEvent): void {
             var length = this._calculateOffset(ev),
-                value: number,
-                maxOffset = this._maxOffset || this._setLength();
+                maxOffset = this._maxOffset,
+                value: number;
 
             if (length < 0) {
                 value = this.min;
@@ -568,10 +569,8 @@
          * @returns {number} The current value of the {link platui.Slider|Slider}.
          */
         _calculateValue(width: number): number {
-            var increment = this._increment || this._setIncrement(),
-                step = this._step;
-
-            return (this.min + Math.round(width / increment / step) * step);
+            var step = this._step;
+            return (this.min + Math.round(width / this._increment / step) * step);
         }
         
         /**
@@ -588,8 +587,7 @@
          * @returns {number} The current position of the knob in pixels.
          */
         _calculateKnobPosition(value: number): number {
-            var increment = this._increment || this._setIncrement();
-            return (value - this.min) * increment;
+            return (value - this.min) * this._increment;
         }
         
         /**

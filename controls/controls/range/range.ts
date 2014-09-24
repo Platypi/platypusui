@@ -680,8 +680,7 @@
             this._inTouch = false;
 
             var isLower = target === this._lowerKnob,
-                newOffset = this._calculateOffset(ev, isLower),
-                maxOffset = this._maxOffset || this._setPositionAndLength();
+                newOffset = this._calculateOffset(ev, isLower);
 
             if (isLower) {
                 this._setLowerOffset(newOffset);
@@ -757,8 +756,8 @@
          * @returns {void}
          */
         _trackLower(ev: plat.ui.IGestureEvent): void {
-            var maxOffset = this._maxOffset || this._setPositionAndLength(),
-                upperOffset = this._upperKnobOffset || this._setUpperOffset(maxOffset),
+            var maxOffset = this._maxOffset,
+                upperOffset = this._upperKnobOffset,
                 position = this._calculateOffset(ev, true),
                 value: number;
 
@@ -799,7 +798,7 @@
          * @returns {void}
          */
         _trackUpper(ev: plat.ui.IGestureEvent): void {
-            var maxOffset = this._maxOffset || this._setPositionAndLength(),
+            var maxOffset = this._maxOffset,
                 lowerOffset = this._lowerKnobOffset,
                 length = this._calculateOffset(ev, false),
                 value: number;
@@ -839,10 +838,8 @@
          * @returns {number} The current value of the {link platui.Range|Range}.
          */
         _calculateValue(width: number, isLower: boolean): number {
-            var increment = this._increment || this._setIncrement(),
-                step = this._step;
-
-            return (this.min + Math.round(width / increment / step) * step);
+            var step = this._step;
+            return (this.min + Math.round(width / this._increment / step) * step);
         }
 
         /**
@@ -888,8 +885,7 @@
          * @returns {number} The current position of the knob in pixels.
          */
         _calculateKnobPosition(value: number): number {
-            var increment = this._increment || this._setIncrement();
-            return (value - this.min) * increment;
+            return (value - this.min) * this._increment;
         }
 
         /**
@@ -908,7 +904,7 @@
          */
         _setLower(newValue: number, setKnob: boolean): void {
             var lower = this.lower,
-                context = this.context;
+                context = this.context || <IRangeContext>{};
 
             if (newValue === lower) {
                 if (context.lower !== lower) {
@@ -951,7 +947,7 @@
          */
         _setUpper(newValue: number, setKnob: boolean): void {
             var upper = this.upper,
-                context = this.context;
+                context = this.context || <IRangeContext>{};
 
             if (newValue === upper) {
                 if (context.upper !== upper) {
