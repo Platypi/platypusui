@@ -9,8 +9,10 @@ module app {
             test: <any>null,
             check: true,
             progress: 0,
-            range: 0,
-            test3: ''
+            range: 20,
+            test3: '',
+            lower: 10,
+            upper: 90
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;

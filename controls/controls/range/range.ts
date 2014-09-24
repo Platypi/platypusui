@@ -50,6 +50,19 @@
         $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
+         * @name context
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {platui.IRangeContext}
+         * 
+         * @description
+         * The specifically defined context for this control.
+         */
+        context: IRangeContext;
+
+        /**
          * @name templateString
          * @memberof platui.Range
          * @kind property
@@ -248,7 +261,7 @@
          * @description
          * The current lower knob offset.
          */
-        _lowerKnobOffset = 0;
+        _lowerKnobOffset: number;
 
         /**
          * @name _upperKnobOffset
@@ -261,7 +274,7 @@
          * @description
          * The current upper knob offset.
          */
-        _upperKnobOffset = 0;
+        _upperKnobOffset: number;
 
         /**
          * @name _inTouch
@@ -334,7 +347,20 @@
          * @returns {void}
          */
         contextChanged(): void {
+            var context = this.context,
+                $utils = this.$utils;
+            if (!$utils.isObject(context)) {
+                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                Exception.warn('"' + __Range + '\'s" context should be an object that implements the platui.IRangeContext interface.');
+                return;
+            }
 
+            var lower = context.lower,
+                upper = context.upper,
+                isNumber = $utils.isNumber;
+
+            this.setLower(isNumber(lower) ? lower : 0);
+            this.setUpper(isNumber(upper) ? upper : this.max);
         }
 
         /**
@@ -383,9 +409,11 @@
          * @returns {void}
          */
         loaded(): void {
-            var dom = this.dom,
+            var context = this.context || <IRangeContext>{},
+                dom = this.dom,
                 element = this.element,
-                isNumber = this.$utils.isNumber,
+                $utils = this.$utils,
+                isNumber = $utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
                 options = optionObj.value || <ISliderOptions>{},
                 optionLower = Number(options.lower),
@@ -395,32 +423,48 @@
                 step = options.step,
                 style = options.style || 'primary',
                 transition = this._transition = options.transition || 'right',
-                length = this._setPositionAndLength(transition);
+                Exception: plat.IExceptionStatic;
 
             dom.addClass(element, style + ' ' + transition);
 
-            var contextLower = this.lower,
-                contextUpper = this.upper,
-                lower = isNumber(contextLower) ? contextLower : isNumber(optionLower) ? optionLower : min,
-                upper = isNumber(contextUpper) ? contextUpper : isNumber(optionUpper) ? optionUpper : max,
+            var contextLower = context.lower,
+                contextUpper = context.upper,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
-                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100;
+                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
+                lower = isNumber(contextLower) ? contextLower : isNumber(optionLower) ? optionLower : min,
+                upper = isNumber(contextUpper) ? contextUpper : isNumber(optionUpper) ? optionUpper : max;
 
-            // reset value to minimum in case Bind set it to a value
+            // reset value to minimum in case context is already set to a value
             this.lower = min;
             this.upper = max;
             this._step = isNumber(step) ? (step > 0 ? step : 1) : 1;
 
             if (min >= max) {
-                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                Exception = plat.acquire(__ExceptionStatic);
                 Exception.warn('"' + __Range + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
             }
 
+            this._setPositionAndLength();
+
+            if (!this._maxOffset) {
+                this._setOffsetWithClone();
+            }
+
             this._setIncrement();
             this._initializeEvents(transition);
-            this.setLower(lower);
-            this.setUpper(upper);
+
+            if (!$utils.isObject(this.context)) {
+                Exception = plat.acquire(__ExceptionStatic);
+                Exception.warn('"' + __Range + '\'s" context should be an object that implements the platui.IRangeContext interface.');
+                return;
+            }
+
+            this._setLower(lower, false);
+            this._setUpper(upper, false);
+            this._setLowerKnob(lower);
+            this._setUpperKnob(upper);
+            this._watchContext();
         }
 
         /**
@@ -438,7 +482,13 @@
          * @returns {void}
          */
         setLower(value: number): void {
-            if (!this.$utils.isNumber(value)) {
+            var $utils = this.$utils;
+            if (!$utils.isObject(this.context)) {
+                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                Exception.warn('Cannot set the lower value of a "' + __Range + '" whose context has ' +
+                    'not yet been set to an object.');
+                return;
+            } else if (!$utils.isNumber(value)) {
                 return;
             }
 
@@ -460,11 +510,47 @@
          * @returns {void}
          */
         setUpper(value: number): void {
-            if (!this.$utils.isNumber(value)) {
+            var $utils = this.$utils;
+            if (!$utils.isObject(this.context)) {
+                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                Exception.warn('Cannot set the upper value of a "' + __Range + '" whose context has ' +
+                    'not yet been set to an object.');
+                return;
+            } else if (!$utils.isNumber(value)) {
                 return;
             }
 
             this._setUpper(value, true);
+        }
+        
+        /**
+         * @name _watchContext
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Observe the necessary context values.
+         * 
+         * @returns {void}
+         */
+        _watchContext(): void {
+            var context = this.context;
+            this.observe(context, 'lower', (newValue: number, oldValue: number) => {
+                if (newValue === oldValue) {
+                    return;
+                }
+
+                this.setLower(newValue);
+            });
+
+            this.observe(context, 'upper', (newValue: number, oldValue: number) => {
+                if (newValue === oldValue) {
+                    return;
+                }
+
+                this.setUpper(newValue);
+            });
         }
 
         /**
@@ -583,7 +669,7 @@
 
             var isLower = target === this._lowerKnob,
                 newOffset = this._calculateOffset(ev, isLower),
-                maxOffset = this._maxOffset || this._setPositionAndLength(this._transition);
+                maxOffset = this._maxOffset || this._setPositionAndLength();
 
             if (isLower) {
                 this._setLowerOffset(newOffset);
@@ -607,7 +693,7 @@
          * @returns {number} The new lower offset.
          */
         _setLowerOffset(offset: number): number {
-            var maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
+            var maxOffset = this._maxOffset || this._setPositionAndLength(),
                 upperOffset = this._upperKnobOffset;
 
             if (offset < 0) {
@@ -633,7 +719,7 @@
          * @returns {number} The new upper offset.
          */
         _setUpperOffset(offset: number): number {
-            var maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
+            var maxOffset = this._maxOffset || this._setPositionAndLength(),
                 lowerOffset = this._lowerKnobOffset;
 
             if (offset > maxOffset) {
@@ -659,10 +745,10 @@
          * @returns {void}
          */
         _trackLower(ev: plat.ui.IGestureEvent): void {
-            var position = this._calculateOffset(ev, true),
-                value: number,
-                maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
-                upperOffset = this._upperKnobOffset || this._setUpperOffset(maxOffset);
+            var maxOffset = this._maxOffset || this._setPositionAndLength(),
+                upperOffset = this._upperKnobOffset || this._setUpperOffset(maxOffset),
+                position = this._calculateOffset(ev, true),
+                value: number;
 
             if (position < 0) {
                 value = this.min;
@@ -684,7 +770,7 @@
 
             this._setLower(value, false);
             style[<any>this._positionProperty] = position + 'px';
-            style[<any>this._lengthProperty] = upperOffset - position + 'px';
+            style[<any>this._lengthProperty] = (upperOffset - position) + 'px';
         }
 
         /**
@@ -701,10 +787,10 @@
          * @returns {void}
          */
         _trackUpper(ev: plat.ui.IGestureEvent): void {
-            var length = this._calculateOffset(ev, false),
-                value: number,
-                maxOffset = this._maxOffset || this._setPositionAndLength(this._transition),
-                lowerOffset = this._lowerKnobOffset;
+            var maxOffset = this._maxOffset || this._setPositionAndLength(),
+                lowerOffset = this._lowerKnobOffset,
+                length = this._calculateOffset(ev, false),
+                value: number;
 
             if (length <= lowerOffset) {
                 value = this.lower;
@@ -723,7 +809,7 @@
             }
 
             this._setUpper(value, false);
-            this._slider.style[<any>this._lengthProperty] = length - lowerOffset + 'px';
+            this._slider.style[<any>this._lengthProperty] = (length - lowerOffset) + 'px';
         }
 
         /**
@@ -777,6 +863,24 @@
         }
 
         /**
+         * @name _calculateKnobPosition
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Calculates knob position based on current value.
+         * 
+         * @param {number} value The current value of the {link platui.Slider|Slider}.
+         * 
+         * @returns {number} The current position of the knob in pixels.
+         */
+        _calculateKnobPosition(value: number): number {
+            var increment = this._increment || this._setIncrement();
+            return (value - this.min) * increment;
+        }
+
+        /**
          * @name _setLower
          * @memberof platui.Range
          * @kind function
@@ -791,9 +895,13 @@
          * @returns {void}
          */
         _setLower(newValue: number, setKnob: boolean): void {
-            var lower = this.lower;
+            var lower = this.lower,
+                context = this.context;
 
             if (newValue === lower) {
+                if (context.lower !== lower) {
+                    context.lower = lower;
+                }
                 return;
             } else if (newValue >= this.max) {
                 newValue = this.max;
@@ -805,10 +913,10 @@
                 return;
             }
 
-            this.lower = newValue;
-            //if (setKnob) {
-            //    this._setKnob();
-            //}
+            this.lower = context.lower = newValue;
+            if (setKnob) {
+                this._setLowerKnob();
+            }
         }
 
         /**
@@ -826,9 +934,13 @@
          * @returns {void}
          */
         _setUpper(newValue: number, setKnob: boolean): void {
-            var upper = this.upper;
+            var upper = this.upper,
+                context = this.context;
 
             if (newValue === upper) {
+                if (context.upper !== upper) {
+                    context.upper = upper;
+                }
                 return;
             } else if (newValue >= this.max) {
                 newValue = this.max;
@@ -840,10 +952,10 @@
                 return;
             }
 
-            this.upper = newValue;
-            //if (setKnob) {
-            //    this._setKnob();
-            //}
+            this.upper = context.upper = newValue;
+            if (setKnob) {
+                this._setUpperKnob();
+            }
         }
 
         /**
@@ -874,27 +986,102 @@
          * 
          * @returns {number} The length of the slider.
          */
-        _setPositionAndLength(transition: string): number {
-            switch (transition) {
+        _setPositionAndLength(element?: HTMLElement): number {
+            element = element || this._slider.parentElement;
+            switch (this._transition) {
                 case 'right':
                     this._positionProperty = 'left';
                     this._lengthProperty = 'width';
-                    return (this._maxOffset = this._slider.parentElement.offsetWidth);
+                    return (this._maxOffset = element.offsetWidth);
                 case 'left':
                     this._positionProperty = 'right';
                     this._lengthProperty = 'width';
-                    return (this._maxOffset = this._slider.parentElement.offsetWidth);
+                    return (this._maxOffset = element.offsetWidth);
                 case 'up':
                     this._positionProperty = 'bottom';
                     this._lengthProperty = 'height';
-                    return (this._maxOffset = this._slider.parentElement.offsetHeight);
+                    return (this._maxOffset = element.offsetHeight);
                 case 'down':
                     this._positionProperty = 'top';
                     this._lengthProperty = 'height';
-                    return (this._maxOffset = this._slider.parentElement.offsetHeight);
+                    return (this._maxOffset = element.offsetHeight);
                 default:
                     return 0;
             }
+        }
+
+        /**
+         * @name _setLowerKnob
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Animates and sets the knob position.
+         * 
+         * @param {number} value? The value to use to calculate the knob position. If no value is 
+         * specified, the current {@link platui.Slider|Slider's} value will be used.
+         * 
+         * @returns {void}
+         */
+        _setLowerKnob(value?: number): void {
+            var animationOptions: plat.IObject<string> = {},
+                upperKnobOffset = this._upperKnobOffset,
+                upperOffset = this.$utils.isNumber(upperKnobOffset) ? upperKnobOffset :
+                    this._setUpperOffset(this._calculateKnobPosition(this.upper)),
+                position = this._calculateKnobPosition((value || this.lower));
+
+            animationOptions[this._positionProperty] = position + 'px';
+            animationOptions[this._lengthProperty] = (upperOffset - position) + 'px';
+            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this._lowerKnobOffset = position;
+        }
+
+        /**
+         * @name _setUpperKnob
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Animates and sets the knob position.
+         * 
+         * @param {number} value? The value to use to calculate the knob position. If no value is 
+         * specified, the current {@link platui.Slider|Slider's} value will be used.
+         * 
+         * @returns {void}
+         */
+        _setUpperKnob(value?: number): void {
+            var animationOptions: plat.IObject<string> = {},
+                length = this._calculateKnobPosition((value || this.upper));
+
+            animationOptions[this._lengthProperty] = (length - this._lowerKnobOffset) + 'px';
+            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this._upperKnobOffset = length;
+        }
+
+        /**
+         * @name _setOffsetWithClone
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a clone of this element and uses it to find the max offset.
+         * 
+         * @returns {void}
+         */
+        _setOffsetWithClone(): void {
+            var clone = <HTMLElement>this.element.cloneNode(true),
+                style = clone.style,
+                body = this.$document.body;
+
+            style.position = 'absolute';
+            style.display = 'block';
+            style.visibility = 'hidden';
+            body.appendChild(clone);
+            this._setPositionAndLength(<HTMLElement>clone.firstElementChild);
+            body.removeChild(clone);
         }
     }
 
@@ -1032,5 +1219,41 @@
          * The target element located at the x-y coordinate.
          */
         target?: HTMLElement;
+    }
+    
+    /**
+     * @name IRangeContext
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * Defines the expected context of the {@link platui.Range|Range} control.
+     */
+    export interface IRangeContext {
+        /**
+         * @name lower
+         * @memberof platui.IRangeContext
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The lower set value of the {@link platui.Range|Range} control.
+         */
+        lower: number;
+
+        /**
+         * @name lower
+         * @memberof platui.IRangeContext
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The upper set value of the {@link platui.Range|Range} control.
+         */
+        upper: number;
     }
 }

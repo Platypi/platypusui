@@ -335,15 +335,14 @@
                 optionMax = options.max,
                 step = options.step,
                 style = options.style || 'primary',
-                transition = this._transition = options.transition || 'right',
-                length = this._setLength(transition);
+                transition = this._transition = options.transition || 'right';
 
             dom.addClass(element, style + ' ' + transition);
 
             var bindValue = this.value,
-                value = isNumber(bindValue) ? bindValue : isNumber(optionValue) ? optionValue : min,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
-                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100;
+                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
+                value = isNumber(bindValue) ? bindValue : isNumber(optionValue) ? optionValue : min;
 
             // reset value to minimum in case Bind set it to a value
             this.value = min;
@@ -355,8 +354,15 @@
                 this.max = min + 1;
             }
 
+            this._setLength();
+
+            if (!this._maxOffset) {
+                this._setOffsetWithClone();
+            }
+
             this._setIncrement();
             this._initializeEvents(transition);
+
             this.setValue(value);
             this._loaded = true;
         }
@@ -454,7 +460,7 @@
             this._inTouch = false;
 
             var newOffset = this._calculateOffset(ev),
-                maxOffset = this._maxOffset || this._setLength(this._transition);
+                maxOffset = this._maxOffset || this._setLength();
             if (newOffset < 0) {
                 this._knobOffset = 0;
                 return;
@@ -482,7 +488,7 @@
         _track(ev: plat.ui.IGestureEvent): void {
             var length = this._calculateOffset(ev),
                 value: number,
-                maxOffset = this._maxOffset || this._setLength(this._transition);
+                maxOffset = this._maxOffset || this._setLength();
 
             if (length < 0) {
                 value = this.min;
@@ -623,20 +629,21 @@
          * @description
          * Sets the property to use for length and sets the max length of the slider.
          * 
-         * @param {string} transition The control's transition direction.
+         * @param {HTMLElement} element The element to use to obtain the max length.
          * 
          * @returns {number} The length of the slider.
          */
-        _setLength(transition: string): number {
-            switch (transition) {
+        _setLength(element?: HTMLElement): number {
+            element = element || this._slider.parentElement;
+            switch (this._transition) {
                 case 'right':
                 case 'left':
                     this._lengthProperty = 'width';
-                    return (this._maxOffset = this._slider.parentElement.offsetWidth);
+                    return (this._maxOffset = element.offsetWidth);
                 case 'up':
                 case 'down':
                     this._lengthProperty = 'height';
-                    return (this._maxOffset = this._slider.parentElement.offsetHeight);
+                    return (this._maxOffset = element.offsetHeight);
                 default:
                     return 0;
             }
@@ -715,6 +722,30 @@
             animationOptions[this._lengthProperty] = length + 'px';
             this.$animator.animate(this._slider, __Transition, animationOptions);
             this._knobOffset = length;
+        }
+        
+        /**
+         * @name _setOffsetWithClone
+         * @memberof platui.Slider
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a clone of this element and uses it to find the max offset.
+         * 
+         * @returns {void}
+         */
+        _setOffsetWithClone(): void {
+            var clone = <HTMLElement>this.element.cloneNode(true),
+                style = clone.style,
+                body = this.$document.body;
+
+            style.position = 'absolute';
+            style.display = 'block';
+            style.visibility = 'hidden';
+            body.appendChild(clone);
+            this._setLength(<HTMLElement>clone.firstElementChild);
+            body.removeChild(clone);
         }
     }
 

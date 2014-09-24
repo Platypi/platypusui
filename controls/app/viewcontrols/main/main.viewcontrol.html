@@ -25,6 +25,7 @@
             <br />
             <span>&nbsp;&nbsp;&nbsp;</span><plat-slider plat-options="{  }" style="width: 400px;" plat-bind="range"></plat-slider>
             <br /><br />
+            <span>&nbsp;&nbsp;&nbsp;lower: {{lower}}&nbsp;&nbsp;&nbsp;upper: {{upper}}</span>
             <span>&nbsp;&nbsp;&nbsp;</span><plat-range plat-options="{  }" style="width: 400px;"></plat-range>
         </div>
     </div>
@@ -305,11 +306,11 @@
             <button plat-tap="toggle">Show Modal!</button>
         </div>
     </div>
-    <plat-modal plat-name="modal" plat-options="{ style: 'halfwidth centered', transition: 'up' }">
+    <plat-modal plat-name="modal" plat-options="{ transition: 'right' }">
         <div style="background-color: red;">
             header
         </div>
-        <div style="height: 100%;background-color:white;">
+        <div>
             <div class="inner-container">
                 <button plat-tap="toggle">Hello Modo!</button>
             </div>
