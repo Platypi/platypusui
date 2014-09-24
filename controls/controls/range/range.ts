@@ -440,6 +440,13 @@
 
             dom.addClass(element, style + ' ' + transition);
 
+            // if it's a reversed transition, swap knobs.
+            if (transition === 'left' || transition === 'down') {
+                var lowerKnob = this._lowerKnob;
+                this._lowerKnob = this._upperKnob;
+                this._upperKnob = lowerKnob;
+            }
+
             var contextLower = context.lower,
                 contextUpper = context.upper,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
@@ -759,27 +766,30 @@
             var maxOffset = this._maxOffset,
                 upperOffset = this._upperKnobOffset,
                 position = this._calculateOffset(ev, true),
+                setValue = true,
                 value: number;
 
             if (position < 0) {
                 value = this.min;
                 if (value - this.lower >= 0) {
-                    return;
+                    setValue = false;
                 }
                 position = 0;
             } else if (position >= upperOffset) {
                 value = this.upper;
                 if (value - this.lower <= 0) {
-                    return;
+                    setValue = false;
                 }
                 position = upperOffset;
             } else {
                 value = this._calculateValue(position, true);
             }
 
-            var style = this._slider.style;
+            if (setValue) {
+                this._setLower(value, false);
+            }
 
-            this._setLower(value, false);
+            var style = this._slider.style;
             style[<any>this._positionProperty] = position + 'px';
             style[<any>this._lengthProperty] = (upperOffset - position) + 'px';
         }
@@ -801,25 +811,29 @@
             var maxOffset = this._maxOffset,
                 lowerOffset = this._lowerKnobOffset,
                 length = this._calculateOffset(ev, false),
+                setValue = true,
                 value: number;
 
             if (length <= lowerOffset) {
                 value = this.lower;
                 if (value - this.upper >= 0) {
-                    return;
+                    setValue = false;
                 }
                 length = lowerOffset;
             } else if (length > maxOffset) {
                 value = this.max;
                 if (value - this.upper <= 0) {
-                    return;
+                    setValue = false;
                 }
                 length = maxOffset;
             } else {
                 value = this._calculateValue(length, false);
             }
 
-            this._setUpper(value, false);
+            if (setValue) {
+                this._setUpper(value, false);
+            }
+
             this._slider.style[<any>this._lengthProperty] = (length - lowerOffset) + 'px';
         }
 
