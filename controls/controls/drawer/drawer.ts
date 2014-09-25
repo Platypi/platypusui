@@ -609,7 +609,7 @@
                 show = options.show;
 
             this._type = options.type;
-            this._isElastic = options.elastic === true;
+            this._isElastic = options.elastic;
             this._useContext = options.useContext === true;
             this._templateUrl = options.templateUrl;
             this._initializeEvents(id, transition);
