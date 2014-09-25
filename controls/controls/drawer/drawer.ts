@@ -589,6 +589,21 @@
         };
         
         /**
+         * @name initialize
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Sets the class name on the element.
+         * 
+         * @returns {void}
+         */
+        initialize(): void {
+            this.dom.addClass(this.element, __DrawerController);
+        }
+        
+        /**
          * @name loaded
          * @memberof platui.DrawerController
          * @kind function

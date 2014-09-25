@@ -266,6 +266,9 @@ module platui {
          * @remarks
          * - "primary"
          * - "secondary"
+         * - "back"
+         * - "confirm"
+         * - "cancel"
          */
         style?: string;
     }
