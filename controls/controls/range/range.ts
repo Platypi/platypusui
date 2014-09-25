@@ -13,6 +13,18 @@
      */
     export class Range extends plat.ui.TemplateControl implements IUIControl {
         /**
+         * @name $window
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        $window: Window = plat.acquire(__Window);
+        /**
          * @name $document
          * @memberof platui.Range
          * @kind property
@@ -1116,10 +1128,19 @@
          * @returns {void}
          */
         _setOffsetWithClone(): void {
-            var clone = <HTMLElement>this.element.cloneNode(true),
+            var element = this.element,
+                clone = <HTMLElement>element.cloneNode(true),
                 style = clone.style,
-                body = this.$document.body;
+                regex = /\d+(?!\d+|%)/,
+                $window = this.$window,
+                body = this.$document.body,
+                width: string;
 
+            while (!regex.test(width = $window.getComputedStyle(element).width)) {
+                element = element.parentElement;
+            }
+
+            clone.style.width = width;
             style.position = 'absolute';
             style.display = 'block';
             style.visibility = 'hidden';

@@ -17,12 +17,13 @@
         .border-radius(@height);
         .box-sizing(content-box);
 
-        .bar {
+        .plat-animated-bar {
             background-color: @fill-color;
             width: 0;
             height: @height;
             .border-radius(@height);
             .transition(@transition);
+            .box-sizing(content-box);
         }
     }
 }

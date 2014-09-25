@@ -24,7 +24,7 @@
          */
         templateString =
         '<div class="plat-progress-container">' +
-            '<div class="ring"></div>' +
+            '<div class="plat-animated-ring"></div>' +
         '</div>';
         
         /**

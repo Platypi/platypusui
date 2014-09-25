@@ -16,11 +16,13 @@
         overflow: visible;
         .calc(width; '100% - @{knob-diameter}');
         .calc(height; '100% - @{knob-diameter}');
+        .box-sizing(content-box);
 
         .plat-slider-offset {
             position: absolute;
             background-color: @fill-color;
             overflow: visible;
+            .box-sizing(content-box);
 
             .plat-knob {
                 position: absolute;
