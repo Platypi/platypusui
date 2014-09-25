@@ -18,7 +18,7 @@
             <plat-radio plat-bind="text">h3</plat-radio>
             <br />
             <br /><br />
-            <span>&nbsp;&nbsp;&nbsp;</span><plat-input>Enter text here...</plat-input>
+            <span>&nbsp;&nbsp;&nbsp;</span><plat-input type="password">Enter text here...</plat-input>
             <br />
             <br /><br />
             <span>&nbsp;&nbsp;&nbsp;value: {{range}}</span>
@@ -303,16 +303,16 @@
         <input type="checkbox" id="modal" />
         <label for="modal"></label>
         <div class="demo-stage">
-            <button plat-tap="toggle">Show Modal!</button>
+            <button plat-tap="__toggle">Show Modal!</button>
         </div>
     </div>
-    <plat-modal plat-name="modal" plat-options="{ transition: 'right' }">
+    <plat-modal plat-name="modal" plat-options="{ transition: 'right', show: show }">
         <div style="background-color: red;">
             header
         </div>
         <div>
             <div class="inner-container">
-                <button plat-tap="toggle">Hello Modo!</button>
+                <button plat-tap="__toggle">Hello Modo!</button>
             </div>
         </div>
     </plat-modal>

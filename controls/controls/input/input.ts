@@ -252,8 +252,9 @@
                 input = this._inputElement = <HTMLInputElement>image.nextElementSibling,
                 attributes = element.attributes,
                 length = attributes.length,
-                attrRegex = /plat-(?!control|hide)/,
+                attrRegex = /plat-(?!control|hide|options)/,
                 attribute: Attr,
+                $utils = this.$utils,
                 name: string;
 
             this._actionElement = <HTMLElement>input.nextElementSibling;
@@ -267,11 +268,13 @@
                     }
 
                     input.setAttribute(name, attribute.value);
+                } else if (name === 'type') {
+                    this._type = attribute.value;
                 }
             }
 
             var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!this.$utils.isEmpty(placeholder)) {
+            if (!$utils.isEmpty(placeholder)) {
                 input.placeholder = placeholder;
             }
         }
@@ -293,7 +296,7 @@
                 dom = this.dom,
                 element = this.element,
                 style = options.style || 'primary',
-                type = this._type = options.type || 'text',
+                type = this._type = options.type || this._type || 'text',
                 pattern = options.pattern;
 
             dom.addClass(element, style + ' ' + type);

@@ -12,7 +12,8 @@ module app {
             range: 20,
             test3: '',
             lower: 10,
-            upper: 90
+            upper: 90,
+            show: false
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
@@ -40,8 +41,8 @@ module app {
             this.context.range++;
         }
 
-        toggle() {
-            this.modal.control.toggle();
+        __toggle() {
+            this.context.show = !this.context.show;
         }
     }
 

@@ -190,17 +190,29 @@
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options,
+            var optionObj = this.options || <plat.observable.IObservableProperty<IModalOptions>>{},
+                options = optionObj.value || <IModalOptions>{},
                 $utils = this.$utils,
                 isString = $utils.isString,
                 dom = this.dom,
                 modalElement = this._modalElement,
-                options = $utils.isObject(optionObj) ? optionObj.value : <IModalOptions>{},
                 transition = options.transition,
-                style = isString(options.style) ? options.style.toLowerCase() : 'full';
+                style = isString(options.style) ? options.style.toLowerCase() : 'full',
+                show = options.show;
+
+            if ($utils.isBoolean(show)) {
+                optionObj.observe(this._optionsChanged);
+            } else {
+                show = false;
+            }
 
             if (!isString(transition) || transition === 'none') {
                 dom.addClass(modalElement, style + ' plat-no-transition');
+                if (show) {
+                    $utils.postpone(() => {
+                        this.show();
+                    });
+                }
                 return;
             } else if ($utils.isNull(this._transitionHash[transition])) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
@@ -210,6 +222,11 @@
 
             this._transitionEnd = this.$compat.animationEvents.$transitionEnd;
             dom.addClass(modalElement, transition + ' plat-modal-transition ' + style);
+            if (show) {
+                $utils.postpone(() => {
+                    this.show();
+                });
+            }
         }
         
         /**
@@ -292,6 +309,36 @@
          */
         isVisible(): boolean {
             return this._isVisible;
+        }
+        
+        /**
+         * @name _optionsChanged
+         * @memberof platui.Modal
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Listens for the transition to end and hides the element after it is finished.
+         * 
+         * @param {platui.IModalOptions} newValue The new value of the {@link plat.controls.Options|options}.
+         * 
+         * @returns {void}
+         */
+        _optionsChanged(newValue: IModalOptions): void {
+            var show = newValue.show;
+            if (this.$utils.isBoolean(show)) {
+                if (show) {
+                    if (this._isVisible) {
+                        return;
+                    }
+                    this.show();
+                    return;
+                }
+
+                if (this._isVisible) {
+                    this.hide();
+                }
+            }
         }
         
         /**
@@ -379,7 +426,7 @@
          * - "fade"
          */
         transition?: string;
-        
+
         /**
          * @name templateUrl
          * @memberof platui.IModalOptions
@@ -393,5 +440,19 @@
          * innerHTML.
          */
         templateUrl?: string;
+        
+        /**
+         * @name show
+         * @memberof platui.IModalOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * An expression that evaluates to true or false, indicating whether or not the 
+         * modal is shown.
+         */
+        show: boolean;
     }
 }
