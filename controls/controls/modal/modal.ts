@@ -318,7 +318,8 @@
          * @access protected
          * 
          * @description
-         * Listens for the transition to end and hides the element after it is finished.
+         * Listens for {@link plat.controls.Options|options} to change and either shows or hides the 
+         * {@link platui.Modal|Modal} accordingly.
          * 
          * @param {platui.IModalOptions} newValue The new value of the {@link plat.controls.Options|options}.
          * 
@@ -451,7 +452,7 @@
          * 
          * @description
          * An expression that evaluates to true or false, indicating whether or not the 
-         * modal is shown.
+         * {@link platui.Modal|Modal} is shown.
          */
         show: boolean;
     }

@@ -331,7 +331,7 @@
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
-        options: plat.observable.IObservableProperty<IDrawerOptions>;
+        options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
         
         /**
          * @name _transition
@@ -601,16 +601,27 @@
          */
         loaded(): void {
             var element = this.element,
-                optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
-                options = optionObj.value || <IDrawerOptions>{},
+                $utils = this.$utils,
+                optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
+                options = optionObj.value || <IDrawerControllerOptions>{},
                 transition = options.transition,
-                id = options.id;
+                id = options.id,
+                show = options.show;
 
             this._type = options.type;
             this._isElastic = options.elastic === true;
             this._useContext = options.useContext === true;
             this._templateUrl = options.templateUrl;
             this._initializeEvents(id, transition);
+
+            if ($utils.isBoolean(show)) {
+                optionObj.observe(this._optionsChanged);
+                if (show) {
+                    $utils.postpone(() => {
+                        this.open();
+                    });
+                }
+            }
         }
         
         /**
@@ -750,6 +761,37 @@
          */
         isOpen(): boolean {
             return this._isOpen;
+        }
+
+        /**
+         * @name _optionsChanged
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Listens for {@link plat.controls.Options|options} to change and either shows or hides the 
+         * {@link platui.Drawer|Drawer} accordingly.
+         * 
+         * @param {platui.IDrawerControllerOptions} newValue The new value of the {@link plat.controls.Options|options}.
+         * 
+         * @returns {void}
+         */
+        _optionsChanged(newValue: IDrawerControllerOptions): void {
+            var show = newValue.show;
+            if (this.$utils.isBoolean(show)) {
+                if (show) {
+                    if (this._isOpen) {
+                        return;
+                    }
+                    this.open();
+                    return;
+                }
+
+                if (this._isOpen) {
+                    this.close();
+                }
+            }
         }
         
         /**
@@ -1270,8 +1312,7 @@
      * @kind interface
      * 
      * @description
-     * The available {@link plat.controls.Options|options} for the {@link platui.Drawer|Drawer} control 
-     * and/or the {@link platui.DrawerController|DrawerController} control.
+     * The available {@link plat.controls.Options|options} for the {@link platui.Drawer|Drawer} control.
      */
     export interface IDrawerOptions {
         /**
@@ -1346,18 +1387,30 @@
          * Defaults to false.
          */
         elastic?: boolean;
-        
+    }
+
+    /**
+     * @name IDrawerControllerOptions
+     * @memberof platui
+     * @kind interface
+     * 
+     * @extends {platui.IDrawerOptions}
+     * 
+     * @description
+     * The available {@link plat.controls.Options|options} for the {@link platui.DrawerController|DrawerController} control.
+     */
+    export interface IDrawerControllerOptions extends IDrawerOptions {
         /**
          * @name type
-         * @memberof platui.IDrawerOptions
+         * @memberof platui.IDrawerControllerOptions
          * @kind property
          * @access public
          * 
          * @type {string}
          * 
          * @description
-         * An option for the {@link platui.DrawerController|DrawerController} specifying how the drawer should 
-         * open. Can be specified as either "tap" or "slide", but it's default behavior is both.
+         * Specifies how the {@link platui.Drawer|Drawer} should open. Can be specified as either "tap" or "slide", 
+         * but it's default behavior is both.
          * 
          * @remarks
          * "tap": The drawer opens when the controller is tapped.
@@ -1366,6 +1419,20 @@
          * controller is slid.
          */
         type?: string;
+
+        /**
+         * @name show
+         * @memberof platui.IDrawerControllerOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * An expression that evaluates to true or false, indicating whether or not the 
+         * {@link platui.Drawer|Drawer} is shown.
+         */
+        show?: boolean;
     }
     
     /**
