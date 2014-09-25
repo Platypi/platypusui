@@ -478,13 +478,12 @@
             }
 
             this._setPositionAndLength();
-
             if (!this._maxOffset) {
                 this._setOffsetWithClone();
             }
 
-            this._setLowerKnob(min);
             this._setIncrement();
+            this._setLowerKnob(min);
             this._initializeEvents(transition);
 
             if (!$utils.isObject(this.context)) {

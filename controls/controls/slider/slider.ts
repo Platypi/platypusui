@@ -367,7 +367,6 @@
             }
 
             this._setLength();
-
             if (!this._maxOffset) {
                 this._setOffsetWithClone();
             }
