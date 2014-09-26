@@ -15,7 +15,6 @@
 
     &.right,
     &.left {
-        width: @length;
         height: 100%;
         top: 0;
     }
@@ -23,23 +22,26 @@
     &.up,
     &.down {
         width: 100%;
-        height: @length;
         left: 0;
     }
 
     &.right {
+        width: @length-right;
         left: 0;
     }
 
     &.left {
+        width: @length-left;
         right: 0;
     }
 
     &.down {
+        height: @length-down;
         top: 0;
     }
 
     &.up {
+        height: @length-up;
         bottom: 0;
     }
 }

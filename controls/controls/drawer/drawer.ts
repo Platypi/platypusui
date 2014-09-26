@@ -140,7 +140,9 @@
                 templateUrl = options.templateUrl,
                 isElastic = options.elastic === true;
 
+            element.setAttribute(__Hide, '');
             this.dom.addClass(element, transition);
+
             if ($utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
                     this.innerTemplate = template;
@@ -659,9 +661,10 @@
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {void}
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        open(): void {
+        open(): plat.ui.animations.IAnimationThenable<void> {
             var elementToMove = this._rootElement,
                 drawerElement = this._drawerElement,
                 isNode = this.$utils.isNode;
@@ -693,7 +696,7 @@
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
             this._isOpen = true;
-            this.$animator.animate(elementToMove, __Transition, animationOptions);
+            return this.$animator.animate(elementToMove, __Transition, animationOptions);
         }
         
         /**
@@ -705,9 +708,10 @@
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {void}
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        close(): void {
+        close(): plat.ui.animations.IAnimationThenable<void> {
             var elementToMove = this._rootElement,
                 drawerElement = this._drawerElement,
                 isNode = this.$utils.isNode;
@@ -719,7 +723,7 @@
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(0,0,0)';
             this._isOpen = false;
-            this.$animator.animate(elementToMove, __Transition, animationOptions).then(() => {
+            return this.$animator.animate(elementToMove, __Transition, animationOptions).then(() => {
                 if (this._isOpen) {
                     return;
                 }
@@ -737,15 +741,15 @@
          * @description
          * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
          * 
-         * @returns {void}
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
-        toggle(): void {
+        toggle(): plat.ui.animations.IAnimationThenable<void> {
             if (this._isOpen) {
-                this.close();
-                return;
+                return this.close();
             }
 
-            this.open();
+            return this.open();
         }
         
         /**
@@ -757,15 +761,15 @@
          * @description
          * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
          * 
-         * @returns {void}
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
          */
-        reset(): void {
+        reset(): plat.ui.animations.IAnimationThenable<void> {
             if (this._isOpen) {
-                this.open();
-                return;
+                return this.open();
             }
 
-            this.close();
+            return this.close();
         }
         
         /**
@@ -1134,6 +1138,7 @@
                     return;
                 }
 
+                drawerElement.removeAttribute(__Hide);
                 this._addEventListeners(transition.toLowerCase());
                 this._setOffset();
                 drawerElement.setAttribute(__Hide, '');

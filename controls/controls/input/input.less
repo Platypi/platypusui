@@ -16,11 +16,12 @@
         .box-sizing(border-box);
 
         input {
-            position: relative;
-            left: 1em;
+            position: absolute;
+            height: 100%;
+            width: 80%;
+            left: 5%;
             bottom: 0;
             padding: 0;
-            height: 100%;
             vertical-align: bottom;
             background-color: @transparent;
             color: @text-color;
@@ -29,7 +30,6 @@
             font: inherit;
             -webkit-appearance: none;
             .box-sizing(border-box);
-            .calc(width; '100% - 3em');
 
             &::-ms-clear,
             &::-ms-reveal {
@@ -43,10 +43,10 @@
             }
         }
 
-        .action {
+        .plat-input-action {
             display: inline-block;
-            position: relative;
-            left: 1em;
+            position: absolute;
+            right: 5%;
             bottom: 0.1em;
             width: 1em;
             height: 80%;
@@ -54,10 +54,6 @@
             color: @action-color;
             cursor: pointer;
             .box-sizing(content-box);
-
-            &.hide {
-                display: none;
-            }
         }
     }
 
@@ -80,7 +76,7 @@
             input {
                 .calc(width; '100% - 4em');
             }
-            .action {
+            .plat-input-action {
                 width: 2em;
             }
         }
@@ -88,7 +84,7 @@
 
     &.password {
         .plat-input-container {
-            .action {
+            .plat-input-action {
                 width: 1.2em;
                 height: 1.2em;
                 text-align: center;

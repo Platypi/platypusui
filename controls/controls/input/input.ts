@@ -51,9 +51,9 @@
          */
         templateString =
         '<div class="plat-input-container">' +
-            '<div class="image"></div>' +
+            '<div class="plat-input-image"></div>' +
             '<input type="text" />' +
-            '<div class="action"></div>' +
+            '<div class="plat-input-action"></div>' +
         '</div>';
         
         /**
@@ -353,8 +353,9 @@
             } else {
                 inputElement.value = '';
             }
+
             actionElement.textContent = this._typeChar = '';
-            this.dom.addClass(actionElement, 'hide');
+            actionElement.setAttribute(__Hide, '');
         }
         
         /**
@@ -456,7 +457,7 @@
             this._inputElement.type = type;
 
             actionElement.textContent = this._typeChar = '';
-            this.dom.addClass(actionElement, 'hide');
+            actionElement.setAttribute(__Hide, '');
             this.addEventListener(actionElement, event, this._typeHandler);
             this._addTextEventListener();
         }
@@ -634,11 +635,11 @@
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
                 if (newChar === '') {
-                    this.dom.addClass(actionElement, 'hide');
+                    actionElement.setAttribute(__Hide, '');
                     return;
                 }
 
-                this.dom.removeClass(actionElement, 'hide');
+                actionElement.removeAttribute(__Hide);
             }
         }
 
@@ -669,11 +670,11 @@
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
                 if (newChar === '') {
-                    this.dom.addClass(actionElement, 'hide');
+                    actionElement.setAttribute(__Hide, '');
                     return;
                 }
 
-                this.dom.removeClass(actionElement, 'hide');
+                actionElement.removeAttribute(__Hide);
             }
         }
         
@@ -730,11 +731,11 @@
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
                 if (newChar === '') {
-                    this.dom.addClass(actionElement, 'hide');
+                    actionElement.setAttribute(__Hide, '');
                     return;
                 }
 
-                this.dom.removeClass(actionElement, 'hide');
+                actionElement.removeAttribute(__Hide);
             }
         }
 
