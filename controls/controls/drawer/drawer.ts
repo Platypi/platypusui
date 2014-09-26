@@ -136,7 +136,7 @@
                     (options.useContext === true) ||
                     element.hasAttribute(__Context) ||
                     element.hasAttribute('data-' + __Context),
-                id = options.id,
+                id = options.id || '',
                 templateUrl = options.templateUrl,
                 isElastic = options.elastic === true;
 
@@ -210,17 +210,14 @@
                 useContext = this._useContext,
                 DIRECT = plat.events.EventManager.DIRECT;
 
-            this.on(__DrawerControllerFetchEvent,
+            this.on(__DrawerControllerFetchEvent + '_' + id,
                 (event: plat.events.IDispatchEventInstance, controllerArg: IDrawerHandshakeEvent) => {
-                if (isString(id) && isString(controllerArg.id) && id !== controllerArg.id) {
-                    return;
-                } else if (isString(controllerArg.transition)) {
+                if (isString(controllerArg.transition)) {
                     transition = controllerArg.transition;
                     this._changeDirection(transition);
                 }
 
-                this.dispatchEvent(__DrawerFoundEvent, DIRECT, {
-                    id: id,
+                this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                     transition: transition,
                     element: element,
                     useContext: useContext,
@@ -229,8 +226,7 @@
                 });
             });
 
-            this.dispatchEvent(__DrawerFoundEvent, DIRECT, {
-                id: id,
+            this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                 transition: transition,
                 element: element,
                 useContext: useContext,
@@ -620,7 +616,7 @@
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
                 transition = options.transition,
-                id = options.id,
+                id = options.id || '',
                 show = options.show;
 
             this._type = options.type;
@@ -1101,12 +1097,8 @@
 
             this._setTransform();
 
-            var eventRemover = this.on(__DrawerFoundEvent,
+            var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
-                if (isString(id) && isString(drawerArg.id) && id !== drawerArg.id) {
-                    return;
-                }
-
                 eventRemover();
 
                 this._drawerElement = drawerArg.element;
@@ -1141,8 +1133,7 @@
                 this._determineTemplate(drawerArg.template);
             });
 
-            this.dispatchEvent(__DrawerControllerFetchEvent, plat.events.EventManager.DIRECT, {
-                id: id,
+            this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                 transition: transition
             });
         }
@@ -1461,18 +1452,6 @@
      * {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} handshake.
      */
     interface IDrawerHandshakeEvent {
-        /**
-         * @name id
-         * @memberof platui.IDrawerHandshakeEvent
-         * @kind property
-         * @access public
-         * 
-         * @type {string}
-         * 
-         * @description
-         * The unique ID of the {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} pair.
-         */
-        id?: string;
         /**
          * @name transition
          * @memberof platui.IDrawerHandshakeEvent
