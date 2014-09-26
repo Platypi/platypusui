@@ -268,7 +268,12 @@
          * @type {string}
          * 
          * @description
-         * The type of mark to place inside the {@link platui.Checkbox|Checkbox}.
+         * The type of mark to place inside the {@link platui.Checkbox|Checkbox}. 
+         * Defaults to "check".
+         * 
+         * @remarks
+         * - "check"
+         * - "x"
          */
         mark?: string;
         

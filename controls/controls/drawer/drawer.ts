@@ -89,7 +89,7 @@
          * @access public
          * 
          * @description
-         * Set the class name.
+         * Set the class name and hides the element.
          * 
          * @returns {void}
          */
@@ -663,11 +663,14 @@
          */
         open(): void {
             var elementToMove = this._rootElement,
+                drawerElement = this._drawerElement,
                 isNode = this.$utils.isNode;
 
-            if (!isNode(elementToMove) || !isNode(this._drawerElement)) {
+            if (!isNode(elementToMove) || !isNode(drawerElement)) {
                 return;
             }
+
+            drawerElement.removeAttribute(__Hide);
 
             var translation: string;
             switch (this._transition) {
@@ -689,8 +692,8 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            this.$animator.animate(elementToMove, __Transition, animationOptions);
             this._isOpen = true;
+            this.$animator.animate(elementToMove, __Transition, animationOptions);
         }
         
         /**
@@ -715,8 +718,14 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(0,0,0)';
-            this.$animator.animate(elementToMove, __Transition, animationOptions);
             this._isOpen = false;
+            this.$animator.animate(elementToMove, __Transition, animationOptions).then(() => {
+                if (this._isOpen) {
+                    return;
+                }
+
+                drawerElement.setAttribute(__Hide, '');
+            });
         }
         
         /**
@@ -940,6 +949,11 @@
                 x: ev.clientX,
                 y: ev.clientY
             };
+
+            if (this._isOpen) {
+                return;
+            }
+            this._drawerElement.removeAttribute(__Hide);
         }
         
         /**
@@ -1093,7 +1107,8 @@
             var element = this.element,
                 $utils = this.$utils,
                 isString = $utils.isString,
-                needsDirection = !isString(transition);
+                needsDirection = !isString(transition),
+                drawerElement: HTMLElement;
 
             this._setTransform();
 
@@ -1101,7 +1116,7 @@
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
                 eventRemover();
 
-                this._drawerElement = drawerArg.element;
+                drawerElement = this._drawerElement = drawerArg.element;
 
                 if (needsDirection) {
                     if (isString(drawerArg.transition)) {
@@ -1121,6 +1136,7 @@
 
                 this._addEventListeners(transition.toLowerCase());
                 this._setOffset();
+                drawerElement.setAttribute(__Hide, '');
 
                 if ($utils.isUndefined(this._isElastic)) {
                     this._isElastic = drawerArg.elastic === true;

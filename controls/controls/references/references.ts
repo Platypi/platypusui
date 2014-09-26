@@ -31,6 +31,7 @@ var __Promise = '$Promise',
     /**
      * Referenced Controls / Vars
      */
+    __Hide = __Plat + 'hide',
     __Checked = __Plat + 'checked',
     __CamelChecked = 'platChecked',
     __Context = __Plat + 'context',
