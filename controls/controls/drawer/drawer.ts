@@ -186,7 +186,7 @@
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
                     this.innerTemplate = template;
                     if (this._useContext) {
-                        this._bindTemplate(template.cloneNode(true));
+                        this.bindTemplate('drawer', template.cloneNode(true));
                         this._checkPreload();
                     }
 
@@ -194,7 +194,7 @@
                 });
                 return;
             } else if (useContext && $utils.isNode(this.innerTemplate)) {
-                this._bindTemplate(this.innerTemplate.cloneNode(true));
+                this.bindTemplate('drawer', this.innerTemplate.cloneNode(true));
                 this._checkPreload();
             }
 
@@ -336,6 +336,30 @@
         }
 
         /**
+         * @name bindTemplate
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Binds the added HTML template to this control's inherited context.
+         * 
+         * @param {string} name The template name to bind.
+         * @param {Node} node The node to add as a bindable template.
+         * 
+         * @returns {void}
+         */
+        bindTemplate(name: string, node: Node): void {
+            var bindableTemplates = this.bindableTemplates;
+            bindableTemplates.add(name, node);
+            bindableTemplates.bind(name).then((template) => {
+                var element = this.element;
+                this.dom.clearNode(element);
+                element.appendChild(template);
+            });
+        }
+
+        /**
          * @name setProperty
          * @memberof platui.Input
          * @kind function
@@ -446,29 +470,6 @@
                 useContext: useContext,
                 template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                 elastic: isElastic
-            });
-        }
-        
-        /**
-         * @name _bindTemplate
-         * @memberof platui.Drawer
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Binds the added HTML template to this control's inherited context.
-         * 
-         * @param {Node} node The node to add as a bindable template.
-         * 
-         * @returns {void}
-         */
-        _bindTemplate(node: Node): void {
-            var bindableTemplates = this.bindableTemplates,
-                drawer = 'drawer';
-
-            bindableTemplates.add(drawer, node);
-            bindableTemplates.bind(drawer).then((template) => {
-                this.element.appendChild(template);
             });
         }
 
@@ -1098,6 +1099,31 @@
         }
 
         /**
+         * @name bindTemplate
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Binds the added HTML template to this control's inherited context and 
+         * places the node into the {@link platui.Drawer|Drawer}.
+         * 
+         * @param {string} name The template name to bind.
+         * @param {Node} node The node to add as a bindable template.
+         * 
+         * @returns {void}
+         */
+        bindTemplate(name: string, node: Node): void {
+            var bindableTemplates = this.bindableTemplates;
+            bindableTemplates.add(name, node);
+            bindableTemplates.bind(name).then((template) => {
+                var element = this._drawerElement;
+                this.dom.clearNode(element);
+                element.appendChild(template);
+            });
+        }
+
+        /**
          * @name setProperty
          * @memberof platui.Input
          * @kind function
@@ -1607,36 +1633,11 @@
 
             if ($utils.isString(this._templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template) => {
-                    this._bindTemplate(template);
+                    this.bindTemplate('drawer', template);
                 });
             } else if ($utils.isNode(fragment)) {
-                this._bindTemplate(fragment);
+                this.bindTemplate('drawer', fragment);
             }
-        }
-        
-        /**
-         * @name _bindTemplate
-         * @memberof platui.DrawerController
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Binds the added HTML template to this control's inherited context.
-         * 
-         * @param {Node} node The node to add as a bindable template.
-         * 
-         * @returns {void}
-         */
-        _bindTemplate(node: Node): void {
-            var drawerElement = this._drawerElement,
-                bindableTemplates = this.bindableTemplates,
-                drawer = 'drawer';
-
-            bindableTemplates.add(drawer, node);
-            bindableTemplates.bind(drawer).then((template) => {
-                this.dom.clearNode(drawerElement);
-                drawerElement.appendChild(template);
-            });
         }
         
         /**
