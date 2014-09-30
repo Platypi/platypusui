@@ -455,17 +455,21 @@
 
                 this._controller = controllerArg.control;
 
-                this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
-                    control: this,
-                    transition: transition,
-                    useContext: useContext,
-                    template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
-                    elastic: isElastic
-                });
+                    if (!controllerArg.received) {
+                        this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
+                            control: this,
+                            received: true,
+                            transition: transition,
+                            useContext: useContext,
+                            template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                            elastic: isElastic
+                        });
+                    }
             });
 
             this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                 control: this,
+                received: false,
                 transition: transition,
                 useContext: useContext,
                 template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
@@ -1555,21 +1559,18 @@
          * @returns {void}
          */
         _initializeEvents(id: string, transition: string): void {
-            var element = this.element,
-                $utils = this.$utils,
-                isString = $utils.isString,
-                needsDirection = !isString(transition);
-
             this._setTransform();
 
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
                 eventRemover();
 
-                var drawer = (this._drawer = drawerArg.control) || {},
+                var $utils = this.$utils,
+                    isString = $utils.isString,
+                    drawer = (this._drawer = drawerArg.control) || {},
                     drawerElement = this._drawerElement = drawer.element;
 
-                if (needsDirection) {
+                if (!isString(transition)) {
                     if (isString(drawerArg.transition)) {
                         transition = drawerArg.transition;
                     } else {
@@ -1594,6 +1595,14 @@
                     this._isElastic = drawerArg.elastic === true;
                 }
 
+                if (!drawerArg.received) {
+                    this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
+                        control: this,
+                        received: true,
+                        transition: transition
+                    });
+                }
+
                 if (!this._useContext && drawerArg.useContext === true) {
                     return;
                 }
@@ -1610,6 +1619,7 @@
 
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                 control: this,
+                received: false,
                 transition: transition
             });
         }
@@ -1917,6 +1927,18 @@
      * {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} handshake.
      */
     interface IDrawerHandshakeEvent {
+        /**
+         * @name received
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A boolean value specifying whether the is being reciprocated.
+         */
+        received?: boolean;
         /**
          * @name control
          * @memberof platui.IDrawerHandshakeEvent
