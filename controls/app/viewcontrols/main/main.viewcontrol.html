@@ -5,20 +5,21 @@
         <input type="checkbox" id="forms" />
         <label for="forms"></label>
         <div class="demo-stage">
+            <plat-drawer-controller style="font-size: 300%;">|||</plat-drawer-controller>
             <plat-toggle plat-bind="check"></plat-toggle>
             <br />
             <plat-checkbox plat-bind="check">hello</plat-checkbox>
             <br />
             <input type="text" plat-bind="text" />
             <br />
-            <plat-radio plat-bind="text">h1</plat-radio>
+            <plat-radio plat-bind="text" plat-tap="foo">h1</plat-radio>
             <br />
             <plat-radio plat-bind="text">h2</plat-radio>
             <br />
             <plat-radio plat-bind="text">h3</plat-radio>
             <br />
             <br /><br />
-            <span>&nbsp;&nbsp;&nbsp;</span><plat-input type="password">Enter text here...</plat-input>
+            <span>&nbsp;&nbsp;&nbsp;</span><plat-input type="number" plat-bind="text">Enter text here...</plat-input>
             <br />
             <br /><br />
             <span>&nbsp;&nbsp;&nbsp;value: {{range}}</span>
@@ -306,7 +307,7 @@
             <button plat-tap="__toggle">Show Modal!</button>
         </div>
     </div>
-    <plat-modal plat-name="modal" plat-options="{ transition: 'right', show: show }">
+    <plat-modal plat-name="modal" plat-options="{ transition: 'right' }" plat-bind="show">
         <div style="background-color: red;">
             header
         </div>

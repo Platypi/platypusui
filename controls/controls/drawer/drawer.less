@@ -7,8 +7,8 @@
     position: absolute;
     overflow: auto;
     color: @color;
+    z-index: 0;
     background-color: @background-color;
-    z-index: -1;
     -webkit-backface-visibility: hidden;
     .user-select(none);
     .box-sizing(border-box);
@@ -50,6 +50,14 @@
     #Drawer;
     -webkit-backface-visibility: hidden;
     -webkit-perspective: none;
+    
+    &.plat-drawer-transition-right,
+    &.plat-drawer-transition-left,
+    &.plat-drawer-transition-down,
+    &.plat-drawer-transition-up {
+        overflow: hidden;
+        .touch-action(none);
+    }
 
     &.plat-drawer-transition-right {
         .box-shadow(-@shadow-offset 0px @shadow-blur @shadow-spread @shadow-color);

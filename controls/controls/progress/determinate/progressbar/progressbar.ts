@@ -4,13 +4,13 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.TemplateControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} for showing incremental progress.
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} for showing incremental progress.
      */
-    export class ProgressBar extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class ProgressBar extends plat.ui.TemplateControl implements IUIControl {
         /**
          * @name $utils
          * @memberof platui.ProgressBar
@@ -65,20 +65,6 @@
          * The max value of the bar.
          */
         _barMax: number;
-        
-        /**
-         * @name _usingBind
-         * @memberof platui.ProgressBar
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the control is bound to a context value with a 
-         * {@link plat.controls.Bind|Bind} control.
-         */
-        _usingBind = false;
         
         /**
          * @name setClasses
@@ -143,18 +129,14 @@
          * @returns {void}
          */
         loaded(): void {
-            var context = this.context,
-                element = this.element,
-                usingPlatBind = this._usingBind = element.hasAttribute(__Bind) || element.hasAttribute('data-' + __Bind);
+            var context = this.context;
 
-            this._barMax = this._barMax || this._barElement.parentElement.offsetWidth;
+            this._barMax = this._barElement.parentElement.offsetWidth;
 
-            if ((!this.$utils.isNumber(context) || context > 1 || context < 0) && !usingPlatBind) {
+            if (!this.$utils.isNumber(context) || context > 1 || context < 0) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1, ' +
                     'or a "' + __Bind + '" control must be used.');
-                return;
-            } else if (usingPlatBind) {
                 return;
             }
 
@@ -173,35 +155,7 @@
          * @returns {void}
          */
         contextChanged(): void {
-            if (this._usingBind) {
-                return;
-            }
-
             this.setProgress();
-        }
-        
-        /**
-         * @name setProperty
-         * @memberof platui.ProgressBar
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * The function called when the bindable property is set externally.
-         * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
-         * @param {boolean} setProperty? A boolean value indicating whether we should set 
-         * the property if we need to toggle the check mark value.
-         * 
-         * @returns {void}
-         */
-        setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
-            if (newValue === oldValue) {
-                return;
-            }
-
-            this.setProgress(newValue);
         }
         
         /**
@@ -227,6 +181,40 @@
             }
 
             this._barElement.style.width = Math.ceil(barMax * barValue) + 'px';
+        }
+
+        /**
+         * @name _setOffsetWithClone
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a clone of this element and uses it to find the max offset.
+         * 
+         * @returns {void}
+         */
+        _setOffsetWithClone(): void {
+            var element = this.element,
+                clone = <HTMLElement>element.cloneNode(true),
+                style = clone.style,
+                regex = /\d+(?!\d+|%)/,
+                $window: Window = plat.acquire(__Window),
+                $document: Document = plat.acquire(__Document),
+                body = $document.body,
+                width: string;
+
+            while (!regex.test(width = $window.getComputedStyle(element).width)) {
+                element = element.parentElement;
+            }
+
+            clone.style.width = width;
+            style.position = 'absolute';
+            style.display = 'block';
+            style.visibility = 'hidden';
+            body.appendChild(clone);
+            this._barMax = (<HTMLElement>clone.firstElementChild).offsetWidth;
+            body.removeChild(clone);
         }
     }
 

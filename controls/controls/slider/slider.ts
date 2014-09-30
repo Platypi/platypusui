@@ -388,12 +388,11 @@
          * The function called when the {@link platui.Slider|Slider's} bindable property is set externally.
          * 
          * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any): void {
-            if (newValue === oldValue || newValue === this.value) {
+        setProperty(newValue: any): void {
+            if (newValue === this.value) {
                 return;
             } else if (!this.$utils.isNumber(newValue)) {
                 newValue = this.min;

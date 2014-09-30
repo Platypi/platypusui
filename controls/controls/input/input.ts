@@ -199,6 +199,32 @@
          * Whether or not the {@link plat.controls.Bind|Bind} control is being used.
          */
         _usingBind = false;
+
+        /**
+         * @name _loaded
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
+         */
+        _loaded = false;
+        
+        /**
+         * @name _preloadedValue
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * A value specified prior to the control being loaded.
+         */
+        _preloadedValue = '';
         
         /**
          * @name setClasses
@@ -265,9 +291,9 @@
                 if (attrRegex.test(name)) {
                     if (name === __Bind || name === 'data-' + __Bind) {
                         this._usingBind = true;
+                    } else {
+                        input.setAttribute(name, attribute.value);
                     }
-
-                    input.setAttribute(name, attribute.value);
                 } else if (name === 'type') {
                     this._type = attribute.value;
                 }
@@ -310,6 +336,22 @@
             }
 
             this._initializeType();
+            this._loaded = true;
+        }
+
+        /**
+         * @name dispose
+         * @memberof platui.Input
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Sets loaded back to false to avoid acting on input.
+         * 
+         * @returns {void}
+         */
+        dispose(): void {
+            this._loaded = false;
         }
         
         /**
@@ -343,17 +385,13 @@
         clear(): void {
             var inputElement = this._inputElement,
                 value = inputElement.value;
+
             if (value === '') {
                 return;
             }
 
             var actionElement = this._actionElement;
-            if (this._usingBind) {
-                this.propertyChanged('', value);
-            } else {
-                inputElement.value = '';
-            }
-
+            this.propertyChanged((inputElement.value = ''), value);
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
         }
@@ -402,6 +440,29 @@
         value(): string {
             return this._inputElement.value;
         }
+
+        /**
+         * @name setProperty
+         * @memberof platui.Input
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
+         * 
+         * @returns {void}
+         */
+        setProperty(newValue: any, oldValue?: any): void {
+            if (!this._loaded) {
+                this._preloadedValue = newValue;
+                return;
+            }
+
+            this._onInput();
+        }
         
         /**
          * @name _initializeType
@@ -437,12 +498,12 @@
                     event = __$touchstart;
                     break;
                 case 'tel':
-                    this._pattern = this._pattern || /^\+|[0-9.-\s]+/;
+                    this._pattern = this._pattern || /^\+?[0-9\.\-\s]*$/;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
                 case 'number':
-                    this._pattern = this._pattern || /[0-9.,]+/;
+                    this._pattern = this._pattern || /^[0-9\.,]*$/;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     type = 'tel';
@@ -459,6 +520,11 @@
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
             this.addEventListener(actionElement, event, this._typeHandler);
+
+            if (this._usingBind) {
+                this._checkInput(this._preloadedValue);
+            }
+
             this._addTextEventListener();
         }
 
@@ -599,11 +665,7 @@
                 value = inputElement.value,
                 char = this._typeChar;
 
-            if (this._usingBind) {
-                this.propertyChanged(char === 'x' ? '' : value + char, value);
-            } else {
-                inputElement.value = char === 'x' ? '' : value + char;
-            }
+            this.propertyChanged((inputElement.value = (char === 'x' ? '' : value + char)), value);
             this._checkEmail();
             inputElement.focus();
         }
@@ -751,25 +813,53 @@
          * @returns {void}
          */
         _onInput(): void {
+            var inputElement = this._inputElement,
+                value = inputElement.value;
             switch (this._type) {
                 case 'tel':
                 case 'number':
-                    var inputElement = this._inputElement,
-                        value = inputElement.value,
-                        last = value.length - 1;
-
+                    var last = value.length - 1;
                     if (last >= 0 && (!this._pattern.test(value[last]) ||
                         !(last === 0 || this._type !== 'tel' || value[last] !== '+'))) {
-                        if (this._usingBind) {
-                            this.propertyChanged(value.slice(0, -1), value);
-                        } else {
-                            inputElement.value = value.slice(0, -1);
-                        }
+                        value = inputElement.value = value.slice(0, -1);
                     }
+                default:
+                    this.propertyChanged(value);
                     break;
             }
 
             this._actionHandler();
+        }
+        
+        /**
+         * @name _checkInput
+         * @memberof platui.Input
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Check the initial input and delete if it does not match the pattern.
+         * 
+         * @param {string} value The value to check as input to the HTMLInputElement.
+         * 
+         * @returns {void}
+         */
+        _checkInput(value: string): void {
+            switch (this._type) {
+                case 'tel':
+                case 'number':
+                    if (this._pattern.test(value)) {
+                        this._inputElement.value = value;
+                    } else {
+                        if (this._usingBind) {
+                            var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                            Exception.warn(__Input + ' control is bound to a value that does not satisfy ' +
+                                'the given pattern and/or type. The bound value will be reset to "".');
+                        }
+                        this.propertyChanged((this._inputElement.value = ''), value);
+                    }
+                    break;
+            }
         }
     }
 

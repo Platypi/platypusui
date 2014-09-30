@@ -4,13 +4,13 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.TemplateControl}
+     * @extends {plat.ui.BindablePropertyControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that acts as a global drawer.
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that acts as a global drawer.
      */
-    export class Drawer extends plat.ui.TemplateControl implements IUIControl {
+    export class Drawer extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
          * @name $utils
          * @memberof platui.Drawer
@@ -61,6 +61,45 @@
          * Whether or not to use the inherited context of this global {@link platui.Drawer|Drawer}.
          */
         _useContext: boolean;
+
+        /**
+         * @name controller
+         * @memberof platui.Drawer
+         * @kind property
+         * @access public
+         * 
+         * @type {platui.DrawerController}
+         * 
+         * @description
+         * A reference to the {@link platui.DrawerController|DrawerController} used to control this {@link platui.Drawer|Drawer}.
+         */
+        _controller: DrawerController;
+
+        /**
+         * @name _loaded
+         * @memberof platui.Drawer
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
+         */
+        _loaded = false;
+
+        /**
+         * @name _preloadedValue
+         * @memberof platui.Drawer
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A value specified prior to the control being loaded.
+         */
+        _preloadedValue = false;
         
         /**
          * @name setClasses
@@ -133,9 +172,9 @@
                 options = optionObj.value || <IDrawerOptions>{},
                 transition = this._currentTransition = options.transition || 'right',
                 useContext = this._useContext =
-                    (options.useContext === true) ||
-                    element.hasAttribute(__Context) ||
-                    element.hasAttribute('data-' + __Context),
+                (options.useContext === true) ||
+                element.hasAttribute(__Context) ||
+                element.hasAttribute('data-' + __Context),
                 id = options.id || '',
                 templateUrl = options.templateUrl,
                 isElastic = options.elastic === true;
@@ -147,18 +186,190 @@
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
                     this.innerTemplate = template;
                     if (this._useContext) {
-                        this.bindableTemplates.add('drawer', template.cloneNode(true));
-                        this._bindTemplate();
+                        this._bindTemplate(template.cloneNode(true));
+                        this._checkPreload();
                     }
+
                     this._initializeEvents(id, transition, isElastic);
                 });
                 return;
             } else if (useContext && $utils.isNode(this.innerTemplate)) {
-                this.bindableTemplates.add('drawer', this.innerTemplate.cloneNode(true));
-                this._bindTemplate();
+                this._bindTemplate(this.innerTemplate.cloneNode(true));
+                this._checkPreload();
             }
 
             this._initializeEvents(id, transition, isElastic);
+        }
+
+        /**
+         * @name open
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Opens the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
+         */
+        open(): plat.ui.animations.IAnimationThenable<void> {
+            var controller = this._controller;
+            if (this.$utils.isNull(controller)) {
+                return;
+            } else if (!this._useContext) {
+                return controller.open();
+            }
+
+            var promise = controller._open();
+            this.propertyChanged(true);
+            return promise;
+        }
+
+        /**
+         * @name close
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Closes the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
+         */
+        close(): plat.ui.animations.IAnimationThenable<void> {
+            var controller = this._controller;
+            if (this.$utils.isNull(controller)) {
+                return;
+            } else if (!this._useContext) {
+                return controller.close();
+            }
+
+            var promise = controller._close();
+            this.propertyChanged(false);
+            return promise;
+        }
+
+        /**
+         * @name toggle
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
+         * 
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
+         */
+        toggle(): plat.ui.animations.IAnimationThenable<void> {
+            var controller = this._controller;
+            if (this.$utils.isNull(controller)) {
+                return;
+            } else if (!this._useContext) {
+                return controller.toggle();
+            }
+
+            var promise: plat.ui.animations.IAnimationThenable<void>;
+            if (controller.isOpen()) {
+                promise = controller._close();
+                this.propertyChanged(false);
+                return promise;
+            }
+
+            promise = controller._open();
+            this.propertyChanged(true);
+            return promise;
+        }
+
+        /**
+         * @name reset
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
+         * 
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
+         */
+        reset(): plat.ui.animations.IAnimationThenable<void> {
+            var controller = this._controller;
+            if (this.$utils.isNull(controller)) {
+                return;
+            } else if (!this._useContext) {
+                return controller.reset();
+            }
+
+            var promise: plat.ui.animations.IAnimationThenable<void>;
+            if (controller.isOpen()) {
+                promise = controller._open();
+                this.propertyChanged(true);
+                return promise;
+            }
+
+            promise = controller._close();
+            this.propertyChanged(false);
+            return promise;
+        }
+
+        /**
+         * @name isOpen
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Indicates whether the {@link platui.Drawer|Drawer} is currently open.
+         * 
+         * @returns {boolean} Whether or not the {@link platui.Drawer|Drawer} is currently open.
+         */
+        isOpen(): boolean {
+            var controller = this._controller;
+            if (this.$utils.isNull(controller)) {
+                return;
+            }
+
+            return controller.isOpen();
+        }
+
+        /**
+         * @name setProperty
+         * @memberof platui.Input
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {any} newValue The new value of the bindable property.
+         * 
+         * @returns {void}
+         */
+        setProperty(newValue: any): void {
+            if (!this.loaded) {
+                this._preloadedValue = newValue;
+                return;
+            }
+
+            var $utils = this.$utils,
+                controller = this._controller;
+
+            if ($utils.isBoolean(newValue) && !$utils.isNull(controller)) {
+                if (newValue) {
+                    if (controller.isOpen()) {
+                        return;
+                    }
+                    controller.open();
+                    return;
+                }
+
+                if (controller.isOpen()) {
+                    controller.close();
+                }
+            }
         }
         
         /**
@@ -206,7 +417,6 @@
          */
         _initializeEvents(id: string, transition: string, isElastic: boolean): void {
             var $utils = this.$utils,
-                element = this.element,
                 isString = $utils.isString,
                 innerTemplate = this.innerTemplate,
                 useContext = this._useContext,
@@ -219,9 +429,11 @@
                     this._changeDirection(transition);
                 }
 
+                this._controller = controllerArg.control;
+
                 this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
+                    control: this,
                     transition: transition,
-                    element: element,
                     useContext: useContext,
                     template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                     elastic: isElastic
@@ -229,8 +441,8 @@
             });
 
             this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
+                control: this,
                 transition: transition,
-                element: element,
                 useContext: useContext,
                 template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                 elastic: isElastic
@@ -246,12 +458,41 @@
          * @description
          * Binds the added HTML template to this control's inherited context.
          * 
+         * @param {Node} node The node to add as a bindable template.
+         * 
          * @returns {void}
          */
-        _bindTemplate(): void {
-            this.bindableTemplates.bind('drawer').then((template) => {
+        _bindTemplate(node: Node): void {
+            var bindableTemplates = this.bindableTemplates,
+                drawer = 'drawer';
+
+            bindableTemplates.add(drawer, node);
+            bindableTemplates.bind(drawer).then((template) => {
                 this.element.appendChild(template);
             });
+        }
+
+        /**
+         * @name _checkPreload
+         * @memberof platui.Drawer
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Checks the preloaded value and handles accordingly.
+         * 
+         * @returns {void}
+         */
+        _checkPreload(): void {
+            if (this._preloadedValue) {
+                var $utils = this.$utils;
+                $utils.postpone(() => {
+                    var controller = this._controller;
+                    if (!$utils.isNull(controller)) {
+                        controller.open();
+                    }
+                });
+            }
         }
     }
 
@@ -262,13 +503,13 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.TemplateControl}
+     * @extends {plat.ui.BindablePropertyControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that manipulates and controls a global drawer.
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that manipulates and controls a global drawer.
      */
-    export class DrawerController extends plat.ui.TemplateControl {
+    export class DrawerController extends plat.ui.BindablePropertyControl {
         /**
          * @name $utils
          * @memberof platui.DrawerController
@@ -293,6 +534,18 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
+        /**
+         * @name $window
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        $window: Window = plat.acquire(__Window);
         /**
          * @name $document
          * @memberof platui.DrawerController
@@ -358,6 +611,20 @@
          * with this control.
          */
         _drawerElement: HTMLElement;
+
+        /**
+         * @name _drawer
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {platui.Drawer}
+         * 
+         * @description
+         * The global {@link platui.Drawer|Drawer} associated 
+         * with this control.
+         */
+        _drawer: Drawer;
         
         /**
          * @name _transform
@@ -371,6 +638,19 @@
          * The current browser's CSS3 transform property.
          */
         _transform: string;
+
+        /**
+         * @name _preTransform
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The value of the inline transform property prior to the Drawer manipulating it.
+         */
+        _preTransform: string;
         
         /**
          * @name _lastTouch
@@ -477,6 +757,19 @@
         _removeTap: plat.IRemoveListener;
 
         /**
+         * @name _openTapRemover
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the tap event listener on the open {@link platui.Drawer|Drawer}.
+         */
+        _openTapRemover: plat.IRemoveListener;
+
+        /**
          * @name _removeSwipeOpen
          * @memberof platui.DrawerController
          * @kind property
@@ -540,6 +833,20 @@
          * The root element to translate.
          */
         _rootElement: HTMLElement;
+        
+        /**
+         * @name _rootElementStyle
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {{ position?: string; zIndex?: string; }}
+         * 
+         * @description
+         * An object to hold the _rootElement style so that we can reset it 
+         * when the {@link platui.DrawerController|Drawer Controller} is disposed.
+         */
+        _rootElementStyle: { position?: string; zIndex?: string; };
 
         /**
          * @name _type
@@ -587,6 +894,45 @@
         };
         
         /**
+         * @name _directionalTransitionPrep
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * A class name that is used to set styling based on the transition direction.
+         */
+        _directionalTransitionPrep: string;
+
+        /**
+         * @name _loaded
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
+         */
+        _loaded = false;
+
+        /**
+         * @name _preloadedValue
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A value specified prior to the control being loaded.
+         */
+        _preloadedValue = false;
+        
+        /**
          * @name initialize
          * @memberof platui.DrawerController
          * @kind function
@@ -618,23 +964,13 @@
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
                 transition = options.transition,
-                id = options.id || '',
-                show = options.show;
+                id = options.id || '';
 
             this._type = options.type;
             this._isElastic = options.elastic;
             this._useContext = options.useContext === true;
             this._templateUrl = options.templateUrl;
             this._initializeEvents(id, transition);
-
-            if ($utils.isBoolean(show)) {
-                optionObj.observe(this._optionsChanged);
-                if (show) {
-                    $utils.postpone(() => {
-                        this.open();
-                    });
-                }
-            }
         }
         
         /**
@@ -644,12 +980,22 @@
          * @access public
          * 
          * @description
-         * Remove the transition classes off the root element.
+         * Remove the transition classes off the root element and reset the position and 
+         * zIndex properties if modified.
          * 
          * @returns {void}
          */
         dispose(): void {
-            this.dom.removeClass(this._rootElement, 'plat-drawer-transition-prep plat-drawer-transition-' + this._transition);
+            var storedStyle = this._rootElementStyle,
+                rootElement = this._rootElement,
+                $utils = this.$utils;
+
+            this.dom.removeClass(rootElement, 'plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+
+            if (this.$utils.isObject(storedStyle)) {
+                var rootElementStyle = this._rootElement.style;
+                $utils.extend(rootElementStyle, storedStyle);
+            }
         }
         
         /**
@@ -665,38 +1011,13 @@
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         open(): plat.ui.animations.IAnimationThenable<void> {
-            var elementToMove = this._rootElement,
-                drawerElement = this._drawerElement,
-                isNode = this.$utils.isNode;
-
-            if (!isNode(elementToMove) || !isNode(drawerElement)) {
-                return;
+            var promise = this._open();
+            if (this._useContext) {
+                this.propertyChanged(true);
+            } else if (!this.$utils.isNull(this._drawer)) {
+                this._drawer.propertyChanged(true);
             }
-
-            drawerElement.removeAttribute(__Hide);
-
-            var translation: string;
-            switch (this._transition) {
-                case 'up':
-                    translation = 'translate3d(0,' + (-this._maxOffset) + 'px,0)';
-                    break;
-                case 'down':
-                    translation = 'translate3d(0,' + this._maxOffset + 'px,0)';
-                    break;
-                case 'left':
-                    translation = 'translate3d(' + (-this._maxOffset) + 'px,0,0)';
-                    break;
-                case 'right':
-                    translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
-                    break;
-                default:
-                    return;
-            }
-
-            var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = translation;
-            this._isOpen = true;
-            return this.$animator.animate(elementToMove, __Transition, animationOptions);
+            return promise;
         }
         
         /**
@@ -712,24 +1033,13 @@
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         close(): plat.ui.animations.IAnimationThenable<void> {
-            var elementToMove = this._rootElement,
-                drawerElement = this._drawerElement,
-                isNode = this.$utils.isNode;
-
-            if (!isNode(elementToMove) || !isNode(drawerElement)) {
-                return;
+            var promise = this._close();
+            if (this._useContext) {
+                this.propertyChanged(false);
+            } else if (!this.$utils.isNull(this._drawer)) {
+                this._drawer.propertyChanged(false);
             }
-
-            var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = 'translate3d(0,0,0)';
-            this._isOpen = false;
-            return this.$animator.animate(elementToMove, __Transition, animationOptions).then(() => {
-                if (this._isOpen) {
-                    return;
-                }
-
-                drawerElement.setAttribute(__Hide, '');
-            });
+            return promise;
         }
         
         /**
@@ -788,34 +1098,142 @@
         }
 
         /**
-         * @name _optionsChanged
+         * @name setProperty
+         * @memberof platui.Input
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {any} newValue The new value of the bindable property.
+         * 
+         * @returns {void}
+         */
+        setProperty(newValue: any): void {
+            if (!this.loaded) {
+                this._preloadedValue = newValue;
+                return;
+            }
+
+            if (this.$utils.isBoolean(newValue)) {
+                if (newValue) {
+                    if (this._isOpen) {
+                        return;
+                    }
+                    this._open();
+                    return;
+                }
+
+                if (this._isOpen) {
+                    this._close();
+                }
+            }
+        }
+
+        /**
+         * @name _open
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
          * 
          * @description
-         * Listens for {@link plat.controls.Options|options} to change and either shows or hides the 
-         * {@link platui.Drawer|Drawer} accordingly.
+         * Opens the {@link platui.Drawer|Drawer}.
          * 
-         * @param {platui.IDrawerControllerOptions} newValue The new value of the {@link plat.controls.Options|options}.
-         * 
-         * @returns {void}
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        _optionsChanged(newValue: IDrawerControllerOptions): void {
-            var show = newValue.show;
-            if (this.$utils.isBoolean(show)) {
-                if (show) {
-                    if (this._isOpen) {
-                        return;
-                    }
-                    this.open();
+        _open(): plat.ui.animations.IAnimationThenable<void> {
+            var elementToMove = this._rootElement,
+                drawerElement = this._drawerElement,
+                $utils = this.$utils,
+                isNode = $utils.isNode;
+
+            if (!isNode(elementToMove) || !isNode(drawerElement)) {
+                return;
+            }
+
+            drawerElement.removeAttribute(__Hide);
+
+            var translation: string;
+            switch (this._transition) {
+                case 'up':
+                    translation = 'translate3d(0,' + (-this._maxOffset) + 'px,0)';
+                    break;
+                case 'down':
+                    translation = 'translate3d(0,' + this._maxOffset + 'px,0)';
+                    break;
+                case 'left':
+                    translation = 'translate3d(' + (-this._maxOffset) + 'px,0,0)';
+                    break;
+                case 'right':
+                    translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
+                    break;
+                default:
+                    return;
+            }
+
+            var animationOptions: plat.IObject<string> = {};
+
+            $utils.postpone(() => {
+                this._openTapRemover = this.addEventListener(elementToMove, __$tap, (ev: Event) => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    this._openTapRemover();
+                    this._openTapRemover = null;
+                    this.close();
+                    return false;
+                }, true);
+            });
+
+            animationOptions[this._transform] = translation;
+            this._isOpen = true;
+            this.dom.addClass(elementToMove, this._directionalTransitionPrep);
+            return this.$animator.animate(elementToMove, __Transition, animationOptions);
+        }
+
+        /**
+         * @name _close
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Closes the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
+         */
+        _close(): plat.ui.animations.IAnimationThenable<void> {
+            var elementToMove = this._rootElement,
+                drawerElement = this._drawerElement,
+                $utils = this.$utils,
+                isNode = $utils.isNode;
+
+            if (!isNode(elementToMove) || !isNode(drawerElement)) {
+                return;
+            }
+
+            var animationOptions: plat.IObject<string> = {},
+                transform = <any>this._transform;
+
+            animationOptions[transform] = 'translate3d(0,0,0)';
+            this._isOpen = false;
+
+            if ($utils.isFunction(this._openTapRemover)) {
+                this._openTapRemover();
+                this._openTapRemover = null;
+            }
+
+            return this.$animator.animate(elementToMove, __Transition, animationOptions).then(() => {
+                if (this._isOpen) {
                     return;
                 }
 
-                if (this._isOpen) {
-                    this.close();
-                }
-            }
+                elementToMove.style[transform] = this._preTransform;
+                drawerElement.setAttribute(__Hide, '');
+                this.dom.removeClass(elementToMove, this._directionalTransitionPrep);
+            });
         }
         
         /**
@@ -871,7 +1289,7 @@
             // remove event listeners first in case we want to later be able to dynamically change transition direction of drawer.
             this._removeEventListeners();
             if (isNull(type) || tapOnly) {
-                this._removeTap = this.addEventListener(element, __$tap, this.toggle, false);
+                this._removeTap = this.addEventListener(element, __$tap, this.open, false);
                 if (tapOnly) {
                     return;
                 }
@@ -1061,7 +1479,7 @@
                     this._checkElasticity(ev.clientX - this._lastTouch.x);
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
                 default:
-                    return 'translate3d(0,0,0)';
+                    return this._preTransform;
             }
         }
         
@@ -1111,8 +1529,7 @@
             var element = this.element,
                 $utils = this.$utils,
                 isString = $utils.isString,
-                needsDirection = !isString(transition),
-                drawerElement: HTMLElement;
+                needsDirection = !isString(transition);
 
             this._setTransform();
 
@@ -1120,7 +1537,8 @@
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
                 eventRemover();
 
-                drawerElement = this._drawerElement = drawerArg.element;
+                var drawer = (this._drawer = drawerArg.control) || {},
+                    drawerElement = this._drawerElement = drawer.element;
 
                 if (needsDirection) {
                     if (isString(drawerArg.transition)) {
@@ -1151,10 +1569,18 @@
                     return;
                 }
 
+                this._useContext = true;
                 this._determineTemplate(drawerArg.template);
+
+                if (this._preloadedValue) {
+                    $utils.postpone(() => {
+                        this._open();
+                    });
+                }
             });
 
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
+                control: this,
                 transition: transition
             });
         }
@@ -1178,12 +1604,10 @@
 
             if ($utils.isString(this._templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template) => {
-                    this.bindableTemplates.add('drawer', template);
-                    this._bindTemplate();
+                    this._bindTemplate(template);
                 });
             } else if ($utils.isNode(fragment)) {
-                this.bindableTemplates.add('drawer', fragment);
-                this._bindTemplate();
+                this._bindTemplate(fragment);
             }
         }
         
@@ -1196,11 +1620,17 @@
          * @description
          * Binds the added HTML template to this control's inherited context.
          * 
+         * @param {Node} node The node to add as a bindable template.
+         * 
          * @returns {void}
          */
-        _bindTemplate(): void {
-            var drawerElement = this._drawerElement;
-            this.bindableTemplates.bind('drawer').then((template) => {
+        _bindTemplate(node: Node): void {
+            var drawerElement = this._drawerElement,
+                bindableTemplates = this.bindableTemplates,
+                drawer = 'drawer';
+
+            bindableTemplates.add(drawer, node);
+            bindableTemplates.bind(drawer).then((template) => {
                 this.dom.clearNode(drawerElement);
                 drawerElement.appendChild(template);
             });
@@ -1219,20 +1649,21 @@
          */
         _setTransform(): void {
             var style = this.element.style,
-                isUndefined = this.$utils.isUndefined;
+                isUndefined = this.$utils.isUndefined,
+                transform: string;
 
             if (isUndefined(style.transform)) {
                 var vendorPrefix = this.$compat.vendorPrefix;
                 if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                    this._transform = vendorPrefix.lowerCase + 'Transform';
-                    return;
+                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
                 } else if (!isUndefined(style[<any>(vendorPrefix.js + 'Transform')])) {
-                    this._transform = vendorPrefix.lowerCase + 'Transform';
-                    return;
+                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
                 }
+            } else {
+                transform = this._transform = 'transform';
             }
 
-            this._transform = 'transform';
+            this._preTransform = style[<any>transform];
         }
         
         /**
@@ -1271,7 +1702,8 @@
                     return false;
             }
 
-            this.dom.addClass(rootElement, 'plat-drawer-transition-prep plat-drawer-transition-' + transition);
+            this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
+            this._directionalTransitionPrep = 'plat-drawer-transition-' + transition;
 
             return true;
         }
@@ -1302,6 +1734,28 @@
             while (isNode(element) && !((parent = element.parentElement).contains(drawer))) {
                 element = parent;
             }
+
+            var $window = this.$window,
+                computedStyle = $window.getComputedStyle(element),
+                style = element.style,
+                position = computedStyle.position,
+                zIndex = Number(computedStyle.zIndex),
+                rootElementStyle: { position?: string; zIndex?: string; };
+
+            if (position === 'static') {
+                rootElementStyle = {
+                    position: style.position
+                };
+                style.position = 'relative';
+            }
+
+            if (!$utils.isNumber(zIndex) || zIndex > 1) {
+                rootElementStyle = rootElementStyle || {};
+                rootElementStyle.zIndex = style.zIndex;
+                style.zIndex = '1';
+            }
+
+            this._rootElementStyle = rootElementStyle;
 
             return element;
         }
@@ -1446,20 +1900,6 @@
          * controller is slid.
          */
         type?: string;
-
-        /**
-         * @name show
-         * @memberof platui.IDrawerControllerOptions
-         * @kind property
-         * @access public
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * An expression that evaluates to true or false, indicating whether or not the 
-         * {@link platui.Drawer|Drawer} is shown.
-         */
-        show?: boolean;
     }
     
     /**
@@ -1474,6 +1914,19 @@
      */
     interface IDrawerHandshakeEvent {
         /**
+         * @name control
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         * 
+         * @type {any}
+         * 
+         * @description
+         * A reference to either the corresponding {@link platui.DrawerController|DrawerController} or the corresponding 
+         * {@link platui.Drawer|Drawer} the  used to control the {@link platui.Drawer|Drawer}.
+         */
+        control?: any;
+        /**
          * @name transition
          * @memberof platui.IDrawerHandshakeEvent
          * @kind property
@@ -1485,18 +1938,6 @@
          * The transition direction of {@link platui.Drawer|Drawer} opening.
          */
         transition?: string;
-        /**
-         * @name element
-         * @memberof platui.IDrawerHandshakeEvent
-         * @kind property
-         * @access public
-         * 
-         * @type {HTMLElement}
-         * 
-         * @description
-         * The global {@link platui.Drawer|Drawer} element.
-         */
-        element?: HTMLElement;
         /**
          * @name template
          * @memberof platui.IDrawerHandshakeEvent

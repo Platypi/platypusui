@@ -20,6 +20,12 @@
   <ItemGroup>
     <Content Include="index.html" />
     <Content Include="lib\platypus.min.js" />
+    <Content Include="viewcontrols\app.viewcontrol.css">
+      <DependentUpon>app.viewcontrol.less</DependentUpon>
+    </Content>
+    <Content Include="viewcontrols\app.viewcontrol.min.css">
+      <DependentUpon>app.viewcontrol.css</DependentUpon>
+    </Content>
     <Content Include="viewcontrols\main\main.viewcontrol.html" />
     <Content Include="web.config" />
   </ItemGroup>

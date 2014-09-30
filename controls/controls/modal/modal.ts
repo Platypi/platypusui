@@ -4,13 +4,13 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.TemplateControl}
+     * @extends {plat.ui.BindablePropertyControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} for showing a templated and animated overlay.
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} for showing a templated and animated overlay.
      */
-    export class Modal extends plat.ui.TemplateControl implements IUIControl {
+    export class Modal extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
          * @name $utils
          * @memberof platui.Modal
@@ -87,6 +87,32 @@
          * Whether or not the modal is currently visible.
          */
         _isVisible = false;
+
+        /**
+         * @name _loaded
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
+         */
+        _loaded = false;
+
+        /**
+         * @name _preloadedValue
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A value specified prior to the control being loaded.
+         */
+        _preloadedValue = false;
 
         /**
          * @name _transitionEnd
@@ -171,8 +197,24 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var modal = this._modalElement = <HTMLElement>this.element.firstElementChild,
-                innerTemplate = this.innerTemplate;
+            var $utils = this.$utils,
+                modal: HTMLElement;
+
+            if ($utils.isString(this.templateUrl)) {
+                var fragment = this.dom.serializeHtml(this.templateString),
+                    childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
+
+                modal = this._modalElement = <HTMLElement>fragment.firstChild;
+                while (childNodes.length > 0) {
+                    modal.appendChild(childNodes.shift());
+                }
+
+                return;
+            }
+
+            modal = this._modalElement = <HTMLElement>this.element.firstElementChild;
+
+            var innerTemplate = this.innerTemplate;
             if (this.$utils.isNode(innerTemplate)) {
                 modal.appendChild(innerTemplate);
             }
@@ -197,20 +239,13 @@
                 dom = this.dom,
                 modalElement = this._modalElement,
                 transition = options.transition,
-                style = isString(options.style) ? options.style.toLowerCase() : 'full',
-                show = options.show;
-
-            if ($utils.isBoolean(show)) {
-                optionObj.observe(this._optionsChanged);
-            } else {
-                show = false;
-            }
+                style = isString(options.style) ? options.style.toLowerCase() : 'full';
 
             if (!isString(transition) || transition === 'none') {
                 dom.addClass(modalElement, style + ' plat-no-transition');
-                if (show) {
+                if (this._preloadedValue) {
                     $utils.postpone(() => {
-                        this.show();
+                        this._show();
                     });
                 }
                 return;
@@ -222,9 +257,9 @@
 
             this._transitionEnd = this.$compat.animationEvents.$transitionEnd;
             dom.addClass(modalElement, transition + ' plat-modal-transition ' + style);
-            if (show) {
+            if (this._preloadedValue) {
                 $utils.postpone(() => {
-                    this.show();
+                    this._show();
                 });
             }
         }
@@ -241,14 +276,8 @@
          * @returns {void}
          */
         show(): void {
-            var dom = this.dom;
-
-            dom.removeClass(this.element, 'hide');
-            this.$utils.defer(() => {
-                dom.addClass(this._modalElement, 'activate');
-            }, 25);
-
-            this._isVisible = true;
+            this._show();
+            this.propertyChanged(true);
         }
         
         /**
@@ -263,16 +292,8 @@
          * @returns {void}
          */
         hide(): void {
-            var dom = this.dom;
-
-            dom.removeClass(this._modalElement, 'activate');
-            if (this.$utils.isString(this._transitionEnd)) {
-                this._addHideOnTransitionEnd();
-            } else {
-                dom.addClass(this.element, 'hide');
-            }
-
-            this._isVisible = false;
+            this._hide();
+            this.propertyChanged(false);
         }
         
         /**
@@ -310,36 +331,86 @@
         isVisible(): boolean {
             return this._isVisible;
         }
-        
+
         /**
-         * @name _optionsChanged
+         * @name setProperty
+         * @memberof platui.Input
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
+         * 
+         * @returns {void}
+         */
+        setProperty(newValue: any, oldValue?: any): void {
+            if (!this.loaded) {
+                this._preloadedValue = newValue;
+                return;
+            }
+
+            if (this.$utils.isBoolean(newValue)) {
+                if (newValue) {
+                    if (this._isVisible) {
+                        return;
+                    }
+                    this._show();
+                    return;
+                }
+
+                if (this._isVisible) {
+                    this._hide();
+                }
+            }
+        }
+
+        /**
+         * @name _show
          * @memberof platui.Modal
          * @kind function
          * @access protected
          * 
          * @description
-         * Listens for {@link plat.controls.Options|options} to change and either shows or hides the 
-         * {@link platui.Modal|Modal} accordingly.
-         * 
-         * @param {platui.IModalOptions} newValue The new value of the {@link plat.controls.Options|options}.
+         * Shows the {@link platui.Modal|Modal}.
          * 
          * @returns {void}
          */
-        _optionsChanged(newValue: IModalOptions): void {
-            var show = newValue.show;
-            if (this.$utils.isBoolean(show)) {
-                if (show) {
-                    if (this._isVisible) {
-                        return;
-                    }
-                    this.show();
-                    return;
-                }
+        _show(): void {
+            var dom = this.dom;
 
-                if (this._isVisible) {
-                    this.hide();
-                }
+            dom.removeClass(this.element, 'hide');
+            this.$utils.defer(() => {
+                dom.addClass(this._modalElement, 'activate');
+            }, 25);
+
+            this._isVisible = true;
+        }
+
+        /**
+         * @name _hide
+         * @memberof platui.Modal
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Hides the {@link platui.Modal|Modal}.
+         * 
+         * @returns {void}
+         */
+        _hide(): void {
+            var dom = this.dom;
+
+            dom.removeClass(this._modalElement, 'activate');
+            if (this.$utils.isString(this._transitionEnd)) {
+                this._addHideOnTransitionEnd();
+            } else {
+                dom.addClass(this.element, 'hide');
             }
+
+            this._isVisible = false;
         }
         
         /**
@@ -439,21 +510,10 @@
          * @description
          * The url of the {@link platui.Modal|Modal's} intended template if not using 
          * innerHTML.
+         * 
+         * @remarks
+         * This URL must be a static string and cannot be a bound item on a parent control's context.
          */
         templateUrl?: string;
-        
-        /**
-         * @name show
-         * @memberof platui.IModalOptions
-         * @kind property
-         * @access public
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * An expression that evaluates to true or false, indicating whether or not the 
-         * {@link platui.Modal|Modal} is shown.
-         */
-        show: boolean;
     }
 }
