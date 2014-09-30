@@ -1175,7 +1175,11 @@
 
             var animationOptions: plat.IObject<string> = {};
 
-            $utils.postpone(() => {
+            if ($utils.isFunction(this._openTapRemover)) {
+                this._openTapRemover();
+            }
+
+            this._openTapRemover = $utils.postpone(() => {
                 this._openTapRemover = this.addEventListener(elementToMove, __$tap, (ev: Event) => {
                     ev.preventDefault();
                     ev.stopPropagation();
@@ -1401,8 +1405,7 @@
                 return;
             }
 
-            var drawerElement = this._drawerElement,
-                distanceMoved: number;
+            var distanceMoved: number;
             switch (this._transition) {
                 case 'up':
                 case 'down':
@@ -1458,26 +1461,26 @@
         _calculateTranslation(ev: plat.ui.IGestureEvent): string {
             var distanceMoved: number;
             switch (this._transition) {
-                case 'up':
-                    distanceMoved = this._isOpen ?
-                    this._checkElasticity((-this._maxOffset) + ev.clientY - this._lastTouch.y) :
-                    this._checkElasticity(ev.clientY - this._lastTouch.y);
-                    return 'translate3d(0,' + distanceMoved + 'px,0)';
-                case 'down':
-                    distanceMoved = this._isOpen ?
-                    this._checkElasticity(this._maxOffset + ev.clientY - this._lastTouch.y) :
-                    this._checkElasticity(ev.clientY - this._lastTouch.y);
-                    return 'translate3d(0,' + distanceMoved + 'px,0)';
-                case 'left':
-                    distanceMoved = this._isOpen ?
-                    this._checkElasticity((-this._maxOffset) + ev.clientX - this._lastTouch.x) :
-                    this._checkElasticity(ev.clientX - this._lastTouch.x);
-                    return 'translate3d(' + distanceMoved + 'px,0,0)';
                 case 'right':
                     distanceMoved = this._isOpen ?
                     this._checkElasticity(this._maxOffset + ev.clientX - this._lastTouch.x) :
                     this._checkElasticity(ev.clientX - this._lastTouch.x);
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
+                case 'left':
+                    distanceMoved = this._isOpen ?
+                    this._checkElasticity(this._maxOffset + this._lastTouch.x - ev.clientX) :
+                    this._checkElasticity(this._lastTouch.x - ev.clientX);
+                    return 'translate3d(' + (-distanceMoved) + 'px,0,0)';
+                case 'down':
+                    distanceMoved = this._isOpen ?
+                    this._checkElasticity(this._maxOffset + ev.clientY - this._lastTouch.y) :
+                    this._checkElasticity(ev.clientY - this._lastTouch.y);
+                    return 'translate3d(0,' + distanceMoved + 'px,0)';
+                case 'up':
+                    distanceMoved = this._isOpen ?
+                    this._checkElasticity(this._maxOffset + this._lastTouch.y - ev.clientY) :
+                    this._checkElasticity(this._lastTouch.y - ev.clientY);
+                    return 'translate3d(0,' + (-distanceMoved) + 'px,0)';
                 default:
                     return this._preTransform;
             }
