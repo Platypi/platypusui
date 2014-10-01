@@ -73,9 +73,9 @@
          */
         templateString =
         '<div class="plat-slider-container">' +
-        '<div class="plat-slider-offset">' +
-        '<div class="plat-knob"></div>' +
-        '</div>' +
+        '    <div class="plat-slider-offset">' +
+        '        <div class="plat-knob"></div>' +
+        '    </div>' +
         '</div>';
 
         /**

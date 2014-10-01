@@ -51,9 +51,9 @@
          */
         templateString =
         '<div class="plat-input-container">' +
-        '<div class="plat-input-image"></div>' +
-        '<input type="text" />' +
-        '<div class="plat-input-action"></div>' +
+        '    <div class="plat-input-image"></div>' +
+        '    <input type="text" />' +
+        '    <div class="plat-input-action"></div>' +
         '</div>';
 
         /**

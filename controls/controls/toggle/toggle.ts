@@ -37,7 +37,7 @@
          */
         templateString =
         '<div class="plat-toggle-container">' +
-        '<div class="knob"></div>' +
+        '    <div class="knob"></div>' +
         '</div>';
 
         /**

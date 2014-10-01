@@ -37,7 +37,7 @@
          */
         templateString =
         '<div class="plat-progress-container">' +
-        '<div class="plat-animated-bar"></div>' +
+        '    <div class="plat-animated-bar"></div>' +
         '</div>';
 
         /**

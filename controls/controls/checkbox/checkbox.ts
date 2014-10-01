@@ -36,7 +36,7 @@
          */
         templateString =
         '<div class="plat-checkbox-container">' +
-        '<span class="mark"></span>' +
+        '    <span class="mark"></span>' +
         '</div>';
 
         /**
