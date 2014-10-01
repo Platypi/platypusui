@@ -23,9 +23,9 @@
          */
         templateString =
         '<div class="plat-radio-container">' +
-            '<div class="mark"></div>' +
+        '    <div class="mark"></div>' +
         '</div>';
-        
+
         /**
          * @name groupName
          * @memberof platui.Radio
@@ -38,7 +38,7 @@
          * The radio groups name if a radio group is present.
          */
         groupName = '';
-        
+
         /**
          * @name _targetType
          * @memberof platui.Radio
@@ -64,7 +64,7 @@
          * Whether the target type has been set already or not.
          */
         _targetTypeSet = true;
-        
+
         /**
          * @name setClasses
          * @memberof platui.Radio
@@ -84,7 +84,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Radio + ' ' + (className || ''));
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.Radio
@@ -109,7 +109,7 @@
 
             this._convertChecked();
         }
-        
+
         /**
          * @name setProperty
          * @memberof platui.Radio
@@ -140,7 +140,7 @@
 
             this._toggle(setProperty);
         }
-        
+
         /**
          * @name propertyChanged
          * @memberof platui.Radio
@@ -161,7 +161,7 @@
                 super.propertyChanged(this._getValue());
             }
         }
-        
+
         /**
          * @name _onTap
          * @memberof platui.Radio
@@ -183,7 +183,7 @@
 
             super._onTap(ev);
         }
-        
+
         /**
          * @name _toggle
          * @memberof platui.Radio
@@ -209,7 +209,7 @@
                 });
             }
         }
-        
+
         /**
          * @name _convertAttribute
          * @memberof platui.Radio
@@ -240,7 +240,7 @@
                 this.setProperty(this._getValue(), null, true);
             }
         }
-        
+
         /**
          * @name _getValue
          * @memberof platui.Radio

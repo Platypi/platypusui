@@ -73,11 +73,11 @@
          */
         templateString =
         '<div class="plat-slider-container">' +
-            '<div class="plat-slider-offset">' +
-                '<div class="plat-knob"></div>' +
-            '</div>' +
+        '<div class="plat-slider-offset">' +
+        '<div class="plat-knob"></div>' +
+        '</div>' +
         '</div>';
-        
+
         /**
          * @name options
          * @memberof platui.Slider
@@ -90,7 +90,7 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<ISliderOptions>;
-        
+
         /**
          * @name value
          * @memberof platui.Slider
@@ -103,7 +103,7 @@
          * The current value of the {@link platui.Slider|Slider}.
          */
         value: number;
-        
+
         /**
          * @name min
          * @memberof platui.Slider
@@ -116,7 +116,7 @@
          * The min value of the {@link platui.Slider|Slider}.
          */
         min: number;
-        
+
         /**
          * @name max
          * @memberof platui.Slider
@@ -129,7 +129,7 @@
          * The max value of the {@link platui.Slider|Slider}.
          */
         max: number;
-        
+
         /**
          * @name _slider
          * @memberof platui.Slider
@@ -142,7 +142,7 @@
          * The HTMLElement representing the slider.
          */
         _slider: HTMLElement;
-        
+
         /**
          * @name _knob
          * @memberof platui.Slider
@@ -155,7 +155,7 @@
          * The HTMLElement representing the knob.
          */
         _knob: HTMLElement;
-        
+
         /**
          * @name _lastTouch
          * @memberof platui.Slider
@@ -220,7 +220,7 @@
          * The transition direction of this control.
          */
         _transition: string;
-        
+
         /**
          * @name _knobOffset
          * @memberof platui.Slider
@@ -273,7 +273,7 @@
          * Denotes whether we're using height or width as the length of the slider.
          */
         _lengthProperty: string;
-        
+
         /**
          * @name setClasses
          * @memberof platui.Slider
@@ -293,7 +293,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Slider + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.Slider
@@ -308,7 +308,7 @@
         initialize(): void {
             this.setClasses();
         }
-        
+
         /**
          * @name setTemplate
          * @memberof platui.Slider
@@ -324,7 +324,7 @@
             var slider = this._slider = <HTMLElement>this.element.firstElementChild.firstElementChild;
             this._knob = <HTMLElement>slider.firstElementChild;
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.Slider
@@ -377,7 +377,7 @@
             this.setValue(value);
             this._loaded = true;
         }
-        
+
         /**
          * @name setProperty
          * @memberof platui.Slider
@@ -405,7 +405,7 @@
 
             this.value = newValue;
         }
-        
+
         /**
          * @name setValue
          * @memberof platui.Slider
@@ -427,7 +427,7 @@
 
             this._setValue(value, true, true);
         }
-        
+
         /**
          * @name _touchStart
          * @memberof platui.Slider
@@ -448,7 +448,7 @@
                 y: ev.clientY
             };
         }
-        
+
         /**
          * @name _touchEnd
          * @memberof platui.Slider
@@ -482,7 +482,7 @@
 
             this._knobOffset = newOffset;
         }
-        
+
         /**
          * @name _track
          * @memberof platui.Slider
@@ -564,7 +564,7 @@
             this.addEventListener(knob, __$trackend, touchEnd, false);
             this.addEventListener(knob, __$touchend, touchEnd, false);
         }
-        
+
         /**
          * @name _calculateValue
          * @memberof platui.Slider
@@ -582,7 +582,7 @@
             var step = this._step;
             return (this.min + Math.round(width / this._increment / step) * step);
         }
-        
+
         /**
          * @name _calculateKnobPosition
          * @memberof platui.Slider
@@ -599,7 +599,7 @@
         _calculateKnobPosition(value: number): number {
             return (value - this.min) * this._increment;
         }
-        
+
         /**
          * @name _calculateOffset
          * @memberof platui.Slider
@@ -627,7 +627,7 @@
 
             return 0;
         }
-        
+
         /**
          * @name _setLength
          * @memberof platui.Slider
@@ -656,7 +656,7 @@
                     return 0;
             }
         }
-        
+
         /**
          * @name _setIncrement
          * @memberof platui.Slider
@@ -671,7 +671,7 @@
         _setIncrement(): number {
             return (this._increment = this._maxOffset / (this.max - this.min));
         }
-        
+
         /**
          * @name _setValue
          * @memberof platui.Slider
@@ -708,7 +708,7 @@
                 this.propertyChanged(newValue, value);
             }
         }
-        
+
         /**
          * @name _setKnob
          * @memberof platui.Slider
@@ -731,7 +731,7 @@
             this.$animator.animate(this._slider, __Transition, animationOptions);
             this._knobOffset = length;
         }
-        
+
         /**
          * @name _setOffsetWithClone
          * @memberof platui.Slider
@@ -767,7 +767,7 @@
     }
 
     plat.register.control(__Slider, Slider);
-    
+
     /**
      * @name ISliderOptions
      * @memberof platui
@@ -794,7 +794,7 @@
          * - "secondary"
          */
         style?: string;
-        
+
         /**
          * @name transition
          * @memberof platui.ISliderOptions
@@ -814,7 +814,7 @@
          * - "down" - the minimum is at the top and the maximum is at the bottom.
          */
         transition?: string;
-        
+
         /**
          * @name value
          * @memberof platui.ISliderOptions
@@ -827,7 +827,7 @@
          * The current value of the {@link platui.Slider|Slider}.
          */
         value?: number;
-        
+
         /**
          * @name min
          * @memberof platui.ISliderOptions
@@ -840,7 +840,7 @@
          * The min value of the {@link platui.Slider|Slider}.
          */
         min?: number;
-        
+
         /**
          * @name max
          * @memberof platui.ISliderOptions

@@ -31,7 +31,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Select + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.Select

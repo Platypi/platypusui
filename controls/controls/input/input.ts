@@ -24,7 +24,7 @@
          * Reference to the {@link plat.IUtils|IUtils} injectable.
          */
         $utils: plat.IUtils = plat.acquire(__Utils);
-        
+
         /**
          * @name $compat
          * @memberof platui.Input
@@ -37,7 +37,7 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
-        
+
         /**
          * @name templateString
          * @memberof platui.Input
@@ -51,11 +51,11 @@
          */
         templateString =
         '<div class="plat-input-container">' +
-            '<div class="plat-input-image"></div>' +
-            '<input type="text" />' +
-            '<div class="plat-input-action"></div>' +
+        '<div class="plat-input-image"></div>' +
+        '<input type="text" />' +
+        '<div class="plat-input-action"></div>' +
         '</div>';
-        
+
         /**
          * @name options
          * @memberof platui.Input
@@ -68,7 +68,7 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IInputOptions>;
-        
+
         /**
          * @name _imageElement
          * @memberof platui.Input
@@ -81,7 +81,7 @@
          * The HTMLElement for the control's optional image.
          */
         _imageElement: HTMLElement;
-        
+
         /**
          * @name _inputElement
          * @memberof platui.Input
@@ -94,7 +94,7 @@
          * The HTMLInputElement for the control's input[type="text"].
          */
         _inputElement: HTMLInputElement;
-        
+
         /**
          * @name _actionElement
          * @memberof platui.Input
@@ -107,7 +107,7 @@
          * The HTMLElement for the control's action.
          */
         _actionElement: HTMLElement;
-        
+
         /**
          * @name _type
          * @memberof platui.Input
@@ -186,7 +186,7 @@
          * Whether the user is currently touching the screen.
          */
         _inTouch = false;
-        
+
         /**
          * @name _usingBind
          * @memberof platui.Input
@@ -212,7 +212,7 @@
          * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
          */
         _loaded = false;
-        
+
         /**
          * @name _preloadedValue
          * @memberof platui.Input
@@ -225,7 +225,7 @@
          * A value specified prior to the control being loaded.
          */
         _preloadedValue = '';
-        
+
         /**
          * @name setClasses
          * @memberof platui.Input
@@ -245,7 +245,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Input + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.Input
@@ -260,7 +260,7 @@
         initialize(): void {
             this.setClasses();
         }
-        
+
         /**
          * @name setTemplate
          * @memberof platui.Input
@@ -304,7 +304,7 @@
                 input.placeholder = placeholder;
             }
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.Input
@@ -353,7 +353,7 @@
         dispose(): void {
             this._loaded = false;
         }
-        
+
         /**
          * @name validate
          * @memberof platui.Input
@@ -370,7 +370,7 @@
         validate(): boolean {
             return this._pattern.test(this._inputElement.value);
         }
-        
+
         /**
          * @name clear
          * @memberof platui.Input
@@ -395,7 +395,7 @@
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
         }
-        
+
         /**
          * @name focus
          * @memberof platui.Input
@@ -410,7 +410,7 @@
         focus(): void {
             this._inputElement.focus();
         }
-        
+
         /**
          * @name blur
          * @memberof platui.Input
@@ -463,7 +463,7 @@
 
             this._onInput();
         }
-        
+
         /**
          * @name _initializeType
          * @memberof platui.Input
@@ -592,7 +592,7 @@
 
             this.addEventListener(input, 'change', eventListener, false);
         }
-        
+
         /**
          * @name _erase
          * @memberof platui.Input
@@ -648,7 +648,7 @@
             inputElement.type = this._type;
             inputElement.focus();
         }
-        
+
         /**
          * @name _handleEmail
          * @memberof platui.Input
@@ -739,7 +739,7 @@
                 actionElement.removeAttribute(__Hide);
             }
         }
-        
+
         /**
          * @name _checkEmail
          * @memberof platui.Input
@@ -830,7 +830,7 @@
 
             this._actionHandler();
         }
-        
+
         /**
          * @name _checkInput
          * @memberof platui.Input
@@ -864,7 +864,7 @@
     }
 
     plat.register.control(__Input, Input);
-    
+
     /**
      * @name IInputOptions
      * @memberof platui
@@ -891,7 +891,7 @@
          * - "secondary"
          */
         style?: string;
-        
+
         /**
          * @name type
          * @memberof platui.IInputOptions

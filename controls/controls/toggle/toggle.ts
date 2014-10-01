@@ -23,7 +23,7 @@
          * Reference to the {@link plat.IUtils|IUtils} injectable.
          */
         $utils: plat.IUtils = plat.acquire(__Utils);
-        
+
         /**
          * @name templateString
          * @memberof platui.Toggle
@@ -37,9 +37,9 @@
          */
         templateString =
         '<div class="plat-toggle-container">' +
-            '<div class="knob"></div>' +
+        '<div class="knob"></div>' +
         '</div>';
-        
+
         /**
          * @name isActive
          * @memberof platui.Toggle
@@ -52,7 +52,7 @@
          * A boolean value indicating whether the control is actively selected.
          */
         isActive = false;
-        
+
         /**
          * @name _targetType
          * @memberof platui.Toggle
@@ -65,7 +65,7 @@
          * The type of the control's activated element.
          */
         _targetType = 'slide';
-        
+
         /**
          * @name _targetElement
          * @memberof platui.Toggle
@@ -78,7 +78,7 @@
          * The element used to create the targeted effect.
          */
         _targetElement: Element;
-        
+
         /**
          * @name setClasses
          * @memberof platui.Toggle
@@ -98,7 +98,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Toggle + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.Toggle
@@ -113,7 +113,7 @@
         initialize(): void {
             this.setClasses();
         }
-        
+
         /**
          * @name setTemplate
          * @memberof platui.Toggle
@@ -130,7 +130,7 @@
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
         }
-        
+
         /**
          * @name setProperty
          * @memberof platui.Toggle
@@ -159,7 +159,7 @@
 
             this._toggle(setProperty);
         }
-        
+
         /**
          * @name _onTap
          * @memberof platui.Toggle
@@ -181,7 +181,7 @@
             domEvent.initialize(this.element, 'change');
             domEvent.trigger();
         }
-        
+
         /**
          * @name _toggle
          * @memberof platui.Toggle
@@ -206,7 +206,7 @@
                 this.propertyChanged(isActive, wasActive);
             }
         }
-        
+
         /**
          * @name _activate
          * @memberof platui.Toggle

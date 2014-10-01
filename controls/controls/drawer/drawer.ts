@@ -23,7 +23,7 @@
          * Reference to the {@link plat.IUtils|IUtils} injectable.
          */
         $utils: plat.IUtils = plat.acquire(__Utils);
-        
+
         /**
          * @name options
          * @memberof platui.Drawer
@@ -36,7 +36,7 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IDrawerOptions>;
-        
+
         /**
          * @name _currentTransition
          * @memberof platui.Drawer
@@ -100,7 +100,7 @@
          * A value specified prior to the control being loaded.
          */
         _preloadedValue = false;
-        
+
         /**
          * @name setClasses
          * @memberof platui.Drawer
@@ -120,7 +120,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Drawer + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.Drawer
@@ -153,7 +153,7 @@
                 this.innerTemplate = this.dom.appendChildren(childNodes);
             }
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.Drawer
@@ -395,7 +395,7 @@
                 }
             }
         }
-        
+
         /**
          * @name _changeDirection
          * @memberof platui.Drawer
@@ -422,7 +422,7 @@
 
             this._currentTransition = transition;
         }
-        
+
         /**
          * @name _initializeEvents
          * @memberof platui.Drawer
@@ -448,12 +448,12 @@
 
             this.on(__DrawerControllerFetchEvent + '_' + id,
                 (event: plat.events.IDispatchEventInstance, controllerArg: IDrawerHandshakeEvent) => {
-                if (isString(controllerArg.transition)) {
-                    transition = controllerArg.transition;
-                    this._changeDirection(transition);
-                }
+                    if (isString(controllerArg.transition)) {
+                        transition = controllerArg.transition;
+                        this._changeDirection(transition);
+                    }
 
-                this._controller = controllerArg.control;
+                    this._controller = controllerArg.control;
 
                     if (!controllerArg.received) {
                         this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
@@ -465,7 +465,7 @@
                             elastic: isElastic
                         });
                     }
-            });
+                });
 
             this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                 control: this,
@@ -502,7 +502,7 @@
     }
 
     plat.register.control(__Drawer, Drawer);
-    
+
     /**
      * @name DrawerController
      * @memberof platui
@@ -575,7 +575,7 @@
          * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
          */
         $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
-        
+
         /**
          * @name options
          * @memberof platui.DrawerController
@@ -588,7 +588,7 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
-        
+
         /**
          * @name _transition
          * @memberof platui.DrawerController
@@ -602,7 +602,7 @@
          * with this control.
          */
         _transition: string;
-        
+
         /**
          * @name _drawerElement
          * @memberof platui.DrawerController
@@ -630,7 +630,7 @@
          * with this control.
          */
         _drawer: Drawer;
-        
+
         /**
          * @name _transform
          * @memberof platui.DrawerController
@@ -656,7 +656,7 @@
          * The value of the inline transform property prior to the Drawer manipulating it.
          */
         _preTransform: string;
-        
+
         /**
          * @name _lastTouch
          * @memberof platui.DrawerController
@@ -669,7 +669,7 @@
          * The last touch start recorded.
          */
         _lastTouch: plat.ui.IPoint;
-        
+
         /**
          * @name _hasSwiped
          * @memberof platui.DrawerController
@@ -762,19 +762,6 @@
         _removeTap: plat.IRemoveListener;
 
         /**
-         * @name _openTapRemover
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IRemoveListener}
-         * 
-         * @description
-         * A function for removing the tap event listener on the open {@link platui.Drawer|Drawer}.
-         */
-        _openTapRemover: plat.IRemoveListener;
-
-        /**
          * @name _removeSwipeOpen
          * @memberof platui.DrawerController
          * @kind property
@@ -827,6 +814,58 @@
         _removeSecondaryTrack: plat.IRemoveListener;
 
         /**
+         * @name _openDelayRemover
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the postponed addition of event intercepts.
+         */
+        _openDelayRemover: plat.IRemoveListener;
+
+        /**
+         * @name _openTapRemover
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the tap event listener on the open {@link platui.Drawer|Drawer}.
+         */
+        _openTapRemover: plat.IRemoveListener;
+
+        /**
+         * @name _openSwipeRemover
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the swipe event listeners on the open {@link platui.Drawer|Drawer}.
+         */
+        _openSwipeRemover: plat.IRemoveListener;
+
+        /**
+         * @name _openTrackRemover
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the swipe event listeners on the open {@link platui.Drawer|Drawer}.
+         */
+        _openTrackRemover: plat.IRemoveListener;
+
+        /**
          * @name _rootElement
          * @memberof platui.DrawerController
          * @kind property
@@ -838,7 +877,7 @@
          * The root element to translate.
          */
         _rootElement: HTMLElement;
-        
+
         /**
          * @name _rootElementStyle
          * @memberof platui.DrawerController
@@ -897,7 +936,7 @@
             up: 'down',
             down: 'up'
         };
-        
+
         /**
          * @name _directionalTransitionPrep
          * @memberof platui.DrawerController
@@ -936,7 +975,49 @@
          * A value specified prior to the control being loaded.
          */
         _preloadedValue = false;
-        
+
+        /**
+         * @name _isTap
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a tap 
+         * for opening and closing.
+         */
+        _isTap: boolean;
+
+        /**
+         * @name _isSwipe
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a swipe 
+         * for opening and closing.
+         */
+        _isSwipe: boolean;
+
+        /**
+         * @name _isTrack
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A value specifying whether the {@link platui.Drawer|Drawer} is being tracked 
+         * for opening and closing.
+         */
+        _isTrack: boolean;
+
         /**
          * @name initialize
          * @memberof platui.DrawerController
@@ -951,7 +1032,7 @@
         initialize(): void {
             this.dom.addClass(this.element, __DrawerController);
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.DrawerController
@@ -971,13 +1052,13 @@
                 transition = options.transition,
                 id = options.id || '';
 
-            this._type = options.type;
+            this._type = options.type || 'tap track';
             this._isElastic = options.elastic;
-            this._useContext = options.useContext === true;
+            this._useContext = options.useContext;
             this._templateUrl = options.templateUrl;
             this._initializeEvents(id, transition);
         }
-        
+
         /**
          * @name dispose
          * @memberof platui.DrawerController
@@ -1002,7 +1083,7 @@
                 $utils.extend(rootElementStyle, storedStyle);
             }
         }
-        
+
         /**
          * @name open
          * @memberof platui.DrawerController
@@ -1024,7 +1105,7 @@
             }
             return promise;
         }
-        
+
         /**
          * @name close
          * @memberof platui.DrawerController
@@ -1046,7 +1127,7 @@
             }
             return promise;
         }
-        
+
         /**
          * @name toggle
          * @memberof platui.DrawerController
@@ -1066,7 +1147,7 @@
 
             return this.open();
         }
-        
+
         /**
          * @name reset
          * @memberof platui.DrawerController
@@ -1086,7 +1167,7 @@
 
             return this.close();
         }
-        
+
         /**
          * @name isOpen
          * @memberof platui.DrawerController
@@ -1174,12 +1255,12 @@
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         _open(): plat.ui.animations.IAnimationThenable<void> {
-            var elementToMove = this._rootElement,
+            var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 $utils = this.$utils,
                 isNode = $utils.isNode;
 
-            if (!isNode(elementToMove) || !isNode(drawerElement)) {
+            if (!isNode(rootElement) || !isNode(drawerElement)) {
                 return;
             }
 
@@ -1203,27 +1284,15 @@
                     return;
             }
 
-            var animationOptions: plat.IObject<string> = {};
-
-            if ($utils.isFunction(this._openTapRemover)) {
-                this._openTapRemover();
+            if (!this._isOpen) {
+                this._openDelayRemover = $utils.postpone(this._addOpenDrawerIntercepts, null, this);
             }
 
-            this._openTapRemover = $utils.postpone(() => {
-                this._openTapRemover = this.addEventListener(elementToMove, __$tap, (ev: Event) => {
-                    ev.preventDefault();
-                    ev.stopPropagation();
-                    this._openTapRemover();
-                    this._openTapRemover = null;
-                    this.close();
-                    return false;
-                }, true);
-            });
-
+            var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
             this._isOpen = true;
-            this.dom.addClass(elementToMove, this._directionalTransitionPrep);
-            return this.$animator.animate(elementToMove, __Transition, animationOptions);
+            this.dom.addClass(rootElement, this._directionalTransitionPrep);
+            return this.$animator.animate(rootElement, __Transition, animationOptions);
         }
 
         /**
@@ -1239,12 +1308,11 @@
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         _close(): plat.ui.animations.IAnimationThenable<void> {
-            var elementToMove = this._rootElement,
+            var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
-                $utils = this.$utils,
-                isNode = $utils.isNode;
+                isNode = this.$utils.isNode;
 
-            if (!isNode(elementToMove) || !isNode(drawerElement)) {
+            if (!isNode(rootElement) || !isNode(drawerElement)) {
                 return;
             }
 
@@ -1254,22 +1322,116 @@
             animationOptions[transform] = 'translate3d(0,0,0)';
             this._isOpen = false;
 
-            if ($utils.isFunction(this._openTapRemover)) {
-                this._openTapRemover();
-                this._openTapRemover = null;
-            }
+            this._removeIntercepts();
 
-            return this.$animator.animate(elementToMove, __Transition, animationOptions).then(() => {
+            return this.$animator.animate(rootElement, __Transition, animationOptions).then(() => {
                 if (this._isOpen) {
                     return;
                 }
 
-                elementToMove.style[transform] = this._preTransform;
+                rootElement.style[transform] = this._preTransform;
                 drawerElement.setAttribute(__Hide, '');
-                this.dom.removeClass(elementToMove, this._directionalTransitionPrep);
+                this.dom.removeClass(rootElement, this._directionalTransitionPrep);
             });
         }
-        
+
+        /**
+         * @name _addOpenDrawerIntercepts
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all event listeners to the moving root element for tracking and closing the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {void}
+         */
+        _addOpenDrawerIntercepts(): void {
+            var rootElement = this._rootElement;
+
+            if (this._isTrack) {
+                var touchStartRemover = this.addEventListener(rootElement, __$touchstart, this._touchStart, false),
+                    trackRemover = this.addEventListener(rootElement, __$track, this._track, false),
+                    touchEnd = this._touchEnd,
+                    trackEndRemover = this.addEventListener(rootElement, __$trackend, touchEnd, false),
+                    touchEndRemover = this.addEventListener(rootElement, __$touchend, touchEnd, false);
+
+                this._openTrackRemover = () => {
+                    touchStartRemover();
+                    trackRemover();
+                    trackEndRemover();
+                    touchEndRemover();
+                };
+            }
+
+            if (this._isTap) {
+                this._openTapRemover = this.addEventListener(rootElement, __$tap, this._openDrawerTapIntercept, false);
+            }
+
+            if (this._isSwipe) {
+
+            }
+        }
+
+        /**
+         * @name _openDrawerTapIntercept
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds a tap event listener to the moving root element for closing the {@link platui.Drawer|Drawer}.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $tap event object.
+         * 
+         * @returns {void}
+         */
+        _openDrawerTapIntercept(ev: plat.ui.IGestureEvent): void {
+            this._removeIntercepts();
+            this.close();
+        }
+
+        /**
+         * @name _removeIntercepts
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Removes all event listener on the moving root element for closing the {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {void}
+         */
+        _removeIntercepts(): void {
+            var isFunction = this.$utils.isFunction;
+
+            if (isFunction(this._openDelayRemover)) {
+                this._openDelayRemover();
+                this._openDelayRemover = null;
+            }
+
+            if (this._isTap) {
+                if (isFunction(this._openTapRemover)) {
+                    this._openTapRemover();
+                    this._openTapRemover = null;
+                }
+            }
+
+            if (this._isTrack) {
+                if (isFunction(this._openTrackRemover)) {
+                    this._openTrackRemover();
+                    this._openTrackRemover = null;
+                }
+            }
+
+            if (this._isSwipe) {
+                if (isFunction(this._openSwipeRemover)) {
+                    this._openSwipeRemover();
+                    this._openSwipeRemover = null;
+                }
+            }
+        }
+
         /**
          * @name _addSwipeEvents
          * @memberof platui.DrawerController
@@ -1298,7 +1460,7 @@
                 this.close();
             }, false);
         }
-        
+
         /**
          * @name _addSwipeEvents
          * @memberof platui.DrawerController
@@ -1315,38 +1477,40 @@
         _addEventListeners(transition: string): void {
             var element = this.element,
                 isNull = this.$utils.isNull,
-                type = this._type,
-                tapOnly = type === 'tap';
+                types = this._type.split(' ');
 
             this._transition = transition;
 
-            // remove event listeners first in case we want to later be able to dynamically change transition direction of drawer.
-            this._removeEventListeners();
-            if (isNull(type) || tapOnly) {
+            // remove event listeners here first if we want to later be able to dynamically change transition direction of drawer.
+            // this._removeEventListeners();
+
+            if (this._isTap = (types.indexOf('tap') !== -1)) {
                 this._removeTap = this.addEventListener(element, __$tap, this.open, false);
-                if (tapOnly) {
-                    return;
+            }
+
+            if (this._isSwipe = (types.indexOf('swipe') !== -1)) {
+                this._addSwipeEvents(transition);
+            }
+
+            if (this._isTrack = (types.indexOf('track') !== -1)) {
+                var primaryTrack = __$track + transition,
+                    secondaryTrack = __$track + this._transitionHash[transition],
+                    trackFn = this._track;
+
+                this._removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
+                this._removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
+
+                if (isNull(this._lastTouch)) {
+                    var touchEnd = this._touchEnd;
+
+                    this._lastTouch = { x: 0, y: 0 };
+                    this.addEventListener(element, __$touchstart, this._touchStart, false);
+                    this.addEventListener(element, __$touchend, touchEnd, false);
+                    this.addEventListener(element, __$trackend, touchEnd, false);
                 }
             }
-
-            var primaryTrack = __$track + transition,
-                secondaryTrack = __$track + this._transitionHash[transition],
-                trackFn = this._track;
-
-            this._removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
-            this._removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
-            this._addSwipeEvents(transition);
-
-            if (isNull(this._lastTouch)) {
-                var touchEnd = this._touchEnd;
-
-                this._lastTouch = { x: 0, y: 0 };
-                this.addEventListener(element, __$touchstart, this._touchStart, false);
-                this.addEventListener(element, __$touchend, touchEnd, false);
-                this.addEventListener(element, __$trackend, touchEnd, false);
-            }
         }
-        
+
         /**
          * @name _removeEventListeners
          * @memberof platui.DrawerController
@@ -1385,7 +1549,7 @@
                 this._removeSwipeClose = null;
             }
         }
-        
+
         /**
          * @name _touchStart
          * @memberof platui.DrawerController
@@ -1411,7 +1575,7 @@
             }
             this._drawerElement.removeAttribute(__Hide);
         }
-        
+
         /**
          * @name _touchEnd
          * @memberof platui.DrawerController
@@ -1430,8 +1594,6 @@
             this._inTouch = false;
             if (!inTouch || this._hasSwiped) {
                 this._hasSwiped = false;
-                return;
-            } else if (ev.type === __$touchend && this._type !== 'slide') {
                 return;
             }
 
@@ -1456,7 +1618,7 @@
 
             this.reset();
         }
-        
+
         /**
          * @name _track
          * @memberof platui.DrawerController
@@ -1474,7 +1636,7 @@
         _track(ev: plat.ui.IGestureEvent): void {
             this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
         }
-        
+
         /**
          * @name _calculateTranslation
          * @memberof platui.DrawerController
@@ -1515,7 +1677,7 @@
                     return this._preTransform;
             }
         }
-        
+
         /**
          * @name _checkElasticity
          * @memberof platui.DrawerController
@@ -1543,7 +1705,7 @@
 
             return distanceMoved;
         }
-        
+
         /**
          * @name _initializeEvents
          * @memberof platui.DrawerController
@@ -1563,59 +1725,61 @@
 
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
-                eventRemover();
+                    eventRemover();
 
-                var $utils = this.$utils,
-                    isString = $utils.isString,
-                    drawer = (this._drawer = drawerArg.control) || {},
-                    drawerElement = this._drawerElement = drawer.element;
+                    var $utils = this.$utils,
+                        isString = $utils.isString,
+                        isUndefined = $utils.isUndefined,
+                        drawer = (this._drawer = drawerArg.control) || {},
+                        drawerElement = this._drawerElement = drawer.element,
+                        useContext = this._useContext;
 
-                if (!isString(transition)) {
-                    if (isString(drawerArg.transition)) {
-                        transition = drawerArg.transition;
-                    } else {
-                        var Exception = plat.acquire(plat.IExceptionStatic);
-                        Exception.warn('Transition direction is incorrectly defined for "' +
-                            __Drawer + '" or "' + __DrawerController + '."' +
-                            ' Please ensure it is a string.');
+                    if (!isString(transition)) {
+                        if (isString(drawerArg.transition)) {
+                            transition = drawerArg.transition;
+                        } else {
+                            var Exception = plat.acquire(plat.IExceptionStatic);
+                            Exception.warn('Transition direction is incorrectly defined for "' +
+                                __Drawer + '" or "' + __DrawerController + '."' +
+                                ' Please ensure it is a string.');
+                            return;
+                        }
+                    }
+
+                    if (!this._controllerIsValid(transition)) {
                         return;
                     }
-                }
 
-                if (!this._controllerIsValid(transition)) {
-                    return;
-                }
+                    drawerElement.removeAttribute(__Hide);
+                    this._addEventListeners(transition.toLowerCase());
+                    this._setOffset();
+                    drawerElement.setAttribute(__Hide, '');
 
-                drawerElement.removeAttribute(__Hide);
-                this._addEventListeners(transition.toLowerCase());
-                this._setOffset();
-                drawerElement.setAttribute(__Hide, '');
+                    if (isUndefined(this._isElastic)) {
+                        this._isElastic = drawerArg.elastic === true;
+                    }
 
-                if ($utils.isUndefined(this._isElastic)) {
-                    this._isElastic = drawerArg.elastic === true;
-                }
+                    if (!drawerArg.received) {
+                        this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
+                            control: this,
+                            received: true,
+                            transition: transition
+                        });
+                    }
 
-                if (!drawerArg.received) {
-                    this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
-                        control: this,
-                        received: true,
-                        transition: transition
-                    });
-                }
+                    if (useContext === false || (isUndefined(useContext) && drawerArg.useContext === true)) {
+                        return;
+                    }
 
-                if (!this._useContext && drawerArg.useContext === true) {
-                    return;
-                }
+                    this._useContext = true;
+                    this._determineTemplate(drawerArg.template);
 
-                this._useContext = true;
-                this._determineTemplate(drawerArg.template);
-
-                if (this._preloadedValue) {
-                    $utils.postpone(() => {
-                        this._open();
-                    });
-                }
-            });
+                    if (this._preloadedValue) {
+                        $utils.postpone(() => {
+                            this._open();
+                        });
+                    }
+                });
 
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                 control: this,
@@ -1623,7 +1787,7 @@
                 transition: transition
             });
         }
-        
+
         /**
          * @name _determineTemplate
          * @memberof platui.DrawerController
@@ -1649,7 +1813,7 @@
                 this.bindTemplate('drawer', fragment);
             }
         }
-        
+
         /**
          * @name _setTransform
          * @memberof platui.DrawerController
@@ -1679,7 +1843,7 @@
 
             this._preTransform = style[<any>transform];
         }
-        
+
         /**
          * @name _controllerIsValid
          * @memberof platui.DrawerController
@@ -1707,13 +1871,13 @@
                 Exception.warn('Could not find a corresponding "' + __Drawer + '" for this "' + __DrawerController + '."');
                 return false;
             }
-            
+
             var rootElement = this._rootElement = this._getRootElement(this.root);
             if (isNull(rootElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Cannot have a "' + __DrawerController +
                     '" in a hierarchy above the corresponding "' + __Drawer + '."');
-                    return false;
+                return false;
             }
 
             this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
@@ -1721,7 +1885,7 @@
 
             return true;
         }
-        
+
         /**
          * @name _getRootElement
          * @memberof platui.DrawerController
@@ -1773,7 +1937,7 @@
 
             return element;
         }
-        
+
         /**
          * @name _setOffset
          * @memberof platui.DrawerController
@@ -1800,7 +1964,7 @@
     }
 
     plat.register.control(__DrawerController, DrawerController);
-    
+
     /**
      * @name IDrawerOptions
      * @memberof platui
@@ -1822,7 +1986,7 @@
          * The unique ID of the {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} pair.
          */
         id?: string;
-        
+
         /**
          * @name transition
          * @memberof platui.IDrawerOptions
@@ -1842,7 +2006,7 @@
          * - "down"
          */
         transition?: string;
-        
+
         /**
          * @name templateUrl
          * @memberof platui.IDrawerOptions
@@ -1855,7 +2019,7 @@
          * The URL of the {@link platui.Drawer|Drawer's} intended template.
          */
         templateUrl?: string;
-        
+
         /**
          * @name useContext
          * @memberof platui.IDrawerOptions
@@ -1868,7 +2032,7 @@
          * A boolean value stating whether to use the associated control's context or not.
          */
         useContext?: boolean;
-        
+
         /**
          * @name elastic
          * @memberof platui.IDrawerOptions
@@ -1904,18 +2068,19 @@
          * @type {string}
          * 
          * @description
-         * Specifies how the {@link platui.Drawer|Drawer} should open. Can be specified as either "tap" or "slide", 
-         * but it's default behavior is both.
+         * Specifies how the {@link platui.Drawer|Drawer} should open. Multiple types can be combined by making it space delimited. 
+         * It's default behavior is "tap track".
          * 
          * @remarks
          * "tap": The drawer opens when the controller is tapped.
-         * "slide": The drawer opens when the controller is dragged.
+         * "track": The drawer opens when the controller is dragged.
+         * "swipe": The drawer opens when the controller is swiped.
          * default: The drawer opens either when the controller is tapped or the 
-         * controller is slid.
+         * controller is tracked.
          */
         type?: string;
     }
-    
+
     /**
      * @name IDrawerHandshakeEvent
      * @memberof platui

@@ -22,7 +22,7 @@
          * Reference to the Document injectable.
          */
         $document: Document = plat.acquire(__Document);
-        
+
         /**
          * @name templateString
          * @memberof platui.Checkbox
@@ -36,9 +36,9 @@
          */
         templateString =
         '<div class="plat-checkbox-container">' +
-            '<span class="mark"></span>' +
+        '<span class="mark"></span>' +
         '</div>';
-        
+
         /**
          * @name options
          * @memberof platui.Checkbox
@@ -64,7 +64,7 @@
          * Whether the target type has been set already or not.
          */
         _targetTypeSet = false;
-        
+
         /**
          * @name setClasses
          * @memberof platui.Checkbox
@@ -84,7 +84,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Checkbox + ' ' + (className || ''));
         }
-        
+
         /**
          * @name setTemplate
          * @memberof platui.Checkbox
@@ -127,7 +127,7 @@
                 }
             }
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.Checkbox
@@ -197,7 +197,7 @@
                 this._convertAttribute(true);
             }
         }
-        
+
         /**
          * @name _convertAttribute
          * @memberof platui.Checkbox
@@ -249,7 +249,7 @@
     }
 
     plat.register.control(__Checkbox, Checkbox);
-    
+
     /**
      * @name ICheckboxOptions
      * @memberof platui
@@ -276,7 +276,7 @@
          * - "x"
          */
         mark?: string;
-        
+
         /**
          * @name style
          * @memberof platui.ICheckboxOptions

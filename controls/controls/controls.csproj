@@ -56,7 +56,7 @@
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
     <TypeScriptCompile Include="drawer\drawer.ts" />
     <TypeScriptCompile Include="input\input.ts" />
-    <TypeScriptCompile Include="lib\platypus.d.ts" />
+    <TypeScriptCompile Include="lib\platypus.ts" />
     <TypeScriptCompile Include="modal\modal.ts" />
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />

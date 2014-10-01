@@ -5,11 +5,11 @@
 .plat-drawer {
     #Drawer;
     position: absolute;
-    overflow: auto;
     color: @color;
     z-index: 0;
     background-color: @background-color;
     -webkit-backface-visibility: hidden;
+    .scroll();
     .user-select(none);
     .box-sizing(border-box);
 
@@ -64,6 +64,7 @@
             top: 0;
             left: 0;
             background-color: transparent;
+            overflow: hidden;
             z-index: 100;
             .fill();
         }

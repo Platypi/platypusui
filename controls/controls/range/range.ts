@@ -87,10 +87,10 @@
          */
         templateString =
         '<div class="plat-range-container">' +
-            '<div class="plat-slider-offset">' +
-                '<div class="plat-lower-knob"></div>' +
-                '<div class="plat-upper-knob"></div>' +
-            '</div>' +
+        '    <div class="plat-slider-offset">' +
+        '        <div class="plat-lower-knob"></div>' +
+        '        <div class="plat-upper-knob"></div>' +
+        '    </div>' +
         '</div>';
 
         /**
@@ -326,7 +326,7 @@
          * Denotes whether we're using left, right, top, or bottom as the position of the slider.
          */
         _positionProperty: string;
-        
+
         /**
          * @name _isSelf
          * @memberof platui.Range
@@ -359,7 +359,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Range + ' ' + (className || ''));
         }
-        
+
         /**
          * @name contextChanged
          * @memberof platui.Range
@@ -566,7 +566,7 @@
 
             this._setUpper(value, true);
         }
-        
+
         /**
          * @name _watchContext
          * @memberof platui.Range
@@ -721,7 +721,7 @@
 
             this._setUpperOffset(newOffset);
         }
-        
+
         /**
          * @name _setLowerOffset
          * @memberof platui.Range
@@ -1083,7 +1083,7 @@
             var animationOptions: plat.IObject<string> = {},
                 upperKnobOffset = this._upperKnobOffset,
                 upperOffset = this.$utils.isNumber(upperKnobOffset) ? upperKnobOffset :
-                    this._setUpperOffset(this._calculateKnobPosition(this.upper)),
+                this._setUpperOffset(this._calculateKnobPosition(this.upper)),
                 position = this._calculateKnobPosition((value || this.lower));
 
             animationOptions[this._positionProperty] = position + 'px';
@@ -1261,7 +1261,7 @@
          */
         step?: number;
     }
-    
+
     /**
      * @name IRangePoint
      * @memberof platui
@@ -1284,7 +1284,7 @@
          */
         target?: HTMLElement;
     }
-    
+
     /**
      * @name IRangeContext
      * @memberof platui

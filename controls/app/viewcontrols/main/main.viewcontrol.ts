@@ -1,4 +1,3 @@
-/// <reference path='../../../controls/lib/platypus.d.ts' />
 module app {
     export class MainViewControl extends plat.ui.WebViewControl {
         title = 'Main';

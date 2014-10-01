@@ -23,7 +23,7 @@
          * Reference to the {@link plat.IUtils|IUtils} injectable.
          */
         $utils: plat.IUtils = plat.acquire(__Utils);
-        
+
         /**
          * @name templateString
          * @memberof platui.ProgressBar
@@ -37,9 +37,9 @@
          */
         templateString =
         '<div class="plat-progress-container">' +
-            '<div class="plat-animated-bar"></div>' +
+        '<div class="plat-animated-bar"></div>' +
         '</div>';
-        
+
         /**
          * @name _barElement
          * @memberof platui.ProgressBar
@@ -52,7 +52,7 @@
          * The animated bar element.
          */
         _barElement: HTMLElement;
-        
+
         /**
          * @name _barMax
          * @memberof platui.ProgressBar
@@ -65,7 +65,7 @@
          * The max value of the bar.
          */
         _barMax: number;
-        
+
         /**
          * @name setClasses
          * @memberof platui.ProgressBar
@@ -85,7 +85,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __ProgressBar + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.ProgressBar
@@ -100,7 +100,7 @@
         initialize(): void {
             this.setClasses(__ProgressBar);
         }
-        
+
         /**
          * @name setTemplate
          * @memberof platui.ProgressBar
@@ -115,7 +115,7 @@
         setTemplate(): void {
             this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.ProgressBar
@@ -142,7 +142,7 @@
 
             this.setProgress();
         }
-        
+
         /**
          * @name contextChanged
          * @memberof platui.ProgressBar
@@ -157,7 +157,7 @@
         contextChanged(): void {
             this.setProgress();
         }
-        
+
         /**
          * @name setProgress
          * @memberof platui.ProgressBar

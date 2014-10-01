@@ -1,7 +1,7 @@
 ﻿/* tslint:disable:no-unused-variable */
-    /*
-     * Injectables
-     */
+/*
+ * Injectables
+ */
 var __Promise = '$Promise',
     __Compat = '$Compat',
     __Window = '$Window',
@@ -87,7 +87,7 @@ module platui {
          */
         setClasses(classNames?: any, element?: Element): void;
     }
-    
+
     /**
      * @name IFormControl
      * @memberof platui

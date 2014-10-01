@@ -19,7 +19,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="index.html" />
-    <Content Include="lib\platypus.min.js" />
     <Content Include="viewcontrols\app.viewcontrol.css">
       <DependentUpon>app.viewcontrol.less</DependentUpon>
     </Content>

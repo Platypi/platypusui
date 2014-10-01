@@ -35,7 +35,7 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
-        
+
         /**
          * @name templateString
          * @memberof platui.Modal
@@ -48,7 +48,7 @@
          * The HTML template represented as a string.
          */
         templateString = '<div class="plat-modal-container"></div>';
-        
+
         /**
          * @name options
          * @memberof platui.Modal
@@ -61,7 +61,7 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IModalOptions>;
-        
+
         /**
          * @name _modalElement
          * @memberof platui.Modal
@@ -145,7 +145,7 @@
             right: true,
             fade: true
         };
-        
+
         /**
          * @name setClasses
          * @memberof platui.Modal
@@ -165,7 +165,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Modal + ' hide ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.Modal
@@ -184,7 +184,7 @@
             this.templateUrl = options.templateUrl;
             this.setClasses();
         }
-        
+
         /**
          * @name setTemplate
          * @memberof platui.Modal
@@ -219,7 +219,7 @@
                 modal.appendChild(innerTemplate);
             }
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.Modal
@@ -263,7 +263,7 @@
                 });
             }
         }
-        
+
         /**
          * @name show
          * @memberof platui.Modal
@@ -279,7 +279,7 @@
             this._show();
             this.propertyChanged(true);
         }
-        
+
         /**
          * @name hide
          * @memberof platui.Modal
@@ -295,7 +295,7 @@
             this._hide();
             this.propertyChanged(false);
         }
-        
+
         /**
          * @name toggle
          * @memberof platui.Modal
@@ -315,7 +315,7 @@
 
             this.show();
         }
-        
+
         /**
          * @name isVisible
          * @memberof platui.Modal
@@ -412,7 +412,7 @@
 
             this._isVisible = false;
         }
-        
+
         /**
          * @name _addHideOnTransitionEnd
          * @memberof platui.Modal
@@ -435,7 +435,7 @@
     }
 
     plat.register.control(__Modal, Modal);
-    
+
     /**
      * @name IModalOptions
      * @memberof platui

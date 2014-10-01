@@ -24,9 +24,9 @@
          */
         templateString =
         '<div class="plat-progress-container">' +
-            '<div class="plat-animated-ring"></div>' +
+        '<div class="plat-animated-ring"></div>' +
         '</div>';
-        
+
         /**
          * @name setClasses
          * @memberof platui.ProgressRing
@@ -46,7 +46,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __ProgressRing + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.ProgressRing

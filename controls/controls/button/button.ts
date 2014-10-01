@@ -31,7 +31,7 @@ module platui {
          * Reference to the Document injectable.
          */
         $document: Document = plat.acquire(__Document);
-        
+
         /**
          * @name replaceWith
          * @memberof platui.Button
@@ -45,7 +45,7 @@ module platui {
          * a <button> node.
          */
         replaceWith = 'button';
-        
+
         /**
          * @name options
          * @memberof platui.Button
@@ -58,7 +58,7 @@ module platui {
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IButtonOptions>;
-        
+
         /**
          * @name groupName
          * @memberof platui.Button
@@ -71,7 +71,7 @@ module platui {
          * The button groups name if a button group is present.
          */
         groupName = '';
-        
+
         /**
          * @name _isSelected
          * @memberof platui.Button
@@ -84,7 +84,7 @@ module platui {
          * A boolean value showing the selected state of this {@link platui.Button|Button}.
          */
         _isSelected: boolean;
-        
+
         /**
          * @name setClasses
          * @memberof platui.Button
@@ -104,7 +104,7 @@ module platui {
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Button + ' ' + (className || ''));
         }
-        
+
         /**
          * @name initialize
          * @memberof platui.Button
@@ -130,7 +130,7 @@ module platui {
 
             this.setClasses();
         }
-        
+
         /**
          * @name setTemplate
          * @memberof platui.Button
@@ -170,7 +170,7 @@ module platui {
                 }
             }
         }
-        
+
         /**
          * @name loaded
          * @memberof platui.Button
@@ -189,7 +189,7 @@ module platui {
 
             this.dom.addClass(this.element, style);
         }
-        
+
         /**
          * @name _addEventListeners
          * @memberof platui.Button
@@ -215,7 +215,7 @@ module platui {
                 }
             });
         }
-        
+
         /**
          * @name _onTap
          * @memberof platui.Button
@@ -241,7 +241,7 @@ module platui {
     }
 
     plat.register.control(__Button, Button);
-    
+
     /**
      * @name IButtonOptions
      * @memberof platui
