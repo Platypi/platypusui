@@ -32089,6 +32089,18 @@ module plat {
              */
             private __reverseMap = {};
             /**
+             * @name __mappedEventListener
+             * @memberof plat.ui.DomEvents
+             * @kind property
+             * @access private
+             * 
+             * @type {EventListener}
+             * 
+             * @description
+             * An EventListener with a bound context for registering mapped events.
+             */
+            private __mappedEventListener: EventListener = this.__handleMappedEvent.bind(this);
+            /**
              * @name __mappedCount
              * @memberof plat.ui.DomEvents
              * @kind property
@@ -32262,9 +32274,7 @@ module plat {
                     (<any>this.__reverseMap)[mappedType] = type;
                     this.__registerElement(element, type);
                     mappedCount[type]++;
-                    if (count === 0) {
-                        mappedRemoveListener = this.__addMappedEvent(mappedType, useCapture);
-                    }
+                    mappedRemoveListener = this.__addMappedEvent(count, mappedType, useCapture);
 
                     if ($compat.hasTouchEvents) {
                         mappedType = mappedType
@@ -32272,9 +32282,7 @@ module plat {
                             .replace('start', 'down')
                             .replace('end', 'up');
                         (<any>this.__reverseMap)[mappedType] = type;
-                        if (count === 0) {
-                            mappedTouchRemoveListener = this.__addMappedEvent(mappedType, useCapture);
-                        }
+                        mappedTouchRemoveListener = this.__addMappedEvent(count, mappedType, useCapture);
                     }
                 }
 
@@ -32284,13 +32292,19 @@ module plat {
                     return () => {
                         if (listenerRemoved) {
                             return;
-                        } else if (mappingExists && mappedCount[type] > 0) {
-                            mappedCount[type]--;
+                        }
+
+                        var currentCount = mappedCount[type];
+                        if (mappingExists && currentCount > 0) {
+                            currentCount = mappedCount[type]--;
+                        }
+
+                        if (currentCount === 0) {
+                            mappedRemoveListener();
+                            mappedTouchRemoveListener();
                         }
 
                         listenerRemoved = true;
-                        mappedRemoveListener();
-                        mappedTouchRemoveListener();
                         element.removeEventListener(type, listener, useCapture);
                     };
                 }
@@ -33233,19 +33247,21 @@ module plat {
              * @description
              * Adds a listener for listening to a standard event and mapping it to a custom event.
              * 
+             * @param {number} count The number of mapped events registered.
              * @param {string} mappedEvent The mapped event type.
              * @param {boolean} useCapture? Whether the mapped event listener is fired on the capture or bubble phase.
              * 
              * @returns {plat.IRemoveListener} A function for removing the added mapped listener.
              */
-            private __addMappedEvent(mappedEvent: string, useCapture?: boolean): IRemoveListener {
-                var $document = this.$Document,
-                    mappedEventListener = this.__handleMappedEvent.bind(this);
+            private __addMappedEvent(count: number, mappedEvent: string, useCapture?: boolean): IRemoveListener {
+                var $document = this.$Document;
 
-                $document.addEventListener(mappedEvent, mappedEventListener, useCapture);
+                if (count === 0) {
+                    $document.addEventListener(mappedEvent, this.__mappedEventListener, useCapture);
+                }
 
                 return () => {
-                    $document.removeEventListener(mappedEvent, mappedEventListener, useCapture);
+                    $document.removeEventListener(mappedEvent, this.__mappedEventListener, useCapture);
                 };
             }
             /**
@@ -33275,7 +33291,8 @@ module plat {
                     countType = type;
 
                 if (type.indexOf(trackGesture) !== -1) {
-                    countType = trackGesture;
+                    var trackend = gestures.$trackend;
+                    countType = type === trackend ? trackend : trackGesture;
                 } else if (type.indexOf(swipeGesture) !== -1) {
                     countType = swipeGesture;
                 }
@@ -35470,7 +35487,7 @@ module plat {
                  * 
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {any} options Specified options for the animation.
+                 * @param {any} options? Specified options for the animation.
                  * 
                  * @returns {plat.ui.animations.IAnimationPromise} A promise that resolves when the animation is finished.
                  */
