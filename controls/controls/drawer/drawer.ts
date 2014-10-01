@@ -221,8 +221,13 @@
                 return controller.open();
             }
 
-            var promise = controller._open();
-            this.propertyChanged(true);
+            var wasClosed = !controller.isOpen(),
+                promise = controller._open();
+
+            if (wasClosed) {
+                this.propertyChanged(true);
+            }
+
             return promise;
         }
 
@@ -246,8 +251,13 @@
                 return controller.close();
             }
 
-            var promise = controller._close();
-            this.propertyChanged(false);
+            var wasOpen = controller.isOpen(),
+                promise = controller._close();
+
+            if (wasOpen) {
+                this.propertyChanged(false);
+            }
+
             return promise;
         }
 
@@ -684,6 +694,19 @@
         _hasSwiped = false;
 
         /**
+         * @name _hasTapped
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the user has tapped.
+         */
+        _hasTapped = false;
+
+        /**
          * @name _isOpen
          * @memberof platui.DrawerController
          * @kind property
@@ -773,19 +796,6 @@
          * A function for removing the swipe open event listener.
          */
         _removeSwipeOpen: plat.IRemoveListener;
-
-        /**
-         * @name _removeSwipeClose
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IRemoveListener}
-         * 
-         * @description
-         * A function for removing the swipe close event listener.
-         */
-        _removeSwipeClose: plat.IRemoveListener;
 
         /**
          * @name _removePrimaryTrack
@@ -1097,12 +1107,17 @@
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         open(): plat.ui.animations.IAnimationThenable<void> {
-            var promise = this._open();
-            if (this._useContext) {
-                this.propertyChanged(true);
-            } else if (!this.$utils.isNull(this._drawer)) {
-                this._drawer.propertyChanged(true);
+            var wasClosed = !this._isOpen,
+                promise = this._open();
+
+            if (wasClosed) {
+                if (this._useContext) {
+                    this.propertyChanged(true);
+                } else if (!this.$utils.isNull(this._drawer)) {
+                    this._drawer.propertyChanged(true);
+                }
             }
+
             return promise;
         }
 
@@ -1119,12 +1134,17 @@
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         close(): plat.ui.animations.IAnimationThenable<void> {
-            var promise = this._close();
-            if (this._useContext) {
-                this.propertyChanged(false);
-            } else if (!this.$utils.isNull(this._drawer)) {
-                this._drawer.propertyChanged(false);
+            var wasOpen = this._isOpen,
+                promise = this._close();
+
+            if (wasOpen) {
+                if (this._useContext) {
+                    this.propertyChanged(false);
+                } else if (!this.$utils.isNull(this._drawer)) {
+                    this._drawer.propertyChanged(false);
+                }
             }
+
             return promise;
         }
 
@@ -1261,7 +1281,7 @@
                 isNode = $utils.isNode;
 
             if (!isNode(rootElement) || !isNode(drawerElement)) {
-                return;
+                return this.$animator.resolve();
             }
 
             drawerElement.removeAttribute(__Hide);
@@ -1281,11 +1301,15 @@
                     translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
                     break;
                 default:
-                    return;
+                    return this.$animator.resolve();
             }
 
             if (!this._isOpen) {
-                this._openDelayRemover = $utils.postpone(this._addOpenDrawerIntercepts, null, this);
+                if ($utils.isFunction(this._openDelayRemover)) {
+                    this._openDelayRemover();
+                    this._openDelayRemover = null;
+                }
+                this._openDelayRemover = $utils.postpone(this._addEventIntercepts, null, this);
             }
 
             var animationOptions: plat.IObject<string> = {};
@@ -1310,10 +1334,19 @@
         _close(): plat.ui.animations.IAnimationThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
-                isNode = this.$utils.isNode;
+                $utils = this.$utils,
+                isNode = $utils.isNode;
+
+            if (this._isOpen) {
+                if ($utils.isFunction(this._openDelayRemover)) {
+                    this._openDelayRemover();
+                    this._openDelayRemover = null;
+                }
+                this._openDelayRemover = $utils.postpone(this._removeEventIntercepts, null, this);
+            }
 
             if (!isNode(rootElement) || !isNode(drawerElement)) {
-                return;
+                return this.$animator.resolve();
             }
 
             var animationOptions: plat.IObject<string> = {},
@@ -1321,9 +1354,6 @@
 
             animationOptions[transform] = 'translate3d(0,0,0)';
             this._isOpen = false;
-
-            this._removeIntercepts();
-
             return this.$animator.animate(rootElement, __Transition, animationOptions).then(() => {
                 if (this._isOpen) {
                     return;
@@ -1336,17 +1366,17 @@
         }
 
         /**
-         * @name _addOpenDrawerIntercepts
+         * @name _addEventIntercepts
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
          * 
          * @description
-         * Adds all event listeners to the moving root element for tracking and closing the {@link platui.Drawer|Drawer}.
+         * Adds all event listeners to the moving root element when tracking and closing an open {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
-        _addOpenDrawerIntercepts(): void {
+        _addEventIntercepts(): void {
             var rootElement = this._rootElement;
 
             if (this._isTrack) {
@@ -1365,50 +1395,27 @@
             }
 
             if (this._isTap) {
-                this._openTapRemover = this.addEventListener(rootElement, __$tap, this._openDrawerTapIntercept, false);
+                this._addTapClose();
             }
 
             if (this._isSwipe) {
-
+                this._addSwipeClose();
             }
         }
 
         /**
-         * @name _openDrawerTapIntercept
+         * @name _removeEventIntercepts
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
          * 
          * @description
-         * Adds a tap event listener to the moving root element for closing the {@link platui.Drawer|Drawer}.
-         * 
-         * @param {plat.ui.IGestureEvent} ev The $tap event object.
+         * Removes all event intercepts on the moving root element when closing an open {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
-        _openDrawerTapIntercept(ev: plat.ui.IGestureEvent): void {
-            this._removeIntercepts();
-            this.close();
-        }
-
-        /**
-         * @name _removeIntercepts
-         * @memberof platui.DrawerController
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Removes all event listener on the moving root element for closing the {@link platui.Drawer|Drawer}.
-         * 
-         * @returns {void}
-         */
-        _removeIntercepts(): void {
+        _removeEventIntercepts(): void {
             var isFunction = this.$utils.isFunction;
-
-            if (isFunction(this._openDelayRemover)) {
-                this._openDelayRemover();
-                this._openDelayRemover = null;
-            }
 
             if (this._isTap) {
                 if (isFunction(this._openTapRemover)) {
@@ -1433,7 +1440,7 @@
         }
 
         /**
-         * @name _addSwipeEvents
+         * @name _addSwipeOpen
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
@@ -1441,28 +1448,71 @@
          * @description
          * Adds swipe events to the controller element.
          * 
-         * @param {string} transition The transition direction of opening for the {@link platui.Drawer|Drawer}.
-         * 
          * @returns {void}
          */
-        _addSwipeEvents(transition: string): void {
-            var openEvent = __$swipe + transition,
-                closeEvent = __$swipe + this._transitionHash[transition],
-                element = this.element;
-
-            this._removeSwipeOpen = this.addEventListener(element, openEvent, () => {
+        _addSwipeOpen(): void {
+            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + this._transition, () => {
                 this._hasSwiped = true;
                 this.open();
             }, false);
+        }
 
-            this._removeSwipeClose = this.addEventListener(element, closeEvent, () => {
+        /**
+         * @name _addSwipeClose
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds swipe close event to the root element.
+         * 
+         * @returns {void}
+         */
+        _addSwipeClose(): void {
+            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._transitionHash[this._transition], () => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
         }
 
         /**
-         * @name _addSwipeEvents
+         * @name _addTapOpen
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds tap close event to the controller element.
+         * 
+         * @returns {void}
+         */
+        _addTapOpen(): void {
+            this._removeTap = this.addEventListener(this.element, __$tap, () => {
+                this._hasTapped = true;
+                this.open();
+            }, false);
+        }
+
+        /**
+         * @name _addTapClose
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds tap close event to the root element.
+         * 
+         * @returns {void}
+         */
+        _addTapClose(): void {
+            this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
+                this._hasTapped = true;
+                this.close();
+            }, false);
+        }
+
+        /**
+         * @name _addEventListeners
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
@@ -1485,11 +1535,11 @@
             // this._removeEventListeners();
 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
-                this._removeTap = this.addEventListener(element, __$tap, this.open, false);
+                this._addTapOpen();
             }
 
             if (this._isSwipe = (types.indexOf('swipe') !== -1)) {
-                this._addSwipeEvents(transition);
+                this._addSwipeOpen();
             }
 
             if (this._isTrack = (types.indexOf('track') !== -1)) {
@@ -1543,11 +1593,6 @@
                 this._removeSwipeOpen();
                 this._removeSwipeOpen = null;
             }
-
-            if (isFunction(this._removeSwipeClose)) {
-                this._removeSwipeClose();
-                this._removeSwipeClose = null;
-            }
         }
 
         /**
@@ -1573,6 +1618,7 @@
             if (this._isOpen) {
                 return;
             }
+
             this._drawerElement.removeAttribute(__Hide);
         }
 
@@ -1590,10 +1636,12 @@
          * @returns {void}
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var inTouch = this._inTouch;
-            this._inTouch = false;
-            if (!inTouch || this._hasSwiped) {
-                this._hasSwiped = false;
+            var inTouch = this._inTouch,
+                hasSwiped = this._hasSwiped,
+                hasTapped = this._hasTapped;
+
+            this._inTouch = this._hasSwiped = this._hasTapped = false;
+            if (hasTapped || !inTouch || hasSwiped) {
                 return;
             }
 

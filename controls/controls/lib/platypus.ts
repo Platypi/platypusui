@@ -3231,7 +3231,7 @@ module plat {
          * @description
          * An object containing the correctly mapped touch events for the browser.
          */
-        mappedEvents: IMappedEvents;
+        mappedEvents: IMappedTouchEvents;
 
         /**
          * @name animationEvents
@@ -3775,7 +3775,7 @@ module plat {
          * @description
          * An object containing the correctly mapped touch events for the browser.
          */
-        mappedEvents: IMappedEvents;
+        mappedEvents: IMappedTouchEvents;
 
         /**
          * @name animationEvents
@@ -3846,16 +3846,82 @@ module plat {
     }
 
     /**
-     * @name IMappedEvents
+     * @name ITouchMapping
      * @memberof plat
      * @kind interface
      * 
-     * @extends {plat.IObject}
+     * @extends {plat.IObject<T>}
+     * 
+     * @typeparam T The type of value being mapped to touch events.
      * 
      * @description
      * Describes an object containing the correctly mapped touch events for the browser.
      */
-    export interface IMappedEvents extends IObject<string> {
+    export interface ITouchMapping<T> extends IObject<T> {
+        /**
+         * @name $touchstart
+         * @memberof plat.ITouchMapping
+         * @kind property
+         * @access public
+         * 
+         * @type {T}
+         * 
+         * @description
+         * An event type for touch start.
+         */
+        $touchstart: T;
+
+        /**
+         * @name $touchend
+         * @memberof plat.ITouchMapping
+         * @kind property
+         * @access public
+         * 
+         * @type {T}
+         * 
+         * @description
+         * An event type for touch end.
+         */
+        $touchend: T;
+
+        /**
+         * @name $touchmove
+         * @memberof plat.ITouchMapping
+         * @kind property
+         * @access public
+         * 
+         * @type {T}
+         * 
+         * @description
+         * An event type for touch move.
+         */
+        $touchmove: T;
+
+        /**
+         * @name $touchcancel
+         * @memberof plat.ITouchMapping
+         * @kind property
+         * @access public
+         * 
+         * @type {T}
+         * 
+         * @description
+         * An event type for touch cancel.
+         */
+        $touchcancel: T;
+    }
+
+    /**
+     * @name IMappedEvents
+     * @memberof plat
+     * @kind interface
+     * 
+     * @extends {plat.ITouchMapping<string>}
+     * 
+     * @description
+     * Describes an object containing the correctly mapped touch events for the browser.
+     */
+    export interface IMappedTouchEvents extends ITouchMapping<string> {
         /**
          * @name $touchstart
          * @memberof plat.IMappedEvents
@@ -32023,6 +32089,24 @@ module plat {
              */
             private __reverseMap = {};
             /**
+             * @name __mappedCount
+             * @memberof plat.ui.DomEvents
+             * @kind property
+             * @access protected
+             * 
+             * @type {plat.ITouchMapping<number>}
+             * 
+             * @description
+             * An object containing the number of currently active mapped touch 
+             * events of each type.
+             */
+            private __mappedCount: ITouchMapping<number> = {
+                $touchstart: 0,
+                $touchmove: 0,
+                $touchend: 0,
+                $touchcancel: 0
+            };
+            /**
              * @name __swipeSubscribers
              * @memberof plat.ui.DomEvents
              * @kind property
@@ -32167,22 +32251,30 @@ module plat {
                     mappedGestures = $compat.mappedEvents,
                     mappedType = mappedGestures[type],
                     mappingExists = !isNull(mappedType),
+                    mappedCount = this.__mappedCount,
                     mappedRemoveListener = noop,
                     mappedTouchRemoveListener = noop,
                     gestures = this._gestures,
                     listenerRemoved = false;
 
                 if (mappingExists) {
+                    var count = mappedCount[type];
                     (<any>this.__reverseMap)[mappedType] = type;
                     this.__registerElement(element, type);
-                    mappedRemoveListener = this.__addMappedEvent(mappedType, useCapture);
+                    mappedCount[type]++;
+                    if (count === 0) {
+                        mappedRemoveListener = this.__addMappedEvent(mappedType, useCapture);
+                    }
+
                     if ($compat.hasTouchEvents) {
                         mappedType = mappedType
                             .replace('touch', 'mouse')
                             .replace('start', 'down')
                             .replace('end', 'up');
                         (<any>this.__reverseMap)[mappedType] = type;
-                        mappedTouchRemoveListener = this.__addMappedEvent(mappedType, useCapture);
+                        if (count === 0) {
+                            mappedTouchRemoveListener = this.__addMappedEvent(mappedType, useCapture);
+                        }
                     }
                 }
 
@@ -32192,6 +32284,8 @@ module plat {
                     return () => {
                         if (listenerRemoved) {
                             return;
+                        } else if (mappingExists && mappedCount[type] > 0) {
+                            mappedCount[type]--;
                         }
 
                         listenerRemoved = true;
@@ -32247,6 +32341,12 @@ module plat {
                     $swipe: 0,
                     $track: 0,
                     $trackend: 0
+                };
+                this.__mappedCount = {
+                    $touchstart: 0,
+                    $touchmove: 0,
+                    $touchend: 0,
+                    $touchcancel: 0
                 };
                 this._isActive = false;
                 this._subscribers = {};
@@ -35376,7 +35476,7 @@ module plat {
                  */
                 animate(element: Element, key: string, options?: any): IAnimationPromise {
                     if (!isNode(element) || element.nodeType !== Node.ELEMENT_NODE || this.__parentIsAnimating(element)) {
-                        return this.__resolvePromise();
+                        return this.resolve();
                     }
 
                     var $compat = this.$Compat,
@@ -35386,7 +35486,7 @@ module plat {
 
                     if (!$compat.animationSupported || isUndefined(animation)) {
                         if (isUndefined(jsAnimation)) {
-                            return this.__resolvePromise();
+                            return this.resolve();
                         }
 
                         animationInstance = jsAnimation.inject();
@@ -35417,6 +35517,24 @@ module plat {
                     }
 
                     return (animationObj.promise = animationPromise);
+                }
+
+                /**
+                 * @name resolve
+                 * @memberof plat.ui.animations.Animator
+                 * @kind function
+                 * @access public
+                 * 
+                 * @description
+                 * Immediately resolves an empty {@link plat.ui.animations.AnimationPromise|AnimationPromise}.
+                 * 
+                 * @returns {plat.ui.animations.IAnimationThenable<void>} The immediately resolved 
+                 * {@link plat.ui.animations.AnimationPromise|AnimationPromise}.
+                 */
+                resolve(): IAnimationThenable<void> {
+                    return new AnimationPromise((resolve) => {
+                        resolve();
+                    });
                 }
         
                 /**
@@ -35533,24 +35651,6 @@ module plat {
                         }
                     }
                 }
-        
-                /**
-                 * @name __resolvePromise
-                 * @memberof plat.ui.animations.Animator
-                 * @kind function
-                 * @access private
-                 * 
-                 * @description
-                 * Immediately resolves an empty {@link plat.ui.animations.AnimationPromise|AnimationPromise}.
-                 * 
-                 * @returns {plat.ui.animations.IAnimationThenable<void>} The immediately resolved 
-                 * {@link plat.ui.animations.AnimationPromise|AnimationPromise}.
-                 */
-                private __resolvePromise(): IAnimationThenable<void> {
-                    return new AnimationPromise((resolve) => {
-                        resolve();
-                    });
-                }
             }
 
             /**
@@ -35587,6 +35687,20 @@ module plat {
                  * @returns {plat.ui.animations.IAnimationPromise} A promise that resolves when the animation is finished.
                  */
                 animate(element: Element, key: string, options?: any): IAnimationPromise;
+
+                /**
+                 * @name resolve
+                 * @memberof plat.ui.animations.Animator
+                 * @kind function
+                 * @access public
+                 * 
+                 * @description
+                 * Immediately resolves an empty {@link plat.ui.animations.AnimationPromise|AnimationPromise}.
+                 * 
+                 * @returns {plat.ui.animations.IAnimationThenable<void>} The immediately resolved 
+                 * {@link plat.ui.animations.AnimationPromise|AnimationPromise}.
+                 */
+                resolve(): IAnimationThenable<void>;
             }
     
             /**
