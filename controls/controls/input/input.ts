@@ -782,7 +782,9 @@
                     }
                     break;
                 default:
-                    if (value.indexOf('@') === -1) {
+                    if (value === '') {
+                        this._typeChar = '';
+                    } else if (value.indexOf('@') === -1) {
                         this._typeChar = '@';
                     }
                     break;
