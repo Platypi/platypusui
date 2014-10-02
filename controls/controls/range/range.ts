@@ -791,7 +791,7 @@
                 }
                 position = upperOffset;
             } else {
-                value = this._calculateValue(position, true);
+                value = this._calculateValue(position);
             }
 
             if (setValue) {
@@ -819,31 +819,31 @@
         _trackUpper(ev: plat.ui.IGestureEvent): void {
             var maxOffset = this._maxOffset,
                 lowerOffset = this._lowerKnobOffset,
-                length = this._calculateOffset(ev, false),
+                offset = this._calculateOffset(ev, false),
                 setValue = true,
                 value: number;
 
-            if (length <= lowerOffset) {
+            if (offset <= lowerOffset) {
                 value = this.lower;
                 if (value - this.upper >= 0) {
                     setValue = false;
                 }
-                length = lowerOffset;
-            } else if (length > maxOffset) {
+                offset = lowerOffset;
+            } else if (offset > maxOffset) {
                 value = this.max;
                 if (value - this.upper <= 0) {
                     setValue = false;
                 }
-                length = maxOffset;
+                offset = maxOffset;
             } else {
-                value = this._calculateValue(length, false);
+                value = this._calculateValue(offset);
             }
 
             if (setValue) {
                 this._setUpper(value, false);
             }
 
-            this._slider.style[<any>this._lengthProperty] = (length - lowerOffset) + 'px';
+            this._slider.style[<any>this._lengthProperty] = (offset - lowerOffset) + 'px';
         }
 
         /**
@@ -856,11 +856,10 @@
          * Calculates the current value based on knob position and slider width.
          * 
          * @param {number} width The current width of the slider.
-         * @param {boolean} isLower Whether the current knob is the lower or the upper knob.
          * 
          * @returns {number} The current value of the {link platui.Range|Range}.
          */
-        _calculateValue(width: number, isLower: boolean): number {
+        _calculateValue(width: number): number {
             var step = this._step;
             return (this.min + Math.round(width / this._increment / step) * step);
         }
