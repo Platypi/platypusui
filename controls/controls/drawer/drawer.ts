@@ -180,7 +180,7 @@
                 isElastic = options.elastic === true;
 
             element.setAttribute(__Hide, '');
-            this.dom.addClass(element, transition);
+            this.dom.addClass(element, __Plat + transition);
 
             if ($utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
@@ -427,8 +427,8 @@
             var dom = this.dom,
                 element = this.element;
 
-            dom.removeClass(element, this._currentTransition);
-            dom.addClass(element, transition);
+            dom.removeClass(element, __Plat + this._currentTransition);
+            dom.addClass(element, __Plat + transition);
 
             this._currentTransition = transition;
         }

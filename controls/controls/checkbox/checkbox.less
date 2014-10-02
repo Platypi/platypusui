@@ -28,12 +28,12 @@
         .border-radius(@diameter);
         .box-sizing(content-box);
 
-        &.check,
-        &.x {
+        &.plat-check,
+        &.plat-x {
             border-color: @checked-border-color;
 
-            .mark::before,
-            .mark::after {
+            .plat-mark::before,
+            .plat-mark::after {
                 content: "";
                 position: absolute;
                 height: @mark-thickness;
@@ -41,15 +41,15 @@
             }
         }
 
-        &.check {
-            .mark::before {
+        &.plat-check {
+            .plat-mark::before {
                 left: 5%;
                 top: 60%;
                 width: @diameter / 2.5;
                 .rotate(45deg);
             }
 
-            .mark::after {
+            .plat-mark::after {
                 left: 28%;
                 top: 51%;
                 width: @diameter / 1.5;
@@ -57,44 +57,44 @@
             }
         }
 
-        &.x {
-            .mark::before,
-            .mark::after {
+        &.plat-x {
+            .plat-mark::before,
+            .plat-mark::after {
                 left: 17.5%;
                 top: 48.5%;
                 width: @diameter / 1.5;
             }
 
-            .mark::before {
+            .plat-mark::before {
                 .rotate(45deg);
             }
 
-            .mark::after {
+            .plat-mark::after {
                 .rotate(-45deg);
             }
         }
     }
 
-    &.primary {
+    &.plat-primary {
         .plat-checkbox-container {
-            &.check,
-            &.x {
-                .mark::before,
-                .mark::after {
+            &.plat-check,
+            &.plat-x {
+                .plat-mark::before,
+                .plat-mark::after {
                     background-color: @mark-color;
                 }
             }
         }
     }
 
-    &.secondary {
+    &.plat-secondary {
         .plat-checkbox-container {
-            &.check,
-            &.x {
+            &.plat-check,
+            &.plat-x {
                 background-color: @mark-color;
 
-                .mark::before,
-                .mark::after {
+                .plat-mark::before,
+                .plat-mark::after {
                     .secondary-mark-color(background-color);
                 }
             }

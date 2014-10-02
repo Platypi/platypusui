@@ -14,23 +14,23 @@
     cursor: pointer;
     .box-sizing(border-box);
     
-    &:not(.back) {
+    &:not(.plat-back) {
         &:active,
-        &.selected {
+        &.plat-selected {
             background-color: @color;
             .active-color(color);
         }
     }
 
-    &.primary {
+    &.plat-primary {
         .border-radius(@primary-border-radius);
     }
 
-    &.secondary {
+    &.plat-secondary {
         .border-radius(@secondary-border-radius);
     }
 
-    &.back {
+    &.plat-back {
         border: none;
 
         *:first-child {
@@ -46,7 +46,7 @@
         }
     }
 
-    &.confirm {
+    &.plat-confirm {
         *:last-child {
             margin-right: 2em;
 
@@ -58,7 +58,7 @@
         }
     }
 
-    &.cancel {
+    &.plat-cancel {
         *:last-child {
             margin-right: 2em;
 

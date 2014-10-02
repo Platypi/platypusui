@@ -23,7 +23,7 @@
          */
         templateString =
         '<div class="plat-radio-container">' +
-        '    <div class="mark"></div>' +
+        '    <div class="plat-mark"></div>' +
         '</div>';
 
         /**
@@ -50,7 +50,7 @@
          * @description
          * The check type to be placed in the element.
          */
-        _targetType = 'radio';
+        _targetType = 'bullet';
 
         /**
          * @name _targetTypeSet
@@ -255,7 +255,7 @@
          */
         _getValue(): string {
             var element = this.element;
-            return element.hasAttribute('value') ? element.getAttribute('value') : element.textContent;
+            return element.hasAttribute('value') ? element.getAttribute('value').trim() : element.textContent.trim();
         }
     }
 

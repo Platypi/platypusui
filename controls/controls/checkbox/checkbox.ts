@@ -36,7 +36,7 @@
          */
         templateString =
         '<div class="plat-checkbox-container">' +
-        '    <span class="mark"></span>' +
+        '    <span class="plat-mark"></span>' +
         '</div>';
 
         /**
@@ -157,7 +157,7 @@
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
                     Exception.warn('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.');
-                    mark = this._targetType = 'check';
+                    this._targetType = 'check';
                     break;
             }
 
@@ -168,7 +168,7 @@
             }
 
             this._targetTypeSet = true;
-            dom.addClass(this.element, style);
+            dom.addClass(this.element, __Plat + style);
         }
 
         /**
@@ -240,7 +240,7 @@
          */
         _activate(element: Element): void {
             if (this._targetTypeSet) {
-                this.dom.toggleClass(element, this._targetType);
+                this.dom.toggleClass(element, __Plat + this._targetType);
                 return;
             }
 

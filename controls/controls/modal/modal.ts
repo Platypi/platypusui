@@ -163,7 +163,7 @@
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Modal + ' hide ' + (className || ''));
+            this.dom.addClass(element || this.element, __Modal + (className || ''));
         }
 
         /**
@@ -241,8 +241,10 @@
                 transition = options.transition,
                 style = isString(options.style) ? options.style.toLowerCase() : 'full';
 
+            this.element.setAttribute(__Hide, '');
+
             if (!isString(transition) || transition === 'none') {
-                dom.addClass(modalElement, style + ' plat-no-transition');
+                dom.addClass(modalElement, __Plat + style + ' ' + __Plat + 'no-transition');
                 if (this._preloadedValue) {
                     $utils.postpone(() => {
                         this._show();
@@ -256,7 +258,7 @@
             }
 
             this._transitionEnd = this.$compat.animationEvents.$transitionEnd;
-            dom.addClass(modalElement, transition + ' plat-modal-transition ' + style);
+            dom.addClass(modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition ' + __Plat + style);
             if (this._preloadedValue) {
                 $utils.postpone(() => {
                     this._show();
@@ -379,11 +381,9 @@
          * @returns {void}
          */
         _show(): void {
-            var dom = this.dom;
-
-            dom.removeClass(this.element, 'hide');
+            this.element.setAttribute(__Hide, '');
             this.$utils.defer(() => {
-                dom.addClass(this._modalElement, 'activate');
+                this.dom.addClass(this._modalElement, __Plat + 'activate');
             }, 25);
 
             this._isVisible = true;
@@ -401,13 +401,11 @@
          * @returns {void}
          */
         _hide(): void {
-            var dom = this.dom;
-
-            dom.removeClass(this._modalElement, 'activate');
+            this.dom.removeClass(this._modalElement, __Plat + 'activate');
             if (this.$utils.isString(this._transitionEnd)) {
                 this._addHideOnTransitionEnd();
             } else {
-                dom.addClass(this.element, 'hide');
+                this.element.removeAttribute(__Hide);
             }
 
             this._isVisible = false;
@@ -426,10 +424,9 @@
          */
         _addHideOnTransitionEnd(): void {
             var element = this.element,
-                dom = this.dom,
                 remove = this.addEventListener(element, this._transitionEnd, () => {
                     remove();
-                    dom.addClass(element, 'hide');
+                    element.setAttribute(__Hide, '');
                 }, false);
         }
     }

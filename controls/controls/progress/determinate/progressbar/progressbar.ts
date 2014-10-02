@@ -98,7 +98,7 @@
          * @returns {void}
          */
         initialize(): void {
-            this.setClasses(__ProgressBar);
+            this.setClasses();
         }
 
         /**
@@ -131,12 +131,14 @@
         loaded(): void {
             var context = this.context;
 
-            this._barMax = this._barElement.parentElement.offsetWidth;
+            var bar = this._barMax = this._barElement.parentElement.offsetWidth;
+            if (!bar) {
+                this._setOffsetWithClone();
+            }
 
             if (!this.$utils.isNumber(context) || context > 1 || context < 0) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1, ' +
-                    'or a "' + __Bind + '" control must be used.');
+                Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1');
                 return;
             }
 

@@ -23,7 +23,7 @@
         .box-sizing(content-box);
            
         @knob-diameter: @height; 
-        .knob {
+        .plat-knob {
             position: absolute;
             top: 0;
             left: 0;
@@ -37,11 +37,11 @@
             .transition(@knob-transition);
         }
 
-        &.slide {
+        &.plat-slide {
             border-color: @checked-border-color;
             background-color: @checked-color;
 
-            .knob {
+            .plat-knob {
                 left: @width - @knob-diameter;
             }
         }

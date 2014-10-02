@@ -325,7 +325,7 @@
                 type = this._type = options.type || this._type || 'text',
                 pattern = options.pattern;
 
-            dom.addClass(element, style + ' ' + type);
+            dom.addClass(element, __Plat + style + ' ' + __Plat + type);
 
             if (this.$utils.isString(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
@@ -456,12 +456,16 @@
          * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any): void {
+            if (newValue === oldValue) {
+                return;
+            }
+
             if (!this._loaded) {
                 this._preloadedValue = newValue;
                 return;
             }
 
-            this._onInput();
+            this._onInputChanged(newValue);
         }
 
         /**
@@ -827,6 +831,43 @@
                     }
                 default:
                     this.propertyChanged(value);
+                    break;
+            }
+
+            this._actionHandler();
+        }
+
+        /**
+         * @name _onInputChanged
+         * @memberof platui.Input
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The event handler upon bound text being changed.
+         * 
+         * @param {string} newValue The new value of the bound text.
+         * 
+         * @returns {void}
+         */
+        _onInputChanged(newValue: string): void {
+            var inputElement = this._inputElement;
+            if (newValue === inputElement.value) {
+                return;
+            }
+
+            switch (this._type) {
+                case 'tel':
+                case 'number':
+                    var last = newValue.length - 1;
+                    if (last >= 0 && (!this._pattern.test(newValue[last]) ||
+                        !(last === 0 || this._type !== 'tel' || newValue[last] !== '+'))) {
+                        newValue = inputElement.value = newValue.slice(0, -1);
+                        this.propertyChanged(newValue);
+                        break;
+                    }
+                default:
+                    inputElement.value = newValue;
                     break;
             }
 

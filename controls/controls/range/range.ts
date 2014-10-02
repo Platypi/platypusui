@@ -450,7 +450,7 @@
                 transition = this._transition = options.transition || 'right',
                 Exception: plat.IExceptionStatic;
 
-            dom.addClass(element, style + ' ' + transition);
+            dom.addClass(element, __Plat + style + ' ' + __Plat + transition);
 
             // if it's a reversed transition, swap knobs.
             if (transition === 'left' || transition === 'down') {

@@ -37,7 +37,7 @@
          */
         templateString =
         '<div class="plat-toggle-container">' +
-        '    <div class="knob"></div>' +
+        '    <div class="plat-knob"></div>' +
         '</div>';
 
         /**
@@ -222,7 +222,7 @@
          * @returns {void}
          */
         _activate(element: Element): void {
-            this.dom.toggleClass(element, this._targetType);
+            this.dom.toggleClass(element, __Plat + this._targetType);
         }
     }
 

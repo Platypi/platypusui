@@ -349,7 +349,7 @@
                 style = options.style || 'primary',
                 transition = this._transition = options.transition || 'right';
 
-            dom.addClass(element, style + ' ' + transition);
+            dom.addClass(element, __Plat + style + ' ' + __Plat + transition);
 
             var bindValue = this.value,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,

@@ -25,33 +25,33 @@
         
         &.plat-no-transition,
         &.plat-modal-transition.fade {
-            &.full {
+            &.plat-full {
                 top: 0;
                 left: 0;
             }
 
-            &.halfwidth {
+            &.plat-halfwidth {
                 top: 0;
                 left: @left;
 
-                &.centered {
+                &.plat-centered {
                     left: 50%;
                     .translateAccelerate(-50%;0);
                 }
             }
 
-            &.halfheight {
+            &.plat-halfheight {
                 top: @top;
                 left: 0;
 
-                &.centered {
+                &.plat-centered {
                     top: 50%;
                     .translateAccelerate(0;-50%);
                 }
             }
 
-            &.half,
-            &.custom {
+            &.plat-half,
+            &.plat-custom {
                 top: @top;
                 left: @left;
 
@@ -60,8 +60,8 @@
                 }
             }
 
-            &.half {
-                &.centered {
+            &.plat-half {
+                &.plat-centered {
                     top: 50%;
                     left: 50%;
                 }
@@ -69,319 +69,315 @@
         }
 
         &.plat-modal-transition {
-            &.right {
+            &.plat-right {
                 .transition(@right-transition);
 
-                &.full {
+                &.plat-full {
                     top: 0;
                     left: -100%;
 
-                    &.activate {
+                    &.plat-activate {
                         left: 0;
                     }
                 }
                 
-                &.half,
-                &.halfwidth {
+                &.plat-half,
+                &.plat-halfwidth {
                     top: 0;
                     left: -50%;
 
-                    &.activate {
+                    &.plat-activate {
                         left: @left;
 
-                        &.centered {
+                        &.plat-centered {
                             left: 50%;
                         }
                     }
                 }
 
-                &.halfwidth {
-                    &.centered {
+                &.plat-halfwidth {
+                    &.plat-centered {
                         .translateAccelerate(-50%;0);
                     }
                 }
 
-                &.halfheight {
+                &.plat-halfheight {
                     top: @top;
                     left: -100%;
 
-                    &.activate {
+                    &.plat-activate {
                         left: 0;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         top: 50%;
                         .translateAccelerate(0;-50%);
                     }
                 }
 
-                &.half {
+                &.plat-half {
                     top: @top;
 
-                    &.centered {
+                    &.plat-centered {
                         top: 50%;
                         .translateAccelerate(-50%;-50%);
                     }
                 }
 
-                &.custom {
+                &.plat-custom {
                     top: @top;
                     left: -@width;
 
-                    &.activate {
+                    &.plat-activate {
                         left: @left;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         .translateAccelerate(-50%;-50%);
                     }
                 }
             }
 
-            &.left {
+            &.plat-left {
                 .transition(@left-transition);
 
-                &.full {
+                &.plat-full {
                     top: 0;
                     right: -100%;
 
-                    &.activate {
+                    &.plat-activate {
                         right: 0;
                     }
                 }
                 
-                &.half,
-                &.halfwidth {
+                &.plat-half,
+                &.plat-halfwidth {
                     top: 0;
                     right: -50%;
 
-                    &.activate {
+                    &.plat-activate {
                         right: @left;
 
-                        &.centered {
+                        &.plat-centered {
                             right: 50%;
                         }
                     }
                 }
 
-                &.halfwidth {
-                    &.centered {
+                &.plat-halfwidth {
+                    &.plat-centered {
                         .translateAccelerate(50%;0);
                     }
                 }
 
-                &.halfheight {
+                &.plat-halfheight {
                     top: @top;
                     right: -100%;
 
-                    &.activate {
+                    &.plat-activate {
                         right: 0;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         top: 50%;
                         .translateAccelerate(0;-50%);
                     }
                 }
 
-                &.half {
+                &.plat-half {
                     top: @top;
 
-                    &.centered {
+                    &.plat-centered {
                         top: 50%;
                         .translateAccelerate(50%;-50%);
                     }
                 }
 
-                &.custom {
+                &.plat-custom {
                     top: @top;
                     right: -@width;
 
-                    &.activate {
+                    &.plat-activate {
                         right: @left;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         .translateAccelerate(50%;-50%);
                     }
                 }
             }
 
-            &.down {
+            &.plat-down {
                 .transition(@down-transition);
 
-                &.full {
+                &.plat-full {
                     top: -100%;
                     left: 0;
 
-                    &.activate {
+                    &.plat-activate {
                         top: 0;
                     }
                 }
                 
-                &.half,
-                &.halfheight {
+                &.plat-half,
+                &.plat-halfheight {
                     top: -50%;
                     left: 0;
 
-                    &.activate {
+                    &.plat-activate {
                         top: @top;
 
-                        &.centered {
+                        &.plat-centered {
                             top: 50%;
                         }
                     }
                 }
 
-                &.halfheight {
-                    &.centered {
+                &.plat-halfheight {
+                    &.plat-centered {
                         .translateAccelerate(0;-50%);
                     }
                 }
 
-                &.halfwidth {
+                &.plat-halfwidth {
                     top: -100%;
                     left: @left;
 
-                    &.activate {
+                    &.plat-activate {
                         top: 0;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         left: 50%;
                         .translateAccelerate(-50%;0);
                     }
                 }
 
-                &.half {
+                &.plat-half {
                     left: @left;
 
-                    &.centered {
+                    &.plat-centered {
                         left: 50%;
                         .translateAccelerate(-50%;-50%);
                     }
                 }
 
-                &.custom {
+                &.plat-custom {
                     top: -@height;
                     left: @left;
 
-                    &.activate {
+                    &.plat-activate {
                         top: @top;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         .translateAccelerate(-50%;-50%);
                     }
                 }
             }
 
-            &.up {
+            &.plat-up {
                 .transition(@up-transition);
 
                 &.full {
                     bottom: -100%;
                     left: 0;
 
-                    &.activate {
+                    &.plat-activate {
                         bottom: 0;
                     }
                 }
                 
-                &.half,
-                &.halfheight {
+                &.plat-half,
+                &.plat-halfheight {
                     bottom: -50%;
                     left: 0;
 
-                    &.activate {
+                    &.plat-activate {
                         bottom: @top;
 
-                        &.centered {
+                        &.plat-centered {
                             bottom: 50%;
                         }
                     }
                 }
 
-                &.halfheight {
-                    &.centered {
+                &.plat-halfheight {
+                    &.plat-centered {
                         .translateAccelerate(0;50%);
                     }
                 }
 
-                &.halfwidth {
+                &.plat-halfwidth {
                     bottom: -100%;
                     left: @left;
 
-                    &.activate {
+                    &.plat-activate {
                         bottom: 0;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         left: 50%;
                         .translateAccelerate(-50%;0);
                     }
                 }
 
-                &.half {
+                &.plat-half {
                     left: @left;
 
-                    &.centered {
+                    &.plat-centered {
                         left: 50%;
                         .translateAccelerate(-50%;50%);
                     }
                 }
 
-                &.custom {
+                &.plat-custom {
                     bottom: -@height;
                     left: @left;
 
-                    &.activate {
+                    &.plat-activate {
                         bottom: @top;
                     }
 
-                    &.centered {
+                    &.plat-centered {
                         .translateAccelerate(-50%;50%);
                     }
                 }
             }
 
-            &.fade {
+            &.plat-fade {
                 opacity: 0;
                 .transition(@fade-transition);
 
-                &.activate {
+                &.plat-activate {
                     opacity: 1;
                 }
             }
         }
 
-        &.full {
+        &.plat-full {
             width: 100%;
             height: 100%;
         }
 
-        &.halfwidth {
+        &.plat-halfwidth {
             width: 50%;
             height: 100%;
         }
 
-        &.halfheight {
+        &.plat-halfheight {
             width: 100%;
             height: 50%;
         }
 
-        &.half {
+        &.plat-half {
             width: 50%;
             height: 50%;
         }
 
-        &.custom {
+        &.plat-custom {
             width: @width;
             height: @height;
         }
-    }
-
-    &.hide {
-        display: none;
     }
 }

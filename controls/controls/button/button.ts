@@ -187,7 +187,7 @@ module platui {
                 options = optionObj.value || <IButtonOptions>{},
                 style = options.style || 'primary';
 
-            this.dom.addClass(this.element, style);
+            this.dom.addClass(this.element, __Plat + style);
         }
 
         /**
@@ -210,7 +210,7 @@ module platui {
             this.addEventListener(element, __$tap, this._onTap, false);
             this.on(__ButtonPrefix + name, () => {
                 if (this._isSelected) {
-                    dom.removeClass(element, 'selected');
+                    dom.removeClass(element, 'plat-selected');
                     this._isSelected = false;
                 }
             });
@@ -233,7 +233,7 @@ module platui {
             }
 
             var element = this.element;
-            this.dom.addClass(element, 'selected');
+            this.dom.addClass(element, 'plat-selected');
             this.dispatchEvent(__ButtonPrefix + this.groupName, plat.events.EventManager.DIRECT);
             this._isSelected = true;
             this.propertyChanged(element.textContent);
