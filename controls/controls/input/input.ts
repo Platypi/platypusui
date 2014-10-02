@@ -50,11 +50,11 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-input-container">' +
-        '    <div class="plat-input-image"></div>' +
-        '    <input type="text" />' +
-        '    <div class="plat-input-action"></div>' +
-        '</div>';
+        '<div class="plat-input-container">\n' +
+        '    <div class="plat-input-image"></div>\n' +
+        '    <input type="text" />\n' +
+        '    <div class="plat-input-action"></div>\n' +
+        '</div>\n';
 
         /**
          * @name options
@@ -268,7 +268,7 @@
          * @access public
          * 
          * @description
-         * Set all HTMLElement references.
+         * Set all HTMLElement references and potential attribute controls.
          * 
          * @returns {void}
          */
@@ -282,8 +282,6 @@
                 attribute: Attr,
                 $utils = this.$utils,
                 name: string;
-
-            this._actionElement = <HTMLElement>input.nextElementSibling;
 
             for (var i = 0; i < length; ++i) {
                 attribute = attributes[i];
@@ -327,6 +325,7 @@
 
             dom.addClass(element, __Plat + style + ' ' + __Plat + type);
 
+            this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
             if (this.$utils.isString(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);

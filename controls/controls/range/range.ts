@@ -404,25 +404,6 @@
         }
 
         /**
-         * @name setTemplate
-         * @memberof platui.Range
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Grab both knob and slider elements.
-         * 
-         * @returns {void}
-         */
-        setTemplate(): void {
-            var rangeContainer = this.element.firstElementChild,
-                slider = this._slider = <HTMLElement>rangeContainer.firstElementChild;
-
-            this._lowerKnob = <HTMLElement>slider.firstElementChild;
-            this._upperKnob = <HTMLElement>slider.lastElementChild;
-        }
-
-        /**
          * @name loaded
          * @memberof platui.Range
          * @kind function
@@ -435,8 +416,9 @@
          */
         loaded(): void {
             var context = this.context || <IRangeContext>{},
-                dom = this.dom,
                 element = this.element,
+                rangeContainer = element.firstElementChild,
+                slider = this._slider = <HTMLElement>rangeContainer.firstElementChild,
                 $utils = this.$utils,
                 isNumber = $utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
@@ -450,7 +432,9 @@
                 transition = this._transition = options.transition || 'right',
                 Exception: plat.IExceptionStatic;
 
-            dom.addClass(element, __Plat + style + ' ' + __Plat + transition);
+            this._lowerKnob = <HTMLElement>slider.firstElementChild;
+            this._upperKnob = <HTMLElement>slider.lastElementChild;
+            this.dom.addClass(element, __Plat + style + ' ' + __Plat + transition);
 
             // if it's a reversed transition, swap knobs.
             if (transition === 'left' || transition === 'down') {

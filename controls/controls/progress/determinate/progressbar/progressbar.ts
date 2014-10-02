@@ -36,9 +36,9 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-progress-container">' +
-        '    <div class="plat-animated-bar"></div>' +
-        '</div>';
+        '<div class="plat-progress-container">\n' +
+        '    <div class="plat-animated-bar"></div>\n' +
+        '</div>\n';
 
         /**
          * @name _barElement
@@ -102,36 +102,22 @@
         }
 
         /**
-         * @name setTemplate
-         * @memberof platui.ProgressBar
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Grabs the bar element and bar max value.
-         * 
-         * @returns {void}
-         */
-        setTemplate(): void {
-            this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
-        }
-
-        /**
          * @name loaded
          * @memberof platui.ProgressBar
          * @kind function
          * @access public
          * 
          * @description
-         * Checks to make sure the context is correctly set or a plat-bind is being used, 
-         * then does the initial animation of the bar.
+         * Grabs the bar element and bar max value and checks to make sure the context is correctly 
+         * set or a plat-bind is being used, then does the initial animation of the bar.
          * 
          * @returns {void}
          */
         loaded(): void {
-            var context = this.context;
+            var context = this.context,
+                barElement = this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild,
+                bar = this._barMax = barElement.parentElement.offsetWidth;
 
-            var bar = this._barMax = this._barElement.parentElement.offsetWidth;
             if (!bar) {
                 this._setOffsetWithClone();
             }
@@ -175,14 +161,14 @@
          * @returns {void}
          */
         setProgress(value?: number): void {
-            var barValue = value || this.context,
-                barMax = this._barMax || (this._barMax = this._barElement.parentElement.offsetWidth);
-
+            var barValue = value || this.context;
             if (!this.$utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
+                var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
+                Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1');
                 return;
             }
 
-            this._barElement.style.width = Math.ceil(barMax * barValue) + 'px';
+            this._barElement.style.width = Math.ceil(this._barMax * barValue) + 'px';
         }
 
         /**

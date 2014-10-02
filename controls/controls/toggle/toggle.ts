@@ -115,7 +115,7 @@
         }
 
         /**
-         * @name setTemplate
+         * @name loaded
          * @memberof platui.Toggle
          * @kind function
          * @access public
@@ -125,9 +125,9 @@
          * 
          * @returns {void}
          */
-        setTemplate(): void {
+        loaded(): void {
             var element = this.element;
-            this._targetElement = element.firstElementChild;
+            this._targetElement = this._targetElement || element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
         }
 
@@ -200,7 +200,7 @@
             var wasActive = this.isActive,
                 isActive = !wasActive;
 
-            this._activate(this._targetElement);
+            this._activate(this._targetElement || (this._targetElement = this.element.firstElementChild));
             this.isActive = (<HTMLInputElement>this.element).checked = isActive;
             if (setProperty === true) {
                 this.propertyChanged(isActive, wasActive);

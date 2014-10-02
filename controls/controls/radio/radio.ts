@@ -64,6 +64,19 @@
          * Whether the target type has been set already or not.
          */
         _targetTypeSet = true;
+        
+        /**
+         * @name _removeListener
+         * @memberof platui.Radio
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function to stop listening for dispatched group events.
+         */
+        _removeListener: plat.IRemoveListener;
 
         /**
          * @name setClasses
@@ -98,6 +111,8 @@
          */
         loaded(): void {
             var element = this.element;
+            this._targetElement = this._targetElement || element.firstElementChild;
+            this.addEventListener(element, __$tap, this._onTap);
 
             if (element.hasAttribute('name')) {
                 this.groupName = element.getAttribute('name');
@@ -200,10 +215,15 @@
          */
         _toggle(setProperty?: boolean): void {
             super._toggle(setProperty);
+            if (this.$utils.isFunction(this._removeListener)) {
+                this._removeListener();
+                this._removeListener = null;
+            }
+
             if (this.isActive) {
                 var name = this.groupName;
                 this.dispatchEvent(__RadioPrefix + name, plat.events.EventManager.DIRECT);
-                var remover = this.on(__RadioPrefix + name, () => {
+                var remover = this._removeListener = this.on(__RadioPrefix + name, () => {
                     this._toggle();
                     remover();
                 });

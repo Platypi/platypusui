@@ -310,22 +310,6 @@
         }
 
         /**
-         * @name setTemplate
-         * @memberof platui.Slider
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Grab the knob element.
-         * 
-         * @returns {void}
-         */
-        setTemplate(): void {
-            var slider = this._slider = <HTMLElement>this.element.firstElementChild.firstElementChild;
-            this._knob = <HTMLElement>slider.firstElementChild;
-        }
-
-        /**
          * @name loaded
          * @memberof platui.Slider
          * @kind function
@@ -339,6 +323,7 @@
         loaded(): void {
             var dom = this.dom,
                 element = this.element,
+                slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
                 isNumber = this.$utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
                 options = optionObj.value || <ISliderOptions>{},
@@ -349,6 +334,7 @@
                 style = options.style || 'primary',
                 transition = this._transition = options.transition || 'right';
 
+            this._knob = <HTMLElement>slider.firstElementChild;
             dom.addClass(element, __Plat + style + ' ' + __Plat + transition);
 
             var bindValue = this.value,

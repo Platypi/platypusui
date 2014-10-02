@@ -47,7 +47,7 @@
          * @description
          * The HTML template represented as a string.
          */
-        templateString = '<div class="plat-modal-container"></div>';
+        templateString = '<div class="plat-modal-container"></div>\n';
 
         /**
          * @name options

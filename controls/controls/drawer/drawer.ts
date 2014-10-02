@@ -128,30 +128,17 @@
          * @access public
          * 
          * @description
-         * Set the class name and hides the element.
+         * Set the class name and hides the element and 
+         * removes the innerHTML from the DOM and saves it.
          * 
          * @returns {void}
          */
         initialize(): void {
-            this.setClasses();
-        }
-
-        /**
-         * @name setTemplate
-         * @memberof platui.Drawer
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Removes the innerHTML from the DOM and saves it.
-         * 
-         * @returns {void}
-         */
-        setTemplate(): void {
             var childNodes = Array.prototype.slice.call(this.element.childNodes);
             if (childNodes.length > 0) {
                 this.innerTemplate = this.dom.appendChildren(childNodes);
             }
+            this.setClasses();
         }
 
         /**

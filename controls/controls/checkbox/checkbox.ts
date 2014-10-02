@@ -35,9 +35,9 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-checkbox-container">' +
-        '    <span class="plat-mark"></span>' +
-        '</div>';
+        '<div class="plat-checkbox-container">\n' +
+        '    <span class="plat-mark"></span>\n' +
+        '</div>\n';
 
         /**
          * @name options
@@ -97,8 +97,6 @@
          * @returns {void}
          */
         setTemplate(): void {
-            super.setTemplate();
-
             var isNull = this.$utils.isNull,
                 innerTemplate = this.innerTemplate;
 
@@ -141,6 +139,8 @@
          * @returns {void}
          */
         loaded(): void {
+            super.loaded();
+
             var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
                 options = optionObj.value || <ICheckboxOptions>{},
                 previousType = this._targetType,
