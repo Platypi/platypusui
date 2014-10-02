@@ -19,8 +19,9 @@
         border: @border-size solid;
         .border-color(border-color);
         .border-radius(@height);
-        .transition(@transition);
         .box-sizing(content-box);
+        .translateZ(0);
+        .transition(@transition);
            
         @knob-diameter: @height; 
         .plat-knob {
@@ -34,6 +35,7 @@
             .knob-border-color(border-color);
             .border-radius(@knob-diameter);
             .box-sizing(border-box);
+            .translateZ(0);
             .transition(@knob-transition);
         }
 

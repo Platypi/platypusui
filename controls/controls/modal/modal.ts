@@ -241,7 +241,9 @@
                 transition = options.transition,
                 style = isString(options.style) ? options.style.toLowerCase() : 'full';
 
+            this._modalElement = this._modalElement || <HTMLElement>this.element.firstElementChild;
             this.element.setAttribute(__Hide, '');
+            this._loaded = true;
 
             if (!isString(transition) || transition === 'none') {
                 dom.addClass(modalElement, __Plat + style + ' ' + __Plat + 'no-transition');
@@ -278,8 +280,11 @@
          * @returns {void}
          */
         show(): void {
+            var wasHidden = !this._isVisible;
             this._show();
-            this.propertyChanged(true);
+            if (wasHidden) {
+                this.propertyChanged(true);
+            }
         }
 
         /**
@@ -294,8 +299,11 @@
          * @returns {void}
          */
         hide(): void {
+            var wasVisible = this.isVisible;
             this._hide();
-            this.propertyChanged(false);
+            if (wasVisible) {
+                this.propertyChanged(false);
+            }
         }
 
         /**
@@ -349,7 +357,7 @@
          * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any): void {
-            if (!this.loaded) {
+            if (!this._loaded) {
                 this._preloadedValue = newValue;
                 return;
             }
@@ -381,7 +389,7 @@
          * @returns {void}
          */
         _show(): void {
-            this.element.setAttribute(__Hide, '');
+            this.element.removeAttribute(__Hide);
             this.$utils.defer(() => {
                 this.dom.addClass(this._modalElement, __Plat + 'activate');
             }, 25);
@@ -401,13 +409,13 @@
          * @returns {void}
          */
         _hide(): void {
-            this.dom.removeClass(this._modalElement, __Plat + 'activate');
             if (this.$utils.isString(this._transitionEnd)) {
                 this._addHideOnTransitionEnd();
             } else {
-                this.element.removeAttribute(__Hide);
+                this.element.setAttribute(__Hide, '');
             }
 
+            this.dom.removeClass(this._modalElement, __Plat + 'activate');
             this._isVisible = false;
         }
 

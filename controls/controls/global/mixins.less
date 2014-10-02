@@ -576,6 +576,13 @@
     .transform(translate(@x, @y), @vendorList);
 }
 
+.translateZ(@z) {
+    .transform(translateZ(@z));
+}
+.translateZ(@z; @vendorList: @webMozMsList) when (default()) {
+    .transform(translateZ(@z), @vendorList);
+}
+
 .translate3d(@x; @y; @z) {
     .transform(translate3d(@x, @y, @z));
 }

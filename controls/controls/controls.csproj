@@ -53,6 +53,7 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="button\button.ts" />
+    <TypeScriptCompile Include="carousel\carousel.ts" />
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
     <TypeScriptCompile Include="drawer\drawer.ts" />
     <TypeScriptCompile Include="input\input.ts" />
@@ -85,6 +86,18 @@
     </Content>
     <Content Include="button\button.variables.min.css">
       <DependentUpon>button.variables.css</DependentUpon>
+    </Content>
+    <Content Include="carousel\carousel.css">
+      <DependentUpon>carousel.less</DependentUpon>
+    </Content>
+    <Content Include="carousel\carousel.min.css">
+      <DependentUpon>carousel.css</DependentUpon>
+    </Content>
+    <Content Include="carousel\carousel.variables.css">
+      <DependentUpon>carousel.variables.less</DependentUpon>
+    </Content>
+    <Content Include="carousel\carousel.variables.min.css">
+      <DependentUpon>carousel.variables.css</DependentUpon>
     </Content>
     <Content Include="checkbox\checkbox.css">
       <DependentUpon>checkbox.less</DependentUpon>
@@ -383,6 +396,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="range\range.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="carousel\carousel.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="carousel\carousel.variables.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

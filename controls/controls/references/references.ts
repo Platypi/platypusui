@@ -27,6 +27,7 @@ var __Promise = '$Promise',
     __Range = __Plat + 'range',
     __Select = __Plat + 'select',
     __Input = __Plat + 'input',
+    __Carousel = __Plat + 'carousel',
 
     /**
      * Referenced Controls / Vars

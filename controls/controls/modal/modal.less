@@ -70,6 +70,7 @@
 
         &.plat-modal-transition {
             &.plat-right {
+                .translateZ(0);
                 .transition(@right-transition);
 
                 &.plat-full {
@@ -139,6 +140,7 @@
             }
 
             &.plat-left {
+                .translateZ(0);
                 .transition(@left-transition);
 
                 &.plat-full {
@@ -208,6 +210,7 @@
             }
 
             &.plat-down {
+                .translateZ(0);
                 .transition(@down-transition);
 
                 &.plat-full {
@@ -277,9 +280,10 @@
             }
 
             &.plat-up {
+                .translateZ(0);
                 .transition(@up-transition);
 
-                &.full {
+                &.plat-full {
                     bottom: -100%;
                     left: 0;
 
