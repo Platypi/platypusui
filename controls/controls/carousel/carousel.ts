@@ -677,11 +677,17 @@
          */
         _setOffsetWithClone(): void {
             var element = this.element,
-                clone = <HTMLElement>element.cloneNode(true),
+                body = this.$document.body;
+
+            if (!body.contains(element)) {
+                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                return;
+            }
+
+            var clone = <HTMLElement>element.cloneNode(true),
                 style = clone.style,
                 regex = /\d+(?!\d+|%)/,
                 $window = this.$window,
-                body = this.$document.body,
                 width: string;
 
             while (!regex.test(width = $window.getComputedStyle(element).width)) {

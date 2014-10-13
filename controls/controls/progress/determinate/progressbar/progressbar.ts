@@ -184,12 +184,18 @@
          */
         _setOffsetWithClone(): void {
             var element = this.element,
-                clone = <HTMLElement>element.cloneNode(true),
+                $document: Document = plat.acquire(__Document),
+                body = $document.body;
+
+            if (!body.contains(element)) {
+                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                return;
+            }
+
+            var clone = <HTMLElement>element.cloneNode(true),
                 style = clone.style,
                 regex = /\d+(?!\d+|%)/,
                 $window: Window = plat.acquire(__Window),
-                $document: Document = plat.acquire(__Document),
-                body = $document.body,
                 width: string;
 
             while (!regex.test(width = $window.getComputedStyle(element).width)) {
