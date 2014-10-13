@@ -310,7 +310,7 @@
          * @type {string}
          * 
          * @description
-         * Denotes whether we're using height or width as the length of the slider.
+         * Denotes whether we're using height or width as the length of the sliding element.
          */
         _lengthProperty: string;
 
@@ -323,7 +323,7 @@
          * @type {string}
          * 
          * @description
-         * Denotes whether we're using left, right, top, or bottom as the position of the slider.
+         * Denotes whether we're using left, right, top, or bottom as the position of the sliding element.
          */
         _positionProperty: string;
 
@@ -1018,11 +1018,11 @@
          * @access protected
          * 
          * @description
-         * Sets the properties to use for length and position and sets the max length of the slider.
+         * Sets the properties to use for length and position and sets the max length of the sliding element.
          * 
-         * @param {string} transition The control's transition direction.
+         * @param {HTMLElement} element? The element to base the length off of.
          * 
-         * @returns {number} The length of the slider.
+         * @returns {number} The length of the sliding element.
          */
         _setPositionAndLength(element?: HTMLElement): number {
             element = element || this._slider.parentElement;

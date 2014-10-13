@@ -14013,7 +14013,7 @@ module plat {
                 withCredentials: false,
                 timeout: null,
                 jsonpIdentifier: 'callback',
-                contentType: 'application/json;charset=utf-8;'
+                contentType: 'application/json;charset=utf-8'
             };
 
             /**
@@ -23634,6 +23634,60 @@ module plat {
              * The event name.
              */
             event: string = 'keydown';
+
+            /**
+             * @name cancelEvent
+             * @memberof plat.controls.KeyDown
+             * @kind property
+             * @access public
+             * 
+             * @type {plat.IRemoveListener}
+             * 
+             * @description
+             * The a method to remove the currently postponed event.
+             */
+            cancelEvent: IRemoveListener = noop;
+
+            /**
+             * @name _onEvent
+             * @memberof plat.controls.KeyDown
+             * @kind function
+             * @access protected
+             * 
+             * @description
+             * Delays execution of the event
+             * 
+             * @param {KeyboardEvent} ev The KeyboardEvent object.
+             * 
+             * @returns {void}
+             */
+            _onEvent(ev: KeyboardEvent): void {
+                var keyCode = ev.keyCode;
+
+                if ((keyCode >= 48 && keyCode <= 90) ||
+                    (keyCode >= 186) ||
+                    (keyCode >= 96 && keyCode <= 111)) {
+                    this.cancelEvent = postpone(() => {
+                        super._onEvent(ev);
+                    });
+                }
+            }
+
+            /**
+             * @name dispose
+             * @memberof plat.controls.KeyDown
+             * @kind function
+             * 
+             * @description
+             * Calls to cancel an event if it is in progress.
+             * 
+             * @returns {void}
+             */
+            dispose() {
+                this.cancelEvent();
+
+                this.cancelEvent = null;
+            }
         }
 
         /**
@@ -23661,6 +23715,19 @@ module plat {
             event: string = 'keydown';
 
             /**
+             * @name cancelEvent
+             * @memberof plat.controls.KeyPress
+             * @kind property
+             * @access public
+             * 
+             * @type {plat.IRemoveListener}
+             * 
+             * @description
+             * The a method to remove the currently postponed event.
+             */
+            cancelEvent: IRemoveListener = noop;
+
+            /**
              * @name _onEvent
              * @memberof plat.controls.KeyPress
              * @kind function
@@ -23679,8 +23746,26 @@ module plat {
                 if ((keyCode >= 48 && keyCode <= 90) ||
                     (keyCode >= 186) ||
                     (keyCode >= 96 && keyCode <= 111)) {
-                    super._onEvent(ev);
+                    this.cancelEvent = postpone(() => {
+                        super._onEvent(ev);
+                    });
                 }
+            }
+
+            /**
+             * @name dispose
+             * @memberof plat.controls.KeyPress
+             * @kind function
+             * 
+             * @description
+             * Calls to cancel an event if it is in progress.
+             * 
+             * @returns {void}
+             */
+            dispose() {
+                this.cancelEvent();
+
+                this.cancelEvent = null;
             }
         }
 
@@ -28706,6 +28791,23 @@ module plat {
              * @returns {Array<Node>} An Array copy of the fragment's childNodes.
              */
             insertBefore(parent: Node, fragment: DocumentFragment, endNode?: Node): Array<Node>;
+            /**
+             * @name insertBefore
+             * @memberof plat.ui.Dom
+             * @kind function
+             * @access public
+             * @variation 3
+             * 
+             * @description
+             * Inserts a Node before the designated end Node.
+             * 
+             * @param {Node} parent The parent node into which to insert nodes.
+             * @param {Node} node The Node to insert into the parent.
+             * @param {Node} endNode? An optional endNode to use to insert nodes.
+             * 
+             * @returns {Array<Node>} An Array copy of the fragment's childNodes.
+             */
+            insertBefore(parent: Node, node: Node, endNode?: Node): Array<Node>;
             insertBefore(parent: Node, nodes: any, endNode?: Node): Array<Node> {
                 return insertBefore(parent, nodes, endNode);
             }
@@ -29200,6 +29302,23 @@ module plat {
              * @returns {Array<Node>} An Array copy of the fragment's childNodes.
              */
             insertBefore(parent: Node, fragment: DocumentFragment, endNode?: Node): Array<Node>;
+            /**
+             * @name insertBefore
+             * @memberof plat.ui.IDom
+             * @kind function
+             * @access public
+             * @variation 3
+             * 
+             * @description
+             * Inserts a Node before the designated end Node.
+             * 
+             * @param {Node} parent The parent node into which to insert nodes.
+             * @param {Node} node The Node to insert into the parent.
+             * @param {Node} endNode? An optional endNode to use to insert nodes.
+             * 
+             * @returns {Array<Node>} An Array copy of the fragment's childNodes.
+             */
+            insertBefore(parent: Node, node: Node, endNode?: Node): Array<Node>;
 
             /**
              * @name replace
@@ -31669,22 +31788,22 @@ module plat {
                         'touch-action: manipulation'
                     ]
                 }, {
-                    /**
-                     * The className that will be used to define the custom style for 
-                     * blocking touch action scrolling, zooming, etc on the element.
-                     */
-                    className: 'plat-no-touch-action',
-                    /**
-                     * An array of string styles that block touch action scrolling, zooming, etc. 
-                     * Primarily useful on elements such as a canvas.
-                     * In the format 'CSS identifier: value'
-                     * (e.g. 'width : 100px')
-                     */
-                    styles: [
-                        '-ms-touch-action: none',
-                        'touch-action: none'
-                    ]
-                }]
+                        /**
+                         * The className that will be used to define the custom style for 
+                         * blocking touch action scrolling, zooming, etc on the element.
+                         */
+                        className: 'plat-no-touch-action',
+                        /**
+                         * An array of string styles that block touch action scrolling, zooming, etc. 
+                         * Primarily useful on elements such as a canvas.
+                         * In the format 'CSS identifier: value'
+                         * (e.g. 'width : 100px')
+                         */
+                        styles: [
+                            '-ms-touch-action: none',
+                            'touch-action: none'
+                        ]
+                    }]
             };
 
             /**
@@ -32415,8 +32534,7 @@ module plat {
                 this.__hasMoved = false;
 
                 if ((this.__touchCount = ev.touches.length) > 1) {
-                    ev.preventDefault();
-                    return false;
+                    return;
                 }
 
                 this.__registerType(this.__MOVE);
@@ -32486,8 +32604,7 @@ module plat {
                 // return immediately if there are multiple touches present, or 
                 // if it is a mouse event and currently in a touch
                 if (this.__touchCount > 1 || (this._inTouch === true && ev.type === 'mousemove')) {
-                    ev.preventDefault();
-                    return false;
+                    return;
                 }
 
                 this.__standardizeEventObject(ev);
@@ -32514,7 +32631,7 @@ module plat {
 
                 var lastMove = this.__lastMoveEvent,
                     direction = ev.direction = isNull(lastMove) ? this.__getDirection(x - lastX, y - lastY) :
-                        this.__getDirection(x - lastMove.clientX, y - lastMove.clientY);
+                    this.__getDirection(x - lastMove.clientX, y - lastMove.clientY);
 
                 if (this.__checkForOriginChanged(direction)) {
                     ev.preventDefault();
@@ -32549,19 +32666,17 @@ module plat {
              */
             _onTouchEnd(ev: IPointerEvent): boolean {
                 var eventType = ev.type,
-                    hasMoved = this.__hasMoved,
-                    inTouch = this._inTouch;
+                    hasMoved = this.__hasMoved;
 
                 // return immediately if there were multiple touches present
                 if (this.__touchCount > 1) {
-                    ev.preventDefault();
-                    if (eventType === 'touchend') {
+                    if (this.__touchCount && eventType === 'touchend') {
                         this.__preventClickFromTouch();
                     }
-                    return false;
-                }
 
-                if (eventType !== 'mouseup') {
+                    this.__resetTouchEnd();
+                    return;
+                } else if (eventType !== 'mouseup') {
                     if (eventType === 'touchend') {
                         var target = <HTMLInputElement>ev.target;
                         if (hasMoved) {
@@ -32571,13 +32686,14 @@ module plat {
                             this.__preventClickFromTouch();
                         } else {
                             ev.preventDefault();
-                            if (inTouch === true) {
+                        if (this._inTouch === true) {
                                 this.__handleInput(target);
                             }
                         }
-                        this._inTouch = false;
                     }
-                } else if (!isUndefined(inTouch)) {
+
+                    this._inTouch = false;
+                } else if (!isUndefined(this._inTouch)) {
                     ev.preventDefault();
                     return false;
                 }
@@ -32592,19 +32708,12 @@ module plat {
 
                 this.__standardizeEventObject(ev);
 
-                // check for cancel event,
-                if (this.__cancelRegex.test(eventType)) {
-                    this.__tapCount = 0;
-                    this.__hasRelease = false;
-                    this.__hasSwiped = false;
+                // check for cancel event, or return if the touch count was greater than 0 
+                // (should potentially only happen with pointerevents), else 
+                // handle release
+                if (this.__cancelRegex.test(eventType) || ev.touches.length > 0) {
+                    this.__resetTouchEnd();
                     return true;
-                }
-
-                // return if the touch count was greater than 0 (should only happen with pointerevents), 
-                // or handle release
-                if (ev.touches.length > 0) {
-                    ev.preventDefault();
-                    return false;
                 } else if (this.__hasRelease) {
                     this.__handleRelease(ev);
                 }
@@ -32653,6 +32762,24 @@ module plat {
                 return true;
             }
 
+            /**
+             * @name __resetTouchEnd
+             * @memberof plat.ui.DomEvents
+             * @kind function
+             * @access private
+             *
+             * @description
+             * A function for resetting all values potentially modified during the touch event sequence.
+             *
+             * @returns {void}
+             */
+            private __resetTouchEnd(): void {
+                this.__tapCount = 0;
+                this._inTouch = this.__hasRelease = this.__hasSwiped = false;
+                this.__pointerHash = {};
+                this.__pointerEvents = [];
+            }
+
             // gesture handling methods
 
             /**
@@ -32660,12 +32787,12 @@ module plat {
              * @memberof plat.ui.DomEvents
              * @kind function
              * @access private
-             * 
+             *
              * @description
              * A function for handling and firing tap events.
-             * 
+             *
              * @param {plat.ui.IPointerEvent} ev The touch end event object.
-             * 
+             *
              * @returns {void}
              */
             private __handleTap(ev: IPointerEvent): void {

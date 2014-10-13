@@ -623,7 +623,7 @@
          * @description
          * Sets the property to use for length and sets the max length of the slider.
          * 
-         * @param {HTMLElement} element The element to use to obtain the max length.
+         * @param {HTMLElement} element? The element to use to obtain the max length.
          * 
          * @returns {number} The length of the slider.
          */

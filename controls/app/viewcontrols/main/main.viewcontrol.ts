@@ -12,7 +12,8 @@ module app {
             test3: '',
             lower: 10,
             upper: 90,
-            show: false
+            show: false,
+            carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }]
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;

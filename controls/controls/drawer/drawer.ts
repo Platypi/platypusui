@@ -1505,7 +1505,7 @@
          * @access protected
          * 
          * @description
-         * Adds primary and secondary tracking events to the controller element.
+         * Adds primary and secondary tracking events to the {@link platui.DrawerController|DrawerController} element.
          * 
          * @param {string} transition The transition direction of opening for the {@link platui.Drawer|Drawer}.
          * 
