@@ -275,6 +275,34 @@
         _lengthProperty: string;
 
         /**
+         * @name _cloneAttempts
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current number of times we checked to see if the element was placed into the DOM. 
+         * Used for determining max offset width.
+         */
+        _cloneAttempts = 0;
+
+        /**
+         * @name _maxCloneCount
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * Used for determining max offset width.
+         */
+        _maxCloneAttempts = 25;
+
+        /**
          * @name setClasses
          * @memberof platui.Slider
          * @kind function
@@ -734,9 +762,17 @@
                 body = this.$document.body;
 
             if (!body.contains(element)) {
+                var cloneAttempts = ++this._cloneAttempts;
+                if (cloneAttempts === this._maxCloneAttempts) {
+                    (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
+                    return;
+                }
+
                 this.$utils.postpone(this._setOffsetWithClone, null, this);
                 return;
             }
+
+            this._cloneAttempts = 0;
 
             var clone = <HTMLElement>element.cloneNode(true),
                 style = clone.style,

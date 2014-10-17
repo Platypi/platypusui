@@ -28,11 +28,13 @@ var __Promise = '$Promise',
     __Select = __Plat + 'select',
     __Input = __Plat + 'input',
     __Carousel = __Plat + 'carousel',
+    __TemplateControlFactory = '$TemplateControlFactory',
 
     /**
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
+    __Hidden = __Plat + 'hidden',
     __Checked = __Plat + 'checked',
     __CamelChecked = 'platChecked',
     __Context = __Plat + 'context',

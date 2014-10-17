@@ -1042,9 +1042,7 @@
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element,
-                $utils = this.$utils,
-                optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
+            var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
                 transition = options.transition,
                 id = options.id || '';

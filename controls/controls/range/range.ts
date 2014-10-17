@@ -341,6 +341,34 @@
         _isSelf = false;
 
         /**
+         * @name _cloneAttempts
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current number of times we checked to see if the element was placed into the DOM. 
+         * Used for determining max offset width.
+         */
+        _cloneAttempts = 0;
+
+        /**
+         * @name _maxCloneCount
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * Used for determining max offset width.
+         */
+        _maxCloneAttempts = 25;
+
+        /**
          * @name setClasses
          * @memberof platui.Range
          * @kind function
@@ -720,8 +748,7 @@
          * @returns {number} The new lower offset.
          */
         _setLowerOffset(offset: number): number {
-            var maxOffset = this._maxOffset || this._setPositionAndLength(),
-                upperOffset = this._upperKnobOffset;
+            var upperOffset = this._upperKnobOffset;
 
             if (offset < 0) {
                 return (this._lowerKnobOffset = 0);
@@ -772,8 +799,7 @@
          * @returns {void}
          */
         _trackLower(ev: plat.ui.IGestureEvent): void {
-            var maxOffset = this._maxOffset,
-                upperOffset = this._upperKnobOffset,
+            var upperOffset = this._upperKnobOffset,
                 position = this._calculateOffset(ev, true),
                 setValue = true,
                 value: number;
@@ -1114,9 +1140,17 @@
                 body = this.$document.body;
 
             if (!body.contains(element)) {
+                var cloneAttempts = ++this._cloneAttempts;
+                if (cloneAttempts === this._maxCloneAttempts) {
+                    (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
+                    return;
+                }
+
                 this.$utils.postpone(this._setOffsetWithClone, null, this);
                 return;
             }
+
+            this._cloneAttempts = 0;
 
             var clone = <HTMLElement>element.cloneNode(true),
                 style = clone.style,
