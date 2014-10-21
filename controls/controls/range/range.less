@@ -16,12 +16,14 @@
         background-color: @background-color;
         overflow: visible;
         .calc(height; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
+        .border-radius(@fill-border-radius);
         .box-sizing(content-box);
 
         .plat-slider-offset {
             position: absolute;
             background-color: @fill-color;
             overflow: visible;
+            .border-radius(@fill-border-radius);
             .box-sizing(content-box);
 
             .plat-lower-knob,
@@ -43,7 +45,8 @@
             }
         }
     }
-
+    
+    @half-thickness: @thickness / 2;
     &.plat-right,
     &.plat-left {
         height: max(@lower-knob-diameter, @upper-knob-radius);
@@ -59,12 +62,12 @@
                 height: 100%;
 
                 .plat-lower-knob {
-                    top: -@lower-knob-radius;
+                    .calc(top, '@{half-thickness} - @{lower-knob-radius}');
                     left: -@lower-knob-radius;
                 }
 
                 .plat-upper-knob {
-                    top: -@upper-knob-radius;
+                    .calc(top, '@{half-thickness} - @{upper-knob-radius}');
                     right: -@upper-knob-radius;
                 }
             }
@@ -107,12 +110,12 @@
                 height: 0;
 
                 .plat-lower-knob {
-                    left: -@lower-knob-radius;
+                    .calc(left, '@{half-thickness} - @{lower-knob-radius}');
                     bottom: -@lower-knob-radius;
                 }
 
                 .plat-upper-knob {
-                    left: -@upper-knob-radius;
+                    .calc(left, '@{half-thickness} - @{upper-knob-radius}');
                     top: -@upper-knob-radius;
                 }
             }
