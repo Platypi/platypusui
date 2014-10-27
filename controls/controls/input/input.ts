@@ -278,6 +278,7 @@
                 input = this._inputElement = <HTMLInputElement>image.nextElementSibling,
                 attributes = element.attributes,
                 length = attributes.length,
+                hasPlaceholder = false,
                 attrRegex = /plat-(?!control|hide|options)/,
                 attribute: Attr,
                 $utils = this.$utils,
@@ -294,7 +295,14 @@
                     }
                 } else if (name === 'type') {
                     this._type = attribute.value;
+                } else if (name === 'placeholder') {
+                    input.placeholder = attribute.value;
+                    hasPlaceholder = true;
                 }
+            }
+
+            if (hasPlaceholder) {
+                return;
             }
 
             var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
@@ -320,7 +328,7 @@
                 dom = this.dom,
                 element = this.element,
                 style = options.style || 'primary',
-                type = this._type = options.type || this._type || 'text',
+                type = this._type = this._type || options.type || 'text',
                 pattern = options.pattern;
 
             dom.addClass(element, __Plat + style + ' ' + __Plat + type);
@@ -900,6 +908,9 @@
                         }
                         this.propertyChanged((this._inputElement.value = ''), value);
                     }
+                    break;
+                default:
+                    this._inputElement.value = value;
                     break;
             }
         }

@@ -3,7 +3,7 @@ module app {
         title = 'Main';
         templateUrl = 'viewcontrols/main/main.viewcontrol.html';
         context = {
-            text: <string>null,
+            text: <string>'test',
             password: <string>null,
             test: <any>null,
             check: true,

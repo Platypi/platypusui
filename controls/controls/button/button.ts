@@ -183,11 +183,16 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
+            var element = this.element,
+                optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
                 options = optionObj.value || <IButtonOptions>{},
                 style = options.style || 'primary';
 
-            this.dom.addClass(this.element, __Plat + style);
+            this.dom.addClass(element, __Plat + style);
+            if (element.hasAttribute('type')) {
+                return;
+            }
+            (<HTMLButtonElement>element).type = options.type || 'button';
         }
 
         /**
@@ -271,5 +276,23 @@ module platui {
          * - "cancel"
          */
         style?: string;
+        /**
+         * @name type
+         * @memberof platui.IButtonOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * Indicates the behavior of the {@link platui.Button|Button}.
+         * Defaults to "button".
+         * 
+         * @remarks
+         * - "button" - does nothing
+         * - "submit" - submits the form
+         * - "reset" - resets the form
+         */
+        type?: string;
     }
 }
