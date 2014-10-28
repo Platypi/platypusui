@@ -11977,16 +11977,19 @@ module plat {
                 AttributeControl.dispose(ctrl);
                 return;
             } else if (ctrl.hasOwnContext) {
-                ui.ViewControl.dispose(ctrl);
+                ui.BaseViewControl.dispose(ctrl);
                 return;
             } else if (ctrl.controls) {
                 ui.TemplateControl.dispose(ctrl);
                 return;
             }
 
+            if (isFunction(control.dispose)) {
+                control.dispose();
+            }
+
             Control.removeEventListeners(control);
             Control.$ContextManagerStatic.dispose(control);
-            control.dispose();
             control.element = null;
             Control.removeParent(control);
         }
@@ -22623,9 +22626,13 @@ module plat {
 
                     if (awaitContext) {
                         this.contextPromise = new this.$Promise<void>((resolve, reject) => {
-                            contextManager.observe(absoluteContextPath, {
+                            var removeListener = contextManager.observe(absoluteContextPath, {
                                 uid: uiControl.uid,
                                 listener: (newValue, oldValue) => {
+                                    if (isUndefined(newValue)) {
+                                        return;
+                                    }
+                                    removeListener();
                                     uiControl.context = newValue;
                                     this._beforeLoad(uiControl, absoluteContextPath);
                                     resolve();

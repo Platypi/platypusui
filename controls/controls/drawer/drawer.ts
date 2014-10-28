@@ -71,9 +71,9 @@
          * @type {platui.DrawerController}
          * 
          * @description
-         * A reference to the {@link platui.DrawerController|DrawerController} used to control this {@link platui.Drawer|Drawer}.
+         * A reference to all the {@link platui.DrawerController|DrawerController} used to control this {@link platui.Drawer|Drawer}.
          */
-        _controller: DrawerController;
+        _controllers: Array<DrawerController> = [];
 
         /**
          * @name _loaded
@@ -201,7 +201,7 @@
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         open(): plat.ui.animations.IAnimationThenable<void> {
-            var controller = this._controller;
+            var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
             } else if (!this._useContext) {
@@ -231,7 +231,7 @@
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         close(): plat.ui.animations.IAnimationThenable<void> {
-            var controller = this._controller;
+            var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
             } else if (!this._useContext) {
@@ -261,7 +261,7 @@
          * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
         toggle(): plat.ui.animations.IAnimationThenable<void> {
-            var controller = this._controller;
+            var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
             } else if (!this._useContext) {
@@ -293,7 +293,7 @@
          * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
          */
         reset(): plat.ui.animations.IAnimationThenable<void> {
-            var controller = this._controller;
+            var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
             } else if (!this._useContext) {
@@ -324,7 +324,7 @@
          * @returns {boolean} Whether or not the {@link platui.Drawer|Drawer} is currently open.
          */
         isOpen(): boolean {
-            var controller = this._controller;
+            var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
             }
@@ -339,9 +339,9 @@
          * @access public
          * 
          * @description
-         * Binds the added HTML template to this control's inherited context.
+         * Adds and binds the added HTML template to this control's inherited context.
          * 
-         * @param {string} name The template name to bind.
+         * @param {string} name The template name to both add and bind.
          * @param {Node} node The node to add as a bindable template.
          * 
          * @returns {void}
@@ -358,7 +358,7 @@
 
         /**
          * @name setProperty
-         * @memberof platui.Input
+         * @memberof platui.Drawer
          * @kind function
          * @access public
          * 
@@ -376,7 +376,7 @@
             }
 
             var $utils = this.$utils,
-                controller = this._controller;
+                controller = this._controllers[0];
 
             if ($utils.isBoolean(newValue) && !$utils.isNull(controller)) {
                 if (newValue) {
@@ -391,6 +391,47 @@
                     controller.close();
                 }
             }
+        }
+
+        /**
+         * @name controllerCount
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Returns the number of {@link platui.DrawerController|DrawerControllers} linked to this 
+         * {@link platui.Drawer|Drawer}.
+         * 
+         * @returns {number} The {@link platui.DrawerController|DrawerController} count.
+         */
+        controllerCount(): number {
+            return this._controllers.length;
+        }
+
+        /**
+         * @name spliceController
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Removes a specified {@link platui.DrawerController|DrawerController} from this control's Array of 
+         * linked {@link platui.DrawerController|DrawerControllers}.
+         * 
+         * @param {platui.DrawerController} controller The {@link platui.DrawerController|DrawerController} 
+         * to splice.
+         * 
+         * @returns {void}
+         */
+        spliceController(controller: DrawerController): void {
+            var controllers = this._controllers,
+                index = controllers.indexOf(controller);
+            if (index === -1) {
+                return;
+            }
+
+            controllers.splice(index, 1);
         }
 
         /**
@@ -439,18 +480,24 @@
         _initializeEvents(id: string, transition: string, isElastic: boolean): void {
             var $utils = this.$utils,
                 isString = $utils.isString,
+                isNull = $utils.isNull,
                 innerTemplate = this.innerTemplate,
                 useContext = this._useContext,
                 DIRECT = plat.events.EventManager.DIRECT;
 
             this.on(__DrawerControllerFetchEvent + '_' + id,
                 (event: plat.events.IDispatchEventInstance, controllerArg: IDrawerHandshakeEvent) => {
+                    var control = controllerArg.control;
+                    if (isNull(control)) {
+                        return;
+                    }
+
                     if (isString(controllerArg.transition)) {
                         transition = controllerArg.transition;
                         this._changeDirection(transition);
                     }
 
-                    this._controller = controllerArg.control;
+                    this._controllers.unshift(control);
 
                     if (!controllerArg.received) {
                         this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
@@ -489,7 +536,7 @@
             if (this._preloadedValue) {
                 var $utils = this.$utils;
                 $utils.postpone(() => {
-                    var controller = this._controller;
+                    var controller = this._controllers[0];
                     if (!$utils.isNull(controller)) {
                         controller.open();
                     }
@@ -863,6 +910,20 @@
         _openTrackRemover: plat.IRemoveListener;
 
         /**
+         * @name _disposeRemover
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the listener for responding to other {@link platui.DrawerController|DrawerControllers} 
+         * being disposed.
+         */
+        _disposeRemover: plat.IRemoveListener = () => { };
+
+        /**
          * @name _rootElement
          * @memberof platui.DrawerController
          * @kind property
@@ -1067,16 +1128,44 @@
          * @returns {void}
          */
         dispose(): void {
+            var $utils = this.$utils,
+                drawer = this._drawer;
+            if ($utils.isNull(drawer)) {
+                return;
+            }
+
+            drawer.spliceController(this);
+            if (drawer.controllerCount() > 0) {
+                return;
+            }
+
             var storedStyle = this._rootElementStyle,
                 rootElement = this._rootElement,
-                $utils = this.$utils;
+                disposeRootElement = true;
 
-            this.dom.removeClass(rootElement, 'plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+            this._disposeRemover();
+            this.on(__DrawerControllerDisposingFound, (ev: plat.events.IDispatchEventInstance, otherRoot: HTMLElement) => {
+                if (!disposeRootElement) {
+                    return;
+                }
 
-            if (this.$utils.isObject(storedStyle)) {
-                var rootElementStyle = this._rootElement.style;
-                $utils.extend(rootElementStyle, storedStyle);
-            }
+                disposeRootElement = rootElement !== otherRoot;
+            });
+
+            $utils.defer(() => {
+                if (!disposeRootElement) {
+                    return;
+                }
+
+                this.dom.removeClass(rootElement, 'plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+
+                if ($utils.isObject(storedStyle)) {
+                    var rootElementStyle = this._rootElement.style;
+                    $utils.extend(rootElementStyle, storedStyle);
+                }
+            }, 25);
+
+            this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
         }
 
         /**
@@ -1915,6 +2004,9 @@
 
             this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this._directionalTransitionPrep = 'plat-drawer-transition-' + transition;
+            this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
+                this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
+            });
 
             return true;
         }
@@ -2134,7 +2226,7 @@
          * @type {boolean}
          * 
          * @description
-         * A boolean value specifying whether the is being reciprocated.
+         * A boolean value specifying whether the handshake is being reciprocated.
          */
         received?: boolean;
         /**

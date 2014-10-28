@@ -58,7 +58,9 @@ var __Promise = '$Promise',
     __RadioPrefix = '__plat-radio-',
     __DrawerControllerInitEvent = '__platDrawerControllerInit',
     __DrawerControllerFetchEvent = '__platDrawerControllerFetch',
-    __DrawerFoundEvent = '__platDrawerFound';
+    __DrawerFoundEvent = '__platDrawerFound',
+    __DrawerControllerDisposing = '__platDrawerControllerDisposing',
+    __DrawerControllerDisposingFound = '__platDrawerControllerDisposingFound';
 /* tslint:enable:no-unused-variable */
 
 module platui {
