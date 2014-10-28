@@ -2002,7 +2002,12 @@
                 return false;
             }
 
-            this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
+            var dom = this.dom,
+                transitionPrep = 'plat-drawer-transition-prep';
+            if (!dom.hasClass(rootElement, transitionPrep)) {
+                dom.addClass(rootElement, transitionPrep);
+            }
+
             this._directionalTransitionPrep = 'plat-drawer-transition-' + transition;
             this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
