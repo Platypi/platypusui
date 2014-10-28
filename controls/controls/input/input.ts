@@ -186,6 +186,19 @@
          * Whether the user is currently touching the screen.
          */
         _inTouch = false;
+        
+        /**
+         * @name _inAction
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the user is currently in the process of performing the {@link platui.Input|Input's} action.
+         */
+        _inAction = false;
 
         /**
          * @name _usingBind
@@ -527,10 +540,45 @@
             }
 
             this._inputElement.type = type;
-
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
-            this.addEventListener(actionElement, event, this._typeHandler);
+            this._addEventListeners(event);
+        }
+        
+        /**
+         * @name _addEventListeners
+         * @memberof platui.Input
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all event listeners to the input and action element.
+         * 
+         * @param {string} event The primary action element's event.
+         * 
+         * @returns {void}
+         */
+        _addEventListeners(event: string): void {
+            var actionElement = this._actionElement,
+                input = this._inputElement,
+                actionEnd = () => (this._inAction = false);
+
+            this.addEventListener(actionElement, event, this._typeHandler, false);
+            this.addEventListener(actionElement, __$touchstart, () => (this._inAction = true), false);
+            this.addEventListener(actionElement, __$touchend, actionEnd, false);
+            this.addEventListener(actionElement, __$trackend, actionEnd, false);
+            this.addEventListener(input, 'focus', () => {
+                if (input.value === '') {
+                    return;
+                }
+                actionElement.removeAttribute(__Hide);
+            }, false);
+            this.addEventListener(input, 'blur', (ev: Event) => {
+                if (this._inAction) {
+                    return;
+                }
+                actionElement.setAttribute(__Hide, '');
+            }, false);
 
             if (this._usingBind) {
                 this._checkInput(this._preloadedValue);
@@ -913,6 +961,9 @@
                     this._inputElement.value = value;
                     break;
             }
+
+            this._actionHandler();
+            this._actionElement.setAttribute(__Hide, '');
         }
     }
 
