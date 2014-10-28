@@ -301,7 +301,7 @@
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, __Carousel + ' ' + (className || ''));
         }
-        
+
         /**
          * @name contextChanged
          * @memberof platui.Carousel
@@ -380,7 +380,7 @@
             this._init(options.transition || 'horizontal');
             this._loaded = true;
         }
-        
+
         /**
          * @name goToNext
          * @memberof platui.Carousel
@@ -426,7 +426,7 @@
             this.$animator.animate(this._slider, __Transition, animationOptions);
             this._index--;
         }
-        
+
         /**
          * @name goToIndex
          * @memberof platui.Carousel
@@ -448,7 +448,7 @@
 
             this._index = index;
         }
-        
+
         /**
          * @name reset
          * @memberof platui.Carousel
@@ -498,7 +498,7 @@
             this._slider = <HTMLElement>this.element.firstElementChild;
             this._addEventListeners(transition);
         }
-        
+
         /**
          * @name _addEventListeners
          * @memberof platui.Carousel
@@ -768,7 +768,7 @@
          * - "vertical"
          */
         transition?: string;
-        
+
         /**
          * @name index
          * @memberof platui.ICarouselOptions
