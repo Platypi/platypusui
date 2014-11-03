@@ -7127,7 +7127,7 @@ module plat {
          * sending AJAX requests to a server. This class does not support 
          * synchronous requests.
          */
-        class HttpRequest implements IHttpRequest {
+        export class HttpRequest implements IHttpRequest {
             /**
              * The timeout ID associated with the specified timeout
              */
@@ -7232,7 +7232,7 @@ module plat {
                     this.jsonpCallback = options.jsonpCallback || uniqueId('plat_callback');
                 }
 
-                return new AjaxPromise((resolve, reject) => {
+                var promise = new AjaxPromise((resolve, reject) => {
                     var $window = <any>this.$Window,
                         $document = this.$Document,
                         scriptTag = $document.createElement('script'),
@@ -7280,7 +7280,11 @@ module plat {
                             }, timeout - 1);
                         });
                     }
-                }, { __http: this });
+                });
+
+                promise.initialize(this);
+
+                return promise;
             }
 
             /**
@@ -7329,158 +7333,161 @@ module plat {
                 var xhr = this.xhr,
                     options = this.__options,
                     method = options.method,
-                    url = options.url;
+                    url = options.url,
+                    promise = new AjaxPromise((resolve, reject) => {
+                        xhr.onreadystatechange = () => {
+                            var success = this._xhrOnReadyStateChange();
 
-                return new AjaxPromise((resolve, reject) => {
-                    xhr.onreadystatechange = () => {
-                        var success = this._xhrOnReadyStateChange();
+                            if (isNull(success)) {
+                                return;
+                            }
 
-                        if (isNull(success)) {
-                            return;
+                            var response = this._formatResponse(options.responseType, success);
+
+                            if (success) {
+                                resolve(response);
+                            } else {
+                                reject(new AjaxError(response));
+                            }
+
+                            this.xhr = options = null;
+                        };
+
+                        if (!isString(method)) {
+                            var Exception: IExceptionStatic = acquire(__ExceptionStatic);
+                            Exception.warn('AjaxOptions method was not of type string. Defaulting to "GET".', Exception.AJAX);
+                            method = 'GET';
                         }
 
-                        var response = this._formatResponse(options.responseType, success);
-
-                        if (success) {
-                            resolve(response);
-                        } else {
-                            reject(new AjaxError(response));
-                        }
-
-                        this.xhr = options = null;
-                    };
-
-                    if (!isString(method)) {
-                        var Exception: IExceptionStatic = acquire(__ExceptionStatic);
-                        Exception.warn('AjaxOptions method was not of type string. Defaulting to "GET".', Exception.AJAX);
-                        method = 'GET';
-                    }
-
-                    xhr.open(
-                        method.toUpperCase(),
-                        url,
+                        xhr.open(
+                            method.toUpperCase(),
+                            url,
                         // synchronous XHR not supported
-                        true,
-                        options.user,
-                        options.password
-                        );
+                            true,
+                            options.user,
+                            options.password
+                            );
 
-                    var responseType = options.responseType;
-                    if (!(this.__fileSupported || responseType === '' || responseType === 'text')) {
-                        responseType = '';
-                    }
+                        var responseType = options.responseType;
+                        if (!(this.__fileSupported || responseType === '' || responseType === 'text')) {
+                            responseType = '';
+                        }
 
-                    xhr.responseType = responseType;
-                    xhr.withCredentials = options.withCredentials;
+                        xhr.responseType = responseType;
+                        xhr.withCredentials = options.withCredentials;
 
-                    var mimeType = options.overrideMimeType,
-                        data = options.data;
+                        var mimeType = options.overrideMimeType,
+                            data = options.data;
 
-                    if (isString(mimeType) && !isEmpty(mimeType)) {
-                        xhr.overrideMimeType(mimeType);
-                    }
+                        if (isString(mimeType) && !isEmpty(mimeType)) {
+                            xhr.overrideMimeType(mimeType);
+                        }
 
-                    if (isNull(data) || data === '') {
-                        // no data exists so set headers and send request
-                        this.__setHeaders();
-                        xhr.send();
-                    } else {
-                        var transforms = options.transforms || [],
-                            length = transforms.length,
-                            contentType = options.contentType,
-                            contentTypeExists = isString(contentType) && !isEmpty(contentType);
-
-                        if (length > 0) {
-                            // if data transforms defined, assume they're going to take care of 
-                            // any and all transformations.
-                            for (var i = 0; i < length; ++i) {
-                                data = transforms[i](data, xhr);
-                            }
-
-                            // if contentType exists, assume they did not set it in 
-                            // their headers as well
-                            if (contentTypeExists) {
-                                xhr.setRequestHeader('Content-Type', contentType);
-                            }
-
+                        if (isNull(data) || data === '') {
+                            // no data exists so set headers and send request
                             this.__setHeaders();
-                            xhr.send(data);
-                        } else if (isObject(data)) {
-                            // if isObject and contentType exists we want to transform the data
-                            if (contentTypeExists) {
-                                var contentTypeLower = contentType.toLowerCase();
-                                if (contentTypeLower.indexOf('x-www-form-urlencoded') !== -1) {
-                                    // perform an encoded form transformation
-                                    data = this.__serializeFormData();
-                                    // set Content-Type header because we're assuming they didn't set it 
-                                    // in their headers object
+                            xhr.send();
+                        } else {
+                            var transforms = options.transforms || [],
+                                length = transforms.length,
+                                contentType = options.contentType,
+                                contentTypeExists = isString(contentType) && !isEmpty(contentType);
+
+                            if (length > 0) {
+                                // if data transforms defined, assume they're going to take care of 
+                                // any and all transformations.
+                                for (var i = 0; i < length; ++i) {
+                                    data = transforms[i](data, xhr);
+                                }
+
+                                // if contentType exists, assume they did not set it in 
+                                // their headers as well
+                                if (contentTypeExists) {
                                     xhr.setRequestHeader('Content-Type', contentType);
-                                    this.__setHeaders();
-                                    xhr.send(data);
-                                } else if (contentTypeLower.indexOf('multipart/form-data') !== -1) {
-                                    // need to check if File is a supported object
-                                    if (this.__fileSupported) {
-                                        // use FormData
-                                        data = this.__appendFormData();
-                                        // do not set the Content-Type header due to modern browsers 
-                                        // setting special headers for multipart/form-data
+                                }
+
+                                this.__setHeaders();
+                                xhr.send(data);
+                            } else if (isObject(data)) {
+                                // if isObject and contentType exists we want to transform the data
+                                if (contentTypeExists) {
+                                    var contentTypeLower = contentType.toLowerCase();
+                                    if (contentTypeLower.indexOf('x-www-form-urlencoded') !== -1) {
+                                        // perform an encoded form transformation
+                                        data = this.__serializeFormData();
+                                        // set Content-Type header because we're assuming they didn't set it 
+                                        // in their headers object
+                                        xhr.setRequestHeader('Content-Type', contentType);
                                         this.__setHeaders();
                                         xhr.send(data);
+                                    } else if (contentTypeLower.indexOf('multipart/form-data') !== -1) {
+                                        // need to check if File is a supported object
+                                        if (this.__fileSupported) {
+                                            // use FormData
+                                            data = this.__appendFormData();
+                                            // do not set the Content-Type header due to modern browsers 
+                                            // setting special headers for multipart/form-data
+                                            this.__setHeaders();
+                                            xhr.send(data);
+                                        } else {
+                                            // use iframe trick for older browsers (do not send a request)
+                                            // this case is the reason for this giant, terrible, nested if-else statement
+                                            this.__submitFramedFormData().then((response) => {
+                                                resolve(response);
+                                            }, () => {
+                                                    this.xhr = null;
+                                                });
+                                        }
                                     } else {
-                                        // use iframe trick for older browsers (do not send a request)
-                                        // this case is the reason for this giant, terrible, nested if-else statement
-                                        this.__submitFramedFormData().then((response) => {
-                                            resolve(response);
-                                        }, () => {
-                                            this.xhr = null;
-                                        });
+                                        // assume stringification is possible
+                                        data = JSON.stringify(data);
+                                        // set Content-Type header because we're assuming they didn't set it 
+                                        // in their headers object
+                                        xhr.setRequestHeader('Content-Type', contentType);
+                                        this.__setHeaders();
+                                        xhr.send(data);
                                     }
                                 } else {
-                                    // assume stringification is possible
-                                    data = JSON.stringify(data);
-                                    // set Content-Type header because we're assuming they didn't set it 
-                                    // in their headers object
-                                    xhr.setRequestHeader('Content-Type', contentType);
+                                    // contentType does not exist so simply set defined headers and send raw data
                                     this.__setHeaders();
                                     xhr.send(data);
                                 }
                             } else {
-                                // contentType does not exist so simply set defined headers and send raw data
+                                // if contentType exists set Content-Type header because we're assuming they didn't set it 
+                                // in their headers object
+                                if (contentTypeExists) {
+                                    xhr.setRequestHeader('Content-Type', contentType);
+                                }
+
                                 this.__setHeaders();
                                 xhr.send(data);
                             }
-                        } else {
-                            // if contentType exists set Content-Type header because we're assuming they didn't set it 
-                            // in their headers object
-                            if (contentTypeExists) {
-                                xhr.setRequestHeader('Content-Type', contentType);
-                            }
-
-                            this.__setHeaders();
-                            xhr.send(data);
                         }
-                    }
 
-                    var timeout = options.timeout;
-                    if (isNumber(timeout) && timeout > 0) {
-                        // we first postpone to avoid always timing out when debugging, though this is not
-                        // a foolproof method.
-                        this.clearTimeout = postpone(() => {
-                            this.clearTimeout = defer(() => {
-                                reject(new AjaxError({
-                                    response: 'Request timed out in ' + timeout + 'ms for ' + options.url,
-                                    status: xhr.status,
-                                    getAllResponseHeaders: () => { return xhr.getAllResponseHeaders(); },
-                                    xhr: xhr
-                                }));
+                        var timeout = options.timeout;
+                        if (isNumber(timeout) && timeout > 0) {
+                            // we first postpone to avoid always timing out when debugging, though this is not
+                            // a foolproof method.
+                            this.clearTimeout = postpone(() => {
+                                this.clearTimeout = defer(() => {
+                                    reject(new AjaxError({
+                                        response: 'Request timed out in ' + timeout + 'ms for ' + options.url,
+                                        status: xhr.status,
+                                        getAllResponseHeaders: () => { return xhr.getAllResponseHeaders(); },
+                                        xhr: xhr
+                                    }));
 
-                                xhr.onreadystatechange = null;
-                                xhr.abort();
-                                this.xhr = null;
-                            }, timeout - 1);
-                        });
-                    }
-                }, { __http: this });
+                                    xhr.onreadystatechange = null;
+                                    xhr.abort();
+                                    this.xhr = null;
+                                }, timeout - 1);
+                            });
+                        }
+                    });
+
+                promise.initialize(this);
+
+                return promise;
             }
 
             /**
@@ -7750,7 +7757,22 @@ module plat {
          * IHttpRequest provides a wrapper for the XMLHttpRequest object. Allows for
          * sending AJAX requests to a server.
          */
-        interface IHttpRequest {
+        export interface IHttpRequest {
+            /**
+             * The timeout ID associated with the specified timeout
+             */
+            clearTimeout?: plat.IRemoveListener;
+
+            /**
+             * The created XMLHttpRequest
+             */
+            xhr?: XMLHttpRequest;
+
+            /**
+             * The JSONP callback name
+             */
+            jsonpCallback?: string;
+
             /**
              * Executes an XMLHttpRequest and resolves an IAjaxPromise upon completion.
              */
@@ -8006,7 +8028,7 @@ module plat {
             /**
              * The HttpRequest object.
              */
-            private __http: HttpRequest;
+            private __http: IHttpRequest;
 
             /**
              * The constructor method for the {@link plat.async.AjaxPromise}.
@@ -8027,7 +8049,18 @@ module plat {
             }
 
             /**
-             * A method to cancel the AJAX call associated with this {@link plat.async.AjaxPromise}.
+             * A method to initialize this AjaxPromise, passing it the
+             * associated IHttpRequest.
+             * @param {plat.async.IHttpRequest} http The http request for this promise.
+             */
+            initialize(http: IHttpRequest) {
+                if (isObject(http) && isNull(this.__http)) {
+                    this.__http = http;
+                }
+            }
+
+            /**
+             * A method to cancel the AJAX call associated with this AjaxPromise.
              */
             cancel(): void {
                 var http = this.__http,
@@ -8175,6 +8208,13 @@ module plat {
          * Describes a type of IPromise that fulfills with an IAjaxResponse and can be optionally cancelled.
          */
         export interface IAjaxPromise<R> extends IAjaxThenable<IAjaxResponse<R>> {
+            /**
+             * A method to initialize this AjaxPromise, passing it the
+             * associated IHttpRequest.
+             * @param {plat.async.IHttpRequest} http The http request for this promise.
+             */
+            initialize(http: IHttpRequest): void;
+
             /**
              * A method to cancel the AJAX call associated with this {@link plat.async.AjaxPromise}.
              */
@@ -18492,19 +18532,20 @@ module plat {
                  * All elements currently being animated.
                  */
                 _elements: IObject<IAnimatedElement> = {};
-        
+
                 /**
                  * Indicates if a warning regarding our CSS was previously fired.
                  */
                 private __cssWarning = false;
-        
+
                 /**
                  * Animates the element with the defined animation denoted by the key.
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
+                 * A promise that resolves when the animation is finished.
                  */
-                animate(element: Element, key: string, options?: any): IAnimationPromise {
+                animate(element: Element, key: string, options?: any): IAnimationThenable<IParentAnimationFn> {
                     if (!isNode(element) || element.nodeType !== Node.ELEMENT_NODE) {
                         return this.resolve();
                     }
@@ -18523,7 +18564,7 @@ module plat {
                     } else {
                         if (!(this.__cssWarning || $compat.platCss)) {
                             var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                            $exception.warn('CSS animation occurring and platypus.css was not found prior to platypus.js. If you ' +
+                            $exception.warn('CSS animation occurring and platypus.css was not loaded. If you ' +
                                 'intend to use platypus.css, please move it before platypus.js inside your head or body declaration.',
                                 $exception.ANIMATION);
                             this.__cssWarning = true;
@@ -18532,28 +18573,43 @@ module plat {
                         animationInstance = animation.inject();
                     }
 
-                    var parentAnimating = this.__parentIsAnimating(element),
+                    var animationPromise: IAnimationThenable<any> = (<BaseAnimation>animationInstance)._init(element, options),
+                        animatingParentId = this.__parentIsAnimating(element),
                         id = this.__setAnimationId(element, animationInstance),
-                        animatedElement = this._elements[id],
-                        animationPromise: IAnimationThenable<void> = (<BaseAnimation>animationInstance)._init(element, options);
+                        animatedElement = this._elements[id];
 
-                    if (parentAnimating) {
+                    if (!isNull(animatingParentId)) {
                         animatedElement.animationEnd(true);
-                    } else {
-                        this.__stopChildAnimations(element);
-                        animationPromise = animationPromise.then(() => {
-                            animatedElement.promise = null;
-                            animatedElement.animationEnd();
-                        });
-                        animationInstance.start();
+
+                        var parent = this._elements[animatingParentId];
+                        if (isPromise(parent.promise)) {
+                            return animationPromise.then(() => {
+                                return () => {
+                                    return parent.promise;
+                                };
+                            });
+                        }
+
+                        return this.resolve();
                     }
 
-                    if (!isNull(animatedElement.promise)) {
-                        return animatedElement.promise.then(() => {
+                    this.__stopChildAnimations(element);
+                    animationPromise = animationPromise.then(() => {
+                        animatedElement.promise = null;
+                        animatedElement.animationEnd();
+                        return () => {
                             return animationPromise;
+                        };
+                    });
+
+                    if (isPromise(animatedElement.promise)) {
+                        return animatedElement.promise.then(() => {
+                            animationInstance.start();
+                            return (animatedElement.promise = animationPromise);
                         });
                     }
 
+                    animationInstance.start();
                     return (animatedElement.promise = animationPromise);
                 }
 
@@ -18561,26 +18617,40 @@ module plat {
                  * Immediately resolves an empty AnimationPromise.
                  * AnimationPromise.
                  */
-                resolve(): IAnimationThenable<void> {
-                    return new AnimationPromise((resolve) => {
-                        resolve();
+                resolve(): IAnimationThenable<IParentAnimationFn> {
+                    var animationPromise = new AnimationPromise((resolve) => {
+                        resolve(() => {
+                            return animationPromise;
+                        });
                     });
+
+                    return animationPromise;
                 }
-        
+
                 /**
                  * Checks whether or not any parent elements are animating.
                  * @param {Node} element The element whose parents we need to check.
                  */
-                private __parentIsAnimating(element: Node): boolean {
+                private __parentIsAnimating(element: Node): string {
+                    var animationId: string;
                     while (!isDocument(element = element.parentNode) && element.nodeType === Node.ELEMENT_NODE) {
                         if (hasClass(<HTMLElement>element, __Animating)) {
-                            return true;
+                            animationId = ((<ICustomElement>element).__plat || {}).animation;
+                            if (isString(animationId)) {
+                                if (!isNull(this._elements[animationId])) {
+                                    return animationId;
+                                }
+
+                                deleteProperty((<ICustomElement>element).__plat, 'animation');
+                                if (isEmpty(plat)) {
+                                    deleteProperty(element, '__plat');
+                                }
+                                removeClass(<HTMLElement>element, __Animating);
+                            }
                         }
                     }
-
-                    return false;
                 }
-        
+
                 /**
                  * Sets an new, unique animation ID and denotes the element as currently being animated.
                  * @param {Node} element The element being animated.
@@ -18603,21 +18673,21 @@ module plat {
 
                     var animatedElement = elements[id],
                         removeListener = (cancel?: boolean, reanimating?: boolean) => {
-                        if (cancel === true) {
-                            animationInstance.cancel();
-                            if (reanimating === true) {
-                                return;
+                            if (cancel === true) {
+                                animationInstance.cancel();
+                                if (reanimating === true) {
+                                    return;
+                                }
+                                animationInstance.done();
                             }
-                            animationInstance.done();
-                        }
 
-                        removeClass(<HTMLElement>element, __Animating);
-                        deleteProperty(elements, id);
-                        deleteProperty(plat, 'animation');
-                        if (isEmpty(plat)) {
-                            deleteProperty(element, '__plat');
-                        }
-                    };
+                            removeClass(<HTMLElement>element, __Animating);
+                            deleteProperty(elements, id);
+                            deleteProperty(plat, 'animation');
+                            if (isEmpty(plat)) {
+                                deleteProperty(element, '__plat');
+                            }
+                        };
 
                     if (isUndefined(animatedElement)) {
                         addClass(<HTMLElement>element, __Animating);
@@ -18631,7 +18701,7 @@ module plat {
 
                     return id;
                 }
-        
+
                 /**
                  * Forces child nodes of an animating element to stop animating.
                  * @param {Element} element The element being animated.
@@ -18678,16 +18748,17 @@ module plat {
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options Specified options for the animation.
+                 * A promise that resolves when the animation is finished.
                  */
-                animate(element: Element, key: string, options?: any): IAnimationPromise;
+                animate(element: Element, key: string, options?: any): IAnimationThenable<IParentAnimationFn>;
 
                 /**
                  * Immediately resolves an empty AnimationPromise.
                  * AnimationPromise.
                  */
-                resolve(): IAnimationThenable<void>;
+                resolve(): IAnimationThenable<IParentAnimationFn>;
             }
-    
+
             /**
              * Describes an object representing a currenlty animated element.
              */
@@ -18705,11 +18776,21 @@ module plat {
                  */
                 promise?: IAnimationThenable<any>;
             }
-    
+
+            /**
+             * Describes a function used to obtain an animating parent element's animation promise.
+             */
+            export interface IParentAnimationFn {
+                /**
+                 * The method signature for IParentAnimationFn.
+                 */
+                (): IAnimationThenable<void>;
+            }
+
             /**
              * Describes a type of Promise that can be optionally cancelled.
              */
-            export class AnimationPromise extends async.Promise<void> implements IAnimationPromise {
+            export class AnimationPromise extends async.Promise<IParentAnimationFn> implements IAnimationPromise {
                 /**
                  * The animation instance to cancel if needed.
                  */
@@ -18717,18 +18798,18 @@ module plat {
 
                 /**
                  * The constructor method for the {@link plat.async.AjaxPromise}.
-                 * @param {(resolve: (value?: void) => any) => void} resolveFunction A resolve function 
+                 * @param {(resolve: (value?: plat.ui.animations.IParentAnimationFn) => any) => void} resolveFunction A resolve function 
                  * that only allows for a resolve of void and no reject.
                  */
-                constructor(resolveFunction: (resolve: (value?: void) => any) => void);
+                constructor(resolveFunction: (resolve: (value?: IParentAnimationFn) => any) => void);
                 /**
                  * The constructor method for the {@link plat.async.AjaxPromise}.
-                 * @param {(resolve: (value?: void) => any) => void} resolveFunction A resolve function 
+                 * @param {(resolve: (value?: plat.ui.animations.IParentAnimationFn) => any) => void} resolveFunction A resolve function 
                  * that only allows for a resolve of void and no reject.
                  * @param {any} promise The promise object to allow for cancelling the {@link plat.ui.animations.AnimationPromise}.
                  */
-                constructor(resolveFunction: (resolve: (value?: void) => any) => void, promise: any);
-                constructor(resolveFunction: (resolve: (value?: void) => any) => void, promise?: any) {
+                constructor(resolveFunction: (resolve: (value?: IParentAnimationFn) => any) => void, promise: any);
+                constructor(resolveFunction: (resolve: (value?: IParentAnimationFn) => any) => void, promise?: any) {
                     super(resolveFunction);
                     if (!isNull(promise)) {
                         this.__animationInstance = promise.__animationInstance;
@@ -18736,12 +18817,42 @@ module plat {
                 }
 
                 /**
+                 * Initializes the promise, providing it with the {@link plat.ui.animations.IBaseAnimation} instance.
+                 * @param {plat.ui.animations.IBaseAnimation} instance The animation instance for this promise.
+                 */
+                initialize(instance: IBaseAnimation): void {
+                    if (isObject(instance) && isNull(this.__animationInstance)) {
+                        this.__animationInstance = instance;
+                    }
+                }
+
+                /**
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimationPromise {
-                    if (!isNull(this.__animationInstance)) {
-                        this.__animationInstance.cancel();
-                        this.__animationInstance.done();
+                    var animationInstance = this.__animationInstance;
+                    if (!isNull(animationInstance)) {
+                        if (isFunction(animationInstance.cancel)) {
+                            animationInstance.cancel();
+                        }
+                        if (isFunction(animationInstance.done)) {
+                            animationInstance.done();
+                        }
+                    }
+
+                    return this;
+                }
+
+                /**
+                 * A method to dispose the associated animation in order to remove any end states 
+                 * as determined by the animation class itself.
+                 */
+                dispose(): IAnimationPromise {
+                    var animationInstance = this.__animationInstance;
+                    if (!isNull(animationInstance)) {
+                        if (isFunction(animationInstance.dispose)) {
+                            animationInstance.dispose();
+                        }
                     }
 
                     return this;
@@ -18750,25 +18861,27 @@ module plat {
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: void) => U} onFulfilled A method called when/if the promise fulfills. 
+                 * @param {(success: plat.ui.animations.IParentAnimationFn) => U} onFulfilled A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: void) => U): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IParentAnimationFn) => U): IAnimationThenable<U>;
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: void) => plat.ui.animations.IAnimationThenable<U>} onFulfilled A method called when/if the promise fulfills. 
+                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.ui.animations.IAnimationThenable<U>} onFulfilled 
+                 * A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: void) => IAnimationThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IParentAnimationFn) => IAnimationThenable<U>): IAnimationThenable<U>;
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: void) => plat.async.IThenable<U>} onFulfilled A method called when/if the promise fulfills. 
+                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.async.IThenable<U>} onFulfilled 
+                 * A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: void) => async.IThenable<U>): IAnimationThenable<U>;
-                then<U>(onFulfilled: (success: void) => any): IAnimationThenable<U>  {
+                then<U>(onFulfilled: (success: IParentAnimationFn) => async.IThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IParentAnimationFn) => any): IAnimationThenable<U> {
                     return <IAnimationThenable<U>><any>super.then<U>(onFulfilled);
                 }
 
@@ -18798,6 +18911,12 @@ module plat {
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimationPromise;
+
+                /**
+                 * A method to dispose the associated animation in order to remove any end states 
+                 * as determined by the animation class itself.
+                 */
+                dispose(): IAnimationPromise;
 
                 /**
                  * Takes in two methods, called when/if the promise fulfills/rejects.
@@ -18846,38 +18965,52 @@ module plat {
                  */
                 catch<U>(onRejected: (error: any) => U): IAnimationThenable<U>;
             }
-    
+
             /**
              * Describes a type of IPromise that fulfills when an animation is 
              * finished and can be optionally cancelled.
              */
-            export interface IAnimationPromise extends IAnimationThenable<void> {
+            export interface IAnimationPromise extends IAnimationThenable<IParentAnimationFn> {
+                /**
+                 * Initializes the promise, providing it with the {@link plat.ui.animations.IBaseAnimation} instance.
+                 * @param {plat.ui.animations.IBaseAnimation} instance The animation instance for this promise.
+                 */
+                initialize(instance: IBaseAnimation): void;
+
                 /**
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimationPromise;
 
                 /**
-                 * Takes in two methods, called when/if the promise fulfills.
-                 * next then method in the promise chain.
-                 * @param {(success: void) => U} onFulfilled A method called when/if the promise fulfills. 
-                 * If undefined the next onFulfilled method in the promise chain will be called.
+                 * A method to dispose the associated animation in order to remove any end states 
+                 * as determined by the animation class itself.
                  */
-                then<U>(onFulfilled: (success: void) => U): IAnimationThenable<U>;
+                dispose(): IAnimationPromise;
+
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: void) => plat.ui.animations.IAnimationThenable<U>} onFulfilled A method called when/if the promise fulfills. 
+                 * @param {(success: plat.ui.animations.IParentAnimationFn) => U} onFulfilled A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: void) => IAnimationThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IParentAnimationFn) => U): IAnimationThenable<U>;
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: void) => plat.async.IThenable<U>} onFulfilled A method called when/if the promise fulfills. 
+                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.ui.animations.IAnimationThenable<U>} onFulfilled 
+                 * A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: void) => async.IThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IParentAnimationFn) => IAnimationThenable<U>): IAnimationThenable<U>;
+                /**
+                 * Takes in two methods, called when/if the promise fulfills.
+                 * next then method in the promise chain.
+                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.async.IThenable<U>} onFulfilled 
+                 * A method called when/if the promise fulfills. 
+                 * If undefined the next onFulfilled method in the promise chain will be called.
+                 */
+                then<U>(onFulfilled: (success: IParentAnimationFn) => async.IThenable<U>): IAnimationThenable<U>;
             }
 
             /**
@@ -18903,7 +19036,7 @@ module plat {
                  * Specified options for the animation.
                  */
                 options: any;
-        
+
                 /**
                  * The resolve function for the end of the animation.
                  */
@@ -18913,12 +19046,12 @@ module plat {
                  * A function for initializing the animation or any of its properties before start.
                  */
                 initialize(): void { }
-        
+
                 /**
                  * A function denoting the start of the animation.
                  */
                 start(): void { }
-        
+
                 /**
                  * A function to be called when the animation is over.
                  */
@@ -18927,20 +19060,19 @@ module plat {
                         this._resolve();
                         this._resolve = null;
                     }
-                    this.dispose();
                 }
-        
+
                 /**
                  * A function to be called to let it be known the animation is being cancelled.
                  */
                 cancel(): void { }
-        
+
                 /**
                  * A function for reverting any modifications or changes that may have been made as a 
                  * result of this animation.
                  */
                 dispose(): void { }
-        
+
                 /**
                  * Initializes the element and key properties of this animation and passes in the function 
                  * to resolve when finished.
@@ -18952,10 +19084,14 @@ module plat {
                     this.element = <HTMLElement>element;
                     this.options = options;
 
-                    return new AnimationPromise((resolve) => {
+                    var promise = new AnimationPromise((resolve) => {
                         this._resolve = resolve;
                         this.initialize();
-                    }, { __animationInstance: this });
+                    });
+
+                    promise.initialize(this);
+
+                    return promise;
                 }
             }
 
@@ -19213,7 +19349,7 @@ module plat {
 
                 /**
                  * A function to be called to let it be known the animation is being cancelled. 
-                 * Replaces the animation class with the animation class and "-cancel" appended to it 
+                 * Replaces the animation class with the animation class and "-end" appended to it 
                  * to allow it to jump to final state.
                  */
                 cancel(): void {
@@ -19222,10 +19358,18 @@ module plat {
                     removeClass(element, className);
                     addClass(element, className + __END_SUFFIX);
                 }
+
+                /**
+                 * A function to remove the end state from the element. Can be useful when combining 
+                 * multiple types of animations on the same element.
+                 */
+                dispose(): void {
+                    removeClass(this.element, this.className + __END_SUFFIX);
+                }
             }
 
             register.animation(__SimpleAnimation, SimpleCssAnimation);
-    
+
             /**
              * An interface for extending the SimpleCssAnimation 
              * or SimpleCssTransition and allowing for 
@@ -19249,7 +19393,7 @@ module plat {
             }
 
             register.animation(__FadeIn, FadeIn);
-    
+
             /**
              * An animation control that fades out an element as defined by the included CSS.
              */
@@ -19261,7 +19405,7 @@ module plat {
             }
 
             register.animation(__FadeOut, FadeOut);
-    
+
             /**
              * An animation control that causes an element to enter as defined by the included CSS.
              */
@@ -19273,7 +19417,7 @@ module plat {
             }
 
             register.animation(__Enter, Enter);
-    
+
             /**
              * An animation control that causes an element to leave as defined by the included CSS.
              */
@@ -19306,7 +19450,14 @@ module plat {
                  * The class name added to the animated element.
                  */
                 className = __SimpleTransition;
-        
+
+                /**
+                 * A JavaScript object containing all modified properties as a result 
+                 * of this animation. Used in the case of a disposal to reset the changed 
+                 * properties.
+                 */
+                _modifiedProperties: IObject<string> = {};
+
                 /**
                  * Denotes whether or not the animation was ever started.
                  */
@@ -19365,6 +19516,21 @@ module plat {
                 }
 
                 /**
+                 * A function to be called to reset the last transition to its previous state.
+                 */
+                dispose(): void {
+                    var style = this.element.style || {},
+                        modifiedProperties = this._modifiedProperties,
+                        keys = Object.keys(modifiedProperties),
+                        key: any;
+
+                    while (keys.length > 0) {
+                        key = keys.pop();
+                        style[key] = modifiedProperties[key];
+                    }
+                }
+
+                /**
                  * Animate the element based on the options passed in.
                  * If false, the control should begin cleaning up.
                  */
@@ -19374,6 +19540,7 @@ module plat {
                         keys = Object.keys(options),
                         length = keys.length,
                         key: any,
+                        modifiedProperties = this._modifiedProperties,
                         currentProperty: string,
                         newProperty: string,
                         unchanged = 0;
@@ -19390,6 +19557,8 @@ module plat {
                         style[key] = newProperty;
                         if (currentProperty === style[key]) {
                             unchanged++;
+                        } else {
+                            modifiedProperties[key] = currentProperty;
                         }
                     }
 
@@ -19448,6 +19617,11 @@ module plat {
                 navigator: navigation.IBaseNavigator;
 
                 /**
+                 * A promise used for disposing the end state of the previous animation prior to starting a new one.
+                 */
+                _animationPromise: animations.IAnimationThenable<animations.IParentAnimationFn>;
+
+                /**
                  * The constructor for a Baseport.
                  * @param {plat.navigation.IBaseNavigator} navigator The navigator used for navigating between 
                  * IBaseViewControls.
@@ -19464,14 +19638,14 @@ module plat {
                     this.dom.clearNode(this.element);
                     this._load();
                 }
-        
+
                 /**
                  * Clean up any memory being held.
                  */
                 dispose() {
                     this.navigator.dispose();
                 }
-        
+
                 /**
                  * Grabs the root of this control's manager 
                  * tree, clears it, and initializes the 
@@ -19489,7 +19663,7 @@ module plat {
                         injectedControl = newControl ? control.inject() : control,
                         replaceType = injectedControl.replaceWith,
                         node = (isEmpty(replaceType) || replaceType === 'any') ? this.$Document.createElement('div') :
-                            <HTMLElement>this.$Document.createElement(replaceType),
+                        <HTMLElement>this.$Document.createElement(replaceType),
                         attributes: IObject<string> = {},
                         nodeMap: processing.INodeMap = {
                             element: node,
@@ -19508,7 +19682,12 @@ module plat {
                     node.className = 'plat-viewcontrol';
                     element.appendChild(node);
 
-                    this.$Animator.animate(this.element, __Enter);
+                    var animationPromise = this._animationPromise;
+                    if (!isNull(animationPromise)) {
+                        animationPromise.dispose();
+                    }
+
+                    this._animationPromise = this.$Animator.animate(this.element, __Enter);
 
                     var viewportManager = this.$ManagerCache.read(this.uid),
                         manager = this.$ElementManagerFactory.getInstance(),
@@ -19540,15 +19719,21 @@ module plat {
                  * IBaseViewControls.
                  * @param {plat.ui.IBaseViewControl} fromControl The IBaseViewControl 
                  * being navigated away from.
-                 * away.
+                 * resolves when the current view is done animating away.
                  */
-                navigateFrom(fromControl: IBaseViewControl): async.IThenable<void> {
+                navigateFrom(fromControl: IBaseViewControl): animations.IAnimationThenable<animations.IParentAnimationFn> {
                     if (isNull(fromControl) || !isFunction(fromControl.navigatingFrom)) {
-                        return this.$Promise.resolve<void>(null);
+                        return this.$Animator.resolve();
                     }
 
                     fromControl.navigatingFrom();
-                    return this.$Animator.animate(this.element, __Leave);
+
+                    var animationPromise = this._animationPromise;
+                    if (!isNull(animationPromise)) {
+                        animationPromise.dispose();
+                    }
+
+                    return (this._animationPromise = this.$Animator.animate(this.element, __Leave));
                 }
 
                 /**
@@ -19589,9 +19774,9 @@ module plat {
                  * IBaseViewControls.
                  * @param {plat.ui.IBaseViewControl} fromControl The IBaseViewControl 
                  * being navigated away from.
-                 * away.
+                 * when the current view is done animating away.
                  */
-                navigateFrom(fromControl: IBaseViewControl): async.IThenable<void>;
+                navigateFrom(fromControl: IBaseViewControl): animations.IAnimationThenable<animations.IParentAnimationFn>;
 
                 /**
                  * Implements the functionality for when the hard backbutton is pressed on a device.
@@ -19614,7 +19799,7 @@ module plat {
                  * The navigation parameter.
                  */
                 parameter: any;
-        
+
                 /**
                  * The options used for navigation.
                  */
@@ -20428,7 +20613,7 @@ module plat {
                         return this.__handleAnimation(startNode, endNode, key);
                     }
 
-                    var animationPromises: Array<animations.IAnimationThenable<void>> = [];
+                    var animationPromises: Array<animations.IAnimationThenable<animations.IParentAnimationFn>> = [];
                     while (length-- > 0) {
                         animationPromises.push(currentAnimations[length].cancel());
                     }

@@ -197,10 +197,10 @@
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        open(): plat.ui.animations.IAnimationThenable<void> {
+        open(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
@@ -227,10 +227,10 @@
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        close(): plat.ui.animations.IAnimationThenable<void> {
+        close(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
@@ -257,10 +257,10 @@
          * @description
          * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
-        toggle(): plat.ui.animations.IAnimationThenable<void> {
+        toggle(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
@@ -268,7 +268,7 @@
                 return controller.toggle();
             }
 
-            var promise: plat.ui.animations.IAnimationThenable<void>;
+            var promise: plat.async.IThenable<void>;
             if (controller.isOpen()) {
                 promise = controller._close();
                 this.propertyChanged(false);
@@ -289,10 +289,10 @@
          * @description
          * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
          */
-        reset(): plat.ui.animations.IAnimationThenable<void> {
+        reset(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 return;
@@ -300,7 +300,7 @@
                 return controller.reset();
             }
 
-            var promise: plat.ui.animations.IAnimationThenable<void>;
+            var promise: plat.async.IThenable<void>;
             if (controller.isOpen()) {
                 promise = controller._open();
                 this.propertyChanged(true);
@@ -1177,10 +1177,10 @@
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        open(): plat.ui.animations.IAnimationThenable<void> {
+        open(): plat.async.IThenable<void> {
             var wasClosed = !this._isOpen,
                 promise = this._open();
 
@@ -1204,10 +1204,10 @@
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        close(): plat.ui.animations.IAnimationThenable<void> {
+        close(): plat.async.IThenable<void> {
             var wasOpen = this._isOpen,
                 promise = this._close();
 
@@ -1231,10 +1231,10 @@
          * @description
          * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
-        toggle(): plat.ui.animations.IAnimationThenable<void> {
+        toggle(): plat.async.IThenable<void> {
             if (this._isOpen) {
                 return this.close();
             }
@@ -1251,10 +1251,10 @@
          * @description
          * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
          */
-        reset(): plat.ui.animations.IAnimationThenable<void> {
+        reset(): plat.async.IThenable<void> {
             if (this._isOpen) {
                 return this.open();
             }
@@ -1345,17 +1345,17 @@
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        _open(): plat.ui.animations.IAnimationThenable<void> {
+        _open(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 $utils = this.$utils,
                 isNode = $utils.isNode;
 
             if (!isNode(rootElement) || !isNode(drawerElement)) {
-                return this.$animator.resolve();
+                return <any>this.$animator.resolve();
             }
 
             drawerElement.removeAttribute(__Hide);
@@ -1375,7 +1375,7 @@
                     translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
                     break;
                 default:
-                    return this.$animator.resolve();
+                    return <any>this.$animator.resolve();
             }
 
             if (!this._isOpen) {
@@ -1390,7 +1390,7 @@
             animationOptions[this._transform] = translation;
             this._isOpen = true;
             this.dom.addClass(rootElement, this._directionalTransitionPrep);
-            return this.$animator.animate(rootElement, __Transition, animationOptions);
+            return <any>this.$animator.animate(rootElement, __Transition, animationOptions);
         }
 
         /**
@@ -1402,10 +1402,10 @@
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
          * 
-         * @returns {plat.ui.animations.IAnimationThenable<void>} A promise that resolves 
+         * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        _close(): plat.ui.animations.IAnimationThenable<void> {
+        _close(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 $utils = this.$utils,
@@ -1420,7 +1420,7 @@
             }
 
             if (!isNode(rootElement) || !isNode(drawerElement)) {
-                return this.$animator.resolve();
+                return <any>this.$animator.resolve();
             }
 
             var animationOptions: plat.IObject<string> = {},
