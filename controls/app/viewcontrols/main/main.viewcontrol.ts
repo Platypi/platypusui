@@ -47,4 +47,12 @@ module app {
     }
 
     plat.register.viewControl('viewcontrol', MainViewControl, null, ['']);
+
+    class App extends plat.App {
+        error(ev: plat.events.IErrorEvent<Error>) {
+            console.log(ev.error);
+        }
+    }
+
+    plat.register.app('app', App);
 }

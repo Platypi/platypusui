@@ -2,7 +2,7 @@
     <!-- Form/Input -->
     <div class="demo-area">
         <h2 class="demo-heading">Forms</h2>
-        <input type="checkbox" id="forms" />
+        <input type="checkbox" id="forms" checked />
         <label for="forms"></label>
         <div class="demo-stage">
             <plat-drawer-controller style="font-size: 300%;">|||</plat-drawer-controller>
@@ -40,7 +40,7 @@
         <input type="checkbox" id="progress" />
         <label for="progress"></label>
         <div class="demo-stage">
-            <plat-progress plat-bind="progress" style="width: 400px;"></plat-progress>
+            <plat-progress plat-context="progress" style="width: 400px;"></plat-progress>
             <br />
             <button plat-tap="bar">Progress!</button>
         </div>
@@ -49,7 +49,7 @@
     <!-- Typography -->
     <div class="demo-area">
         <h2 class="demo-heading">Typography</h2>
-        <input type="checkbox" id="typography" checked />
+        <input type="checkbox" id="typography" />
         <label for="typography"></label>
         <div class="demo-stage">
             <h1>Heading 1: The biggest impact</h1>
@@ -327,7 +327,7 @@
         <input type="checkbox" id="carousel" checked />
         <label for="carousel"></label>
         <div class="demo-stage">
-            <plat-carousel plat-context="carouselItems" style="width: 400px; height: 400px;">
+            <plat-carousel plat-context="carouselItems" style="width: 800px; height: 400px;">
                 <div style="width: 100%; height: 100%; text-align: center; vertical-align: middle; background-color: lightblue;">
                     <span>{{text}}</span>
                 </div>

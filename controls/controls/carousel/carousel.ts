@@ -161,7 +161,7 @@
          * @description
          * The last touch start recorded.
          */
-        _lastTouch: plat.ui.IPoint;
+        _lastTouch: plat.ui.IPoint = { x: 0, y: 0 };
 
         /**
          * @name _inTouch
@@ -174,7 +174,7 @@
          * @description
          * Whether or not the user is currently touching the screen.
          */
-        _inTouch: boolean;
+        //_inTouch: boolean;
 
         /**
          * @name _loaded
@@ -380,17 +380,19 @@
          * @returns {void}
          */
         loaded(): void {
-            var $utils = this.$utils;
-            if (!$utils.isArray(this.context)) {
+            var $utils = this.$utils,
+                context = this.context;
+            if (!$utils.isArray(context)) {
                 var Exception = plat.acquire(__ExceptionStatic);
                 Exception.warn('The context of a ' + __Carousel + ' must be an Array.');
                 return;
             }
 
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
-                options = optionObj.value || <IDrawerControllerOptions>{};
+                options = optionObj.value || <IDrawerControllerOptions>{},
+                index = options.index;
 
-            this._index = $utils.isNumber(options.index) ? options.index : 0;
+            this._index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : 0;
             this._init(options.transition || 'horizontal');
             this._loaded = true;
         }
@@ -407,8 +409,7 @@
          * @returns {void}
          */
         goToNext(): void {
-            if (this._index === this.context.length - 1) {
-                this.reset();
+            if (this._index >= this.context.length - 1) {
                 return;
             }
 
@@ -416,7 +417,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + (this._currentOffset -= this._intervalOffset) + 'px,0,0)';
-            this._setAnimationOptions(animationOptions);
+            this._initiateAnimation(animationOptions);
         }
 
         /**
@@ -431,8 +432,7 @@
          * @returns {void}
          */
         goToPrevious(): void {
-            if (this._index === 0) {
-                this.reset();
+            if (this._index <= 0) {
                 return;
             }
 
@@ -440,7 +440,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + (this._currentOffset += this._intervalOffset) + 'px,0,0)';
-            this._setAnimationOptions(animationOptions);
+            this._initiateAnimation(animationOptions);
         }
 
         /**
@@ -480,11 +480,11 @@
         reset(): void {
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + this._currentOffset + 'px,0,0)';
-            this._setAnimationOptions(animationOptions);
+            this._initiateAnimation(animationOptions);
         }
 
         /**
-         * @name _setAnimationOptions
+         * @name _initiateAnimation
          * @memberof platui.Carousel
          * @kind function
          * @access protected
@@ -497,7 +497,7 @@
          * 
          * @returns {void}
          */
-        _setAnimationOptions(animationOptions: plat.IObject<string>): void {
+        _initiateAnimation(animationOptions: plat.IObject<string>): void {
             if (!this.$utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
                     this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
@@ -561,30 +561,10 @@
          * @returns {void}
          */
         _addEventListeners(transition: string): void {
-            var element = this.element,
-                trackFn = this._track,
-                track: string,
-                antiTrack: string;
-
-            if (transition === 'vertical') {
-                track = __$track + 'up';
-                antiTrack = __$track + 'down';
-            } else {
-                track = __$track + 'left';
-                antiTrack = __$track + 'right';
-            }
-
-            this.addEventListener(element, track, trackFn, false);
-            this.addEventListener(element, antiTrack, trackFn, false);
-
-            if (this.$utils.isNull(this._lastTouch)) {
-                var touchEnd = this._touchEnd;
-
-                this._lastTouch = { x: 0, y: 0 };
-                this.addEventListener(element, __$touchstart, this._touchStart, false);
-                this.addEventListener(element, __$touchend, touchEnd, false);
-                this.addEventListener(element, __$trackend, touchEnd, false);
-            }
+            var element = this.element;
+            this.addEventListener(element, __$track, this._track, false);
+            this.addEventListener(element, __$touchstart, this._touchStart, false);
+            this.addEventListener(element, __$trackend, this._touchEnd, false);
         }
 
         /**
@@ -603,7 +583,6 @@
         _touchStart(ev: plat.ui.IGestureEvent): void {
             if (!this.$utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
-                    this._inTouch = true;
                     this._lastTouch = {
                         x: ev.clientX,
                         y: ev.clientY
@@ -614,7 +593,6 @@
                 return;
             }
 
-            this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -635,11 +613,10 @@
          * @returns {void}
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var inTouch = this._inTouch,
-                hasSwiped = this._hasSwiped;
+            var hasSwiped = this._hasSwiped;
 
-            this._inTouch = this._hasSwiped = false;
-            if (!inTouch || hasSwiped) {
+            this._hasSwiped = false;
+            if (hasSwiped) {
                 return;
             }
 
@@ -649,11 +626,14 @@
 
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
-                    this.goToNext();
-                } else {
+                    if (this._index < this.context.length - 1) {
+                        this.goToNext();
+                        return;
+                    }
+                } else if (this._index > 0) {
                     this.goToPrevious();
+                    return;
                 }
-                return;
             }
 
             this.reset();
@@ -674,10 +654,6 @@
          * @returns {void}
          */
         _track(ev: plat.ui.IGestureEvent): void {
-            if (!this._inTouch) {
-                return;
-            }
-
             this._slider.style[<any>this._transform] = this._calculateTranslation(ev);
         }
 
@@ -695,14 +671,11 @@
          * @returns {string} The translation value.
          */
         _calculateTranslation(ev: plat.ui.IGestureEvent): string {
-            var translation: number;
             if (this._transition === 'vertical') {
-                translation = this._currentOffset + (ev.clientY - this._lastTouch.y);
-                return 'translate3d(0,' + translation + 'px,0)';
+                return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
             }
 
-            translation = this._currentOffset + (ev.clientX - this._lastTouch.x);
-            return 'translate3d(' + translation + 'px,0,0)';
+            return 'translate3d(' + (this._currentOffset + (ev.clientX - this._lastTouch.x)) + 'px,0,0)';
         }
 
         /**

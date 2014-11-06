@@ -249,19 +249,6 @@
         _loaded = false;
 
         /**
-         * @name _inTouch
-         * @memberof platui.Slider
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the user is currently touching the screen.
-         */
-        _inTouch = false;
-
-        /**
          * @name _lengthProperty
          * @memberof platui.Slider
          * @kind property
@@ -456,7 +443,6 @@
          * @returns {void}
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
-            this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -477,12 +463,6 @@
          * @returns {void}
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            if (!this._inTouch) {
-                return;
-            }
-
-            this._inTouch = false;
-
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
@@ -549,34 +529,10 @@
          * @returns {void}
          */
         _initializeEvents(transition: string): void {
-            var knob = this._knob,
-                track: string,
-                reverseTrack: string,
-                trackFn: EventListener = this._track,
-                touchEnd = this._touchEnd;
-
-            switch (transition) {
-                case 'right':
-                case 'left':
-                    track = __$track + 'right';
-                    reverseTrack = __$track + 'left';
-                    break;
-                case 'up':
-                case 'down':
-                    track = __$track + 'up';
-                    reverseTrack = __$track + 'down';
-                    break;
-                default:
-                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid direction "' + transition + '" for "' + __Slider + '."');
-                    return;
-            }
-
+            var knob = this._knob;
             this.addEventListener(knob, __$touchstart, this._touchStart, false);
-            this.addEventListener(knob, track, trackFn, false);
-            this.addEventListener(knob, reverseTrack, trackFn, false);
-            this.addEventListener(knob, __$trackend, touchEnd, false);
-            this.addEventListener(knob, __$touchend, touchEnd, false);
+            this.addEventListener(knob, __$track, this._track, false);
+            this.addEventListener(knob, __$trackend, this._touchEnd, false);
         }
 
         /**
@@ -667,6 +623,8 @@
                     this._lengthProperty = 'height';
                     return (this._maxOffset = element.offsetHeight);
                 default:
+                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                    Exception.warn('Invalid direction "' + this._transition + '" for "' + __Slider + '."');
                     return 0;
             }
         }

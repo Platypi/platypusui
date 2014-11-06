@@ -832,7 +832,7 @@
         _removeSwipeOpen: plat.IRemoveListener;
 
         /**
-         * @name _removePrimaryTrack
+         * @name _removeTrack
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
@@ -840,22 +840,9 @@
          * @type {plat.IRemoveListener}
          * 
          * @description
-         * A function for removing the primary track (open) event listener.
+         * A function for removing the track event listener.
          */
-        _removePrimaryTrack: plat.IRemoveListener;
-
-        /**
-         * @name _removeSecondaryTrack
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IRemoveListener}
-         * 
-         * @description
-         * A function for removing the secondary track (close) event listener.
-         */
-        _removeSecondaryTrack: plat.IRemoveListener;
+        _removeTrack: plat.IRemoveListener;
 
         /**
          * @name _openTapRemover
@@ -1610,12 +1597,7 @@
             }
 
             if (this._isTrack = (types.indexOf('track') !== -1)) {
-                var primaryTrack = __$track + transition,
-                    secondaryTrack = __$track + this._transitionHash[transition],
-                    trackFn = this._track;
-
-                this._removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
-                this._removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
+                this._removeTrack = this.addEventListener(element, __$track, this._track, false);
 
                 if (isNull(this._lastTouch)) {
                     var touchEnd = this._touchEnd;
@@ -1646,14 +1628,9 @@
                 this._removeTap = null;
             }
 
-            if (isFunction(this._removePrimaryTrack)) {
-                this._removePrimaryTrack();
-                this._removePrimaryTrack = null;
-            }
-
-            if (isFunction(this._removeSecondaryTrack)) {
-                this._removeSecondaryTrack();
-                this._removeSecondaryTrack = null;
+            if (isFunction(this._removeTrack)) {
+                this._removeTrack();
+                this._removeTrack = null;
             }
 
             if (isFunction(this._removeSwipeOpen)) {

@@ -219,7 +219,7 @@
          * @type {number}
          * 
          * @description
-         * The maximum slider offset.
+         * The maximum slider element offset.
          */
         _maxOffset: number;
 
@@ -232,7 +232,7 @@
          * @type {number}
          * 
          * @description
-         * The slider's pixel based increment value.
+         * The slider element's pixel based increment value.
          */
         _increment: number;
 
@@ -245,7 +245,7 @@
          * @type {number}
          * 
          * @description
-         * Denotes the incremental step value of the {@link platui.Slider|Slider's} value property.
+         * Denotes the incremental step value of the {@link platui.Range|Range's} value property.
          */
         _step: number;
 
@@ -287,19 +287,6 @@
          * The current upper knob offset.
          */
         _upperKnobOffset: number;
-
-        /**
-         * @name _inTouch
-         * @memberof platui.Range
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the user is currently touching the screen.
-         */
-        _inTouch = false;
 
         /**
          * @name _lengthProperty
@@ -449,8 +436,8 @@
                 slider = this._slider = <HTMLElement>rangeContainer.firstElementChild,
                 $utils = this.$utils,
                 isNumber = $utils.isNumber,
-                optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
-                options = optionObj.value || <ISliderOptions>{},
+                optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
+                options = optionObj.value || <IRangeOptions>{},
                 optionLower = Number(options.lower),
                 optionUpper = Number(options.upper),
                 optionMin = options.min,
@@ -625,40 +612,15 @@
         _initializeEvents(transition: string): void {
             var lowerKnob = this._lowerKnob,
                 upperKnob = this._upperKnob,
-                track: string,
-                reverseTrack: string,
                 touchstart = this._touchStart,
-                touchEnd = this._touchEnd,
-                trackLower = this._trackLower,
-                trackUpper = this._trackUpper;
-
-            switch (transition) {
-                case 'right':
-                case 'left':
-                    track = __$track + 'right';
-                    reverseTrack = __$track + 'left';
-                    break;
-                case 'up':
-                case 'down':
-                    reverseTrack = __$track + 'down';
-                    track = __$track + 'up';
-                    break;
-                default:
-                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid direction "' + transition + '" for "' + __Range + '."');
-                    return;
-            }
+                touchEnd = this._touchEnd;
 
             this.addEventListener(lowerKnob, __$touchstart, touchstart, false);
             this.addEventListener(upperKnob, __$touchstart, touchstart, false);
-            this.addEventListener(lowerKnob, track, trackLower, false);
-            this.addEventListener(lowerKnob, reverseTrack, trackLower, false);
-            this.addEventListener(upperKnob, track, trackUpper, false);
-            this.addEventListener(upperKnob, reverseTrack, trackUpper, false);
+            this.addEventListener(lowerKnob, __$track, this._trackLower, false);
+            this.addEventListener(upperKnob, __$track, this._trackUpper, false);
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
-            this.addEventListener(lowerKnob, __$touchend, touchEnd, false);
-            this.addEventListener(upperKnob, __$touchend, touchEnd, false);
         }
 
         /**
@@ -690,7 +652,6 @@
                 target.style.zIndex = '1';
             }
 
-            this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY,
@@ -705,7 +666,7 @@
          * @access protected
          * 
          * @description
-         * Set the new slider offset.
+         * Set the new slider element offset.
          * 
          * @param {plat.ui.IGestureEvent} ev The $trackend event object.
          * 
@@ -715,13 +676,9 @@
             var lastTouch = this._lastTouch,
                 target = ev.currentTarget;
 
-            if (!this._inTouch ||
-                this.$utils.isNull(lastTouch) ||
-                (lastTouch.target !== target)) {
+            if (this.$utils.isNull(lastTouch) || (lastTouch.target !== target)) {
                 return;
             }
-
-            this._inTouch = false;
 
             var isLower = target === this._lowerKnob,
                 newOffset = this._calculateOffset(ev, isLower);
@@ -741,7 +698,7 @@
          * @access protected
          * 
          * @description
-         * Sets the lower slider's offset to the given value.
+         * Sets the lower slider element's offset to the given value.
          * 
          * @param {number} offset The new offset.
          * 
@@ -766,7 +723,7 @@
          * @access protected
          * 
          * @description
-         * Sets the upper slider's offset to the given value.
+         * Sets the upper slider element's offset to the given value.
          * 
          * @param {number} offset The new offset.
          * 
@@ -879,9 +836,9 @@
          * @access protected
          * 
          * @description
-         * Calculates the current value based on knob position and slider width.
+         * Calculates the current value based on knob position and slider element width.
          * 
-         * @param {number} width The current width of the slider.
+         * @param {number} width The current width of the slider element.
          * 
          * @returns {number} The current value of the {link platui.Range|Range}.
          */
@@ -897,7 +854,7 @@
          * @access protected
          * 
          * @description
-         * Calculates the new offset of the slider based on the old offset and the distance moved.
+         * Calculates the new offset of the slider element based on the old offset and the distance moved.
          * 
          * @param {plat.ui.IGestureEvent} ev The $track or $trackend event object.
          * @param {boolean} isLower Whether the current knob is the lower or the upper knob.
@@ -928,7 +885,7 @@
          * @description
          * Calculates knob position based on current value.
          * 
-         * @param {number} value The current value of the {link platui.Slider|Slider}.
+         * @param {number} value The current value of the {link platui.Range|Range}.
          * 
          * @returns {number} The current position of the knob in pixels.
          */
@@ -1031,7 +988,7 @@
          * @description
          * Sets the increment for sliding the {link platui.Range|Range}.
          * 
-         * @returns {number} The slider's increment value.
+         * @returns {number} The slider element's increment value.
          */
         _setIncrement(): number {
             return (this._increment = this._maxOffset / (this.max - this.min));
@@ -1070,6 +1027,8 @@
                     this._lengthProperty = 'height';
                     return (this._maxOffset = element.offsetHeight);
                 default:
+                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                    Exception.warn('Invalid transition "' + this._transition + '" for "' + __Range + '."');
                     return 0;
             }
         }
@@ -1084,7 +1043,7 @@
          * Animates and sets the knob position.
          * 
          * @param {number} value? The value to use to calculate the knob position. If no value is 
-         * specified, the current {@link platui.Slider|Slider's} value will be used.
+         * specified, the current {@link platui.Range|Range's} value will be used.
          * 
          * @returns {void}
          */
@@ -1111,7 +1070,7 @@
          * Animates and sets the knob position.
          * 
          * @param {number} value? The value to use to calculate the knob position. If no value is 
-         * specified, the current {@link platui.Slider|Slider's} value will be used.
+         * specified, the current {@link platui.Range|Range's} value will be used.
          * 
          * @returns {void}
          */
