@@ -326,7 +326,7 @@
         isOpen(): boolean {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
-                return;
+                return false;
             }
 
             return controller.isOpen();
@@ -858,19 +858,6 @@
         _removeSecondaryTrack: plat.IRemoveListener;
 
         /**
-         * @name _openDelayRemover
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IRemoveListener}
-         * 
-         * @description
-         * A function for removing the postponed addition of event intercepts.
-         */
-        _openDelayRemover: plat.IRemoveListener;
-
-        /**
          * @name _openTapRemover
          * @memberof platui.DrawerController
          * @kind property
@@ -1077,6 +1064,20 @@
         _isTrack: boolean;
 
         /**
+         * @name _animationThenable
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimationThenable<void>}
+         * 
+         * @description
+         * The most recent animation thenable. Used to cancel the current animation if another needs 
+         * to begin.
+         */
+        _animationThenable: plat.ui.animations.IAnimationThenable<void>;
+
+        /**
          * @name initialize
          * @memberof platui.DrawerController
          * @kind function
@@ -1123,7 +1124,8 @@
          * 
          * @description
          * Remove the transition classes off the root element and reset the position and 
-         * zIndex properties if modified.
+         * zIndex properties if modified and only if this is the last {@link platui.DrawerController|DrawerController}  
+         * referencing this {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
@@ -1187,8 +1189,6 @@
             if (wasClosed) {
                 if (this._useContext) {
                     this.propertyChanged(true);
-                } else if (!this.$utils.isNull(this._drawer)) {
-                    this._drawer.propertyChanged(true);
                 }
             }
 
@@ -1214,8 +1214,6 @@
             if (wasOpen) {
                 if (this._useContext) {
                     this.propertyChanged(false);
-                } else if (!this.$utils.isNull(this._drawer)) {
-                    this._drawer.propertyChanged(false);
                 }
             }
 
@@ -1352,11 +1350,14 @@
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 $utils = this.$utils,
-                isNode = $utils.isNode;
+                isNode = $utils.isNode,
+                wasClosed = !this._isOpen;
 
             if (!isNode(rootElement) || !isNode(drawerElement)) {
                 return <any>this.$animator.resolve();
             }
+
+            this._isOpen = true;
 
             drawerElement.removeAttribute(__Hide);
 
@@ -1378,17 +1379,12 @@
                     return <any>this.$animator.resolve();
             }
 
-            if (!this._isOpen) {
-                if ($utils.isFunction(this._openDelayRemover)) {
-                    this._openDelayRemover();
-                    this._openDelayRemover = null;
-                }
-                this._openDelayRemover = $utils.postpone(this._addEventIntercepts, null, this);
+            if (wasClosed) {
+                this._addEventIntercepts();
             }
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            this._isOpen = true;
             this.dom.addClass(rootElement, this._directionalTransitionPrep);
             return <any>this.$animator.animate(rootElement, __Transition, animationOptions);
         }
@@ -1412,12 +1408,10 @@
                 isNode = $utils.isNode;
 
             if (this._isOpen) {
-                if ($utils.isFunction(this._openDelayRemover)) {
-                    this._openDelayRemover();
-                    this._openDelayRemover = null;
-                }
-                this._openDelayRemover = $utils.postpone(this._removeEventIntercepts, null, this);
+                this._removeEventIntercepts();
             }
+
+            this._isOpen = false;
 
             if (!isNode(rootElement) || !isNode(drawerElement)) {
                 return <any>this.$animator.resolve();
@@ -1427,7 +1421,6 @@
                 transform = <any>this._transform;
 
             animationOptions[transform] = 'translate3d(0,0,0)';
-            this._isOpen = false;
             return this.$animator.animate(rootElement, __Transition, animationOptions).then(() => {
                 if (this._isOpen) {
                     return;
@@ -1453,6 +1446,14 @@
         _addEventIntercepts(): void {
             var rootElement = this._rootElement;
 
+            if (this._isTap) {
+                this._addTapClose();
+            }
+
+            if (this._isSwipe) {
+                this._addSwipeClose();
+            }
+
             if (this._isTrack) {
                 var touchStartRemover = this.addEventListener(rootElement, __$touchstart, this._touchStart, false),
                     trackRemover = this.addEventListener(rootElement, __$track, this._track, false),
@@ -1466,14 +1467,6 @@
                     trackEndRemover();
                     touchEndRemover();
                 };
-            }
-
-            if (this._isTap) {
-                this._addTapClose();
-            }
-
-            if (this._isSwipe) {
-                this._addSwipeClose();
             }
         }
 
@@ -1527,7 +1520,7 @@
         _addSwipeOpen(): void {
             this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + this._transition, () => {
                 this._hasSwiped = true;
-                this.open();
+                this.$utils.postpone(this.open, null, this);
             }, false);
         }
 
@@ -1545,7 +1538,7 @@
         _addSwipeClose(): void {
             this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._transitionHash[this._transition], () => {
                 this._hasSwiped = true;
-                this.close();
+                this.$utils.postpone(this.close, null, this);
             }, false);
         }
 
@@ -1563,7 +1556,7 @@
         _addTapOpen(): void {
             this._removeTap = this.addEventListener(this.element, __$tap, () => {
                 this._hasTapped = true;
-                this.open();
+                this.$utils.postpone(this.open, null, this);
             }, false);
         }
 
@@ -1581,7 +1574,7 @@
         _addTapClose(): void {
             this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
                 this._hasTapped = true;
-                this.close();
+                this.$utils.postpone(this.close, null, this);
             }, false);
         }
 
@@ -1721,24 +1714,25 @@
 
             var distanceMoved: number;
             switch (this._transition) {
-                case 'up':
-                case 'down':
-                    distanceMoved = ev.clientY - this._lastTouch.y;
-                    break;
-                case 'left':
                 case 'right':
+                case 'left':
                     distanceMoved = ev.clientX - this._lastTouch.x;
+                    break;
+                case 'down':
+                case 'up':
+                    distanceMoved = ev.clientY - this._lastTouch.y;
                     break;
                 default:
                     return;
             }
 
-            if (Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
-                this.toggle();
+            if (this._isRightDirection(distanceMoved) &&
+                Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
+                this.$utils.postpone(this.toggle, null, this);
                 return;
             }
 
-            this.reset();
+            this.$utils.postpone(this.reset, null, this);
         }
 
         /**
@@ -1757,6 +1751,33 @@
          */
         _track(ev: plat.ui.IGestureEvent): void {
             this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
+        }
+
+        /**
+         * @name _isRightDirection
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Checks to make sure the user has been tracking in the right direction to 
+         * toggle.
+         * 
+         * @param {number} distanceMoved The distance the user's pointer has moved.
+         * 
+         * @returns {boolean} Whether or not the user was tracking in the right direction.
+         */
+        _isRightDirection(distanceMoved: number): boolean {
+            switch (this._transition) {
+                case 'right':
+                case 'down':
+                    return this._isOpen ? distanceMoved < 0 : distanceMoved > 0;
+                case 'left':
+                case 'up':
+                    return this._isOpen ? distanceMoved > 0 : distanceMoved < 0;
+                default:
+                    return false;
+            }
         }
 
         /**

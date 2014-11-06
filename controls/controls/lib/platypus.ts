@@ -8,9 +8,6 @@
     /**
      * The entry point into the platypus library.
      */
-    /**
-     * Holds all classes and interfaces related to attribute control components in platypus.
-     */
 module plat {
     /* tslint:disable:no-unused-variable */
     /*
@@ -9862,7 +9859,7 @@ module plat {
 
                 return removeCallback;
             }
-        
+
             /**
              * Observes an array and calls the listener when certain functions are called on 
              * that array. The watched functions are push, pop, shift, splice, unshift, sort, 
@@ -9884,16 +9881,7 @@ module plat {
                     setProto = $compat.setProto;
 
                 if (isArray(oldArray)) {
-                    if (setProto) {
-                        (<any>Object).setPrototypeOf(oldArray, Object.create(Array.prototype));
-                    } else if (proto) {
-                        (<any>oldArray).__proto__ = Object.create(Array.prototype);
-                    } else {
-                        for (i = 0; i < length; ++i) {
-                            method = arrayMethods[i];
-                            (<any>oldArray)[method] = (<any>Array.prototype)[method];
-                        }
-                    }
+                    this._restoreArray(oldArray);
                 }
 
                 if (isNull(array)) {
@@ -9926,52 +9914,31 @@ module plat {
 
                 var listenerRemoved = false,
                     removeListener = () => {
-                    if (listenerRemoved) {
-                        return;
-                    }
-
-                    listenerRemoved = true;
-                    ContextManager.spliceRemoveListener(absoluteIdentifier, uid, removeListener);
-
-                    var index = arrayCallbacks.indexOf(listener);
-                    if (index === -1) {
-                        return;
-                    }
-
-                    arrayCallbacks.splice(index, 1);
-                    if (arrayCallbacks.length === 0) {
-                        deleteProperty(observedArrayCallbacks, uid);
-                        if (isEmpty(observedArrayCallbacks)) {
-                            deleteProperty(observedArrayListeners, absoluteIdentifier);
+                        if (listenerRemoved) {
+                            return;
                         }
-                    }
-                };
+
+                        listenerRemoved = true;
+                        ContextManager.spliceRemoveListener(absoluteIdentifier, uid, removeListener);
+
+                        var index = arrayCallbacks.indexOf(listener);
+                        if (index === -1) {
+                            return;
+                        }
+
+                        arrayCallbacks.splice(index, 1);
+                        if (arrayCallbacks.length === 0) {
+                            deleteProperty(observedArrayCallbacks, uid);
+                            if (isEmpty(observedArrayCallbacks)) {
+                                deleteProperty(observedArrayListeners, absoluteIdentifier);
+                            }
+                        }
+                    };
 
                 arrayCallbacks.push(listener);
                 ContextManager.pushRemoveListener(absoluteIdentifier, uid, removeListener);
 
-                if (proto) {
-                    var obj = Object.create(Array.prototype);
-
-                    for (i = 0; i < length; ++i) {
-                        method = arrayMethods[i];
-                        obj[method] = this._overwriteArrayFunction(absoluteIdentifier, method);
-                    }
-
-                    if (setProto) {
-                        (<any>Object).setPrototypeOf(array, obj);
-                    } else {
-                        (<any>array).__proto__ = obj;
-                    }
-
-                    return removeListener;
-                }
-
-                for (i = 0; i < length; ++i) {
-                    method = arrayMethods[i];
-                    ContextManager.defineProperty(array, method,
-                        this._overwriteArrayFunction(absoluteIdentifier, method), false, true);
-                }
+                this._overwriteArray(absoluteIdentifier, array);
 
                 return removeListener;
             }
@@ -9986,6 +9953,63 @@ module plat {
                 this.__contextObjects = {};
             }
         
+            /**
+             * Restores an array to use Array.prototype instead of listener functions. 
+             * @param {Array<any>} array The array to restore.
+             */
+            _restoreArray(array: Array<any>) {
+                var $compat = this.$Compat;
+
+                if ($compat.setProto) {
+                    (<any>Object).setPrototypeOf(array, Object.create(Array.prototype));
+                } else if ($compat.proto) {
+                    (<any>array).__proto__ = Object.create(Array.prototype);
+                } else {
+                    var length = arrayMethods.length,
+                        method: string;
+
+                    for (var i = 0; i < length; ++i) {
+                        method = arrayMethods[i];
+                        (<any>array)[method] = (<any>Array.prototype)[method];
+                    }
+                }
+            }
+
+            /**
+             * Overwrites an Array's prototype to observe mutation functions.
+             * @param {string} absoluteIdentifier The identifier for the Array off context.
+             * @param {Array<any>} array The array to overwrite.
+             */
+            _overwriteArray(absoluteIdentifier: string, array: Array<any>) {
+                var $compat = this.$Compat,
+                    length = arrayMethods.length,
+                    method: string,
+                    i: number;
+
+                if ($compat.proto) {
+                    var obj = Object.create(Array.prototype);
+
+                    for (i = 0; i < length; ++i) {
+                        method = arrayMethods[i];
+                        obj[method] = this._overwriteArrayFunction(absoluteIdentifier, method);
+                    }
+
+                    if ($compat.setProto) {
+                        (<any>Object).setPrototypeOf(array, obj);
+                    } else {
+                        (<any>array).__proto__ = obj;
+                    }
+
+                    return;
+                }
+
+                for (i = 0; i < length; ++i) {
+                    method = arrayMethods[i];
+                    ContextManager.defineProperty(array, method,
+                        this._overwriteArrayFunction(absoluteIdentifier, method), false, true);
+                }
+            }
+
             /**
              * Gets the immediate context of identifier by splitting on "." 
              * and observes the objects along the way.
@@ -11945,6 +11969,11 @@ module plat {
         static $EventManagerStatic: events.IEventManagerStatic;
 
         /**
+         * Reference to the IPromise injectable.
+         */
+        static $Promise: async.IPromise;
+
+        /**
          * An object containing all controls' registered event listeners.
          */
         private static __eventListeners: IObject<Array<IRemoveListener>> = {};
@@ -11976,7 +12005,7 @@ module plat {
          * Given a control, calls the loaded method for the control if it exists.
          * @param {plat.IControl} control The control to load.
          */
-        static load(control: IControl): void {
+        static load(control: IControl): async.IThenable<void> {
             if (isNull(control)) {
                 return;
             }
@@ -11999,8 +12028,10 @@ module plat {
             }
 
             if (isFunction(control.loaded)) {
-                control.loaded();
+                return Control.$Promise.cast(control.loaded());
             }
+
+            return Control.$Promise.resolve(null);
         }
 
         /**
@@ -12633,17 +12664,20 @@ module plat {
     export function IControlFactory(
         $Parser?: expressions.IParser,
         $ContextManagerStatic?: observable.IContextManagerStatic,
-        $EventManagerStatic?: events.IEventManagerStatic): IControlFactory {
+        $EventManagerStatic?: events.IEventManagerStatic,
+        $Promise?: async.IPromise): IControlFactory {
             Control.$Parser = $Parser;
             Control.$ContextManagerStatic = $ContextManagerStatic;
             Control.$EventManagerStatic = $EventManagerStatic;
+            Control.$Promise = $Promise;
             return Control;
     }
 
     register.injectable(__ControlFactory, IControlFactory, [
         __Parser,
         __ContextManagerStatic,
-        __EventManagerStatic
+        __EventManagerStatic,
+        __Promise
     ], __FACTORY);
 
     /**
@@ -12661,7 +12695,7 @@ module plat {
          * Given a control, calls the loaded method for the control if it exists.
          * @param {plat.IControl} control The control to load.
          */
-        load(control: IControl): void;
+        load(control: IControl): async.IThenable<void>;
 
         /**
          * Disposes all the necessary memory for a control. Uses specific dispose 
@@ -12757,7 +12791,7 @@ module plat {
          * meaning all of its children have also been loaded and initial DOM has been created and populated. It is now 
          * safe for all controls to access, observe, and modify the context property.
          */
-        loaded? (): void;
+        loaded? (): any;
 
         /**
          * Retrieves all the controls with the specified name.
@@ -18543,9 +18577,8 @@ module plat {
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
-                 * A promise that resolves when the animation is finished.
                  */
-                animate(element: Element, key: string, options?: any): IAnimationThenable<IParentAnimationFn> {
+                animate(element: Element, key: string, options?: any): IAnimatingThenable {
                     if (!isNode(element) || element.nodeType !== Node.ELEMENT_NODE) {
                         return this.resolve();
                     }
@@ -18573,9 +18606,11 @@ module plat {
                         animationInstance = animation.inject();
                     }
 
-                    var animationPromise: IAnimationThenable<any> = (<BaseAnimation>animationInstance)._init(element, options),
-                        animatingParentId = this.__parentIsAnimating(element),
+                    var animatingParentId = this.__parentIsAnimating(element),
                         id = this.__setAnimationId(element, animationInstance),
+                        // instantiate needs to be called after __setAnimationId in the case that 
+                        // the same element is animating while in an animation
+                        animationPromise: IAnimationThenable<any> = animationInstance.instantiate(element, options),
                         animatedElement = this._elements[id];
 
                     if (!isNull(animatingParentId)) {
@@ -18583,7 +18618,7 @@ module plat {
 
                         var parent = this._elements[animatingParentId];
                         if (isPromise(parent.promise)) {
-                            return animationPromise.then(() => {
+                            return animationInstance.instantiate(element, options).then(() => {
                                 return () => {
                                     return parent.promise;
                                 };
@@ -18617,7 +18652,7 @@ module plat {
                  * Immediately resolves an empty AnimationPromise.
                  * AnimationPromise.
                  */
-                resolve(): IAnimationThenable<IParentAnimationFn> {
+                resolve(): IAnimatingThenable {
                     var animationPromise = new AnimationPromise((resolve) => {
                         resolve(() => {
                             return animationPromise;
@@ -18675,10 +18710,10 @@ module plat {
                         removeListener = (cancel?: boolean, reanimating?: boolean) => {
                             if (cancel === true) {
                                 animationInstance.cancel();
+                                animationInstance.end();
                                 if (reanimating === true) {
                                     return;
                                 }
-                                animationInstance.done();
                             }
 
                             removeClass(<HTMLElement>element, __Animating);
@@ -18748,15 +18783,14 @@ module plat {
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options Specified options for the animation.
-                 * A promise that resolves when the animation is finished.
                  */
-                animate(element: Element, key: string, options?: any): IAnimationThenable<IParentAnimationFn>;
+                animate(element: Element, key: string, options?: any): IAnimatingThenable;
 
                 /**
                  * Immediately resolves an empty AnimationPromise.
                  * AnimationPromise.
                  */
-                resolve(): IAnimationThenable<IParentAnimationFn>;
+                resolve(): IAnimatingThenable;
             }
 
             /**
@@ -18778,19 +18812,22 @@ module plat {
             }
 
             /**
-             * Describes a function used to obtain an animating parent element's animation promise.
+             * Describes a function used to obtain an animating parent element's animation thenable.
              */
-            export interface IParentAnimationFn {
+            export interface IGetAnimatingThenable {
                 /**
-                 * The method signature for IParentAnimationFn.
+                 * The method signature for IGetAnimatingThenable.
                  */
                 (): IAnimationThenable<void>;
             }
 
             /**
-             * Describes a type of Promise that can be optionally cancelled.
+             * Describes a type of Promise that can be optionally cancelled and/or disposed of. 
+             * Further, in the case where it may have a parent that is animating (which will cause it to immediately cancel and fulfill 
+             * itself, it resolves with a IGetAnimatingThenable for acccessing 
+             * the IAnimationThenable of the animating parent element.
              */
-            export class AnimationPromise extends async.Promise<IParentAnimationFn> implements IAnimationPromise {
+            export class AnimationPromise extends async.Promise<IGetAnimatingThenable> implements IAnimatingThenable {
                 /**
                  * The animation instance to cancel if needed.
                  */
@@ -18801,15 +18838,15 @@ module plat {
                  * @param {(resolve: (value?: plat.ui.animations.IParentAnimationFn) => any) => void} resolveFunction A resolve function 
                  * that only allows for a resolve of void and no reject.
                  */
-                constructor(resolveFunction: (resolve: (value?: IParentAnimationFn) => any) => void);
+                constructor(resolveFunction: (resolve: (value?: IGetAnimatingThenable) => any) => void);
                 /**
                  * The constructor method for the {@link plat.async.AjaxPromise}.
                  * @param {(resolve: (value?: plat.ui.animations.IParentAnimationFn) => any) => void} resolveFunction A resolve function 
                  * that only allows for a resolve of void and no reject.
                  * @param {any} promise The promise object to allow for cancelling the {@link plat.ui.animations.AnimationPromise}.
                  */
-                constructor(resolveFunction: (resolve: (value?: IParentAnimationFn) => any) => void, promise: any);
-                constructor(resolveFunction: (resolve: (value?: IParentAnimationFn) => any) => void, promise?: any) {
+                constructor(resolveFunction: (resolve: (value?: IGetAnimatingThenable) => any) => void, promise: any);
+                constructor(resolveFunction: (resolve: (value?: IGetAnimatingThenable) => any) => void, promise?: any) {
                     super(resolveFunction);
                     if (!isNull(promise)) {
                         this.__animationInstance = promise.__animationInstance;
@@ -18829,14 +18866,14 @@ module plat {
                 /**
                  * A method to cancel the associated animation.
                  */
-                cancel(): IAnimationPromise {
+                cancel(): IAnimatingThenable {
                     var animationInstance = this.__animationInstance;
                     if (!isNull(animationInstance)) {
                         if (isFunction(animationInstance.cancel)) {
                             animationInstance.cancel();
                         }
-                        if (isFunction(animationInstance.done)) {
-                            animationInstance.done();
+                        if (isFunction(animationInstance.end)) {
+                            animationInstance.end();
                         }
                     }
 
@@ -18847,7 +18884,7 @@ module plat {
                  * A method to dispose the associated animation in order to remove any end states 
                  * as determined by the animation class itself.
                  */
-                dispose(): IAnimationPromise {
+                dispose(): IAnimatingThenable {
                     var animationInstance = this.__animationInstance;
                     if (!isNull(animationInstance)) {
                         if (isFunction(animationInstance.dispose)) {
@@ -18864,7 +18901,7 @@ module plat {
                  * @param {(success: plat.ui.animations.IParentAnimationFn) => U} onFulfilled A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: IParentAnimationFn) => U): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IGetAnimatingThenable) => U): IAnimationThenable<U>;
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
@@ -18872,7 +18909,7 @@ module plat {
                  * A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: IParentAnimationFn) => IAnimationThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IGetAnimatingThenable) => IAnimationThenable<U>): IAnimationThenable<U>;
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
@@ -18880,8 +18917,8 @@ module plat {
                  * A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: IParentAnimationFn) => async.IThenable<U>): IAnimationThenable<U>;
-                then<U>(onFulfilled: (success: IParentAnimationFn) => any): IAnimationThenable<U> {
+                then<U>(onFulfilled: (success: IGetAnimatingThenable) => async.IThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success: IGetAnimatingThenable) => any): IAnimationThenable<U> {
                     return <IAnimationThenable<U>><any>super.then<U>(onFulfilled);
                 }
 
@@ -18908,15 +18945,21 @@ module plat {
              */
             export interface IAnimationThenable<R> extends async.IThenable<R> {
                 /**
+                 * Initializes the promise, providing it with the {@link plat.ui.animations.IBaseAnimation} instance.
+                 * @param {plat.ui.animations.IBaseAnimation} instance The animation instance for this promise.
+                 */
+                initialize? (instance: IBaseAnimation): void;
+
+                /**
                  * A method to cancel the associated animation.
                  */
-                cancel(): IAnimationPromise;
+                cancel(): IAnimationThenable<R>;
 
                 /**
                  * A method to dispose the associated animation in order to remove any end states 
                  * as determined by the animation class itself.
                  */
-                dispose(): IAnimationPromise;
+                dispose(): IAnimationThenable<R>;
 
                 /**
                  * Takes in two methods, called when/if the promise fulfills/rejects.
@@ -18967,51 +19010,13 @@ module plat {
             }
 
             /**
-             * Describes a type of IPromise that fulfills when an animation is 
-             * finished and can be optionally cancelled.
+             * Describes a type of IPromise that resolves when an animation is 
+             * finished. It can be optionally cancelled and/or disposed of. Further, in the case where it may have 
+             * a parent that is animating (which will cause it to immediately cancel and fulfill itself, it resolves  
+             * with a IGetAnimatingThenable for acccessing 
+             * the IAnimationThenable of the animating parent element.
              */
-            export interface IAnimationPromise extends IAnimationThenable<IParentAnimationFn> {
-                /**
-                 * Initializes the promise, providing it with the {@link plat.ui.animations.IBaseAnimation} instance.
-                 * @param {plat.ui.animations.IBaseAnimation} instance The animation instance for this promise.
-                 */
-                initialize(instance: IBaseAnimation): void;
-
-                /**
-                 * A method to cancel the associated animation.
-                 */
-                cancel(): IAnimationPromise;
-
-                /**
-                 * A method to dispose the associated animation in order to remove any end states 
-                 * as determined by the animation class itself.
-                 */
-                dispose(): IAnimationPromise;
-
-                /**
-                 * Takes in two methods, called when/if the promise fulfills.
-                 * next then method in the promise chain.
-                 * @param {(success: plat.ui.animations.IParentAnimationFn) => U} onFulfilled A method called when/if the promise fulfills. 
-                 * If undefined the next onFulfilled method in the promise chain will be called.
-                 */
-                then<U>(onFulfilled: (success: IParentAnimationFn) => U): IAnimationThenable<U>;
-                /**
-                 * Takes in two methods, called when/if the promise fulfills.
-                 * next then method in the promise chain.
-                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.ui.animations.IAnimationThenable<U>} onFulfilled 
-                 * A method called when/if the promise fulfills. 
-                 * If undefined the next onFulfilled method in the promise chain will be called.
-                 */
-                then<U>(onFulfilled: (success: IParentAnimationFn) => IAnimationThenable<U>): IAnimationThenable<U>;
-                /**
-                 * Takes in two methods, called when/if the promise fulfills.
-                 * next then method in the promise chain.
-                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.async.IThenable<U>} onFulfilled 
-                 * A method called when/if the promise fulfills. 
-                 * If undefined the next onFulfilled method in the promise chain will be called.
-                 */
-                then<U>(onFulfilled: (success: IParentAnimationFn) => async.IThenable<U>): IAnimationThenable<U>;
-            }
+            export interface IAnimatingThenable extends IAnimationThenable<IGetAnimatingThenable> { }
 
             /**
              * A class representing a single animation for a single element.
@@ -19055,7 +19060,7 @@ module plat {
                 /**
                  * A function to be called when the animation is over.
                  */
-                done(): void {
+                end(): void {
                     if (isFunction(this._resolve)) {
                         this._resolve();
                         this._resolve = null;
@@ -19074,13 +19079,13 @@ module plat {
                 dispose(): void { }
 
                 /**
-                 * Initializes the element and key properties of this animation and passes in the function 
-                 * to resolve when finished.
+                 * Initializes the element and key properties of this animation and grabs a 
+                 * reference to its resolve function.
                  * @param {Element} element The element on which the animation will occur.
                  * @param {any} options Specified options for the animation.
                  * animation is complete and end() is called.
                  */
-                _init(element: Element, options?: any): IAnimationPromise {
+                instantiate(element: Element, options?: any): IAnimatingThenable {
                     this.element = <HTMLElement>element;
                     this.options = options;
 
@@ -19127,7 +19132,7 @@ module plat {
                 /**
                  * A function to be called when the animation is over.
                  */
-                done(): void;
+                end(): void;
 
                 /**
                  * A function to be called to let it be known the animation is being cancelled.
@@ -19139,6 +19144,14 @@ module plat {
                  * result of this animation.
                  */
                 dispose(): void;
+
+                /**
+                 * Initializes the element and key properties of this animation.
+                 * @param {Element} element The element on which the animation will occur.
+                 * @param {any} options Specified options for the animation.
+                 * animation is complete and end() is called.
+                 */
+                instantiate(element: Element, options?: any): IAnimatingThenable;
             }
 
             /**
@@ -19336,14 +19349,14 @@ module plat {
                         computedStyle[<any>(animationId + 'PlayState')] === 'paused') {
                         removeClass(element, className);
                         addClass(element, className + __END_SUFFIX);
-                        this.done();
+                        this.end();
                         return;
                     }
 
                     this.animationEnd(() => {
                         removeClass(element, className);
                         addClass(element, className + __END_SUFFIX);
-                        this.done();
+                        this.end();
                     });
                 }
 
@@ -19478,7 +19491,7 @@ module plat {
                         element = this.element,
                         endFn = () => {
                             removeClass(element, this.className);
-                            this.done();
+                            this.end();
                         },
                         computedStyle = this.$Window.getComputedStyle(element),
                         transitionProperty = computedStyle[<any>(transitionId + 'Property')],
@@ -19619,7 +19632,7 @@ module plat {
                 /**
                  * A promise used for disposing the end state of the previous animation prior to starting a new one.
                  */
-                _animationPromise: animations.IAnimationThenable<animations.IParentAnimationFn>;
+                _animationPromise: animations.IAnimationThenable<animations.IGetAnimatingThenable>;
 
                 /**
                  * The constructor for a Baseport.
@@ -19721,7 +19734,7 @@ module plat {
                  * being navigated away from.
                  * resolves when the current view is done animating away.
                  */
-                navigateFrom(fromControl: IBaseViewControl): animations.IAnimationThenable<animations.IParentAnimationFn> {
+                navigateFrom(fromControl: IBaseViewControl): animations.IAnimationThenable<animations.IGetAnimatingThenable> {
                     if (isNull(fromControl) || !isFunction(fromControl.navigatingFrom)) {
                         return this.$Animator.resolve();
                     }
@@ -19776,7 +19789,7 @@ module plat {
                  * being navigated away from.
                  * when the current view is done animating away.
                  */
-                navigateFrom(fromControl: IBaseViewControl): animations.IAnimationThenable<animations.IParentAnimationFn>;
+                navigateFrom(fromControl: IBaseViewControl): animations.IAnimationThenable<animations.IGetAnimatingThenable>;
 
                 /**
                  * Implements the functionality for when the hard backbutton is pressed on a device.
@@ -20273,7 +20286,7 @@ module plat {
                 /**
                  * An array to aggregate all current animation promises.
                  */
-                private __currentAnimations: Array<animations.IAnimationThenable<void>> = [];
+                private __currentAnimations: Array<animations.IAnimationThenable<any>> = [];
                 /**
                  * The resolve function for the itemsLoaded promise.
                  */
@@ -20613,7 +20626,7 @@ module plat {
                         return this.__handleAnimation(startNode, endNode, key);
                     }
 
-                    var animationPromises: Array<animations.IAnimationThenable<animations.IParentAnimationFn>> = [];
+                    var animationPromises: Array<animations.IAnimatingThenable> = [];
                     while (length-- > 0) {
                         animationPromises.push(currentAnimations[length].cancel());
                     }
@@ -21153,6 +21166,11 @@ module plat {
                 $Animator: animations.IAnimator = acquire(__Animator);
 
                 /**
+                 * Reference to the IPromise injectable.
+                 */
+                $Promise: async.IPromise = acquire(__Promise);
+
+                /**
                  * The evaluated plat-options object.
                  */
                 options: observable.IObservableProperty<IIfOptions>;
@@ -21184,11 +21202,11 @@ module plat {
                 /**
                  * A promise that resolves when the leave animation is finished.
                  */
-                private __leaveAnimation: animations.IAnimationThenable<void>;
+                private __leaveAnimation: animations.IAnimationThenable<any>;
                 /**
                  * A promise that resolves when the entrance animation is finished.
                  */
-                private __enterAnimation: animations.IAnimationThenable<void>;
+                private __enterAnimation: animations.IAnimationThenable<any>;
 
                 /**
                  * The constructor for a If. Creates the 
@@ -21198,21 +21216,25 @@ module plat {
                     super();
                     var $document: Document = acquire(__Document);
                     this.commentNode = $document.createComment('plat-if' + __BOUND_PREFIX + 'placeholder');
-                    this.fragmentStore = $document.createDocumentFragment();
                 }
 
                 /**
                  * Checks the options and initializes the 
                  * evaluation.
                  */
-                contextChanged(): void {
+                contextChanged(): async.IThenable<void> {
                     var options = this.options.value;
 
                     if (isEmpty(options)) {
                         return;
                     }
 
-                    this._setter(options);
+                    return this._setter(options);
+                }
+
+                setTemplate() {
+                    var childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
+                    this.bindableTemplates.add('template', childNodes);
                 }
 
                 /**
@@ -21220,7 +21242,7 @@ module plat {
                  * defined, kicks off the evaluation, and observes 
                  * the options for changes.
                  */
-                loaded(): void {
+                loaded(): async.IThenable<void> {
                     if (isNull(this.options)) {
                         var $exception: IExceptionStatic = acquire(__ExceptionStatic);
                         $exception.warn('No condition specified in plat-options for plat-if.', $exception.BIND);
@@ -21233,9 +21255,12 @@ module plat {
                         };
                     }
 
-                    this.contextChanged();
+                    var promise = this.contextChanged();
+
                     this.__firstTime = false;
                     this.__removeListener = this.options.observe(this._setter);
+
+                    return promise;
                 }
 
                 /**
@@ -21256,49 +21281,64 @@ module plat {
                  * whether or not to add or remove 
                  * the node from the DOM.
                  */
-                _setter(options: IIfOptions): void {
-                    var value = !!options.condition;
+                _setter(options: IIfOptions): async.IThenable<void> {
+                    var value = !!options.condition,
+                        promise: async.IThenable<void>;
 
-                    if (value === this.__condition) {
-                        return;
+                    if (value === this.__condition && !this.__firstTime) {
+                        return this.$Promise.resolve(null);
                     }
 
                     if (value) {
                         if (!isNull(this.__leaveAnimation)) {
-                            this.__leaveAnimation.cancel().then(() => {
+                            promise = <any>this.__leaveAnimation.cancel().then(() => {
                                 this.__leaveAnimation = null;
-                                this._addItem();
+                                return this._addItem();
                             });
                         } else {
-                            this._addItem();
+                            promise = this._addItem();
                         }
                     } else {
                         if (!isNull(this.__enterAnimation)) {
-                            this.__enterAnimation.cancel().then(() => {
+                            promise = this.__enterAnimation.cancel().then(() => {
                                 this.__enterAnimation = null;
-                                this._removeItem();
+                                return this._removeItem();
                             });
                         } else {
                             this._removeItem();
+                            promise = this.$Promise.resolve(null);
                         }
                     }
 
                     this.__condition = value;
+
+                    return promise;
                 }
 
                 /**
                  * Adds the conditional nodes to the DOM.
                  */
-                _addItem(): void {
+                _addItem(): async.IThenable<void> {
                     var commentNode = this.commentNode,
                         parentNode = commentNode.parentNode;
 
-                    if (!isNode(parentNode)) {
-                        return;
+                    if (!isNode(parentNode) && !this.__firstTime) {
+                        return this.$Promise.resolve(null);
+                    }
+
+                    if (this.__firstTime) {
+                        return this.bindableTemplates.bind('template').then((template) => {
+                            this.fragmentStore = template;
+                            this.element.appendChild(template);
+
+                            return this.__enterAnimation = this.$Animator.animate(this.element, __Enter);
+                        }).then(() => {
+                            this.__enterAnimation = null;
+                        });
                     }
 
                     parentNode.replaceChild(this.fragmentStore, commentNode);
-                    this.__enterAnimation = this.$Animator.animate(this.element, __Enter).then(() => {
+                    return this.__enterAnimation = this.$Animator.animate(this.element, __Enter).then(() => {
                         this.__enterAnimation = null;
                     });
                 }
@@ -21310,8 +21350,6 @@ module plat {
                     var element = this.element;
 
                     if (this.__firstTime) {
-                        element.parentNode.insertBefore(this.commentNode, element);
-                        insertBefore(this.fragmentStore, element);
                         return;
                     }
 
@@ -22918,7 +22956,7 @@ module plat {
                 }
 
                 return promise.then(() => {
-                    this._loadControls(<Array<IAttributeControl>>controls, this.getUiControl());
+                    return this._loadControls(<Array<IAttributeControl>>controls, this.getUiControl());
                 }).catch((error: any) => {
                     postpone(() => {
                         var $exception: IExceptionStatic = acquire(__ExceptionStatic);
@@ -23056,11 +23094,12 @@ module plat {
              * @param {plat.ui.ITemplateControl} templateControl The ITemplateControl 
              * associated with this manager.
              */
-            _loadControls(controls: Array<IAttributeControl>, templateControl: ui.ITemplateControl): void {
+            _loadControls(controls: Array<IAttributeControl>, templateControl: ui.ITemplateControl): async.IThenable<void> {
                 var length = controls.length,
                     control: IAttributeControl,
                     load = this.$ControlFactory.load,
                     templateControlLoaded = isNull(templateControl),
+                    promise: async.IThenable<void>,
                     templateControlPriority: number,
                     i: number;
 
@@ -23079,15 +23118,17 @@ module plat {
 
                     if (!templateControlLoaded && templateControlPriority > control.priority) {
                         templateControlLoaded = true;
-                        load(templateControl);
+                        promise = load(templateControl);
                     }
 
                     load(control);
                 }
 
                 if (!templateControlLoaded) {
-                    load(templateControl);
+                    promise = load(templateControl);
                 }
+
+                return promise;
             }
         
             /**
@@ -23998,7 +24039,7 @@ module plat {
              * Contains the navigation history stack for the associated Viewport.
              */
             history: Array<INavigationState> = [];
-        
+
             /**
              * Specifies the current state of navigation. This state should contain 
              * enough information for it to be pushed onto the history stack when 
@@ -24036,7 +24077,7 @@ module plat {
 
                 this.viewport = viewport;
             }
-        
+
             /**
              * Allows an IBaseViewControl to navigate to another 
              * IBaseViewControl. Also allows for
@@ -24140,11 +24181,11 @@ module plat {
 
                         baseport.navigateTo(event);
                     }).catch((error) => {
-                        postpone(() => {
-                            var Exception: IExceptionStatic = acquire(__ExceptionStatic);
-                            Exception.fatal(error, Exception.NAVIGATION);
+                            postpone(() => {
+                                var Exception: IExceptionStatic = acquire(__ExceptionStatic);
+                                Exception.fatal(error, Exception.NAVIGATION);
+                            });
                         });
-                    });
 
                     return;
                 }
@@ -24176,7 +24217,7 @@ module plat {
 
                 if (isString(Constructor)) {
                     return viewControl.type === Constructor;
-            }
+                }
 
                 return viewControl.constructor === Constructor;
             }
@@ -24240,7 +24281,7 @@ module plat {
                     if (inHistory) {
                         this.$BaseViewControlFactory.detach(viewControl);
                     } else {
-                    this.$BaseViewControlFactory.dispose(viewControl);
+                        this.$BaseViewControlFactory.dispose(viewControl);
                     }
 
                     var last = this._goBackLength(length);
@@ -24258,13 +24299,13 @@ module plat {
 
                     baseport.navigateTo(event);
                 }).catch((error) => {
-                    postpone(() => {
-                        $exception = acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.NAVIGATION);
+                        postpone(() => {
+                            $exception = acquire(__ExceptionStatic);
+                            $exception.fatal(error, $exception.NAVIGATION);
+                        });
                     });
-                });
             }
-        
+
             /**
              * Looks for a backButtonPressed event on the current view control and uses it if it exists. Otherwise calls goBack if 
              * this navigator is the main navigator.
@@ -24280,7 +24321,7 @@ module plat {
             canGoBack(): boolean {
                 return this.history.length > 0;
             }
-        
+
             /**
              * Clears the navigation history, disposing all the controls.
              */
@@ -24317,17 +24358,18 @@ module plat {
             _findInHistory(Constructor: string): number;
             _findInHistory(Constructor: any): number {
                 var history = this.history,
-                    index = -1;
+                    index = -1,
+                    i: number;
 
                 if (isFunction(Constructor)) {
-                    for (var i = (history.length - 1); i >= 0; --i) {
+                    for (i = (history.length - 1); i >= 0; --i) {
                         if (history[i].control.constructor === Constructor) {
                             index = i;
                             break;
                         }
                     }
                 } else if (isString(Constructor)) {
-                    for (var i = (history.length - 1); i >= 0; --i) {
+                    for (i = (history.length - 1); i >= 0; --i) {
                         if (history[i].control.type === Constructor) {
                             index = i;
                             break;
@@ -24337,7 +24379,7 @@ module plat {
 
                 return index;
             }
-        
+
             /**
              * This method takes in a length and navigates back in the history, returning the 
              * IBaseViewControl associated with length + 1 entries 
@@ -24377,7 +24419,7 @@ module plat {
         }
 
         register.injectable(__NavigatorInstance, INavigatorInstance, null, __INSTANCE);
-    
+
         /**
          * An object that allows IBaseViewControl to implement methods 
          * used to navigate within a Viewport.
@@ -24387,7 +24429,7 @@ module plat {
              * Contains the navigation history stack for the associated Viewport.
              */
             history: Array<INavigationState>;
-        
+
             /**
              * Specifies the current state of navigation. This state should contain 
              * enough information for it to be pushed onto the history stack when 
@@ -24400,7 +24442,7 @@ module plat {
              * facilitate navigation.
              */
             viewport: ui.controls.IBaseport;
-        
+
             /**
              * Allows an IBaseViewControl to navigate to another 
              * IBaseViewControl. Also allows for
@@ -24432,7 +24474,7 @@ module plat {
              * INavigationOptions used for navigation.
              */
             navigate(injector: dependency.IInjector<ui.IBaseViewControl>, options?: INavigationOptions): void;
-        
+
             /**
              * Returns to the last visited IBaseViewControl.
              * @param {plat.navigation.IBackNavigationOptions} options? Optional 
@@ -24442,19 +24484,19 @@ module plat {
              * to use at the next IBaseViewControl.
              */
             goBack(options?: IBackNavigationOptions): void;
-        
+
             /**
              * Lets the caller know if there are IBaseViewControl in the history, 
              * meaning the caller is safe to perform a backward navigation.
              */
             canGoBack(): boolean;
-        
+
             /**
              * Clears the navigation history, disposing all the controls.
              */
             clearHistory(): void;
         }
-    
+
         /**
          * Options that you can submit to an INavigatorInstance in order 
          * to customize navigation.
@@ -24470,7 +24512,7 @@ module plat {
              */
             initialize?: boolean;
         }
-    
+
         /**
          * Options that you can submit to an INavigatorInstance during a backward 
          * navigation in order to customize the navigation.
@@ -24736,6 +24778,9 @@ module plat {
             route: web.IRoute<any>;
         }
     }
+    /**
+     * Holds all classes and interfaces related to attribute control components in platypus.
+     */
     export module controls {
         /**
          * Allows for assigning a name to an Element or TemplateControl and referencing it 
@@ -25918,7 +25963,7 @@ module plat {
                 }
 
                 var attributes = expression.split(';'),
-                    elementStyle = this.element.style,
+                    elementStyle = this.element.style || {},
                     length = attributes.length,
                     splitStyles: Array<string>,
                     styleType: string,
@@ -25926,13 +25971,18 @@ module plat {
 
                 for (var i = 0; i < length; ++i) {
                     splitStyles = attributes[i].split(':');
-                    if (splitStyles.length === 2) {
-                        styleType = camelCase(splitStyles[0].trim());
-                        styleValue = splitStyles[1].trim();
 
-                        if (!isUndefined((<any>elementStyle)[styleType])) {
-                            (<any>elementStyle)[styleType] = styleValue;
-                        }
+                    if (splitStyles.length < 2) {
+                        continue;
+                    } else if (splitStyles.length > 2) {
+                        splitStyles = [splitStyles.shift(), splitStyles.join(':')];
+                    }
+
+                    styleType = camelCase(splitStyles[0].trim());
+                    styleValue = splitStyles[1].trim();
+
+                    if (!isUndefined((<any>elementStyle)[styleType])) {
+                        (<any>elementStyle)[styleType] = styleValue;
                     }
                 }
             }
@@ -27061,20 +27111,25 @@ module plat {
             $LifecycleEventStatic.dispatch(__beforeLoad, App);
 
             if (isNull(node)) {
-                $compiler.compile(head);
                 body.setAttribute(__Hide, '');
-                $compiler.compile(body);
-                body.removeAttribute(__Hide);
+                postpone(() => {
+                    $compiler.compile(head);
+                    $compiler.compile(body);
+                    body.removeAttribute(__Hide);
+                });
                 return;
             }
 
             if (isFunction((<Element>node).setAttribute)) {
                 (<Element>node).setAttribute(__Hide, '');
-                $compiler.compile(node);
-                (<Element>node).removeAttribute(__Hide);
-            } else {
-                $compiler.compile(node);
+                postpone(() => {
+                    $compiler.compile(node);
+                    (<Element>node).removeAttribute(__Hide);
+                });
+                return;
             }
+
+            $compiler.compile(node);
         }
 
         /**

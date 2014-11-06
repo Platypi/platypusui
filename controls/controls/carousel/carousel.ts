@@ -283,6 +283,20 @@
         _maxCloneAttempts = 25;
 
         /**
+         * @name _animationThenable
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimationThenable<void>}
+         * 
+         * @description
+         * The most recent animation thenable. Used to cancel the current animation if another needs 
+         * to begin.
+         */
+        _animationThenable: plat.ui.animations.IAnimationThenable<void>;
+
+        /**
          * @name setClasses
          * @memberof platui.Carousel
          * @kind function
@@ -398,14 +412,15 @@
                 return;
             }
 
+            this._index++;
+
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + (this._currentOffset -= this._intervalOffset) + 'px,0,0)';
-            this.$animator.animate(this._slider, __Transition, animationOptions);
-            this._index++;
+            this._setAnimationOptions(animationOptions);
         }
 
         /**
-         * @name goToNext
+         * @name goToPrevious
          * @memberof platui.Carousel
          * @kind function
          * @access public
@@ -421,10 +436,11 @@
                 return;
             }
 
+            this._index--;
+
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + (this._currentOffset += this._intervalOffset) + 'px,0,0)';
-            this.$animator.animate(this._slider, __Transition, animationOptions);
-            this._index--;
+            this._setAnimationOptions(animationOptions);
         }
 
         /**
@@ -446,7 +462,8 @@
                 return;
             }
 
-            this._index = index;
+            // throw new NotImplementedException
+            // this._index = index;
         }
 
         /**
@@ -463,7 +480,37 @@
         reset(): void {
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + this._currentOffset + 'px,0,0)';
-            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this._setAnimationOptions(animationOptions);
+        }
+
+        /**
+         * @name _setAnimationOptions
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Animates the carousel with a set of characteristics passed in as an argument.
+         * 
+         * @param {plat.IObject<string>} animationOptions An object containing key-value pairs 
+         * of properties to animate.
+         * 
+         * @returns {void}
+         */
+        _setAnimationOptions(animationOptions: plat.IObject<string>): void {
+            if (!this.$utils.isNull(this._animationThenable)) {
+                this._animationThenable = this._animationThenable.cancel().then(() => {
+                    this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
+                        this._animationThenable = null;
+                    });
+                });
+
+                return;
+            }
+
+            this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
+                this._animationThenable = null;
+            });
         }
 
         /**
@@ -486,17 +533,18 @@
                 if (!this._intervalOffset) {
                     this._setOffsetWithClone();
                 }
+
+                this._addEventListeners(transition);
             }).catch(() => {
-                var Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('Error processing ' + __Carousel + '. Please ensure you\'re context is correct.');
-                this._loaded = false;
-                return;
-            });
+                    var Exception = plat.acquire(__ExceptionStatic);
+                    Exception.warn('Error processing ' + __Carousel + '. Please ensure you\'re context is correct.');
+                    this._loaded = false;
+                    return;
+                });
 
             this._setTransform();
             this._transition = transition;
             this._slider = <HTMLElement>this.element.firstElementChild;
-            this._addEventListeners(transition);
         }
 
         /**
@@ -553,6 +601,19 @@
          * @returns {void}
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
+            if (!this.$utils.isNull(this._animationThenable)) {
+                this._animationThenable = this._animationThenable.cancel().then(() => {
+                    this._inTouch = true;
+                    this._lastTouch = {
+                        x: ev.clientX,
+                        y: ev.clientY
+                    };
+
+                    this._animationThenable = null;
+                });
+                return;
+            }
+
             this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
@@ -613,6 +674,10 @@
          * @returns {void}
          */
         _track(ev: plat.ui.IGestureEvent): void {
+            if (!this._inTouch) {
+                return;
+            }
+
             this._slider.style[<any>this._transform] = this._calculateTranslation(ev);
         }
 
