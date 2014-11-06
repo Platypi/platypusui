@@ -529,9 +529,29 @@
          * @returns {void}
          */
         _initializeEvents(transition: string): void {
-            var knob = this._knob;
+            var knob = this._knob,
+                trackFn: EventListener = this._track,
+                track: string,
+                reverseTrack: string;
+
+            switch (transition) {
+                case 'right':
+                case 'up':
+                    track = __$track + transition;
+                    reverseTrack = __$track + __transitionHash[transition];
+                    break;
+                case 'left':
+                case 'down':
+                    track = __$track + __transitionHash[transition];
+                    reverseTrack = __$track + transition;
+                    break;
+                default:
+                    return;
+            }
+
             this.addEventListener(knob, __$touchstart, this._touchStart, false);
-            this.addEventListener(knob, __$track, this._track, false);
+            this.addEventListener(knob, track, trackFn, false);
+            this.addEventListener(knob, reverseTrack, trackFn, false);
             this.addEventListener(knob, __$trackend, this._touchEnd, false);
         }
 

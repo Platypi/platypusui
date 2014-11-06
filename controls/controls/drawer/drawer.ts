@@ -832,7 +832,7 @@
         _removeSwipeOpen: plat.IRemoveListener;
 
         /**
-         * @name _removeTrack
+         * @name _removePrimaryTrack
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
@@ -840,9 +840,22 @@
          * @type {plat.IRemoveListener}
          * 
          * @description
-         * A function for removing the track event listener.
+         * A function for removing the primary track (open) event listener.
          */
-        _removeTrack: plat.IRemoveListener;
+        _removePrimaryTrack: plat.IRemoveListener;
+
+        /**
+         * @name _removeSecondaryTrack
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function for removing the secondary track (close) event listener.
+         */
+        _removeSecondaryTrack: plat.IRemoveListener;
 
         /**
          * @name _openTapRemover
@@ -950,24 +963,6 @@
          * A URL that points to the HTML template.
          */
         _templateUrl: string;
-
-        /**
-         * @name _transitionHash
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {string}
-         * 
-         * @description
-         * An object to quickly access the transition close direction based on a transition open direction.
-         */
-        _transitionHash: plat.IObject<string> = {
-            right: 'left',
-            left: 'right',
-            up: 'down',
-            down: 'up'
-        };
 
         /**
          * @name _directionalTransitionPrep
@@ -1176,6 +1171,8 @@
             if (wasClosed) {
                 if (this._useContext) {
                     this.propertyChanged(true);
+                } else if (!this.$utils.isNull(this._drawer)) {
+                    this._drawer.propertyChanged(true);
                 }
             }
 
@@ -1201,6 +1198,8 @@
             if (wasOpen) {
                 if (this._useContext) {
                     this.propertyChanged(false);
+                } else if (!this.$utils.isNull(this._drawer)) {
+                    this._drawer.propertyChanged(false);
                 }
             }
 
@@ -1523,7 +1522,7 @@
          * @returns {void}
          */
         _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._transitionHash[this._transition], () => {
+            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + __transitionHash[this._transition], () => {
                 this._hasSwiped = true;
                 this.$utils.postpone(this.close, null, this);
             }, false);
@@ -1597,7 +1596,12 @@
             }
 
             if (this._isTrack = (types.indexOf('track') !== -1)) {
-                this._removeTrack = this.addEventListener(element, __$track, this._track, false);
+                var primaryTrack = __$track + transition,
+                    secondaryTrack = __$track + __transitionHash[transition],
+                    trackFn = this._track;
+
+                this._removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
+                this._removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
 
                 if (isNull(this._lastTouch)) {
                     var touchEnd = this._touchEnd;
@@ -1628,9 +1632,14 @@
                 this._removeTap = null;
             }
 
-            if (isFunction(this._removeTrack)) {
-                this._removeTrack();
-                this._removeTrack = null;
+            if (isFunction(this._removePrimaryTrack)) {
+                this._removePrimaryTrack();
+                this._removePrimaryTrack = null;
+            }
+
+            if (isFunction(this._removeSecondaryTrack)) {
+                this._removeSecondaryTrack();
+                this._removeSecondaryTrack = null;
             }
 
             if (isFunction(this._removeSwipeOpen)) {
@@ -1981,7 +1990,7 @@
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic;
 
-            if (isNull(this._transitionHash[transition])) {
+            if (isNull(__transitionHash[transition])) {
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Incorrect transition direction: "' + transition +
                     '" defined for "' + __Drawer + '" or "' + __DrawerController + '."');

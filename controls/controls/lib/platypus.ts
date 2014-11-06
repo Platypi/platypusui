@@ -16833,9 +16833,7 @@ module plat {
                     direction = ev.direction = isNull(lastMove) ? this.__getDirection(x - lastX, y - lastY) :
                     this.__getDirection(x - lastMove.clientX, y - lastMove.clientY);
 
-                if (this.__checkForOriginChanged(direction)) {
-                    ev.preventDefault();
-                }
+                this.__checkForOriginChanged(direction);
 
                 var velocity = ev.velocity = this.__getVelocity(x - swipeOrigin.clientX, y - swipeOrigin.clientY,
                     ev.timeStamp - swipeOrigin.timeStamp);
@@ -17076,12 +17074,10 @@ module plat {
                     trackDirectionDomEvent = this.__findFirstSubscriber(eventTarget, trackDirectionGesture);
 
                 if (!isNull(trackDomEvent)) {
-                    ev.preventDefault();
                     trackDomEvent.trigger(ev);
                 }
 
                 if (!isNull(trackDirectionDomEvent)) {
-                    ev.preventDefault();
                     trackDirectionDomEvent.trigger(ev);
                 }
             }
@@ -17579,7 +17575,7 @@ module plat {
              * an origin point.
              * @param {string} direction The current direction of movement.
              */
-            private __checkForOriginChanged(direction: string): boolean {
+            private __checkForOriginChanged(direction: string): void {
                 var lastMove = this.__lastMoveEvent;
                 if (isNull(lastMove)) {
                     this.__hasSwiped = false;
@@ -17588,7 +17584,7 @@ module plat {
 
                 var swipeDirection = lastMove.direction;
                 if (swipeDirection === direction) {
-                    return false;
+                    return;
                 }
 
                 this.__swipeOrigin = lastMove;
@@ -17600,7 +17596,7 @@ module plat {
              * Checks to see if a swipe event has been registered.
              * @param {string} direction The current direction of movement.
              */
-            private __checkForRegisteredSwipe(direction: string): boolean {
+            private __checkForRegisteredSwipe(direction: string): void {
                 var swipeTarget = <ICustomElement>this.__swipeOrigin.target,
                     swipeGesture = this._gestures.$swipe,
                     swipeDirectionGesture = swipeGesture + direction,
@@ -17611,8 +17607,6 @@ module plat {
                     master: domEventSwipe,
                     directional: domEventSwipeDirection
                 };
-
-                return !isNull(domEventSwipe) || !isNull(domEventSwipeDirection);
             }
             /**
              * Checks to see if a swipe event has been registered.
@@ -18624,7 +18618,7 @@ module plat {
 
                         var parent = this._elements[animatingParentId];
                         if (isPromise(parent.promise)) {
-                            return animationInstance.instantiate(element, options).then(() => {
+                            return animationPromise.then(() => {
                                 return () => {
                                     return parent.promise;
                                 };

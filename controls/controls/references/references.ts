@@ -60,7 +60,17 @@ var __Promise = '$Promise',
     __DrawerControllerFetchEvent = '__platDrawerControllerFetch',
     __DrawerFoundEvent = '__platDrawerFound',
     __DrawerControllerDisposing = '__platDrawerControllerDisposing',
-    __DrawerControllerDisposingFound = '__platDrawerControllerDisposingFound';
+    __DrawerControllerDisposingFound = '__platDrawerControllerDisposingFound',
+
+    /**
+     * Misc
+     */
+    __transitionHash: plat.IObject<string> = {
+        right: 'left',
+        left: 'right',
+        up: 'down',
+        down: 'up'
+    };
 /* tslint:enable:no-unused-variable */
 
 module platui {

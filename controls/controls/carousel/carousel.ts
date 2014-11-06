@@ -393,7 +393,7 @@
                 index = options.index;
 
             this._index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : 0;
-            this._init(options.transition || 'horizontal');
+            this._init(options.transition || 'right');
             this._loaded = true;
         }
 
@@ -561,8 +561,28 @@
          * @returns {void}
          */
         _addEventListeners(transition: string): void {
-            var element = this.element;
-            this.addEventListener(element, __$track, this._track, false);
+            var element = this.element,
+                trackFn = this._track,
+                track: string,
+                reverseTrack: string;
+
+            switch (transition) {
+                case 'right':
+                case 'up':
+                    track = __$track + transition;
+                    reverseTrack = __$track + __transitionHash[transition];
+                    break;
+                case 'left':
+                case 'down':
+                    track = __$track + __transitionHash[transition];
+                    reverseTrack = __$track + transition;
+                    break;
+                default:
+                    return;
+            }
+
+            this.addEventListener(element, track, trackFn, false);
+            this.addEventListener(element, reverseTrack, trackFn, false);
             this.addEventListener(element, __$touchstart, this._touchStart, false);
             this.addEventListener(element, __$trackend, this._touchEnd, false);
         }
@@ -799,11 +819,11 @@
          * 
          * @description
          * The transition direction of the {@link platui.Carousel|Carousel}. 
-         * Defaults to "horizontal".
+         * Defaults to "right".
          * 
          * @remarks
-         * - "horizontal"
-         * - "vertical"
+         * - "right"/"left" - horizontal control.
+         * - "up"/"down" - vertical control.
          */
         transition?: string;
 

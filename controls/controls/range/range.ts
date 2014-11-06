@@ -613,12 +613,33 @@
             var lowerKnob = this._lowerKnob,
                 upperKnob = this._upperKnob,
                 touchstart = this._touchStart,
-                touchEnd = this._touchEnd;
+                touchEnd = this._touchEnd,
+                trackLower = this._trackLower,
+                trackUpper = this._trackUpper,
+                track: string,
+                reverseTrack: string;
+
+            switch (transition) {
+                case 'right':
+                case 'up':
+                    track = __$track + transition;
+                    reverseTrack = __$track + __transitionHash[transition];
+                    break;
+                case 'left':
+                case 'down':
+                    track = __$track + __transitionHash[transition];
+                    reverseTrack = __$track + transition;
+                    break;
+                default:
+                    return;
+            }
 
             this.addEventListener(lowerKnob, __$touchstart, touchstart, false);
             this.addEventListener(upperKnob, __$touchstart, touchstart, false);
-            this.addEventListener(lowerKnob, __$track, this._trackLower, false);
-            this.addEventListener(upperKnob, __$track, this._trackUpper, false);
+            this.addEventListener(lowerKnob, track, trackLower, false);
+            this.addEventListener(lowerKnob, reverseTrack, trackLower, false);
+            this.addEventListener(upperKnob, track, trackUpper, false);
+            this.addEventListener(upperKnob, reverseTrack, trackUpper, false);
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
         }
