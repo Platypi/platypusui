@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.9.3-build.4 (http://getplatypi.com) 
+ * PlatypusTS v0.9.4 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -2114,6 +2114,9 @@ module plat {
             for (var i = 0; i < length; ++i) {
                 (<any>error)[properties[i]] = message[properties[i]];
             }
+
+            (<any>error).stack = message.stack;
+            (<any>error).code = message.code;
         }
 
         var ErrorEvent: events.IErrorEventStatic = acquire(__ErrorEventStatic);
@@ -2121,6 +2124,10 @@ module plat {
         ErrorEvent.dispatch(__error, Exception, error);
 
         if (isFatal) {
+            if (message instanceof Error) {
+                throw message;
+            }
+
             throw error;
         }
     }
@@ -3394,6 +3401,11 @@ module plat {
              * Determines if a character is correlated with a shifted key code.
              */
             shiftedKeyRegex = /[A-Z!@#$%^&*()_+}{":?><|~]/;
+
+            /**
+             * Determines if a url is relative or absolute.
+             */
+            fullUrlRegex = /^(?:[a-z]+:)?\/\//i;
         
             /**
              * A regular expression for matching or removing all newline characters.
@@ -3609,6 +3621,11 @@ module plat {
              * Determines if a character is correlated with a shifted key code.
              */
             shiftedKeyRegex: RegExp;
+
+            /**
+             * Determines if a url is relative or absolute.
+             */
+            fullUrlRegex: RegExp;
         }
 
         /**
@@ -5284,10 +5301,6 @@ module plat {
                 }
 
                 if ($compat.pushState) {
-                    if ($config.routingType === $config.STATE) {
-                        this.url($config.baseUrl, true);
-                    }
-
                     $dom.addEventListener($window, __POPSTATE, changed, false);
                 }
 
@@ -5306,9 +5319,9 @@ module plat {
                 var location = this.$Window.location;
 
                 if (isString(url) && this.__lastUrl !== url) {
-                    this.__lastUrl = url;
                     this._setUrl(url, replace);
                 }
+
                 return this.__currentUrl || location.href;
             }
 
@@ -5361,9 +5374,12 @@ module plat {
                 }
 
                 this.__currentUrl = null;
-                var url = this.url();
+                var url = this.url(),
+                    $config = Browser.config;
 
-                if (this.__lastUrl === url) {
+                if (this.__lastUrl === url ||
+                    ($config.routingType === $config.STATE &&
+                    url.indexOf(this.__lastUrl + '#') > -1)) {
                     return;
                 }
 
@@ -5386,6 +5402,12 @@ module plat {
             _setUrl(url: string, replace?: boolean): void {
                 url = this._formatUrl(url);
                 if (this.$Compat.pushState) {
+
+                    // make sure URL is absolute
+                    if (!this.$Regex.fullUrlRegex.test(url) && url[0] !== '/') {
+                        url = '/' + url;
+                    }
+
                     if (replace) {
                         history.replaceState(null, '', url);
                     } else {
@@ -5575,10 +5597,11 @@ module plat {
              * @param {string} url The initial URL passed into the Browser.
              */
             private static __getBaseUrl(url: string): string {
-                var colon = url.slice(url.indexOf(':')),
-                    next = colon.slice(colon.search(/\w+/));
+                if (isUndefined((<any>window.location).origin)) {
+                    (<any>window.location).origin = window.location.protocol + "//" + window.location.host;
+                }
 
-                return url.slice(0, url.indexOf('/', url.indexOf(next))) + '/';
+                return (<any>window.location).origin.split('?')[0].split('#')[0] + '/';
             }
 
             /**
@@ -5666,11 +5689,7 @@ module plat {
                     var url = this.$Window.location.href,
                         trimmedUrl = url.replace(this.$Regex.initialUrlRegex, '/');
 
-                    if ($config.routingType === $config.HASH) {
-                        $config.baseUrl = trimmedUrl.replace(/#.*/, '');
-                    } else {
-                        $config.baseUrl = UrlUtils.__getBaseUrl(trimmedUrl);
-                    }
+                    $config.baseUrl = UrlUtils.__getBaseUrl(trimmedUrl);
                 }
             }
 
@@ -5684,11 +5703,17 @@ module plat {
 
                 var element = UrlUtils.__urlUtilsElement ||
                     (UrlUtils.__urlUtilsElement = this.$Document.createElement('a')),
-                    define = this.$ContextManagerStatic.defineGetter;
+                    define = this.$ContextManagerStatic.defineGetter,
+                    $BrowserConfig = this.$BrowserConfig;
 
                 // always make local urls relative to start page.
                 if (url[0] === '/') {
                     url = url.slice(1);
+                }
+
+                // Always append the baseUrl if this is not a full-url
+                if (!this.$Regex.fullUrlRegex.test(url)) {
+                    url = $BrowserConfig.baseUrl + url;
                 }
 
                 element.setAttribute('href', url);
@@ -5715,15 +5740,15 @@ module plat {
 
                 var path: string;
 
-                if (!isEmpty(this.$BrowserConfig.baseUrl)) {
-                    path = url.replace(this.$BrowserConfig.baseUrl, '/');
+                if (!isEmpty($BrowserConfig.baseUrl)) {
+                    path = url.replace($BrowserConfig.baseUrl, '/');
                 } else {
                     path = (element.pathname.charAt(0) === '/')
                     ? element.pathname
                     : '/' + element.pathname;
                 }
 
-                define(this, 'pathname', path.split('?')[0], true, true);
+                define(this, 'pathname', path.split('?')[0].split('#')[0], true, true);
                 define(this, 'query', UrlUtils.__getQuery(this.search), true, true);
             }
 
@@ -7141,7 +7166,7 @@ module plat {
             jsonpCallback: string;
 
             /**
-             * The plat.IBrowser injectable instance
+             * The plat.web.IBrowser injectable instance
              */
             $Browser: web.IBrowser = acquire(__Browser);
 
@@ -8158,7 +8183,7 @@ module plat {
              * @param {(error: any) => plat.async.IAjaxThenable<U>} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
-            then<U>(onFulfilled: (success: R) => IAjaxThenable<U>, onRejected?: (error: any) => IAjaxThenable<U>): IAjaxThenable<U>;
+            then<U>(onFulfilled: (success: R) => IThenable<U>, onRejected?: (error: any) => IThenable<U>): IAjaxThenable<U>;
             /**
              * Takes in two methods, called when/if the promise fulfills/rejects.
              * next then method in the promise chain.
@@ -8167,7 +8192,7 @@ module plat {
              * @param {(error: any) => U} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
-            then<U>(onFulfilled: (success: R) => IAjaxThenable<U>, onRejected?: (error: any) => U): IAjaxThenable<U>;
+            then<U>(onFulfilled: (success: R) => IThenable<U>, onRejected?: (error: any) => U): IAjaxThenable<U>;
             /**
              * Takes in two methods, called when/if the promise fulfills/rejects.
              * next then method in the promise chain.
@@ -8176,7 +8201,7 @@ module plat {
              * @param {(error: any) => plat.async.IAjaxThenable<U>} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
-            then<U>(onFulfilled: (success: R) => U, onRejected?: (error: any) => IAjaxThenable<U>): IAjaxThenable<U>;
+            then<U>(onFulfilled: (success: R) => U, onRejected?: (error: any) => IThenable<U>): IAjaxThenable<U>;
             /**
              * Takes in two methods, called when/if the promise fulfills/rejects.
              * next then method in the promise chain.
@@ -8192,7 +8217,7 @@ module plat {
              * @param {(error: any) => plat.async.IAjaxThenable<U>} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
-            catch<U>(onRejected: (error: any) => IAjaxThenable<U>): IAjaxThenable<U>;
+            catch<U>(onRejected: (error: any) => IThenable<U>): IAjaxThenable<U>;
             /**
              * A wrapper method for Promise.then(undefined, onRejected);
              * @param {(error: any) => U} onRejected A method called when/if the promise rejects. 
@@ -12222,7 +12247,7 @@ module plat {
 
         /**
          * The HTMLElement that represents this Control. Should only be modified by controls that implement 
-         * {plat.ui.ITemplateControl|ITemplateControl}. During initialize the control should populate this element with what it wishes
+         * ITemplateControl. During initialize the control should populate this element with what it wishes
          * to render to the user. 
          * When there is innerHTML in the element prior to instantiating the control:
          *     The element will include the innerHTML
@@ -12755,7 +12780,7 @@ module plat {
 
         /**
          * The HTMLElement that represents this Control. Should only be modified by controls that implement 
-         * {plat.ui.ITemplateControl|ITemplateControl}. During initialize the control should populate this element with what it wishes
+         * ITemplateControl. During initialize the control should populate this element with what it wishes
          * to render to the user. 
          * When there is innerHTML in the element prior to instantiating the control:
          *     The element will include the innerHTML
@@ -15159,7 +15184,7 @@ module plat {
 
                 return templatePromise.then((result: DocumentFragment) => {
                     return this._bindTemplate(key, <DocumentFragment>result.cloneNode(true), relativeIdentifier, resources);
-                }, (error: any) => {
+                }).then(null, (error: any) => {
                     postpone(() => {
                         $exception = acquire(__ExceptionStatic);
                         $exception.fatal(error, $exception.BIND);
@@ -16389,6 +16414,11 @@ module plat {
             _inTouch: boolean;
 
             /**
+             * Whether or not the user is using mouse when touch events are present.
+             */
+            _inMouse = false;
+
+            /**
              * An object with keyed subscribers that keep track of all of the 
              * events registered on a particular element.
              */
@@ -16433,9 +16463,9 @@ module plat {
 
             /**
              * An object containing the number of currently active 
-             * events of each type.
+             * events of each base type.
              */
-            _gestureCount: IGestures<number> = {
+            _gestureCount: IBaseGestures<number> = {
                 $tap: 0,
                 $dbltap: 0,
                 $hold: 0,
@@ -16723,35 +16753,40 @@ module plat {
              * @param {plat.ui.IPointerEvent} ev The touch start event object.
              */
             _onTouchStart(ev: IPointerEvent): boolean {
-                var isTouch = ev.type !== 'mousedown';
+                if (this.__touchCount++ > 0) {
+                    return;
+                }
 
-                if (isTouch) {
+                if (ev.type !== 'mousedown') {
                     this._inTouch = true;
                 } else if (this._inTouch === true) {
                     // return immediately if mouse event and currently in a touch
                     ev.preventDefault();
                     return false;
+                } else if (this.$Compat.hasTouchEvents) {
+                    this._inMouse = true;
                 }
 
-                // set any captured target back to null
-                this.__capturedTarget = null;
-
-                this.__standardizeEventObject(ev);
-
-                this.__lastTouchDown = this.__swipeOrigin = ev;
-                this.__lastMoveEvent = null;
+                // set any captured target and last move back to null
+                this.__capturedTarget = this.__lastMoveEvent = null;
                 this.__hasMoved = false;
 
-                if ((this.__touchCount = ev.touches.length) > 1) {
+                ev = this.__standardizeEventObject(ev);
+                if (isNull(ev)) {
                     return;
                 }
 
-                this.__registerType(this.__MOVE);
-                this.__detectingMove = true;
+                this.__lastTouchDown = this.__swipeOrigin = ev;
 
                 var gestureCount = this._gestureCount,
                     noHolds = gestureCount.$hold <= 0,
                     noRelease = gestureCount.$release <= 0;
+
+                // if any moving events registered, register move
+                if (gestureCount.$track > 0 || gestureCount.$trackend > 0 || gestureCount.$swipe > 0) {
+                    this.__registerType(this.__MOVE);
+                    this.__detectingMove = true;
+                }
 
                 // return if no hold or release events are registered
                 if (noHolds && noRelease) {
@@ -16798,16 +16833,21 @@ module plat {
              * @param {plat.ui.IPointerEvent} ev The touch move event object.
              */
             _onMove(ev: IPointerEvent): boolean {
+                var $compat = this.$Compat;
+
                 // clear hold event
                 this.__clearHold();
 
                 // return immediately if there are multiple touches present, or 
                 // if it is a mouse event and currently in a touch
-                if (this.__touchCount > 1 || (this._inTouch === true && ev.type === 'mousemove')) {
-                    return;
+                if (this._inTouch === true && ev.type === 'mousemove') {
+                    return true;
                 }
 
-                this.__standardizeEventObject(ev);
+                ev = this.__standardizeEventObject(ev);
+                if (isNull(ev)) {
+                    return;
+                }
 
                 var gestureCount = this._gestureCount,
                     noTracking = gestureCount.$track <= 0,
@@ -16833,7 +16873,9 @@ module plat {
                     direction = ev.direction = isNull(lastMove) ? this.__getDirection(x - lastX, y - lastY) :
                     this.__getDirection(x - lastMove.clientX, y - lastMove.clientY);
 
-                this.__checkForOriginChanged(direction);
+                if (this.__checkForOriginChanged(direction) && $compat.ANDROID) {
+                    ev.preventDefault();
+                }
 
                 var velocity = ev.velocity = this.__getVelocity(x - swipeOrigin.clientX, y - swipeOrigin.clientY,
                     ev.timeStamp - swipeOrigin.timeStamp);
@@ -16857,25 +16899,22 @@ module plat {
                 var eventType = ev.type,
                     hasMoved = this.__hasMoved;
 
-                // return immediately if there were multiple touches present
-                if (this.__touchCount > 1) {
-                    if (this.__touchCount && eventType === 'touchend') {
-                        this.__preventClickFromTouch();
-                    }
-
-                    this.__resetTouchEnd();
-                    return;
-                } else if (eventType !== 'mouseup') {
+                if (eventType !== 'mouseup') {
+                    // all non mouse cases
                     if (eventType === 'touchend') {
                         var target = <HTMLInputElement>ev.target;
                         if (hasMoved) {
-                            ev.preventDefault();
+                            if (ev.cancelable === true) {
+                                ev.preventDefault();
+                            }
                             this.__preventClickFromTouch();
                         } else if (this.__isFocused(target)) {
                             this.__preventClickFromTouch();
                         } else {
-                            ev.preventDefault();
-                        if (this._inTouch === true) {
+                            if (ev.cancelable === true) {
+                                ev.preventDefault();
+                            }
+                            if (this._inTouch === true) {
                                 this.__handleInput(target);
                             }
                         }
@@ -16883,27 +16922,35 @@ module plat {
 
                     this._inTouch = false;
                 } else if (!isUndefined(this._inTouch)) {
-                    ev.preventDefault();
-                    return false;
+                    if (!this._inMouse) {
+                        // this is case where touchend fired and now 
+                        // mouse end is also being fired
+                        if (ev.cancelable === true) {
+                            ev.preventDefault();
+                        }
+                        return false;
+                    }
+                    this._inMouse = false;
                 }
 
-                // clear hold event
-                this.__clearHold();
-
-                if (this.__detectingMove) {
-                    this.__unregisterType(this.__MOVE);
-                    this.__detectingMove = false;
-                }
-
-                this.__standardizeEventObject(ev);
-
-                // check for cancel event, or return if the touch count was greater than 0 
-                // (should potentially only happen with pointerevents), else 
-                // handle release
-                if (this.__cancelRegex.test(eventType) || ev.touches.length > 0) {
-                    this.__resetTouchEnd();
+                // check for cancel event
+                if (this.__cancelRegex.test(eventType)) {
+                    this.__handleCanceled(ev);
                     return true;
-                } else if (this.__hasRelease) {
+                }
+
+                // standardizeEventObject creates touches
+                ev = this.__standardizeEventObject(ev);
+                if (isNull(ev)) {
+                    return;
+                }
+
+                this.__clearTempStates();
+
+                this.__touchCount = ev.touches.length;
+
+                // handle release event
+                if (this.__hasRelease) {
                     this.__handleRelease(ev);
                 }
 
@@ -16952,17 +16999,46 @@ module plat {
             }
 
             /**
+             * Clears all temporary states like move and hold events.
+             */
+            private __clearTempStates(): void {
+                // clear hold event
+                this.__clearHold();
+                if (this.__detectingMove) {
+                    this.__unregisterType(this.__MOVE);
+                    this.__detectingMove = false;
+                }
+            }
+
+            /**
              * A function for resetting all values potentially modified during the touch event sequence.
              */
             private __resetTouchEnd(): void {
-                this.__tapCount = 0;
+                this.__tapCount = this.__touchCount = 0;
                 this._inTouch = this.__hasRelease = this.__hasSwiped = false;
                 this.__pointerHash = {};
                 this.__pointerEvents = [];
+                this.__capturedTarget = null;
             }
 
             // gesture handling methods
 
+            /**
+             * A function for handling when gestures are canceled via the Browser.
+             * @param {plat.ui.IPointerEvent} ev The touch cancel event object.
+             */
+            private __handleCanceled(ev: IPointerEvent): void {
+                var touches = ev.touches || this.__pointerEvents,
+                    index = this.__getTouchIndex(touches);
+
+                ev = index >= 0 ? touches[index] : this.__standardizeEventObject(ev);
+
+                if (this.__hasMoved) {
+                    this.__handleTrackEnd(ev);
+                }
+
+                this.__resetTouchEnd();
+            }
             /**
              * A function for handling and firing tap events.
              * @param {plat.ui.IPointerEvent} ev The touch end event object.
@@ -17067,18 +17143,27 @@ module plat {
              */
             private __handleTrack(ev: IPointerEvent): void {
                 var trackGesture = this._gestures.$track,
+                    isAndroid = this.$Compat.ANDROID,
                     direction = ev.direction,
                     trackDirectionGesture = trackGesture + direction,
                     eventTarget = this.__capturedTarget || <ICustomElement>ev.target,
                     trackDomEvent = this.__findFirstSubscriber(eventTarget, trackGesture),
-                    trackDirectionDomEvent = this.__findFirstSubscriber(eventTarget, trackDirectionGesture);
+                    trackDomEventExists = !isNull(trackDomEvent),
+                    trackDirectionDomEvent = this.__findFirstSubscriber(eventTarget, trackDirectionGesture),
+                    trackDirectionDomEventExists = !isNull(trackDirectionDomEvent);
 
-                if (!isNull(trackDomEvent)) {
-                    trackDomEvent.trigger(ev);
-                }
+                if (trackDomEventExists || trackDirectionDomEventExists) {
+                    if (this.$Compat.ANDROID) {
+                        ev.preventDefault();
+                    }
 
-                if (!isNull(trackDirectionDomEvent)) {
-                    trackDirectionDomEvent.trigger(ev);
+                    if (trackDomEventExists) {
+                        trackDomEvent.trigger(ev);
+                    }
+
+                    if (trackDirectionDomEventExists) {
+                        trackDirectionDomEvent.trigger(ev);
+                    }
                 }
             }
             /**
@@ -17111,7 +17196,10 @@ module plat {
                     return;
                 }
 
-                this.__standardizeEventObject(ev);
+                ev = this.__standardizeEventObject(ev);
+                if (isNull(ev)) {
+                    return;
+                }
                 domEvent.trigger(ev);
             }
 
@@ -17302,25 +17390,12 @@ module plat {
                 var eventType = ev.type,
                     $compat = this.$Compat;
 
-                if ($compat.hasPointerEvents) {
-                    if (eventType === 'pointerdown') {
-                        this.__setCapture(ev.target);
-                    }
-
+                if ($compat.hasPointerEvents || $compat.hasMsPointerEvents) {
                     this.__updatePointers(ev, this.__pointerEndRegex.test(eventType));
-                } else if ($compat.hasMsPointerEvents) {
-                    if (eventType === 'MSPointerDown') {
-                        this.__setCapture(ev.target);
-                    }
-
-                    this.__updatePointers(ev, this.__pointerEndRegex.test(eventType));
-                } else if (eventType === 'mousedown') {
-                    ev.pointerType = 'mouse';
-                    this.__setCapture(ev.target);
-                } else {
-                    // do not need to set catpure for touchstart events
-                    ev.pointerType = eventType.indexOf('mouse') === -1 ? 'touch' : 'mouse';
+                    return;
                 }
+
+                ev.pointerType = eventType.indexOf('mouse') === -1 ? 'touch' : 'mouse';
             }
             /**
              * Sets the captured target.
@@ -17467,32 +17542,58 @@ module plat {
              * Standardizes certain properties on the event object for custom events.
              * @param {plat.ui.IExtendedEvent} ev The event object to be standardized.
              */
-            private __standardizeEventObject(ev: IExtendedEvent): void {
+            private __standardizeEventObject(ev: IExtendedEvent): IExtendedEvent {
                 this.__setTouchPoint(ev);
 
-                ev.touches = ev.touches || this.__pointerEvents;
+                var isStart = this._startEvents.indexOf(ev.type) !== -1,
+                    touches = ev.touches = ev.touches || this.__pointerEvents,
+                    cTouches = ev.changedTouches,
+                    changedTouchesExist = !isUndefined(cTouches),
+                    changedTouches = changedTouchesExist ? cTouches : [];
 
-                var evtObj = ev;
-                if (isUndefined(ev.clientX)) {
-                    if (ev.touches.length > 0) {
-                        evtObj = ev.touches[0];
-                    } else if (((<any>ev).changedTouches || []).length > 0) {
-                        evtObj = (<any>ev).changedTouches[0];
+                if (changedTouchesExist) {
+                    if (isStart) {
+                        ev = changedTouches[0];
+                        ev.touches = touches;
+                    } else {
+                        var changedTouchIndex = this.__getTouchIndex(changedTouches);
+                        if (changedTouchIndex >= 0) {
+                            ev = changedTouches[changedTouchIndex];
+                            ev.touches = touches;
+                        } else if (this.__getTouchIndex(touches) >= 0) {
+                            // we want to return null because our point of interest is in touches 
+                            // but was not in changedTouches so it is still playing a part on the page
+                            return null;
+                        }
                     }
-
-                    ev.clientX = evtObj.clientX;
-                    ev.clientY = evtObj.clientY;
                 }
 
-                if (isUndefined(ev.offsetX) || !isNull(this.__capturedTarget)) {
-                    ev.offset = this.__getOffset(ev);
-                    return;
+                if (isStart) {
+                    this.__setCapture(ev.target);
                 }
 
-                ev.offset = {
-                    x: ev.offsetX,
-                    y: ev.offsetY
-                };
+                ev.offset = this.__getOffset(ev);
+
+                return ev;
+            }
+            /**
+             * Searches through the input array looking for the primary 
+             * touch down index.
+             * @param {Array<plat.ui.IExtendedEvent>} ev The array of touch event objects 
+             * to search through.
+             * not found.
+             */
+            private __getTouchIndex(touches: Array<IExtendedEvent>): number {
+                var identifier = (this.__lastTouchDown || <IExtendedEvent>{}).identifier,
+                    length = touches.length;
+
+                for (var i = 0; i < length; ++i) {
+                    if (touches[i].identifier === identifier) {
+                        return i;
+                    }
+                }
+
+                return -1;
             }
             /**
              * Grabs the x and y offsets of an event object's target.
@@ -17504,6 +17605,11 @@ module plat {
                     return {
                         x: ev.clientX,
                         y: ev.clientY
+                    };
+                } else if (!isUndefined(ev.offsetX) && target === ev.target) {
+                    return {
+                        x: ev.offsetX,
+                        y: ev.offsetY
                     };
                 }
 
@@ -17575,7 +17681,7 @@ module plat {
              * an origin point.
              * @param {string} direction The current direction of movement.
              */
-            private __checkForOriginChanged(direction: string): void {
+            private __checkForOriginChanged(direction: string): boolean {
                 var lastMove = this.__lastMoveEvent;
                 if (isNull(lastMove)) {
                     this.__hasSwiped = false;
@@ -17584,7 +17690,7 @@ module plat {
 
                 var swipeDirection = lastMove.direction;
                 if (swipeDirection === direction) {
-                    return;
+                    return false;
                 }
 
                 this.__swipeOrigin = lastMove;
@@ -17596,7 +17702,7 @@ module plat {
              * Checks to see if a swipe event has been registered.
              * @param {string} direction The current direction of movement.
              */
-            private __checkForRegisteredSwipe(direction: string): void {
+            private __checkForRegisteredSwipe(direction: string): boolean {
                 var swipeTarget = <ICustomElement>this.__swipeOrigin.target,
                     swipeGesture = this._gestures.$swipe,
                     swipeDirectionGesture = swipeGesture + direction,
@@ -17607,6 +17713,8 @@ module plat {
                     master: domEventSwipe,
                     directional: domEventSwipeDirection
                 };
+
+                return !isNull(domEventSwipe) || !isNull(domEventSwipeDirection);
             }
             /**
              * Checks to see if a swipe event has been registered.
@@ -17659,13 +17767,13 @@ module plat {
                     style = '.' + styleClass.className + ' { ',
                     textContent = '';
 
-                    styleLength = styles.length;
+                styleLength = styles.length;
 
-                    for (var j = 0; j < styleLength; ++j) {
-                        textContent += styles[j] + ';';
-                    }
+                for (var j = 0; j < styleLength; ++j) {
+                    textContent += styles[j] + ';';
+                }
 
-                    style += textContent + ' } ';
+                style += textContent + ' } ';
 
                 return style;
             }
@@ -18203,6 +18311,17 @@ module plat {
              * may slightly differ depending on the browser implementation.
              */
             touches?: Array<IExtendedEvent>;
+
+            /**
+             * An array containing all recently changed touch points. This should not be present on 
+             * the triggered custom event.
+             */
+            changedTouches?: Array<IExtendedEvent>;
+
+            /**
+             * A unique touch identifier.
+             */
+            identifier?: number;
         }
 
         /**
@@ -18219,11 +18338,6 @@ module plat {
              * A unique touch identifier.
              */
             pointerId?: number;
-
-            /**
-             * A unique touch identifier.
-             */
-            identifier?: number;
         }
 
         /**
@@ -18320,21 +18434,10 @@ module plat {
         }
 
         /**
-         * Describes an object to keep track of a single 
-         * element's registered custom event types.
-         */
-        export interface IEventSubscriber extends IGestures<IDomEventInstance> {
-            /**
-             * The total registered gesture count for the associated element.
-             */
-            gestureCount: number;
-        }
-
-        /**
          * Describes an object containing information 
-         * regarding all our custom events.
+         * regarding our base custom events.
          */
-        export interface IGestures<T> {
+        export interface IBaseGestures<T> {
             /**
              * The string type|number of events associated with the tap event.
              */
@@ -18361,6 +18464,22 @@ module plat {
             $swipe?: T;
 
             /**
+             * The string type|number of events associated with the track event.
+             */
+            $track?: T;
+
+            /**
+             * The string type|number of events associated with the trackend event.
+             */
+            $trackend?: T;
+        }
+
+        /**
+         * Describes an object containing information 
+         * regarding all our custom events.
+         */
+        export interface IGestures<T> extends IBaseGestures<T> {
+            /**
              * The string type|number of events associated with the swipeleft event.
              */
             $swipeleft?: T;
@@ -18381,11 +18500,6 @@ module plat {
             $swipedown?: T;
 
             /**
-             * The string type|number of events associated with the track event.
-             */
-            $track?: T;
-
-            /**
              * The string type|number of events associated with the trackleft event.
              */
             $trackleft?: T;
@@ -18404,11 +18518,17 @@ module plat {
              * The string type|number of events associated with the trackdown event.
              */
             $trackdown?: T;
+        }
 
+        /**
+         * Describes an object to keep track of a single 
+         * element's registered custom event types.
+         */
+        export interface IEventSubscriber extends IGestures<IDomEventInstance> {
             /**
-             * The string type|number of events associated with the trackend event.
+             * The total registered gesture count for the associated element.
              */
-            $trackend?: T;
+            gestureCount: number;
         }
 
         /**
@@ -21378,27 +21498,116 @@ module plat {
              * A TemplateControl for adding additonal 
              * functionality to a native HTML anchor tag.
              */
-            class Anchor extends TemplateControl {
+            export class Anchor extends TemplateControl {
                 /**
                  * Replaces the Anchor's element with a native anchor tag.
                  */
                 replaceWith = 'a';
+
                 /**
                  * The control's anchor element.
                  */
                 element: HTMLAnchorElement;
+
                 /**
-                 * Prevents default on the anchor tag if the href attribute is left empty.
+                 * The IBrowserConfig injectable instance
+                 */
+                $browserConfig: web.IBrowserConfig = acquire(__BrowserConfig);
+
+                /**
+                 * The IBrowser injectable instance
+                 */
+                $browser: web.IBrowser = acquire(__Browser);
+
+                /**
+                 * The options for Anchor, if ignore is true, anchor will ignore changing the url.
+                 */
+                options: observable.IObservableProperty<{ ignore?: boolean; }>;
+
+                /**
+                 * Prevents default on the anchor tag if the href attribute is left empty, also normalizes internal links.
                  */
                 initialize(): void {
-                    var element = this.element;
-                    if (isEmpty(element.href)) {
-                        this.addEventListener(element, 'click', (ev: Event) => {
-                            if (isEmpty(element.href)) {
-                                ev.preventDefault();
-                            }
-                        }, false);
+                    var element = this.element,
+                        $browserConfig = this.$browserConfig,
+                        baseUrl = $browserConfig.baseUrl.slice(0, -1);
+
+                    this.addEventListener(element, 'click', (ev: Event) => {
+                        var href = this.getHref();
+
+                        if (isUndefined(href)) {
+                            return;
+                        }
+
+                        ev.preventDefault();
+
+                        if (isEmpty(href)) {
+                            return;
+                        }
+
+                        this.$browser.url(href);
+                    }, false);
+                }
+
+                /**
+                 * Calls to normalize the href for internal links.
+                 */
+                loaded(): void {
+                    this.setHref();
+                }
+
+                /**
+                 * Calls to normalizes the href for internal links and resets the href is necessary.
+                 */
+                setHref(): void {
+                    var options = this.options;
+
+                    if (isObject(options) && options.value.ignore) {
+                        return;
                     }
+
+                    var href = this.getHref();
+
+                    if (!isEmpty(href)) {
+                        this.element.href = href;
+                    }
+                }
+
+                /**
+                 * Normalizes the href for internal links, ignores external links.
+                 */
+                getHref(): string {
+                    var options = this.options;
+
+                    if (isObject(options) && options.value.ignore) {
+                        return;
+                    }
+
+                    var element = this.element,
+                        href = element.href || '',
+                        $browserConfig = this.$browserConfig,
+                        baseUrl = $browserConfig.baseUrl.slice(0, -1),
+                        routingType = $browserConfig.routingType,
+                        usingHash = routingType !== $browserConfig.STATE,
+                        prefix = $browserConfig.hashPrefix;
+
+                    if (href.indexOf(baseUrl) === -1) {
+                        return;
+                    }
+
+                    if (isEmpty(href)) {
+                        return href;
+                    }
+
+                    var urlWithHash = baseUrl + '/#';
+
+                    if (usingHash && href.indexOf('#') === -1) {
+                        href = urlWithHash + prefix + href.replace(baseUrl, '');
+                    } else if (!usingHash && href.indexOf(urlWithHash) > -1 && href !== urlWithHash) {
+                        href = baseUrl + href.replace(baseUrl, '').slice(2 + prefix.length);
+                    }
+
+                    return href;
                 }
             }
 
@@ -26026,6 +26235,23 @@ module plat {
              * Used to set the element's href property.
              */
             property: string = 'href';
+
+            /**
+             * The TemplateControl for a plat-href is an Anchor control.
+             */
+            templateControl: ui.controls.Anchor;
+
+            /**
+             * Sets the href property, then calls the Anchor control to 
+             * normalize the href.
+             */
+            setter() {
+                super.setter();
+
+                if (isFunction(this.templateControl.setHref)) {
+                    this.templateControl.setHref();
+                }
+            }
         }
 
         /**
@@ -26036,6 +26262,29 @@ module plat {
              * Used to set the element's src property.
              */
             property: string = 'src';
+
+            /**
+             * The plat.web.IBrowser injectable instance
+             */
+            $Browser: web.IBrowser = acquire(__Browser);
+
+            /**
+             * The function for setting the corresponding 
+             * attribute property value to the evaluated expression.
+             */
+            setter() {
+                var element = this.element,
+                    elementProperty = this.property,
+                    expression = this.attributes[this.attribute];
+
+                if (isEmpty(expression) || isNull(element)) {
+                    return;
+                }
+
+                if (!isUndefined((<any>element)[elementProperty])) {
+                    (<any>element)[elementProperty] = this.$Browser.urlUtils(expression);
+                }
+            }
         }
 
         register.control(__Href, Href);

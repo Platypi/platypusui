@@ -151,6 +151,19 @@
         _hasSwiped = false;
 
         /**
+         * @name _inTouch
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the user is currently touching the screen.
+         */
+        _inTouch: boolean;
+
+        /**
          * @name _lastTouch
          * @memberof platui.Carousel
          * @kind property
@@ -478,6 +491,7 @@
          * @returns {void}
          */
         reset(): void {
+            console.log('resetting');
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + this._currentOffset + 'px,0,0)';
             this._initiateAnimation(animationOptions);
@@ -563,6 +577,7 @@
         _addEventListeners(transition: string): void {
             var element = this.element,
                 trackFn = this._track,
+                touchEnd = this._touchEnd,
                 track: string,
                 reverseTrack: string;
 
@@ -584,7 +599,8 @@
             this.addEventListener(element, track, trackFn, false);
             this.addEventListener(element, reverseTrack, trackFn, false);
             this.addEventListener(element, __$touchstart, this._touchStart, false);
-            this.addEventListener(element, __$trackend, this._touchEnd, false);
+            this.addEventListener(element, __$trackend, touchEnd, false);
+            this.addEventListener(element, __$touchend, touchEnd, false);
         }
 
         /**
@@ -601,8 +617,13 @@
          * @returns {void}
          */
         _touchStart(ev: plat.ui.IGestureEvent): void {
+            if (this._inTouch) {
+                return;
+            }
+
             if (!this.$utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
+                    this._inTouch = true;
                     this._lastTouch = {
                         x: ev.clientX,
                         y: ev.clientY
@@ -613,6 +634,7 @@
                 return;
             }
 
+            this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -633,17 +655,25 @@
          * @returns {void}
          */
         _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var hasSwiped = this._hasSwiped;
+            var inTouch = this._inTouch,
+                hasSwiped = this._hasSwiped;
 
-            this._hasSwiped = false;
-            if (hasSwiped) {
+            this._inTouch = this._hasSwiped = false;
+            if (!inTouch || hasSwiped) {
                 return;
             }
 
-            var distanceMoved = this._transition === 'vertical' ?
-                (ev.clientY - this._lastTouch.y) :
-                (ev.clientX - this._lastTouch.x);
-
+            var distanceMoved: number;
+            switch (this._transition) {
+                case 'up':
+                case 'down':
+                    distanceMoved = ev.clientY - this._lastTouch.y;
+                    break;
+                default:
+                    distanceMoved = ev.clientX - this._lastTouch.x;
+                    break
+            }
+            console.log('distance = ' + distanceMoved);
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
