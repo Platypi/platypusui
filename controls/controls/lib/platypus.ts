@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.9.4 (http://getplatypi.com) 
+ * PlatypusTS v0.9.5 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -5286,15 +5286,13 @@ module plat {
 
                 this.__initializing = true;
 
+                acquire(__UrlUtilsInstance);
+
                 var url = this.url(),
                     trimmedUrl = url.replace(this.$Regex.initialUrlRegex, '/'),
                     changed = this._urlChanged.bind(this),
                     $dom = this.$Dom,
                     $window = this.$Window;
-
-                if (isEmpty($config.baseUrl)) {
-                    acquire(__UrlUtilsInstance);
-                }
 
                 if (trimmedUrl !== url) {
                     this.url(trimmedUrl, true);
@@ -5685,11 +5683,22 @@ module plat {
              */
             constructor() {
                 var $config = this.$BrowserConfig;
-                if (isEmpty($config.baseUrl)) {
+                if (isEmpty($config.baseUrl) || !this.$Regex.fullUrlRegex.test($config.baseUrl)) {
                     var url = this.$Window.location.href,
-                        trimmedUrl = url.replace(this.$Regex.initialUrlRegex, '/');
+                        trimmedUrl = url.replace(this.$Regex.initialUrlRegex, '/'),
+                        baseUrl = $config.baseUrl;
 
-                    $config.baseUrl = UrlUtils.__getBaseUrl(trimmedUrl);
+                    if (isString(baseUrl)) {
+                        if (baseUrl.indexOf('/') === 0) {
+                            baseUrl = baseUrl.slice(1);
+                        }
+
+                        if (baseUrl[baseUrl.length - 1] !== '/') {
+                            baseUrl += '/';
+                        }
+                    }
+
+                    $config.baseUrl = UrlUtils.__getBaseUrl(trimmedUrl) + baseUrl;
                 }
             }
 
@@ -16587,7 +16596,7 @@ module plat {
              */
             private __listeners: ICustomEventListener = {
                 start: this._onTouchStart.bind(this),
-                move: this._onMove.bind(this),
+                move: this._onTouchMove.bind(this),
                 end: this._onTouchEnd.bind(this)
             };
 
@@ -16832,7 +16841,7 @@ module plat {
              * A listener for touch/mouse move events.
              * @param {plat.ui.IPointerEvent} ev The touch move event object.
              */
-            _onMove(ev: IPointerEvent): boolean {
+            _onTouchMove(ev: IPointerEvent): boolean {
                 var $compat = this.$Compat;
 
                 // clear hold event
@@ -16865,7 +16874,7 @@ module plat {
                 }
 
                 // if no move events or no tracking events and the user hasn't moved the minimum swipe distance
-                if ((gestureCount.$swipe <= 0 && noTracking) || (noTracking && !minMove)) {
+                if (noTracking && (!minMove || gestureCount.$swipe <= 0)) {
                     return true;
                 }
 
@@ -16902,6 +16911,8 @@ module plat {
                 if (eventType !== 'mouseup') {
                     // all non mouse cases
                     if (eventType === 'touchend') {
+                        // all to handle a strange issue when touch clicking certain types 
+                        // of DOM elements
                         var target = <HTMLInputElement>ev.target;
                         if (hasMoved) {
                             if (ev.cancelable === true) {
@@ -17032,11 +17043,8 @@ module plat {
                     index = this.__getTouchIndex(touches);
 
                 ev = index >= 0 ? touches[index] : this.__standardizeEventObject(ev);
-
-                if (this.__hasMoved) {
-                    this.__handleTrackEnd(ev);
-                }
-
+                this.__clearTempStates();
+                this.__handleTrackEnd(ev);
                 this.__resetTouchEnd();
             }
             /**
@@ -17143,7 +17151,6 @@ module plat {
              */
             private __handleTrack(ev: IPointerEvent): void {
                 var trackGesture = this._gestures.$track,
-                    isAndroid = this.$Compat.ANDROID,
                     direction = ev.direction,
                     trackDirectionGesture = trackGesture + direction,
                     eventTarget = this.__capturedTarget || <ICustomElement>ev.target,

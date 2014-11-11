@@ -1343,10 +1343,6 @@
                 return <any>this.$animator.resolve();
             }
 
-            this._isOpen = true;
-
-            drawerElement.removeAttribute(__Hide);
-
             var translation: string;
             switch (this._transition) {
                 case 'up':
@@ -1365,13 +1361,17 @@
                     return <any>this.$animator.resolve();
             }
 
+            this._isOpen = true;
+
+            drawerElement.removeAttribute(__Hide);
+            this.dom.addClass(rootElement, this._directionalTransitionPrep);
+
             if (wasClosed) {
                 this._addEventIntercepts();
             }
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            this.dom.addClass(rootElement, this._directionalTransitionPrep);
             return <any>this.$animator.animate(rootElement, __Transition, animationOptions);
         }
 
@@ -1406,13 +1406,12 @@
             var animationOptions: plat.IObject<string> = {},
                 transform = <any>this._transform;
 
-            animationOptions[transform] = 'translate3d(0,0,0)';
+            animationOptions[transform] = this._preTransform;
             return this.$animator.animate(rootElement, __Transition, animationOptions).then(() => {
                 if (this._isOpen) {
                     return;
                 }
 
-                rootElement.style[transform] = this._preTransform;
                 drawerElement.setAttribute(__Hide, '');
                 this.dom.removeClass(rootElement, this._directionalTransitionPrep);
             });
@@ -1430,8 +1429,6 @@
          * @returns {void}
          */
         _addEventIntercepts(): void {
-            var rootElement = this._rootElement;
-
             if (this._isTap) {
                 this._addTapClose();
             }
@@ -1441,6 +1438,7 @@
             }
 
             if (this._isTrack) {
+                var rootElement = this._rootElement;
                 var touchStartRemover = this.addEventListener(rootElement, __$touchstart, this._touchStart, false),
                     trackRemover = this.addEventListener(rootElement, __$track, this._track, false),
                     touchEnd = this._touchEnd,
@@ -1470,25 +1468,19 @@
         _removeEventIntercepts(): void {
             var isFunction = this.$utils.isFunction;
 
-            if (this._isTap) {
-                if (isFunction(this._openTapRemover)) {
-                    this._openTapRemover();
-                    this._openTapRemover = null;
-                }
+            if (this._isTap && isFunction(this._openTapRemover)) {
+                this._openTapRemover();
+                this._openTapRemover = null;
             }
 
-            if (this._isTrack) {
-                if (isFunction(this._openTrackRemover)) {
-                    this._openTrackRemover();
-                    this._openTrackRemover = null;
-                }
+            if (this._isTrack && isFunction(this._openTrackRemover)) {
+                this._openTrackRemover();
+                this._openTrackRemover = null;
             }
 
-            if (this._isSwipe) {
-                if (isFunction(this._openSwipeRemover)) {
-                    this._openSwipeRemover();
-                    this._openSwipeRemover = null;
-                }
+            if (this._isSwipe && isFunction(this._openSwipeRemover)) {
+                this._openSwipeRemover();
+                this._openSwipeRemover = null;
             }
         }
 
@@ -1627,22 +1619,25 @@
          */
         _removeEventListeners(): void {
             var isFunction = this.$utils.isFunction;
-            if (isFunction(this._removeTap)) {
+
+            if (this._isTap && isFunction(this._removeTap)) {
                 this._removeTap();
                 this._removeTap = null;
             }
 
-            if (isFunction(this._removePrimaryTrack)) {
-                this._removePrimaryTrack();
-                this._removePrimaryTrack = null;
+            if (this._isTrack) {
+                if (isFunction(this._removePrimaryTrack)) {
+                    this._removePrimaryTrack();
+                    this._removePrimaryTrack = null;
+                }
+
+                if (isFunction(this._removeSecondaryTrack)) {
+                    this._removeSecondaryTrack();
+                    this._removeSecondaryTrack = null;
+                }
             }
 
-            if (isFunction(this._removeSecondaryTrack)) {
-                this._removeSecondaryTrack();
-                this._removeSecondaryTrack = null;
-            }
-
-            if (isFunction(this._removeSwipeOpen)) {
+            if (this._isSwipe && isFunction(this._removeSwipeOpen)) {
                 this._removeSwipeOpen();
                 this._removeSwipeOpen = null;
             }
@@ -1673,6 +1668,7 @@
             }
 
             this._drawerElement.removeAttribute(__Hide);
+            this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
         }
 
         /**
@@ -2064,7 +2060,7 @@
                 style.position = 'relative';
             }
 
-            if (!$utils.isNumber(zIndex) || zIndex > 1) {
+            if (!$utils.isNumber(zIndex) || zIndex < 1) {
                 rootElementStyle = rootElementStyle || {};
                 rootElementStyle.zIndex = style.zIndex;
                 style.zIndex = '1';

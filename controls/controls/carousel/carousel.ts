@@ -491,7 +491,6 @@
          * @returns {void}
          */
         reset(): void {
-            console.log('resetting');
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = 'translate3d(' + this._currentOffset + 'px,0,0)';
             this._initiateAnimation(animationOptions);
@@ -673,7 +672,7 @@
                     distanceMoved = ev.clientX - this._lastTouch.x;
                     break
             }
-            console.log('distance = ' + distanceMoved);
+
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
@@ -721,11 +720,13 @@
          * @returns {string} The translation value.
          */
         _calculateTranslation(ev: plat.ui.IGestureEvent): string {
-            if (this._transition === 'vertical') {
-                return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
+            switch (this._transition) {
+                case 'up':
+                case 'down':
+                    return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
+                default:
+                    return 'translate3d(' + (this._currentOffset + (ev.clientX - this._lastTouch.x)) + 'px,0,0)';
             }
-
-            return 'translate3d(' + (this._currentOffset + (ev.clientX - this._lastTouch.x)) + 'px,0,0)';
         }
 
         /**
