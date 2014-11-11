@@ -670,7 +670,7 @@
                     break;
                 default:
                     distanceMoved = ev.clientX - this._lastTouch.x;
-                    break
+                    break;
             }
 
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {

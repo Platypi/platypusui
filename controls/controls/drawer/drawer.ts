@@ -1339,7 +1339,7 @@
                 isNode = $utils.isNode,
                 wasClosed = !this._isOpen;
 
-            if (!isNode(rootElement) || !isNode(drawerElement)) {
+            if (!(isNode(rootElement) && isNode(drawerElement))) {
                 return <any>this.$animator.resolve();
             }
 
@@ -1364,10 +1364,12 @@
             this._isOpen = true;
 
             drawerElement.removeAttribute(__Hide);
-            this.dom.addClass(rootElement, this._directionalTransitionPrep);
 
             if (wasClosed) {
+                this.dom.addClass(rootElement, __Drawer + '-open ' + this._directionalTransitionPrep);
                 this._addEventIntercepts();
+            } else {
+                this.dom.addClass(rootElement, this._directionalTransitionPrep);
             }
 
             var animationOptions: plat.IObject<string> = {};
@@ -1390,16 +1392,18 @@
         _close(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
+                dom = this.dom,
                 $utils = this.$utils,
                 isNode = $utils.isNode;
 
             if (this._isOpen) {
                 this._removeEventIntercepts();
+                dom.removeClass(rootElement, __Drawer + '-open');
             }
 
             this._isOpen = false;
 
-            if (!isNode(rootElement) || !isNode(drawerElement)) {
+            if (!(isNode(rootElement) && isNode(drawerElement))) {
                 return <any>this.$animator.resolve();
             }
 
@@ -1413,7 +1417,7 @@
                 }
 
                 drawerElement.setAttribute(__Hide, '');
-                this.dom.removeClass(rootElement, this._directionalTransitionPrep);
+                dom.removeClass(rootElement, this._directionalTransitionPrep);
             });
         }
 
@@ -2012,6 +2016,7 @@
             }
 
             this._directionalTransitionPrep = 'plat-drawer-transition-' + transition;
+            dom.addClass(rootElement, this._directionalTransitionPrep);
             this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
             });
