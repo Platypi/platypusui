@@ -16776,15 +16776,14 @@ module plat {
                     this._inMouse = true;
                 }
 
-                // set any captured target and last move back to null
-                this.__capturedTarget = this.__lastMoveEvent = null;
-                this.__hasMoved = false;
-
                 ev = this.__standardizeEventObject(ev);
                 if (isNull(ev)) {
                     return;
                 }
 
+                // set any captured target and last move back to null
+                this.__capturedTarget = this.__lastMoveEvent = null;
+                this.__hasMoved = false;
                 this.__lastTouchDown = this.__swipeOrigin = ev;
 
                 var gestureCount = this._gestureCount,
@@ -16868,9 +16867,8 @@ module plat {
                     swipeOrigin = this.__swipeOrigin,
                     x = ev.clientX,
                     y = ev.clientY,
-                    lastX = swipeOrigin.clientX,
-                    lastY = swipeOrigin.clientY,
-                    minMove = this.__hasMoved || (this.__getDistance(lastX, x, lastY, y) >= config.distances.minScrollDistance);
+                    minMove = this.__hasMoved ||
+                        (this.__getDistance(swipeOrigin.clientX, x, swipeOrigin.clientY, y) >= config.distances.minScrollDistance);
 
                 // if minimum distance not met or no moving events return
                 if (!minMove || (noTracking && noSwiping)) {
@@ -16883,15 +16881,11 @@ module plat {
                     direction = ev.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY),
                     originChanged = this.__checkForOriginChanged(direction),
                     velocity = ev.velocity = this.__getVelocity(x - swipeOrigin.clientX, y - swipeOrigin.clientY,
-                    ev.timeStamp - swipeOrigin.timeStamp);
+                        ev.timeStamp - swipeOrigin.timeStamp);
 
                 // if swiping events exist
-                if (!noSwiping) {
-                    var hadSwiped = this.__hasSwiped;
-                    this.__hasSwiped = (this.__isHorizontal(direction) ? velocity.x : velocity.y) >= config.velocities.minSwipeVelocity;
-                    if (!hadSwiped || originChanged) {
-                        this.__setRegisteredSwipes(direction);
-                    }
+                if (!(noSwiping || (this.__hasSwiped && !originChanged))) {
+                    this.__setRegisteredSwipes(direction, velocity);
                 }
 
                 // if tracking events exist
@@ -17131,6 +17125,7 @@ module plat {
                 var lastMove = this.__lastMoveEvent;
                 if (isNull(lastMove)) {
                     this.__hasSwiped = false;
+                    this.__swipeSubscribers = null;
                     return;
                 }
 
@@ -17150,10 +17145,10 @@ module plat {
             private __handleTrack(ev: IPointerEvent): void {
                 var trackGesture = this._gestures.$track,
                     direction = ev.direction,
-                    trackDirectionGesture = trackGesture + direction,
-                    eventTarget = this.__capturedTarget || <ICustomElement>ev.target,
-                    domEvents = this.__findFirstSubscribers(eventTarget, [trackGesture, (trackGesture + direction)]);
+                    eventTarget = this.__capturedTarget || <ICustomElement>ev.target;
 
+                var domEvents = this.__findFirstSubscribers(eventTarget,
+                    [trackGesture, (trackGesture + direction.x), (trackGesture + direction.y)]);
                 if (domEvents.length > 0) {
                     if (this.$Compat.ANDROID) {
                         ev.preventDefault();
@@ -17586,7 +17581,8 @@ module plat {
                     touches = ev.touches = ev.touches || this.__pointerEvents,
                     cTouches = ev.changedTouches,
                     changedTouchesExist = !isUndefined(cTouches),
-                    changedTouches = changedTouchesExist ? cTouches : [];
+                    changedTouches = changedTouchesExist ? cTouches : [],
+                    timeStamp = ev.timeStamp;
 
                 if (changedTouchesExist) {
                     if (isStart) {
@@ -17610,6 +17606,7 @@ module plat {
                 }
 
                 ev.offset = this.__getOffset(ev);
+                ev.timeStamp = timeStamp;
 
                 return ev;
             }
@@ -17702,23 +17699,27 @@ module plat {
              * Calculates the direction of movement.
              * @param {number} dx The change in x position.
              * @param {number} dy The change in y position.
+             * horiztonal and vertical directions of movement.
              */
-            private __getDirection(dx: number, dy: number): string {
+            private __getDirection(dx: number, dy: number): IDirection {
                 var distanceX = Math.abs(dx),
-                    distanceY = Math.abs(dy);
+                    distanceY = Math.abs(dy),
+                    lastDirection = (this.__lastMoveEvent || <IPointerEvent>{}).direction || <IDirection>{},
+                    horizontal = dx === 0 ? (lastDirection.x || 'none') : (dx < 0 ? 'left' : 'right'),
+                    vertical = dy === 0 ? (lastDirection.y || 'none') : (dy < 0 ? 'up' : 'down');
 
-                if (distanceY > distanceX) {
-                    return dy < 0 ? 'up' : 'down';
-                }
-
-                return dx < 0 ? 'left' : 'right';
+                return {
+                    x: horizontal,
+                    y: vertical,
+                    primary: (distanceX === distanceY ? (lastDirection.primary || 'none') : (distanceX > distanceY ? horizontal : vertical))
+                };
             }
             /**
              * Checks to see if a swipe direction has changed to recalculate 
              * an origin point.
-             * @param {string} direction The current direction of movement.
+             * @param {plat.ui.IDirection} direction The current vertical and horiztonal directions of movement.
              */
-            private __checkForOriginChanged(direction: string): boolean {
+            private __checkForOriginChanged(direction: IDirection): boolean {
                 var lastMove = this.__lastMoveEvent;
                 if (isNull(lastMove)) {
                     this.__hasSwiped = false;
@@ -17726,7 +17727,7 @@ module plat {
                 }
 
                 var swipeDirection = lastMove.direction;
-                if (swipeDirection === direction) {
+                if (swipeDirection.x === direction.x && swipeDirection.y === direction.y) {
                     return false;
                 }
 
@@ -17737,13 +17738,26 @@ module plat {
             }
             /**
              * Checks to see if a swipe event has been registered.
-             * @param {string} direction The current direction of movement.
+             * @param {plat.ui.IDirection} direction The current horizontal and vertical directions of movement.
+             * @param {plat.ui.IVelocity} velocity The current horizontal and vertical velocities.
              */
-            private __setRegisteredSwipes(direction: string): void {
+            private __setRegisteredSwipes(direction: IDirection, velocity: IVelocity): void {
                 var swipeTarget = <ICustomElement>this.__swipeOrigin.target,
-                    swipeGesture = this._gestures.$swipe;
+                    swipeGesture = this._gestures.$swipe,
+                    minSwipeVelocity = DomEvents.config.velocities.minSwipeVelocity,
+                    events = [swipeGesture];
 
-                this.__swipeSubscribers = this.__findFirstSubscribers(swipeTarget, [swipeGesture, (swipeGesture + direction)]);
+                if (velocity.x >= minSwipeVelocity) {
+                    this.__hasSwiped = true;
+                    events.push(swipeGesture + direction.x);
+                }
+
+                if (velocity.y >= minSwipeVelocity) {
+                    this.__hasSwiped = true;
+                    events.push(swipeGesture + direction.y);
+                }
+
+                this.__swipeSubscribers = this.__findFirstSubscribers(swipeTarget, events);
             }
             /**
              * Checks to see if a swipe event has been registered.
@@ -18166,7 +18180,11 @@ module plat {
                 customEv.clientY = ev.clientY;
                 customEv.offsetX = ev.offset.x;
                 customEv.offsetY = ev.offset.y;
-                customEv.direction = ev.direction || 'none';
+                customEv.direction = ev.direction || {
+                    x: 'none',
+                    y: 'none',
+                    primary: 'none'
+                };
                 customEv.touches = ev.touches;
                 customEv.velocity = ev.velocity || { x: 0, y: 0 };
                 customEv.identifier = ev.identifier || 0;
@@ -18326,9 +18344,9 @@ module plat {
             offset: IPoint;
 
             /**
-             * The potential direction associated with the event.
+             * The horizontal and vertical directions associated with this event.
              */
-            direction?: string;
+            direction?: IDirection;
 
             /**
              * The potential velocity associated with the event.
@@ -18424,9 +18442,9 @@ module plat {
             offsetY?: number;
 
             /**
-             * The potential direction associated with the event.
+             * The horizontal and vertical directions associated with this event.
              */
-            direction?: string;
+            direction?: IDirection;
 
             /**
              * The potential velocity associated with the event.
@@ -18573,6 +18591,29 @@ module plat {
              * The y-coordinate.
              */
             y: number;
+        }
+
+        /**
+         * Describes an object containing a direction in both the horizontal and vertical directions.
+         */
+        export interface IDirection {
+            /**
+             * The horizontal, x-direction
+             * Can be either "left" or "right".
+             */
+            x: string;
+
+            /**
+             * The vertical, y-direction.
+             * Can be either "up" or "down".
+             */
+            y: string;
+
+            /**
+             * The direction whose vector magnitude is the greatest.
+             * Can be "left", "right", "up", "down".
+             */
+            primary: string;
         }
 
         /**
