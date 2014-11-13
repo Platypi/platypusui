@@ -2016,7 +2016,7 @@
             }
 
             this._directionalTransitionPrep = 'plat-drawer-transition-' + transition;
-            dom.addClass(rootElement, this._directionalTransitionPrep);
+
             this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
             });
