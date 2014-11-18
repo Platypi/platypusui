@@ -158,10 +158,7 @@
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
                 transition = this._currentTransition = options.transition || 'right',
-                useContext = this._useContext =
-                (options.useContext === true) ||
-                element.hasAttribute(__Context) ||
-                element.hasAttribute('data-' + __Context),
+                useContext = this._useContext = (options.useContext === true) || !$utils.isUndefined(this.attributes[__CamelContext]),
                 id = options.id || '',
                 templateUrl = options.templateUrl,
                 isElastic = options.elastic === true;
@@ -203,19 +200,14 @@
         open(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
-                return;
-            } else if (!this._useContext) {
-                return controller.open();
+                var $promise: plat.async.IPromise = plat.acquire(__Promise),
+                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to open.',
+                    $exception.TEMPLATE);
+                return $promise.resolve(null);
             }
 
-            var wasClosed = !controller.isOpen(),
-                promise = controller._open();
-
-            if (wasClosed) {
-                this.propertyChanged(true);
-            }
-
-            return promise;
+            return controller.open();
         }
 
         /**
@@ -233,19 +225,14 @@
         close(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
-                return;
-            } else if (!this._useContext) {
-                return controller.close();
+                var $promise: plat.async.IPromise = plat.acquire(__Promise),
+                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to close.',
+                    $exception.TEMPLATE);
+                return $promise.resolve(null);
             }
 
-            var wasOpen = controller.isOpen(),
-                promise = controller._close();
-
-            if (wasOpen) {
-                this.propertyChanged(false);
-            }
-
-            return promise;
+            return controller.close();
         }
 
         /**
@@ -263,21 +250,14 @@
         toggle(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
-                return;
-            } else if (!this._useContext) {
-                return controller.toggle();
+                var $promise: plat.async.IPromise = plat.acquire(__Promise),
+                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to toggle.',
+                    $exception.TEMPLATE);
+                return $promise.resolve(null);
             }
 
-            var promise: plat.async.IThenable<void>;
-            if (controller.isOpen()) {
-                promise = controller._close();
-                this.propertyChanged(false);
-                return promise;
-            }
-
-            promise = controller._open();
-            this.propertyChanged(true);
-            return promise;
+            return controller.toggle();
         }
 
         /**
@@ -295,21 +275,14 @@
         reset(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
-                return;
-            } else if (!this._useContext) {
-                return controller.reset();
+                var $promise: plat.async.IPromise = plat.acquire(__Promise),
+                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to reset.',
+                    $exception.TEMPLATE);
+                return $promise.resolve(null);
             }
 
-            var promise: plat.async.IThenable<void>;
-            if (controller.isOpen()) {
-                promise = controller._open();
-                this.propertyChanged(true);
-                return promise;
-            }
-
-            promise = controller._close();
-            this.propertyChanged(false);
-            return promise;
+            return controller.reset();
         }
 
         /**
@@ -326,6 +299,9 @@
         isOpen(): boolean {
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
+                var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to check if is open.',
+                    $exception.TEMPLATE);
                 return false;
             }
 
@@ -619,6 +595,18 @@
          * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
          */
         $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        /**
+         * @name $Promise
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.async.IPromise}
+         * 
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        $Promise: plat.async.IPromise = plat.acquire(__Promise);
 
         /**
          * @name options
@@ -1046,18 +1034,17 @@
         _isTrack: boolean;
 
         /**
-         * @name _animationThenable
+         * @name _toggleDelay
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
          * 
-         * @type {plat.ui.animations.IAnimationThenable<void>}
+         * @type {plat.IRemoveListener}
          * 
          * @description
-         * The most recent animation thenable. Used to cancel the current animation if another needs 
-         * to begin.
+         * A function to remove the toggle delay if present.
          */
-        _animationThenable: plat.ui.animations.IAnimationThenable<void>;
+        _toggleDelay: plat.IRemoveListener;
 
         /**
          * @name initialize
@@ -1141,7 +1128,7 @@
                     return;
                 }
 
-                this.dom.removeClass(rootElement, 'plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+                this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
 
                 if ($utils.isObject(storedStyle)) {
                     var rootElementStyle = this._rootElement.style;
@@ -1166,12 +1153,23 @@
          */
         open(): plat.async.IThenable<void> {
             var wasClosed = !this._isOpen,
-                promise = this._open();
+                $utils = this.$utils;
+
+            if ($utils.isFunction(this._toggleDelay)) {
+                this._toggleDelay();
+            }
+
+            var promise = new this.$Promise<void>((resolve) => {
+                this._toggleDelay = $utils.postpone(() => {
+                    this._toggleDelay = null;
+                    this._open().then(resolve);
+                });
+            });
 
             if (wasClosed) {
                 if (this._useContext) {
                     this.propertyChanged(true);
-                } else if (!this.$utils.isNull(this._drawer)) {
+                } else if (!$utils.isNull(this._drawer)) {
                     this._drawer.propertyChanged(true);
                 }
             }
@@ -1193,12 +1191,23 @@
          */
         close(): plat.async.IThenable<void> {
             var wasOpen = this._isOpen,
-                promise = this._close();
+                $utils = this.$utils;
+
+            if ($utils.isFunction(this._toggleDelay)) {
+                this._toggleDelay();
+            }
+
+            var promise = new this.$Promise<void>((resolve) => {
+                this._toggleDelay = $utils.postpone(() => {
+                    this._toggleDelay = null;
+                    this._close().then(resolve);
+                });
+            });
 
             if (wasOpen) {
                 if (this._useContext) {
                     this.propertyChanged(false);
-                } else if (!this.$utils.isNull(this._drawer)) {
+                } else if (!$utils.isNull(this._drawer)) {
                     this._drawer.propertyChanged(false);
                 }
             }
@@ -1305,17 +1314,24 @@
                 return;
             }
 
-            if (this.$utils.isBoolean(newValue)) {
+            var $utils = this.$utils;
+            if ($utils.isBoolean(newValue)) {
                 if (newValue) {
                     if (this._isOpen) {
                         return;
                     }
-                    this._open();
+                    this._toggleDelay = $utils.postpone(() => {
+                        this._toggleDelay = null;
+                        this._open();
+                    });
                     return;
                 }
 
                 if (this._isOpen) {
-                    this._close();
+                    this._toggleDelay = $utils.postpone(() => {
+                        this._toggleDelay = null;
+                        this._close();
+                    });
                 }
             }
         }
@@ -1340,7 +1356,7 @@
                 wasClosed = !this._isOpen;
 
             if (!(isNode(rootElement) && isNode(drawerElement))) {
-                return <any>this.$animator.resolve();
+                return this.$Promise.resolve(null);
             }
 
             var translation: string;
@@ -1404,7 +1420,7 @@
             this._isOpen = false;
 
             if (!(isNode(rootElement) && isNode(drawerElement))) {
-                return <any>this.$animator.resolve();
+                return this.$Promise.resolve(null);
             }
 
             var animationOptions: plat.IObject<string> = {},
@@ -1502,7 +1518,7 @@
         _addSwipeOpen(): void {
             this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + this._transition, () => {
                 this._hasSwiped = true;
-                this.$utils.postpone(this.open, null, this);
+                this.open();
             }, false);
         }
 
@@ -1520,7 +1536,7 @@
         _addSwipeClose(): void {
             this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + __transitionHash[this._transition], () => {
                 this._hasSwiped = true;
-                this.$utils.postpone(this.close, null, this);
+                this.close();
             }, false);
         }
 
@@ -1538,7 +1554,7 @@
         _addTapOpen(): void {
             this._removeTap = this.addEventListener(this.element, __$tap, () => {
                 this._hasTapped = true;
-                this.$utils.postpone(this.open, null, this);
+                this.open();
             }, false);
         }
 
@@ -1556,7 +1572,7 @@
         _addTapClose(): void {
             this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
                 this._hasTapped = true;
-                this.$utils.postpone(this.close, null, this);
+                this.close();
             }, false);
         }
 
@@ -1904,7 +1920,8 @@
                     this._determineTemplate(drawerArg.template);
 
                     if (this._preloadedValue) {
-                        $utils.postpone(() => {
+                        this._toggleDelay = $utils.postpone(() => {
+                            this._toggleDelay = null;
                             this._open();
                         });
                     }

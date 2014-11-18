@@ -38,6 +38,7 @@ var __Promise = '$Promise',
     __Checked = __Plat + 'checked',
     __CamelChecked = 'platChecked',
     __Context = __Plat + 'context',
+    __CamelContext = 'platContext',
     __Bind = __Plat + 'bind',
 
     /**
