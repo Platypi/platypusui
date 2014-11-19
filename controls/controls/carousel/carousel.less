@@ -26,7 +26,6 @@
         .plat-carousel-item {
             width: 100%;
             height: 100%;
-            display: inline-block;
             padding-left: @padding-left;
             padding-right: @padding-right;
             padding-top: @padding-top;
@@ -37,6 +36,24 @@
         &.plat-transition {
             .translateZ(0);
             .transition(@transition);
+        }
+    }
+
+    &.plat-right,
+    &.plat-left {
+        .plat-carousel-container {
+            .plat-carousel-item {
+                display: inline-block;
+            }
+        }
+    }
+
+    &.plat-up,
+    &.plat-down {
+        .plat-carousel-container {
+            .plat-carousel-item {
+                display: block;
+            }
         }
     }
 }

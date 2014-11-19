@@ -112,6 +112,19 @@
         options: plat.observable.IObservableProperty<ICarouselOptions>;
 
         /**
+         * @name itemsLoaded
+         * @memberof platui.Carousel
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.async.IThenable<void>}
+         * 
+         * @description
+         * A Promise that fulfills when the items are loaded.
+         */
+        itemsLoaded: plat.async.IThenable<void>;
+
+        /**
          * @name _transition
          * @memberof platui.Carousel
          * @kind property
@@ -213,7 +226,7 @@
          * @description
          * The current index seen in the {@link platui.Carousel|Carousel}.
          */
-        _index: number;
+        _index = 0;
 
         /**
          * @name _intervalOffset
@@ -310,6 +323,19 @@
         _animationThenable: plat.ui.animations.IAnimationThenable<void>;
 
         /**
+         * @name _onLoad
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {() => void}
+         * 
+         * @description
+         * A function to call once items are loaded and the {@link platui.Carousel|Carousel} is set.
+         */
+        _onLoad: () => void;
+
+        /**
          * @name setClasses
          * @memberof platui.Carousel
          * @kind function
@@ -403,10 +429,16 @@
 
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
+                transition = options.transition || 'right',
                 index = options.index;
 
-            this._index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : 0;
-            this._init(options.transition || 'right');
+            this.dom.addClass(this.element, __Plat + transition);
+            index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : 0;
+            this._onLoad = () => {
+                this.goToIndex(index);
+                this._addEventListeners(transition);
+            };
+            this._init(transition);
             this._loaded = true;
         }
 
@@ -429,7 +461,7 @@
             this._index++;
 
             var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = 'translate3d(' + (this._currentOffset -= this._intervalOffset) + 'px,0,0)';
+            animationOptions[this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
             this._initiateAnimation(animationOptions);
         }
 
@@ -452,7 +484,7 @@
             this._index--;
 
             var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = 'translate3d(' + (this._currentOffset += this._intervalOffset) + 'px,0,0)';
+            animationOptions[this._transform] = this._calculateStaticTranslation(this._intervalOffset);
             this._initiateAnimation(animationOptions);
         }
 
@@ -471,12 +503,16 @@
          * @returns {void}
          */
         goToIndex(index: number): void {
-            if (index === this._index) {
+            if (index === this._index || index < 0 || index >= this.context.length) {
                 return;
             }
 
-            // throw new NotImplementedException
-            // this._index = index;
+            var animationOptions: plat.IObject<string> = {},
+                interval = (this._index - index) * this._intervalOffset;
+
+            this._index = index;
+            animationOptions[this._transform] = this._calculateStaticTranslation(interval);
+            this._initiateAnimation(animationOptions);
         }
 
         /**
@@ -492,7 +528,7 @@
          */
         reset(): void {
             var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = 'translate3d(' + this._currentOffset + 'px,0,0)';
+            animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation(animationOptions);
         }
 
@@ -541,23 +577,23 @@
          */
         _init(transition: string): void {
             var foreach = <plat.ui.controls.ForEach>this.controls[0];
-            foreach.itemsLoaded.then(() => {
+            this._setTransform();
+            this._transition = transition;
+            this._slider = <HTMLElement>this.element.firstElementChild;
+
+            this.itemsLoaded = foreach.itemsLoaded.then(() => {
                 this._setPosition();
                 if (!this._intervalOffset) {
                     this._setOffsetWithClone();
+                } else {
+                    this._onLoad();
                 }
-
-                this._addEventListeners(transition);
             }).catch(() => {
                     var Exception = plat.acquire(__ExceptionStatic);
                     Exception.warn('Error processing ' + __Carousel + '. Please ensure you\'re context is correct.');
                     this._loaded = false;
                     return;
                 });
-
-            this._setTransform();
-            this._transition = transition;
-            this._slider = <HTMLElement>this.element.firstElementChild;
         }
 
         /**
@@ -703,23 +739,46 @@
          * @returns {void}
          */
         _track(ev: plat.ui.IGestureEvent): void {
-            this._slider.style[<any>this._transform] = this._calculateTranslation(ev);
+            this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
         }
 
         /**
-         * @name _calculateTranslation
+         * @name _calculateStaticTranslation
          * @memberof platui.Carousel
          * @kind function
          * @access protected
          * 
          * @description
-         * Calculates the translation value for setting the transform value.
+         * Calculates the translation value for setting the transform value during a static index set.
+         * 
+         * @param {number} interval The interval change.
+         * 
+         * @returns {string} The translation value.
+         */
+        _calculateStaticTranslation(interval: number): string {
+            switch (this._transition) {
+                case 'up':
+                case 'down':
+                    return 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)';
+                default:
+                    return 'translate3d(' + (this._currentOffset += interval) + 'px,0,0)';
+            }
+        }
+
+        /**
+         * @name _calculateDynamicTranslation
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Calculates the translation value for setting the transform value during tracking.
          * 
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
          * 
          * @returns {string} The translation value.
          */
-        _calculateTranslation(ev: plat.ui.IGestureEvent): string {
+        _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
             switch (this._transition) {
                 case 'up':
                 case 'down':
@@ -772,13 +831,15 @@
          */
         _setPosition(element?: HTMLElement): number {
             element = element || <HTMLElement>this.element.firstElementChild;
-            if (this._transition === 'vertical') {
-                this._positionProperty = 'top';
-                return (this._intervalOffset = element.offsetHeight);
+            switch (this._transition) {
+                case 'up':
+                case 'down':
+                    this._positionProperty = 'top';
+                    return (this._intervalOffset = element.offsetHeight);
+                default:
+                    this._positionProperty = 'left';
+                    return (this._intervalOffset = element.offsetWidth);
             }
-
-            this._positionProperty = 'left';
-            return (this._intervalOffset = element.offsetWidth);
         }
 
         /**
@@ -826,6 +887,7 @@
             body.appendChild(clone);
             this._setPosition(<HTMLElement>clone.firstElementChild);
             body.removeChild(clone);
+            this._onLoad();
         }
     }
 
