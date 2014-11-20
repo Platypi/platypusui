@@ -874,18 +874,19 @@
             this._cloneAttempts = 0;
 
             var clone = <HTMLElement>element.cloneNode(true),
-                style = clone.style,
                 regex = /\d+(?!\d+|%)/,
                 $window = this.$window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
-                computedStyle: CSSStyleDeclaration;
+                computedStyle: CSSStyleDeclaration,
+                width: string;
 
-            clone.id = '';
-            while (!regex.test((computedStyle = $window.getComputedStyle(element)).width)) {
+            shallowCopy.id = '';
+            while (!regex.test((width = (computedStyle = $window.getComputedStyle(element)).width))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }
+                shallowCopy.style.setProperty('width', width, 'important');
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -897,7 +898,6 @@
                     currStyle = curr.style,
                     temp: HTMLElement;
 
-                currStyle.setProperty('visibility', 'hidden', 'important');
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -907,10 +907,12 @@
                 curr.insertBefore(clone, null);
             }
 
-            element = element.parentElement;
-            element.appendChild(shallowCopy);
+            var shallowStyle = shallowCopy.style;
+            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty('visibility', 'hidden', 'important');
+            body.appendChild(shallowCopy);
             this._setPosition(<HTMLElement>clone.firstElementChild);
-            element.removeChild(shallowCopy);
+            body.removeChild(shallowCopy);
             this._onLoad();
         }
     }

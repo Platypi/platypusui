@@ -218,6 +218,9 @@
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
+                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                    $exception.warn('Max clone attempts reached before the ' + __ProgressBar + ' was placed into the ' +
+                        'DOM. Disposing of the ' + __ProgressBar);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
@@ -229,22 +232,45 @@
             this._cloneAttempts = 0;
 
             var clone = <HTMLElement>element.cloneNode(true),
-                style = clone.style,
                 regex = /\d+(?!\d+|%)/,
                 $window: Window = plat.acquire(__Window),
+                parentChain = <Array<HTMLElement>>[],
+                shallowCopy = clone,
+                computedStyle: CSSStyleDeclaration,
                 width: string;
 
-            while (!regex.test(width = $window.getComputedStyle(element).width)) {
+            shallowCopy.id = '';
+            while (!regex.test((width = (computedStyle = $window.getComputedStyle(element)).width))) {
+                if (computedStyle.display === 'none') {
+                    shallowCopy.style.setProperty('display', 'block', 'important');
+                }
+                shallowCopy.style.setProperty('width', width, 'important');
                 element = element.parentElement;
+                shallowCopy = <HTMLElement>element.cloneNode(false);
+                shallowCopy.id = '';
+                parentChain.push(shallowCopy);
             }
 
-            clone.style.width = width;
-            style.position = 'absolute';
-            style.display = 'block';
-            style.visibility = 'hidden';
-            body.appendChild(clone);
+            if (parentChain.length > 0) {
+                var curr = parentChain.pop(),
+                    currStyle = curr.style,
+                    temp: HTMLElement;
+
+                while (parentChain.length > 0) {
+                    temp = parentChain.pop();
+                    curr.insertBefore(temp, null);
+                    curr = temp;
+                }
+
+                curr.insertBefore(clone, null);
+            }
+
+            var shallowStyle = shallowCopy.style;
+            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty('visibility', 'hidden', 'important');
+            body.appendChild(shallowCopy);
             this._barMax = (<HTMLElement>clone.firstElementChild).offsetWidth;
-            body.removeChild(clone);
+            body.removeChild(shallowCopy);
         }
     }
 
