@@ -860,6 +860,9 @@
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
+                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                    $exception.warn('Max clone attempts reached before the ' + __Carousel + ' was placed into the ' +
+                        'DOM. Disposing of the ' + __Carousel);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
@@ -874,19 +877,40 @@
                 style = clone.style,
                 regex = /\d+(?!\d+|%)/,
                 $window = this.$window,
-                width: string;
+                parentChain = <Array<HTMLElement>>[],
+                shallowCopy = clone,
+                computedStyle: CSSStyleDeclaration;
 
-            while (!regex.test(width = $window.getComputedStyle(element).width)) {
+            clone.id = '';
+            while (!regex.test((computedStyle = $window.getComputedStyle(element)).width)) {
+                if (computedStyle.display === 'none') {
+                    shallowCopy.style.setProperty('display', 'block', 'important');
+                }
                 element = element.parentElement;
+                shallowCopy = <HTMLElement>element.cloneNode(false);
+                shallowCopy.id = '';
+                parentChain.push(shallowCopy);
             }
 
-            clone.style.width = width;
-            style.position = 'absolute';
-            style.display = 'block';
-            style.visibility = 'hidden';
-            body.appendChild(clone);
+            if (parentChain.length > 0) {
+                var curr = parentChain.pop(),
+                    currStyle = curr.style,
+                    temp: HTMLElement;
+
+                currStyle.setProperty('visibility', 'hidden', 'important');
+                while (parentChain.length > 0) {
+                    temp = parentChain.pop();
+                    curr.insertBefore(temp, null);
+                    curr = temp;
+                }
+
+                curr.insertBefore(clone, null);
+            }
+
+            element = element.parentElement;
+            element.appendChild(shallowCopy);
             this._setPosition(<HTMLElement>clone.firstElementChild);
-            body.removeChild(clone);
+            element.removeChild(shallowCopy);
             this._onLoad();
         }
     }
