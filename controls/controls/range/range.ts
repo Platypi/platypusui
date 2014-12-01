@@ -704,63 +704,36 @@
             var isLower = target === this._lowerKnob,
                 newOffset = this._calculateOffset(ev, isLower);
 
-            if (isLower) {
-                this._setLowerOffset(newOffset);
-                return;
-            }
-
-            this._setUpperOffset(newOffset);
+            this._setOffset(newOffset, isLower);
         }
 
         /**
-         * @name _setLowerOffset
+         * @name _setOffset
          * @memberof platui.Range
          * @kind function
          * @access protected
          * 
          * @description
-         * Sets the lower slider element's offset to the given value.
+         * Sets the designated knob element's offset to the given value.
          * 
          * @param {number} offset The new offset.
-         * 
-         * @returns {number} The new lower offset.
-         */
-        _setLowerOffset(offset: number): number {
-            var upperOffset = this._upperKnobOffset;
-
-            if (offset < 0) {
-                return (this._lowerKnobOffset = 0);
-            } else if (offset > upperOffset) {
-                return (this._lowerKnobOffset = upperOffset);
-            }
-
-            return (this._lowerKnobOffset = offset);
-        }
-
-        /**
-         * @name _setUpperOffset
-         * @memberof platui.Range
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Sets the upper slider element's offset to the given value.
-         * 
-         * @param {number} offset The new offset.
+         * @param {boolean} isLower Whether we're setting the lower or upper knob.
          * 
          * @returns {number} The new upper offset.
          */
-        _setUpperOffset(offset: number): number {
-            var maxOffset = this._maxOffset || this._setPositionAndLength(),
-                lowerOffset = this._lowerKnobOffset;
+        _setOffset(offset: number, isLower: boolean): number {
+            var maxOffset = this._maxOffset;
 
-            if (offset > maxOffset) {
-                return (this._upperKnobOffset = maxOffset);
-            } else if (offset < lowerOffset) {
-                return (this._upperKnobOffset = lowerOffset);
+            if (offset < 0) {
+                return isLower ? (this._lowerKnobOffset = 0) :
+                    (this._upperKnobOffset = 0);
+            } else if (offset > maxOffset) {
+                return isLower ? (this._lowerKnobOffset = maxOffset) :
+                    (this._upperKnobOffset = maxOffset);
             }
 
-            return (this._upperKnobOffset = offset);
+            return isLower ? (this._lowerKnobOffset = offset) :
+                (this._upperKnobOffset = offset);
         }
 
         /**
@@ -777,34 +750,36 @@
          * @returns {void}
          */
         _trackLower(ev: plat.ui.IGestureEvent): void {
-            var upperOffset = this._upperKnobOffset,
+            var maxOffset = this._maxOffset,
                 position = this._calculateOffset(ev, true),
-                setValue = true,
                 value: number;
 
             if (position < 0) {
                 value = this.min;
                 if (value - this.lower >= 0) {
-                    setValue = false;
+                    value = null;
                 }
                 position = 0;
-            } else if (position >= upperOffset) {
-                value = this.upper;
+            } else if (position > maxOffset) {
+                value = this.max;
                 if (value - this.lower <= 0) {
-                    setValue = false;
+                    value = null;
                 }
-                position = upperOffset;
+                position = maxOffset;
             } else {
                 value = this._calculateValue(position);
+                if (value - this.lower === 0) {
+                    value = null;
+                }
+
+                if (position > this._upperKnobOffset) {
+                    this._positionTogether(position, value);
+                    this._setOffset(position, false);
+                    return;
+                }
             }
 
-            if (setValue) {
-                this._setLower(value, false);
-            }
-
-            var style = this._slider.style;
-            style[<any>this._positionProperty] = position + 'px';
-            style[<any>this._lengthProperty] = (upperOffset - position) + 'px';
+            this._positionLower(position, value);
         }
 
         /**
@@ -822,32 +797,115 @@
          */
         _trackUpper(ev: plat.ui.IGestureEvent): void {
             var maxOffset = this._maxOffset,
-                lowerOffset = this._lowerKnobOffset,
-                offset = this._calculateOffset(ev, false),
-                setValue = true,
+                position = this._calculateOffset(ev, false),
                 value: number;
 
-            if (offset <= lowerOffset) {
-                value = this.lower;
+            if (position < 0) {
+                value = this.min;
                 if (value - this.upper >= 0) {
-                    setValue = false;
+                    value = null;
                 }
-                offset = lowerOffset;
-            } else if (offset > maxOffset) {
+                position = 0;
+            } else if (position > maxOffset) {
                 value = this.max;
                 if (value - this.upper <= 0) {
-                    setValue = false;
+                    value = null;
                 }
-                offset = maxOffset;
+                position = maxOffset;
             } else {
-                value = this._calculateValue(offset);
+                value = this._calculateValue(position);
+                if (value - this.upper === 0) {
+                    value = null;
+                }
+
+                if (position < this._lowerKnobOffset) {
+                    this._positionTogether(position, value);
+                    this._setOffset(position, true);
+                    return;
+                }
             }
 
-            if (setValue) {
-                this._setUpper(value, false);
+            this._positionUpper(position, value);
+        }
+
+        /**
+         * @name _positionLower
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Positions the slider element and adjusts it's length to account 
+         * for lower knob movement.
+         * 
+         * @param {number} position The new position of the lower knob.
+         * @param {number} value? The new value to set if specified.
+         * 
+         * @returns {void}
+         */
+        _positionLower(position: number, value?: number): void {
+            var style = this._slider.style;
+            style[<any>this._positionProperty] = position + 'px';
+            style[<any>this._lengthProperty] = (this._upperKnobOffset - position) + 'px';
+
+            if (value === null) {
+                return;
             }
 
-            this._slider.style[<any>this._lengthProperty] = (offset - lowerOffset) + 'px';
+            this._setLower(value, false);
+        }
+
+        /**
+         * @name _positionUpper
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Positions the slider element and adjusts it's length to account 
+         * for upper knob movement.
+         * 
+         * @param {number} position The new position of the upper knob.
+         * @param {number} value? The new value to set if specified.
+         * 
+         * @returns {void}
+         */
+        _positionUpper(position: number, value?: number): void {
+            this._slider.style[<any>this._lengthProperty] = (position - this._lowerKnobOffset) + 'px';
+
+            if (value === null) {
+                return;
+            }
+
+            this._setUpper(value, false);
+        }
+
+        /**
+         * @name _positionTogether
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Positions the slider element and adjusts it's length to account 
+         * for synchronized knob movement.
+         * 
+         * @param {number} position The new position of the knobs.
+         * @param {number} value? The new value to set if specified.
+         * 
+         * @returns {void}
+         */
+        _positionTogether(position: number, value?: number): void {
+            var style = this._slider.style;
+            style[<any>this._positionProperty] = position + 'px';
+            style[<any>this._lengthProperty] = '0px';
+
+            if (value === null) {
+                return;
+            }
+
+            this._setLower(value, false);
+            this._setUpper(value, false);
         }
 
         /**
@@ -883,18 +941,28 @@
          * @returns {number} The current position of the knob in pixels.
          */
         _calculateOffset(ev: plat.ui.IGestureEvent, isLower: boolean): number {
+            var currentOffset = isLower ? this._lowerKnobOffset : this._upperKnobOffset,
+                displacement: number;
+
             switch (this._transition) {
                 case 'right':
-                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + ev.clientX - this._lastTouch.x;
+                    displacement = ev.clientX - this._lastTouch.x;
+                    break;
                 case 'left':
-                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + this._lastTouch.x - ev.clientX;
+                    displacement = this._lastTouch.x - ev.clientX;
+                    break;
                 case 'up':
-                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + this._lastTouch.y - ev.clientY;
+                    displacement = this._lastTouch.y - ev.clientY;
+                    break;
                 case 'down':
-                    return (isLower ? this._lowerKnobOffset : this._upperKnobOffset) + ev.clientY - this._lastTouch.y;
+                    displacement = ev.clientY - this._lastTouch.y;
+                    break;
+                default:
+                    displacement = 0;
+                    break;
             }
 
-            return 0;
+            return currentOffset + displacement;
         }
 
         /**
@@ -1072,7 +1140,7 @@
             var animationOptions: plat.IObject<string> = {},
                 upperKnobOffset = this._upperKnobOffset,
                 upperOffset = this.$utils.isNumber(upperKnobOffset) ? upperKnobOffset :
-                this._setUpperOffset(this._calculateKnobPosition(this.upper)),
+                this._setOffset(this._calculateKnobPosition(this.upper), false),
                 position = this._calculateKnobPosition((value || this.lower));
 
             animationOptions[this._positionProperty] = position + 'px';

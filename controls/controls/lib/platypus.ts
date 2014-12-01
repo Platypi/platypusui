@@ -201,6 +201,17 @@ module plat {
         __compatError = 'Compatibility' + __errorSuffix,
     
         /**
+         * ForEach aliases
+         */
+        __forEachAliasOptions = {
+            index: 'index',
+            even: 'even',
+            odd: 'odd',
+            first: 'first',
+            last: 'last'
+        },
+    
+        /**
          * Constants
          */
         __startSymbol = '{{',
@@ -3539,7 +3550,7 @@ module plat {
             /**
              * Determines if a url is relative or absolute.
              */
-            fullUrlRegex = /^(?:[a-z]+:)?\/\//i;
+            fullUrlRegex = /^(?:[a-z0-9\-]+:)?(?:\/\/)?/i;
         
             /**
              * A regular expression for matching or removing all newline characters.
@@ -5423,7 +5434,7 @@ module plat {
                 acquire(__UrlUtilsInstance);
 
                 var url = this.url(),
-                    trimmedUrl = url.replace(this.$Regex.initialUrlRegex, '/'),
+                    trimmedUrl = url,
                     changed = this._urlChanged.bind(this),
                     $dom = this.$Dom,
                     $window = this.$Window;
@@ -5737,11 +5748,20 @@ module plat {
              * @param {string} url The initial URL passed into the Browser.
              */
             private static __getBaseUrl(url: string): string {
-                if (isUndefined((<any>window.location).origin)) {
-                    (<any>window.location).origin = window.location.protocol + "//" + window.location.host;
+                var $Regex = acquire(__Regex),
+                    origin = (<any>window.location).origin,
+                    protocol = window.location.protocol,
+                    host = window.location.host;
+
+                if (protocol === 'file:' || protocol.indexOf('wmapp') > -1) {
+                    origin = window.location.href;
+                } else if(isUndefined(origin)) {
+                    origin = window.location.protocol + "//" + window.location.host;
                 }
 
-                return (<any>window.location).origin.split('?')[0].split('#')[0] + '/';
+                origin = origin.replace($Regex.initialUrlRegex, '');
+
+                return origin.split('?')[0].split('#')[0] + '/';
             }
 
             /**
@@ -5879,11 +5899,6 @@ module plat {
                 url = element.href;
 
                 var protocol = element.protocol ? element.protocol.replace(/:$/, '') : '';
-
-                // cordova adds //www for some urls, so we want to take those out.
-                if (protocol.indexOf('http') === -1 && protocol.indexOf('ms-appx') === -1) {
-                    url = url.replace('//', '');
-                }
 
                 define(this, 'href', url, true, true);
                 define(this, 'protocol', element.protocol ? element.protocol.replace(/:$/, '') : '', true, true);
@@ -6172,11 +6187,10 @@ module plat {
                     parameter: match.route,
                     target: match.injector,
                     type: match.type,
-                    options: null,
-                    cancelable: true
+                    options: null
                 });
 
-                if (event.cancelled) {
+                if (event.defaultPrevented) {
                     return false;
                 }
 
@@ -6283,8 +6297,7 @@ module plat {
                     parameter: matchedRoute.route,
                     target: matchedRoute.injector,
                     type: matchedRoute.type,
-                    options: null,
-                    cancelable: false
+                    options: null
                 });
             }
 
@@ -6697,19 +6710,6 @@ module plat {
                         }
                     }
                 });
-            }
-
-            /**
-             * Creates a promise that fulfills to the passed in object. If the
-             * passed-in object is a promise it returns the promise.
-             * @param object The object to cast to a Promise.
-             */
-            static cast<R>(object?: R): Promise<R> {
-                if (isObject(object) && (<any>object).constructor === Promise) {
-                    return <Promise<R>>(<any>object);
-                }
-
-                return new Promise<R>((resolve: (value: R) => any) => resolve(object));
             }
 
             /**
@@ -7220,7 +7220,6 @@ module plat {
         export function IPromise($Window?: any): IPromise {
             if (!isNull($Window.Promise) &&
                 isFunction($Window.Promise.all) &&
-                isFunction($Window.Promise.cast) &&
                 isFunction($Window.Promise.race) &&
                 isFunction($Window.Promise.resolve) &&
                 isFunction($Window.Promise.reject)) {
@@ -7262,13 +7261,6 @@ module plat {
              * @param {Array<R>} promises An array of objects, if an object is not a promise, it will be cast.
              */
             all<R>(promises: Array<R>): IThenable<Array<R>>;
-
-            /**
-             * Creates a promise that fulfills to the passed in object. If the
-             * passed-in object is a promise it returns the promise.
-             * @param {R} object The object to cast to a Promise.
-             */
-            cast<R>(object?: R): IThenable<R>;
 
             /**
              * Returns a promise that fulfills as soon as any of the promises fulfill,
@@ -10929,6 +10921,11 @@ module plat {
             $EventManagerStatic: IEventManagerStatic = acquire(__EventManagerStatic);
 
             /**
+             * Reference to the IContextManagerStatic injectable.
+             */
+            $ContextManagerStatic: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
+
+            /**
              * The object that initiated the event.
              */
             sender: any;
@@ -10942,6 +10939,13 @@ module plat {
              * The event direction this object is using for propagation.
              */
             direction: string;
+
+            /**
+             * Whether or not preventDefault() was called on the event. Senders of the 
+             * event can check this property to know if they should carry out a default 
+             * action as a result of the event.
+             */
+            defaultPrevented: boolean = false;
 
             /**
              * Whether or not the event propagation was stopped.
@@ -10980,6 +10984,15 @@ module plat {
                 this.name = name;
                 this.direction = direction || this.$EventManagerStatic.UP;
                 this.sender = sender;
+            }
+
+            /**
+             * Cancels the default action (if there is one) for an event. Does not affect propagation.
+             */
+            preventDefault(): void {
+                if (!this.defaultPrevented) {
+                    this.$ContextManagerStatic.defineGetter(this, 'defaultPrevented', true);
+                }
             }
 
             /**
@@ -11027,6 +11040,13 @@ module plat {
             direction: string;
 
             /**
+             * Whether or not preventDefault() was called on the event. Senders of the 
+             * event can check this property to know if they should carry out a default 
+             * action as a result of the event.
+             */
+            defaultPrevented: boolean;
+
+            /**
              * Whether or not the event propagation was stopped.
              */
             stopped: boolean;
@@ -11061,6 +11081,11 @@ module plat {
             initialize(name: string, sender: any, direction?: string): void;
 
             /**
+             * Cancels the default action (if there is one) for an event. Does not affect propagation.
+             */
+            preventDefault(): void;
+
+            /**
              * Call this method to halt the propagation of an upward-moving event.
              * Downward events cannot be stopped with this method.
              */
@@ -11075,25 +11100,12 @@ module plat {
              * Creates a new LifecycleEvent and fires it.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
-             * @param {boolean} cancelable? Whether or not the event can be cancelled.
              */
-            static dispatch(name: string, sender: any, cancelable?: boolean): void {
+            static dispatch(name: string, sender: any): void {
                 var event = new LifecycleEvent();
                 event.initialize(name, sender);
-                event.cancelable = cancelable === true;
                 EventManager.sendEvent(event);
             }
-
-            /**
-             * States whether or not this event is able to be cancelled. Some lifecycle events can be 
-             * cancelled, preventing the default functionality for the event.
-             */
-            cancelable: boolean;
-
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            cancelled: boolean = false;
 
             /**
              * Initializes the event, populating its public properties.
@@ -11102,15 +11114,6 @@ module plat {
              */
             initialize(name: string, sender: any): void {
                 super.initialize(name, sender, this.$EventManagerStatic.DIRECT);
-            }
-
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            cancel(): void {
-                if (this.cancelable) {
-                    this.cancelled = true;
-                }
             }
         }
 
@@ -11131,9 +11134,8 @@ module plat {
              * Creates a new LifecycleEvent and fires it.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
-             * @param {boolean} cancelable? Whether or not the event can be cancelled.
              */
-            dispatch(name: string, sender: any, cancelable?: boolean): void;
+            dispatch(name: string, sender: any): void;
         }
 
         /**
@@ -11141,27 +11143,11 @@ module plat {
          */
         export interface ILifecycleEvent extends IDispatchEventInstance {
             /**
-             * States whether or not this event is able to be cancelled. Some lifecycle events can be 
-             * cancelled, preventing the default functionality for the event.
-             */
-            cancelable: boolean;
-
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            cancelled: boolean;
-
-            /**
              * Initializes the event, populating its public properties.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
              */
             initialize(name: string, sender: any): void;
-
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            cancel(): void;
         }
 
         /**
@@ -11296,7 +11282,7 @@ module plat {
                     return;
                 } else {
                     $dom.addEventListener(EventManager.$Window, 'load', () => {
-                        dispatch(__ready, EventManager, true);
+                        dispatch(__ready, EventManager);
                     });
                 }
             }
@@ -11878,17 +11864,6 @@ module plat {
             type: string;
 
             /**
-             * States whether or not this event is able to be cancelled. Some navigation events can be 
-             * cancelled, preventing further navigation.
-             */
-            cancelable: boolean = true;
-
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            cancelled: boolean = false;
-
-            /**
              * Initializes the event members.
              * @param {string} name The name of the event.
              * @param {any} sender The object that initiated the event.
@@ -11902,17 +11877,6 @@ module plat {
                 this.options = eventOptions.options;
                 this.target = eventOptions.target;
                 this.type = eventOptions.type;
-            }
-
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            cancel(): void {
-                if (this.cancelable) {
-                    this.cancelled = true;
-
-                    (<any>this.$EventManagerStatic.propagatingEvents)[this.name] = false;
-                }
             }
         }
 
@@ -11966,17 +11930,6 @@ module plat {
             type: string;
 
             /**
-             * States whether or not this event is able to be cancelled. Some navigation events can be 
-             * cancelled, preventing further navigation.
-             */
-            cancelable: boolean;
-
-            /**
-             * States whether or not this event has been cancelled.
-             */
-            cancelled: boolean;
-
-            /**
              * Initializes the event members.
              * @param {string} name The name of the event.
              * @param {any} sender The object that initiated the event.
@@ -11984,11 +11937,6 @@ module plat {
              */
             initialize(name: string, sender: any, direction?: 'direct', eventOptions?: INavigationEventOptions<P>): void;
             initialize(name: string, sender: any, direction?: string, eventOptions?: INavigationEventOptions<P>): void;
-
-            /**
-             * If the event is cancelable, calling this method will cancel the event.
-             */
-            cancel(): void;
         }
 
         /**
@@ -12015,12 +11963,6 @@ module plat {
              * Specifies the type of IBaseViewControl for the event.
              */
             type: string;
-
-            /**
-             * States whether or not this event is able to be cancelled. Some navigation events can be 
-             * cancelled, preventing further navigation.
-             */
-            cancelable?: boolean;
         }
 
         /**
@@ -12208,7 +12150,7 @@ module plat {
             }
 
             if (isFunction(control.loaded)) {
-                return Control.$Promise.cast(control.loaded());
+                return Control.$Promise.resolve(control.loaded());
             }
 
             return Control.$Promise.resolve(null);
@@ -17143,22 +17085,26 @@ module plat {
                     if (eventType === 'touchend') {
                         // all to handle a strange issue when touch clicking certain types 
                         // of DOM elements
-                        var target = <HTMLInputElement>ev.target;
                         if (hasMoved) {
                             if (ev.cancelable === true) {
                                 ev.preventDefault();
                             }
-                            this.__preventClickFromTouch();
-                        } else if (this.__isFocused(target)) {
-                            this.__preventClickFromTouch();
-                        } else {
+                        } else if (this._inTouch === true) {
+                            // handInput must be called prior to preventClickFromTouch due to an 
+                            // order of operations
+                            this.__handleInput(<HTMLInputElement>ev.target);
                             if (ev.cancelable === true) {
                                 ev.preventDefault();
                             }
-                            if (this._inTouch === true) {
-                                this.__handleInput(target);
+                        } else {
+                            this.__preventClickFromTouch();
+                            if (ev.cancelable === true) {
+                                ev.preventDefault();
                             }
+                            return;
                         }
+
+                        this.__preventClickFromTouch();
                     }
 
                     this._inTouch = false;
@@ -18112,7 +18058,6 @@ module plat {
                         break;
                     case 'a':
                     case 'button':
-                    case 'select':
                     case 'label':
                         if (isFunction(focusedElement.blur)) {
                             focusedElement.blur();
@@ -18133,6 +18078,20 @@ module plat {
                             remover();
                         }, false);
                         return;
+                    case 'select':
+                        if (isFunction(focusedElement.blur)) {
+                            focusedElement.blur();
+                        }
+                        postpone(() => {
+                            var $document = this.$Document;
+                            if ($document.body.contains(target)) {
+                                var event = <MouseEvent>$document.createEvent('MouseEvents');
+                                event.initMouseEvent('mousedown', false, false, null, null, null,
+                                    null, null, null, null, null, null, null, null, null);
+                                target.dispatchEvent(event);
+                            }
+                        });
+                        break;
                     default:
                         if (isFunction(focusedElement.blur)) {
                             focusedElement.blur();
@@ -18146,7 +18105,6 @@ module plat {
                 }
 
                 this.__focusedElement = null;
-                return;
             }
             /**
              * Handles the phantom click in WebKit based touch applications.
@@ -20697,6 +20655,24 @@ module plat {
                 itemsLoaded: async.IThenable<void>;
 
                 /**
+                 * The options for the foreach control. 
+                 */
+                options: observable.IObservableProperty<IForEachOptions>;
+
+                /**
+                 * Used to hold the alias tokens for the built-in foreach aliases. You 
+                 * can overwrite these with the options for 
+                 * the foreach control. 
+                 */
+                _aliases: IForEachAliasOptions = {
+                    index: __forEachAliasOptions.index,
+                    even: __forEachAliasOptions.even,
+                    odd: __forEachAliasOptions.odd,
+                    first: __forEachAliasOptions.first,
+                    last: __forEachAliasOptions.last
+                };
+
+                /**
                  * The node length of the element's childNodes (innerHTML).
                  */
                 _blockLength = 0;
@@ -20750,6 +20726,7 @@ module plat {
                         return;
                     }
 
+                    this._setAliases();
                     this._executeEvent({
                         method: 'splice',
                         arguments: null,
@@ -20769,6 +20746,7 @@ module plat {
                         return;
                     }
 
+                    this._setAliases();
                     this._addItems(context.length, 0);
 
                     this._setListener();
@@ -20779,6 +20757,31 @@ module plat {
                  */
                 dispose(): void {
                     this.__resolveFn = null;
+                }
+
+                /**
+                 * Sets the alias tokens to use for all the items in the foreach context array.
+                 */
+                _setAliases() {
+                    var options = this.options;
+
+                    if (!(isObject(options) && isObject(options.value) && isObject(options.value.aliases))) {
+                        return;
+                    }
+
+                    var aliases = options.value.aliases,
+                        keys = Object.keys(this._aliases),
+                        length = keys.length,
+                        _aliases = this._aliases,
+                        value: string;
+
+                    for (var i = 0; i < length; ++i) {
+                        value = aliases[keys[i]];
+
+                        if (isString(value)) {
+                            _aliases[keys[i]] = value;
+                        }
+                    }
                 }
 
                 /**
@@ -20932,29 +20935,37 @@ module plat {
                  * @param {number} index The index used to create the resource aliases.
                  */
                 _getAliases(index: number): IObject<IResource> {
-                    var isEven = (index & 1) === 0;
-                    return {
-                        index: {
-                            value: index,
-                            type: __OBSERVABLE_RESOURCE
-                        },
-                        even: {
-                            value: isEven,
-                            type: __OBSERVABLE_RESOURCE
-                        },
-                        odd: {
-                            value: !isEven,
-                            type: __OBSERVABLE_RESOURCE
-                        },
-                        first: {
-                            value: index === 0,
-                            type: __OBSERVABLE_RESOURCE
-                        },
-                        last: {
-                            value: index === (this.context.length - 1),
-                            type: __OBSERVABLE_RESOURCE
-                        }
+                    var isEven = (index & 1) === 0,
+                        aliases: IObject<ui.IResource> = {},
+                        _aliases = this._aliases,
+                        type = __OBSERVABLE_RESOURCE;
+
+                    aliases[_aliases.index] = {
+                        value: index,
+                        type: type
                     };
+
+                    aliases[_aliases.even] = {
+                        value: isEven,
+                        type: type
+                    };
+
+                    aliases[_aliases.odd] = {
+                        value: !isEven,
+                        type: type
+                    };
+
+                    aliases[_aliases.first] = {
+                        value: index === 0,
+                        type: type
+                    };
+
+                    aliases[_aliases.last] = {
+                        value: index === (this.context.length - 1),
+                        type: type
+                    };
+
+                    return aliases;
                 }
 
                 /**
@@ -21086,6 +21097,53 @@ module plat {
             }
 
             register.control(__ForEach, ForEach);
+
+            /**
+             * The options object for the 
+             * ForEach control.
+             */
+            export interface IForEachOptions {
+                /**
+                 * Used to specify alternative alias tokens for the built-in foreach aliases.
+                 */
+                aliases: IForEachAliasOptions;
+            }
+
+            /**
+             * The alias tokens for the ForEach options object for the 
+             * ForEach control.
+             */
+            export interface IForEachAliasOptions extends IObject<string> {
+                /**
+                 * Used to specify an alternative alias for the index in a ForEach 
+                 * item template.
+                 */
+                index: string;
+
+                /**
+                 * Used to specify an alternative alias for the even in a ForEach 
+                 * item template.
+                 */
+                even: string;
+
+                /**
+                 * Used to specify an alternative alias for the odd in a ForEach 
+                 * item template.
+                 */
+                odd: string;
+
+                /**
+                 * Used to specify an alternative alias for the first in a ForEach 
+                 * item template.
+                 */
+                first: string;
+
+                /**
+                 * Used to specify an alternative alias for the last in a ForEach 
+                 * item template.
+                 */
+                last: string;
+            }
 
             /**
              * A TemplateControl for adding HTML to the 
@@ -24425,7 +24483,7 @@ module plat {
                 control.navigator = this;
                 control.navigatedTo(parameter);
 
-                this._sendEvent(__navigated, control, control.type, parameter, options, false);
+                this._sendEvent(__navigated, control, control.type, parameter, options);
             }
         
             /**
@@ -24457,17 +24515,15 @@ module plat {
              * or a route depending upon this navigator and event name.
              * @param {plat.navigation.IBaseNavigationOptions} options The 
              * IBaseNavigationOptions used during navigation
-             * @param {boolean} cancelable Whether or not the event can be cancelled, preventing further navigation.
              * dispatch.
              */
             _sendEvent(name: string, target: any, type: string, parameter: any,
-                options: IBaseNavigationOptions, cancelable: boolean): events.INavigationEvent<any> {
+                options: IBaseNavigationOptions): events.INavigationEvent<any> {
                 return this.$NavigationEventStatic.dispatch(name, this, {
                     target: target,
                     type: type,
                     parameter: parameter,
-                    options: options,
-                    cancelable: cancelable
+                    options: options
                 });
             }
         }
@@ -24669,9 +24725,9 @@ module plat {
                     baseport = this.viewport,
                     index = -1;
 
-                event = this._sendEvent(__beforeNavigate, Constructor, null, parameter, options, true);
+                event = this._sendEvent(__beforeNavigate, Constructor, null, parameter, options);
 
-                if (event.cancelled) {
+                if (event.defaultPrevented) {
                     return;
                 }
 
@@ -24798,9 +24854,9 @@ module plat {
                     return;
                 }
 
-                var event = this._sendEvent(__beforeNavigate, viewControl, viewControl.type, parameter, options, true);
+                var event = this._sendEvent(__beforeNavigate, viewControl, viewControl.type, parameter, options);
 
-                if (event.cancelled) {
+                if (event.defaultPrevented) {
                     return;
                 }
 
@@ -25212,10 +25268,10 @@ module plat {
              * and the Router.
              */
             _beforeRouteChange(ev: events.INavigationEvent<web.IRoute<any>>): void {
-                var event = this._sendEvent(__beforeNavigate, ev.target, ev.type, ev.parameter, ev.options, true);
+                var event = this._sendEvent(__beforeNavigate, ev.target, ev.type, ev.parameter, ev.options);
 
-                if (event.cancelled) {
-                    ev.cancel();
+                if (event.defaultPrevented) {
+                    ev.preventDefault();
                 }
             }
         
@@ -26296,7 +26352,7 @@ module plat {
          */
         export class SetAttributeControl extends AttributeControl implements ISetAttributeControl {
             /**
-             * The property to set on the associated template control.
+             * The property to set on the associated element.
              */
             property: string = '';
 
@@ -26351,25 +26407,26 @@ module plat {
              * attribute property value.
              */
             setter(): void {
-                var expression = this.attributes[this.attribute];
-
                 postpone(() => {
-                    if (!isNode(this.element)) {
+                    var element = this.element,
+                        property = this.property;
+
+                    if (!isNode(element)) {
                         return;
                     }
 
-                    switch (expression) {
+                    switch (this.attributes[this.attribute]) {
                         case 'false':
                         case '0':
                         case 'null':
                         case '':
-                            this.element.setAttribute(this.property, '');
-                            (<any>this.element)[this.property] = false;
-                            this.element.removeAttribute(this.property);
+                            element.setAttribute(property, '');
+                            (<any>element)[property] = false;
+                            element.removeAttribute(property);
                             break;
                         default:
-                            this.element.setAttribute(this.property, this.property);
-                            (<any>this.element)[this.property] = true;
+                            element.setAttribute(property, property);
+                            (<any>element)[property] = true;
                     }
                 });
             }
@@ -26441,57 +26498,89 @@ module plat {
          */
         export class Visible extends SetAttributeControl {
             /**
-             * The property to set on the associated template control.
+             * The property to set on the associated element.
              */
-            property: string = __Hide;
+            property: string = 'display';
+
+            /**
+             * The value to associate with the property.
+             */
+            value: string = 'none';
+
+            /**
+             * The importance to set on the property.
+             */
+            importance: string = 'important';
+
+            /**
+             * The initial value of the property to be set.
+             */
+            _initialValue = '';
 
             /**
              * Hides the element.
              */
             initialize(): void {
-                this.__hide();
+                var style = this.element.style || { getPropertyValue: noop },
+                    initialValue = (<CSSStyleDeclaration>style).getPropertyValue(this.property);
+
+                this._setValue(this.value, this.importance);
+
+                if (isEmpty(initialValue) || initialValue === 'none') {
+                    return;
+                }
+
+                this._initialValue = initialValue;
             }
 
             /**
              * Hides or shows the element depending upon the attribute value
              */
             setter(): void {
-                var expression = this.attributes[this.attribute];
-
                 postpone(() => {
                     if (!isNode(this.element)) {
                         return;
                     }
 
-                    switch (expression) {
+                    switch (this.attributes[this.attribute]) {
                         case 'false':
                         case '0':
                         case 'null':
                         case '':
-                            this.__hide();
+                            this._setValue(this.value, this.importance);
                             break;
                         default:
-                            this.__show();
+                            this._setValue(this._initialValue);
+                            break;
                     }
                 });
             }
 
             /**
-             * Hides the element.
+             * Sets the value of the property element with the given importance. If the 
+             * value is null or empty string, the property will be removed.
+             * @param {string} value The value to set.
+             * @param {string} importance? The priority or importance level to set.
              */
-            private __hide(): void {
-                if (!this.element.hasAttribute(this.property)) {
-                    this.element.setAttribute(this.property, '');
-                }
-            }
+            _setValue(value: string, importance?: string): void {
+                var property = this.property,
+                    style = this.element.style || {
+                        setProperty: noop,
+                        removeProperty: noop,
+                        getPropertyValue: noop,
+                        getPropertyPriority: noop
+                    },
+                    currentVal = (<CSSStyleDeclaration>style).getPropertyValue(property),
+                    currentPriority = (<CSSStyleDeclaration>style).getPropertyPriority(property);
 
-            /**
-             * Shows the element.
-             */
-            private __show(): void {
-                if (this.element.hasAttribute(this.property)) {
-                    this.element.removeAttribute(this.property);
+                if (value === currentVal && importance === currentPriority) {
+                    return;
+                } else if (isEmpty(value)) {
+                    (<CSSStyleDeclaration>style).removeProperty(property);
+                    return;
                 }
+
+                (<CSSStyleDeclaration>style).setProperty(property, value, importance);
             }
         }
 
@@ -27681,7 +27770,7 @@ module plat {
                     dispatch = $LifecycleEventStatic.dispatch;
 
                 postpone(() => {
-                    dispatch(__ready, $LifecycleEventStatic, true);
+                    dispatch(__ready, $LifecycleEventStatic);
                 });
             }
         }
@@ -27740,7 +27829,7 @@ module plat {
                 App.__registerAppEvents(ev);
             }
 
-            if (!ev.cancelled) {
+            if (!ev.defaultPrevented) {
                 App.load();
             }
         }
@@ -27861,7 +27950,7 @@ module plat {
         /**
          * Registers a listener for a beforeNavigate event. The listener will be called when a beforeNavigate 
          * event is propagating over the app. Any number of listeners can exist for a single event name. 
-         * This event is cancelable using the ev.cancel() method, 
+         * This event is cancelable using the ev.preventDefault() method, 
          * and thereby preventing the navigation.
          * @param {string} name='beforeNavigate' The name of the event, cooinciding with the beforeNavigate event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the beforeNavigate event is fired.
@@ -27870,7 +27959,7 @@ module plat {
         /**
          * Registers a listener for a navigating event. The listener will be called when a navigating 
          * event is propagating over the app. Any number of listeners can exist for a single event name. 
-         * This event is cancelable using the ev.cancel() method, 
+         * This event is cancelable using the ev.preventDefault() method, 
          * and thereby preventing the navigation.
          * @param {string} name='navigating' The name of the event, cooinciding with the navigating event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the navigating 
@@ -28046,7 +28135,7 @@ module plat {
         /**
          * Registers a listener for a beforeNavigate event. The listener will be called when a beforeNavigate 
          * event is propagating over the app. Any number of listeners can exist for a single event name. 
-         * This event is cancelable using the ev.cancel() method, 
+         * This event is cancelable using the ev.preventDefault() method, 
          * and thereby preventing the navigation.
          * @param {string} name='beforeNavigate' The name of the event, cooinciding with the beforeNavigate event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the beforeNavigate event is fired.
@@ -28055,7 +28144,7 @@ module plat {
         /**
          * Registers a listener for a navigating event. The listener will be called when a navigating 
          * event is propagating over the app. Any number of listeners can exist for a single event name. 
-         * This event is cancelable using the ev.cancel() method, 
+         * This event is cancelable using the ev.preventDefault() method, 
          * and thereby preventing the navigation.
          * @param {string} name='navigating' The name of the event, cooinciding with the navigating event.
          * @param {(ev: plat.events.INavigationEvent<any>) => void} listener The method called when the navigating 
