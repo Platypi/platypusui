@@ -1,4 +1,6 @@
-﻿/**
+﻿/// <reference path="../../references.d.ts" />
+
+/**
  * @name platui
  * @kind namespace
  * @access public

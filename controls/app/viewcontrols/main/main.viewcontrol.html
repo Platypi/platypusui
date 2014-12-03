@@ -1,8 +1,22 @@
 ﻿<div class="container">
+    <!-- Buttons -->
+    <div class="demo-area">
+        <h2 class="demo-heading">Buttons</h2>
+        <input type="checkbox" id="buttons" checked />
+        <label for="buttons"></label>
+        <div class="demo-stage">
+            <plat-button plat-options="{ style: 'primary' }">Primary</plat-button>
+            <plat-button plat-options="{ style: 'secondary' }">Secondary</plat-button>
+            <plat-button plat-options="{ style: 'back' }">Back</plat-button>
+            <plat-button plat-options="{ style: 'confirm' }">Confirm</plat-button>
+            <plat-button plat-options="{ style: 'cancel' }">Cancel</plat-button>
+        </div>
+    </div>
+
     <!-- Form/Input -->
     <div class="demo-area">
         <h2 class="demo-heading">Forms</h2>
-        <input type="checkbox" id="forms" checked />
+        <input type="checkbox" id="forms" />
         <label for="forms"></label>
         <div class="demo-stage">
             <plat-drawer-controller style="font-size: 300%;">|||</plat-drawer-controller>
@@ -324,7 +338,7 @@
     <!-- Carousel -->
     <div class="demo-area">
         <h2 class="demo-heading">Carousel</h2>
-        <input type="checkbox" id="carousel" checked />
+        <input type="checkbox" id="carousel" />
         <label for="carousel"></label>
         <div class="demo-stage">
             <plat-carousel plat-context="carouselItems" style="width: 800px; height: 400px;">

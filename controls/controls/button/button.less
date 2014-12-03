@@ -7,11 +7,13 @@
     #Button;
     position: relative;
     display: inline-block;
+    padding: 0.6em 1.2em;
     background-color: @background-color;
     color: @color;
     border: @border-size solid @border-color;
     outline: none;
     cursor: pointer;
+    font-size: @defaultFontSize;
     .box-sizing(border-box);
     
     &:not(.plat-back) {
@@ -31,44 +33,42 @@
     }
 
     &.plat-back {
-        border: none;
+        // *:first-child {
+            // margin-left: 0.5em;
 
-        *:first-child {
-            margin-left: 0.5em;
-
-            &::before {
-                content: "\2039";
-                position: absolute;
-                top: -0.375em;
-                left: 0;
-                font-size: 200%;
-            }
-        }
+            // &::before {
+            //     content: "\2039";
+            //     position: absolute;
+            //     top: -0.375em;
+            //     left: 0;
+            //     font-size: 200%;
+            // }
+        // }
     }
 
     &.plat-confirm {
-        *:last-child {
-            margin-right: 2em;
+       //  *:last-child {
+           // margin-right: 2em;
 
-            &::after {
-                content: "\2713";
-                position: absolute;
-                right: 0.4em;
-            }
-        }
+            // &::after {
+            //     content: "\2713";
+            //     position: absolute;
+            //     right: 0.4em;
+            // }
+        //}
     }
 
     &.plat-cancel {
-        *:last-child {
-            margin-right: 2em;
+        //*:last-child {
+            //margin-right: 2em;
 
-            &::after {
-                content: "\00d7";
-                position: absolute;
-                top: -0.125em;
-                right: 0.25em;
-                font-size: 150%;
-            }
-        }
+            // &::after {
+            //     content: "\00d7";
+            //     position: absolute;
+            //     top: -0.125em;
+            //     right: 0.25em;
+            //     font-size: 150%;
+            // }
+        //}
     }
 }
