@@ -39,6 +39,19 @@
         $compat: plat.ICompat = plat.acquire(__Compat);
 
         /**
+         * @name $regex
+         * @memberof platui.Input
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.expressions.IRegex}
+         * 
+         * @description
+         * Reference to the {@link plat.expressions.IRegex|IRegex} injectable.
+         */
+        $regex: plat.expressions.IRegex = plat.acquire(__Regex);
+
+        /**
          * @name templateString
          * @memberof platui.Input
          * @kind property
@@ -506,9 +519,7 @@
 
             switch (type) {
                 case 'email':
-                    this._pattern = this._pattern || new RegExp('^(([^<>()[\\]\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\.,;:\\s@\\"]+)*)|' +
-                        '(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|' +
-                        '(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
+                    this._pattern = this._pattern || this.$regex.validateEmail;
                     this._actionHandler = this._checkEmail.bind(this);
                     this._typeHandler = this._handleEmail;
                     break;
@@ -522,7 +533,8 @@
                     event = __$touchstart;
                     break;
                 case 'tel':
-                    this._pattern = this._pattern || /^\+?[0-9\.\-\s]*$/;
+                case 'telephone':
+                    this._pattern = this._pattern || this.$regex.validateTelephone;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
@@ -1013,7 +1025,7 @@
          * - "password"
          * - "email"
          * - "number"
-         * - "tel"
+         * - "tel"/"telephone"
          */
         type?: string;
 

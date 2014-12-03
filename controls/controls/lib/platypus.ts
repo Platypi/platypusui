@@ -3508,12 +3508,14 @@ module plat {
              * A regular expression for finding markup in a string.
              */
             markupRegex: RegExp;
+
             /**
              * Finds the arguments in a method expression.
              * // outputs ["('foo', 'bar', 'baz')", "'foo', 'bar', 'baz'"]
              * exec("myFunction('foo', 'bar', 'baz')");
              */
             argumentRegex = /\((.*)\)/;
+
             /**
              * Given a string, finds the root alias name if that string is an
              * alias path.
@@ -3523,6 +3525,7 @@ module plat {
              * exec('@context');
              */
             aliasRegex = /[^@\.\[\(]+(?=[\.\[\(])/;
+
             /**
              * Finds '/*.html' or '/*.htm' in a url. Useful for removing 
              * the html file out of the url.
@@ -3530,18 +3533,22 @@ module plat {
              * exec('http://localhost:8080/index.html');
              */
             initialUrlRegex = /\/[^\/]*\.(?:html|htm)/;
+
             /**
              * Finds a protocol delimeter in a string (e.g. ://).
              */
             protocolRegex = /:\/\//;
+
             /**
              * Looks for any invalid variable syntax.
              */
             invalidVariableRegex = /[^a-zA-Z0-9@_$]/;
+
             /**
              * Grabs the file name from a file path.
              */
             fileNameRegex = /.*(?:\/|\\)/;
+
             /**
              * Determines if a character is correlated with a shifted key code.
              */
@@ -3551,14 +3558,26 @@ module plat {
              * Determines if a url is relative or absolute.
              */
             fullUrlRegex = /^(?:[a-z0-9\-]+:)?(?:\/\/)?/i;
-        
+
+            /**
+             * Determines if an email address is valid.
+             */
+            validateEmail = new RegExp('^(([^<>()[\\]\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\.,;:\\s@\\"]+)*)|' +
+                '(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|' +
+                '(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
+
+            /**
+             * Determines if a telephone number is valid.
+             */
+            validateTelephone = /^\+?[0-9\.\-\s]*$/;
+
             /**
              * A regular expression for matching or removing all newline characters.
              */
             get newLineRegex(): RegExp {
                 return /\r|\n/g;
             }
-        
+
             /**
              * Finds optional parameters in a route string.
              * // outputs ['(/foo)', '/foo']
@@ -3569,7 +3588,7 @@ module plat {
             get optionalRouteRegex(): RegExp {
                 return /\((.*?)\)/g;
             }
-        
+
             /**
              * Finds named parameters in a route string.
              * // outputs [':foo']
@@ -3580,7 +3599,7 @@ module plat {
             get namedParameterRouteRegex(): RegExp {
                 return /(\(\?)?:\w+/g;
             }
-        
+
             /**
              * Finds an alphanumeric wildcard match in a route string.
              * // outputs ['*bar']
@@ -3589,7 +3608,7 @@ module plat {
             get wildcardRouteRegex(): RegExp {
                 return /\*\w*/g;
             }
-        
+
             /**
              * Finds invalid characters in a route string.
              * // outputs ['?']
@@ -3598,7 +3617,7 @@ module plat {
             get escapeRouteRegex(): RegExp {
                 return /[\-{}\[\]+?.,\\\^$|#\s]/g;
             }
-        
+
             /**
              * Finds delimeters for spinal-case, snake_case, and dot.case.
              * useful for converting to camelCase. Also can turn a string
@@ -3615,7 +3634,7 @@ module plat {
             get camelCaseRegex(): RegExp {
                 return /([\-_\.\s])(\w+?)/g;
             }
-        
+
             /**
              * Finds all whitespace and newline characters 
              * not in string literals. Needs to be combined 
@@ -3624,7 +3643,7 @@ module plat {
             get whiteSpaceRegex(): RegExp {
                 return /("[^"]*?"|'[^']*?')|[\s\r\n\t\v]/g;
             }
-        
+
             /**
              * Finds all single and double quotes.
              */
@@ -3771,6 +3790,16 @@ module plat {
              * Determines if a url is relative or absolute.
              */
             fullUrlRegex: RegExp;
+
+            /**
+             * Determines if an email address is valid.
+             */
+            validateEmail: RegExp;
+
+            /**
+             * Determines if a telephone number is valid.
+             */
+            validateTelephone: RegExp;
         }
 
         /**
@@ -16714,19 +16743,19 @@ module plat {
             /**
              * The user's last touch down.
              */
-            private __lastTouchDown: IPointerEvent;
-            /**
-             * The user's last touch up.
-             */
-            private __lastTouchUp: IPointerEvent;
+            private __lastTouchDown: IBaseEventProperties;
             /**
              * The starting place of an initiated swipe gesture.
              */
-            private __swipeOrigin: IPointerEvent;
+            private __swipeOrigin: IBaseEventProperties;
             /**
              * The user's last move while in touch.
              */
             private __lastMoveEvent: IPointerEvent;
+            /**
+             * The user's last touch up.
+             */
+            private __lastTouchUp: IPointerEvent;
             /**
              * The captured target that the user first initiated a gesture on.
              */
@@ -16937,7 +16966,7 @@ module plat {
              */
             _onTouchStart(ev: IPointerEvent): boolean {
                 if (this.__touchCount++ > 0) {
-                    return;
+                    return true;
                 }
 
                 if (ev.type !== 'mousedown') {
@@ -16952,13 +16981,19 @@ module plat {
 
                 ev = this.__standardizeEventObject(ev);
                 if (isNull(ev)) {
-                    return;
+                    return true;
                 }
 
                 // set any captured target and last move back to null
                 this.__capturedTarget = this.__lastMoveEvent = null;
                 this.__hasMoved = false;
-                this.__lastTouchDown = this.__swipeOrigin = ev;
+                this.__lastTouchDown = this.__swipeOrigin = {
+                    clientX: ev.clientX,
+                    clientY: ev.clientY,
+                    timeStamp: ev.timeStamp,
+                    target: ev.target,
+                    identifier: ev.identifier
+                };
 
                 var gestureCount = this._gestureCount,
                     noHolds = gestureCount.$hold <= 0,
@@ -16985,7 +17020,7 @@ module plat {
                     this.__holdTimeout = setTimeout(() => {
                         this.__hasRelease = true;
                     }, holdInterval);
-                    return;
+                    return true;
                 } else if (noRelease) {
                     domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this._gestures.$hold);
                     if ((domEventFound = !isNull(domEvent))) {
@@ -17011,8 +17046,6 @@ module plat {
                 if (domEventFound) {
                     this.__holdTimeout = setTimeout(subscribeFn, holdInterval);
                 }
-
-                return true;
             }
 
             /**
@@ -17031,7 +17064,7 @@ module plat {
 
                 ev = this.__standardizeEventObject(ev);
                 if (isNull(ev)) {
-                    return;
+                    return true;
                 }
 
                 var gestureCount = this._gestureCount,
@@ -17042,16 +17075,21 @@ module plat {
                     x = ev.clientX,
                     y = ev.clientY,
                     minMove = this.__hasMoved ||
-                        (this.__getDistance(swipeOrigin.clientX, x, swipeOrigin.clientY, y) >= config.distances.minScrollDistance);
+                    (this.__getDistance(swipeOrigin.clientX, x, swipeOrigin.clientY, y) >= config.distances.minScrollDistance);
 
-                // if minimum distance not met or no moving events return
-                if (!minMove || (noTracking && noSwiping)) {
+                // if minimum distance not met
+                if (!minMove) {
                     return true;
                 }
 
                 this.__hasMoved = true;
 
-                var lastMove = this.__lastMoveEvent || swipeOrigin,
+                // if no moving events return
+                if (noTracking && noSwiping) {
+                    return true;
+                }
+
+                var lastMove = <IBaseEventProperties>this.__lastMoveEvent || swipeOrigin,
                     direction = ev.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY),
                     originChanged = this.__checkForOriginChanged(direction),
                     velocity = ev.velocity = this.__getVelocity(x - swipeOrigin.clientX, y - swipeOrigin.clientY,
@@ -17068,8 +17106,6 @@ module plat {
                 }
 
                 this.__lastMoveEvent = ev;
-
-                return true;
             }
 
             /**
@@ -17101,7 +17137,7 @@ module plat {
                             if (ev.cancelable === true) {
                                 ev.preventDefault();
                             }
-                            return;
+                            return true;
                         }
 
                         this.__preventClickFromTouch();
@@ -17129,7 +17165,7 @@ module plat {
                 // standardizeEventObject creates touches
                 ev = this.__standardizeEventObject(ev);
                 if (isNull(ev)) {
-                    return;
+                    return true;
                 }
 
                 this.__clearTempStates();
@@ -17156,7 +17192,7 @@ module plat {
                 if (hasMoved) {
                     this.__handleTrackEnd(ev);
                     this.__tapCount = 0;
-                    return false;
+                    return true;
                 } else if (isNull(touchDown) || ((touchEnd - touchDown.timeStamp) > intervals.tapInterval)) {
                     this.__tapCount = 0;
                     return true;
@@ -17181,8 +17217,6 @@ module plat {
                 this.__handleTap(ev);
 
                 this.__lastTouchUp = ev;
-
-                return true;
             }
 
             /**
@@ -17625,6 +17659,10 @@ module plat {
              * point in the DOM tree.
              */
             private __findFirstSubscriber(eventTarget: ICustomElement, type: string): IDomEventInstance {
+                if (isNull(eventTarget)) {
+                    return;
+                }
+
                 var plat: ICustomElementProperty,
                     subscriber: IEventSubscriber,
                     domEvent: IDomEventInstance;
@@ -17654,6 +17692,10 @@ module plat {
              * points in the DOM tree.
              */
             private __findFirstSubscribers(eventTarget: ICustomElement, types: Array<string>): Array<IDomEventInstance> {
+                if (isNull(eventTarget)) {
+                    return [];
+                }
+
                 var plat: ICustomElementProperty,
                     subscriber: IEventSubscriber,
                     subscriberKeys: Array<string>,
@@ -17756,21 +17798,18 @@ module plat {
                 this.__setTouchPoint(ev);
 
                 var isStart = this._startEvents.indexOf(ev.type) !== -1,
-                    touches = ev.touches = ev.touches || this.__pointerEvents,
-                    cTouches = ev.changedTouches,
-                    changedTouchesExist = !isUndefined(cTouches),
-                    changedTouches = changedTouchesExist ? cTouches : [],
+                    touches = ev.touches || this.__pointerEvents,
+                    changedTouches = ev.changedTouches,
+                    changedTouchesExist = !isUndefined(changedTouches),
                     timeStamp = ev.timeStamp;
 
                 if (changedTouchesExist) {
                     if (isStart) {
                         ev = changedTouches[0];
-                        ev.touches = touches;
                     } else {
                         var changedTouchIndex = this.__getTouchIndex(changedTouches);
                         if (changedTouchIndex >= 0) {
                             ev = changedTouches[changedTouchIndex];
-                            ev.touches = touches;
                         } else if (this.__getTouchIndex(touches) >= 0) {
                             // we want to return null because our point of interest is in touches 
                             // but was not in changedTouches so it is still playing a part on the page
@@ -17783,6 +17822,7 @@ module plat {
                     this.__setCapture(ev.target);
                 }
 
+                ev.touches = touches;
                 ev.offset = this.__getOffset(ev);
                 ev.timeStamp = timeStamp;
 
@@ -17796,7 +17836,7 @@ module plat {
              * not found.
              */
             private __getTouchIndex(touches: Array<IExtendedEvent>): number {
-                var identifier = (this.__lastTouchDown || <IExtendedEvent>{}).identifier,
+                var identifier = (this.__lastTouchDown || <IBaseEventProperties>{}).identifier,
                     length = touches.length;
 
                 for (var i = 0; i < length; ++i) {
@@ -17857,8 +17897,8 @@ module plat {
              * @param {number} y2 The y-coordinate of the second point.
              */
             private __getDistance(x1: number, x2: number, y1: number, y2: number): number {
-                var x = Math.abs(x2 - x1),
-                    y = Math.abs(y2 - y1);
+                var x = x2 - x1,
+                    y = y2 - y1;
                 return Math.sqrt((x * x) + (y * y));
             }
             /**
@@ -17909,7 +17949,13 @@ module plat {
                     return false;
                 }
 
-                this.__swipeOrigin = lastMove;
+                this.__swipeOrigin = {
+                    clientX: lastMove.clientX,
+                    clientY: lastMove.clientY,
+                    timeStamp: lastMove.timeStamp,
+                    target: lastMove.target,
+                    identifier: lastMove.identifier
+                };
 
                 this.__hasSwiped = false;
                 return true;
@@ -17920,7 +17966,7 @@ module plat {
              * @param {plat.ui.IVelocity} velocity The current horizontal and vertical velocities.
              */
             private __setRegisteredSwipes(direction: IDirection, velocity: IVelocity): void {
-                var swipeTarget = <ICustomElement>this.__swipeOrigin.target,
+                var swipeTarget = <ICustomElement>(this.__swipeOrigin || {}).target,
                     swipeGesture = this._gestures.$swipe,
                     minSwipeVelocity = DomEvents.config.velocities.minSwipeVelocity,
                     events = [swipeGesture];
@@ -18471,6 +18517,38 @@ module plat {
              * The touch move event.
              */
             move: EventListener;
+        }
+
+        /**
+         * An extended event object containing coordinate, time, and target info.
+         */
+        export interface IBaseEventProperties {
+            /**
+             * The x-coordinate of the event on the screen relative to the upper left corner of the 
+             * browser window. This value cannot be affected by scrolling.
+             */
+            clientX?: number;
+
+            /**
+             * The y-coordinate of the event on the screen relative to the upper left corner of the 
+             * browser window. This value cannot be affected by scrolling.
+             */
+            clientY?: number;
+
+            /**
+             * A unique touch identifier.
+             */
+            identifier?: number;
+
+            /**
+             * A timestamp.
+             */
+            timeStamp?: number;
+
+            /**
+             * The target of an Event object.
+             */
+            target?: EventTarget;
         }
 
         /**
@@ -26521,8 +26599,8 @@ module plat {
              * Hides the element.
              */
             initialize(): void {
-                var style = this.element.style || { getPropertyValue: noop },
-                    initialValue = (<CSSStyleDeclaration>style).getPropertyValue(this.property);
+                var style: CSSStyleDeclaration = this.element.style || <any>{ getPropertyValue: noop },
+                    initialValue = style.getPropertyValue(this.property);
 
                 this._setValue(this.value, this.importance);
 
@@ -26564,23 +26642,23 @@ module plat {
              */
             _setValue(value: string, importance?: string): void {
                 var property = this.property,
-                    style = this.element.style || {
+                    style: CSSStyleDeclaration = this.element.style || <any>{
                         setProperty: noop,
                         removeProperty: noop,
                         getPropertyValue: noop,
                         getPropertyPriority: noop
                     },
-                    currentVal = (<CSSStyleDeclaration>style).getPropertyValue(property),
-                    currentPriority = (<CSSStyleDeclaration>style).getPropertyPriority(property);
+                    currentVal = style.getPropertyValue(property),
+                    currentPriority = style.getPropertyPriority(property);
 
                 if (value === currentVal && importance === currentPriority) {
                     return;
                 } else if (isEmpty(value)) {
-                    (<CSSStyleDeclaration>style).removeProperty(property);
+                    style.removeProperty(property);
                     return;
                 }
 
-                (<CSSStyleDeclaration>style).setProperty(property, value, importance);
+                style.setProperty(property, value, importance);
             }
         }
 
