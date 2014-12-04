@@ -3,72 +3,179 @@
 @import 'button.variables.less';
 @import 'button.mixins.less';
 
-.plat-button {
+/// ============= Button Defaults ============== ///
+
+.button {
     #Button;
     position: relative;
     display: inline-block;
-    padding: 0.6em 1.2em;
-    background-color: @background-color;
-    color: @color;
-    border: @border-size solid @border-color;
+    padding: @padding-vertical @padding-horizontal;
+    background-color: @neutralColor;
+    color: @white;
     outline: none;
+    border: @border-size solid @neutralColorDark;
     cursor: pointer;
     font-size: @defaultFontSize;
+    .border-radius(@border-radius);
     .box-sizing(border-box);
     
-    &:not(.plat-back) {
-        &:active,
-        &.plat-selected {
-            background-color: @color;
-            .active-color(color);
+
+
+/// =========== Button Colors and Styles ============ ///    
+
+    &.button-primary {
+        background-color: @primaryColor;
+        border-color: @primaryColorDark;
+
+        &.button-outline {
+            border-color: @primaryColor;
+            color: @primaryColor;
+
+            &:active {
+                border-color: @primaryColorLight;
+            }
         }
+
     }
 
-    &.plat-primary {
-        .border-radius(@primary-border-radius);
+    &.button-secondary {
+        background-color: @secondaryColor;
+        border-color: @secondaryColorDark;
+
+        &.button-outline {
+            border-color: @secondaryColor;
+            color: @secondaryColor;
+
+            &:active {
+                border-color: @secondaryColorLight;
+            }
+        }
+
     }
 
-    &.plat-secondary {
-        .border-radius(@secondary-border-radius);
+    &.button-neutral {
+        background-color: @neutralColor;
+        border-color: @neutralColorDark;
+
+        &.button-outline {
+            border-color: @neutralColor;
+            color: @neutralColor;
+
+            &:active {
+                border-color: @neutralColorLight;
+            }
+        }
+
     }
 
-    &.plat-back {
-        // *:first-child {
-            // margin-left: 0.5em;
+    &.button-success {
+        background-color: @successColor;
+        border-color: @successColorDark;
 
-            // &::before {
-            //     content: "\2039";
-            //     position: absolute;
-            //     top: -0.375em;
-            //     left: 0;
-            //     font-size: 200%;
-            // }
-        // }
+        &.button-outline {
+            border-color: @successColor;
+            color: @successColor;
+
+            &:active {
+                border-color: @successColorLight;
+            }
+        }
+
     }
 
-    &.plat-confirm {
-       //  *:last-child {
-           // margin-right: 2em;
+    &.button-danger {
+        background-color: @dangerColor;
+        border-color: @dangerColorDark;
 
-            // &::after {
-            //     content: "\2713";
-            //     position: absolute;
-            //     right: 0.4em;
-            // }
-        //}
+        &.button-outline {
+            border-color: @dangerColor;
+            color: @dangerColor;
+
+            &:active {
+                border-color: @dangerColorLight;
+            }
+        }
+
     }
 
-    &.plat-cancel {
-        //*:last-child {
-            //margin-right: 2em;
+    &.button-caution {
+        background-color: @cautionColor;
+        border-color: @cautionColorDark;
 
-            // &::after {
-            //     content: "\00d7";
-            //     position: absolute;
-            //     top: -0.125em;
-            //     right: 0.25em;
-            //     font-size: 150%;
-            // }
-        //}
+        &.button-outline {
+            border-color: @cautionColor;
+            color: @cautionColor;
+
+            &:active {
+                border-color: @cautionColorLight;
+            }
+        }
+
     }
+
+    &.button-outline {
+        background-color: transparent;
+        border-width: 2px;
+    }
+    
+/// ============== Button Sizes ================ ///
+
+    &.button-small {
+        font-size: 80%;
+    }
+
+    &.button-large {
+        font-size: 115%;
+    }
+
+    &.button-jumbo {
+        font-size: 130%;
+    }    
+
+/// ============== Button States =============== ///
+
+    &:hover,
+    &.plat-selected {
+        opacity: 0.85;
+    }
+
+    &:active,
+    &.plat-selected {
+        opacity: 0.8;
+    }
+
+    &.button-disabled,
+    &[disabled=disabled],
+    &:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+}
+
+/// ============== Button Groups =============== /// 
+
+.button-group > button {
+    margin: 0;
+    border-right-width: 0;
+    border-radius: 0;
+    float: left;
+    border-radius: none;
+}
+
+.button-group > button:first-child {
+    #Button;
+    border-top-left-radius: @border-radius;
+    border-bottom-left-radius: @border-radius;
+}
+
+.button-group > button:last-child {
+    #Button;
+    border-right-width: 1px;
+    border-top-right-radius: @border-radius;
+    border-bottom-right-radius: @border-radius;
+}
+
+.button-group {
+    overflow: auto;
+    width: 100%;
 }

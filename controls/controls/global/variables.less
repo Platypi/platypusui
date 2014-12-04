@@ -1,21 +1,42 @@
 ﻿
+/// ============= Global Colors ============== ///
 
-// Color
-@primaryColor: #f0862c;
-@primaryColorLight: fadeout(@primaryColor, 30%);
-@primaryColorPale: fadeout(@primaryColor, 60%);
-@secondaryColor: #5381b6;
-@secondaryColorLight: fadeout(@secondaryColor, 30%);
-@secondaryColorPale: fadeout(@secondaryColor, 60%);
-@neutralColor: #5e5753;
-@neutralColorLight: fadeout(@neutralColor, 30%);
-@neutralColorPale: fadeout(@neutralColor, 60%);
-@black: #000000;
-@white: #ffffff;
-@grey: #888888;
-@transparent: transparent;
+/// Brand Colors
 
-/// ======= Color ======== ///
+@primaryColor: @blue;
+@primaryColorLight: lighten(@primaryColor, 10%);
+@primaryColorDark: darken(@primaryColor, 8%);
+@primaryColorPale: desaturate(@primaryColor, 10%);
+
+@secondaryColor: @green;
+@secondaryColorLight: lighten(@secondaryColor, 10%);
+@secondaryColorDark: darken(@secondaryColor, 8%);
+@secondaryColorPale: desaturate(@secondaryColor, 10%);
+
+/// State/Action Colors
+
+@successColor: @green;
+@successColorLight: lighten(@successColor, 10%);
+@successColorDark: darken(@successColor, 8%);
+@successColorPale: desaturate(@successColor, 10%);
+
+@dangerColor: @red;
+@dangerColorLight: lighten(@dangerColor, 10%);
+@dangerColorDark: darken(@dangerColor, 8%);
+@dangerColorPale: desaturate(@dangerColor, 10%);
+
+@cautionColor: @yellow;
+@cautionColorLight: lighten(@cautionColor, 10%);
+@cautionColorDark: darken(@cautionColor, 8%);
+@cautionColorPale: desaturate(@cautionColor, 10%);
+
+@neutralColor: @grey;
+@neutralColorLight: lighten(@neutralColor, 10%);
+@neutralColorDark: darken(@neutralColor, 8%);
+@neutralColorPale: desaturate(@neutralColor, 10%);
+
+
+/// ========= Default Color Palette ========== ///
 
 /// Red
 @paleRed: #f8e5e7;
@@ -45,12 +66,25 @@
 /// Orange
 @orange: #f0862c;
 
-// Defaults
+/// Greyscale
+@paleGrey: #edecec;
+@grey: #c8c7cd;
+@textGrey: #676767;
+@black: #000000;
+@white: #ffffff;
+@transparent: transparent;
+
+/// =============== Typography ================ ///
+
 @defaultFontSize: 16px;
 @defaultFontType: @fontSansSerif;
+@fontSansSerif: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+@fontSerif: Georgia, "Times New Roman", Times, serif;
+@fontMonospace: Menlo, Monaco, Consolas, "Courier New", monospace;
 @defaultViewColor: @white;
 
-// Animations
+/// =============== Animations ================ ///
+
 @fadeIn: fadeIn;
 @fadeOut: fadeOut;
 @slideIn: slideIn;
@@ -58,12 +92,8 @@
 @slideInFadeIn: slideInFadeIn;
 @slideOutFadeOut: slideOutFadeOut;
 
-// Typography
-@fontSansSerif: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-@fontSerif: Georgia, "Times New Roman", Times, serif;
-@fontMonospace: Menlo, Monaco, Consolas, "Courier New", monospace;
-
 /// ======= Responsive Breakpoints ======== ///
+
 /// Currently used in the grid system and in Typography
 
 /// Phone Breakpoint
