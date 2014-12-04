@@ -3,7 +3,7 @@
 @import 'button.variables.less';
 @import 'button.mixins.less';
 
-/// ============= Button Defaults ============== ///
+/// ====== Button Default and Outline Style ====== ///
 
 .button {
     #Button;
@@ -19,9 +19,15 @@
     .border-radius(@border-radius);
     .box-sizing(border-box);
     
+    &.button-outline {
+        color: @neutralColor;
 
+        &:active {
+            border-color: @neutralColorLight;
+        }
+    }
 
-/// =========== Button Colors and Styles ============ ///    
+/// ============== Button Colors  =============== ///    
 
     &.button-primary {
         background-color: @primaryColor;
@@ -154,7 +160,12 @@
 
 /// ============== Button Groups =============== /// 
 
-.button-group > button {
+.button-group {
+    overflow: auto;
+    width: 100%;
+}
+
+.button-group > .button {
     margin: 0;
     border-right-width: 0;
     border-radius: 0;
@@ -162,20 +173,22 @@
     border-radius: none;
 }
 
-.button-group > button:first-child {
+.button-group > .button:nth-of-type(1) {
     #Button;
     border-top-left-radius: @border-radius;
     border-bottom-left-radius: @border-radius;
 }
 
-.button-group > button:last-child {
+.button-group > .button:nth-last-of-type(1) {
     #Button;
     border-right-width: 1px;
     border-top-right-radius: @border-radius;
     border-bottom-right-radius: @border-radius;
+
+    &.button-outline {
+        border-right-width: 2px;
+    }
 }
 
-.button-group {
-    overflow: auto;
-    width: 100%;
-}
+
+
