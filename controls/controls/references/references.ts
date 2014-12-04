@@ -4,6 +4,7 @@
  */
 var __Promise = '$Promise',
     __Compat = '$Compat',
+    __Regex = '$Regex',
     __Window = '$Window',
     __Document = '$Document',
     __ExceptionStatic = '$ExceptionStatic',
