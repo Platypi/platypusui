@@ -199,7 +199,7 @@
          * Whether the user is currently touching the screen.
          */
         _inTouch = false;
-        
+
         /**
          * @name _inAction
          * @memberof platui.Input
@@ -556,7 +556,7 @@
             actionElement.setAttribute(__Hide, '');
             this._addEventListeners(event);
         }
-        
+
         /**
          * @name _addEventListeners
          * @memberof platui.Input

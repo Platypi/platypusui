@@ -8,7 +8,7 @@
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An extension of the {@link platui.Range|Range} control that allows for a lower and upper value, 
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} that allows for a lower and upper value, 
      * thus creating a variable range of values.
      */
     export class Range extends plat.ui.TemplateControl implements IUIControl {

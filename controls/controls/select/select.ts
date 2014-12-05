@@ -73,7 +73,7 @@
          * of objects to use to group the objects 
          * into optgroups.
          */
-        group: string;
+        group?: string;
 
         /**
          * @name value
@@ -88,7 +88,7 @@
          * objects with which to use to bind to the 
          * option's value.
          */
-        value: string;
+        value?: string;
 
         /**
          * @name textContent
@@ -103,6 +103,6 @@
          * objects with which to use to bind to the 
          * option's textContent.
          */
-        textContent: string;
+        textContent?: string;
     }
 }
