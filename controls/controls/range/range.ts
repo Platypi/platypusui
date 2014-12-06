@@ -250,7 +250,7 @@
         _step: number;
 
         /**
-         * @name _transition
+         * @name _direction
          * @memberof platui.Range
          * @kind property
          * @access protected
@@ -258,9 +258,22 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of this control.
+         * The orientation of this control.
          */
-        _transition: string;
+        _direction: string;
+
+        /**
+         * @name _flipped
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the upper and lower knobs have been flipped.
+         */
+        _flipped: boolean;
 
         /**
          * @name _lowerKnobOffset
@@ -443,19 +456,21 @@
                 optionMin = options.min,
                 optionMax = options.max,
                 step = options.step,
-                style = options.style || 'primary',
-                transition = this._transition = options.transition || 'right',
+                direction = this._direction = options.direction || 'horizontal',
+                flipped = this._flipped = options.flipped === true,
                 Exception: plat.IExceptionStatic;
 
             this._lowerKnob = <HTMLElement>slider.firstElementChild;
             this._upperKnob = <HTMLElement>slider.lastElementChild;
-            this.dom.addClass(element, __Plat + style + ' ' + __Plat + transition);
 
-            // if it's a reversed transition, swap knobs.
-            if (transition === 'left' || transition === 'down') {
+            // if it's a reversed direction, swap knobs.
+            if (flipped) {
                 var lowerKnob = this._lowerKnob;
                 this._lowerKnob = this._upperKnob;
                 this._upperKnob = lowerKnob;
+                this.dom.addClass(element, __Plat + direction + __Flipped);
+            } else {
+                this.dom.addClass(element, __Plat + direction);
             }
 
             var contextLower = context.lower,
@@ -483,7 +498,7 @@
 
             this._setIncrement();
             this._setLowerKnob(min);
-            this._initializeEvents(transition);
+            this._initializeEvents(direction);
 
             if (!$utils.isObject(this.context)) {
                 Exception = plat.acquire(__ExceptionStatic);
@@ -605,11 +620,11 @@
          * @description
          * Initialize the proper tracking events.
          * 
-         * @param {string} transition The transition direction of the control.
+         * @param {string} direction The orientation of the control.
          * 
          * @returns {void}
          */
-        _initializeEvents(transition: string): void {
+        _initializeEvents(direction: string): void {
             var lowerKnob = this._lowerKnob,
                 upperKnob = this._upperKnob,
                 touchstart = this._touchStart,
@@ -619,16 +634,14 @@
                 track: string,
                 reverseTrack: string;
 
-            switch (transition) {
-                case 'right':
-                case 'up':
-                    track = __$track + transition;
-                    reverseTrack = __$track + __transitionHash[transition];
+            switch (direction) {
+                case 'horizontal':
+                    track = __$track + 'right';
+                    reverseTrack = __$track + 'left';
                     break;
-                case 'left':
-                case 'down':
-                    track = __$track + __transitionHash[transition];
-                    reverseTrack = __$track + transition;
+                case 'vertical':
+                    track = __$track + 'down';
+                    reverseTrack = __$track + 'up';
                     break;
                 default:
                     return;
@@ -944,22 +957,10 @@
             var currentOffset = isLower ? this._lowerKnobOffset : this._upperKnobOffset,
                 displacement: number;
 
-            switch (this._transition) {
-                case 'right':
-                    displacement = ev.clientX - this._lastTouch.x;
-                    break;
-                case 'left':
-                    displacement = this._lastTouch.x - ev.clientX;
-                    break;
-                case 'up':
-                    displacement = this._lastTouch.y - ev.clientY;
-                    break;
-                case 'down':
-                    displacement = ev.clientY - this._lastTouch.y;
-                    break;
-                default:
-                    displacement = 0;
-                    break;
+            if (this._direction === 'vertical') {
+                displacement = this._flipped ? this._lastTouch.y - ev.clientY : ev.clientY - this._lastTouch.y;
+            } else {
+                displacement = this._flipped ? this._lastTouch.x - ev.clientX : ev.clientX - this._lastTouch.x;
             }
 
             return currentOffset + displacement;
@@ -1098,26 +1099,19 @@
          */
         _setPositionAndLength(element?: HTMLElement): number {
             element = element || this._slider.parentElement;
-            switch (this._transition) {
-                case 'right':
-                    this._positionProperty = 'left';
+
+            switch (this._direction) {
+                case 'horizontal':
                     this._lengthProperty = 'width';
+                    this._positionProperty = this._flipped ? 'right' : 'left';
                     return (this._maxOffset = element.offsetWidth);
-                case 'left':
-                    this._positionProperty = 'right';
-                    this._lengthProperty = 'width';
-                    return (this._maxOffset = element.offsetWidth);
-                case 'up':
-                    this._positionProperty = 'bottom';
+                case 'vertical':
                     this._lengthProperty = 'height';
-                    return (this._maxOffset = element.offsetHeight);
-                case 'down':
-                    this._positionProperty = 'top';
-                    this._lengthProperty = 'height';
+                    this._positionProperty = this._flipped ? 'bottom' : 'top';
                     return (this._maxOffset = element.offsetHeight);
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid transition "' + this._transition + '" for "' + __Range + '."');
+                    Exception.warn('Invalid direction "' + this._direction + '" for "' + __Range + '."');
                     return 0;
             }
         }
@@ -1258,7 +1252,7 @@
      */
     export interface IRangeOptions {
         /**
-         * @name style
+         * @name direction
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
@@ -1266,32 +1260,28 @@
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Range|Range}. 
-         * Defaults to "primary".
+         * The orientation of the {@link platui.Range|Range}. 
+         * Defaults to "horizontal".
          * 
          * @remarks
-         * - "primary"
-         * - "secondary"
+         * - "horizontal" - horizontal control.
+         * - "vertical" - vertical control.
          */
-        style?: string;
+        direction?: string;
 
         /**
-         * @name transition
+         * @name flipped
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
          * 
-         * @type {string}
+         * @type {boolean}
          * 
          * @description
-         * The transition direction of the {@link platui.Range|Range}. 
-         * Defaults to "right".
-         * 
-         * @remarks
-         * - "right"/"left" - horizontal control.
-         * - "up"/"down" - vertical control.
+         * Whether or not the upper and lower knobs of the {@link platui.Range|Range} are flipped. 
+         * Defaults to false.
          */
-        transition?: string;
+        flipped?: boolean;
 
         /**
          * @name lower

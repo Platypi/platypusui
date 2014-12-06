@@ -236,14 +236,13 @@
                 options = optionObj.value || <IModalOptions>{},
                 $utils = this.$utils,
                 isString = $utils.isString,
-                transition = options.transition,
-                style = isString(options.style) ? options.style.toLowerCase() : 'full';
+                transition = options.transition;
 
             this._modalElement = this._modalElement || <HTMLElement>this.element.firstElementChild;
             this._loaded = true;
 
             if (!isString(transition) || transition === 'none') {
-                this.dom.addClass(this._modalElement, __Plat + style + ' ' + __Plat + 'no-transition');
+                this.dom.addClass(this._modalElement, __Plat + 'no-transition');
                 if (this._preloadedValue) {
                     $utils.postpone(() => {
                         this._show();
@@ -257,7 +256,7 @@
             }
 
             this._transitionEnd = this.$compat.animationEvents.$transitionEnd;
-            this.dom.addClass(this._modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition ' + __Plat + style);
+            this.dom.addClass(this._modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition');
             if (this._preloadedValue) {
                 $utils.postpone(() => {
                     this._show();
@@ -479,7 +478,7 @@
          * defined LESS variables. When combined as "custom centered" the top and left positioning 
          * refer to the midpoint of the control.
          */
-        style?: string;
+        //style?: string;
 
         /**
          * @name transition

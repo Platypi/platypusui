@@ -351,15 +351,13 @@
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
                 options = optionObj.value || <IInputOptions>{},
-                dom = this.dom,
                 element = this.element,
-                style = options.style || 'primary',
                 type = this._type = this._type || options.type || 'text',
                 pattern = options.pattern;
 
-            dom.addClass(element, __Plat + style + ' ' + __Plat + type);
-
+            this.dom.addClass(element, __Plat + type);
             this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
+
             if (this.$utils.isString(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
@@ -990,24 +988,6 @@
      * The available {@link plat.controls.Options|options} for the {@link platui.Input|Input} control.
      */
     export interface IInputOptions {
-        /**
-         * @name style
-         * @memberof platui.IInputOptions
-         * @kind property
-         * @access public
-         * 
-         * @type {string}
-         * 
-         * @description
-         * The style of {@link platui.Input|Input}. 
-         * Defaults to "primary".
-         * 
-         * @remarks
-         * - "primary"
-         * - "secondary"
-         */
-        style?: string;
-
         /**
          * @name type
          * @memberof platui.IInputOptions

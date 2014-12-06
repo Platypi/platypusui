@@ -38,7 +38,7 @@
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         /**
-         * @name _currentTransition
+         * @name _currentLocation
          * @memberof platui.Drawer
          * @kind property
          * @access protected
@@ -46,9 +46,9 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of the {@link platui.Drawer|Drawer}.
+         * The current location of the {@link platui.Drawer|Drawer}.
          */
-        _currentTransition: string;
+        _currentLocation: string;
         /**
          * @name _useContext
          * @memberof platui.Drawer
@@ -148,7 +148,7 @@
          * @access public
          * 
          * @description
-         * Check for a transition direction and initialize event handling.
+         * Check for a location and initialize event handling.
          * 
          * @returns {void}
          */
@@ -157,14 +157,14 @@
                 $utils = this.$utils,
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
-                transition = this._currentTransition = options.transition || 'right',
+                location = this._currentLocation = options.location || 'left',
                 useContext = this._useContext = (options.useContext === true) || !$utils.isUndefined(this.attributes[__CamelContext]),
                 id = options.id || '',
                 templateUrl = options.templateUrl,
                 isElastic = options.elastic === true;
 
             element.setAttribute(__Hide, '');
-            this.dom.addClass(element, __Plat + transition);
+            this.dom.addClass(element, __Plat + location);
 
             if ($utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
@@ -174,7 +174,7 @@
                         this._checkPreload();
                     }
 
-                    this._initializeEvents(id, transition, isElastic);
+                    this._initializeEvents(id, location, isElastic);
                 });
                 return;
             } else if (useContext && $utils.isNode(this.innerTemplate)) {
@@ -182,7 +182,7 @@
                 this._checkPreload();
             }
 
-            this._initializeEvents(id, transition, isElastic);
+            this._initializeEvents(id, location, isElastic);
         }
 
         /**
@@ -417,24 +417,24 @@
          * @access protected
          * 
          * @description
-         * Changes the placement and implied transition direction of the {@link platui.Drawer|Drawer}.
+         * Changes the placement and implied location of the {@link platui.Drawer|Drawer}.
          * 
-         * @param {string} transition The new transition direction to change to.
+         * @param {string} location The new location to change to.
          * 
          * @returns {void}
          */
-        _changeDirection(transition: string): void {
-            if (this.$utils.isNull(transition) || transition === this._currentTransition) {
+        _changeDirection(location: string): void {
+            if (this.$utils.isNull(location) || location === this._currentLocation) {
                 return;
             }
 
             var dom = this.dom,
                 element = this.element;
 
-            dom.removeClass(element, __Plat + this._currentTransition);
-            dom.addClass(element, __Plat + transition);
+            dom.removeClass(element, __Plat + this._currentLocation);
+            dom.addClass(element, __Plat + location);
 
-            this._currentTransition = transition;
+            this._currentLocation = location;
         }
 
         /**
@@ -447,13 +447,13 @@
          * Initializes and dispatches pub sub events.
          * 
          * @param {string} id The ID of this {@link platui.Drawer|Drawer} if used.
-         * @param {string} transition The transition direction.
+         * @param {string} location The location.
          * @param {boolean} isElastic Whether or not the {@link platui.Drawer|Drawer} has an 
          * elastic transition effect.
          * 
          * @returns {void}
          */
-        _initializeEvents(id: string, transition: string, isElastic: boolean): void {
+        _initializeEvents(id: string, location: string, isElastic: boolean): void {
             var $utils = this.$utils,
                 isString = $utils.isString,
                 isNull = $utils.isNull,
@@ -468,9 +468,9 @@
                         return;
                     }
 
-                    if (isString(controllerArg.transition)) {
-                        transition = controllerArg.transition;
-                        this._changeDirection(transition);
+                    if (isString(controllerArg.location)) {
+                        location = controllerArg.location;
+                        this._changeDirection(location);
                     }
 
                     this._controllers.unshift(control);
@@ -479,7 +479,7 @@
                         this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                             control: this,
                             received: true,
-                            transition: transition,
+                            location: location,
                             useContext: useContext,
                             template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                             elastic: isElastic
@@ -490,7 +490,7 @@
             this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                 control: this,
                 received: false,
-                transition: transition,
+                location: location,
                 useContext: useContext,
                 template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                 elastic: isElastic
@@ -622,7 +622,7 @@
         options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
 
         /**
-         * @name _transition
+         * @name _location
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
@@ -630,10 +630,10 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of the global {@link platui.Drawer|Drawer} associated 
+         * The location of the global {@link platui.Drawer|Drawer} associated 
          * with this control.
          */
-        _transition: string;
+        _location: string;
 
         /**
          * @name _drawerElement
@@ -1075,14 +1075,14 @@
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
-                transition = options.transition,
+                location = options.location,
                 id = options.id || '';
 
             this._type = options.type || 'tap track';
             this._isElastic = options.elastic;
             this._useContext = options.useContext;
             this._templateUrl = options.templateUrl;
-            this._initializeEvents(id, transition);
+            this._initializeEvents(id, location);
         }
 
         /**
@@ -1360,18 +1360,18 @@
             }
 
             var translation: string;
-            switch (this._transition) {
-                case 'up':
-                    translation = 'translate3d(0,' + (-this._maxOffset) + 'px,0)';
-                    break;
-                case 'down':
-                    translation = 'translate3d(0,' + this._maxOffset + 'px,0)';
-                    break;
+            switch (this._location) {
                 case 'left':
-                    translation = 'translate3d(' + (-this._maxOffset) + 'px,0,0)';
+                    translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
                     break;
                 case 'right':
-                    translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
+                    translation = 'translate3d(' + (-this._maxOffset) + 'px,0,0)';
+                    break;
+                case 'top':
+                    translation = 'translate3d(0,' + this._maxOffset + 'px,0)';
+                    break;
+                case 'bottom':
+                    translation = 'translate3d(0,' + (-this._maxOffset) + 'px,0)';
                     break;
                 default:
                     return <any>this.$animator.resolve();
@@ -1516,7 +1516,7 @@
          * @returns {void}
          */
         _addSwipeOpen(): void {
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + this._transition, () => {
+            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + this._location, () => {
                 this._hasSwiped = true;
                 this.open();
             }, false);
@@ -1534,7 +1534,7 @@
          * @returns {void}
          */
         _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + __transitionHash[this._transition], () => {
+            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + __transitionHash[this._location], () => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1585,18 +1585,18 @@
          * @description
          * Adds primary and secondary tracking events to the {@link platui.DrawerController|DrawerController} element.
          * 
-         * @param {string} transition The transition direction of opening for the {@link platui.Drawer|Drawer}.
+         * @param {string} location The location of the {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
-        _addEventListeners(transition: string): void {
+        _addEventListeners(location: string): void {
             var element = this.element,
                 isNull = this.$utils.isNull,
                 types = this._type.split(' ');
 
-            this._transition = transition;
+            this._location = location;
 
-            // remove event listeners here first if we want to later be able to dynamically change transition direction of drawer.
+            // remove event listeners here first if we want to later be able to dynamically change location of drawer.
             // this._removeEventListeners();
 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
@@ -1608,12 +1608,29 @@
             }
 
             if (this._isTrack = (types.indexOf('track') !== -1)) {
-                var primaryTrack = __$track + transition,
-                    secondaryTrack = __$track + __transitionHash[transition],
-                    trackFn = this._track;
+                var trackFn = this._track,
+                    trackDirection: string;
 
-                this._removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false);
-                this._removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false);
+                switch (location) {
+                    case 'left':
+                    case 'right':
+                        trackDirection = location;
+                        break;
+                    case 'top':
+                        trackDirection = 'up';
+                        break;
+                    case 'bottom':
+                        trackDirection = 'down';
+                        break;
+                    default:
+                        var Exception = plat.acquire(plat.IExceptionStatic);
+                        Exception.warn('Incorrect location: "' + location +
+                            '" defined for "' + __Drawer + '" or "' + __DrawerController + '."');
+                        return;
+                }
+
+                this._removePrimaryTrack = this.addEventListener(element, __$track + __transitionHash[trackDirection], trackFn, false);
+                this._removeSecondaryTrack = this.addEventListener(element, __$track + trackDirection, trackFn, false);
 
                 if (isNull(this._lastTouch)) {
                     var touchEnd = this._touchEnd;
@@ -1715,13 +1732,13 @@
             }
 
             var distanceMoved: number;
-            switch (this._transition) {
-                case 'right':
+            switch (this._location) {
                 case 'left':
+                case 'right':
                     distanceMoved = ev.clientX - this._lastTouch.x;
                     break;
-                case 'down':
-                case 'up':
+                case 'top':
+                case 'bottom':
                     distanceMoved = ev.clientY - this._lastTouch.y;
                     break;
                 default:
@@ -1745,7 +1762,7 @@
          * 
          * @description
          * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
-         * depending on the defined "transition" direction.
+         * depending on the defined "location".
          * 
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
          * 
@@ -1770,12 +1787,12 @@
          * @returns {boolean} Whether or not the user was tracking in the right direction.
          */
         _isRightDirection(distanceMoved: number): boolean {
-            switch (this._transition) {
-                case 'right':
-                case 'down':
-                    return this._isOpen ? distanceMoved < 0 : distanceMoved > 0;
+            switch (this._location) {
                 case 'left':
-                case 'up':
+                case 'top':
+                    return this._isOpen ? distanceMoved < 0 : distanceMoved > 0;
+                case 'right':
+                case 'bottom':
                     return this._isOpen ? distanceMoved > 0 : distanceMoved < 0;
                 default:
                     return false;
@@ -1797,23 +1814,23 @@
          */
         _calculateTranslation(ev: plat.ui.IGestureEvent): string {
             var distanceMoved: number;
-            switch (this._transition) {
-                case 'right':
+            switch (this._location) {
+                case 'left':
                     distanceMoved = this._isOpen ?
                     this._checkElasticity(this._maxOffset + ev.clientX - this._lastTouch.x) :
                     this._checkElasticity(ev.clientX - this._lastTouch.x);
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
-                case 'left':
+                case 'right':
                     distanceMoved = this._isOpen ?
                     this._checkElasticity(this._maxOffset + this._lastTouch.x - ev.clientX) :
                     this._checkElasticity(this._lastTouch.x - ev.clientX);
                     return 'translate3d(' + (-distanceMoved) + 'px,0,0)';
-                case 'down':
+                case 'top':
                     distanceMoved = this._isOpen ?
                     this._checkElasticity(this._maxOffset + ev.clientY - this._lastTouch.y) :
                     this._checkElasticity(ev.clientY - this._lastTouch.y);
                     return 'translate3d(0,' + distanceMoved + 'px,0)';
-                case 'up':
+                case 'bottom':
                     distanceMoved = this._isOpen ?
                     this._checkElasticity(this._maxOffset + this._lastTouch.y - ev.clientY) :
                     this._checkElasticity(this._lastTouch.y - ev.clientY);
@@ -1861,11 +1878,11 @@
          * Initializes and dispatches pub sub events.
          * 
          * @param {string} id The ID of this {@link platui.DrawerController|DrawerController} if used.
-         * @param {string} transition The transition direction.
+         * @param {string} location The location of the {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
-        _initializeEvents(id: string, transition: string): void {
+        _initializeEvents(id: string, location: string): void {
             this._setTransform();
 
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
@@ -1879,24 +1896,24 @@
                         drawerElement = this._drawerElement = drawer.element,
                         useContext = this._useContext;
 
-                    if (!isString(transition)) {
-                        if (isString(drawerArg.transition)) {
-                            transition = drawerArg.transition;
+                    if (!isString(location)) {
+                        if (isString(drawerArg.location)) {
+                            location = drawerArg.location;
                         } else {
                             var Exception = plat.acquire(plat.IExceptionStatic);
-                            Exception.warn('Transition direction is incorrectly defined for "' +
+                            Exception.warn('"location" is incorrectly defined for "' +
                                 __Drawer + '" or "' + __DrawerController + '."' +
                                 ' Please ensure it is a string.');
                             return;
                         }
                     }
 
-                    if (!this._controllerIsValid(transition)) {
+                    if (!this._controllerIsValid(location)) {
                         return;
                     }
 
                     drawerElement.removeAttribute(__Hide);
-                    this._addEventListeners(transition.toLowerCase());
+                    this._addEventListeners(location.toLowerCase());
                     this._setOffset();
                     drawerElement.setAttribute(__Hide, '');
 
@@ -1908,7 +1925,7 @@
                         this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                             control: this,
                             received: true,
-                            transition: transition
+                            location: location
                         });
                     }
 
@@ -1930,7 +1947,7 @@
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                 control: this,
                 received: false,
-                transition: transition
+                location: location
             });
         }
 
@@ -1999,20 +2016,15 @@
          * @description
          * Checks if this control has all valid properties.
          * 
-         * @param {string} transition The transition direction of the {@link platui.Drawer|Drawer}.
+         * @param {string} location The location of the {@link platui.Drawer|Drawer}.
          * 
          * @returns {boolean} Whether or not this control is valid.
          */
-        _controllerIsValid(transition: string): boolean {
+        _controllerIsValid(location: string): boolean {
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic;
 
-            if (isNull(__transitionHash[transition])) {
-                Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Incorrect transition direction: "' + transition +
-                    '" defined for "' + __Drawer + '" or "' + __DrawerController + '."');
-                return false;
-            } else if (isNull(this._drawerElement)) {
+            if (isNull(this._drawerElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Could not find a corresponding "' + __Drawer + '" for this "' + __DrawerController + '."');
                 return false;
@@ -2032,7 +2044,7 @@
                 dom.addClass(rootElement, transitionPrep);
             }
 
-            this._directionalTransitionPrep = 'plat-drawer-transition-' + transition;
+            this._directionalTransitionPrep = 'plat-drawer-transition-' + location;
 
             this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
@@ -2105,15 +2117,17 @@
          * @returns {void}
          */
         private _setOffset(): void {
-            switch (this._transition) {
-                case 'up':
-                case 'down':
-                    this._maxOffset = this._drawerElement.offsetHeight;
-                    break;
+            switch (this._location) {
                 case 'left':
                 case 'right':
                     this._maxOffset = this._drawerElement.offsetWidth;
                     break;
+                case 'top':
+                case 'bottom':
+                    this._maxOffset = this._drawerElement.offsetHeight;
+                    break;
+                default:
+                    return;
             }
         }
     }
@@ -2143,7 +2157,7 @@
         id?: string;
 
         /**
-         * @name transition
+         * @name location
          * @memberof platui.IDrawerOptions
          * @kind property
          * @access public
@@ -2151,16 +2165,16 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of {@link platui.Drawer|Drawer} opening. 
-         * Defaults to "right".
+         * The location of the {@link platui.Drawer|Drawer}. 
+         * Defaults to "left".
          * 
          * @remarks
-         * - "right"
          * - "left"
-         * - "up"
-         * - "down"
+         * - "right"
+         * - "top"
+         * - "bottom"
          */
-        transition?: string;
+        location?: string;
 
         /**
          * @name templateUrl
@@ -2273,7 +2287,7 @@
          */
         control?: any;
         /**
-         * @name transition
+         * @name location
          * @memberof platui.IDrawerHandshakeEvent
          * @kind property
          * @access public
@@ -2281,9 +2295,9 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of {@link platui.Drawer|Drawer} opening.
+         * The location of the {@link platui.Drawer|Drawer}. 
          */
-        transition?: string;
+        location?: string;
         /**
          * @name template
          * @memberof platui.IDrawerHandshakeEvent

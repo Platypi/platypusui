@@ -32,6 +32,8 @@
                 position: absolute;
                 width: @knob-diameter;
                 height: @knob-diameter;
+                background-color: @knob-primary-color;
+                border: @knob-border-size solid @knob-primary-border-color;
                 .border-radius(@knob-diameter);
                 .box-sizing(border-box);
             }
@@ -39,8 +41,8 @@
     }
 
     @half-thickness: @thickness / 2;
-    &.plat-right,
-    &.plat-left {
+    &.plat-horizontal,
+    &.plat-horizontal-flipped {
         height: @knob-diameter;
 
         .plat-slider-container {
@@ -64,7 +66,7 @@
         }
     }
 
-    &.plat-right {
+    &.plat-horizontal {
         .plat-slider-container {
             .plat-slider-offset {
                 left: 0;
@@ -76,7 +78,7 @@
         }
     }
 
-    &.plat-left {
+    &.plat-horizontal-flipped {
         .plat-slider-container {
             .plat-slider-offset {
                 right: 0;
@@ -88,8 +90,8 @@
         }
     }
 
-    &.plat-up,
-    &.plat-down {
+    &.plat-vertical,
+    &.plat-vertical-flipped {
         width: @knob-diameter;
 
         .plat-slider-container {
@@ -113,7 +115,7 @@
         }
     }
 
-    &.plat-down {
+    &.plat-vertical {
         .plat-slider-container {
             .plat-slider-offset {
                 top: 0;
@@ -125,7 +127,7 @@
         }
     }
 
-    &.plat-up {
+    &.plat-vertical-flipped {
         .plat-slider-container {
             .plat-slider-offset {
                 bottom: 0;

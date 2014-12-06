@@ -112,22 +112,11 @@ module platui {
          * @access public
          * 
          * @description
-         * Adds a listener for the tap event and checks for a 
-         * button group.
+         * Sets default classes.
          * 
          * @returns {void}
          */
         initialize(): void {
-            var element = this.element;
-
-            if (element.hasAttribute('name')) {
-                this._addEventListeners(element.getAttribute('name'));
-            } else if (element.hasAttribute(__Bind)) {
-                this._addEventListeners(element.getAttribute(__Bind));
-            } else if (element.hasAttribute('data-' + __Bind)) {
-                this._addEventListeners(element.getAttribute('data-' + __Bind));
-            }
-
             this.setClasses();
         }
 
@@ -186,13 +175,18 @@ module platui {
             var element = this.element,
                 optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
                 options = optionObj.value || <IButtonOptions>{},
-                style = options.style || 'primary';
+                group = options.group;
 
-            this.dom.addClass(element, __Plat + style);
-            if (element.hasAttribute('type')) {
+            if (!group) {
+                if (element.hasAttribute(__Bind)) {
+                    this._addEventListeners(element.getAttribute(__Bind));
+                } else if (element.hasAttribute('data-' + __Bind)) {
+                    this._addEventListeners(element.getAttribute('data-' + __Bind));
+                }
                 return;
             }
-            (<HTMLButtonElement>element).type = options.type || 'button';
+
+            this._addEventListeners(group);
         }
 
         /**
@@ -257,7 +251,7 @@ module platui {
      */
     export interface IButtonOptions {
         /**
-         * @name style
+         * @name group
          * @memberof platui.IButtonOptions
          * @kind property
          * @access public
@@ -265,34 +259,8 @@ module platui {
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Button|Button}. 
-         * Defaults to "primary".
-         * 
-         * @remarks
-         * - "primary"
-         * - "secondary"
-         * - "back"
-         * - "confirm"
-         * - "cancel"
+         * The group name of this {@link platui.Button|Button's} associated button group.
          */
-        style?: string;
-        /**
-         * @name type
-         * @memberof platui.IButtonOptions
-         * @kind property
-         * @access public
-         * 
-         * @type {string}
-         * 
-         * @description
-         * Indicates the behavior of the {@link platui.Button|Button}.
-         * Defaults to "button".
-         * 
-         * @remarks
-         * - "button" - does nothing
-         * - "submit" - submits the form
-         * - "reset" - resets the form
-         */
-        type?: string;
+        group?: string;
     }
 }
