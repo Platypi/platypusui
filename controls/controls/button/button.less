@@ -165,7 +165,8 @@
     width: 100%;
 }
 
-.button-group > .button {
+.button-group > .button,
+.button-group > .plat-button {
     margin: 0;
     border-right-width: 0;
     border-radius: 0;
@@ -173,13 +174,15 @@
     border-radius: none;
 }
 
-.button-group > .button:nth-of-type(1) {
+.button-group > .button:nth-of-type(1),
+.button-group > .plat-button:nth-of-type(1) {
     #Button;
     border-top-left-radius: @border-radius;
     border-bottom-left-radius: @border-radius;
 }
 
-.button-group > .button:nth-last-of-type(1) {
+.button-group > .button:nth-last-of-type(1),
+.button-group > .plat-button:nth-last-of-type(1) {
     #Button;
     border-right-width: 1px;
     border-top-right-radius: @border-radius;
@@ -189,6 +192,3 @@
         border-right-width: 2px;
     }
 }
-
-
-
