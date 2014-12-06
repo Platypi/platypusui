@@ -39,10 +39,14 @@
     <!-- Buttons -->
     <div class="demo-area">
         <h2 class="demo-heading">Buttons</h2>
-        <input type="checkbox" id="buttons" />
+        <input type="checkbox" id="buttons" checked />
         <label for="buttons"></label>
         <div class="demo-stage">
             <p>Colors</p>
+            <!-- demo -->
+            
+            <!-- /demo -->
+
             <button class="button button-primary">Primary</button>
             <button class="button button-secondary">Secondary</button>
             <button class="button button-neutral">Neutral</button>
@@ -64,13 +68,12 @@
             <p>States</p>
             <button class="button button-primary" disabled>Disabled</button>
             <button class="button button-danger button-large" disabled>Disabled</button>
-            <p>Groups</p>
+            <p>Groups</p>    
             <div class="button-group">
-                <button class="button">Select</button>
-                <button class="button">Copy</button>
-                <button class="button">Paste</button>
+                <plat-button name="controls" class="button-primary">Select</plat-button>
+                <plat-button name="controls" class="button-primary">Copy</plat-button>
+                <plat-button name="controls" class="button-primary">Paste</plat-button>
             </div>
-            <br>
             <div class="button-group">
                 <button class="button button-outline button-success">Select</button>
                 <button class="button button-outline button-success">Copy</button>
