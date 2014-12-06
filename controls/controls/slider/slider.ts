@@ -209,7 +209,7 @@
         _step: number;
 
         /**
-         * @name _transition
+         * @name _direction
          * @memberof platui.Slider
          * @kind property
          * @access protected
@@ -217,9 +217,22 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of this control.
+         * The orientation of this control.
          */
-        _transition: string;
+        _direction: string;
+
+        /**
+         * @name _flipped
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the min and max positions have been flipped.
+         */
+        _flipped: boolean;
 
         /**
          * @name _knobOffset
@@ -336,8 +349,7 @@
          * @returns {void}
          */
         loaded(): void {
-            var dom = this.dom,
-                element = this.element,
+            var element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
                 isNumber = this.$utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
@@ -346,11 +358,16 @@
                 optionMin = options.min,
                 optionMax = options.max,
                 step = options.step,
-                style = options.style || 'primary',
-                transition = this._transition = options.transition || 'right';
+                flipped = this._flipped = options.flipped === true,
+                direction = this._direction = options.direction || 'horizontal';
 
             this._knob = <HTMLElement>slider.firstElementChild;
-            dom.addClass(element, __Plat + style + ' ' + __Plat + transition);
+
+            if (flipped) {
+                this.dom.addClass(element, __Plat + direction + __Flipped);
+            } else {
+                this.dom.addClass(element, __Plat + direction);
+            }
 
             var bindValue = this.value,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
@@ -373,7 +390,7 @@
             }
 
             this._setIncrement();
-            this._initializeEvents(transition);
+            this._initializeEvents(direction);
 
             this.setValue(value);
             this._loaded = true;
@@ -524,26 +541,24 @@
          * @description
          * Initialize the proper tracking events.
          * 
-         * @param {string} transition The transition direction of the control.
+         * @param {string} direction The orientation of the control.
          * 
          * @returns {void}
          */
-        _initializeEvents(transition: string): void {
+        _initializeEvents(direction: string): void {
             var knob = this._knob,
                 trackFn: EventListener = this._track,
                 track: string,
                 reverseTrack: string;
 
-            switch (transition) {
-                case 'right':
-                case 'up':
-                    track = __$track + transition;
-                    reverseTrack = __$track + __transitionHash[transition];
+            switch (direction) {
+                case 'horizontal':
+                    track = __$track + 'right';
+                    reverseTrack = __$track + 'left';
                     break;
-                case 'left':
-                case 'down':
-                    track = __$track + __transitionHash[transition];
-                    reverseTrack = __$track + transition;
+                case 'vertical':
+                    track = __$track + 'down';
+                    reverseTrack = __$track + 'up';
                     break;
                 default:
                     return;
@@ -604,18 +619,18 @@
          * @returns {number} The current position of the knob in pixels.
          */
         _calculateOffset(ev: plat.ui.IGestureEvent): number {
-            switch (this._transition) {
-                case 'right':
-                    return this._knobOffset + ev.clientX - this._lastTouch.x;
-                case 'left':
-                    return this._knobOffset + this._lastTouch.x - ev.clientX;
-                case 'up':
-                    return this._knobOffset + this._lastTouch.y - ev.clientY;
-                case 'down':
-                    return this._knobOffset + ev.clientY - this._lastTouch.y;
+            switch (this._direction) {
+                case 'horizontal':
+                    return this._flipped ?
+                        (this._knobOffset + this._lastTouch.x - ev.clientX) :
+                        (this._knobOffset + ev.clientX - this._lastTouch.x);
+                case 'vertical':
+                    return this._flipped ?
+                        (this._knobOffset + this._lastTouch.y - ev.clientY) :
+                        (this._knobOffset + ev.clientY - this._lastTouch.y);
+                default:
+                    return 0;
             }
-
-            return 0;
         }
 
         /**
@@ -633,18 +648,16 @@
          */
         _setLength(element?: HTMLElement): number {
             element = element || this._slider.parentElement;
-            switch (this._transition) {
-                case 'right':
-                case 'left':
+            switch (this._direction) {
+                case 'horizontal':
                     this._lengthProperty = 'width';
                     return (this._maxOffset = element.offsetWidth);
-                case 'up':
-                case 'down':
+                case 'vertical':
                     this._lengthProperty = 'height';
                     return (this._maxOffset = element.offsetHeight);
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid direction "' + this._transition + '" for "' + __Slider + '."');
+                    Exception.warn('Invalid direction "' + this._direction + '" for "' + __Slider + '."');
                     return 0;
             }
         }
@@ -810,7 +823,7 @@
      */
     export interface ISliderOptions {
         /**
-         * @name style
+         * @name direction
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
@@ -818,34 +831,28 @@
          * @type {string}
          * 
          * @description
-         * The style of {@link platui.Slider|Slider}. 
-         * Defaults to "primary".
+         * The orientation of the {@link platui.Slider|Slider}. 
+         * Defaults to "horizontal".
          * 
          * @remarks
-         * - "primary"
-         * - "secondary"
+         * - "horizontal" - horizontal control.
+         * - "vertical" - vertical control.
          */
-        style?: string;
+        direction?: string;
 
         /**
-         * @name transition
+         * @name flipped
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
          * 
-         * @type {string}
+         * @type {boolean}
          * 
          * @description
-         * The transition direction of the {@link platui.Slider|Slider}. 
-         * Defaults to "right".
-         * 
-         * @remarks
-         * - "right" - the minimum is all the way to the left and the maximum is all the way to the right.
-         * - "left" - the minimum is all the way to the right and the maximum is all the way to the left.
-         * - "up" - the minimum is at the bottom and the maximum is at the top.
-         * - "down" - the minimum is at the top and the maximum is at the bottom.
+         * Whether or not the min and max positions are flipped. 
+         * Defaults to false.
          */
-        transition?: string;
+        flipped?: boolean;
 
         /**
          * @name value

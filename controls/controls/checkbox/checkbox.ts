@@ -144,9 +144,7 @@
             var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
                 options = optionObj.value || <ICheckboxOptions>{},
                 previousType = this._targetType,
-                dom = this.dom,
-                mark = this._targetType = options.mark || 'check',
-                style = options.style || 'primary';
+                mark = this._targetType = options.mark || 'check';
 
             this._convertChecked();
 
@@ -163,12 +161,11 @@
 
             if (this._targetTypeSet) {
                 var target = this._targetElement;
-                dom.removeClass(target, previousType);
+                this.dom.removeClass(target, previousType);
                 this._activate(target);
             }
 
             this._targetTypeSet = true;
-            dom.addClass(this.element, __Plat + style);
         }
 
         /**
@@ -276,23 +273,5 @@
          * - "x"
          */
         mark?: string;
-
-        /**
-         * @name style
-         * @memberof platui.ICheckboxOptions
-         * @kind property
-         * @access public
-         * 
-         * @type {string}
-         * 
-         * @description
-         * The style of {@link platui.Checkbox|Checkbox}. 
-         * Defaults to "primary".
-         * 
-         * @remarks
-         * - "primary"
-         * - "secondary"
-         */
-        style?: string;
     }
 }

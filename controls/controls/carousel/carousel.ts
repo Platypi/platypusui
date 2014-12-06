@@ -429,7 +429,7 @@
 
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
-                transition = options.transition || 'right',
+                transition = this._transition = options.direction || 'horizontal',
                 index = options.index;
 
             this.dom.addClass(this.element, __Plat + transition);
@@ -438,7 +438,7 @@
                 this.goToIndex(index);
                 this._addEventListeners(transition);
             };
-            this._init(transition);
+            this._init();
             this._loaded = true;
         }
 
@@ -571,14 +571,11 @@
          * @description
          * Initializes the control and adds all event listeners.
          * 
-         * @param {string} transition The transition direction.
-         * 
          * @returns {void}
          */
-        _init(transition: string): void {
+        _init(): void {
             var foreach = <plat.ui.controls.ForEach>this.controls[0];
             this._setTransform();
-            this._transition = transition;
             this._slider = <HTMLElement>this.element.firstElementChild;
 
             this.itemsLoaded = foreach.itemsLoaded.then(() => {
@@ -617,15 +614,13 @@
                 reverseTrack: string;
 
             switch (transition) {
-                case 'right':
-                case 'up':
-                    track = __$track + transition;
-                    reverseTrack = __$track + __transitionHash[transition];
+                case 'horizontal':
+                    track = __$track + 'right';
+                    reverseTrack = __$track + 'left';
                     break;
-                case 'left':
-                case 'down':
-                    track = __$track + __transitionHash[transition];
-                    reverseTrack = __$track + transition;
+                case 'vertical':
+                    track = __$track + 'down';
+                    reverseTrack = __$track + 'up';
                     break;
                 default:
                     return;
@@ -698,17 +693,7 @@
                 return;
             }
 
-            var distanceMoved: number;
-            switch (this._transition) {
-                case 'up':
-                case 'down':
-                    distanceMoved = ev.clientY - this._lastTouch.y;
-                    break;
-                default:
-                    distanceMoved = ev.clientX - this._lastTouch.x;
-                    break;
-            }
-
+            var distanceMoved = (this._transition === 'vertical') ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
@@ -756,13 +741,11 @@
          * @returns {string} The translation value.
          */
         _calculateStaticTranslation(interval: number): string {
-            switch (this._transition) {
-                case 'up':
-                case 'down':
-                    return 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)';
-                default:
-                    return 'translate3d(' + (this._currentOffset += interval) + 'px,0,0)';
+            if (this._transition === 'vertical') {
+                return 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)';
             }
+
+            return 'translate3d(' + (this._currentOffset += interval) + 'px,0,0)';
         }
 
         /**
@@ -779,13 +762,11 @@
          * @returns {string} The translation value.
          */
         _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
-            switch (this._transition) {
-                case 'up':
-                case 'down':
-                    return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
-                default:
-                    return 'translate3d(' + (this._currentOffset + (ev.clientX - this._lastTouch.x)) + 'px,0,0)';
+            if (this._transition === 'vertical') {
+                return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
             }
+
+            return 'translate3d(' + (this._currentOffset + (ev.clientX - this._lastTouch.x)) + 'px,0,0)';
         }
 
         /**
@@ -832,8 +813,7 @@
         _setPosition(element?: HTMLElement): number {
             element = element || <HTMLElement>this.element.firstElementChild;
             switch (this._transition) {
-                case 'up':
-                case 'down':
+                case 'vertical':
                     this._positionProperty = 'top';
                     return (this._intervalOffset = element.offsetHeight);
                 default:
@@ -937,14 +917,14 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of the {@link platui.Carousel|Carousel}. 
-         * Defaults to "right".
+         * The swipe direction of the {@link platui.Carousel|Carousel}. 
+         * Defaults to "horizontal".
          * 
          * @remarks
-         * - "right"/"left" - horizontal control.
-         * - "up"/"down" - vertical control.
+         * - "horizontal" - horizontal control.
+         * - "vertical" - vertical control.
          */
-        transition?: string;
+        direction?: string;
 
         /**
          * @name index
