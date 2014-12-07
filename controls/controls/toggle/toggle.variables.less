@@ -1,22 +1,33 @@
 @import '../global/variables.less';
 
 #Toggle {
-    // set this var to for a custom border color
-    @border-color: undefined;
-    @background-color: @neutralColor;
+    
+/// =========== Toggle Colors =========== ///
+
+    @border-color: darken(@neutralColorLight, 3%);
+    @background-color-off: @neutralColorLight;
     @color: @neutralColor;
-    @checked-color: @primaryColor;
+    @background-color-on: @successColor;
+    @border-color-on: darken(@background-color-on, 5%);
+
+/// ============ Toggle Size ============ ///
+    
     @width: 3.6em;
-    // the ratio calculates the toggle height as @width * @ratio
-    @ratio: 5/12;
-    @checked-border-color: @checked-color;
-    @border-size: 1px;
+    @ratio: 6/13;
+    @height: @width * @ratio;
+
+/// ========== Knob Properties ========== ///
+
+    @knob-diameter: @height; 
+    @knob-transition: left @transition-time;
+    @knob-border-color: @paleGrey;
+    @knob-border-size: 1px;
+
+/// ============= Animation ============= ///
+
     @transition-time: 250ms;
-    @transition: background-color @transition-time, 
+    @transition: 
+        background-color @transition-time, 
         border-bottom-color @transition-time, border-left-color @transition-time, 
         border-right-color @transition-time, border-top-color @transition-time;
-    @knob-transition: left @transition-time;
-    @knob-color: @white;
-    @knob-border-color: undefined;
-    @knob-border-size: 1px;
 }
