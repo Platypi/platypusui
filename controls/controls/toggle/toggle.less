@@ -68,11 +68,21 @@
             height: @toggle-thin-height;
             overflow: visible;
             background-color: @neutralColorDark;
+            border: none;
 
             .plat-knob {
                 top: -(@knob-diameter * (@toggle-thin-ratio / 2));
-                background-color: @paleGrey;
-                .box-shadow(2px 2px 3px 0px rgba(50, 50, 50, 0.22););
+                background-color: @toggle-thin-color;
+                border: 1px solid darken(@toggle-thin-color, 4%);
+                .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+            }
+
+            &.plat-slide {
+                background-color: @background-color-on;
+
+                .plat-knob {
+                    .box-shadow(-2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+                }
             }
         }
     }

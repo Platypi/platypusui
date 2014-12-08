@@ -24,12 +24,10 @@
     @knob-transition: left @transition-time;
     @knob-border-color: @paleGrey;
     @knob-border-size: 1px;
+    @toggle-thin-color: @paleGrey;
 
 /// ============= Animation ============= ///
 
     @transition-time: 250ms;
-    @transition: 
-        background-color @transition-time, 
-        border-bottom-color @transition-time, border-left-color @transition-time, 
-        border-right-color @transition-time, border-top-color @transition-time;
+    @transition: all @transition-time;
 }
