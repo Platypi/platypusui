@@ -18,6 +18,8 @@
 
     .plat-modal-container {
         position: absolute;
+        width: 100%;
+        height: 100%;
         background-color: @background-color;
         color: @color;
         .scroll();
@@ -25,6 +27,9 @@
         
         &.plat-no-transition,
         &.plat-modal-transition.fade {
+            top: 0;
+            left: 0;
+
             &.plat-full {
                 top: 0;
                 left: 0;
@@ -72,6 +77,12 @@
             &.plat-right {
                 .translateZ(0);
                 .transition(@right-transition);
+                top: 0;
+                left: -100%;
+
+                &.plat-activate {
+                    left: 0;
+                }
 
                 &.plat-full {
                     top: 0;
@@ -142,6 +153,12 @@
             &.plat-left {
                 .translateZ(0);
                 .transition(@left-transition);
+                top: 0;
+                right: -100%;
+
+                &.plat-activate {
+                    right: 0;
+                }
 
                 &.plat-full {
                     top: 0;
@@ -212,6 +229,12 @@
             &.plat-down {
                 .translateZ(0);
                 .transition(@down-transition);
+                top: -100%;
+                left: 0;
+
+                &.plat-activate {
+                    top: 0;
+                }
 
                 &.plat-full {
                     top: -100%;
@@ -282,6 +305,12 @@
             &.plat-up {
                 .translateZ(0);
                 .transition(@up-transition);
+                bottom: -100%;
+                left: 0;
+
+                &.plat-activate {
+                    bottom: 0;
+                }
 
                 &.plat-full {
                     bottom: -100%;
