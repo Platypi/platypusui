@@ -58,6 +58,7 @@
     <TypeScriptCompile Include="drawer\drawer.ts" />
     <TypeScriptCompile Include="input\input.ts" />
     <TypeScriptCompile Include="lib\platypus.ts" />
+    <TypeScriptCompile Include="listview\listview.ts" />
     <TypeScriptCompile Include="modal\modal.ts" />
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />
@@ -402,6 +403,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="carousel\carousel.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="listview\listview.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="listview\listview.variables.less" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
 </Project>

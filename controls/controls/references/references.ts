@@ -10,6 +10,7 @@ var __Promise = '$Promise',
     __ExceptionStatic = '$ExceptionStatic',
     __Utils = '$Utils',
     __Animator = '$Animator',
+    __TemplateControlFactory = '$TemplateControlFactory',
 
     /**
      * Controls
@@ -29,7 +30,7 @@ var __Promise = '$Promise',
     __Select = __Plat + 'select',
     __Input = __Plat + 'input',
     __Carousel = __Plat + 'carousel',
-    __TemplateControlFactory = '$TemplateControlFactory',
+    __Listview = __Plat + 'listview',
 
     /**
      * Referenced Controls / Vars
