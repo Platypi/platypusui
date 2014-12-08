@@ -31,7 +31,6 @@
             height: @knob-diameter;
             width: @knob-diameter;
             background-color: @white;
-
             .border-radius(@knob-diameter);
             .box-shadow(inset -1px 0px 3px 0px @paleGrey);
             .box-sizing(border-box);
@@ -46,6 +45,34 @@
             .plat-knob {
                 left: @width - @knob-diameter;
                 .box-shadow(inset 1px -2px 3px 0px @paleGrey);
+            }
+        }
+    }
+
+/// ============== Toggle Square =============== ///
+
+    &.toggle-square {
+        .plat-toggle-container {
+            .border-radius(2px);
+
+            .plat-knob {
+                .border-radius(2px);
+            }
+        }
+    }
+
+/// =============== Toggle Thin ================ ///
+
+    &.toggle-thin {
+        .plat-toggle-container {
+            height: @toggle-thin-height;
+            overflow: visible;
+            background-color: @neutralColorDark;
+
+            .plat-knob {
+                top: -(@knob-diameter * (@toggle-thin-ratio / 2));
+                background-color: @paleGrey;
+                .box-shadow(2px 2px 3px 0px rgba(50, 50, 50, 0.22););
             }
         }
     }
@@ -80,16 +107,5 @@
         }
     }
 
-/// ======== Toggle Style Alternatives ======== ///
-    
-    &.toggle-square {
-        .plat-toggle-container {
-            .border-radius(2px);
-
-            .plat-knob {
-                .border-radius(2px);
-            }
-        }
-    }
 
 }
