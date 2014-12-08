@@ -1,16 +1,28 @@
 @import '../global/variables.less';
 
 #Slider {
+
+/// ================ Colors ================= ///    
+
     @background-color: @primaryColorPale;
     @fill-color: @primaryColor;
+
+/// ================= Size ================== ///    
+
     @thickness: 2px;
     @fill-border-radius: 4px;
+
+/// ================= Knob ================== ///    
+
     @knob-primary-color: lighten(@fill-color, 15%);
     @knob-secondary-color: @white;
     @knob-diameter: 2em;
     @knob-primary-border-color: @fill-color;
     @knob-secondary-border-color: @fill-color;
     @knob-border-size: 1px;
+
+/// ============== Animations =============== ///    
+
     @horizontal-transition: width 300ms;
     @vertical-transition: height 300ms;
 }

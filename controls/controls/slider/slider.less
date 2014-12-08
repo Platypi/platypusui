@@ -2,6 +2,8 @@
 @import '../global/mixins.less';
 @import 'slider.variables.less';
 
+/// ========== Slider Default Style =========== ///
+
 .plat-slider {
     #Slider;
     position: relative;
@@ -41,6 +43,9 @@
     }
 
     @half-thickness: @thickness / 2;
+
+/// ============ Slider Orientations ============= ///
+
     &.plat-horizontal,
     &.plat-horizontal-flipped {
         height: @knob-diameter;
@@ -138,6 +143,8 @@
             }
         }
     }
+
+/// =========== Slider Color Options =========== ///
 
     &.plat-primary {
         .plat-slider-container {
