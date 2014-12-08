@@ -10,21 +10,31 @@
             <h4>Ranges</h4>
             <p>Slider</p>
             <div class="demo-item">
-                <plat-slider plat-bind="range1" style="width: 400px"></plat-slider>
+                <plat-slider plat-bind="sliders.slider1" style="width: 400px"></plat-slider>
             </div>
             <div class="demo-item">
-                <plat-slider plat-bind="range2" style="width: 400px;" class="slider-primary"></plat-slider>
+                <plat-slider plat-bind="sliders.slider2" style="width: 400px;" class="slider-primary"></plat-slider>
             </div>
             <div class="demo-item">
-                <plat-slider plat-bind="range2" style="width: 400px;" class="slider-secondary"></plat-slider>
+                <plat-slider plat-bind="sliders.slider3" style="width: 400px;" class="slider-secondary"></plat-slider>
             </div>
             <div class="demo-item">
-                <plat-slider plat-bind="range2" style="width: 400px;" class="slider-success"></plat-slider>
+                <plat-slider plat-bind="sliders.slider4" style="width: 400px;" class="slider-success"></plat-slider>
             </div>
             <p>Range</p>
             <div class="demo-item">
-                <p>lower: {{lower}} &nbsp; upper: {{upper}}</p>
-                <plat-range></plat-range>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range1" style="width: 400px"></plat-range>
+                </div>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range2" style="width: 400px;" class="range-secondary"></plat-range>
+                </div>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range3" style="width: 400px;" class="range-caution"></plat-range>
+                </div>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range4" style="width: 400px;" class="range-danger"></plat-range>
+                </div>
             </div>
 
             <!-- Toggle -->

@@ -26,8 +26,9 @@
 
         .plat-slider-offset {
             position: absolute;
-            background-color: darken(@neutralColorDark, 7%);
+            background-color: @neutralColorDark;
             overflow: visible;
+            .box-shadow(inset 0px 1px 1px 0px darken(@neutralColorDark, 10%));
             .border-radius(@fill-border-radius);
             .box-sizing(content-box);
 
@@ -36,7 +37,7 @@
                 width: @knob-diameter;
                 height: @knob-diameter;
                 background-color: lighten(@paleGrey, 10%);
-                border: @knob-border-size solid darken(@paleGrey, 5%);;
+                border: @knob-border-size solid darken(@paleGrey, 5%);
                 cursor: pointer;
                 .border-radius(@knob-diameter);
                 .box-sizing(border-box);
@@ -153,11 +154,7 @@
         .plat-slider-container {
             .plat-slider-offset {
                 background-color: @primaryColor;
-
-                .plat-knob {
-                    background-color: @primaryColor;
-                    border-color: darken(@primaryColor, 10%);
-                }
+                .box-shadow(inset 0px 1px 1px 0px darken(@primaryColor, 10%));
             }
         }
     }
@@ -166,11 +163,7 @@
         .plat-slider-container {
             .plat-slider-offset {
                 background-color: @secondaryColor;
-
-                .plat-knob {
-                    background-color: @secondaryColor;
-                    border-color: darken(@secondaryColor, 10%);
-                }
+                .box-shadow(inset 0px 1px 1px 0px darken(@secondaryColor, 10%));
             }
         }
     }
@@ -179,11 +172,7 @@
         .plat-slider-container {
             .plat-slider-offset {
                 background-color: @successColor;
-
-                .plat-knob {
-                    background-color: @successColor;
-                    border-color: darken(@successColor, 10%);
-                }
+                .box-shadow(inset 0px 1px 1px 0px darken(@successColor, 10%));
             }
         }
     }
@@ -192,11 +181,7 @@
         .plat-slider-container {
             .plat-slider-offset {
                 background-color: @cautionColor;
-
-                .plat-knob {
-                    background-color: @cautionColor;
-                    border-color: darken(@cautionColor, 10%);
-                }
+                .box-shadow(inset 0px 1px 1px 0px darken(@cautionColor, 10%));
             }
         }
     }
@@ -205,11 +190,7 @@
         .plat-slider-container {
             .plat-slider-offset {
                 background-color: @dangerColor;
-
-                .plat-knob {
-                    background-color: @dangerColor;
-                    border-color: darken(@dangerColor, 10%);
-                }
+                .box-shadow(inset 0px 1px 1px 0px darken(@dangerColor, 10%));
             }
         }
     }

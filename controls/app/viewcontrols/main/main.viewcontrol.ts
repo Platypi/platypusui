@@ -10,8 +10,18 @@ module app {
             test: <any>null,
             check: true,
             progress: 0,
-            range1: 20,
-            range2: 32,
+            sliders: {
+                slider1: 20,
+                slider2: 35,   
+                slider3: 50,
+                slider4: 65,
+            },
+            ranges: {
+                range1: { lower: 10, upper: 30 },
+                range2: { lower: 15, upper: 50 },   
+                range3: { lower: 20, upper: 70 },
+                range4: { lower: 25, upper: 90 },  
+            },
             test3: '',
             lower: 10,
             upper: 90,
@@ -41,7 +51,6 @@ module app {
 
         bar(ev?: any) {
             this.context.progress += 0.01;
-            this.context.range1++;
         }
 
         __toggle() {
