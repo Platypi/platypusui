@@ -13,6 +13,30 @@
      */
     export class Listview extends plat.ui.TemplateControl implements IUIControl {
         /**
+         * @name $window
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        $window: Window = plat.acquire(__Window);
+        /**
+         * @name $document
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        $document: Document = plat.acquire(__Document);
+        /**
          * @name $utils
          * @memberof platui.Listview
          * @kind property
@@ -36,6 +60,31 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
+        /**
+         * @name $animator
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         */
+        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+
+        /**
+         * @name context
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {Array<any>}
+         * 
+         * @description
+         * The specifically defined Array type context for this control.
+         */
+        context: Array<any>;
 
         /**
          * @name options

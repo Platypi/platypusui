@@ -209,6 +209,12 @@
     <Content Include="lib\platypus.min.css">
       <DependentUpon>platypus.css</DependentUpon>
     </Content>
+    <Content Include="listview\listview.css">
+      <DependentUpon>listview.less</DependentUpon>
+    </Content>
+    <Content Include="listview\listview.min.css">
+      <DependentUpon>listview.css</DependentUpon>
+    </Content>
     <Content Include="modal\modal.css">
       <DependentUpon>modal.less</DependentUpon>
     </Content>
