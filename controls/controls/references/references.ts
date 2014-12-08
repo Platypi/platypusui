@@ -68,7 +68,7 @@ var __Promise = '$Promise',
      * Misc
      */
     __Flipped = '-flipped',
-    __transitionHash: plat.IObject<string> = {
+    __transitionNegate: plat.IObject<string> = {
         right: 'left',
         left: 'right',
         up: 'down',
