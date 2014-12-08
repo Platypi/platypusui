@@ -10,10 +10,16 @@
             <h4>Ranges</h4>
             <p>Slider</p>
             <div class="demo-item">
-                <span>value: {{range}}</span>
+                <plat-slider plat-bind="range1" style="width: 400px"></plat-slider>
             </div>
             <div class="demo-item">
-                <plat-slider plat-options="{  }" style="width: 400px;" plat-bind="range"></plat-slider>
+                <plat-slider plat-bind="range2" style="width: 400px;" class="slider-primary"></plat-slider>
+            </div>
+            <div class="demo-item">
+                <plat-slider plat-bind="range2" style="width: 400px;" class="slider-secondary"></plat-slider>
+            </div>
+            <div class="demo-item">
+                <plat-slider plat-bind="range2" style="width: 400px;" class="slider-success"></plat-slider>
             </div>
             <p>Range</p>
             <div class="demo-item">
