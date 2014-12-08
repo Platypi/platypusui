@@ -1516,7 +1516,7 @@
          * @returns {void}
          */
         _addSwipeOpen(): void {
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + this._location, () => {
+            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._location], () => {
                 this._hasSwiped = true;
                 this.open();
             }, false);
@@ -1534,7 +1534,7 @@
          * @returns {void}
          */
         _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + __transitionHash[this._location], () => {
+            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._location, () => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1629,7 +1629,7 @@
                         return;
                 }
 
-                this._removePrimaryTrack = this.addEventListener(element, __$track + __transitionHash[trackDirection], trackFn, false);
+                this._removePrimaryTrack = this.addEventListener(element, __$track + __transitionNegate[trackDirection], trackFn, false);
                 this._removeSecondaryTrack = this.addEventListener(element, __$track + trackDirection, trackFn, false);
 
                 if (isNull(this._lastTouch)) {

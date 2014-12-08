@@ -234,31 +234,29 @@
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IModalOptions>>{},
                 options = optionObj.value || <IModalOptions>{},
-                $utils = this.$utils,
-                isString = $utils.isString,
                 transition = options.transition;
 
             this._modalElement = this._modalElement || <HTMLElement>this.element.firstElementChild;
             this._loaded = true;
 
-            if (!isString(transition) || transition === 'none') {
+            if (!this.$utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._modalElement, __Plat + 'no-transition');
                 if (this._preloadedValue) {
-                    $utils.postpone(() => {
+                    this.$utils.postpone(() => {
                         this._show();
                     });
                 }
                 return;
-            } else if ($utils.isNull(this._transitionHash[transition])) {
+            } else if (!this._transitionHash[transition]) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Custom transition direction: "' + transition +
-                    '" defined for "' + __Modal + '." Please ensure a transition is defined to avoid errors.');
+                Exception.warn('Custom transition: "' + transition +
+                    '" defined for "' + __Modal + '." Please ensure the transition is defined to avoid errors.');
             }
 
             this._transitionEnd = this.$compat.animationEvents.$transitionEnd;
             this.dom.addClass(this._modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition');
             if (this._preloadedValue) {
-                $utils.postpone(() => {
+                this.$utils.postpone(() => {
                     this._show();
                 });
             }
