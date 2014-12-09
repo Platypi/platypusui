@@ -38,7 +38,7 @@
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         /**
-         * @name _currentLocation
+         * @name _currentPosition
          * @memberof platui.Drawer
          * @kind property
          * @access protected
@@ -46,9 +46,9 @@
          * @type {string}
          * 
          * @description
-         * The current location of the {@link platui.Drawer|Drawer}.
+         * The current position of the {@link platui.Drawer|Drawer}.
          */
-        _currentLocation: string;
+        _currentPosition: string;
         /**
          * @name _useContext
          * @memberof platui.Drawer
@@ -148,7 +148,7 @@
          * @access public
          * 
          * @description
-         * Check for a location and initialize event handling.
+         * Check for a position and initialize event handling.
          * 
          * @returns {void}
          */
@@ -157,14 +157,14 @@
                 $utils = this.$utils,
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
-                location = this._currentLocation = options.location || 'left',
+                position = this._currentPosition = options.position || 'left',
                 useContext = this._useContext = (options.useContext === true) || !$utils.isUndefined(this.attributes[__CamelContext]),
                 id = options.id || '',
                 templateUrl = options.templateUrl,
                 isElastic = options.elastic === true;
 
             element.setAttribute(__Hide, '');
-            this.dom.addClass(element, __Plat + location);
+            this.dom.addClass(element, __Plat + position);
 
             if ($utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
@@ -174,7 +174,7 @@
                         this._checkPreload();
                     }
 
-                    this._initializeEvents(id, location, isElastic);
+                    this._initializeEvents(id, position, isElastic);
                 });
                 return;
             } else if (useContext && $utils.isNode(this.innerTemplate)) {
@@ -182,7 +182,7 @@
                 this._checkPreload();
             }
 
-            this._initializeEvents(id, location, isElastic);
+            this._initializeEvents(id, position, isElastic);
         }
 
         /**
@@ -417,24 +417,24 @@
          * @access protected
          * 
          * @description
-         * Changes the placement and implied location of the {@link platui.Drawer|Drawer}.
+         * Changes the placement and implied position of the {@link platui.Drawer|Drawer}.
          * 
-         * @param {string} location The new location to change to.
+         * @param {string} position The new position to change to.
          * 
          * @returns {void}
          */
-        _changeDirection(location: string): void {
-            if (this.$utils.isNull(location) || location === this._currentLocation) {
+        _changeDirection(position: string): void {
+            if (this.$utils.isNull(position) || position === this._currentPosition) {
                 return;
             }
 
             var dom = this.dom,
                 element = this.element;
 
-            dom.removeClass(element, __Plat + this._currentLocation);
-            dom.addClass(element, __Plat + location);
+            dom.removeClass(element, __Plat + this._currentPosition);
+            dom.addClass(element, __Plat + position);
 
-            this._currentLocation = location;
+            this._currentPosition = position;
         }
 
         /**
@@ -447,13 +447,13 @@
          * Initializes and dispatches pub sub events.
          * 
          * @param {string} id The ID of this {@link platui.Drawer|Drawer} if used.
-         * @param {string} location The location.
+         * @param {string} position The position.
          * @param {boolean} isElastic Whether or not the {@link platui.Drawer|Drawer} has an 
          * elastic transition effect.
          * 
          * @returns {void}
          */
-        _initializeEvents(id: string, location: string, isElastic: boolean): void {
+        _initializeEvents(id: string, position: string, isElastic: boolean): void {
             var $utils = this.$utils,
                 isString = $utils.isString,
                 isNull = $utils.isNull,
@@ -468,9 +468,9 @@
                         return;
                     }
 
-                    if (isString(controllerArg.location)) {
-                        location = controllerArg.location;
-                        this._changeDirection(location);
+                    if (isString(controllerArg.position)) {
+                        position = controllerArg.position;
+                        this._changeDirection(position);
                     }
 
                     this._controllers.unshift(control);
@@ -479,7 +479,7 @@
                         this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                             control: this,
                             received: true,
-                            location: location,
+                            position: position,
                             useContext: useContext,
                             template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                             elastic: isElastic
@@ -490,7 +490,7 @@
             this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
                 control: this,
                 received: false,
-                location: location,
+                position: position,
                 useContext: useContext,
                 template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                 elastic: isElastic
@@ -622,7 +622,7 @@
         options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
 
         /**
-         * @name _location
+         * @name _position
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
@@ -630,10 +630,10 @@
          * @type {string}
          * 
          * @description
-         * The location of the global {@link platui.Drawer|Drawer} associated 
+         * The position of the global {@link platui.Drawer|Drawer} associated 
          * with this control.
          */
-        _location: string;
+        _position: string;
 
         /**
          * @name _drawerElement
@@ -1075,14 +1075,14 @@
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
-                location = options.location,
+                position = options.position,
                 id = options.id || '';
 
             this._type = options.type || 'tap track';
             this._isElastic = options.elastic;
             this._useContext = options.useContext;
             this._templateUrl = options.templateUrl;
-            this._initializeEvents(id, location);
+            this._initializeEvents(id, position);
         }
 
         /**
@@ -1360,7 +1360,7 @@
             }
 
             var translation: string;
-            switch (this._location) {
+            switch (this._position) {
                 case 'left':
                     translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
                     break;
@@ -1516,7 +1516,7 @@
          * @returns {void}
          */
         _addSwipeOpen(): void {
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._location], () => {
+            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], () => {
                 this._hasSwiped = true;
                 this.open();
             }, false);
@@ -1534,7 +1534,7 @@
          * @returns {void}
          */
         _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._location, () => {
+            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position, () => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1585,18 +1585,18 @@
          * @description
          * Adds primary and secondary tracking events to the {@link platui.DrawerController|DrawerController} element.
          * 
-         * @param {string} location The location of the {@link platui.Drawer|Drawer}.
+         * @param {string} position The position of the {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
-        _addEventListeners(location: string): void {
+        _addEventListeners(position: string): void {
             var element = this.element,
                 isNull = this.$utils.isNull,
                 types = this._type.split(' ');
 
-            this._location = location;
+            this._position = position;
 
-            // remove event listeners here first if we want to later be able to dynamically change location of drawer.
+            // remove event listeners here first if we want to later be able to dynamically change position of drawer.
             // this._removeEventListeners();
 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
@@ -1611,10 +1611,10 @@
                 var trackFn = this._track,
                     trackDirection: string;
 
-                switch (location) {
+                switch (position) {
                     case 'left':
                     case 'right':
-                        trackDirection = location;
+                        trackDirection = position;
                         break;
                     case 'top':
                         trackDirection = 'up';
@@ -1624,7 +1624,7 @@
                         break;
                     default:
                         var Exception = plat.acquire(plat.IExceptionStatic);
-                        Exception.warn('Incorrect location: "' + location +
+                        Exception.warn('Incorrect position: "' + position +
                             '" defined for "' + __Drawer + '" or "' + __DrawerController + '."');
                         return;
                 }
@@ -1732,7 +1732,7 @@
             }
 
             var distanceMoved: number;
-            switch (this._location) {
+            switch (this._position) {
                 case 'left':
                 case 'right':
                     distanceMoved = ev.clientX - this._lastTouch.x;
@@ -1762,7 +1762,7 @@
          * 
          * @description
          * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
-         * depending on the defined "location".
+         * depending on the defined position.
          * 
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
          * 
@@ -1787,7 +1787,7 @@
          * @returns {boolean} Whether or not the user was tracking in the right direction.
          */
         _isRightDirection(distanceMoved: number): boolean {
-            switch (this._location) {
+            switch (this._position) {
                 case 'left':
                 case 'top':
                     return this._isOpen ? distanceMoved < 0 : distanceMoved > 0;
@@ -1814,7 +1814,7 @@
          */
         _calculateTranslation(ev: plat.ui.IGestureEvent): string {
             var distanceMoved: number;
-            switch (this._location) {
+            switch (this._position) {
                 case 'left':
                     distanceMoved = this._isOpen ?
                     this._checkElasticity(this._maxOffset + ev.clientX - this._lastTouch.x) :
@@ -1878,11 +1878,11 @@
          * Initializes and dispatches pub sub events.
          * 
          * @param {string} id The ID of this {@link platui.DrawerController|DrawerController} if used.
-         * @param {string} location The location of the {@link platui.Drawer|Drawer}.
+         * @param {string} position The position of the {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
-        _initializeEvents(id: string, location: string): void {
+        _initializeEvents(id: string, position: string): void {
             this._setTransform();
 
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
@@ -1896,24 +1896,24 @@
                         drawerElement = this._drawerElement = drawer.element,
                         useContext = this._useContext;
 
-                    if (!isString(location)) {
-                        if (isString(drawerArg.location)) {
-                            location = drawerArg.location;
+                    if (!isString(position)) {
+                        if (isString(drawerArg.position)) {
+                            position = drawerArg.position;
                         } else {
                             var Exception = plat.acquire(plat.IExceptionStatic);
-                            Exception.warn('"location" is incorrectly defined for "' +
+                            Exception.warn('"position" is incorrectly defined for "' +
                                 __Drawer + '" or "' + __DrawerController + '."' +
                                 ' Please ensure it is a string.');
                             return;
                         }
                     }
 
-                    if (!this._controllerIsValid(location)) {
+                    if (!this._controllerIsValid(position)) {
                         return;
                     }
 
                     drawerElement.removeAttribute(__Hide);
-                    this._addEventListeners(location.toLowerCase());
+                    this._addEventListeners(position.toLowerCase());
                     this._setOffset();
                     drawerElement.setAttribute(__Hide, '');
 
@@ -1925,7 +1925,7 @@
                         this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                             control: this,
                             received: true,
-                            location: location
+                            position: position
                         });
                     }
 
@@ -1947,7 +1947,7 @@
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                 control: this,
                 received: false,
-                location: location
+                position: position
             });
         }
 
@@ -2016,11 +2016,11 @@
          * @description
          * Checks if this control has all valid properties.
          * 
-         * @param {string} location The location of the {@link platui.Drawer|Drawer}.
+         * @param {string} position The position of the {@link platui.Drawer|Drawer}.
          * 
          * @returns {boolean} Whether or not this control is valid.
          */
-        _controllerIsValid(location: string): boolean {
+        _controllerIsValid(position: string): boolean {
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic;
 
@@ -2044,7 +2044,7 @@
                 dom.addClass(rootElement, transitionPrep);
             }
 
-            this._directionalTransitionPrep = 'plat-drawer-transition-' + location;
+            this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
 
             this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
@@ -2117,7 +2117,7 @@
          * @returns {void}
          */
         private _setOffset(): void {
-            switch (this._location) {
+            switch (this._position) {
                 case 'left':
                 case 'right':
                     this._maxOffset = this._drawerElement.offsetWidth;
@@ -2157,7 +2157,7 @@
         id?: string;
 
         /**
-         * @name location
+         * @name position
          * @memberof platui.IDrawerOptions
          * @kind property
          * @access public
@@ -2165,7 +2165,7 @@
          * @type {string}
          * 
          * @description
-         * The location of the {@link platui.Drawer|Drawer}. 
+         * The position of the {@link platui.Drawer|Drawer}. 
          * Defaults to "left".
          * 
          * @remarks
@@ -2174,7 +2174,7 @@
          * - "top"
          * - "bottom"
          */
-        location?: string;
+        position?: string;
 
         /**
          * @name templateUrl
@@ -2287,7 +2287,7 @@
          */
         control?: any;
         /**
-         * @name location
+         * @name position
          * @memberof platui.IDrawerHandshakeEvent
          * @kind property
          * @access public
@@ -2295,9 +2295,9 @@
          * @type {string}
          * 
          * @description
-         * The location of the {@link platui.Drawer|Drawer}. 
+         * The position of the {@link platui.Drawer|Drawer}. 
          */
-        location?: string;
+        position?: string;
         /**
          * @name template
          * @memberof platui.IDrawerHandshakeEvent

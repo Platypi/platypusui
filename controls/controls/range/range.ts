@@ -250,7 +250,7 @@
         _step: number;
 
         /**
-         * @name _direction
+         * @name _orientation
          * @memberof platui.Range
          * @kind property
          * @access protected
@@ -260,10 +260,10 @@
          * @description
          * The orientation of this control.
          */
-        _direction: string;
+        _orientation: string;
 
         /**
-         * @name _flipped
+         * @name _reversed
          * @memberof platui.Range
          * @kind property
          * @access protected
@@ -271,9 +271,9 @@
          * @type {boolean}
          * 
          * @description
-         * Whether the upper and lower knobs have been flipped.
+         * Whether the upper and lower knobs have been _reversed.
          */
-        _flipped: boolean;
+        _reversed: boolean;
 
         /**
          * @name _lowerKnobOffset
@@ -445,8 +445,7 @@
         loaded(): void {
             var context = this.context || <IRangeContext>{},
                 element = this.element,
-                rangeContainer = element.firstElementChild,
-                slider = this._slider = <HTMLElement>rangeContainer.firstElementChild,
+                slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
                 $utils = this.$utils,
                 isNumber = $utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
@@ -456,29 +455,29 @@
                 optionMin = options.min,
                 optionMax = options.max,
                 step = options.step,
-                direction = this._direction = options.direction || 'horizontal',
-                flipped = this._flipped = options.flipped === true,
+                orientation = this._orientation = options.orientation || 'horizontal',
+                reversed = this._reversed = (options.reverse === true),
+                contextLower = context.lower,
+                contextUpper = context.upper,
+                min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
+                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
+                lower = isNumber(contextLower) ? contextLower : isNumber(optionLower) ? optionLower : min,
+                upper = isNumber(contextUpper) ? contextUpper : isNumber(optionUpper) ? optionUpper : max,
+                className = __Plat + orientation,
                 Exception: plat.IExceptionStatic;
 
             this._lowerKnob = <HTMLElement>slider.firstElementChild;
             this._upperKnob = <HTMLElement>slider.lastElementChild;
 
             // if it's a reversed direction, swap knobs.
-            if (flipped) {
+            if (reversed) {
                 var lowerKnob = this._lowerKnob;
                 this._lowerKnob = this._upperKnob;
                 this._upperKnob = lowerKnob;
-                this.dom.addClass(element, __Plat + direction + __Flipped);
-            } else {
-                this.dom.addClass(element, __Plat + direction);
+                className += __Reversed;
             }
 
-            var contextLower = context.lower,
-                contextUpper = context.upper,
-                min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
-                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
-                lower = isNumber(contextLower) ? contextLower : isNumber(optionLower) ? optionLower : min,
-                upper = isNumber(contextUpper) ? contextUpper : isNumber(optionUpper) ? optionUpper : max;
+            this.dom.addClass(element, className);
 
             // reset value to minimum in case context is already set to a value
             this.lower = min;
@@ -498,7 +497,7 @@
 
             this._setIncrement();
             this._setLowerKnob(min);
-            this._initializeEvents(direction);
+            this._initializeEvents(orientation);
 
             if (!$utils.isObject(this.context)) {
                 Exception = plat.acquire(__ExceptionStatic);
@@ -620,11 +619,11 @@
          * @description
          * Initialize the proper tracking events.
          * 
-         * @param {string} direction The orientation of the control.
+         * @param {string} orientation The orientation of the control.
          * 
          * @returns {void}
          */
-        _initializeEvents(direction: string): void {
+        _initializeEvents(orientation: string): void {
             var lowerKnob = this._lowerKnob,
                 upperKnob = this._upperKnob,
                 touchstart = this._touchStart,
@@ -634,7 +633,7 @@
                 track: string,
                 reverseTrack: string;
 
-            switch (direction) {
+            switch (orientation) {
                 case 'horizontal':
                     track = __$track + 'right';
                     reverseTrack = __$track + 'left';
@@ -957,10 +956,10 @@
             var currentOffset = isLower ? this._lowerKnobOffset : this._upperKnobOffset,
                 displacement: number;
 
-            if (this._direction === 'vertical') {
-                displacement = this._flipped ? this._lastTouch.y - ev.clientY : ev.clientY - this._lastTouch.y;
+            if (this._orientation === 'vertical') {
+                displacement = this._reversed ? this._lastTouch.y - ev.clientY : ev.clientY - this._lastTouch.y;
             } else {
-                displacement = this._flipped ? this._lastTouch.x - ev.clientX : ev.clientX - this._lastTouch.x;
+                displacement = this._reversed ? this._lastTouch.x - ev.clientX : ev.clientX - this._lastTouch.x;
             }
 
             return currentOffset + displacement;
@@ -1100,18 +1099,18 @@
         _setPositionAndLength(element?: HTMLElement): number {
             element = element || this._slider.parentElement;
 
-            switch (this._direction) {
+            switch (this._orientation) {
                 case 'horizontal':
                     this._lengthProperty = 'width';
-                    this._positionProperty = this._flipped ? 'right' : 'left';
+                    this._positionProperty = this._reversed ? 'right' : 'left';
                     return (this._maxOffset = element.offsetWidth);
                 case 'vertical':
                     this._lengthProperty = 'height';
-                    this._positionProperty = this._flipped ? 'bottom' : 'top';
+                    this._positionProperty = this._reversed ? 'bottom' : 'top';
                     return (this._maxOffset = element.offsetHeight);
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid direction "' + this._direction + '" for "' + __Range + '."');
+                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + __Range + '."');
                     return 0;
             }
         }
@@ -1252,7 +1251,7 @@
      */
     export interface IRangeOptions {
         /**
-         * @name direction
+         * @name orientation
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
@@ -1267,10 +1266,10 @@
          * - "horizontal" - horizontal control.
          * - "vertical" - vertical control.
          */
-        direction?: string;
+        orientation?: string;
 
         /**
-         * @name flipped
+         * @name reverse
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
@@ -1278,10 +1277,10 @@
          * @type {boolean}
          * 
          * @description
-         * Whether or not the upper and lower knobs of the {@link platui.Range|Range} are flipped. 
+         * Whether or not the upper and lower knobs of the {@link platui.Range|Range} are reversed. 
          * Defaults to false.
          */
-        flipped?: boolean;
+        reverse?: boolean;
 
         /**
          * @name lower

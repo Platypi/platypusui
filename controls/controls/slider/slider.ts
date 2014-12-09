@@ -209,7 +209,7 @@
         _step: number;
 
         /**
-         * @name _direction
+         * @name _orientation
          * @memberof platui.Slider
          * @kind property
          * @access protected
@@ -219,10 +219,10 @@
          * @description
          * The orientation of this control.
          */
-        _direction: string;
+        _orientation: string;
 
         /**
-         * @name _flipped
+         * @name _reversed
          * @memberof platui.Slider
          * @kind property
          * @access protected
@@ -230,9 +230,9 @@
          * @type {boolean}
          * 
          * @description
-         * Whether the min and max positions have been flipped.
+         * Whether the min and max positions have been reversed.
          */
-        _flipped: boolean;
+        _reversed: boolean;
 
         /**
          * @name _knobOffset
@@ -358,21 +358,21 @@
                 optionMin = options.min,
                 optionMax = options.max,
                 step = options.step,
-                flipped = this._flipped = options.flipped === true,
-                direction = this._direction = options.direction || 'horizontal';
+                reversed = this._reversed = (options.reverse === true),
+                orientation = this._orientation = options.orientation || 'horizontal',
+                bindValue = this.value,
+                min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
+                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
+                value = isNumber(bindValue) ? bindValue : isNumber(optionValue) ? optionValue : min,
+                className = __Plat + orientation;
 
             this._knob = <HTMLElement>slider.firstElementChild;
 
-            if (flipped) {
-                this.dom.addClass(element, __Plat + direction + __Flipped);
-            } else {
-                this.dom.addClass(element, __Plat + direction);
+            if (reversed) {
+                className += __Reversed;
             }
 
-            var bindValue = this.value,
-                min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
-                max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
-                value = isNumber(bindValue) ? bindValue : isNumber(optionValue) ? optionValue : min;
+            this.dom.addClass(element, className);
 
             // reset value to minimum in case Bind set it to a value
             this.value = min;
@@ -390,7 +390,7 @@
             }
 
             this._setIncrement();
-            this._initializeEvents(direction);
+            this._initializeEvents(orientation);
 
             this.setValue(value);
             this._loaded = true;
@@ -541,17 +541,17 @@
          * @description
          * Initialize the proper tracking events.
          * 
-         * @param {string} direction The orientation of the control.
+         * @param {string} orientation The orientation of the control.
          * 
          * @returns {void}
          */
-        _initializeEvents(direction: string): void {
+        _initializeEvents(orientation: string): void {
             var knob = this._knob,
                 trackFn: EventListener = this._track,
                 track: string,
                 reverseTrack: string;
 
-            switch (direction) {
+            switch (orientation) {
                 case 'horizontal':
                     track = __$track + 'right';
                     reverseTrack = __$track + 'left';
@@ -619,13 +619,13 @@
          * @returns {number} The current position of the knob in pixels.
          */
         _calculateOffset(ev: plat.ui.IGestureEvent): number {
-            switch (this._direction) {
+            switch (this._orientation) {
                 case 'horizontal':
-                    return this._flipped ?
+                    return this._reversed ?
                         (this._knobOffset + this._lastTouch.x - ev.clientX) :
                         (this._knobOffset + ev.clientX - this._lastTouch.x);
                 case 'vertical':
-                    return this._flipped ?
+                    return this._reversed ?
                         (this._knobOffset + this._lastTouch.y - ev.clientY) :
                         (this._knobOffset + ev.clientY - this._lastTouch.y);
                 default:
@@ -648,7 +648,7 @@
          */
         _setLength(element?: HTMLElement): number {
             element = element || this._slider.parentElement;
-            switch (this._direction) {
+            switch (this._orientation) {
                 case 'horizontal':
                     this._lengthProperty = 'width';
                     return (this._maxOffset = element.offsetWidth);
@@ -657,7 +657,7 @@
                     return (this._maxOffset = element.offsetHeight);
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid direction "' + this._direction + '" for "' + __Slider + '."');
+                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + __Slider + '."');
                     return 0;
             }
         }
@@ -823,7 +823,7 @@
      */
     export interface ISliderOptions {
         /**
-         * @name direction
+         * @name orientation
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
@@ -838,10 +838,10 @@
          * - "horizontal" - horizontal control.
          * - "vertical" - vertical control.
          */
-        direction?: string;
+        orientation?: string;
 
         /**
-         * @name flipped
+         * @name reverse
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
@@ -849,10 +849,10 @@
          * @type {boolean}
          * 
          * @description
-         * Whether or not the min and max positions are flipped. 
+         * Whether or not the min and max positions are reversed. 
          * Defaults to false.
          */
-        flipped?: boolean;
+        reverse?: boolean;
 
         /**
          * @name value

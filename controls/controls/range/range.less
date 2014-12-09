@@ -54,7 +54,7 @@
     
     @half-thickness: @thickness / 2;
     &.plat-horizontal,
-    &.plat-horizontal-flipped {
+    &.plat-horizontal-reversed {
         height: max(@lower-knob-diameter, @upper-knob-radius);
 
         .plat-range-container {
@@ -93,7 +93,7 @@
         }
     }
 
-    &.plat-horizontal-flipped {
+    &.plat-horizontal-reversed {
         .plat-range-container {
             .plat-slider-offset {
                 right: 0;
@@ -102,7 +102,7 @@
     }
 
     &.plat-vertical,
-    &.plat-vertical-flipped {
+    &.plat-vertical-reversed {
         width: @lower-knob-diameter;
 
         .plat-range-container {
@@ -141,7 +141,7 @@
         }
     }
 
-    &.plat-vertical-flipped {
+    &.plat-vertical-reversed {
         .plat-range-container {
             .plat-slider-offset {
                 bottom: 0;
