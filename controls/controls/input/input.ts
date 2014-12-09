@@ -64,7 +64,7 @@
          */
         templateString =
         '<div class="plat-input-container">\n' +
-        '    <div class="plat-input-image"></div>\n' +
+        '    <span class="plat-input-image"></span>\n' +
         '    <input type="text" />\n' +
         '    <div class="plat-input-action"></div>\n' +
         '</div>\n';
