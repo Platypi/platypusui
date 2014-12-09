@@ -5,8 +5,26 @@
         <input type="checkbox" id="forms" checked />
         <label for="forms"></label>
         <div class="demo-stage">
-             <!-- Input -->
-            <h4>Checkbox</h4>
+            <p>Text Input</p>
+            <div class="demo-item">
+                <div class="demo-item-inline">
+                    <plat-input type="text" />
+                </div>
+                <div class="demo-item-inline">
+                    <plat-input type="text" placeholder="First Name" class="input-box" />
+                </div>
+            </div>
+
+            <p>Password Input</p>
+            <div class="demo-item">
+                <div class="demo-item-inline">
+                    <plat-input type="password" placeholder="Password">Enter text here...</plat-input>
+                </div>
+            </div>
+
+
+             <!-- Checkboxes/Radios -->
+            <h4>Checkboxes and Radios</h4>
             <p>Default Style</p>
             <div class="demo-item">
                 <div class="demo-item-inline">
@@ -52,22 +70,18 @@
                     <plat-checkbox class="checkbox-square" checked>Signal Lamp</plat-checkbox>
                 </div>
             </div>
-            <div class="demo-item"></div>
-            <p>Text Input</p>
-            <div class="demo-item">
-                <input type="text" plat-bind="text" />
-            </div>
             <p>Radios</p>
             <div class="demo-item">
-                <plat-radio plat-bind="text" plat-tap="foo">h1</plat-radio>
-                <plat-radio plat-bind="text">h2</plat-radio>
-                <plat-radio plat-bind="text">h3</plat-radio>
+                <div class="demo-item-inline">
+                    <plat-radio plat-bind="text" plat-tap="foo">h1</plat-radio>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-radio plat-bind="text">h2</plat-radio>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-radio plat-bind="text">h3</plat-radio>
+                </div>
             </div>
-            <p>Password Input</p>
-            <div class="demo-item">
-                <plat-input type="password" plat-bind="text">Enter text here...</plat-input>
-            </div>
-
             <!-- Sliders -->
             <h4>Ranges</h4>
             <p>Slider</p>
@@ -160,9 +174,9 @@
             </div>
             <div class="demo-item">
                 <div class="button-group">
-                    <plat-button class="button-outline button-success">Select</plat-button>
-                    <plat-button class="button-outline button-success">Copy</plat-button>
-                    <plat-button class="button-outline button-success">Paste</plat-button>
+                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Select</plat-button>
+                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Copy</plat-button>
+                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Paste</plat-button>
                 </div>
             </div>
         </div>

@@ -2,26 +2,33 @@
 @import '../global/mixins.less';
 @import 'input.variables.less';
 
+#Input_Local {
+    @input-action-width: 1em;
+    @input-left-distance: 0%;
+    @input-width: 100% - @input-left-distance;
+}
+
 .plat-input {
     #Input;
+    #Input_Local;
     display: inline-block;
     width: @default-width;
-    height: 1.75em;
+    height: 2.5em;
     .box-sizing(border-box);
 
     .plat-input-container {
         position: relative;
         width: 100%;
         height: 100%;
-        border-bottom: @primary-border-bottom;
+        border-bottom: 1px solid @neutralColorLight;
         .border-radius(@primary-border-radius);
         .box-sizing(border-box);
 
         input {
             position: absolute;
             height: 100%;
-            width: 80%;
-            left: 5%;
+            .calc(width, '@{input-width} - @{input-action-width}');
+            left: @input-left-distance;
             bottom: 0;
             padding: 0;
             vertical-align: bottom;
@@ -44,6 +51,26 @@
                 margin: 0;
             }
         }
+
+/// =========== Placeholder Styling =========== ///
+
+        ::-webkit-input-placeholder {
+            color: @neutralColorLight;
+        }
+
+        ::-moz-input-placeholder {
+            color: @neutralColorLight;   
+        }
+
+        :-moz-input-placeholder {
+            color: @neutralColorLight;
+        }
+
+        :-ms-input-placeholder {
+            color: @neutralColorLight;
+        }
+
+/// =============== Input Icon =============== ///
 
         .plat-input-action {
             display: inline-block;

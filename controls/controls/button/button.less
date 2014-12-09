@@ -21,6 +21,7 @@
     
     &.button-outline {
         color: @neutralColor;
+        transition: all 250ms;
 
         &:active {
             border-color: @neutralColorLight;
@@ -37,8 +38,10 @@
             border-color: @primaryColor;
             color: @primaryColor;
 
-            &:active {
-                border-color: @primaryColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @primaryColor;
             }
         }
 
@@ -52,8 +55,10 @@
             border-color: @secondaryColor;
             color: @secondaryColor;
 
-            &:active {
-                border-color: @secondaryColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @secondaryColor;
             }
         }
 
@@ -67,8 +72,10 @@
             border-color: @neutralColor;
             color: @neutralColor;
 
-            &:active {
-                border-color: @neutralColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @neutralColor;
             }
         }
 
@@ -82,8 +89,10 @@
             border-color: @successColor;
             color: @successColor;
 
-            &:active {
-                border-color: @successColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @successColor;
             }
         }
 
@@ -97,8 +106,10 @@
             border-color: @dangerColor;
             color: @dangerColor;
 
-            &:active {
-                border-color: @dangerColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @dangerColor;
             }
         }
 
@@ -113,7 +124,8 @@
             color: @cautionColor;
 
             &:active {
-                border-color: @cautionColorLight;
+                color: @white;
+                background-color: @cautionColor;
             }
         }
 
@@ -140,13 +152,13 @@
 
 /// ============== Button States =============== ///
 
-    &:hover,
-    &.plat-selected {
+    &:hover:not(.button-outline),
+    &.plat-selected:not(.button-outline) {
         opacity: 0.85;
     }
 
-    &:active,
-    &.plat-selected {
+    &:active:not(.button-outline),
+    &.plat-selected:not(.button-outline) {
         opacity: 0.8;
     }
 
