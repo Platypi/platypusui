@@ -125,7 +125,7 @@
         itemsLoaded: plat.async.IThenable<void>;
 
         /**
-         * @name _transition
+         * @name _orientation
          * @memberof platui.Carousel
          * @kind property
          * @access protected
@@ -133,9 +133,9 @@
          * @type {string}
          * 
          * @description
-         * The transition direction of this control.
+         * The orientation of this control.
          */
-        _transition: string;
+        _orientation: string;
 
         /**
          * @name _transform
@@ -429,14 +429,14 @@
 
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
-                transition = this._transition = options.direction || 'horizontal',
+                orientation = this._orientation = options.orientation || 'horizontal',
                 index = options.index;
 
-            this.dom.addClass(this.element, __Plat + transition);
+            this.dom.addClass(this.element, __Plat + orientation);
             index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : 0;
             this._onLoad = () => {
                 this.goToIndex(index);
-                this._addEventListeners(transition);
+                this._addEventListeners(orientation);
             };
             this._init();
             this._loaded = true;
@@ -602,18 +602,18 @@
          * @description
          * Adds all event listeners on this control's element.
          * 
-         * @param {string} transition The transition direction of the {@link platui.Carousel|Carousel}.
+         * @param {string} orientation The orientation of the {@link platui.Carousel|Carousel}.
          * 
          * @returns {void}
          */
-        _addEventListeners(transition: string): void {
+        _addEventListeners(orientation: string): void {
             var element = this.element,
                 trackFn = this._track,
                 touchEnd = this._touchEnd,
                 track: string,
                 reverseTrack: string;
 
-            switch (transition) {
+            switch (orientation) {
                 case 'horizontal':
                     track = __$track + 'right';
                     reverseTrack = __$track + 'left';
@@ -693,7 +693,7 @@
                 return;
             }
 
-            var distanceMoved = (this._transition === 'vertical') ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
+            var distanceMoved = (this._orientation === 'vertical') ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
@@ -717,7 +717,7 @@
          * 
          * @description
          * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
-         * depending on the defined "transition" direction.
+         * depending on the defined orientation.
          * 
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
          * 
@@ -741,7 +741,7 @@
          * @returns {string} The translation value.
          */
         _calculateStaticTranslation(interval: number): string {
-            if (this._transition === 'vertical') {
+            if (this._orientation === 'vertical') {
                 return 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)';
             }
 
@@ -762,7 +762,7 @@
          * @returns {string} The translation value.
          */
         _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
-            if (this._transition === 'vertical') {
+            if (this._orientation === 'vertical') {
                 return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
             }
 
@@ -812,7 +812,7 @@
          */
         _setPosition(element?: HTMLElement): number {
             element = element || <HTMLElement>this.element.firstElementChild;
-            switch (this._transition) {
+            switch (this._orientation) {
                 case 'vertical':
                     this._positionProperty = 'top';
                     return (this._intervalOffset = element.offsetHeight);
@@ -909,7 +909,7 @@
      */
     export interface ICarouselOptions {
         /**
-         * @name transition
+         * @name orientation
          * @memberof platui.ICarouselOptions
          * @kind property
          * @access public
@@ -924,7 +924,7 @@
          * - "horizontal" - horizontal control.
          * - "vertical" - vertical control.
          */
-        direction?: string;
+        orientation?: string;
 
         /**
          * @name index
