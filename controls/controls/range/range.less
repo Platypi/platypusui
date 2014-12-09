@@ -11,70 +11,61 @@
     .touch-action(none);
     .box-sizing(border-box);
     
-    @lower-knob-radius: @lower-knob-diameter / 2;
-    @upper-knob-radius: @upper-knob-diameter / 2;
     .plat-range-container {
         position: absolute;
-        background-color: @background-color;
+        background-color: @neutralColorLight;
         overflow: visible;
-        .calc(height; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
+        .calc(height; '100% - @{knob-radius} - @{knob-radius}');
         .border-radius(@fill-border-radius);
         .box-sizing(content-box);
+        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
 
         .plat-slider-offset {
             position: absolute;
-            background-color: @fill-color;
+            background-color: @neutralColorDark;
             overflow: visible;
+            .box-shadow(inset 0px 1px 1px 0px darken(@neutralColorDark, 10%));
             .border-radius(@fill-border-radius);
             .box-sizing(content-box);
 
             .plat-lower-knob,
             .plat-upper-knob {
                 position: absolute;
+                width: @knob-diameter;
+                height: @knob-diameter;
+                background-color: lighten(@paleGrey, 10%);
+                border: @knob-border-size solid darken(@paleGrey, 5%);
+                cursor: pointer;
+                .border-radius(@knob-diameter / 2);
+                .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.24));
                 .box-sizing(border-box);
-            }
-
-            .plat-lower-knob {
-                width: @lower-knob-diameter;
-                height: @lower-knob-diameter;
-                background-color: @lower-knob-primary-color;
-                border: @lower-knob-border-size solid @lower-knob-primary-border-color;
-                .border-radius(@lower-knob-diameter);
-            }
-
-            .plat-upper-knob {
-                width: @upper-knob-diameter;
-                height: @upper-knob-diameter;
-                background-color: @upper-knob-primary-color;
-                border: @upper-knob-border-size solid @upper-knob-primary-border-color;
-                .border-radius(@upper-knob-diameter);
             }
         }
     }
     
     @half-thickness: @thickness / 2;
     &.plat-horizontal,
-    &.plat-horizontal-flipped {
-        height: max(@lower-knob-diameter, @upper-knob-radius);
+    &.plat-horizontal-reversed {
+        height: max(@knob-diameter, @knob-radius);
 
         .plat-range-container {
             top: 50%;
-            left: @lower-knob-radius;
+            left: @knob-radius;
             height: @thickness;
-            .calc(width; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
+            .calc(width; '100% - @{knob-radius} - @{knob-radius}');
 
             .plat-slider-offset {
                 width: 100%;
                 height: 100%;
 
                 .plat-lower-knob {
-                    .calc(top, '@{half-thickness} - @{lower-knob-radius}');
-                    left: -@lower-knob-radius;
+                    .calc(top, '@{half-thickness} - @{knob-radius}');
+                    left: -@knob-radius;
                 }
 
                 .plat-upper-knob {
-                    .calc(top, '@{half-thickness} - @{upper-knob-radius}');
-                    right: -@upper-knob-radius;
+                    .calc(top, '@{half-thickness} - @{knob-radius}');
+                    right: -@knob-radius;
                 }
             }
 
@@ -93,7 +84,7 @@
         }
     }
 
-    &.plat-horizontal-flipped {
+    &.plat-horizontal-reversed {
         .plat-range-container {
             .plat-slider-offset {
                 right: 0;
@@ -102,27 +93,27 @@
     }
 
     &.plat-vertical,
-    &.plat-vertical-flipped {
-        width: @lower-knob-diameter;
+    &.plat-vertical-reversed {
+        width: @knob-diameter;
 
         .plat-range-container {
             left: 50%;
-            top: @lower-knob-radius;
+            top: @knob-radius;
             width: @thickness;
-            .calc(height; '100% - @{lower-knob-radius} - @{upper-knob-radius}');
+            .calc(height; '100% - @{knob-radius} - @{knob-radius}');
 
             .plat-slider-offset {
                 width: 100%;
                 height: 0;
 
                 .plat-lower-knob {
-                    .calc(left, '@{half-thickness} - @{lower-knob-radius}');
-                    bottom: -@lower-knob-radius;
+                    .calc(left, '@{half-thickness} - @{knob-radius}');
+                    bottom: -@knob-radius;
                 }
 
                 .plat-upper-knob {
-                    .calc(left, '@{half-thickness} - @{upper-knob-radius}');
-                    top: -@upper-knob-radius;
+                    .calc(left, '@{half-thickness} - @{knob-radius}');
+                    top: -@knob-radius;
                 }
             }
 
@@ -141,7 +132,7 @@
         }
     }
 
-    &.plat-vertical-flipped {
+    &.plat-vertical-reversed {
         .plat-range-container {
             .plat-slider-offset {
                 bottom: 0;
@@ -149,34 +140,49 @@
         }
     }
 
-    &.plat-primary {
+/// =========== Slider Color Options =========== ///
+
+    &.range-primary {
         .plat-range-container {
             .plat-slider-offset {
-                .plat-lower-knob {
-                    background-color: @lower-knob-primary-color;
-                    border: @lower-knob-border-size solid @lower-knob-primary-border-color;
-                }
-
-                .plat-upper-knob {
-                    background-color: @upper-knob-primary-color;
-                    border: @upper-knob-border-size solid @upper-knob-primary-border-color;
-                }
+                background-color: @primaryColor;
+                .box-shadow(inset 0px 1px 1px 0px darken(@primaryColor, 10%));
             }
         }
     }
 
-    &.plat-secondary {
+    &.range-secondary {
         .plat-range-container {
             .plat-slider-offset {
-                .plat-lower-knob {
-                    background-color: @lower-knob-secondary-color;
-                    border: @lower-knob-border-size solid @lower-knob-secondary-border-color;
-                }
+                background-color: @secondaryColor;
+                .box-shadow(inset 0px 1px 1px 0px darken(@secondaryColor, 10%));
+            }
+        }
+    }
+        
+    &.range-success {
+        .plat-range-container {
+            .plat-slider-offset {
+                background-color: @successColor;
+                .box-shadow(inset 0px 1px 1px 0px darken(@successColor, 10%));
+            }
+        }
+    }
 
-                .plat-upper-knob {
-                    background-color: @upper-knob-secondary-color;
-                    border: @upper-knob-border-size solid @upper-knob-secondary-border-color;
-                }
+    &.range-caution {
+        .plat-range-container {
+            .plat-slider-offset {
+                background-color: @cautionColor;
+                .box-shadow(inset 0px 1px 1px 0px darken(@cautionColor, 10%));
+            }
+        }
+    }
+
+    &.range-danger {
+        .plat-range-container {
+            .plat-slider-offset {
+                background-color: @dangerColor;
+                .box-shadow(inset 0px 1px 1px 0px darken(@dangerColor, 10%));
             }
         }
     }

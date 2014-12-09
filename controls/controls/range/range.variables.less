@@ -1,22 +1,21 @@
 ﻿@import '../global/variables.less';
 
 #Range {
-    @background-color: @primaryColorPale;
-    @fill-color: @primaryColor;
-    @thickness: 2px;
-    @fill-border-radius: 5px;
-    @lower-knob-primary-color: lighten(@fill-color, 15%);
-    @lower-knob-secondary-color: @white;
-    @lower-knob-diameter: 2em;
-    @lower-knob-primary-border-color: @fill-color;
-    @lower-knob-secondary-border-color: @fill-color;
-    @lower-knob-border-size: 1px;
-    @upper-knob-primary-color: lighten(@fill-color, 15%);
-    @upper-knob-secondary-color: @white;
-    @upper-knob-diameter: 2em;
-    @upper-knob-primary-border-color: @fill-color;
-    @upper-knob-secondary-border-color: @fill-color;
-    @upper-knob-border-size: 1px;
+
+/// ================= Size ================== ///
+
+    @thickness: 8px;
+    @fill-border-radius: 4px;
+
+/// ================= Knob ================== ///
+
+    @knob-diameter: 1.6em;
+    @knob-border-size: 1px;
+    @knob-radius: @knob-diameter / 2;
+    @knob-border-size: 1px;
+
+/// =============== Animations =============== ///
+    
     @horizontal-transition: width 300ms;
     @vertical-transition: height 300ms;
 }

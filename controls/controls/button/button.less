@@ -5,7 +5,8 @@
 
 /// ====== Button Default and Outline Style ====== ///
 
-.plat-button, .button {
+.plat-button,
+.button {
     #Button;
     position: relative;
     display: inline-block;
@@ -17,6 +18,7 @@
     cursor: pointer;
     font-size: @defaultFontSize;
     .border-radius(@border-radius);
+    .webkit-touch-additions();
     .box-sizing(border-box);
     
     &.button-outline {

@@ -3,6 +3,8 @@
 @import 'checkbox.variables.less';
 @import 'checkbox.mixins.less';
 
+/// =========== Default Checkbox =========== ///
+
 .plat-checkbox {
     #Checkbox;
     display: inline-block;
@@ -10,7 +12,7 @@
     .box-sizing(border-box);
 
     & > span {
-        font-size: 175%;
+        font-size: 125%;
         
         &:first-of-type {
             margin-left: 0.2em;
@@ -24,36 +26,39 @@
         height: @diameter;
         background-color: @background-color;
         overflow: hidden;
-        border: @border-size solid @border-color;
+        border: 1px solid @neutralColor;
+
         .border-radius(@diameter);
         .box-sizing(content-box);
 
+/// ============ Checkmark Symbol ============ ///
+
         &.plat-check,
         &.plat-x {
-            border-color: @checked-border-color;
+            background-color: @neutralColor;
 
             .plat-mark::before,
             .plat-mark::after {
                 content: "";
                 position: absolute;
-                height: @mark-thickness;
-                background-color: @mark-color;
-                .border-radius(@mark-thickness);
+                height: 2px;
+                background-color: @white;
+                .border-radius(2px);
             }
         }
 
         &.plat-check {
             .plat-mark::before {
-                left: 5%;
-                top: 60%;
-                width: @diameter / 2.5;
+                left: 13%;
+                top: 55%;
+                width: @diameter / 2.6;
                 .rotate(45deg);
             }
 
             .plat-mark::after {
-                left: 28%;
-                top: 51%;
-                width: @diameter / 1.5;
+                left: 34%;
+                top: 47%;
+                width: @diameter / 1.7;
                 .rotate(-45deg);
             }
         }
@@ -76,28 +81,67 @@
         }
     }
 
-    &.plat-primary {
+/// ============ Checkmark Square ============ ///
+
+    &.checkbox-square {
         .plat-checkbox-container {
+            .border-radius(2px);
+        }
+    }
+
+/// ============ Checkmark Colors ============ ///
+
+    &.checkbox-primary {
+        .plat-checkbox-container {
+            border-color: @primaryColor;
+
             &.plat-check,
             &.plat-x {
-                .plat-mark::before,
-                .plat-mark::after {
-                    background-color: @mark-color;
-                }
+                background-color: @primaryColor;
             }
         }
     }
 
-    &.plat-secondary {
+    &.checkbox-secondary {
         .plat-checkbox-container {
+            border-color: @secondaryColor;
+            
             &.plat-check,
             &.plat-x {
-                background-color: @mark-color;
+                background-color: @secondaryColor;
+            }
+        }
+    }
 
-                .plat-mark::before,
-                .plat-mark::after {
-                    .secondary-mark-color(background-color);
-                }
+    &.checkbox-success {
+        .plat-checkbox-container {
+            border-color: @successColor;
+            
+            &.plat-check,
+            &.plat-x {
+                background-color: @successColor;
+            }
+        }
+    }
+
+    &.checkbox-caution {
+        .plat-checkbox-container {
+            border-color: @cautionColor;
+            
+            &.plat-check,
+            &.plat-x {
+                background-color: @cautionColor;
+            }
+        }
+    }
+
+    &.checkbox-danger {
+        .plat-checkbox-container {
+            border-color: @dangerColor;
+            
+            &.plat-check,
+            &.plat-x {
+                background-color: @dangerColor;
             }
         }
     }

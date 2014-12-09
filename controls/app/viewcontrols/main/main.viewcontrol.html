@@ -5,28 +5,54 @@
         <input type="checkbox" id="forms" checked />
         <label for="forms"></label>
         <div class="demo-stage">
-            <h4>Toggle</h4>
+             <!-- Input -->
+            <h4>Checkbox</h4>
             <p>Default Style</p>
             <div class="demo-item">
-                <plat-toggle></plat-toggle>
-                <plat-toggle class="toggle-primary"></plat-toggle>
-                <plat-toggle class="toggle-secondary"></plat-toggle>
-                <plat-toggle class="toggle-danger"></plat-toggle>
-                <plat-toggle class="toggle-caution"></plat-toggle>
+                <div class="demo-item-inline">
+                    <plat-checkbox plat-bind="checks.HTML">HTML</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox plat-bind="checks.CSS">CSS</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox plat-bind="checks.JavaScript">JavaScript</plat-checkbox>
+                </div>
             </div>
+            <p>Colors</p>
             <div class="demo-item">
-                <plat-toggle class="toggle-square"></plat-toggle>
-                <plat-toggle class="toggle-square toggle-primary"></plat-toggle>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-primary" checked>Cooking</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-secondary" checked>Sports</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-success" checked>Croquet</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-caution" checked>Knife Fighting</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-danger" checked>Bloodletting</plat-checkbox>
+                </div>
             </div>
-            <p>Thin Style</p>
+            <p>Square Style</p>
             <div class="demo-item">
-                <plat-toggle class="toggle-thin"></plat-toggle>
-                <plat-toggle class="toggle-thin toggle-square toggle-primary"></plat-toggle>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-square checkbox-primary" checked>Phone</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-square checkbox-secondary" checked>Email</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-square checkbox-success" checked>Carrier Pigeon</plat-checkbox>
+                </div>
+                <div class="demo-item-inline">
+                    <plat-checkbox class="checkbox-square" checked>Signal Lamp</plat-checkbox>
+                </div>
             </div>
-            <p>Checkbox</p>
-            <div class="demo-item">
-                <plat-checkbox plat-bind="check">hello</plat-checkbox>
-            </div>
+            <div class="demo-item"></div>
             <p>Text Input</p>
             <div class="demo-item">
                 <input type="text" plat-bind="text" />
@@ -41,18 +67,58 @@
             <div class="demo-item">
                 <plat-input type="password" plat-bind="text">Enter text here...</plat-input>
             </div>
+
+            <!-- Sliders -->
+            <h4>Ranges</h4>
             <p>Slider</p>
             <div class="demo-item">
-                <span>value: {{range}}</span>
+                <plat-slider plat-bind="sliders.slider1" style="width: 400px"></plat-slider>
             </div>
             <div class="demo-item">
-                <plat-slider plat-options="{  }" style="width: 400px;" plat-bind="range"></plat-slider>
+                <plat-slider plat-bind="sliders.slider2" style="width: 400px;" class="slider-primary"></plat-slider>
+            </div>
+            <div class="demo-item">
+                <plat-slider plat-bind="sliders.slider3" style="width: 400px;" class="slider-secondary"></plat-slider>
+            </div>
+            <div class="demo-item">
+                <plat-slider plat-bind="sliders.slider4" style="width: 400px;" class="slider-success"></plat-slider>
             </div>
             <p>Range</p>
             <div class="demo-item">
-                <p>lower: {{lower}} &nbsp; upper: {{upper}}</p>
-                <plat-range></plat-range>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range1" style="width: 400px"></plat-range>
+                </div>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range2" style="width: 400px;" class="range-secondary"></plat-range>
+                </div>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range3" style="width: 400px;" class="range-caution"></plat-range>
+                </div>
+                <div class="demo-item">
+                    <plat-range plat-context="ranges.range4" style="width: 400px;" class="range-danger"></plat-range>
+                </div>
             </div>
+
+            <!-- Toggle -->
+            <h4>Toggle</h4>
+            <p>Default Style</p>
+            <div class="demo-item">
+                <plat-toggle></plat-toggle>
+                <plat-toggle class="toggle-primary"></plat-toggle>
+                <plat-toggle class="toggle-secondary"></plat-toggle>
+                <plat-toggle class="toggle-danger"></plat-toggle>
+                <plat-toggle class="toggle-caution"></plat-toggle>
+            </div>
+            <p>Square Style</p>
+            <div class="demo-item">
+                <plat-toggle class="toggle-square"></plat-toggle>
+                <plat-toggle class="toggle-square toggle-primary"></plat-toggle>
+            </div>
+            <p>Thin Style</p>
+            <div class="demo-item">
+                <plat-toggle class="toggle-thin toggle-square toggle-primary"></plat-toggle>
+                <plat-toggle class="toggle-thin"></plat-toggle>
+            </div> 
         </div>
     </div>
 
@@ -84,12 +150,12 @@
             <p>States</p>
             <plat-button class="button-primary" disabled>Disabled</plat-button>
             <plat-button class="button-danger button-large" disabled>Disabled</plat-button>
-            <p>Groups</p>    
+            <p>Groups</p>
             <div class="demo-item">
                 <div class="button-group">
-                    <plat-button name="controls" class="button-primary">Select</plat-button>
-                    <plat-button name="controls" class="button-primary">Copy</plat-button>
-                    <plat-button name="controls" class="button-primary">Paste</plat-button>
+                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Select</plat-button>
+                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Copy</plat-button>
+                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Paste</plat-button>
                 </div>
             </div>
             <div class="demo-item">
