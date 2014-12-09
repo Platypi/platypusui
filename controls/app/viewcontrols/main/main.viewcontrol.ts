@@ -8,7 +8,11 @@ module app {
             text: <string>'test',
             password: <string>null,
             test: <any>null,
-            check: true,
+            checks: {
+                HTML: true,
+                CSS: false,
+                JavaScript: true
+            },
             progress: 0,
             sliders: {
                 slider1: 20,

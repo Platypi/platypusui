@@ -36,24 +36,24 @@
             .plat-mark::after {
                 content: "";
                 position: absolute;
-                height: @mark-thickness;
+                height: 3px;
                 background-color: @mark-color;
-                .border-radius(@mark-thickness);
+                //.border-radius(@mark-thickness);
             }
         }
 
         &.plat-check {
             .plat-mark::before {
-                left: 5%;
-                top: 60%;
-                width: @diameter / 2.5;
+                left: 4%;
+                top: 51%;
+                width: @diameter / 2.1;
                 .rotate(45deg);
             }
 
             .plat-mark::after {
-                left: 28%;
-                top: 51%;
-                width: @diameter / 1.5;
+                left: 26%;
+                top: 44%;
+                width: @diameter / 1.4;
                 .rotate(-45deg);
             }
         }
