@@ -13,7 +13,7 @@
 /// ============ Toggle Size ============ ///
     
     @width: 3.5em;
-    @ratio: 6/13;
+    @ratio: 1/2;
     @height: @width * @ratio;
     @toggle-thin-ratio: 0.5;
     @toggle-thin-height: @height * @toggle-thin-ratio;
@@ -22,9 +22,9 @@
 
     @knob-diameter: @height;
     @knob-transition: left @transition-time;
-    @knob-border-color: @paleGrey;
+    @knob-border-color: darken(@paleGrey, 5%);
     @knob-border-size: 1px;
-    @toggle-thin-color: @paleGrey;
+    @toggle-thin-color: lighten(@paleGrey, 10%);
 
 /// ============= Animation ============= ///
 
