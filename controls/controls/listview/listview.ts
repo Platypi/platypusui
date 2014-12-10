@@ -74,6 +74,19 @@
         $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
+         * @name templateString
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The HTML template represented as a string.
+         */
+        templateString = '<div class="plat-listview-container"></div>\n';
+
+        /**
          * @name context
          * @memberof platui.Listview
          * @kind property
