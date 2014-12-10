@@ -22,10 +22,6 @@
     &.button-outline {
         color: @neutralColor;
         transition: all 250ms;
-
-        &:active {
-            border-color: @neutralColorLight;
-        }
     }
 
 /// ============== Button Colors  =============== ///    
@@ -152,7 +148,7 @@
 
 /// ============== Button States =============== ///
 
-    &:hover:not(.button-outline),
+    &:hover,
     &.plat-selected:not(.button-outline) {
         opacity: 0.85;
     }

@@ -651,6 +651,52 @@
     }
 }
 
+/// Flexbox
+
+.flexbox {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.align-items(@position) {
+    -webkit-align-items: @position;
+    -moz-align-items: @position;
+    -ms-align-items: @position;
+    align-items: @position;
+}
+
+.align-content(@position) {
+    -webkit-align-content: @position;
+    -moz-align-content: @position;
+    -ms-align-content: @position;
+    align-content: @position;
+}
+
+.justify-content(@position) {
+    -webkit-justify-content: @position;
+    -moz-justify-content: @position;
+    -ms-justify-content: @position;
+    justify-content: @position;   
+}
+
+.flex(@values) {
+    -webkit-box-flex: @values;
+    -moz-box-flex:  @values;
+    -webkit-flex:  @values;
+    -ms-flex:  @values;
+    flex:  @values;
+}
+
+.flex-absolute-center {
+    .flexbox();
+    .align-items(center);
+    .justify-content(center);
+}
+
+
 /// Misc
 
 .calc(@prop; @val) {

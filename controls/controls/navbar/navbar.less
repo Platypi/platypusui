@@ -1,0 +1,145 @@
+@import '../global/variables.less';
+@import '../global/mixins.less';
+@import 'navbar.variables.less';
+
+/// ============== Navbar Defaults  =============== ///
+
+.plat-navbar, .navbar {
+	#Navbar;
+	.flex-absolute-center();
+	.box-shadow(0px 2px 4px 0px rgba(50, 50, 50, 0.20));
+	width: 100%;
+	height: @navbar-height;
+	background-color: @navbar-color;
+	text-align: center;
+	color: @white;
+
+	&.navbar-fixed {
+		position: fixed;
+		left: 0;
+	}
+
+	&.navbar-absolute {
+		position: absolute;
+		left: 0;
+	}
+
+	&.navbar-top {
+		top: 0;
+	}
+
+	&.navbar-bottom {
+		bottom: 0;
+		.box-shadow(0px -2px 4px 0px rgba(50, 50, 50, 0.20));
+	}
+
+/// ============ Right & Left Actions  ============= ///
+
+	.navbar-action {
+		.flex-absolute-center();
+		position: relative;
+		float: left;
+		height: 100%;
+		width: @navbar-action-width;
+		max-width: @navbar-action-max-width;
+		text-align: center;
+		cursor: pointer;
+	}
+
+	.navbar-action::after {
+		content: "";
+		position: absolute;
+		border-radius: @navbar-height / 2;
+		background-color: #ffffff;
+		opacity: 0.1;
+	}
+
+	.navbar-action:active::after {
+		.animation-d(PULSE 250ms forwards linear);
+	}
+
+	.animation-d(@values) {
+		-webkit-animation: @values;
+		-moz-animation: @values;
+		-o-animation: @values;
+		animation: @values;	
+	}
+
+/// =============== Center Content  ================ ///
+
+	.navbar-title {
+		.flex-absolute-center();
+		.flex(1);
+		float: left;
+		height: 100%;
+		text-align: center;
+	}
+
+	@-webkit-keyframes PULSE {
+		0%   { 
+			top: @navbar-height / 2;
+			left: 50%;
+			margin-left: 0;
+			height: 0px;
+			width: 0px;
+		}
+		100%   { 
+			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+			left: 50%;
+			margin-left: -((@navbar-height * 0.8) * 0.5);
+			height: @navbar-height * 0.8;
+			width: @navbar-height * 0.8;
+		}
+	}
+	@-moz-keyframes PULSE {
+		0%   { 
+			top: @navbar-height / 2;
+			left: 50%;
+			margin-left: 0;
+			height: 0px;
+			width: 0px;
+		}
+		100%   { 
+			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+			left: 50%;
+			margin-left: -((@navbar-height * 0.8) * 0.5);
+			height: @navbar-height * 0.8;
+			width: @navbar-height * 0.8;
+		}
+	}
+	@-o-keyframes PULSE {
+		0%   { 
+			top: @navbar-height / 2;
+			left: 50%;
+			margin-left: 0;
+			height: 0px;
+			width: 0px;
+		}
+		100%   { 
+			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+			left: 50%;
+			margin-left: -((@navbar-height * 0.8) * 0.5);
+			height: @navbar-height * 0.8;
+			width: @navbar-height * 0.8;
+		}
+	}
+	@keyframes PULSE {
+		0%   { 
+			top: @navbar-height / 2;
+			left: 50%;
+			margin-left: 0;
+			height: 0px;
+			width: 0px;
+		}
+		100%   { 
+			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+			left: 50%;
+			margin-left: -((@navbar-height * 0.8) * 0.5);
+			height: @navbar-height * 0.8;
+			width: @navbar-height * 0.8;
+		}
+	}
+}
+
+
+
