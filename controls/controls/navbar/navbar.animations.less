@@ -1,0 +1,100 @@
+@import 'navbar.variables.less';
+
+/// ============== Custom Animation  =============== ///
+
+@-webkit-keyframes PULSE {
+	#Navbar;
+	0%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+	50%   { 
+		top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+		left: 50%;
+		margin-left: -((@navbar-height * 0.8) * 0.5);
+		height: @navbar-height * 0.8;
+		width: @navbar-height * 0.8;
+	}
+	100%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+}
+@-moz-keyframes PULSE {
+	#Navbar;
+	0%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+	50%   { 
+		top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+		left: 50%;
+		margin-left: -((@navbar-height * 0.8) * 0.5);
+		height: @navbar-height * 0.8;
+		width: @navbar-height * 0.8;
+	}
+	100%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+}
+@-o-keyframes PULSE {
+	#Navbar;
+	0%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+	50%   { 
+		top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+		left: 50%;
+		margin-left: -((@navbar-height * 0.8) * 0.5);
+		height: @navbar-height * 0.8;
+		width: @navbar-height * 0.8;
+	}
+	100%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+}
+@keyframes PULSE {
+	#Navbar;
+	0%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+	50%   { 
+		top: (@navbar-height - (@navbar-height * 0.8)) / 2;
+		left: 50%;
+		margin-left: -((@navbar-height * 0.8) * 0.5);
+		height: @navbar-height * 0.8;
+		width: @navbar-height * 0.8;
+	}
+	100%   { 
+		top: @navbar-height / 2;
+		left: 50%;
+		margin-left: 0;
+		height: 0px;
+		width: 0px;
+	}
+}

@@ -411,6 +411,13 @@
     .vendor-loop(animation-timing-function; @function; @vendorList);
 }
 
+.basic-prefixed-animation(@values) {
+    -webkit-animation: @values;
+    -moz-animation: @values;
+    -o-animation: @values;
+    animation: @values; 
+}
+
 /// Custom Animations
 #KeyFrames {
     .keyFrames(@name) {

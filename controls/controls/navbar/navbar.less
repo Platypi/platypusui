@@ -1,6 +1,7 @@
 @import '../global/variables.less';
 @import '../global/mixins.less';
 @import 'navbar.variables.less';
+@import 'navbar.animations.less';
 
 /// ============== Navbar Defaults  =============== ///
 
@@ -13,6 +14,7 @@
 	background-color: @navbar-color;
 	text-align: center;
 	color: @white;
+	font-size: 95%;
 
 	&.navbar-fixed {
 		position: fixed;
@@ -29,8 +31,8 @@
 	}
 
 	&.navbar-bottom {
-		bottom: 0;
 		.box-shadow(0px -2px 4px 0px rgba(50, 50, 50, 0.20));
+		bottom: 0;
 	}
 
 /// ============ Right & Left Actions  ============= ///
@@ -55,14 +57,7 @@
 	}
 
 	.navbar-action:active::after {
-		.animation-d(PULSE 250ms forwards linear);
-	}
-
-	.animation-d(@values) {
-		-webkit-animation: @values;
-		-moz-animation: @values;
-		-o-animation: @values;
-		animation: @values;	
+		.basic-prefixed-animation(PULSE 500ms forwards ease-out);
 	}
 
 /// =============== Center Content  ================ ///
@@ -73,70 +68,21 @@
 		float: left;
 		height: 100%;
 		text-align: center;
-	}
 
-	@-webkit-keyframes PULSE {
-		0%   { 
-			top: @navbar-height / 2;
-			left: 50%;
-			margin-left: 0;
-			height: 0px;
-			width: 0px;
+/// ================ Navbar Search  ================ ///
+
+		.plat-input[type="search"] {
+			.border-radius(@border-radius);
+			height: @navbar-height * 0.63;
+			line-height: @navbar-height * 0.63;
+			padding: 0 0.3em;
+			width: 80%;
+			max-width: 14em;
+			background-color: darken(@navbar-color, 6%);
 		}
-		100%   { 
-			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
-			left: 50%;
-			margin-left: -((@navbar-height * 0.8) * 0.5);
-			height: @navbar-height * 0.8;
-			width: @navbar-height * 0.8;
-		}
-	}
-	@-moz-keyframes PULSE {
-		0%   { 
-			top: @navbar-height / 2;
-			left: 50%;
-			margin-left: 0;
-			height: 0px;
-			width: 0px;
-		}
-		100%   { 
-			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
-			left: 50%;
-			margin-left: -((@navbar-height * 0.8) * 0.5);
-			height: @navbar-height * 0.8;
-			width: @navbar-height * 0.8;
-		}
-	}
-	@-o-keyframes PULSE {
-		0%   { 
-			top: @navbar-height / 2;
-			left: 50%;
-			margin-left: 0;
-			height: 0px;
-			width: 0px;
-		}
-		100%   { 
-			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
-			left: 50%;
-			margin-left: -((@navbar-height * 0.8) * 0.5);
-			height: @navbar-height * 0.8;
-			width: @navbar-height * 0.8;
-		}
-	}
-	@keyframes PULSE {
-		0%   { 
-			top: @navbar-height / 2;
-			left: 50%;
-			margin-left: 0;
-			height: 0px;
-			width: 0px;
-		}
-		100%   { 
-			top: (@navbar-height - (@navbar-height * 0.8)) / 2;
-			left: 50%;
-			margin-left: -((@navbar-height * 0.8) * 0.5);
-			height: @navbar-height * 0.8;
-			width: @navbar-height * 0.8;
+
+		.plat-input-container {
+			border: none;
 		}
 	}
 }

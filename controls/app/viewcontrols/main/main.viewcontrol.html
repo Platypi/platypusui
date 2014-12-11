@@ -1,5 +1,5 @@
 <div class="container">
-
+    <!-- Navbar -->
     <div class="demo-area">
         <h2 class="demo-heading">Navbar</h2>
         <input type="checkbox" id="forms" checked>
@@ -9,7 +9,9 @@
                 <div class="device iPhone5">
                     <plat-navbar class="navbar-absolute navbar-top">
                         <div class="navbar-action">Back</div>
-                        <div class="navbar-title">Title</div>
+                        <div class="navbar-title">
+                            <plat-input type="search" placeholder="search"></plat-input>
+                        </div>
                         <div class="navbar-action">Option</div>
                     </plat-navbar>
                     <p>iPhone 5</p>
@@ -17,12 +19,12 @@
             </div>
             <div class="demo-item-inline">
                 <div class="device nexus7">
-                    <plat-navbar class="navbar-absolute navbar-bottom">
+                    <plat-navbar class="navbar-absolute navbar-top">
                         <div class="navbar-action">
                             <span>Back</span>
                         </div>
                         <div class="navbar-title">
-                            <span>Title</span>
+                            <plat-input type="search" placeholder="search"></plat-input>
                         </div>
                         <div class="navbar-action">
                             <span>Option</span>
