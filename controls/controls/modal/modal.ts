@@ -73,7 +73,7 @@
          * @description
          * The HTML element representing the content of the modal.
          */
-        _modalElement: HTMLElement;
+        protected _modalElement: HTMLElement;
 
         /**
          * @name _isVisible
@@ -86,7 +86,7 @@
          * @description
          * Whether or not the modal is currently visible.
          */
-        _isVisible = false;
+        protected _isVisible = false;
 
         /**
          * @name _loaded
@@ -99,7 +99,7 @@
          * @description
          * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
          */
-        _loaded = false;
+        protected _loaded = false;
 
         /**
          * @name _preloadedValue
@@ -112,7 +112,7 @@
          * @description
          * A value specified prior to the control being loaded.
          */
-        _preloadedValue = false;
+        protected _preloadedValue = false;
 
         /**
          * @name _transitionEnd
@@ -125,7 +125,7 @@
          * @description
          * The browser's "transitionend" event.
          */
-        _transitionEnd: string;
+        protected _transitionEnd: string;
 
         /**
          * @name _transitionHash
@@ -138,7 +138,7 @@
          * @description
          * A hash for validating available transitions.
          */
-        _transitionHash: plat.IObject<boolean> = {
+        protected _transitionHash: plat.IObject<boolean> = {
             up: true,
             down: true,
             left: true,
@@ -382,7 +382,7 @@
          * 
          * @returns {void}
          */
-        _show(): void {
+        protected _show(): void {
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
             this.$utils.defer(() => {
@@ -403,7 +403,7 @@
          * 
          * @returns {void}
          */
-        _hide(): void {
+        protected _hide(): void {
             var dom = this.dom;
             if (this.$utils.isString(this._transitionEnd)) {
                 this._addHideOnTransitionEnd();
@@ -426,7 +426,7 @@
          * 
          * @returns {void}
          */
-        _addHideOnTransitionEnd(): void {
+        protected _addHideOnTransitionEnd(): void {
             var element = this.element,
                 remove = this.addEventListener(element, this._transitionEnd, () => {
                     remove();

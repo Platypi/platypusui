@@ -43,7 +43,6 @@
                 border-color: @primaryColorLight;
             }
         }
-
     }
 
     &.button-secondary {
@@ -58,7 +57,6 @@
                 border-color: @secondaryColorLight;
             }
         }
-
     }
 
     &.button-neutral {
@@ -73,7 +71,6 @@
                 border-color: @neutralColorLight;
             }
         }
-
     }
 
     &.button-success {
@@ -88,7 +85,6 @@
                 border-color: @successColorLight;
             }
         }
-
     }
 
     &.button-danger {
@@ -103,7 +99,6 @@
                 border-color: @dangerColorLight;
             }
         }
-
     }
 
     &.button-caution {
@@ -118,7 +113,6 @@
                 border-color: @cautionColorLight;
             }
         }
-
     }
 
     &.button-outline {
@@ -138,12 +132,11 @@
 
     &.button-jumbo {
         font-size: 130%;
-    }    
+    }
 
 /// ============== Button States =============== ///
 
-    &:hover,
-    &.plat-selected {
+    &:hover {
         opacity: 0.85;
     }
 
@@ -153,11 +146,56 @@
     }
 
     &.button-disabled,
-    &[disabled=disabled],
+    &[disabled="disabled"],
     &:disabled {
         opacity: 0.5;
         cursor: default;
     }
+
+/// ============== Button Types =============== ///
+/*
+    &.button-back {
+        border: none;
+
+        *:first-child {
+            margin-left: 0.5em;
+
+            &::before {
+                content: "\2039";
+                position: absolute;
+                top: -0.375em;
+                left: 0;
+                font-size: 200%;
+            }
+        }
+    }
+
+    &.button-confirm {
+        *:last-child {
+            margin-right: 2em;
+
+            &::after {
+                content: "\2713";
+                position: absolute;
+                right: 0.4em;
+            }
+        }
+    }
+
+    &.button-cancel {
+        *:last-child {
+            margin-right: 2em;
+
+            &::after {
+                content: "\00d7";
+                position: absolute;
+                top: -0.125em;
+                right: 0.25em;
+                font-size: 150%;
+            }
+        }
+    }
+*/
 }
 
 /// ============== Button Groups =============== /// 
@@ -167,8 +205,8 @@
     width: 100%;
 }
 
-.button-group > .button,
-.button-group > .plat-button {
+.button-group > .plat-button,
+.button-group > .button {
     margin: 0;
     border-right-width: 0;
     border-radius: 0;
@@ -176,15 +214,15 @@
     border-radius: none;
 }
 
-.button-group > .button:nth-of-type(1),
-.button-group > .plat-button:nth-of-type(1) {
+.button-group > .plat-button:nth-of-type(1),
+.button-group > .button:nth-of-type(1) {
     #Button;
     border-top-left-radius: @border-radius;
     border-bottom-left-radius: @border-radius;
 }
 
-.button-group > .button:nth-last-of-type(1),
-.button-group > .plat-button:nth-last-of-type(1) {
+.button-group > .plat-button:nth-last-of-type(1),
+.button-group > .button:nth-last-of-type(1) {
     #Button;
     border-right-width: 1px;
     border-top-right-radius: @border-radius;

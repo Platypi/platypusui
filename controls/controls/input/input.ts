@@ -93,7 +93,7 @@
          * @description
          * The HTMLElement for the control's optional image.
          */
-        _imageElement: HTMLElement;
+        protected _imageElement: HTMLElement;
 
         /**
          * @name _inputElement
@@ -106,7 +106,7 @@
          * @description
          * The HTMLInputElement for the control's input[type="text"].
          */
-        _inputElement: HTMLInputElement;
+        protected _inputElement: HTMLInputElement;
 
         /**
          * @name _actionElement
@@ -119,7 +119,7 @@
          * @description
          * The HTMLElement for the control's action.
          */
-        _actionElement: HTMLElement;
+        protected _actionElement: HTMLElement;
 
         /**
          * @name _type
@@ -132,7 +132,7 @@
          * @description
          * The control's type (e.g. - "email").
          */
-        _type: string;
+        protected _type: string;
 
         /**
          * @name _pattern
@@ -145,7 +145,7 @@
          * @description
          * A regular expression string to regulate what text is allowed to be entered.
          */
-        _pattern: RegExp;
+        protected _pattern: RegExp;
 
         /**
          * @name _typeChar
@@ -159,7 +159,7 @@
          * The control's type character (e.g. - an "x" to delete 
          * input text).
          */
-        _typeChar: string;
+        protected _typeChar: string;
 
         /**
          * @name _typeHandler
@@ -172,7 +172,7 @@
          * @description
          * A function to handle the type event.
          */
-        _typeHandler: EventListener;
+        protected _typeHandler: EventListener;
 
         /**
          * @name _actionHandler
@@ -185,7 +185,7 @@
          * @description
          * A function to check the current action state and handle accordingly.
          */
-        _actionHandler: () => void;
+        protected _actionHandler: () => void;
 
         /**
          * @name _inTouch
@@ -198,7 +198,7 @@
          * @description
          * Whether the user is currently touching the screen.
          */
-        _inTouch = false;
+        protected _inTouch = false;
 
         /**
          * @name _inAction
@@ -211,7 +211,7 @@
          * @description
          * Whether the user is currently in the process of performing the {@link platui.Input|Input's} action.
          */
-        _inAction = false;
+        protected _inAction = false;
 
         /**
          * @name _usingBind
@@ -224,7 +224,7 @@
          * @description
          * Whether or not the {@link plat.controls.Bind|Bind} control is being used.
          */
-        _usingBind = false;
+        protected _usingBind = false;
 
         /**
          * @name _loaded
@@ -237,7 +237,7 @@
          * @description
          * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
          */
-        _loaded = false;
+        protected _loaded = false;
 
         /**
          * @name _preloadedValue
@@ -250,7 +250,7 @@
          * @description
          * A value specified prior to the control being loaded.
          */
-        _preloadedValue = '';
+        protected _preloadedValue = '';
 
         /**
          * @name setClasses
@@ -510,7 +510,7 @@
          * 
          * @returns {void}
          */
-        _initializeType(): void {
+        protected _initializeType(): void {
             var type = this._type,
                 event = __$tap,
                 actionElement = this._actionElement;
@@ -568,7 +568,7 @@
          * 
          * @returns {void}
          */
-        _addEventListeners(event: string): void {
+        protected _addEventListeners(event: string): void {
             var actionElement = this._actionElement,
                 input = this._inputElement,
                 actionEnd = () => (this._inAction = false);
@@ -608,7 +608,7 @@
          * 
          * @returns {void}
          */
-        _addTextEventListener(): void {
+        protected _addTextEventListener(): void {
             var input = this._inputElement,
                 $compat = this.$compat,
                 $utils = this.$utils,
@@ -673,7 +673,7 @@
          * 
          * @returns {void}
          */
-        _erase(): void {
+        protected _erase(): void {
             this.clear();
             this.focus();
         }
@@ -690,7 +690,7 @@
          * 
          * @returns {void}
          */
-        _handlePasswordShow(): void {
+        protected _handlePasswordShow(): void {
             this._inTouch = true;
             this._inputElement.type = 'text';
         }
@@ -707,7 +707,7 @@
          * 
          * @returns {void}
          */
-        _handlePasswordHide(): void {
+        protected _handlePasswordHide(): void {
             if (!this._inTouch) {
                 return;
             }
@@ -729,7 +729,7 @@
          * 
          * @returns {void}
          */
-        _handleEmail(): void {
+        protected _handleEmail(): void {
             var inputElement = this._inputElement,
                 value = inputElement.value,
                 char = this._typeChar;
@@ -750,7 +750,7 @@
          * 
          * @returns {void}
          */
-        _checkText(): void {
+        protected _checkText(): void {
             var char = this._typeChar;
 
             if (char === 'x') {
@@ -785,7 +785,7 @@
          * 
          * @returns {void}
          */
-        _checkPassword(): void {
+        protected _checkPassword(): void {
             var char = this._typeChar;
 
             if (char === '?') {
@@ -820,7 +820,7 @@
          * 
          * @returns {void}
          */
-        _checkEmail(): void {
+        protected _checkEmail(): void {
             var value = this._inputElement.value,
                 char = this._typeChar;
 
@@ -883,7 +883,7 @@
          * 
          * @returns {void}
          */
-        _onInput(): void {
+        protected _onInput(): void {
             var inputElement = this._inputElement,
                 value = inputElement.value;
             switch (this._type) {
@@ -915,7 +915,7 @@
          * 
          * @returns {void}
          */
-        _onInputChanged(newValue: string): void {
+        protected _onInputChanged(newValue: string): void {
             var inputElement = this._inputElement;
             if (newValue === inputElement.value) {
                 return;
@@ -952,7 +952,7 @@
          * 
          * @returns {void}
          */
-        _checkInput(value: string): void {
+        protected _checkInput(value: string): void {
             switch (this._type) {
                 case 'tel':
                 case 'number':

@@ -51,7 +51,7 @@
          * @description
          * The animated bar element.
          */
-        _barElement: HTMLElement;
+        protected _barElement: HTMLElement;
 
         /**
          * @name _barMax
@@ -64,7 +64,7 @@
          * @description
          * The max value of the bar.
          */
-        _barMax: number;
+        protected _barMax: number;
 
         /**
          * @name _cloneAttempts
@@ -78,7 +78,7 @@
          * The current number of times we checked to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        _cloneAttempts = 0;
+        protected _cloneAttempts = 0;
 
         /**
          * @name _maxCloneCount
@@ -92,7 +92,7 @@
          * The max number of times we'll check to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        _maxCloneAttempts = 25;
+        protected _maxCloneAttempts = 25;
 
         /**
          * @name setClasses
@@ -210,7 +210,7 @@
          * 
          * @returns {void}
          */
-        _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(): void {
             var element = this.element,
                 $document: Document = plat.acquire(__Document),
                 body = $document.body;
