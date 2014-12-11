@@ -64,7 +64,7 @@
          * @description
          * The type of the control's activated element.
          */
-        _targetType = 'slide';
+        protected _targetType = 'slide';
 
         /**
          * @name _targetElement
@@ -77,7 +77,7 @@
          * @description
          * The element used to create the targeted effect.
          */
-        _targetElement: Element;
+        protected _targetElement: Element;
 
         /**
          * @name setClasses
@@ -173,7 +173,7 @@
          * 
          * @returns {void}
          */
-        _onTap(ev: plat.ui.IGestureEvent): void {
+        protected _onTap(ev: plat.ui.IGestureEvent): void {
             var domEvent = plat.acquire(plat.ui.IDomEventInstance);
 
             this._toggle(true);
@@ -196,7 +196,7 @@
          * 
          * @returns {void}
          */
-        _toggle(setProperty?: boolean): void {
+        protected _toggle(setProperty?: boolean): void {
             var wasActive = this.isActive,
                 isActive = !wasActive;
 
@@ -221,7 +221,7 @@
          * 
          * @returns {void}
          */
-        _activate(element: Element): void {
+        protected _activate(element: Element): void {
             this.dom.toggleClass(element, __Plat + this._targetType);
         }
     }

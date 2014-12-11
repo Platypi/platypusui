@@ -48,7 +48,7 @@
          * @description
          * The current position of the {@link platui.Drawer|Drawer}.
          */
-        _currentPosition: string;
+        protected _currentPosition: string;
         /**
          * @name _useContext
          * @memberof platui.Drawer
@@ -60,7 +60,7 @@
          * @description
          * Whether or not to use the inherited context of this global {@link platui.Drawer|Drawer}.
          */
-        _useContext: boolean;
+        protected _useContext: boolean;
 
         /**
          * @name controller
@@ -73,7 +73,7 @@
          * @description
          * A reference to all the {@link platui.DrawerController|DrawerController} used to control this {@link platui.Drawer|Drawer}.
          */
-        _controllers: Array<DrawerController> = [];
+        protected _controllers: Array<DrawerController> = [];
 
         /**
          * @name _loaded
@@ -86,7 +86,7 @@
          * @description
          * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
          */
-        _loaded = false;
+        protected _loaded = false;
 
         /**
          * @name _preloadedValue
@@ -99,7 +99,7 @@
          * @description
          * A value specified prior to the control being loaded.
          */
-        _preloadedValue = false;
+        protected _preloadedValue = false;
 
         /**
          * @name setClasses
@@ -423,7 +423,7 @@
          * 
          * @returns {void}
          */
-        _changeDirection(position: string): void {
+        protected _changeDirection(position: string): void {
             if (this.$utils.isNull(position) || position === this._currentPosition) {
                 return;
             }
@@ -453,7 +453,7 @@
          * 
          * @returns {void}
          */
-        _initializeEvents(id: string, position: string, isElastic: boolean): void {
+        protected _initializeEvents(id: string, position: string, isElastic: boolean): void {
             var $utils = this.$utils,
                 isString = $utils.isString,
                 isNull = $utils.isNull,
@@ -508,7 +508,7 @@
          * 
          * @returns {void}
          */
-        _checkPreload(): void {
+        protected _checkPreload(): void {
             if (this._preloadedValue) {
                 var $utils = this.$utils;
                 $utils.postpone(() => {
@@ -633,7 +633,7 @@
          * The position of the global {@link platui.Drawer|Drawer} associated 
          * with this control.
          */
-        _position: string;
+        protected _position: string;
 
         /**
          * @name _drawerElement
@@ -647,7 +647,7 @@
          * The HTMLElement of the global {@link platui.Drawer|Drawer} associated 
          * with this control.
          */
-        _drawerElement: HTMLElement;
+        protected _drawerElement: HTMLElement;
 
         /**
          * @name _drawer
@@ -661,7 +661,7 @@
          * The global {@link platui.Drawer|Drawer} associated 
          * with this control.
          */
-        _drawer: Drawer;
+        protected _drawer: Drawer;
 
         /**
          * @name _transform
@@ -674,7 +674,7 @@
          * @description
          * The current browser's CSS3 transform property.
          */
-        _transform: string;
+        protected _transform: string;
 
         /**
          * @name _preTransform
@@ -687,7 +687,7 @@
          * @description
          * The value of the inline transform property prior to the Drawer manipulating it.
          */
-        _preTransform: string;
+        protected _preTransform: string;
 
         /**
          * @name _lastTouch
@@ -700,7 +700,7 @@
          * @description
          * The last touch start recorded.
          */
-        _lastTouch: plat.ui.IPoint;
+        protected _lastTouch: plat.ui.IPoint;
 
         /**
          * @name _hasSwiped
@@ -713,7 +713,7 @@
          * @description
          * Whether or not the user has swiped.
          */
-        _hasSwiped = false;
+        protected _hasSwiped = false;
 
         /**
          * @name _hasTapped
@@ -726,7 +726,7 @@
          * @description
          * Whether or not the user has tapped.
          */
-        _hasTapped = false;
+        protected _hasTapped = false;
 
         /**
          * @name _isOpen
@@ -739,7 +739,7 @@
          * @description
          * Whether or not the {@link platui.Drawer|Drawer} is open.
          */
-        _isOpen = false;
+        protected _isOpen = false;
 
         /**
          * @name _isElastic
@@ -752,7 +752,7 @@
          * @description
          * Whether or not the {@link platui.Drawer|Drawer} is elastic.
          */
-        _isElastic: boolean;
+        protected _isElastic: boolean;
 
         /**
          * @name _inTouch
@@ -765,7 +765,7 @@
          * @description
          * Whether or not the user is currently touching the screen.
          */
-        _inTouch: boolean;
+        protected _inTouch: boolean;
 
         /**
          * @name _useContext
@@ -778,7 +778,7 @@
          * @description
          * Whether or not to use this control's inherited context.
          */
-        _useContext: boolean;
+        protected _useContext: boolean;
 
         /**
          * @name _maxOffset
@@ -791,7 +791,7 @@
          * @description
          * The max offset to transform the {@link platui.Drawer|Drawer's} element.
          */
-        _maxOffset: number;
+        protected _maxOffset: number;
 
         /**
          * @name _removeTap
@@ -804,7 +804,7 @@
          * @description
          * A function for removing the tap event listener.
          */
-        _removeTap: plat.IRemoveListener;
+        protected _removeTap: plat.IRemoveListener;
 
         /**
          * @name _removeSwipeOpen
@@ -817,7 +817,7 @@
          * @description
          * A function for removing the swipe open event listener.
          */
-        _removeSwipeOpen: plat.IRemoveListener;
+        protected _removeSwipeOpen: plat.IRemoveListener;
 
         /**
          * @name _removePrimaryTrack
@@ -830,7 +830,7 @@
          * @description
          * A function for removing the primary track (open) event listener.
          */
-        _removePrimaryTrack: plat.IRemoveListener;
+        protected _removePrimaryTrack: plat.IRemoveListener;
 
         /**
          * @name _removeSecondaryTrack
@@ -843,7 +843,7 @@
          * @description
          * A function for removing the secondary track (close) event listener.
          */
-        _removeSecondaryTrack: plat.IRemoveListener;
+        protected _removeSecondaryTrack: plat.IRemoveListener;
 
         /**
          * @name _openTapRemover
@@ -856,7 +856,7 @@
          * @description
          * A function for removing the tap event listener on the open {@link platui.Drawer|Drawer}.
          */
-        _openTapRemover: plat.IRemoveListener;
+        protected _openTapRemover: plat.IRemoveListener;
 
         /**
          * @name _openSwipeRemover
@@ -869,7 +869,7 @@
          * @description
          * A function for removing the swipe event listeners on the open {@link platui.Drawer|Drawer}.
          */
-        _openSwipeRemover: plat.IRemoveListener;
+        protected _openSwipeRemover: plat.IRemoveListener;
 
         /**
          * @name _openTrackRemover
@@ -882,7 +882,7 @@
          * @description
          * A function for removing the swipe event listeners on the open {@link platui.Drawer|Drawer}.
          */
-        _openTrackRemover: plat.IRemoveListener;
+        protected _openTrackRemover: plat.IRemoveListener;
 
         /**
          * @name _disposeRemover
@@ -896,7 +896,7 @@
          * A function for removing the listener for responding to other {@link platui.DrawerController|DrawerControllers} 
          * being disposed.
          */
-        _disposeRemover: plat.IRemoveListener = () => { };
+        protected _disposeRemover: plat.IRemoveListener = () => { };
 
         /**
          * @name _rootElement
@@ -909,7 +909,7 @@
          * @description
          * The root element to translate.
          */
-        _rootElement: HTMLElement;
+        protected _rootElement: HTMLElement;
 
         /**
          * @name _rootElementStyle
@@ -923,7 +923,7 @@
          * An object to hold the _rootElement style so that we can reset it 
          * when the {@link platui.DrawerController|Drawer Controller} is disposed.
          */
-        _rootElementStyle: { position?: string; zIndex?: string; };
+        protected _rootElementStyle: { position?: string; zIndex?: string; };
 
         /**
          * @name _type
@@ -937,7 +937,7 @@
          * The type of {@link platui.Drawer|Drawer} 
          * (i.e. the method by which the {@link platui.Drawer|Drawer} opens and closes).
          */
-        _type: string;
+        protected _type: string;
 
         /**
          * @name _templateUrl
@@ -950,7 +950,7 @@
          * @description
          * A URL that points to the HTML template.
          */
-        _templateUrl: string;
+        protected _templateUrl: string;
 
         /**
          * @name _directionalTransitionPrep
@@ -963,7 +963,7 @@
          * @description
          * A class name that is used to set styling based on the transition direction.
          */
-        _directionalTransitionPrep: string;
+        protected _directionalTransitionPrep: string;
 
         /**
          * @name _loaded
@@ -976,7 +976,7 @@
          * @description
          * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
          */
-        _loaded = false;
+        protected _loaded = false;
 
         /**
          * @name _preloadedValue
@@ -989,7 +989,7 @@
          * @description
          * A value specified prior to the control being loaded.
          */
-        _preloadedValue = false;
+        protected _preloadedValue = false;
 
         /**
          * @name _isTap
@@ -1003,7 +1003,7 @@
          * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a tap 
          * for opening and closing.
          */
-        _isTap: boolean;
+        protected _isTap: boolean;
 
         /**
          * @name _isSwipe
@@ -1017,7 +1017,7 @@
          * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a swipe 
          * for opening and closing.
          */
-        _isSwipe: boolean;
+        protected _isSwipe: boolean;
 
         /**
          * @name _isTrack
@@ -1031,7 +1031,7 @@
          * A value specifying whether the {@link platui.Drawer|Drawer} is being tracked 
          * for opening and closing.
          */
-        _isTrack: boolean;
+        protected _isTrack: boolean;
 
         /**
          * @name _toggleDelay
@@ -1044,7 +1044,7 @@
          * @description
          * A function to remove the toggle delay if present.
          */
-        _toggleDelay: plat.IRemoveListener;
+        protected _toggleDelay: plat.IRemoveListener;
 
         /**
          * @name initialize
@@ -1348,7 +1348,7 @@
          * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        _open(): plat.async.IThenable<void> {
+        protected _open(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 $utils = this.$utils,
@@ -1405,7 +1405,7 @@
          * @returns {plat.async.IThenable<void>} A promise that resolves 
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        _close(): plat.async.IThenable<void> {
+        protected _close(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 dom = this.dom,
@@ -1448,7 +1448,7 @@
          * 
          * @returns {void}
          */
-        _addEventIntercepts(): void {
+        protected _addEventIntercepts(): void {
             if (this._isTap) {
                 this._addTapClose();
             }
@@ -1485,7 +1485,7 @@
          * 
          * @returns {void}
          */
-        _removeEventIntercepts(): void {
+        protected _removeEventIntercepts(): void {
             var isFunction = this.$utils.isFunction;
 
             if (this._isTap && isFunction(this._openTapRemover)) {
@@ -1515,7 +1515,7 @@
          * 
          * @returns {void}
          */
-        _addSwipeOpen(): void {
+        protected _addSwipeOpen(): void {
             this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], () => {
                 this._hasSwiped = true;
                 this.open();
@@ -1533,7 +1533,7 @@
          * 
          * @returns {void}
          */
-        _addSwipeClose(): void {
+        protected _addSwipeClose(): void {
             this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position, () => {
                 this._hasSwiped = true;
                 this.close();
@@ -1551,7 +1551,7 @@
          * 
          * @returns {void}
          */
-        _addTapOpen(): void {
+        protected _addTapOpen(): void {
             this._removeTap = this.addEventListener(this.element, __$tap, () => {
                 this._hasTapped = true;
                 this.open();
@@ -1569,7 +1569,7 @@
          * 
          * @returns {void}
          */
-        _addTapClose(): void {
+        protected _addTapClose(): void {
             this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
                 this._hasTapped = true;
                 this.close();
@@ -1589,7 +1589,7 @@
          * 
          * @returns {void}
          */
-        _addEventListeners(position: string): void {
+        protected _addEventListeners(position: string): void {
             var element = this.element,
                 isNull = this.$utils.isNull,
                 types = this._type.split(' ');
@@ -1654,7 +1654,7 @@
          * 
          * @returns {void}
          */
-        _removeEventListeners(): void {
+        protected _removeEventListeners(): void {
             var isFunction = this.$utils.isFunction;
 
             if (this._isTap && isFunction(this._removeTap)) {
@@ -1693,7 +1693,7 @@
          * 
          * @returns {void}
          */
-        _touchStart(ev: plat.ui.IGestureEvent): void {
+        protected _touchStart(ev: plat.ui.IGestureEvent): void {
             this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
@@ -1721,7 +1721,7 @@
          * 
          * @returns {void}
          */
-        _touchEnd(ev: plat.ui.IGestureEvent): void {
+        protected _touchEnd(ev: plat.ui.IGestureEvent): void {
             var inTouch = this._inTouch,
                 hasSwiped = this._hasSwiped,
                 hasTapped = this._hasTapped;
@@ -1768,7 +1768,7 @@
          * 
          * @returns {void}
          */
-        _track(ev: plat.ui.IGestureEvent): void {
+        protected _track(ev: plat.ui.IGestureEvent): void {
             this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
         }
 
@@ -1786,7 +1786,7 @@
          * 
          * @returns {boolean} Whether or not the user was tracking in the right direction.
          */
-        _isRightDirection(distanceMoved: number): boolean {
+        protected _isRightDirection(distanceMoved: number): boolean {
             switch (this._position) {
                 case 'left':
                 case 'top':
@@ -1812,7 +1812,7 @@
          * 
          * @returns {string} The translation value.
          */
-        _calculateTranslation(ev: plat.ui.IGestureEvent): string {
+        protected _calculateTranslation(ev: plat.ui.IGestureEvent): string {
             var distanceMoved: number;
             switch (this._position) {
                 case 'left':
@@ -1854,7 +1854,7 @@
          * 
          * @returns {number} The potentially recalcuated distance moved.
          */
-        _checkElasticity(distanceMoved: number): number {
+        protected _checkElasticity(distanceMoved: number): number {
             if (this._isElastic) {
                 return distanceMoved;
             }
@@ -1882,7 +1882,7 @@
          * 
          * @returns {void}
          */
-        _initializeEvents(id: string, position: string): void {
+        protected _initializeEvents(id: string, position: string): void {
             this._setTransform();
 
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
@@ -1965,7 +1965,7 @@
          * 
          * @returns {void}
          */
-        _determineTemplate(fragment?: Node): void {
+        protected _determineTemplate(fragment?: Node): void {
             var $utils = this.$utils;
 
             if ($utils.isString(this._templateUrl)) {
@@ -1988,7 +1988,7 @@
          * 
          * @returns {void}
          */
-        _setTransform(): void {
+        protected _setTransform(): void {
             var style = this.element.style,
                 isUndefined = this.$utils.isUndefined,
                 transform: string;
@@ -2020,7 +2020,7 @@
          * 
          * @returns {boolean} Whether or not this control is valid.
          */
-        _controllerIsValid(position: string): boolean {
+        protected _controllerIsValid(position: string): boolean {
             var isNull = this.$utils.isNull,
                 Exception: plat.IExceptionStatic;
 
@@ -2066,7 +2066,7 @@
          * 
          * @returns {HTMLElement} The root element.
          */
-        _getRootElement(root: plat.ui.ITemplateControl): HTMLElement {
+        protected _getRootElement(root: plat.ui.ITemplateControl): HTMLElement {
             var $utils = this.$utils,
                 isNode = $utils.isNode;
             if (!$utils.isObject(root)) {
