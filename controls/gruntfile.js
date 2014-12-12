@@ -50,7 +50,7 @@ module.exports = exports = function load(grunt) {
                 path: 'http://localhost:8080/controls/app/index.html'
             }
         },
-        typescript: {
+        ts: {
             base: {
                 src: ['controls/**/*.ts'],
                 options: {
@@ -67,7 +67,7 @@ module.exports = exports = function load(grunt) {
         watch: {
             ts: {
                 files: '**/*.ts',
-                tasks: ['typescript']
+                tasks: ['ts']
             },
             less: {
                 files: '**/*.less',
@@ -82,7 +82,7 @@ module.exports = exports = function load(grunt) {
 
     grunt.initConfig(config);
     grunt.loadNpmTasks('grunt-ts-bundle');
-    grunt.loadNpmTasks('grunt-typescript');
+    grunt.loadNpmTasks('grunt-ts');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.renameTask('less', 'lessCompile');
 
@@ -94,5 +94,5 @@ module.exports = exports = function load(grunt) {
     // By default, run all tests.
     grunt.registerTask('default', ['bundle', 'less', 'lessCompile']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
-    grunt.registerTask('compile', ['lessCompile', 'typescript']);
+    grunt.registerTask('compile', ['lessCompile', 'ts']);
 };
