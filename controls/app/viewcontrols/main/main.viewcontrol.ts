@@ -3,7 +3,7 @@
 module app {
     export class MainViewControl extends plat.ui.WebViewControl {
         title = 'Main';
-        templateUrl = 'viewcontrols/main/main.viewcontrol.html';
+        templateUrl = 'app/viewcontrols/main/main.viewcontrol.html';
         context = {
             password: <string>null,
             test: <any>null,

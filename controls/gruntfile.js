@@ -78,18 +78,15 @@ module.exports = exports = function load(grunt) {
         license: grunt.file.read('license.txt')
     };
 
-
-
     grunt.initConfig(config);
+    grunt.renameTask('less', 'lessCompile');
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-less-bundle');
+    grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-ts-bundle');
     grunt.loadNpmTasks('grunt-ts');
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.renameTask('less', 'lessCompile');
-
-    grunt.loadNpmTasks('grunt-less-bundle');
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-open');
-    grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
     grunt.registerTask('default', ['bundle', 'less', 'lessCompile']);
