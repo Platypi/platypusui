@@ -1138,7 +1138,9 @@
 
             animationOptions[this._positionProperty] = position + 'px';
             animationOptions[this._lengthProperty] = (upperOffset - position) + 'px';
-            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this.$animator.animate(this._slider, __Transition, {
+                properties: animationOptions
+            });
             this._lowerKnobOffset = position;
         }
 
@@ -1161,7 +1163,9 @@
                 length = this._calculateKnobPosition((value || this.upper));
 
             animationOptions[this._lengthProperty] = (length - this._lowerKnobOffset) + 'px';
-            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this.$animator.animate(this._slider, __Transition, {
+                properties: animationOptions
+            });
             this._upperKnobOffset = length;
         }
 

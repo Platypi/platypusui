@@ -733,7 +733,9 @@
                 length = this._calculateKnobPosition((value || this.value));
 
             animationOptions[this._lengthProperty] = length + 'px';
-            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this.$animator.animate(this._slider, __Transition, {
+                properties: animationOptions
+            });
             this._knobOffset = length;
         }
 

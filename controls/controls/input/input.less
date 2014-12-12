@@ -2,25 +2,36 @@
 @import '../global/mixins.less';
 @import 'input.variables.less';
 
+#Input_Local {
+    @input-action-width: 1em;
+    @input-left-distance: 0%;
+    @input-width: 100% - @input-left-distance;
+}
+
 .plat-input {
     #Input;
+    #Input_Local;
+    .box-sizing(border-box);
     display: inline-block;
     width: @default-width;
-    height: 1.75em;
-    .box-sizing(border-box);
+    height: 2.5em;
+    
 
     .plat-input-container {
-        position: relative;
-        border-bottom: @primary-border-bottom;
         .border-radius(@primary-border-radius);
         .fill();
         .box-sizing(border-box);
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-bottom: 1px solid @neutralColorLight;
 
         input {
+            .calc(width, '@{input-width} - @{input-action-width}');
+            .box-sizing(border-box);
             position: absolute;
             height: 100%;
-            width: 80%;
-            left: 5%;
+            left: @input-left-distance;
             bottom: 0;
             padding: 0;
             vertical-align: bottom;
@@ -30,7 +41,6 @@
             border: none;
             font: inherit;
             -webkit-appearance: none;
-            .box-sizing(border-box);
 
             &::-ms-clear,
             &::-ms-reveal {
@@ -44,7 +54,28 @@
             }
         }
 
+/// =========== Placeholder Styling =========== ///
+
+        ::-webkit-input-placeholder {
+            color: @neutralColorLight;
+        }
+
+        ::-moz-input-placeholder {
+            color: @neutralColorLight;   
+        }
+
+        :-moz-input-placeholder {
+            color: @neutralColorLight;
+        }
+
+        :-ms-input-placeholder {
+            color: @neutralColorLight;
+        }
+
+/// =============== Input Icon =============== ///
+
         .plat-input-action {
+            .box-sizing(content-box);
             display: inline-block;
             position: absolute;
             right: 5%;
@@ -54,23 +85,10 @@
             text-align: right;
             color: @action-color;
             cursor: pointer;
-            .box-sizing(content-box);
         }
     }
 
-    &.plat-primary {
-        .plat-input-container {
-            border-bottom: @primary-border-bottom;
-            .border-radius(@primary-border-radius);
-        }
-    }
-
-    &.plat-secondary {
-        .plat-input-container {
-            border: @secondary-border;
-            .border-radius(@secondary-border-radius);
-        }
-    }
+/// ============== Input Types =============== ///
 
     &.plat-email {
         .plat-input-container {
@@ -86,13 +104,13 @@
     &.plat-password {
         .plat-input-container {
             .plat-input-action {
+                .border-radius(1.2em);
                 width: 1.2em;
                 height: 1.2em;
                 text-align: center;
                 vertical-align: bottom;
                 line-height: 1.2em;
                 border: 1px solid @action-color;
-                .border-radius(1.2em);
 
                 &:active {
                     background-color: @action-color;

@@ -1,11 +1,11 @@
-﻿@import '../global/variables.less';
+@import '../global/variables.less';
 @import '../global/mixins.less';
 @import 'button.variables.less';
 @import 'button.mixins.less';
 
 /// ====== Button Default and Outline Style ====== ///
 
-.plat-button,
+.plat-button, 
 .button {
     #Button;
     position: relative;
@@ -23,10 +23,7 @@
     
     &.button-outline {
         color: @neutralColor;
-
-        &:active {
-            border-color: @neutralColorLight;
-        }
+        transition: all 250ms;
     }
 
 /// ============== Button Colors  =============== ///    
@@ -39,8 +36,10 @@
             border-color: @primaryColor;
             color: @primaryColor;
 
-            &:active {
-                border-color: @primaryColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @primaryColor;
             }
         }
     }
@@ -53,8 +52,10 @@
             border-color: @secondaryColor;
             color: @secondaryColor;
 
-            &:active {
-                border-color: @secondaryColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @secondaryColor;
             }
         }
     }
@@ -67,8 +68,10 @@
             border-color: @neutralColor;
             color: @neutralColor;
 
-            &:active {
-                border-color: @neutralColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @neutralColor;
             }
         }
     }
@@ -81,8 +84,10 @@
             border-color: @successColor;
             color: @successColor;
 
-            &:active {
-                border-color: @successColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @successColor;
             }
         }
     }
@@ -95,8 +100,10 @@
             border-color: @dangerColor;
             color: @dangerColor;
 
-            &:active {
-                border-color: @dangerColorLight;
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @dangerColor;
             }
         }
     }
@@ -110,7 +117,8 @@
             color: @cautionColor;
 
             &:active {
-                border-color: @cautionColorLight;
+                color: @white;
+                background-color: @cautionColor;
             }
         }
     }
@@ -140,8 +148,8 @@
         opacity: 0.85;
     }
 
-    &:active,
-    &.plat-selected {
+    &:active:not(.button-outline),
+    &.plat-selected:not(.button-outline) {
         opacity: 0.8;
     }
 
@@ -152,50 +160,6 @@
         cursor: default;
     }
 
-/// ============== Button Types =============== ///
-/*
-    &.button-back {
-        border: none;
-
-        *:first-child {
-            margin-left: 0.5em;
-
-            &::before {
-                content: "\2039";
-                position: absolute;
-                top: -0.375em;
-                left: 0;
-                font-size: 200%;
-            }
-        }
-    }
-
-    &.button-confirm {
-        *:last-child {
-            margin-right: 2em;
-
-            &::after {
-                content: "\2713";
-                position: absolute;
-                right: 0.4em;
-            }
-        }
-    }
-
-    &.button-cancel {
-        *:last-child {
-            margin-right: 2em;
-
-            &::after {
-                content: "\00d7";
-                position: absolute;
-                top: -0.125em;
-                right: 0.25em;
-                font-size: 150%;
-            }
-        }
-    }
-*/
 }
 
 /// ============== Button Groups =============== /// 
