@@ -47,6 +47,7 @@ var __Promise = '$Promise',
      * Animations
      */
     __Transition = __Plat + 'transition',
+    __NavbarActionPulse = __Plat + 'navbar-action-pulse',
 
     /**
      * Events

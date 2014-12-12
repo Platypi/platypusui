@@ -1,4 +1,5 @@
 ﻿module platui {
+    
     /**
      * @name Carousel
      * @memberof platui
@@ -11,6 +12,7 @@
      * An {@link plat.ui.ITemplateControl|ITemplateControl} that acts as a HTML template carousel.
      */
     export class Carousel extends plat.ui.TemplateControl implements IUIControl {
+        
         /**
          * @name $utils
          * @memberof platui.Carousel
@@ -23,6 +25,7 @@
          * Reference to the {@link plat.IUtils|IUtils} injectable.
          */
         $utils: plat.IUtils = plat.acquire(__Utils);
+        
         /**
          * @name $compat
          * @memberof platui.Carousel
@@ -35,6 +38,7 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
+        
         /**
          * @name $document
          * @memberof platui.Carousel
@@ -47,6 +51,7 @@
          * Reference to the Document injectable.
          */
         $document: Document = plat.acquire(__Document);
+        
         /**
          * @name $window
          * @memberof platui.Carousel
@@ -59,6 +64,7 @@
          * Reference to the Window injectable.
          */
         $window: Window = plat.acquire(__Window);
+        
         /**
          * @name $animator
          * @memberof platui.Carousel
