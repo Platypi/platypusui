@@ -136,9 +136,8 @@ module platui {
          * @returns {void}
          */
          _actionPressed(ev: plat.ui.IGestureEvent): void {
-            this.dom.addClass(ev.srcElement, 'plat-navbar-action-pulse');
-
-            //this.$animator.animate(ev.srcElement, __NavbarActionPulse);
+            // this.dom.addClass(ev.srcElement, 'plat-navbar-action-pulse');
+            this.$animator.animate(ev.srcElement, __NavbarActionPulse, { pseudo: '::after' });
          }
 	}
 
