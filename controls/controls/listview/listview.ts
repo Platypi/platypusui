@@ -113,6 +113,19 @@
         options: plat.observable.IObservableProperty<IListviewOptions>;
 
         /**
+         * @name templates
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.IObject<Node>}
+         * 
+         * @description
+         * An object containing the {@link platui.Listview|Listview's} defined templates.
+         */
+        templates: plat.IObject<Node>;
+
+        /**
          * @name setClasses
          * @memberof platui.Listview
          * @kind function
@@ -149,6 +162,71 @@
 
             this.templateUrl = options.templateUrl;
             this.setClasses();
+        }
+
+        /**
+         * @name setTemplate
+         * @memberof platui.Listview
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Parse the innerTemplate and add it to the control's element.
+         * 
+         * @returns {void}
+         */
+        setTemplate(): void {
+            var $utils = this.$utils,
+                container: HTMLElement;
+
+            if ($utils.isString(this.templateUrl)) {
+                var fragment = this.dom.serializeHtml(this.templateString),
+                    childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
+
+                container = <HTMLElement>fragment.firstChild;
+                while (childNodes.length > 0) {
+                    container.appendChild(childNodes.shift());
+                }
+
+                return;
+            }
+
+            container = <HTMLElement>this.element.firstElementChild;
+
+            var innerTemplate = this.innerTemplate;
+            if ($utils.isNode(innerTemplate)) {
+                container.appendChild(innerTemplate);
+            }
+        }
+
+        /**
+         * @name contextChanged
+         * @memberof platui.Listview
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Blow out DOM re-determine item templates and kick off re-rendering.
+         * 
+         * @returns {void}
+         */
+        contextChanged(): void {
+
+        }
+
+        /**
+         * @name loaded
+         * @memberof platui.Listview
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Determine item templates and kick off rendering.
+         * 
+         * @returns {void}
+         */
+        loaded(): void {
+
         }
     }
 
