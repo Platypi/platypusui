@@ -123,7 +123,37 @@
          * @description
          * An object containing the {@link platui.Listview|Listview's} defined templates.
          */
-        templates: plat.IObject<Node>;
+        templates: plat.IObject<Node> = {};
+
+        /**
+         * @name _container
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The control's container element.
+         */
+        protected _container: HTMLElement;
+
+        /**
+         * @name _orientation
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The control's orientation.
+         * 
+         * @remarks
+         * - "vertical"
+         * - "horizontal"
+         */
+        protected _orientation: string;
 
         /**
          * @name setClasses
@@ -176,26 +206,23 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var $utils = this.$utils,
-                container: HTMLElement;
-
+            var $utils = this.$utils;
             if ($utils.isString(this.templateUrl)) {
                 var fragment = this.dom.serializeHtml(this.templateString),
-                    childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
+                    element = this.element;
 
-                container = <HTMLElement>fragment.firstChild;
-                while (childNodes.length > 0) {
-                    container.appendChild(childNodes.shift());
-                }
+                this._container = <HTMLElement>fragment.firstChild;
+                this._parseTemplates(element);
 
+                element.appendChild(fragment);
                 return;
             }
 
-            container = <HTMLElement>this.element.firstElementChild;
-
             var innerTemplate = this.innerTemplate;
+            this._container = <HTMLElement>this.element.firstElementChild;
+
             if ($utils.isNode(innerTemplate)) {
-                container.appendChild(innerTemplate);
+                this._parseTemplates(innerTemplate);
             }
         }
 
@@ -206,12 +233,16 @@
          * @access public
          * 
          * @description
-         * Blow out DOM re-determine item templates and kick off re-rendering.
+         * Check new context, re-determine item templates, and kick off re-rendering.
          * 
          * @returns {void}
          */
         contextChanged(): void {
-
+            if (!this.$utils.isArray(this.context)) {
+                var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
+                return;
+            }
         }
 
         /**
@@ -226,7 +257,71 @@
          * @returns {void}
          */
         loaded(): void {
+            var optionObj = this.options || <plat.observable.IObservableProperty<IListviewOptions>>{},
+                options = optionObj.value || <IListviewOptions>{},
+                $utils = this.$utils,
+                templates = this.templates,
+                orientation = this._orientation = options.orientation || 'vertical',
+                itemTemplate = options.itemTemplate,
+                $exception: plat.IExceptionStatic;
 
+            this.dom.addClass(this.element, __Plat + orientation);
+
+            if (!($utils.isUndefined(itemTemplate) || $utils.isNode(templates[itemTemplate]))) {
+                $exception = plat.acquire(__ExceptionStatic);
+                $exception.warn(__Listview + ' item template ' + itemTemplate + ' was not defined in the DOM.', $exception.TEMPLATE);
+                return;
+            }
+
+            if (!$utils.isArray(this.context)) {
+                if (!$utils.isNull(this.context)) {
+                    $exception = plat.acquire(__ExceptionStatic);
+                    $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
+                }
+                return;
+            }
+        }
+
+        /**
+         * @name _parseTemplates
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Parse the Listview templates and create the templates object.
+         * 
+         * @param {Node} node The node whose childNodes we want to parse.
+         * 
+         * @returns {void}
+         */
+        protected _parseTemplates(node: Node): void {
+            var $utils = this.$utils,
+                $document = this.$document,
+                templates = this.templates,
+                bindableTemplates = this.bindableTemplates,
+                slice = Array.prototype.slice,
+                childNodes: Array<Node> = slice.call(node.childNodes),
+                childNode: Node,
+                subNodes: Array<Node>,
+                templateName: string,
+                fragment: DocumentFragment;
+
+            while (childNodes.length > 0) {
+                childNode = childNodes.shift();
+                if (childNode.nodeType === Node.ELEMENT_NODE) {
+                    fragment = $document.createDocumentFragment();
+                    subNodes = slice.call(childNode.childNodes);
+
+                    while (subNodes.length > 0) {
+                        fragment.appendChild(subNodes.shift());
+                    }
+
+                    templateName = $utils.camelCase(childNode.nodeName.toLowerCase());
+                    bindableTemplates.add(templateName, fragment);
+                    templates[templateName] = fragment;
+                }
+            }
         }
     }
 
@@ -241,6 +336,40 @@
      * The available {@link plat.controls.Options|options} for the {@link platui.Listview|Listview} control.
      */
     export interface IListviewOptions {
+        /**
+         * @name orientation
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The orientation (scroll direction) of the {@link platui.Listview|Listview's}. 
+         * Defaults to "vertical".
+         * 
+         * @remarks
+         * - "vertical"
+         * - "horizontal"
+         */
+        orientation: string;
+
+        /**
+         * @name itemTemplate
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The camel-cased node name of the desired item template.
+         * 
+         * @remarks
+         * Unnecessary if a render function is defined.
+         */
+        itemTemplate: string;
+
         /**
          * @name templateUrl
          * @memberof platui.IListviewOptions
