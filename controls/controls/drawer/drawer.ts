@@ -1390,7 +1390,9 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            return <any>this.$animator.animate(rootElement, __Transition, animationOptions);
+            return <any>this.$animator.animate(rootElement, __Transition, {
+                properties: animationOptions
+            });
         }
 
         /**
@@ -1427,7 +1429,9 @@
                 transform = <any>this._transform;
 
             animationOptions[transform] = this._preTransform;
-            return this.$animator.animate(rootElement, __Transition, animationOptions).then(() => {
+            return this.$animator.animate(rootElement, __Transition, {
+                properties: animationOptions
+            }).then(() => {
                 if (this._isOpen) {
                     return;
                 }

@@ -19926,6 +19926,11 @@ module plat {
                 className = __SimpleAnimation;
 
                 /**
+                 * An optional options object that can denote a pseudo element animation.
+                 */
+                options: ISimpleCssAnimationOptions;
+
+                /**
                  * Adds the class to start the animation.
                  */
                 initialize(): void {
@@ -19949,7 +19954,7 @@ module plat {
                     var animationId = this.$Compat.animationEvents.$animation,
                         element = this.element,
                         className = this.className,
-                        computedStyle = this.$Window.getComputedStyle(element),
+                        computedStyle = this.$Window.getComputedStyle(element, (this.options || <ISimpleCssAnimationOptions>{}).pseudo),
                         animationName = computedStyle[<any>(animationId + 'Name')];
 
                     if (animationName === '' ||
@@ -20001,6 +20006,21 @@ module plat {
                  * The class name added to the animated element.
                  */
                 className: string;
+
+                /**
+                 * An optional options object that can denote a pseudo element animation.
+                 */
+                options: ISimpleCssAnimationOptions;
+            }
+
+            /**
+             * An interface describing the options for ISimpleCssAnimation.
+             */
+            export interface ISimpleCssAnimationOptions {
+                /**
+                 * The pseudo element identifier (i.e. '::before' if defined as .red::before).
+                 */
+                pseudo?: string;
             }
 
             /**
@@ -20062,10 +20082,10 @@ module plat {
                 $Window: Window = acquire(__Window);
 
                 /**
-                 * A JavaScript object with key value pairs for adjusting transition values. 
-                 * (e.g. { width: '800px' } would set the element's width to 800px.
+                 * An optional options object that can denote a pseudo element animation and specify 
+                 * properties to modify during the transition.
                  */
-                options: IObject<string>;
+                options: ISimpleCssTransitionOptions;
 
                 /**
                  * The class name added to the animated element.
@@ -20101,7 +20121,7 @@ module plat {
                             removeClass(element, this.className);
                             this.end();
                         },
-                        computedStyle = this.$Window.getComputedStyle(element),
+                        computedStyle = this.$Window.getComputedStyle(element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
                         transitionProperty = computedStyle[<any>(transitionId + 'Property')],
                         transitionDuration = computedStyle[<any>(transitionId + 'Duration')];
 
@@ -20157,8 +20177,8 @@ module plat {
                  */
                 protected _animate(): boolean {
                     var style = this.element.style || {},
-                        options = this.options || {},
-                        keys = Object.keys(options),
+                        properties = (this.options || <ISimpleCssTransitionOptions>{}).properties || {},
+                        keys = Object.keys(properties),
                         length = keys.length,
                         key: any,
                         modifiedProperties = this._modifiedProperties,
@@ -20169,7 +20189,7 @@ module plat {
                     while (keys.length > 0) {
                         key = keys.shift();
                         currentProperty = style[key];
-                        newProperty = options[key];
+                        newProperty = properties[key];
                         if (!isString(newProperty)) {
                             unchanged++;
                             continue;
@@ -20195,10 +20215,18 @@ module plat {
              */
             export interface ISimpleCssTransition extends ISimpleCssAnimation {
                 /**
+                 * An optional options object that can denote a pseudo element animation and specify 
+                 * properties to modify during the transition.
+                 */
+                options: ISimpleCssTransitionOptions;
+            }
+
+            export interface ISimpleCssTransitionOptions extends ISimpleCssAnimationOptions {
+                /**
                  * A JavaScript object with key value pairs for adjusting transition values. 
                  * (e.g. { width: '800px' } would set the element's width to 800px.
                  */
-                options: plat.IObject<string>;
+                properties: IObject<string>;
             }
         }
 

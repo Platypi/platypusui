@@ -449,7 +449,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -472,7 +472,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(this._intervalOffset);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -499,7 +499,7 @@
 
             this._index = index;
             animationOptions[this._transform] = this._calculateStaticTranslation(interval);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -516,7 +516,7 @@
         reset(): void {
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -533,7 +533,7 @@
          * 
          * @returns {void}
          */
-        protected _initiateAnimation(animationOptions: plat.IObject<string>): void {
+        protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): void {
             if (!this.$utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
                     this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
