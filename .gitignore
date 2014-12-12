@@ -15,6 +15,9 @@
 *.sublime-project
 *.sublime-workspace
 
+# Typescript
+.tscache/
+
 # Project Related
 *.css
 *.css.map
