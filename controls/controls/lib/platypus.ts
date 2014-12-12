@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.9.5 (http://getplatypi.com) 
+ * PlatypusTS v0.9.8 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -236,7 +236,7 @@ module plat {
         __APP = '__app__',
         __CONTEXT = 'context',
         __RESOURCE = 'resource',
-        __RESOURCES = __RESOURCE + 'es',
+        __RESOURCES = __RESOURCE + 's',
         __ALIAS = 'alias',
         __ALIASES = __ALIAS + 'es',
         __OBSERVABLE_RESOURCE = 'observable',
@@ -504,13 +504,15 @@ module plat {
     
     var Promise: plat.async.IPromise;
     
-    function mapAsync<T, R>(obj: any, iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, context?: any): plat.async.IThenable<Array<R>> {
+    function mapAsync<T, R>(obj: any, iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>,
+        context?: any): plat.async.IThenable<Array<R>> {
         Promise = Promise || plat.acquire(__Promise);
     
         return Promise.all(map(obj, iterator, context));
     }
     
-    function mapAsyncWithOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>, context: any, descending?: boolean): plat.async.IThenable<Array<R>> {
+    function mapAsyncWithOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
+        context: any, descending?: boolean): plat.async.IThenable<Array<R>> {
         Promise = Promise || plat.acquire(__Promise);
         var initialValue = Promise.resolve<Array<R>>([]);
     
@@ -521,7 +523,8 @@ module plat {
         iterator = iterator.bind(context);
     
         var promise: plat.async.IThenable<Array<R>>,
-            inOrder = (previousValue: plat.async.IThenable<Array<R>>, nextValue: T, nextIndex: number, array: Array<T>): plat.async.IThenable<Array<R>> => {
+            inOrder = (previousValue: plat.async.IThenable<Array<R>>, nextValue: T, nextIndex: number,
+                array: Array<T>): plat.async.IThenable<Array<R>> => {
                 return previousValue.then((items) => {
                     return iterator(nextValue, nextIndex, array).then((moreItems) => {
                         return items.concat(moreItems);
@@ -530,17 +533,19 @@ module plat {
             };
     
         if (descending === true) {
-            return array.reduceRight(inOrder, initialValue);    
+            return array.reduceRight(inOrder, initialValue);
         }
     
         return array.reduce(inOrder, initialValue);
     }
     
-    function mapAsyncInOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>, context?: any): plat.async.IThenable<Array<R>> {
+    function mapAsyncInOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
+        context?: any): plat.async.IThenable<Array<R>> {
         return mapAsyncWithOrder(array, iterator, context);
     }
     
-    function mapAsyncInDescendingOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>, context?: any): plat.async.IThenable<Array<R>> {
+    function mapAsyncInDescendingOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
+        context?: any): plat.async.IThenable<Array<R>> {
         return mapAsyncWithOrder(array, iterator, context, true);
     }
     
@@ -1123,6 +1128,48 @@ module plat {
     
         return true;
     }
+    
+    var __$templateCache: plat.storage.ITemplateCache,
+        __$http: plat.async.IHttp;
+    
+    function getTemplate(templateUrl: string) {
+        __$templateCache = __$templateCache || plat.acquire(__TemplateCache);
+        __$http = __$http || plat.acquire(__Http);
+    
+        var $exception: plat.IExceptionStatic,
+            ajax = __$http.ajax;
+    
+        return __$templateCache.put(templateUrl, __$templateCache.read(templateUrl)
+            .catch((error) => {
+                if (isNull(error)) {
+                    return ajax<string>({ url: templateUrl });
+                }
+            }).then<DocumentFragment>((success) => {
+                if (isDocumentFragment(success)) {
+                    return __$templateCache.put(templateUrl, <any>success);
+                } else if (!isObject(success) || !isString(success.response)) {
+                    $exception = plat.acquire(__ExceptionStatic);
+                    $exception.warn('No template found at ' + templateUrl, $exception.AJAX);
+                    return __$templateCache.put(templateUrl, serializeHtml());
+                }
+    
+                var templateString = success.response;
+    
+                if (isEmpty(templateString.trim())) {
+                    return __$templateCache.put(templateUrl, serializeHtml());
+                }
+    
+                return __$templateCache.put(templateUrl, serializeHtml(templateString));
+            }).catch((error) => {
+                postpone(() => {
+                    $exception = plat.acquire(__ExceptionStatic);
+                    $exception.fatal('Failure to get template from ' + templateUrl + '.',
+                        $exception.TEMPLATE);
+                });
+                return error;
+            }));
+    }
+    
     /* tslint:enable:no-unused-variable */
     
     /**
@@ -1731,7 +1778,7 @@ module plat {
              * SINGLE or STATIC type so that it does not re-instantiate.
              * @param {any} value The value to wrap
              */
-            _wrapInjector(value: any): IInjector<any> {
+            protected _wrapInjector(value: any): IInjector<any> {
                 var name = this.name;
                 return injectableInjectors[name] = <IInjector<any>>{
                     type: this.type,
@@ -3557,7 +3604,7 @@ module plat {
             /**
              * Determines if a url is relative or absolute.
              */
-            fullUrlRegex = /^(?:[a-z0-9\-]+:)?(?:\/\/)?/i;
+            fullUrlRegex = /^(?:[a-z0-9\-]+:)(?:\/\/)?|(?:\/\/)/i;
 
             /**
              * Determines if an email address is valid.
@@ -3810,7 +3857,7 @@ module plat {
             /**
              * The input string to tokenize.
              */
-            _input: string;
+            protected _input: string;
         
             /**
              * The previous character during tokenization.
@@ -3949,7 +3996,7 @@ module plat {
              * @param {string} char The character to check.
              * @param {boolean} isNumberLike Whether or not the character resembles a number.
              */
-            _checkType(char: string, isNumberLike: boolean): boolean {
+            protected _checkType(char: string, isNumberLike: boolean): boolean {
                 if (isNumberLike) {
                     return this._isNumeric(char);
                 }
@@ -3963,7 +4010,7 @@ module plat {
              * @param {number} index The current index in the expression string.
              * @param {boolean} isNumberLike Whether or not the character resembles a number.
              */
-            _lookAhead(char: string, index: number, isNumberLike: boolean): string {
+            protected _lookAhead(char: string, index: number, isNumberLike: boolean): string {
                 var ch: string,
                     input = this._input,
                     maxLength = input.length;
@@ -3986,7 +4033,7 @@ module plat {
              * @param {string} char The operator to find.
              * @param {number} index The current index in the expression string.
              */
-            _lookAheadForOperatorFn(char: string, index: number): string {
+            protected _lookAheadForOperatorFn(char: string, index: number): string {
                 var ch: string,
                     fn = char,
                     input = this._input,
@@ -4015,7 +4062,7 @@ module plat {
              * @param {number} index The current index in the expression string.
              * the first character and end character being looked ahead for.
              */
-            _lookAheadForDelimiter(endChar: string, index: number): string {
+            protected _lookAheadForDelimiter(endChar: string, index: number): string {
                 var char = '',
                     ch: string,
                     input = this._input,
@@ -4036,7 +4083,7 @@ module plat {
              * @param {string} error The error to throw in the case that the expression 
              * is invalid.
              */
-            _popStackForVal(topOperator: IToken, char: string, error: string): void {
+            protected _popStackForVal(topOperator: IToken, char: string, error: string): void {
                 var outputQueue = this.__outputQueue,
                     operatorStack = this.__operatorStack;
 
@@ -4056,7 +4103,7 @@ module plat {
              * with the "val" property to compare.
              * @param {string} char The char to compare with.
              */
-            _isValEqual(obj: IToken, char: string): boolean {
+            protected _isValEqual(obj: IToken, char: string): boolean {
                 if (isNull(obj) || isNull(obj.val)) {
                     return isNull(char);
                 } else if (obj.val === '') {
@@ -4072,7 +4119,7 @@ module plat {
              * with the "val" property to compare.
              * @param {string} char The char to compare with.
              */
-            _isValUnequal(obj: IToken, char: string): boolean {
+            protected _isValUnequal(obj: IToken, char: string): boolean {
                 if (isNull(obj) || isNull(obj.val)) {
                     return !isNull(char);
                 } else if (obj.val === '') {
@@ -4084,7 +4131,7 @@ module plat {
             /**
              * Resets all the tokenizer's properties.
              */
-            _resetTokenizer(): void {
+            protected _resetTokenizer(): void {
                 this._input = null;
                 this.__previousChar = '';
                 this.__outputQueue = [];
@@ -4099,7 +4146,7 @@ module plat {
              * Throws a fatal exception in the case of an error.
              * @param {string} error The error message to throw.
              */
-            _throwError(error: string): void {
+            protected _throwError(error: string): void {
                 var $exception: IExceptionStatic = acquire(__ExceptionStatic);
                 $exception.fatal(error + ' in ' + this._input, $exception.PARSE);
             }
@@ -4108,7 +4155,7 @@ module plat {
              * Checks if a single character is numeric.
              * @param {string} char The character to check.
              */
-            _isNumeric(char: string): boolean {
+            protected _isNumeric(char: string): boolean {
                 return ('0' <= char && char <= '9');
             }
         
@@ -4116,7 +4163,7 @@ module plat {
              * Checks if a single character is a space.
              * @param {string} char The character to check.
              */
-            _isSpace(char: string): boolean {
+            protected _isSpace(char: string): boolean {
                 return (char === ' ' ||
                     char === '\r' ||
                     char === '\n' ||
@@ -4129,7 +4176,7 @@ module plat {
              * Checks if a single character is alphanumeric.
              * @param {string} char The character to check.
              */
-            _isAlphaNumeric(char: string): boolean {
+            protected _isAlphaNumeric(char: string): boolean {
                 return ('a' <= char && char <= 'z' ||
                     'A' <= char && char <= 'Z' ||
                     '0' <= char && char <= '9' ||
@@ -4143,7 +4190,7 @@ module plat {
              * @param {string} input The string to check.
              * JavaScript variable.
              */
-            _isStringValidVariable(input: string): boolean {
+            protected _isStringValidVariable(input: string): boolean {
                 return !this.__variableRegex.test(input);
             }
 
@@ -4654,7 +4701,7 @@ module plat {
              * A single expression's token representation created by a ITokenizer.
              */
             _tokens: Array<IToken> = [];
-        
+
             /**
              * An expression cache. Used so that a JavaScript expression is only ever parsed once.
              */
@@ -4702,7 +4749,7 @@ module plat {
 
                 return parsedObject;
             }
-        
+
             /**
              * If a key is passed in, it clears that single value in the expression cache. If no 
              * key is present, the entire expression cache will be cleared.
@@ -4717,13 +4764,13 @@ module plat {
 
                 this.__cache = {};
             }
-        
+
             /**
              * Evaluate the current IToken array.
              * @param {string} expression The JavaScript expression to evaluate.
              * information about the expression as well as a way to evaluate its value.
              */
-            _evaluate(expression: string): IParsedExpression {
+            protected _evaluate(expression: string): IParsedExpression {
                 var tokens = this._tokens,
                     length = tokens.length,
                     tempIdentifiers = this.__tempIdentifiers,
@@ -4753,7 +4800,7 @@ module plat {
                                 if (args < 0) {
                                     codeArray.push('[]');
                                     tempIdentifiers.push('.');
-                                // handle array literal
+                                    // handle array literal
                                 } else if (args > 0) {
                                     codeArray.push(this.__convertArrayLiteral(args));
                                     tempIdentifiers.push('.');
@@ -4762,7 +4809,7 @@ module plat {
                                 }
                                 break;
                         }
-                    // check if its an operator
+                        // check if its an operator
                     } else if (isOperator(token)) {
                         // check if string literal
                         if (args === 0) {
@@ -4785,12 +4832,12 @@ module plat {
                                     break;
                             }
                         }
-                    // its either function, object, or primitive
+                        // its either function, object, or primitive
                     } else {
                         // potential function or object to index into
                         if (args < 0) {
                             codeArray.push(this.__convertFunction(index, token, useLocalContext));
-                        // primitive
+                            // primitive
                         } else {
                             codeArray.push(this.__convertPrimitive(index, token, args));
                         }
@@ -4803,7 +4850,7 @@ module plat {
                 this._makeIdentifiersUnique();
 
                 var parsedExpression: IParsedExpression = {
-                    evaluate: <(context: any, aliases?: any) => any>new Function(__CONTEXT, __ALIASES,
+                    evaluate: <(context: any, aliases?: IObject<any>) => any>new Function(__CONTEXT, __ALIASES,
                         'var initialContext;' +
                         'return ' + (codeArray.length === 0 ? ('"' + expression + '"') : codeArray.join('')) + ';'),
                     expression: expression,
@@ -4816,7 +4863,7 @@ module plat {
 
                 return parsedExpression;
             }
-        
+
             /**
              * Handles a token that is a primitive value.
              * @param {number} index The current index in the IToken array.
@@ -5000,7 +5047,7 @@ module plat {
                         if (!(lastIndex < 0 || tempIdentifiers[lastIndex] === '.' || identifierFnName === '')) {
                             tempIdentifiers[lastIndex] += '.' + identifierFnName;
                             identifiers.push(tempIdentifiers.pop());
-                        // check fn name is not null, pushed an identifier, and the context is not an array literal
+                            // check fn name is not null, pushed an identifier, and the context is not an array literal
                         } else if (!(identifierFnName === '' ||
                             !pushedIdentifier ||
                             context[0] === '[' ||
@@ -5096,7 +5143,7 @@ module plat {
 
                 return useLocalContext;
             }
-        
+
             /**
              * Handles the "?" operator.
              */
@@ -5169,35 +5216,31 @@ module plat {
 
                 codeArray.push(
                     '(' + OPERATORS[token].fn.toString() + ')(context, aliases,' + tempStr.slice(0, tempStr.length - 1) + ')'
-                );
+                    );
             }
-        
+
             /**
              * Safely finds an initial context.
              * @param {any} context The context object.
              * @param {any} aliases Any aliases that may exist.
              * @param {string} token The property used to find the initial context.
-             * @param {any} undefined An undefined argument.
              */
-            private __findInitialContext(context: any, aliases: any, token: string, undefined?: any): any {
+            private __findInitialContext(context: any, aliases: any, token: string): any {
                 if (token[0] === '@' && aliases !== null && typeof aliases === 'object') {
-                    return aliases[token];
+                    return aliases[token.slice(1)];
                 } else if (context !== null && typeof context === 'object') {
                     return context[token];
                 }
-                return undefined;
             }
             /**
              * Safely drills down into a specified context with a given token.
              * @param {any} context The context object.
              * @param {string} token The property used to drill into the context.
-             * @param {any} undefined An undefined argument.
              */
-            private __indexIntoContext(context: any, token: string, undefined?: any): any {
+            private __indexIntoContext(context: any, token: string): any {
                 if (context !== null && typeof context === 'object') {
                     return context[token];
                 }
-                return undefined;
             }
 
             /**
@@ -5206,24 +5249,24 @@ module plat {
              * in the array.
              * in the IToken array.
              */
-            _peek(index: number): IToken {
+            protected _peek(index: number): IToken {
                 return this._tokens[index + 1];
             }
-        
+
             /**
              * Look back at the previous IToken.
              * @param {number} index The index after the desired IToken 
              * in the array.
              * in the IToken array.
              */
-            _lookBack(index: number): IToken {
+            protected _lookBack(index: number): IToken {
                 return this._tokens[index - 1];
             }
-        
+
             /**
              * Evaluate and remove the leftover identifiers.
              */
-            _popRemainingIdentifiers(): void {
+            protected _popRemainingIdentifiers(): void {
                 var identifiers = this.__identifiers,
                     tempIdentifiers = this.__tempIdentifiers,
                     last: string;
@@ -5235,11 +5278,11 @@ module plat {
                     }
                 }
             }
-        
+
             /**
              * Remove duplicate identifiers.
              */
-            _makeIdentifiersUnique(): void {
+            protected _makeIdentifiersUnique(): void {
                 var identifiers = this.__identifiers,
                     uniqueIdentifiers: Array<string> = [],
                     uniqueIdentifierObject: IObject<boolean> = {},
@@ -5255,7 +5298,7 @@ module plat {
 
                 this.__identifiers = uniqueIdentifiers;
             }
-        
+
             /**
              * Check if the "val" property on an IToken 
              * is present in a particular character string.
@@ -5263,7 +5306,7 @@ module plat {
              * with the "val" property to compare.
              * @param {string} char The char to compare with.
              */
-            _isValEqual(obj: IToken, char: string): boolean {
+            protected _isValEqual(obj: IToken, char: string): boolean {
                 if (isNull(obj) || isNull(obj.val)) {
                     return isNull(char);
                 } else if (obj.val === '') {
@@ -5271,7 +5314,7 @@ module plat {
                 }
                 return char.indexOf(obj.val) !== -1;
             }
-        
+
             /**
              * Check if the "val" property on an IToken 
              * is not present in a particular character string.
@@ -5279,7 +5322,7 @@ module plat {
              * with the "val" property to compare.
              * @param {string} char The char to compare with.
              */
-            _isValUnequal(obj: any, char: string): boolean {
+            protected _isValUnequal(obj: any, char: string): boolean {
                 if (isNull(obj) || isNull(obj.val)) {
                     return !isNull(char);
                 } else if (obj.val === '') {
@@ -5287,23 +5330,23 @@ module plat {
                 }
                 return char.indexOf(obj.val) === -1;
             }
-        
+
             /**
              * Resets all the parser's properties.
              */
-            _resetParser(): void {
+            protected _resetParser(): void {
                 this._tokens = [];
                 this.__codeArray = [];
                 this.__identifiers = [];
                 this.__tempIdentifiers = [];
                 this.__aliases = {};
             }
-        
+
             /**
              * Throws a fatal exception in the case of an error.
              * @param {string} error The error message to throw.
              */
-            _throwError(error: string): void {
+            protected _throwError(error: string): void {
                 var $exception: IExceptionStatic = acquire(__ExceptionStatic);
                 $exception.fatal(error, $exception.PARSE);
             }
@@ -5317,7 +5360,7 @@ module plat {
         }
 
         register.injectable(__Parser, IParser);
-    
+
         /**
          * Describes an object that can parse a JavaScript expression string and turn it into an
          * IParsedExpression.
@@ -5338,7 +5381,7 @@ module plat {
              */
             clearCache(key?: string): void;
         }
-    
+
         /**
          * Describes an object that is the result of parsing a JavaScript expression string. It contains detailed 
          * information about the expression as well as a way to evaluate the expression with a context.
@@ -5347,27 +5390,28 @@ module plat {
             /**
              * A method for evaluating an expression with a context.
              * @param {any} context? The primary context for evaluation.
-             * @param {any} aliases? An object containing resource alias values. All keys must begin with '@'.
+             * @param {IObject<any>} aliases? An object containing resource alias values. 
+             * All property keys must never begin with '@'.
              */
-            evaluate(context?: any, aliases?: any): any;
+            evaluate(context?: any, aliases?: IObject<any>): any;
 
             /**
              * The original expression string.
              */
             expression: string;
-        
+
             /**
              * Contains all the identifiers found in an expression. Useful for determining
              * properties to watch on a context.
              */
             identifiers: Array<string>;
-        
+
             /**
-             * Contains all the aliases (denoted by an identifier with '@' as the first character) for this 
+             * Contains all the aliases (denoted without '@' as the first character) for this 
              * IParsedExpression.
              */
             aliases: Array<string>;
-        
+
             /**
              * Specifies whether or not you want to do a one-time binding on identifiers 
              * for this expression. Typically this is added to a clone of this 
@@ -5540,7 +5584,7 @@ module plat {
              * off a 'urlChanged' direct event notification.
              * @param url The URL to verify whether or not it's cross domain.
              */
-            _urlChanged(): void {
+            protected _urlChanged(): void {
                 if (this.__initializing) {
                     return;
                 }
@@ -5571,7 +5615,7 @@ module plat {
              * @param {boolean} replace? Whether or not to replace the 
              * current URL in the history.
              */
-            _setUrl(url: string, replace?: boolean): void {
+            protected _setUrl(url: string, replace?: boolean): void {
                 url = this._formatUrl(url);
 
                 var utils = this.urlUtils(url);
@@ -5611,7 +5655,7 @@ module plat {
              * Formats the URL in the case of HASH routing.
              * @param url The URL to format.
              */
-            _formatUrl(url: string): string {
+            protected _formatUrl(url: string): string {
                 var $config = Browser.config;
                 if (url.indexOf($config.baseUrl) > -1 && $config.routingType === $config.HASH) {
                     var hasProtocol = url.indexOf(this.urlUtils().protocol) !== -1,
@@ -5911,7 +5955,7 @@ module plat {
                     $BrowserConfig = this.$BrowserConfig;
 
                 // always make local urls relative to start page.
-                if (url[0] === '/') {
+                if (url[0] === '/' && url.indexOf('//') !== 0) {
                     url = url.slice(1);
                 }
 
@@ -5922,11 +5966,11 @@ module plat {
 
                 element.setAttribute('href', url);
                 url = element.href;
-
+            
                 // we need to do this twice for cerain browsers (e.g. win8)
                 element.setAttribute('href', url);
                 url = element.href;
-
+            
                 var protocol = element.protocol ? element.protocol.replace(/:$/, '') : '';
 
                 define(this, 'href', url, true, true);
@@ -6091,25 +6135,25 @@ module plat {
              * The registered routes (as IRouteMatchers) for matching 
              * on route change.
              */
-            _routes: Array<IRouteMatcher> = [];
+            protected _routes: Array<IRouteMatcher> = [];
 
             /**
              * The function to stop listening to the 'urlChanged' event.
              */
-            _removeListener: IRemoveListener;
+            protected _removeListener: IRemoveListener;
 
             /**
              * The registered default route ('') converted into an IMatchedRoute. 
              * The default route is used whenever a specified route/url is not matched.
              */
-            _defaultRoute: IMatchedRoute;
+            protected _defaultRoute: IMatchedRoute;
 
             /**
              * The registered base route ('/') converted into an IMatchedRoute. 
              * The base route is the first route navigated to in the Routeport if a 
              * default route is not specified in its plat-options.
              */
-            _baseRoute: IMatchedRoute;
+            protected _baseRoute: IMatchedRoute;
 
             /**
              * A regular expression for finding invalid characters in a route string.
@@ -6255,7 +6299,7 @@ module plat {
              * IRouteNavigationOptions.
              * both the fully evaluated route and the corresponding IMatchedRoute.
              */
-            _buildRoute(routeParameter: string, query: IObject<string>): { route: string; match: IMatchedRoute; } {
+            protected _buildRoute(routeParameter: string, query: IObject<string>): { route: string; match: IMatchedRoute; } {
                 var queryStr = this._buildQueryString(query);
 
                 if (!isString(routeParameter)) {
@@ -6281,7 +6325,7 @@ module plat {
              * the IRouteNavigationOptions.
              * @param {plat.IObject<string>} query The query object passed in.
              */
-            _buildQueryString(query: IObject<string>): string {
+            protected _buildQueryString(query: IObject<string>): string {
                 var queryStr: Array<string> = [];
 
                 if (!isObject(query)) {
@@ -6308,7 +6352,7 @@ module plat {
              * @param {plat.web.IUrlUtilsInstance} utils The IUrlUtilsInstance 
              * created for the invoked route function.
              */
-            _routeChanged(ev: events.IDispatchEventInstance, utils: web.IUrlUtilsInstance): void {
+            protected _routeChanged(ev: events.IDispatchEventInstance, utils: web.IUrlUtilsInstance): void {
                 var matchedRoute = this._match(utils);
 
                 if (isNull(matchedRoute)) {
@@ -6337,7 +6381,7 @@ module plat {
              * WebViewControl defined by the type.
              * @param {string} type The control type.
              */
-            _registerRoute(route: any, injector: dependency.IInjector<ui.IBaseViewControl>, type: string): void {
+            protected _registerRoute(route: any, injector: dependency.IInjector<ui.IBaseViewControl>, type: string): void {
                 var regexp = isRegExp(route),
                     routeParameters: IRouteMatcher;
 
@@ -6381,7 +6425,7 @@ module plat {
              * @param {string} route The route to parse.
              * route with a BaseViewControl's injector.
              */
-            _getRouteParameters(route: string): IRouteMatcher {
+            protected _getRouteParameters(route: string): IRouteMatcher {
                 var $regex = this.$Regex,
                     namedRegex = $regex.namedParameterRouteRegex,
                     escapeRegex = this.__escapeRegex,
@@ -6428,7 +6472,7 @@ module plat {
              * the url fragment and the url query.
              * injector.
              */
-            _match(utils: web.IUrlUtilsInstance): IMatchedRoute {
+            protected _match(utils: web.IUrlUtilsInstance): IMatchedRoute {
                 var routes = this._routes,
                     url = this._getUrlFragment(utils),
                     route: IRouteMatcher,
@@ -6511,7 +6555,7 @@ module plat {
              * @param {plat.web.IUrlUtilsInstance} utils The utility used to obtain 
              * the url fragment.
              */
-            _getUrlFragment(utils: web.IUrlUtilsInstance): string {
+            protected _getUrlFragment(utils: web.IUrlUtilsInstance): string {
                 return utils.pathname.replace(this.__pathSlashRegex, '');
             }
         }
@@ -7490,7 +7534,7 @@ module plat {
              * return true in the case of a success and false in the case of 
              * an error.
              */
-            _xhrOnReadyStateChange(): boolean {
+            protected _xhrOnReadyStateChange(): boolean {
                 var xhr = this.xhr;
                 if (xhr.readyState === 4) {
                     var status = xhr.status;
@@ -7527,7 +7571,7 @@ module plat {
              * formatted IAjaxResponse and rejects if there is a problem with an 
              * IAjaxError.
              */
-            _sendXhrRequest(): IAjaxPromise<any> {
+            protected _sendXhrRequest(): IAjaxPromise<any> {
                 var xhr = this.xhr,
                     options = this.__options,
                     method = options.method,
@@ -7692,7 +7736,7 @@ module plat {
              * Returns a promise that is immediately rejected due to an error.
              * with an IAjaxError
              */
-            _invalidOptions(): IAjaxPromise<any> {
+            protected _invalidOptions(): IAjaxPromise<any> {
                 return new AjaxPromise((resolve, reject) => {
                     var exceptionFactory: IExceptionStatic = acquire(__ExceptionStatic);
                     exceptionFactory.warn('Attempting a request without specifying a url', exceptionFactory.AJAX);
@@ -7711,7 +7755,7 @@ module plat {
              * @param {boolean} success Signifies if the response was a success
              * the requester.
              */
-            _formatResponse(responseType: string, success: boolean): IAjaxResponse<any> {
+            protected _formatResponse(responseType: string, success: boolean): IAjaxResponse<any> {
                 var xhr = this.xhr,
                     status = xhr.status,
                     response = xhr.response;
@@ -8035,7 +8079,7 @@ module plat {
              * A key/value pair object where the key is a DOMString header key
              * and the value is the DOMString header value.
              */
-            headers?: any;
+            headers?: IObject<any>;
 
             /**
              * Indicates whether or not cross-site Access-Control requests 
@@ -8215,7 +8259,8 @@ module plat {
         export interface IAjaxError extends Error, IAjaxResponse<any> { }
 
         /**
-         * Describes a type of Promise that fulfills with an IAjaxResponse and can be optionally cancelled.
+         * Describes a type of Promise that fulfills with an IAjaxResponse 
+         * and can be optionally cancelled.
          */
         export class AjaxPromise<R> extends Promise<IAjaxResponse<R>> implements IAjaxPromise<R> {
             /**
@@ -8283,8 +8328,8 @@ module plat {
             /**
              * Takes in two methods, called when/if the promise fulfills/rejects.
              * next then method in the promise chain.
-             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if the promise fulfills. 
-             * If undefined the next onFulfilled method in the promise chain will be called.
+             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if 
+             * the promise fulfills. If undefined the next onFulfilled method in the promise chain will be called.
              * @param {(error: plat.async.IAjaxError) => plat.async.IAjaxThenable<U>} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
@@ -8293,8 +8338,8 @@ module plat {
             /**
              * Takes in two methods, called when/if the promise fulfills/rejects.
              * next then method in the promise chain.
-             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if the promise fulfills. 
-             * If undefined the next onFulfilled method in the promise chain will be called.
+             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if 
+             * the promise fulfills. If undefined the next onFulfilled method in the promise chain will be called.
              * @param {(error: plat.async.IAjaxError) => U} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
@@ -8327,8 +8372,8 @@ module plat {
 
             /**
              * A wrapper method for Promise.then(undefined, onRejected);
-             * @param {(error: any) => plat.async.IAjaxThenable<U>} onRejected A method called when/if the promise rejects. If undefined the next
-             * onRejected method in the promise chain will be called.
+             * @param {(error: any) => plat.async.IAjaxThenable<U>} onRejected A method called when/if the promise rejects. 
+             * If undefined the next onRejected method in the promise chain will be called.
              */
             catch<U>(onRejected: (error: any) => IAjaxThenable<U>): IAjaxThenable<U>;
             /**
@@ -8403,7 +8448,8 @@ module plat {
         }
 
         /**
-         * Describes a type of IPromise that fulfills with an IAjaxResponse and can be optionally cancelled.
+         * Describes a type of IPromise that fulfills with an IAjaxResponse 
+         * and can be optionally cancelled.
          */
         export interface IAjaxPromise<R> extends IAjaxThenable<IAjaxResponse<R>> {
             /**
@@ -8421,17 +8467,18 @@ module plat {
             /**
              * Takes in two methods, called when/if the promise fulfills/rejects.
              * next then method in the promise chain.
-             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if the promise fulfills. 
-             * If undefined the next onFulfilled method in the promise chain will be called.
+             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if 
+             * the promise fulfills. If undefined the next onFulfilled method in the promise chain will be called.
              * @param {(error: plat.async.IAjaxError) => plat.async.IAjaxThenable<U>} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
-            then<U>(onFulfilled: (success: IAjaxResponse<R>) => IAjaxThenable<U>, onRejected?: (error: IAjaxError) => IAjaxThenable<U>): IAjaxThenable<U>;
+            then<U>(onFulfilled: (success: IAjaxResponse<R>) => IAjaxThenable<U>,
+                onRejected?: (error: IAjaxError) => IAjaxThenable<U>): IAjaxThenable<U>;
             /**
              * Takes in two methods, called when/if the promise fulfills/rejects.
              * next then method in the promise chain.
-             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if the promise fulfills. 
-             * If undefined the next onFulfilled method in the promise chain will be called.
+             * @param {(success: plat.async.IAjaxResponse<R>) => plat.async.IAjaxThenable<U>} onFulfilled A method called when/if 
+             * the promise fulfills. If undefined the next onFulfilled method in the promise chain will be called.
              * @param {(error: plat.async.IAjaxError) => U} onRejected A method called when/if the promise rejects. 
              * If undefined the next onRejected method in the promise chain will be called.
              */
@@ -9087,12 +9134,21 @@ module plat {
          * A base class for storing data with a designated storage type.
          */
         export class BaseStorage implements IBaseStorage {
+            [key: string]: any;
+
+            /**
+             * Reference to HTML5 localStorage.
+             */
+            protected _storage: Storage;
+        
             /**
              * The constructor for a BaseStorage.
              */
-            constructor() {
-                forEach((<Storage>(<any>this).__storage), (value, key) => {
-                    (<any>this)[key] = value;
+            constructor(storage: Storage) {
+                this._storage = storage;
+
+                forEach(storage, (value, key) => {
+                    this[key] = value;
                 });
             }
 
@@ -9100,14 +9156,14 @@ module plat {
              * Returns the number of items in storage.
              */
             get length(): number {
-                return (<Storage>(<any>this).__storage).length;
+                return this._storage.length;
             }
         
             /**
              * Clears storage, deleting all of its keys.
              */
             clear(): void {
-                (<Storage>(<any>this).__storage).clear();
+                this._storage.clear();
             }
         
             /**
@@ -9115,7 +9171,7 @@ module plat {
              * @param {string} key The key of the item to retrieve from storage.
              */
             getItem<T>(key: string): T {
-                return (<Storage>(<any>this).__storage).getItem(key);
+                return this._storage.getItem(key);
             }
         
             /**
@@ -9125,7 +9181,7 @@ module plat {
              * @param {number} index The index used to retrieve the associated key.
              */
             key(index: number): string {
-                return (<Storage>(<any>this).__storage).key(index);
+                return this._storage.key(index);
             }
         
             /**
@@ -9134,7 +9190,7 @@ module plat {
              * @param {string} key The key of the item to remove from storage.
              */
             removeItem(key: string): void {
-                (<Storage>(<any>this).__storage).removeItem(key);
+                this._storage.removeItem(key);
             }
         
             /**
@@ -9143,8 +9199,8 @@ module plat {
              * @param {any} data The data to store in storage with the key.
              */
             setItem(key: string, data: any): void {
-                (<Storage>(<any>this).__storage).setItem(key, data);
-                (<any>this)[key] = this.getItem(key);
+                this._storage.setItem(key, data);
+                this[key] = this.getItem(key);
             }
         }
     
@@ -9152,6 +9208,8 @@ module plat {
          * An object designed for storing data with a designated storage type.
          */
         export interface IBaseStorage {
+            [key: string]: any;
+
             /**
              * Returns the number of items in storage.
              */
@@ -9195,12 +9253,9 @@ module plat {
          * A class used to wrap HTML5 localStorage into an injectable.
          */
         export class LocalStorage extends BaseStorage implements ILocalStorage {
-            /* tslint:disable:no-unused-variable */
-            /**
-             * Reference to HTML5 localStorage.
-             */
-            private __storage: Storage = (<Window>acquire(__Window)).localStorage;
-            /* tslint:enable:no-unused-variable */
+            constructor() {
+                super((<Window>plat.acquire(__Window)).localStorage);
+            }
         }
 
         /**
@@ -9259,12 +9314,9 @@ module plat {
          * A class for wrapping SessionStorage as an injectable.
          */
         export class SessionStorage extends BaseStorage implements ISessionStorage {
-            /* tslint:disable:no-unused-variable */
-            /**
-             * Reference to HTML5 sessionStorage.
-             */
-            private __storage: Storage = (<Window>acquire(__Window)).sessionStorage;
-            /* tslint:enable:no-unused-variable */
+            constructor() {
+                super((<Window>plat.acquire(__Window)).sessionStorage);
+            }
         }
 
         /**
@@ -9696,7 +9748,7 @@ module plat {
 
                 if (!isNull(control.context)) {
                     ContextManager.defineProperty(control, __CONTEXT,
-                        persist === true ? _clone(control.context, true) : null, true, true);
+                        persist === true ? _clone(control.context, true) : null, true, true, true);
                 }
             }
         
@@ -9744,12 +9796,14 @@ module plat {
              * @param {boolean} enumerable? Whether or not the property should be enumerable (able to be iterated 
              * over in a loop)
              * @param {boolean} configurable? Whether or not the property is able to be reconfigured.
+             * @param {boolean} writable? Whether or not assignment operators work on the property.
              */
-            static defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void {
+            static defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean, writable?: boolean): void {
                 Object.defineProperty(obj, key, {
                     value: value,
                     enumerable: enumerable === true,
-                    configurable: configurable === true
+                    configurable: configurable === true,
+                    writable: writable === true
                 });
             }
         
@@ -9821,6 +9875,9 @@ module plat {
                 }
 
                 listeners.splice(index, 1);
+                if (listeners.length === 0) {
+                    deleteProperty(control, identifier);
+            }
             }
         
             /**
@@ -9938,7 +9995,7 @@ module plat {
         
             /**
              * Safely retrieves the local context for this manager given an Array of
-             * property strings.
+             * property strings and observes it if not found.
              * @param {Array<string>} split The string array containing properties used to index into
              * the context.
              */
@@ -9947,7 +10004,7 @@ module plat {
                     context = this.__contextObjects[join];
 
                 if (isNull(context)) {
-                    context = this.__contextObjects[join] = this._getImmediateContext(join);
+                    context = this.__contextObjects[join] = this._observeImmediateContext(split, join);
                 }
 
                 return context;
@@ -9976,7 +10033,7 @@ module plat {
                     join = split.join('.');
                     context = this.__contextObjects[join];
                     if (isNull(context)) {
-                        context = this.__contextObjects[join] = this._getImmediateContext(join);
+                        context = this.__contextObjects[join] = this._observeImmediateContext(split, join);
                     }
                 } else {
                     join = key;
@@ -9987,7 +10044,7 @@ module plat {
                     if (hasObservableListener) {
                         if (key === 'length') {
                             this.__lengthListeners[absoluteIdentifier] = observableListener;
-                            ContextManager.pushRemoveListener(absoluteIdentifier, uid, () => {
+                            ContextManager.pushRemoveListener(absoluteIdentifier, observableListener.uid, () => {
                                 deleteProperty(this.__lengthListeners, absoluteIdentifier);
                             });
                         }
@@ -10028,8 +10085,7 @@ module plat {
                 if (!hasIdentifier) {
                     if (key === 'length' && isArray(context)) {
                         var property = split.pop(),
-                            parentContext = this.getContext(split),
-                            uid = observableListener.uid;
+                            parentContext = this.getContext(split);
 
                         this.__observedIdentifier = null;
                         access(parentContext, property);
@@ -10039,6 +10095,11 @@ module plat {
                         }
 
                         var removeObservableListener = removeCallback,
+                            removeListener = noop,
+                            removeArrayObserve = noop;
+
+                        if (hasObservableListener) {
+                            var uid = observableListener.uid;
                             removeListener = this.observeArray(uid, noop, join, context, null),
                             removeArrayObserve = this.observe(join, {
                                 uid: uid,
@@ -10047,6 +10108,7 @@ module plat {
                                     removeListener = this.observeArray(uid, noop, join, newValue, oldValue);
                                 }
                             });
+                        }
 
                         removeCallback = () => {
                             removeObservableListener();
@@ -10158,7 +10220,7 @@ module plat {
              * Restores an array to use Array.prototype instead of listener functions. 
              * @param {Array<any>} array The array to restore.
              */
-            _restoreArray(array: Array<any>) {
+            protected _restoreArray(array: Array<any>) {
                 var $compat = this.$Compat;
 
                 if ($compat.setProto) {
@@ -10181,7 +10243,7 @@ module plat {
              * @param {string} absoluteIdentifier The identifier for the Array off context.
              * @param {Array<any>} array The array to overwrite.
              */
-            _overwriteArray(absoluteIdentifier: string, array: Array<any>) {
+            protected _overwriteArray(absoluteIdentifier: string, array: Array<any>) {
                 var $compat = this.$Compat,
                     length = arrayMethods.length,
                     method: string,
@@ -10207,22 +10269,17 @@ module plat {
                 for (i = 0; i < length; ++i) {
                     method = arrayMethods[i];
                     ContextManager.defineProperty(array, method,
-                        this._overwriteArrayFunction(absoluteIdentifier, method), false, true);
+                        this._overwriteArrayFunction(absoluteIdentifier, method), false, true, true);
                 }
             }
 
             /**
-             * Gets the immediate context of identifier by splitting on "." 
-             * and observes the objects along the way.
-             * @param {string} identifier The identifier being observed.
+             * Gets the immediate context of identifier by splitting on ".".
+             * @param {Array<string>} split The string array containing properties used to index into
+             * the context.
              */
-            _getImmediateContext(identifier: string): any {
-                if (isNull(this.__identifiers[identifier])) {
-                    this.observe(identifier, null);
-                }
-
-                var split = identifier.split('.'),
-                    context = this.context;
+            protected _getImmediateContext(split: Array<string>): any {
+                var context = this.context;
 
                 while (split.length > 0) {
                     context = context[split.shift()];
@@ -10235,6 +10292,21 @@ module plat {
             }
         
             /**
+             * Gets the immediate context of identifier by splitting on "." 
+             * and observes the objects along the way.
+             * @param {Array<string>} split The identifier's split string array containing properties 
+             * used to index into the context.
+             * @param {string} identifier The identifier being observed.
+             */
+            protected _observeImmediateContext(split: Array<string>, identifier: string): any {
+                if (isNull(this.__identifiers[identifier])) {
+                    this.observe(identifier, null);
+                }
+
+                return this._getImmediateContext(split);
+            }
+
+            /**
              * Obtains the old value and new value of a given context 
              * property on a property changed event.
              * @param {Array<string>} split The split identifier of the property that changed.
@@ -10242,7 +10314,7 @@ module plat {
              * @param {any} oldRootContext The old context.
              * property upon a potential context change.
              */
-            _getValues(split: Array<string>, newRootContext: any, oldRootContext: any): { newValue: any; oldValue: any; } {
+            protected _getValues(split: Array<string>, newRootContext: any, oldRootContext: any): { newValue: any; oldValue: any; } {
                 var property: string,
                     doNew = true,
                     doOld = true;
@@ -10293,7 +10365,7 @@ module plat {
              * @param {any} newValue The new value of the property.
              * @param {any} oldValue The old value of the property.
              */
-            _notifyChildProperties(identifier: string, newValue: any, oldValue: any): void {
+            protected _notifyChildProperties(identifier: string, newValue: any, oldValue: any): void {
                 var mappings = this.__identifierHash[identifier];
 
                 if (isNull(mappings)) {
@@ -10396,11 +10468,8 @@ module plat {
              * @param {plat.observable.IListener} observableListener The function and associated unique ID to be fired 
              * for this identifier.
              */
-            _addObservableListener(absoluteIdentifier: string, observableListener: IListener): IRemoveListener {
-                var remove = () => {
-                        this._removeCallback(absoluteIdentifier, observableListener);
-                    },
-                    split = absoluteIdentifier.split('.'),
+            protected _addObservableListener(absoluteIdentifier: string, observableListener: IListener): IRemoveListener {
+                var split = absoluteIdentifier.split('.'),
                     property = split.pop(),
                     isLength = property === 'length',
                     context: any;
@@ -10421,8 +10490,13 @@ module plat {
 
                 this.__add(absoluteIdentifier, observableListener);
 
-                ContextManager.pushRemoveListener(absoluteIdentifier, observableListener.uid, remove);
+                var uid = observableListener.uid,
+                    remove = () => {
+                        ContextManager.spliceRemoveListener(absoluteIdentifier, uid, remove);
+                        this._removeCallback(absoluteIdentifier, observableListener);
+                    };
 
+                ContextManager.pushRemoveListener(absoluteIdentifier, uid, remove);
                 return remove;
             }
         
@@ -10433,7 +10507,7 @@ module plat {
              * @param {string} key The property key for the value on the immediateContext that's 
              * being observed.
              */
-            _define(identifier: string, immediateContext: any, key: string): void {
+            protected _define(identifier: string, immediateContext: any, key: string): void {
                 if (isObject(immediateContext[key])) {
                     this.__defineObject(identifier, immediateContext, key);
                 } else {
@@ -10447,7 +10521,7 @@ module plat {
              * @param {string} method The array method being called.
              * array function.
              */
-            _overwriteArrayFunction(absoluteIdentifier: string, method: string): (...args: any[]) => any {
+            protected _overwriteArrayFunction(absoluteIdentifier: string, method: string): (...args: any[]) => any {
                 var callbackObjects = ContextManager.observedArrayListeners[absoluteIdentifier],
                     _this = this;
 
@@ -10500,7 +10574,7 @@ module plat {
              * @param {string} identifier The identifier attached to the callbacks.
              * @param {plat.observable.IListener} listener The observable listener to remove.
              */
-            _removeCallback(identifier: string, listener: IListener): void {
+            protected _removeCallback(identifier: string, listener: IListener): void {
                 var callbacks = this.__identifiers[identifier];
                 if (isNull(callbacks)) {
                     return;
@@ -10525,7 +10599,7 @@ module plat {
              * observed in this context.
              * @param {string} identifier The identifier being observed.
              */
-            _hasIdentifier(identifier: string): boolean {
+            protected _hasIdentifier(identifier: string): boolean {
                 return !isEmpty(this.__identifiers[identifier]);
             }
         
@@ -10538,7 +10612,7 @@ module plat {
              * @param {any} oldValue The old value on this context specified by 
              * the identifier.
              */
-            _execute(identifier: string, value: any, oldValue: any): void {
+            protected _execute(identifier: string, value: any, oldValue: any): void {
                 var observableListeners = this.__identifiers[identifier];
 
                 if (isUndefined(value)) {
@@ -10551,8 +10625,15 @@ module plat {
                     return;
                 }
 
-                for (var i = 0; i < observableListeners.length; ++i) {
+                var length = observableListeners.length,
+                    newLength = length,
+                    i = 0;
+
+                while (i < length) {
                     observableListeners[i].listener(value, oldValue);
+                    newLength = observableListeners.length;
+                    i += newLength - length + 1;
+                    length = newLength;
                 }
             }
         
@@ -10584,15 +10665,16 @@ module plat {
                             return;
                         }
 
-                        var hash = this.__identifierHash[identifier],
-                            childPropertiesLength = isArray(hash) ? hash.length : 0;
-
+                        var childPropertiesExist = (this.__identifierHash[identifier] || []).length > 0;
                         this._execute(identifier, value, oldValue);
-                        if (childPropertiesLength > 0) {
+
+                        if (childPropertiesExist) {
                             this._notifyChildProperties(identifier, value, oldValue);
                         }
 
-                        if (!isObject(value)) {
+                        if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
+                            ContextManager.defineProperty(immediateContext, key, value, true, true, true);
+                        } else if (!isObject(value)) {
                             this.__definePrimitive(identifier, immediateContext, key);
                         }
                     }
@@ -10631,17 +10713,17 @@ module plat {
                             return;
                         }
 
-                        if (isObject(value)) {
-                            var childPropertiesLength = this.__identifierHash[identifier].length;
+                        var childPropertiesExist = (this.__identifierHash[identifier] || []).length > 0;
                             this._execute(identifier, newValue, oldValue);
+
+                        if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
+                            ContextManager.defineProperty(immediateContext, key, value, true, true, true);
+                        } else if (isObject(value)) {
                             this.__defineObject(identifier, immediateContext, key);
-                            if (childPropertiesLength > 0) {
+                            if (childPropertiesExist) {
                                 this._notifyChildProperties(identifier, newValue, oldValue);
                             }
-                        } else if (isDefined) {
-                            this._execute(identifier, newValue, oldValue);
-                        } else {
-                            this._execute(identifier, newValue, oldValue);
+                        } else if (!isDefined) {
                             this.__definePrimitive(identifier, immediateContext, key);
                             isDefined = true;
                         }
@@ -10762,8 +10844,9 @@ module plat {
              * @param {boolean} enumerable? Whether or not the property should be enumerable (able to be iterated 
              * over in a loop)
              * @param {boolean} configurable? Whether or not the property is able to be reconfigured.
+             * @param {boolean} writable? Whether or not assignment operators work on the property.
              */
-            defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void;
+            defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean, writable?: boolean): void;
 
             /**
              * Defines an object property with the associated value. Useful for unobserving objects.
@@ -10790,7 +10873,7 @@ module plat {
              * @param {string} uid The unique ID of the control observing the identifier.
              * @param {plat.IRemoveListener} listener The function for removing the observed property.
              */
-            spliceRemoveListener(identifier: string, uid: string, listener: IRemoveListener): void
+            spliceRemoveListener(identifier: string, uid: string, listener: IRemoveListener): void;
 
             /**
              * Removes a specified identifier from being observed for a given set of control IDs.
@@ -11448,7 +11531,7 @@ module plat {
              * @param {plat.events.IDispatchEventInstance} event The event being dispatched.
              * @param {Array<any>} args The arguments associated with the event.
              */
-            static _dispatchUp(event: IDispatchEventInstance, args: Array<any>): void {
+            protected static _dispatchUp(event: IDispatchEventInstance, args: Array<any>): void {
                 var name = event.name,
                     parent = event.sender;
 
@@ -11466,7 +11549,7 @@ module plat {
              * @param {plat.events.IDispatchEventInstance} event The event being dispatched.
              * @param {Array<any>} args The arguments associated with the event.
              */
-            static _dispatchDown(event: IDispatchEventInstance, args: Array<any>): void {
+            protected static _dispatchDown(event: IDispatchEventInstance, args: Array<any>): void {
                 var controls: Array<IControl> = [],
                     control: IControl,
                     name = event.name;
@@ -11495,7 +11578,7 @@ module plat {
              * @param {plat.events.IDispatchEventInstance} event The event being dispatched.
              * @param {Array<any>} args The arguments associated with the event.
              */
-            static _dispatchDirect(event: IDispatchEventInstance, args: Array<any>): void {
+            protected static _dispatchDirect(event: IDispatchEventInstance, args: Array<any>): void {
                 var uids = Object.keys(EventManager.__eventsListeners),
                     length = uids.length,
                     name = event.name,
@@ -12510,13 +12593,11 @@ module plat {
             }
 
             var control = isFunction((<ui.ITemplateControl>(<any>this)).getAbsoluteIdentifier) ? this : <IControl>this.parent;
-
             if (isNull(control) || !isFunction((<ui.ITemplateControl>(<any>control)).getAbsoluteIdentifier)) {
                 return noop;
             }
 
             var absoluteIdentifier = (<ui.ITemplateControl>(<any>control)).getAbsoluteIdentifier(context);
-
             if (isNull(absoluteIdentifier)) {
                 return noop;
             }
@@ -12554,15 +12635,12 @@ module plat {
                 return noop;
             }
 
-            var array = context[property],
-                callback = listener.bind(this);
-
+            var array = context[property];
             if (!isArray(array)) {
                 return noop;
             }
 
             var control = isFunction((<ui.ITemplateControl>this).getAbsoluteIdentifier) ? this : <IControl>this.parent;
-
             if (isNull(control) || !isFunction((<ui.ITemplateControl>control).getAbsoluteIdentifier)) {
                 return noop;
             }
@@ -12581,6 +12659,7 @@ module plat {
             }
 
             var contextManager = ContextManager.getManager(Control.getRootControl(this)),
+                callback = listener.bind(this),
                 uid = this.uid,
                 removeListener = contextManager.observeArray(uid, callback, absoluteIdentifier, array, null),
                 removeCallback = contextManager.observe(absoluteIdentifier, {
@@ -12591,7 +12670,6 @@ module plat {
                     uid: uid
                 });
 
-            // need to call callback if 
             return () => {
                 removeListener();
                 removeCallback();
@@ -12613,9 +12691,13 @@ module plat {
          */
         observeExpression(expression: expressions.IParsedExpression, listener: (value: any, oldValue: any) => void): IRemoveListener;
         observeExpression(expression: any, listener: (value: any, oldValue: any) => void): IRemoveListener {
-            if (isNull(expression)) {
+            if (isEmpty(expression)) {
                 return noop;
-            } else if (!(isString(expression) || isFunction(expression.evaluate))) {
+            }
+
+            if (isString(expression)) {
+                expression = Control.$Parser.parse(expression);
+            } else if (!isFunction(expression.evaluate)) {
                 return noop;
             }
 
@@ -12629,11 +12711,11 @@ module plat {
 
             listener = listener.bind(this);
 
-            var parsedExpression: expressions.IParsedExpression = isString(expression) ? Control.$Parser.parse(expression) : expression,
-                aliases = parsedExpression.aliases,
+            var aliases = expression.aliases,
                 alias: string,
                 length = aliases.length,
                 resources: IObject<observable.IContextManager> = {},
+                resourceObj: { resource: ui.IResource; control: ui.ITemplateControl; },
                 ContextManager = Control.$ContextManagerStatic,
                 getManager = ContextManager.getManager,
                 TemplateControl = ui.TemplateControl,
@@ -12643,17 +12725,18 @@ module plat {
 
             for (i = 0; i < length; ++i) {
                 alias = aliases[i];
+                resourceObj = findResource(control, alias);
 
-                var resourceObj = findResource(control, alias);
                 if (!isNull(resourceObj) && resourceObj.resource.type === __OBSERVABLE_RESOURCE) {
                     resources[alias] = getManager(resourceObj.control);
                 }
             }
 
-            var identifiers = parsedExpression.identifiers,
+            var identifiers = expression.identifiers,
                 contextManager = getManager(Control.getRootControl(control)),
                 identifier: string,
                 split: Array<string> = [],
+                topIdentifier: string,
                 absolutePath = control.absoluteContextPath + '.',
                 managers: IObject<observable.IContextManager> = {};
 
@@ -12662,12 +12745,13 @@ module plat {
             for (i = 0; i < length; ++i) {
                 identifier = identifiers[i];
                 split = identifier.split('.');
+                topIdentifier = split[0];
 
-                if (identifier.indexOf('this') === 0) {
+                if (topIdentifier === 'this') {
                     identifier = identifier.slice(5);
                 } else if (identifier[0] === '@') {
-                    alias = split[0].slice(1);
-                    identifier = identifier.replace('@' + alias, 'resources.' + alias + '.value');
+                    alias = topIdentifier.slice(1);
+                    identifier = identifier.replace(topIdentifier, 'resources.' + alias + '.value');
 
                     if (!isNull(resources[alias])) {
                         managers[identifier] = resources[alias];
@@ -12682,7 +12766,7 @@ module plat {
             identifiers = Object.keys(managers);
             length = identifiers.length;
 
-            var oldValue = evaluateExpression(parsedExpression, control),
+            var oldValue = evaluateExpression(expression, control),
                 listeners: Array<IRemoveListener> = [],
                 uid = this.uid;
 
@@ -12692,7 +12776,7 @@ module plat {
                 listeners.push(managers[identifier].observe(identifier, {
                     uid: uid,
                     listener: () => {
-                        var value = evaluateExpression(parsedExpression, control);
+                        var value = evaluateExpression(expression, control);
                         listener(value, oldValue);
                         oldValue = value;
                     }
@@ -12711,17 +12795,42 @@ module plat {
         /**
          * Evaluates an expression string, using the control.parent.context.
          * @param {string} expression The expression string to evaluate.
-         * @param {any} aliases Optional alias values to parse with the expression
+         * @param {IObject<any>} aliases Optional alias values to parse with the expression
          */
-        evaluateExpression(expression: string, aliases?: any): any;
+        evaluateExpression(expression: string, aliases?: IObject<any>): any;
         /**
          * Evaluates an IParsedExpression using the control.parent.context.
          * @param {string} expression The expression string to evaluate.
-         * @param {any} aliases Optional alias values to parse with the expression
+         * @param {IObject<any>} aliases Optional alias values to parse with the expression
          */
-        evaluateExpression(expression: expressions.IParsedExpression, aliases?: any): any;
-        evaluateExpression(expression: any, aliases?: any): any {
+        evaluateExpression(expression: expressions.IParsedExpression, aliases?: IObject<any>): any;
+        evaluateExpression(expression: any, aliases?: IObject<any>): any {
             return ui.TemplateControl.evaluateExpression(expression, this.parent, aliases);
+        }
+
+        /**
+         * Finds the first instance of the specified property 
+         * in the parent control chain. Returns undefined if not found.
+         * @param {string} property The property identifer
+         * property value and the control that it's on.
+         */
+        findProperty(property: string): IControlProperty {
+            var control = <IControl>this,
+                expression = Control.$Parser.parse(property),
+                value: any;
+
+            while (!isNull(control)) {
+                value = expression.evaluate(control);
+
+                if (!isNull(value)) {
+                    return {
+                        control: control,
+                        value: value
+                    };
+                }
+
+                control = <IControl>control.parent;
+            }
         }
 
         /**
@@ -12817,11 +12926,11 @@ module plat {
         $ContextManagerStatic?: observable.IContextManagerStatic,
         $EventManagerStatic?: events.IEventManagerStatic,
         $Promise?: async.IPromise): IControlFactory {
-            Control.$Parser = $Parser;
-            Control.$ContextManagerStatic = $ContextManagerStatic;
-            Control.$EventManagerStatic = $EventManagerStatic;
-            Control.$Promise = $Promise;
-            return Control;
+        Control.$Parser = $Parser;
+        Control.$ContextManagerStatic = $ContextManagerStatic;
+        Control.$EventManagerStatic = $EventManagerStatic;
+        Control.$Promise = $Promise;
+        return Control;
     }
 
     register.injectable(__ControlFactory, IControlFactory, [
@@ -13040,15 +13149,23 @@ module plat {
         /**
          * Evaluates an expression string, using the control.parent.context.
          * @param {string} expression The expression string to evaluate.
-         * @param {any} aliases Optional alias values to parse with the expression
+         * @param {IObject<any>} aliases Optional alias values to parse with the expression
          */
-        evaluateExpression? (expression: string, aliases?: any): any;
+        evaluateExpression? (expression: string, aliases?: IObject<any>): any;
         /**
          * Evaluates an IParsedExpression using the control.parent.context.
          * @param {string} expression The expression string to evaluate.
-         * @param {any} aliases Optional alias values to parse with the expression
+         * @param {IObject<any>} aliases Optional alias values to parse with the expression
          */
-        evaluateExpression? (expression: expressions.IParsedExpression, aliases?: any): any;
+        evaluateExpression? (expression: expressions.IParsedExpression, aliases?: IObject<any>): any;
+
+        /**
+         * Finds the first instance of the specified property 
+         * in the parent control chain. Returns undefined if not found.
+         * @param {string} property The property identifer
+         * property value and the control that it's on.
+         */
+        findProperty(property: string): IControlProperty;
 
         /**
          * Creates a new DispatchEvent and propagates it to controls based on the 
@@ -13114,6 +13231,21 @@ module plat {
          * all of the memory it is using, including DOM event and property listeners.
          */
         dispose? (): void;
+    }
+
+    /**
+     * An object that links a property to a control.
+     */
+    export interface IControlProperty {
+        /**
+         * The value of the property.
+         */
+        value: any;
+
+        /**
+         * The control on which the property is found.
+         */
+        control: IControl;
     }
 
     /**
@@ -13228,25 +13360,29 @@ module plat {
              * Evaluates an expression string with a given control and optional control's context and aliases.
              * @param {string} expression The expression string (e.g. 'foo + foo').
              * @param {plat.ui.ITemplateControl} control? The control used for evaluation context.
-             * @param {any} aliases? An optional alias object containing resource alias values
+             * @param {IObject<any>} aliases? An optional alias object containing resource alias values (property keys should 
+             * not include the '@' character).
              */
-            static evaluateExpression(expression: string, control?: ITemplateControl, aliases?: any): any;
+            static evaluateExpression(expression: string, control?: ITemplateControl, aliases?: IObject<any>): any;
             /**
              * Evaluates an expression string with a given control and optional control's context and aliases.
              * @param {plat.expressions.IParsedExpression} expression A parsed expression object created using the 
              * plat.expressions.IParser injectable.
              * @param {plat.ui.ITemplateControl} control? The control used for evaluation context.
-             * @param {any} aliases? An optional alias object containing resource alias values
+             * @param {IObject<any>} aliases? An optional alias object containing resource alias values (property keys should 
+             * not include the '@' character).
              */
-            static evaluateExpression(expression: expressions.IParsedExpression, control?: ITemplateControl, aliases?: any): any;
-            static evaluateExpression(expression: any, control?: ITemplateControl, aliases?: any): any {
-                if (isNull(expression)) {
-                    return;
-                } else if (!(isString(expression) || isFunction(expression.evaluate))) {
-                    return;
+            static evaluateExpression(expression: expressions.IParsedExpression, control?: ITemplateControl, aliases?: IObject<any>): any;
+            static evaluateExpression(expression: any, control?: ITemplateControl, aliases?: IObject<any>): any {
+                if (isEmpty(expression)) {
+                    return expression;
                 }
 
-                expression = isString(expression) ? TemplateControl.$Parser.parse(expression) : expression;
+                if (isString(expression)) {
+                    expression = TemplateControl.$Parser.parse(expression);
+                } else if (!isFunction(expression.evaluate)) {
+                    return expression;
+                }
 
                 if (isNull(control)) {
                     return expression.evaluate(null, aliases);
@@ -13264,15 +13400,17 @@ module plat {
              * the values. Returns the object.
              * @param {plat.ui.ITemplateControl} control The control used as the starting point for finding resources.
              * @param {Array<string>} aliases An array of aliases to search for.
-             * @param {any} resources? An optional resources object to extend, if no resources object is passed in a new one will be created.
+             * @param {IObject<any>} resources? An optional resources object to extend, if no resources object is passed in a 
+             * new one will be created.
              */
-            static getResources(control: ITemplateControl, aliases: Array<string>, resources?: any): IObject<any> {
+            static getResources(control: ITemplateControl, aliases: Array<string>, resources?: IObject<any>): IObject<any> {
                 if (isNull(control)) {
                     return {};
                 }
 
                 var length = aliases.length,
                     alias: string,
+                    resource: IResource,
                     resourceObj: {
                         control: ITemplateControl;
                         resource: IResource;
@@ -13317,7 +13455,8 @@ module plat {
                     }
 
                     cache[alias] = resourceObj;
-                    resources['@' + alias] = isNull(resourceObj.resource) ? resourceObj.resource : resourceObj.resource.value;
+                    resource = resourceObj.resource;
+                    resources[alias] = isNull(resource) ? resource : resource.value;
                 }
 
                 return resources;
@@ -13350,13 +13489,13 @@ module plat {
                     };
                 } else if (alias === __CONTEXT_RESOURCE || alias === __CONTROL_RESOURCE) {
                     return {
-                        resource: (<any>control.resources)[alias],
+                        resource: ((<any>control.resources) || {})[alias],
                         control: control
                     };
                 }
 
                 while (!isNull(control)) {
-                    resource = (<any>control.resources)[alias];
+                    resource = ((<any>control.resources) || {})[alias];
                     if (!isNull(resource)) {
                         return {
                             resource: resource,
@@ -13408,8 +13547,8 @@ module plat {
                 TemplateControl.$ManagerCache.remove(uid);
                 Control.removeParent(control);
 
-                define(control, __CONTEXT, null, true, true);
-                define(control, __RESOURCES, null, true, true);
+                define(control, __CONTEXT, null, true, true, true);
+                define(control, __RESOURCES, null, true, true, true);
                 control.attributes = null;
                 control.bindableTemplates = null;
                 control.controls = [];
@@ -13568,36 +13707,7 @@ module plat {
                     return <any>Promise.reject(null);
                 }
 
-                var $exception: IExceptionStatic;
-
-                return templateCache.put(templateUrl, templateCache.read(templateUrl).catch((error) => {
-                    if (isNull(error)) {
-                        return TemplateControl.$Http.ajax<string>({ url: templateUrl });
-                    }
-                }).then<DocumentFragment>((success) => {
-                    if (isDocumentFragment(success)) {
-                        return templateCache.put(templateUrl, <any>success);
-                    } else if (!isObject(success) || !isString(success.response)) {
-                        $exception = acquire(__ExceptionStatic);
-                        $exception.warn('No template found at ' + templateUrl, $exception.AJAX);
-                        return templateCache.put(templateUrl, dom.serializeHtml());
-                    }
-
-                    var templateString = success.response;
-
-                    if (isEmpty(templateString.trim())) {
-                        return templateCache.put(templateUrl, dom.serializeHtml());
-                    }
-
-                    return templateCache.put(templateUrl, dom.serializeHtml(templateString));
-                }).catch((error) => {
-                    postpone(() => {
-                        $exception = acquire(__ExceptionStatic);
-                        $exception.fatal('Failure to get template from ' + templateUrl + '.',
-                            $exception.TEMPLATE);
-                    });
-                    return error;
-                }));
+                return dom.getTemplate(templateUrl);
             }
 
             /**
@@ -13644,7 +13754,7 @@ module plat {
             /**
              * An object for quickly retrieving previously accessed resources.
              */
-            private static __resourceCache: any = {};
+            private static __resourceCache: IObject<any> = {};
 
             /**
              * By default TemplateControls have a priority of 100.
@@ -13878,9 +13988,10 @@ module plat {
              * Finds the associated resources and builds a context object containing
              * the values.
              * @param {Array<string>} aliases An array of aliases to search for.
-             * @param {any} resources? An optional resources object to extend, if no resources object is passed in a new one will be created.
+             * @param {IObject<any>} resources? An optional resources object to extend, 
+            if no resources object is passed in a new one will be created.
              */
-            getResources(aliases: Array<string>, resources?: any): IObject<any> {
+            getResources(aliases: Array<string>, resources?: IObject<any>): IObject<any> {
                 return TemplateControl.getResources(this, aliases, resources);
             }
 
@@ -13953,26 +14064,27 @@ module plat {
              * Evaluates an expression string with a given control and optional control's context and aliases.
              * @param {string} expression The expression string (e.g. 'foo + foo').
              * @param {plat.ui.ITemplateControl} control? The control used for evaluation context.
-             * @param {any} aliases? An optional alias object containing resource alias values
+             * @param {IObject<any>} aliases? An optional alias object containing resource alias values
              */
-            evaluateExpression(expression: string, control?: ITemplateControl, aliases?: any): any;
+            evaluateExpression(expression: string, control?: ITemplateControl, aliases?: IObject<any>): any;
             /**
              * Evaluates an expression string with a given control and optional control's context and aliases.
              * @param {plat.expressions.IParsedExpression} expression A parsed expression object created using the 
              * plat.expressions.IParser injectable.
              * @param {plat.ui.ITemplateControl} control? The control used for evaluation context.
-             * @param {any} aliases? An optional alias object containing resource alias values
+             * @param {IObject<any>} aliases? An optional alias object containing resource alias values
              */
-            evaluateExpression(expression: expressions.IParsedExpression, control?: ITemplateControl, aliases?: any): any;
+            evaluateExpression(expression: expressions.IParsedExpression, control?: ITemplateControl, aliases?: IObject<any>): any;
 
             /**
              * Given a control and Array of aliases, finds the associated resources and builds a context object containing
              * the values. Returns the object.
              * @param {plat.ui.ITemplateControl} control The control used as the starting point for finding resources.
              * @param {Array<string>} aliases An array of aliases to search for.
-             * @param {any} resources? An optional resources object to extend, if no resources object is passed in a new one will be created.
+             * @param {IObject<any>} resources? An optional resources object to extend, 
+             * if no resources object is passed in a new one will be created.
              */
-            getResources(control: ITemplateControl, aliases: Array<string>, resources?: any): IObject<any>;
+            getResources(control: ITemplateControl, aliases: Array<string>, resources?: IObject<any>): IObject<any>;
 
             /**
              * Starts at a control and searches up its parent chain for a particular resource alias. 
@@ -14220,9 +14332,10 @@ module plat {
              * Finds the associated resources and builds a context object containing
              * the values.
              * @param {Array<string>} aliases An array of aliases to search for.
-             * @param {any} resources? An optional resources object to extend, if no resources object is passed in a new one will be created.
+             * @param {IObject<any>} resources? An optional resources object to extend, 
+            if no resources object is passed in a new one will be created.
              */
-            getResources? (aliases: Array<string>, resources?: any): IObject<any>;
+            getResources? (aliases: Array<string>, resources?: IObject<any>): IObject<any>;
 
             /**
              * Starts at a control and searches up its parent chain for a particular resource alias. 
@@ -14258,7 +14371,7 @@ module plat {
              * The set of functions added externally that listens 
              * for property changes.
              */
-            _listeners: Array<(newValue: any, oldValue?: any) => void> = [];
+            protected _listeners: Array<(newValue: any, oldValue?: any) => void> = [];
 
             /**
              * Adds a listener to be called when the bindable property changes.
@@ -14515,6 +14628,7 @@ module plat {
              * The title of the HTML web page.
              */
             static titleElement: HTMLTitleElement;
+
             /**
              * The description meta tag.
              */
@@ -14906,6 +15020,16 @@ module plat {
             hasClass(element: Element, className: string): boolean {
                 return hasClass(<HTMLElement>element, className);
             }
+
+            /**
+             * Retrieves and serializes HTML from an HTML template file using ajax. Will facilitate caching the template 
+             * as well.
+             * @param {string} templateUrl The url where the HTML template is stored.
+             * DocumentFragment.
+             */
+            getTemplate(templateUrl: string): async.IThenable<DocumentFragment> {
+                return getTemplate(templateUrl);
+            }
         }
 
         /**
@@ -15130,6 +15254,14 @@ module plat {
              * specified in the className argument.
              */
             hasClass(element: Element, className: string): boolean;
+
+            /**
+             * Retrieves and serializes HTML from an HTML template file using ajax. Will facilitate caching the template 
+             * as well.
+             * @param {string} templateUrl The url where the HTML template is stored.
+             * DocumentFragment.
+             */
+            getTemplate(templateUrl: string): async.IThenable<DocumentFragment>;
         }
 
         /**
@@ -15193,7 +15325,7 @@ module plat {
 
                 if (!isNull(original)) {
                     bindableTemplates.templates = original.templates;
-                    bindableTemplates._cache = original._cache;
+                    bindableTemplates.cache = original.cache;
                 }
 
                 return bindableTemplates;
@@ -15274,7 +15406,7 @@ module plat {
              * A keyed cache of IElementManagers that represent the roots of compiled templates 
              * created by this instance.
              */
-            _cache: IObject<processing.IElementManager> = {};
+            cache: IObject<processing.IElementManager> = {};
 
             /**
              * A collection of all the controls created while compiling an added template. Useful during disposal.
@@ -15410,7 +15542,7 @@ module plat {
 
                 this.__compiledControls = [];
                 this.control = null;
-                this._cache = {};
+                this.cache = {};
                 this.templates = {};
             }
         
@@ -15423,7 +15555,7 @@ module plat {
              * @param {plat.IObject<plat.ui.IResource>} A set of resources to add to the control used to bind this 
              * template.
              */
-            _bindTemplate(key: string, template: DocumentFragment, contextId: string,
+            protected _bindTemplate(key: string, template: DocumentFragment, contextId: string,
                 resources: IObject<IResource>): async.IThenable<DocumentFragment> {
                 var control = this._createBoundControl(key, template, contextId, resources),
                     nodeMap = this._createNodeMap(control, template, contextId),
@@ -15465,8 +15597,8 @@ module plat {
              * @param {string} key The template key used to grab the IElementManager.
              * IElementManager is bound and loaded.
              */
-            _bindNodeMap(nodeMap: processing.INodeMap, key: string): async.IThenable<void> {
-                var manager = this._cache[key],
+            protected _bindNodeMap(nodeMap: processing.INodeMap, key: string): async.IThenable<void> {
+                var manager = this.cache[key],
                     child = nodeMap.uiControlNode.control,
                     template = nodeMap.element,
                     $managerCache = this.$ManagerCache;
@@ -15483,7 +15615,7 @@ module plat {
              * @param {string} key The template key.
              * @param {DocumentFragment} template The HTML template being bound.
              */
-            _compile(key: string, template: DocumentFragment): void {
+            protected _compile(key: string, template: DocumentFragment): void {
                 var control = this._createBoundControl(key + __COMPILED, template),
                     nodeMap = this._createNodeMap(control, template);
 
@@ -15499,7 +15631,7 @@ module plat {
              * @param {plat.processing.INodeMap} nodeMap The newly created node map to bind.
              * @param {string} key The template key.
              */
-            _compileNodeMap(control: ITemplateControl, nodeMap: processing.INodeMap, key: string): void {
+            protected _compileNodeMap(control: ITemplateControl, nodeMap: processing.INodeMap, key: string): void {
                 var manager = this.$ElementManagerFactory.getInstance(),
                     promises: Array<async.IThenable<void>> = [];
 
@@ -15507,7 +15639,7 @@ module plat {
                 manager.initialize(nodeMap, null);
                 manager.setUiControlTemplate();
 
-                this._cache[key] = manager;
+                this.cache[key] = manager;
 
                 promises.push(manager.fulfillTemplate());
 
@@ -15534,7 +15666,7 @@ module plat {
              * @param {Node} template The template being compiled.
              * @param {string} childContext? A potential child context string identifier.
              */
-            _createNodeMap(uiControl: ITemplateControl, template: Node, childContext?: string): processing.INodeMap {
+            protected _createNodeMap(uiControl: ITemplateControl, template: Node, childContext?: string): processing.INodeMap {
                 return {
                     element: <HTMLElement>template,
                     attributes: {},
@@ -15559,13 +15691,13 @@ module plat {
              * @param {plat.IObject<plat.ui.IResource>} resources? A set of resources to add to the control used to 
              * compile/bind this template.
              */
-            _createBoundControl(key: string, template: DocumentFragment,
+            protected _createBoundControl(key: string, template: DocumentFragment,
                 relativeIdentifier?: string, resources?: IObject<IResource>): ITemplateControl {
                 var $TemplateControlFactory = this.$TemplateControlFactory,
                     control = $TemplateControlFactory.getInstance(),
                     $ResourcesFactory = this.$ResourcesFactory,
                     parent = this.control,
-                    compiledManager = this._cache[key],
+                    compiledManager = this.cache[key],
                     _resources = $ResourcesFactory.getInstance();
 
                 if (isObject(compiledManager)) {
@@ -15645,6 +15777,12 @@ module plat {
          * separate those templates and reuse them accordingly.
          */
         export interface IBindableTemplates {
+            /**
+             * A keyed cache of IElementManagers that represent the roots of compiled templates 
+             * created by this instance.
+             */
+            cache: IObject<processing.IElementManager>;
+
             /**
              * The control containing this BindableTemplates object.
              */
@@ -15798,7 +15936,7 @@ module plat {
              * @param {any} newValue The new value of the attribute.
              * @param {any} oldValue The previous value of the attribute.
              */
-            _attributeChanged(key: string, newValue: any, oldValue: any): void {
+            protected _attributeChanged(key: string, newValue: any, oldValue: any): void {
                 var listeners = this.__listeners[camelCase(key)],
                     length = listeners.length;
 
@@ -16040,7 +16178,7 @@ module plat {
                     resource = (<any>resources)[key];
 
                     if (!isNull(resource) && resource.type === __OBSERVABLE_RESOURCE) {
-                        define(resources, key, persist ? _clone(resource, true) : null, true, true);
+                        define(resources, key, persist ? _clone(resource, true) : null, true, true, true);
                     }
                 }
 
@@ -16109,7 +16247,7 @@ module plat {
              * @param {plat.ui.ITemplateControl} control The control in charge of the observable resource.
              * @param {plat.ui.IResource} resource The resource to observe.
              */
-            static _observeResource(control: ITemplateControl, resource: IResource): void {
+            protected static _observeResource(control: ITemplateControl, resource: IResource): void {
                 var value = resource.value,
                     uid = control.uid,
                     removeListeners = Resources.__observableResourceRemoveListeners[uid];
@@ -16136,7 +16274,7 @@ module plat {
              * Removes observable resource listeners for a specified control.
              * @param {plat.ui.ITemplateControl} control The control whose listeners are being removed.
              */
-            static _removeListeners(control: ITemplateControl): void {
+            protected static _removeListeners(control: ITemplateControl): void {
                 if (isNull(control)) {
                     return;
                 }
@@ -16529,6 +16667,7 @@ module plat {
                      */
                     dblTapZoomDelay: 0
                 },
+
                 /**
                  * An object containing the different minimum/maximum distances that govern the behavior of certain 
                  * custom DOM events.
@@ -16545,6 +16684,7 @@ module plat {
                      */
                     maxDblTapDistance: 20
                 },
+
                 /**
                  * An object containing the different minimum/maximum velocities that govern the behavior of certain 
                  * custom DOM events.
@@ -16556,6 +16696,7 @@ module plat {
                      */
                     minSwipeVelocity: 0.8
                 },
+
                 /**
                  * The default CSS styles applied to elements listening for custom DOM events. If using 
                  * platypus.css, you must overwrite the styles in platypus.css or create your own and 
@@ -16618,44 +16759,44 @@ module plat {
              * They become active at least one element on the current 
              * page is listening for a custom event.
              */
-            _isActive: boolean;
+            protected _isActive: boolean;
 
             /**
              * Whether or not the user is currently touching the screen.
              */
-            _inTouch: boolean;
+            protected _inTouch: boolean;
 
             /**
              * Whether or not the user is using mouse when touch events are present.
              */
-            _inMouse = false;
+            protected _inMouse = false;
 
             /**
              * An object with keyed subscribers that keep track of all of the 
              * events registered on a particular element.
              */
-            _subscribers: IObject<IEventSubscriber> = {};
+            protected _subscribers: IObject<IEventSubscriber> = {};
 
             /**
              * The touch start events defined by this browser.
              */
-            _startEvents: Array<string>;
+            protected _startEvents: Array<string>;
 
             /**
              * The touch move events defined by this browser.
              */
-            _moveEvents: Array<string>;
+            protected _moveEvents: Array<string>;
 
             /**
              * The touch end events defined by this browser.
              */
-            _endEvents: Array<string>;
+            protected _endEvents: Array<string>;
 
             /**
              * An object containing the event types for all of the 
              * supported gestures.
              */
-            _gestures: IGestures<string> = {
+            protected _gestures: IGestures<string> = {
                 $tap: __tap,
                 $dbltap: __dbltap,
                 $hold: __hold,
@@ -16677,7 +16818,7 @@ module plat {
              * An object containing the number of currently active 
              * events of each base type.
              */
-            _gestureCount: IBaseGestures<number> = {
+            protected _gestureCount: IBaseGestures<number> = {
                 $tap: 0,
                 $dbltap: 0,
                 $hold: 0,
@@ -16957,7 +17098,7 @@ module plat {
              * A listener for touch/mouse start events.
              * @param {plat.ui.IPointerEvent} ev The touch start event object.
              */
-            _onTouchStart(ev: IPointerEvent): boolean {
+            protected _onTouchStart(ev: IPointerEvent): boolean {
                 if (this.__touchCount++ > 0) {
                     return true;
                 }
@@ -17045,7 +17186,7 @@ module plat {
              * A listener for touch/mouse move events.
              * @param {plat.ui.IPointerEvent} ev The touch move event object.
              */
-            _onTouchMove(ev: IPointerEvent): boolean {
+            protected _onTouchMove(ev: IPointerEvent): boolean {
                 // clear hold event
                 this.__cancelDeferredHold();
                 this.__cancelDeferredHold = noop;
@@ -17069,7 +17210,7 @@ module plat {
                     x = ev.clientX,
                     y = ev.clientY,
                     minMove = this.__hasMoved ||
-                    (this.__getDistance(swipeOrigin.clientX, x, swipeOrigin.clientY, y) >= config.distances.minScrollDistance);
+                        (this.__getDistance(swipeOrigin.clientX, x, swipeOrigin.clientY, y) >= config.distances.minScrollDistance);
 
                 // if minimum distance not met
                 if (!minMove) {
@@ -17106,7 +17247,7 @@ module plat {
              * A listener for touch/mouse end events.
              * @param {plat.ui.IPointerEvent} ev The touch end event object.
              */
-            _onTouchEnd(ev: IPointerEvent): boolean {
+            protected _onTouchEnd(ev: IPointerEvent): boolean {
                 var eventType = ev.type,
                     hasMoved = this.__hasMoved;
 
@@ -17255,6 +17396,7 @@ module plat {
                 }
                 this.__resetTouchEnd();
             }
+
             /**
              * A function for handling and firing tap events.
              * @param {plat.ui.IPointerEvent} ev The touch end event object.
@@ -17289,6 +17431,7 @@ module plat {
                     this.__cancelDeferredTap = noop;
                 }, DomEvents.config.intervals.dblTapZoomDelay);
             }
+
             /**
              * A function for handling and firing double tap events.
              * @param {plat.ui.IPointerEvent} ev The touch end event object.
@@ -17312,6 +17455,7 @@ module plat {
                 // set touch count to -1 to prevent repeated fire on sequential taps
                 this.__tapCount = -1;
             }
+
             /**
              * A function for handling and firing release events.
              * @param {plat.ui.IPointerEvent} ev The touch end event object.
@@ -17324,6 +17468,7 @@ module plat {
 
                 this.__hasRelease = false;
             }
+
             /**
              * A function for handling and firing swipe events.
              */
@@ -17344,6 +17489,7 @@ module plat {
                 this.__lastMoveEvent = null;
                 this.__swipeSubscribers = null;
             }
+
             /**
              * A function for handling and firing track events.
              * @param {plat.ui.IPointerEvent} ev The touch move event object.
@@ -17365,6 +17511,7 @@ module plat {
                     }
                 }
             }
+
             /**
              * A function for handling and firing track end events.
              * @param {plat.ui.IPointerEvent} ev The touch end event object.
@@ -17382,6 +17529,7 @@ module plat {
 
                 domEvent.trigger(ev);
             }
+
             /**
              * A function for handling and firing custom events that are mapped to standard events.
              * @param {plat.ui.IExtendedEvent} ev The touch event object.
@@ -17429,6 +17577,7 @@ module plat {
                 this._moveEvents = [touchEvents.$touchmove];
                 this._endEvents = isNull(cancelEvent) ? [touchEvents.$touchend] : [touchEvents.$touchend, cancelEvent];
             }
+
             /**
              * Registers for and starts listening to start and end touch events on the document.
              */
@@ -17436,6 +17585,7 @@ module plat {
                 this.__registerType(this.__START);
                 this.__registerType(this.__END);
             }
+
             /**
              * Unregisters for and stops listening to all touch events on the document.
              */
@@ -17444,6 +17594,7 @@ module plat {
                 this.__unregisterType(this.__MOVE);
                 this.__unregisterType(this.__END);
             }
+
             /**
              * Registers for and begins listening to a particular touch event type.
              * @param {string} event The event type to begin listening for.
@@ -17472,6 +17623,7 @@ module plat {
                     $document.addEventListener(events[index], listener, false);
                 }
             }
+
             /**
              * Unregisters for and stops listening to a particular touch event type.
              * @param {string} event The event type to stop listening for.
@@ -17500,6 +17652,7 @@ module plat {
                     $document.removeEventListener(events[index], listener, false);
                 }
             }
+
             /**
              * Registers and associates an element with an event.
              * @param {plat.ui.ICustomElement} element The element being tied to a custom event.
@@ -17552,6 +17705,7 @@ module plat {
                 }
                 this.__removeSelections(element);
             }
+
             /**
              * Unregisters and disassociates an element with an event.
              * @param {plat.ui.ICustomElement} element The element being disassociated with the given custom event.
@@ -17582,6 +17736,7 @@ module plat {
                     this.__removeElement(element);
                 }
             }
+
             /**
              * Sets the current touch point and helps standardize the given event object.
              * @param {plat.ui.IPointerEvent} ev The current point being touched.
@@ -17597,6 +17752,7 @@ module plat {
 
                 ev.pointerType = eventType.indexOf('mouse') === -1 ? 'touch' : 'mouse';
             }
+
             /**
              * Sets the captured target.
              * @param {EventTarget} target The target to capture.
@@ -17606,6 +17762,7 @@ module plat {
                     this.__capturedTarget = <ICustomElement>target;
                 }
             }
+
             /**
              * Sets the captured target.
              * @param {plat.ui.IPointerEvent} ev The current touch point.
@@ -17718,6 +17875,7 @@ module plat {
 
                 return domEvents;
             }
+
             /**
              * Adds a listener for listening to a standard event and mapping it to a custom event.
              * @param {number} count The number of mapped events registered.
@@ -17735,6 +17893,7 @@ module plat {
                     $document.removeEventListener(mappedEvent, this.__mappedEventListener, useCapture);
                 };
             }
+
             /**
              * Removes an event listener for a given event type.
              * @param {plat.ui.ICustomElement} element The element to remove the listener from.
@@ -17762,6 +17921,7 @@ module plat {
                 (<any>this._gestureCount)[countType]--;
                 this.__unregisterElement(element, type);
             }
+
             /**
              * Removes an element from the subscriber object.
              * @param {plat.ui.ICustomElement} element The element being removed.
@@ -17784,6 +17944,7 @@ module plat {
                     this.dispose();
                 }
             }
+
             /**
              * Standardizes certain properties on the event object for custom events.
              * @param {plat.ui.IExtendedEvent} ev The event object to be standardized.
@@ -17822,6 +17983,7 @@ module plat {
 
                 return ev;
             }
+
             /**
              * Searches through the input array looking for the primary 
              * touch down index.
@@ -17841,6 +18003,7 @@ module plat {
 
                 return -1;
             }
+
             /**
              * Grabs the x and y offsets of an event object's target.
              * @param {plat.ui.IExtendedEvent} ev The current event object.
@@ -17886,6 +18049,7 @@ module plat {
                     y = y2 - y1;
                 return Math.sqrt((x * x) + (y * y));
             }
+
             /**
              * Calculates the velocity between two (x, y) coordinate points over a given time.
              * @param {number} dx The change in x position.
@@ -17898,6 +18062,7 @@ module plat {
                     y: Math.abs(dy / dt) || 0
                 };
             }
+
             /**
              * Calculates the direction of movement.
              * @param {number} dx The change in x position.
@@ -17917,6 +18082,7 @@ module plat {
                     primary: (distanceX === distanceY ? (lastDirection.primary || 'none') : (distanceX > distanceY ? horizontal : vertical))
                 };
             }
+
             /**
              * Checks to see if a swipe direction has changed to recalculate 
              * an origin point.
@@ -17945,6 +18111,7 @@ module plat {
                 this.__hasSwiped = false;
                 return true;
             }
+
             /**
              * Checks to see if a swipe event has been registered.
              * @param {plat.ui.IDirection} direction The current horizontal and vertical directions of movement.
@@ -17968,6 +18135,7 @@ module plat {
 
                 this.__swipeSubscribers = this.__findFirstSubscribers(swipeTarget, events);
             }
+
             /**
              * Checks to see if a swipe event has been registered.
              * @param {string} direction The current direction of movement.
@@ -17975,6 +18143,7 @@ module plat {
             private __isHorizontal(direction: string): boolean {
                 return direction === 'left' || direction === 'right';
             }
+
             /**
              * Appends CSS to the head for gestures if needed.
              */
@@ -18008,6 +18177,7 @@ module plat {
                 style.textContent = textContent;
                 head.appendChild(style);
             }
+
             /**
              * Creates a style text to append to the document head.
              * @param {plat.ui.IDefaultStyle} styleClass The object containing the custom styles for 
@@ -18029,6 +18199,7 @@ module plat {
 
                 return style;
             }
+
             /**
              * Determines whether the target is the currently focused element.
              * @param {EventTarget} target The event target.
@@ -18036,6 +18207,7 @@ module plat {
             private __isFocused(target: EventTarget): boolean {
                 return target === this.__focusedElement;
             }
+
             /**
              * Handles HTMLInputElements in WebKit based touch applications.
              * @param {HTMLInputElement} target The event target.
@@ -18137,6 +18309,7 @@ module plat {
 
                 this.__focusedElement = null;
             }
+
             /**
              * Handles the phantom click in WebKit based touch applications.
              */
@@ -18171,6 +18344,7 @@ module plat {
                     $document.addEventListener('mouseup', preventDefault, true);
                 });
             }
+
             /**
              * Removes selection capability from the element.
              * @param {Node} element The element to remove selections on.
@@ -18187,6 +18361,7 @@ module plat {
                     element.addEventListener('dragstart', this.__preventDefault, false);
                 }
             }
+
             /**
              * Returns selection capability from the element.
              * @param {Node} element The element to return selections on.
@@ -18203,6 +18378,7 @@ module plat {
                     element.removeEventListener('dragstart', this.__preventDefault, false);
                 }
             }
+
             /**
              * Prevents default and stops propagation in all elements other than 
              * inputs and textareas.
@@ -18301,6 +18477,7 @@ module plat {
              * The node or window object associated with this IDomEventInstance object.
              */
             element: any;
+
             /**
              * The event type associated with this IDomEventInstance object.
              */
@@ -18494,10 +18671,12 @@ module plat {
              * The touch start event.
              */
             start: EventListener;
+
             /**
              * The touch end event.
              */
             end: EventListener;
+
             /**
              * The touch move event.
              */
@@ -19008,12 +19187,7 @@ module plat {
                 /**
                  * All elements currently being animated.
                  */
-                _elements: IObject<IAnimatedElement> = {};
-
-                /**
-                 * Indicates if a warning regarding our CSS was previously fired.
-                 */
-                private __cssWarning = false;
+                protected _elements: IObject<IAnimatedElement> = {};
 
                 /**
                  * Animates the element with the defined animation denoted by the key.
@@ -19026,26 +19200,17 @@ module plat {
                         return this.resolve();
                     }
 
-                    var $compat = this.$Compat,
-                        animation = animationInjectors[key],
+                    var animation = animationInjectors[key],
                         jsAnimation = jsAnimationInjectors[key],
                         animationInstance: IBaseAnimation;
 
-                    if (!$compat.animationSupported || isUndefined(animation)) {
+                    if (!this.$Compat.animationSupported || isUndefined(animation)) {
                         if (isUndefined(jsAnimation)) {
                             return this.resolve();
                         }
 
                         animationInstance = jsAnimation.inject();
                     } else {
-                        if (!(this.__cssWarning || $compat.platCss)) {
-                            var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                            $exception.warn('CSS animation occurring and platypus.css was not loaded. If you ' +
-                                'intend to use platypus.css, please move it before platypus.js inside your head or body declaration.',
-                                $exception.ANIMATION);
-                            this.__cssWarning = true;
-                        }
-
                         animationInstance = animation.inject();
                     }
 
@@ -19488,7 +19653,7 @@ module plat {
                 /**
                  * The resolve function for the end of the animation.
                  */
-                _resolve: () => void;
+                protected _resolve: () => void;
 
                 /**
                  * A function for initializing the animation or any of its properties before start.
@@ -19761,6 +19926,11 @@ module plat {
                 className = __SimpleAnimation;
 
                 /**
+                 * An optional options object that can denote a pseudo element animation.
+                 */
+                options: ISimpleCssAnimationOptions;
+
+                /**
                  * Adds the class to start the animation.
                  */
                 initialize(): void {
@@ -19784,7 +19954,7 @@ module plat {
                     var animationId = this.$Compat.animationEvents.$animation,
                         element = this.element,
                         className = this.className,
-                        computedStyle = this.$Window.getComputedStyle(element),
+                        computedStyle = this.$Window.getComputedStyle(element, (this.options || <ISimpleCssAnimationOptions>{}).pseudo),
                         animationName = computedStyle[<any>(animationId + 'Name')];
 
                     if (animationName === '' ||
@@ -19836,6 +20006,21 @@ module plat {
                  * The class name added to the animated element.
                  */
                 className: string;
+
+                /**
+                 * An optional options object that can denote a pseudo element animation.
+                 */
+                options: ISimpleCssAnimationOptions;
+            }
+
+            /**
+             * An interface describing the options for ISimpleCssAnimation.
+             */
+            export interface ISimpleCssAnimationOptions {
+                /**
+                 * The pseudo element identifier (i.e. '::before' if defined as .red::before).
+                 */
+                pseudo?: string;
             }
 
             /**
@@ -19897,10 +20082,10 @@ module plat {
                 $Window: Window = acquire(__Window);
 
                 /**
-                 * A JavaScript object with key value pairs for adjusting transition values. 
-                 * (e.g. { width: '800px' } would set the element's width to 800px.
+                 * An optional options object that can denote a pseudo element animation and specify 
+                 * properties to modify during the transition.
                  */
-                options: IObject<string>;
+                options: ISimpleCssTransitionOptions;
 
                 /**
                  * The class name added to the animated element.
@@ -19912,12 +20097,12 @@ module plat {
                  * of this animation. Used in the case of a disposal to reset the changed 
                  * properties.
                  */
-                _modifiedProperties: IObject<string> = {};
+                protected _modifiedProperties: IObject<string> = {};
 
                 /**
                  * Denotes whether or not the animation was ever started.
                  */
-                _started = false;
+                protected _started = false;
 
                 /**
                  * Adds the class to enable the transition.
@@ -19936,7 +20121,7 @@ module plat {
                             removeClass(element, this.className);
                             this.end();
                         },
-                        computedStyle = this.$Window.getComputedStyle(element),
+                        computedStyle = this.$Window.getComputedStyle(element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
                         transitionProperty = computedStyle[<any>(transitionId + 'Property')],
                         transitionDuration = computedStyle[<any>(transitionId + 'Duration')];
 
@@ -19990,10 +20175,10 @@ module plat {
                  * Animate the element based on the options passed in.
                  * If false, the control should begin cleaning up.
                  */
-                _animate(): boolean {
+                protected _animate(): boolean {
                     var style = this.element.style || {},
-                        options = this.options || {},
-                        keys = Object.keys(options),
+                        properties = (this.options || <ISimpleCssTransitionOptions>{}).properties || {},
+                        keys = Object.keys(properties),
                         length = keys.length,
                         key: any,
                         modifiedProperties = this._modifiedProperties,
@@ -20004,7 +20189,7 @@ module plat {
                     while (keys.length > 0) {
                         key = keys.shift();
                         currentProperty = style[key];
-                        newProperty = options[key];
+                        newProperty = properties[key];
                         if (!isString(newProperty)) {
                             unchanged++;
                             continue;
@@ -20030,10 +20215,18 @@ module plat {
              */
             export interface ISimpleCssTransition extends ISimpleCssAnimation {
                 /**
+                 * An optional options object that can denote a pseudo element animation and specify 
+                 * properties to modify during the transition.
+                 */
+                options: ISimpleCssTransitionOptions;
+            }
+
+            export interface ISimpleCssTransitionOptions extends ISimpleCssAnimationOptions {
+                /**
                  * A JavaScript object with key value pairs for adjusting transition values. 
                  * (e.g. { width: '800px' } would set the element's width to 800px.
                  */
-                options: plat.IObject<string>;
+                properties: IObject<string>;
             }
         }
 
@@ -20075,7 +20268,7 @@ module plat {
                 /**
                  * A promise used for disposing the end state of the previous animation prior to starting a new one.
                  */
-                _animationPromise: animations.IAnimationThenable<animations.IGetAnimatingThenable>;
+                protected _animationPromise: animations.IAnimationThenable<animations.IGetAnimatingThenable>;
 
                 /**
                  * The constructor for a Baseport.
@@ -20199,7 +20392,7 @@ module plat {
                  * @param {plat.navigation.IBaseNavigationOptions} options? The options 
                  * needed on load for the inherited form of navigation.
                  */
-                _load(navigationParameter?: any, options?: navigation.IBaseNavigationOptions): void {
+                protected _load(navigationParameter?: any, options?: navigation.IBaseNavigationOptions): void {
                     var navigator = this.navigator;
                     navigator.registerPort(this);
                     navigator.navigate(navigationParameter, options);
@@ -20357,7 +20550,7 @@ module plat {
                  * Checks for a default view, finds the ViewControl's injector, 
                  * and initializes the loading of the view.
                  */
-                _load(): void {
+                protected _load(): void {
                     var $exception: IExceptionStatic;
                     if (isNull(this.options)) {
                         $exception = acquire(__ExceptionStatic);
@@ -20422,7 +20615,7 @@ module plat {
                  * Looks for a default route and initializes the loading 
                  * of the view.
                  */
-                _load(): void {
+                protected _load(): void {
                     var path = '',
                         options = this.options;
 
@@ -20481,13 +20674,13 @@ module plat {
                  * The unique ID used to reference a particular 
                  * template.
                  */
-                _id: string;
+                protected _id: string;
         
                 /**
                  * The optional URL associated with this 
                  * particular template.
                  */
-                _url: string;
+                protected _url: string;
         
                 /**
                  * Whether or not this is the first instance of the control, 
@@ -20559,7 +20752,7 @@ module plat {
                  * creates the bindable template, and stores the template 
                  * in a template cache for later use.
                  */
-                _initializeTemplate(): void {
+                protected _initializeTemplate(): void {
                     var id = this._id;
 
                     if (isNull(id)) {
@@ -20604,7 +20797,7 @@ module plat {
                  * @param {plat.async.IThenable<plat.ui.controls.Template>} templatePromise The promise 
                  * associated with the first instance of the control with this ID.
                  */
-                _waitForTemplateControl(templatePromise: async.IThenable<Template>): void {
+                protected _waitForTemplateControl(templatePromise: async.IThenable<Template>): void {
                     var $exception: IExceptionStatic;
                     templatePromise.then((templateControl: Template) => {
                         if (!(isNull(this._url) || (this._url === templateControl._url))) {
@@ -20636,8 +20829,8 @@ module plat {
                  * with this corresponding ID that defined the HTML template to reuse.
                  */
                 private __mapBindableTemplates(control: Template): void {
-                    var bindableTemplates = <BindableTemplates>this.bindableTemplates;
-                    bindableTemplates._cache = (<BindableTemplates>control.bindableTemplates)._cache;
+                    var bindableTemplates = this.bindableTemplates;
+                    bindableTemplates.cache = control.bindableTemplates.cache;
                     bindableTemplates.templates = control.bindableTemplates.templates;
                 }
             }
@@ -20727,7 +20920,7 @@ module plat {
                  * can overwrite these with the options for 
                  * the foreach control. 
                  */
-                _aliases: IForEachAliasOptions = {
+                protected _aliases: IForEachAliasOptions = {
                     index: __forEachAliasOptions.index,
                     even: __forEachAliasOptions.even,
                     odd: __forEachAliasOptions.odd,
@@ -20738,7 +20931,7 @@ module plat {
                 /**
                  * The node length of the element's childNodes (innerHTML).
                  */
-                _blockLength = 0;
+                protected _blockLength = 0;
 
                 /**
                  * Whether or not the Array listener has been set.
@@ -20825,7 +21018,7 @@ module plat {
                 /**
                  * Sets the alias tokens to use for all the items in the foreach context array.
                  */
-                _setAliases() {
+                protected _setAliases() {
                     var options = this.options;
 
                     if (!(isObject(options) && isObject(options.value) && isObject(options.value.aliases))) {
@@ -20833,9 +21026,9 @@ module plat {
                     }
 
                     var aliases = options.value.aliases,
-                        keys = Object.keys(this._aliases),
-                        length = keys.length,
                         _aliases = this._aliases,
+                        keys = Object.keys(_aliases),
+                        length = keys.length,
                         value: string;
 
                     for (var i = 0; i < length; ++i) {
@@ -20852,10 +21045,11 @@ module plat {
                  * @param {DocumentFragment} item The HTML fragment representing a single item
                  * @param {boolean} animate? Whether or not to animate the entering item
                  */
-                _addItem(item: DocumentFragment, animate?: boolean): void {
+                protected _addItem(item: DocumentFragment, animate?: boolean): void {
+                    var context = this.context;
                     if (!isNode(item) ||
-                        !isArray(this.context) ||
-                        this.context.length === 0 ||
+                        !isArray(context) ||
+                        context.length === 0 ||
                         this.controls.length === 0) {
                         return;
                     }
@@ -20893,7 +21087,7 @@ module plat {
                 /**
                  * Removes an item from the control's element.
                  */
-                _removeItem(): void {
+                protected _removeItem(): void {
                     var controls = this.controls,
                         length = controls.length - 1;
 
@@ -20904,7 +21098,7 @@ module plat {
                  * Updates the control's children resource objects when 
                  * the array changes.
                  */
-                _updateResources(): void {
+                protected _updateResources(): void {
                     var controls = this.controls,
                         length = controls.length;
 
@@ -20916,7 +21110,7 @@ module plat {
                 /**
                  * Sets a listener for the changes to the array.
                  */
-                _setListener(): void {
+                protected _setListener(): void {
                     if (!this.__listenerSet) {
                         this.observeArray(this, __CONTEXT, this._executeEvent);
                         this.__listenerSet = true;
@@ -20928,7 +21122,7 @@ module plat {
                  * method to its associated method handler.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _executeEvent(ev: observable.IArrayMethodInfo<any>): void {
+                protected _executeEvent(ev: observable.IArrayMethodInfo<any>): void {
                     var method = '_' + ev.method;
                     if (isFunction((<any>this)[method])) {
                         (<any>this)[method](ev);
@@ -20942,7 +21136,7 @@ module plat {
                  * @param {number} index The point in the array to start adding items.
                  * @param {boolean} animate? Whether or not to animate the new items
                  */
-                _addItems(numberOfItems: number, index: number, animate?: boolean): async.IThenable<void> {
+                protected _addItems(numberOfItems: number, index: number, animate?: boolean): async.IThenable<void> {
                     var bindableTemplates = this.bindableTemplates,
                         promises: Array<async.IThenable<void>> = [];
 
@@ -20981,7 +21175,7 @@ module plat {
                  * Removes items from the control's element.
                  * @param {number} numberOfItems The number of items to remove.
                  */
-                _removeItems(numberOfItems: number): void {
+                protected _removeItems(numberOfItems: number): void {
                     for (var i = 0; i < numberOfItems; ++i) {
                         this._removeItem();
                     }
@@ -20997,7 +21191,7 @@ module plat {
                  * first:boolean, and last:boolean.
                  * @param {number} index The index used to create the resource aliases.
                  */
-                _getAliases(index: number): IObject<IResource> {
+                protected _getAliases(index: number): IObject<IResource> {
                     var isEven = (index & 1) === 0,
                         aliases: IObject<ui.IResource> = {},
                         _aliases = this._aliases,
@@ -21035,7 +21229,7 @@ module plat {
                  * Handles items being pushed into the array.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _push(ev: observable.IArrayMethodInfo<any>): void {
+                protected _push(ev: observable.IArrayMethodInfo<any>): void {
                     this._addItems(ev.arguments.length, ev.oldArray.length, true);
                 }
 
@@ -21043,7 +21237,7 @@ module plat {
                  * Handles items being popped off the array.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _pop(ev: observable.IArrayMethodInfo<any>): void {
+                protected _pop(ev: observable.IArrayMethodInfo<any>): void {
                     var blockLength = this._blockLength,
                         startNode: number,
                         animationPromise: plat.ui.animations.IAnimationThenable<void>;
@@ -21067,7 +21261,7 @@ module plat {
                  * Handles items being shifted off the array.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _shift(ev: observable.IArrayMethodInfo<any>): void {
+                protected _shift(ev: observable.IArrayMethodInfo<any>): void {
                     this._removeItems(1);
                 }
 
@@ -21075,7 +21269,7 @@ module plat {
                  * Handles adding/removing items when an array is spliced.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _splice(ev: observable.IArrayMethodInfo<any>): void {
+                protected _splice(ev: observable.IArrayMethodInfo<any>): void {
                     var oldLength = this.controls.length,
                         newLength = ev.newArray.length;
 
@@ -21090,7 +21284,7 @@ module plat {
                  * Handles items being unshifted into the array.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _unshift(ev: observable.IArrayMethodInfo<any>): void {
+                protected _unshift(ev: observable.IArrayMethodInfo<any>): void {
                     this._addItems(ev.arguments.length, ev.oldArray.length);
                 }
 
@@ -21098,13 +21292,13 @@ module plat {
                  * Handles when the array is sorted.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _sort(ev: observable.IArrayMethodInfo<any>): void { }
+                protected _sort(ev: observable.IArrayMethodInfo<any>): void { }
 
                 /**
                  * Handles when the array is reversed.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _reverse(ev: observable.IArrayMethodInfo<any>): void { }
+                protected _reverse(ev: observable.IArrayMethodInfo<any>): void { }
 
                 /**
                  * Animates a block of elements.
@@ -21114,7 +21308,7 @@ module plat {
                  * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
                  * Defaults to true.
                  */
-                _animateItems(startNode: number, endNode: number, key: string, cancel?: boolean): animations.IAnimationThenable<void> {
+                protected _animateItems(startNode: number, endNode: number, key: string, cancel?: boolean): animations.IAnimationThenable<void> {
                     var currentAnimations = this.__currentAnimations,
                         length = currentAnimations.length;
 
@@ -21169,7 +21363,7 @@ module plat {
                 /**
                  * Used to specify alternative alias tokens for the built-in foreach aliases.
                  */
-                aliases: IForEachAliasOptions;
+                aliases?: IForEachAliasOptions;
             }
 
             /**
@@ -21181,31 +21375,31 @@ module plat {
                  * Used to specify an alternative alias for the index in a ForEach 
                  * item template.
                  */
-                index: string;
+                index?: string;
 
                 /**
                  * Used to specify an alternative alias for the even in a ForEach 
                  * item template.
                  */
-                even: string;
+                even?: string;
 
                 /**
                  * Used to specify an alternative alias for the odd in a ForEach 
                  * item template.
                  */
-                odd: string;
+                odd?: string;
 
                 /**
                  * Used to specify an alternative alias for the first in a ForEach 
                  * item template.
                  */
-                first: string;
+                first?: string;
 
                 /**
                  * Used to specify an alternative alias for the last in a ForEach 
                  * item template.
                  */
-                last: string;
+                last?: string;
             }
 
             /**
@@ -21427,7 +21621,7 @@ module plat {
                 /**
                  * Sets a listener for the changes to the array.
                  */
-                _setListener(): void {
+                protected _setListener(): void {
                     if (!this.__listenerSet) {
                         this.observeArray(this, __CONTEXT, this._executeEvent);
                         this.__listenerSet = true;
@@ -21439,7 +21633,7 @@ module plat {
                  * method to its associated method handler.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
                  */
-                _executeEvent(ev: observable.IArrayMethodInfo<any>): void {
+                protected _executeEvent(ev: observable.IArrayMethodInfo<any>): void {
                     var method = '_' + ev.method;
                     if (isFunction((<any>this)[method])) {
                         (<any>this)[method](ev);
@@ -21452,7 +21646,7 @@ module plat {
                  * @param {number} length The current index of the next 
                  * set of items to add.
                  */
-                _addItems(numberOfItems: number, length: number): async.IThenable<void> {
+                protected _addItems(numberOfItems: number, length: number): async.IThenable<void> {
                     var index = length,
                         item: any,
                         bindableTemplates = this.bindableTemplates,
@@ -21494,7 +21688,7 @@ module plat {
                  * inserted into the DOM.
                  * or optgroup has successfully be inserted.
                  */
-                _insertOptions(index: number, item: any, optionClone: DocumentFragment): async.IThenable<any> {
+                protected _insertOptions(index: number, item: any, optionClone: DocumentFragment): async.IThenable<any> {
                     var element = this.element;
                     if (this.__isGrouped) {
                         var groups = this.groups,
@@ -21529,7 +21723,7 @@ module plat {
                  * Removes the specified option item from the DOM.
                  * @param {number} index The control index to remove.
                  */
-                _removeItem(index: number): void {
+                protected _removeItem(index: number): void {
                     if (index < 0) {
                         return;
                     }
@@ -21542,7 +21736,7 @@ module plat {
                  * @param {number} numberOfItems The number of items 
                  * to remove.
                  */
-                _removeItems(numberOfItems: number): void {
+                protected _removeItems(numberOfItems: number): void {
                     var controls = this.controls,
                         length = controls.length - 1;
 
@@ -21556,7 +21750,7 @@ module plat {
                  * from the array context.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _itemRemoved(ev: observable.IArrayMethodInfo<any>): void {
+                protected _itemRemoved(ev: observable.IArrayMethodInfo<any>): void {
                     if (ev.oldArray.length === 0) {
                         return;
                     } else if (this.__isGrouped) {
@@ -21571,7 +21765,7 @@ module plat {
                  * Resets the select element by removing all its 
                  * items and adding them back.
                  */
-                _resetSelect(): void {
+                protected _resetSelect(): void {
                     var itemLength = this.context.length,
                         element = this.element,
                         nodeLength = element.childNodes.length;
@@ -21590,7 +21784,7 @@ module plat {
                  * the array context.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _push(ev: observable.IArrayMethodInfo<any>): void {
+                protected _push(ev: observable.IArrayMethodInfo<any>): void {
                     this._addItems(ev.arguments.length, ev.oldArray.length);
                 }
 
@@ -21599,7 +21793,7 @@ module plat {
                  * from the array context.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _pop(ev: observable.IArrayMethodInfo<any>): void {
+                protected _pop(ev: observable.IArrayMethodInfo<any>): void {
                     this._itemRemoved(ev);
                 }
         
@@ -21608,7 +21802,7 @@ module plat {
                  * from the array context.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _shift(ev: observable.IArrayMethodInfo<any>): void {
+                protected _shift(ev: observable.IArrayMethodInfo<any>): void {
                     this._itemRemoved(ev);
                 }
         
@@ -21617,7 +21811,7 @@ module plat {
                  * from the array context.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _splice(ev: observable.IArrayMethodInfo<any>): void {
+                protected _splice(ev: observable.IArrayMethodInfo<any>): void {
                     if (this.__isGrouped) {
                         this._resetSelect();
                         return;
@@ -21638,7 +21832,7 @@ module plat {
                  * onto the array context.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _unshift(ev: observable.IArrayMethodInfo<any>): void {
+                protected _unshift(ev: observable.IArrayMethodInfo<any>): void {
                     if (this.__isGrouped) {
                         this._resetSelect();
                         return;
@@ -21652,7 +21846,7 @@ module plat {
                  * is sorted.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _sort(ev: observable.IArrayMethodInfo<any>): void {
+                protected _sort(ev: observable.IArrayMethodInfo<any>): void {
                     if (this.__isGrouped) {
                         this._resetSelect();
                     }
@@ -21663,7 +21857,7 @@ module plat {
                  * is reversed.
                  * @param {plat.observable.IArrayMethodInfo<any>} ev The array mutation object
                  */
-                _reverse(ev: observable.IArrayMethodInfo<any>): void {
+                protected _reverse(ev: observable.IArrayMethodInfo<any>): void {
                     if (this.__isGrouped) {
                         this._resetSelect();
                     }
@@ -21824,7 +22018,7 @@ module plat {
                  * whether or not to add or remove 
                  * the node from the DOM.
                  */
-                _setter(options: IIfOptions): async.IThenable<void> {
+                protected _setter(options: IIfOptions): async.IThenable<void> {
                     var value = !!options.condition,
                         promise: async.IThenable<void>;
 
@@ -21861,7 +22055,7 @@ module plat {
                 /**
                  * Adds the conditional nodes to the DOM.
                  */
-                _addItem(): async.IThenable<void> {
+                protected _addItem(): async.IThenable<void> {
                     var commentNode = this.commentNode,
                         parentNode = commentNode.parentNode;
 
@@ -21889,7 +22083,7 @@ module plat {
                 /**
                  * Removes the conditional nodes from the DOM.
                  */
-                _removeItem(): void {
+                protected _removeItem(): void {
                     var element = this.element;
 
                     if (this.__firstTime) {
@@ -22162,7 +22356,7 @@ module plat {
              * @param nodes The NodeList to be compiled. 
              * @param manager The parent Element Manager for the given array of nodes.
              */
-            _compileNodes(nodes: Array<Node>, manager: IElementManager): void {
+            protected _compileNodes(nodes: Array<Node>, manager: IElementManager): void {
                 var length = nodes.length,
                     node: Node,
                     newManager: IElementManager,
@@ -22249,41 +22443,7 @@ module plat {
              * Reference to the ITemplateControlFactory injectable.
              */
             static $TemplateControlFactory: ui.ITemplateControlFactory;
-        
-            /**
-             * Given an IParsedExpression array, creates an array of unique identifers 
-             * to use with binding. This allows us to avoid creating multiple listeners for the identifier and node.
-             * @param {Array<plat.expressions.IParsedExpression>} expressions An array of parsed expressions to search for identifiers.
-             */
-            static findUniqueIdentifiers(expressions: Array<expressions.IParsedExpression>): Array<string> {
-                var length = expressions.length,
-                    uniqueIdentifierObject: IObject<boolean> = {},
-                    uniqueIdentifiers: Array<string> = [],
-                    identifiers: Array<string>,
-                    identifier: string,
-                    j: number,
-                    jLength: number;
 
-                if (length === 1) {
-                    return expressions[0].identifiers.slice(0);
-                }
-
-                for (var i = 0; i < length; ++i) {
-                    identifiers = expressions[i].identifiers;
-                    jLength = identifiers.length;
-
-                    for (j = 0; j < jLength; ++j) {
-                        identifier = identifiers[j];
-                        if (isNull(uniqueIdentifierObject[identifier])) {
-                            uniqueIdentifierObject[identifier] = true;
-                            uniqueIdentifiers.push(identifier);
-                        }
-                    }
-                }
-
-                return uniqueIdentifiers;
-            }
-        
             /**
              * Determines if a string has the markup notation.
              * @param {string} text The text string in which to search for markup.
@@ -22291,7 +22451,7 @@ module plat {
             static hasMarkup(text: string): boolean {
                 return NodeManager._markupRegex.test(text);
             }
-        
+
             /**
              * Given a string, finds markup in the string and creates an array of 
              * IParsedExpression.
@@ -22321,15 +22481,8 @@ module plat {
 
                     // check for one-time databinding
                     if (substring[0] === '=') {
-                        substring = substring.slice(1).trim();
-                        expression = $parser.parse(substring);
-                        expression = {
-                            expression: expression.expression,
-                            evaluate: expression.evaluate,
-                            identifiers: [],
-                            aliases: expression.aliases,
-                            oneTime: true
-                        };
+                        expression = $parser.parse(substring.slice(1).trim());
+                        expression.oneTime = true;
                         parsedExpressions.push(expression);
                     } else {
                         parsedExpressions.push($parser.parse(substring.trim()));
@@ -22346,7 +22499,7 @@ module plat {
 
                 return parsedExpressions;
             }
-        
+
             /**
              * Takes in a control with a data context and an array of IParsedExpression 
              * and outputs a string of the evaluated expressions.
@@ -22357,7 +22510,7 @@ module plat {
             static build(expressions: Array<expressions.IParsedExpression>, control?: ui.ITemplateControl): string {
                 var text = '',
                     length = expressions.length,
-                    resources = {},
+                    resources = <IObject<any>>{},
                     expression: expressions.IParsedExpression,
                     value: any,
                     evaluateExpression = NodeManager.$TemplateControlFactory.evaluateExpression;
@@ -22383,107 +22536,79 @@ module plat {
                         text += value;
                     }
 
-                    if (expression.oneTime) {
+                    if (expression.oneTime && !isUndefined(value)) {
                         expressions[i] = NodeManager._wrapExpression(value);
                     }
                 }
 
                 return text;
             }
-        
+
             /**
              * Registers a listener to be notified of a change in any associated identifier.
-             * @param {Array<string>} identifiers An Array of identifiers to observe.
+             * @param {Array<plat.expressions.IParsedExpression>} expressions An Array of 
+             * IParsedExpressions to observe.
              * @param {plat.ui.ITemplateControl} control The ITemplateControl associated 
              * to the identifiers.
              * @param {(...args: Array<any>) => void} listener The listener to call when any identifier property changes.
              */
-            static observeIdentifiers(identifiers: Array<string>, control: ui.ITemplateControl,
+            static observeExpressions(expressions: Array<expressions.IParsedExpression>, control: ui.ITemplateControl,
                 listener: (...args: Array<any>) => void): void {
-                var length = identifiers.length,
-                    $contextManager = NodeManager.$ContextManagerStatic,
-                    rootManager = $contextManager.getManager(Control.getRootControl(control)),
-                    absoluteContextPath = control.absoluteContextPath,
-                    context = control.context,
+                var uniqueIdentiifers = NodeManager.__findUniqueIdentifiers(expressions),
+                    identifiers = uniqueIdentiifers.identifiers,
+                    oneTimeIdentifiers = uniqueIdentiifers.oneTimeIdentifiers,
+                    oneTimeIdentifier: string,
                     observableCallback = {
                         listener: listener,
                         uid: control.uid
                     },
-                    resources: IObject<{
-                        resource: ui.IResource;
-                        control: ui.ITemplateControl;
-                    }>  = {},
-                    resourceObj: {
-                        resource: ui.IResource;
-                        control: ui.ITemplateControl;
-                    },
+                    observationDetails: IObservationDetails,
                     manager: observable.IContextManager,
-                    split: Array<string>,
-                    alias: string,
                     absoluteIdentifier: string,
-                    identifier: string;
+                    stopObserving: IRemoveListener,
+                    stopListening: IRemoveListener;
 
-                for (var i = 0; i < length; ++i) {
-                    identifier = identifiers[i];
-                    absoluteIdentifier = '';
-
-                    if (identifier[0] === '@') {
-                        // we found an alias
-                        split = identifier.split('.');
-                        alias = split.shift().slice(1);
-
-                        if (split.length > 0) {
-                            absoluteIdentifier = '.' + split.join('.');
-                        }
-
-                        resourceObj = resources[alias];
-
-                        if (isNull(resourceObj)) {
-                            resourceObj = resources[alias] = control.findResource(alias);
-                        }
-
-                        if (!isNull(resourceObj) && !isNull(resourceObj.resource) && resourceObj.resource.type === __OBSERVABLE_RESOURCE) {
-                            manager = $contextManager.getManager(resources[alias].control);
-                            absoluteIdentifier = 'resources.' + alias + '.value' + absoluteIdentifier;
-                        } else {
-                            continue;
-                        }
-                    } else {
-                        // look on the control.context
-                        split = identifier.split('.');
-
-                        if (!isNull($contextManager.getContext(context, split))) {
-                            manager = rootManager;
-                            absoluteIdentifier = absoluteContextPath + '.' + identifier;
-                        } else if (!isNull($contextManager.getContext(control, split))) {
-                            manager = null;
-                        } else {
-                            manager = rootManager;
-                            absoluteIdentifier = absoluteContextPath + '.' + identifier;
-                        }
-                    }
-
+                while (identifiers.length > 0) {
+                    observationDetails = NodeManager.__getObservationDetails(identifiers.pop(), control);
+                    manager = observationDetails.manager;
                     if (!isNull(manager)) {
-                        manager.observe(absoluteIdentifier, observableCallback);
+                        manager.observe(observationDetails.absoluteIdentifier, observableCallback);
+                    }
+                }
+
+                while (oneTimeIdentifiers.length > 0) {
+                    oneTimeIdentifier = oneTimeIdentifiers.pop();
+                    observationDetails = NodeManager.__getObservationDetails(oneTimeIdentifier, control);
+                    manager = observationDetails.manager;
+                    if (!(isNull(manager) || observationDetails.isDefined)) {
+                        absoluteIdentifier = observationDetails.absoluteIdentifier;
+                        stopObserving = manager.observe(absoluteIdentifier, observableCallback);
+                        stopListening = manager.observe(absoluteIdentifier, {
+                            uid: control.uid,
+                            listener: () => {
+                                stopObserving();
+                                stopListening();
+                            }
+                        });
                     }
                 }
             }
-        
+
             /**
              * A regular expression for finding markup
              */
-            static _markupRegex: RegExp;
-        
+            protected static _markupRegex: RegExp;
+
             /**
              * A regular expression for finding newline characters.
              */
-            static _newLineRegex: RegExp;
-        
+            protected static _newLineRegex: RegExp;
+
             /**
              * Wraps constant text as a static IParsedExpression.
              * @param text The text to wrap into a static expression.
              */
-            static _wrapExpression(text: string): expressions.IParsedExpression {
+            protected static _wrapExpression(text: string): expressions.IParsedExpression {
                 return {
                     evaluate: () => text,
                     identifiers: [],
@@ -22491,7 +22616,136 @@ module plat {
                     expression: text
                 };
             }
-        
+
+            /**
+             * Given an IParsedExpression array, creates an array of unique identifers 
+             * to use with binding. This allows us to avoid creating multiple listeners for the identifier and node.
+             * @param {Array<plat.expressions.IParsedExpression>} expressions An array of parsed expressions to search for identifiers.
+             * one way binding as well as an array of unique identifiers for one time binding.
+             */
+            private static __findUniqueIdentifiers(expressions: Array<expressions.IParsedExpression>): IUniqueIdentifiers {
+                var length = expressions.length,
+                    expression: expressions.IParsedExpression;
+
+                if (length === 1) {
+                    expression = expressions[0];
+                    if (expression.oneTime) {
+                        return {
+                            identifiers: [],
+                            oneTimeIdentifiers: expression.identifiers.slice(0)
+                        };
+                    }
+
+                    return {
+                        identifiers: expression.identifiers.slice(0),
+                        oneTimeIdentifiers: []
+                    };
+                }
+
+                var uniqueIdentifierObject: IObject<boolean> = {},
+                    oneTimeIdentifierObject: IObject<boolean> = {},
+                    uniqueIdentifiers: Array<string> = [],
+                    oneTimeIdentifiers: Array<string> = [],
+                    identifiers: Array<string>,
+                    identifier: string,
+                    j: number,
+                    jLength: number,
+                    oneTime: boolean;
+
+                for (var i = 0; i < length; ++i) {
+                    expression = expressions[i];
+                    oneTime = expression.oneTime;
+                    identifiers = expression.identifiers;
+                    jLength = identifiers.length;
+
+                    for (j = 0; j < jLength; ++j) {
+                        identifier = identifiers[j];
+                        if (oneTime) {
+                            if (uniqueIdentifierObject[identifier] === true) {
+                                continue;
+                            }
+
+                            if (!oneTimeIdentifierObject[identifier]) {
+                                oneTimeIdentifierObject[identifier] = true;
+                                oneTimeIdentifiers.push(identifier);
+                            }
+                        } else {
+                            if (!uniqueIdentifierObject[identifier]) {
+                                uniqueIdentifierObject[identifier] = true;
+                                uniqueIdentifiers.push(identifier);
+                            }
+
+                            if (oneTimeIdentifierObject[identifier] === true) {
+                                oneTimeIdentifierObject[identifier] = false;
+                                oneTimeIdentifiers.splice(oneTimeIdentifiers.indexOf(identifier), 1);
+                            }
+                        }
+                    }
+                }
+
+                return {
+                    identifiers: uniqueIdentifiers,
+                    oneTimeIdentifiers: oneTimeIdentifiers
+                };
+            }
+
+            /**
+             * Takes in an identifier and returns an object containing both its converted absolute path and the 
+             * ContextManager needed to observe it.
+             * @param {string} identifier The identifier looking to be observed.
+             * @param {plat.ui.ITemplateControl} control The ITemplateControl associated 
+             * to the identifiers.
+             * identifier.
+             */
+            private static __getObservationDetails(identifier: string, control: ui.ITemplateControl): IObservationDetails {
+                var $contextManager = NodeManager.$ContextManagerStatic,
+                    manager: observable.IContextManager,
+                    split = identifier.split('.'),
+                    absoluteIdentifier = '',
+                    isDefined = false;
+
+                if (identifier[0] === '@') {
+                    // we found an alias
+                    var resourceObj: { resource: ui.IResource; control: ui.ITemplateControl; },
+                        resources: IObject<{
+                            resource: ui.IResource;
+                            control: ui.ITemplateControl;
+                        }> = {},
+                        alias = split.shift().slice(1);
+
+                    if (split.length > 0) {
+                        absoluteIdentifier = '.' + split.join('.');
+                    }
+
+                    resourceObj = resources[alias];
+
+                    if (isNull(resourceObj)) {
+                        resourceObj = resources[alias] = control.findResource(alias);
+                    }
+
+                    if (!isNull(resourceObj) && !isNull(resourceObj.resource) && resourceObj.resource.type === __OBSERVABLE_RESOURCE) {
+                        manager = $contextManager.getManager(resources[alias].control);
+                        absoluteIdentifier = 'resources.' + alias + '.value' + absoluteIdentifier;
+                    }
+                } else {
+                    // look on the control.context
+                    isDefined = !isUndefined($contextManager.getContext(control.context, split));
+
+                    if (isDefined || isUndefined($contextManager.getContext(control, split))) {
+                        manager = $contextManager.getManager(Control.getRootControl(control));
+                        absoluteIdentifier = control.absoluteContextPath + '.' + identifier;
+                    } else {
+                        manager = null;
+                    }
+                }
+
+                return {
+                    absoluteIdentifier: absoluteIdentifier,
+                    manager: manager,
+                    isDefined: isDefined
+                };
+            }
+
             /**
              * The type of INodeManager.
              */
@@ -22509,7 +22763,7 @@ module plat {
              * Whether or not this INodeManager is a clone.
              */
             isClone = false;
-        
+
             /**
              * Initializes the manager's properties.
              * @param {plat.processing.INodeMap} nodeMap The mapping associated with this manager. We have to use an 
@@ -22525,7 +22779,7 @@ module plat {
                     parent.children.push(this);
                 }
             }
-        
+
             /**
              * Retrieves the parent control associated with the parent manager.
              */
@@ -22544,7 +22798,7 @@ module plat {
 
                 return control;
             }
-        
+
             /**
              * Clones this INodeManager with the new node.
              * @param {Node} newNode The new node associated with the new manager.
@@ -22554,7 +22808,7 @@ module plat {
             clone(newNode: Node, parentManager: IElementManager): number {
                 return 1;
             }
-        
+
             /**
              * The function used for data-binding a data context to the DOM.
              */
@@ -22569,12 +22823,14 @@ module plat {
             $ContextManagerStatic?: observable.IContextManagerStatic,
             $Parser?: expressions.IParser,
             $TemplateControlFactory?: ui.ITemplateControlFactory): INodeManagerStatic {
-                NodeManager._markupRegex = $Regex.markupRegex;
-                NodeManager._newLineRegex = $Regex.newLineRegex;
-                NodeManager.$ContextManagerStatic = $ContextManagerStatic;
-                NodeManager.$Parser = $Parser;
-                NodeManager.$TemplateControlFactory = $TemplateControlFactory;
-                return NodeManager;
+            // NOTE: This is not advised by TypeScript, but we want to do this.
+            (<any>NodeManager)._markupRegex = $Regex.markupRegex;
+            (<any>NodeManager)._newLineRegex = $Regex.newLineRegex;
+
+            NodeManager.$ContextManagerStatic = $ContextManagerStatic;
+            NodeManager.$Parser = $Parser;
+            NodeManager.$TemplateControlFactory = $TemplateControlFactory;
+            return NodeManager;
         }
 
         register.injectable(__NodeManagerStatic, INodeManagerStatic, [
@@ -22583,18 +22839,11 @@ module plat {
             __Parser,
             __TemplateControlFactory
         ], __STATIC);
-    
+
         /**
          * Performs essential Node management and binding functions. 
          */
         export interface INodeManagerStatic {
-            /**
-             * Given an IParsedExpression array, creates an array of unique identifers 
-             * to use with binding. This allows us to avoid creating multiple listeners for the identifier and node.
-             * @param {Array<plat.expressions.IParsedExpression>} expressions An array of parsed expressions to search for identifiers.
-             */
-            findUniqueIdentifiers(expressions: Array<expressions.IParsedExpression>): Array<string>;
-
             /**
              * Determines if a string has the markup notation.
              * @param {string} text The text string in which to search for markup.
@@ -22620,15 +22869,16 @@ module plat {
 
             /**
              * Registers a listener to be notified of a change in any associated identifier.
-             * @param {Array<string>} identifiers An Array of identifiers to observe.
+             * @param {Array<plat.expressions.IParsedExpression>} expressions An Array of 
+             * IParsedExpressions to observe.
              * @param {plat.ui.ITemplateControl} control The ITemplateControl associated 
              * to the identifiers.
              * @param {(...args: Array<any>) => void} listener The listener to call when any identifier property changes.
              */
-            observeIdentifiers(identifiers: Array<string>,
+            observeExpressions(expressions: Array<expressions.IParsedExpression>,
                 control: ui.ITemplateControl, listener: (...args: Array<any>) => void): void;
         }
-    
+
         /**
          * Describes an object that takes a Node and provides a way to data-bind to that node.
          */
@@ -22637,18 +22887,18 @@ module plat {
              * The type of INodeManager.
              */
             type: string;
-        
+
             /**
              * The INodeMap for this INodeManager. 
              * Contains the compiled Node.
              */
             nodeMap?: INodeMap;
-        
+
             /**
              * The parent IElementManager.
              */
             parent?: IElementManager;
-        
+
             /**
              * Whether or not this INodeManager is a clone.
              */
@@ -22680,7 +22930,7 @@ module plat {
              */
             bind(): void;
         }
-    
+
         /**
          * Describes a compiled Node.
          */
@@ -22689,27 +22939,22 @@ module plat {
              * The control associated with the Node, if one exists.
              */
             control?: IControl;
-        
+
             /**
              * The Node that is compiled.
              */
             node?: Node;
-        
+
             /**
              * The name of the Node.
              */
             nodeName?: string;
-        
+
             /**
              * Any IParsedExpressions contained in the Node.
              */
             expressions?: Array<expressions.IParsedExpression>;
-        
-            /**
-             * Unique identifiers contained in the Node.
-             */
-            identifiers?: Array<string>;
-        
+
             /**
              * The injector for a control associated with the Node, if one exists.
              */
@@ -22724,7 +22969,7 @@ module plat {
              * The control associated with the Element, if one exists.
              */
             control: ui.ITemplateControl;
-        
+
             /**
              * The resources element, if one exists, defined as the control element's first
              * element child.
@@ -22741,33 +22986,67 @@ module plat {
              * The Element that is compiled.
              */
             element?: HTMLElement;
-        
+
             /**
              * The compiled attribute Nodes for the Element.
              */
             nodes: Array<INode>;
-        
+
             /**
              * An object of key/value attribute pairs.
              */
             attributes?: IObject<string>;
-        
+
             /**
              * The relative context path for the node's corresponding 
              * ITemplateControl, if specified.
              */
             childContext?: string;
-        
+
             /**
              * Indicates whether or not an IControl was found on the Element.
              */
             hasControl?: boolean;
-        
+
             /**
              * A type of INode for a node that contains a ITemplateControl, 
              * if one was found for the Element.
              */
             uiControlNode?: IUiControlNode;
+        }
+
+        /**
+         * Holds an array of identifiers for one way bindings and an 
+         * array of identifiers for one time bindings.
+         */
+        interface IUniqueIdentifiers {
+            /**
+             * An array of identifiers used for one way bindings.
+             */
+            identifiers: Array<string>;
+            /**
+             * An array of identifiers used for one time bindings.
+             */
+            oneTimeIdentifiers: Array<string>;
+        }
+
+        /**
+         * Contains information needed for observing properties.
+         */
+        interface IObservationDetails {
+            /**
+             * The absolute identifier to be observed.
+             */
+            absoluteIdentifier: string;
+            /**
+             * The ContextManager that will 
+             * be doing the observing.
+             */
+            manager: observable.IContextManager;
+            /**
+             * Signifies that a context value is defined for one time data binding.
+             */
+            isDefined: boolean;
         }
 
         /**
@@ -22792,7 +23071,7 @@ module plat {
              * Reference to the IBindableTemplatesFactory injectable.
              */
             static $BindableTemplatesFactory: ui.IBindableTemplatesFactory;
-        
+
             /**
              * Determines if the associated Element has controls that need to be instantiated or Attr nodes
              * containing text markup. If controls exist or markup is found a new 
@@ -22844,7 +23123,7 @@ module plat {
                     var replacementType = uiControl.replaceWith,
                         replaceWithDiv = replacementType === 'any' && noControlAttribute;
                     if (!isEmpty(replacementType) && (replacementType !== 'any' || replaceWithDiv) &&
-                            replacementType.toLowerCase() !== nodeName) {
+                        replacementType.toLowerCase() !== nodeName) {
                         if (replaceWithDiv) {
                             replacementType = 'div';
                         }
@@ -22873,7 +23152,7 @@ module plat {
 
                 return manager;
             }
-        
+
             /**
              * Looks through the Node's child nodes to try and find any 
              * defined IResources in a <plat-resources> tags.
@@ -22893,7 +23172,7 @@ module plat {
 
                 return null;
             }
-        
+
             /**
              * Clones an IElementManager with a new element.
              * @param {plat.processing.IElementManager} sourceManager The original IElementManager.
@@ -22937,7 +23216,7 @@ module plat {
 
                 return manager;
             }
-        
+
             /**
              * Clones an ITemplateControl with a new INodeMap.
              * @param {plat.processing.INodeMap} sourceMap The source INodeMap used to clone the 
@@ -22978,7 +23257,7 @@ module plat {
 
                 return newUiControl;
             }
-        
+
             /**
              * Creates new INodes corresponding to the element 
              * associated with the INodeMap or the passed-in element.
@@ -23044,7 +23323,6 @@ module plat {
                         newNodes.push({
                             control: control,
                             expressions: node.expressions,
-                            identifiers: node.identifiers,
                             node: !attributes ? null : (attributes.getNamedItem(nodeName) || attributes.getNamedItem('data-' + nodeName)),
                             nodeName: nodeName,
                             injector: injector
@@ -23097,21 +23375,21 @@ module plat {
 
                 return newNodes;
             }
-        
+
             /**
              * Returns a new instance of an ElementManager.
              */
             static getInstance(): IElementManager {
                 return new ElementManager();
             }
-        
+
             /**
              * Iterates over the attributes (NamedNodeMap), creating an INodeMap. 
              * This map will contain injectors for all the IControls as well as parsed expressions 
              * and identifiers found for each Attribute (useful for data binding).
              * @param {NamedNodeMap} attributes The attributes used to create the INodeMap.
              */
-            static _collectAttributes(attributes: NamedNodeMap): INodeMap {
+            protected static _collectAttributes(attributes: NamedNodeMap): INodeMap {
                 var nodes: Array<INode> = [],
                     attribute: Attr,
                     name: string,
@@ -23121,23 +23399,19 @@ module plat {
                     hasMarkup: boolean,
                     hasMarkupFn = NodeManager.hasMarkup,
                     findMarkup = NodeManager.findMarkup,
-                    findUniqueIdentifiers = NodeManager.findUniqueIdentifiers,
                     $parser = NodeManager.$Parser,
                     build = NodeManager.build,
                     expressions: Array<expressions.IParsedExpression>,
                     hasControl = false,
                     injector: dependency.IInjector<IControl>,
                     length = attributes.length,
-                    controlAttributes: IObject<string> = {},
-                    uniqueIdentifiers: Array<string>;
+                    controlAttributes: IObject<string> = {};
 
                 for (var i = 0; i < length; ++i) {
                     attribute = attributes[i];
                     value = attribute.value;
                     name = attribute.name.replace(/^data-/i, '').toLowerCase();
                     injector = controlInjectors[name] || viewControlInjectors[name];
-                    expressions = [];
-                    uniqueIdentifiers = [];
 
                     if (name === 'plat-context') {
                         if (value !== '') {
@@ -23151,14 +23425,7 @@ module plat {
                         }
                     } else if (name !== 'plat-control') {
                         hasMarkup = hasMarkupFn(value);
-
-                        if (hasMarkup) {
-                            expressions = findMarkup(value);
-                            uniqueIdentifiers = findUniqueIdentifiers(expressions);
-                            if (uniqueIdentifiers.length === 0) {
-                                attribute.value = value = build(expressions);
-                            }
-                        }
+                        expressions = hasMarkup ? findMarkup(value) : [];
 
                         if (!hasControl && (hasMarkup || !isNull(injector))) {
                             hasControl = true;
@@ -23169,7 +23436,6 @@ module plat {
                             node: attribute,
                             nodeName: name,
                             expressions: expressions,
-                            identifiers: uniqueIdentifiers,
                             injector: injector
                         });
                     }
@@ -23185,13 +23451,13 @@ module plat {
                     hasControl: hasControl
                 };
             }
-        
+
             /**
              * Used to copy the attribute nodes during the cloning process.
              * @param {Array<plat.processing.INode>} nodes The compiled INodes 
              * to be cloned.
              */
-            static _copyAttributeNodes(nodes: Array<INode>): Array<INode> {
+            protected static _copyAttributeNodes(nodes: Array<INode>): Array<INode> {
                 var newNodes: Array<INode> = [],
                     length = nodes.length,
                     node: INode;
@@ -23199,7 +23465,6 @@ module plat {
                 for (var i = 0; i < length; ++i) {
                     node = nodes[i];
                     newNodes.push({
-                        identifiers: node.identifiers,
                         expressions: node.expressions,
                         nodeName: node.nodeName
                     });
@@ -23207,24 +23472,23 @@ module plat {
 
                 return newNodes;
             }
-        
+
             /**
              * Clones an INode with a new node.
              * @param {plat.processing.INode} sourceNode The original INode.
              * @param {Node} node The new node used for cloning.
              * @param {plat.ui.ITemplateControl} newControl? An optional new control to associate with the cloned node.
              */
-            static _cloneNode(sourceNode: INode, node: Node, newControl?: ui.ITemplateControl): INode {
+            protected static _cloneNode(sourceNode: INode, node: Node, newControl?: ui.ITemplateControl): INode {
                 return {
                     control: newControl,
                     injector: sourceNode.injector,
-                    identifiers: sourceNode.identifiers,
                     expressions: sourceNode.expressions,
                     node: node,
                     nodeName: sourceNode.nodeName
                 };
             }
-        
+
             /**
              * Clones an INodeMap with a new element.
              * @param {plat.processing.INodeMap} sourceMap The original INodeMap.
@@ -23234,7 +23498,7 @@ module plat {
              * @param {plat.ui.ITemplateControl} newControl? An optional new ITemplateControl 
              * to associate with the element.
              */
-            static _cloneNodeMap(sourceMap: INodeMap, element: Element,
+            protected static _cloneNodeMap(sourceMap: INodeMap, element: Element,
                 parent: ui.ITemplateControl, newControl?: ui.ITemplateControl): INodeMap {
                 var hasControl = sourceMap.hasControl,
                     nodeMap: INodeMap = {
@@ -23253,7 +23517,7 @@ module plat {
 
                 return nodeMap;
             }
-        
+
             /**
              * Reference to the IPromise injectable.
              */
@@ -23330,7 +23594,7 @@ module plat {
              * and its HTML needs to be asynchronously obtained.
              */
             templatePromise: async.IThenable<void>;
-        
+
             /**
              * Clones the IElementManager with a new node.
              * @param {Node} newNode The new element used to clone the ElementManager.
@@ -23412,7 +23676,7 @@ module plat {
 
                 return 1;
             }
-        
+
             /**
              * Initializes both the manager itself and all the controls associated to the manager's 
              * INodeMap.
@@ -23445,7 +23709,7 @@ module plat {
                     control.initialize();
                 }
             }
-        
+
             /**
              * Links the data context to the DOM (data-binding).
              * IElementManager's associated 
@@ -23551,22 +23815,22 @@ module plat {
                         this.templatePromise = null;
                         this._initializeControl(control, <DocumentFragment>template.cloneNode(true));
                     }, (error) => {
-                        this.templatePromise = null;
-                        if (isNull(error)) {
-                            var template: DocumentFragment = error;
+                            this.templatePromise = null;
+                            if (isNull(error)) {
+                                var template: DocumentFragment = error;
 
-                            if (this.$BindableTeampltesFactory.isBoundControl(control)) {
-                                template = <DocumentFragment>appendChildren(control.element.childNodes);
+                                if (this.$BindableTeampltesFactory.isBoundControl(control)) {
+                                    template = <DocumentFragment>appendChildren(control.element.childNodes);
+                                }
+
+                                this._initializeControl(control, template);
+                            } else {
+                                postpone(() => {
+                                    var $exception: IExceptionStatic = acquire(__ExceptionStatic);
+                                    $exception.fatal(error, $exception.COMPILE);
+                                });
                             }
-
-                            this._initializeControl(control, template);
-                        } else {
-                            postpone(() => {
-                                var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                                $exception.fatal(error, $exception.COMPILE);
-                            });
-                        }
-                    });
+                        });
 
                     return;
                 }
@@ -23577,7 +23841,7 @@ module plat {
 
                 this.bindAndLoad();
             }
-        
+
             /**
              * Retrieves the ITemplateControl instance 
              * associated with this IElementManager.
@@ -23591,7 +23855,7 @@ module plat {
 
                 return uiControlNode.control;
             }
-        
+
             /**
              * Fullfills any template promises and finishes the compile phase for the HTML template associated 
              * with this IElementManager.
@@ -23606,7 +23870,7 @@ module plat {
 
                 return this._fulfillChildTemplates();
             }
-        
+
             /**
              * Binds context to the DOM and loads controls.
              * child manager's controls have been bound and loaded.
@@ -23626,11 +23890,11 @@ module plat {
                 return promise.then(() => {
                     return this._loadControls(<Array<IAttributeControl>>controls, this.getUiControl());
                 }).catch((error: any) => {
-                    postpone(() => {
-                        var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.BIND);
+                        postpone(() => {
+                            var $exception: IExceptionStatic = acquire(__ExceptionStatic);
+                            $exception.fatal(error, $exception.BIND);
+                        });
                     });
-                });
             }
 
             /**
@@ -23656,11 +23920,11 @@ module plat {
                         uid: root.uid
                     });
                 }).catch((error) => {
-                    postpone(() => {
-                        var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.BIND);
+                        postpone(() => {
+                            var $exception: IExceptionStatic = acquire(__ExceptionStatic);
+                            $exception.fatal(error, $exception.BIND);
+                        });
                     });
-                });
             }
 
             /**
@@ -23669,7 +23933,7 @@ module plat {
              * @param {plat.ui.ITemplateControl} uiControl The control to finalize.
              * @param {string} absoluteContextPath The absoluteContextPath of the uiControl.
              */
-            _beforeLoad(uiControl: ui.ITemplateControl, absoluteContextPath: string): void {
+            protected _beforeLoad(uiControl: ui.ITemplateControl, absoluteContextPath: string): void {
                 var contextManager = this.$ContextManagerStatic.getManager(uiControl.root),
                     $TemplateControlFactory = this.$TemplateControlFactory;
 
@@ -23696,7 +23960,7 @@ module plat {
              * Binds context to the DOM and calls bindAndLoad on all children.
              * child manager's controls have been bound and loaded.
              */
-            _bindChildren(): async.IThenable<void[]> {
+            protected _bindChildren(): async.IThenable<void[]> {
                 var children = this.children,
                     length = children.length,
                     child: IElementManager,
@@ -23724,7 +23988,7 @@ module plat {
              * @param {Array<plat.IControl>} controls The array of controls whose attributes will need to be updated 
              * upon the context changing.
              */
-            _observeControlIdentifiers(nodes: Array<INode>, parent: ui.ITemplateControl, controls: Array<IControl>): void {
+            protected _observeControlIdentifiers(nodes: Array<INode>, parent: ui.ITemplateControl, controls: Array<IControl>): void {
                 var length = nodes.length,
                     bindings: Array<INode> = [],
                     attributeChanged = this._attributeChanged,
@@ -23737,8 +24001,8 @@ module plat {
                     node = nodes[i];
                     control = node.control;
 
-                    if (hasParent && node.identifiers.length > 0) {
-                        NodeManager.observeIdentifiers(node.identifiers, parent,
+                    if (hasParent && node.expressions.length > 0) {
+                        NodeManager.observeExpressions(node.expressions, parent,
                             attributeChanged.bind(this, node, parent, controls));
                         bindings.push(node);
                     }
@@ -23753,7 +24017,7 @@ module plat {
                     this._attributeChanged(bindings[i], parent, controls);
                 }
             }
-        
+
             /**
              * Loads the potential attribute based controls associated with this 
              * IElementManager and 
@@ -23762,7 +24026,7 @@ module plat {
              * @param {plat.ui.ITemplateControl} templateControl The ITemplateControl 
              * associated with this manager.
              */
-            _loadControls(controls: Array<IAttributeControl>, templateControl: ui.ITemplateControl): async.IThenable<void> {
+            protected _loadControls(controls: Array<IAttributeControl>, templateControl: ui.ITemplateControl): async.IThenable<void> {
                 var length = controls.length,
                     control: IAttributeControl,
                     load = this.$ControlFactory.load,
@@ -23798,27 +24062,27 @@ module plat {
 
                 return promise;
             }
-        
+
             /**
              * Fulfills the template promise prior to binding and loading the control.
              * its associated controls are bound and loaded.
              */
-            _fulfillAndLoad(): async.IThenable<void> {
+            protected _fulfillAndLoad(): async.IThenable<void> {
                 return this.fulfillTemplate().then(() => {
                     return this.bindAndLoad();
                 }).catch((error) => {
-                    postpone(() => {
-                        var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.BIND);
+                        postpone(() => {
+                            var $exception: IExceptionStatic = acquire(__ExceptionStatic);
+                            $exception.fatal(error, $exception.BIND);
+                        });
                     });
-                });
             }
-        
+
             /**
              * Populates the ITemplateControl properties associated with this manager  
              * if one exists.
              */
-            _populateUiControl(): void {
+            protected _populateUiControl(): void {
                 var nodeMap = this.nodeMap,
                     parent = this.getParentControl(),
                     controlNode = nodeMap.uiControlNode,
@@ -23863,7 +24127,7 @@ module plat {
                 uiControl.type = controlNode.nodeName;
 
                 uiControl.bindableTemplates = uiControl.bindableTemplates ||
-                    ElementManager.$BindableTemplatesFactory.create(uiControl);
+                ElementManager.$BindableTemplatesFactory.create(uiControl);
 
                 if (childNodes.length > 0 && (!isEmpty(uiControl.templateString) || !isEmpty(uiControl.templateUrl))) {
                     uiControl.innerTemplate = <DocumentFragment>appendChildren(childNodes);
@@ -23873,7 +24137,7 @@ module plat {
                     this._replaceElement(uiControl, nodeMap);
                 }
             }
-        
+
             /**
              * Removes the ITemplateControl's element. Called if its replaceWith property is 
              * null or empty string.
@@ -23881,7 +24145,7 @@ module plat {
              * will be removed.
              * @param {plat.processing.INodeMap} nodeMap The INodeMap associated with this manager.
              */
-            _replaceElement(control: ui.ITemplateControl, nodeMap: INodeMap): void {
+            protected _replaceElement(control: ui.ITemplateControl, nodeMap: INodeMap): void {
                 var element = nodeMap.element,
                     parentNode = element.parentNode,
                     $document = ElementManager.$Document,
@@ -23900,7 +24164,7 @@ module plat {
 
                 control.element = nodeMap.element = null;
             }
-        
+
             /**
              * Initializes a control's template and compiles the control.
              * @param {plat.ui.ITemplateControl} uiControl The ITemplateControl 
@@ -23908,7 +24172,7 @@ module plat {
              * @param {DocumentFragment} template The associated ITemplateControl's 
              * template.
              */
-            _initializeControl(uiControl: ui.ITemplateControl, template: DocumentFragment): void {
+            protected _initializeControl(uiControl: ui.ITemplateControl, template: DocumentFragment): void {
                 var element = this.nodeMap.element,
                     // have to check if null since isNull checks for undefined case
                     replaceElement = this.replace,
@@ -23954,7 +24218,7 @@ module plat {
                     this._fulfillAndLoad();
                 }
             }
-        
+
             /**
              * A function to handle updating an attribute on all controls that have it 
              * as a property upon a change in its value.
@@ -23962,7 +24226,7 @@ module plat {
              * @param {plat.ui.ITemplateControl} parent The parent ITemplateControl used for context.
              * @param {Array<plat.IControl>} controls The controls that have the changed attribute as a property.
              */
-            _attributeChanged(node: INode, parent: ui.ITemplateControl, controls: Array<IControl>): void {
+            protected _attributeChanged(node: INode, parent: ui.ITemplateControl, controls: Array<IControl>): void {
                 var length = controls.length,
                     key = camelCase(node.nodeName),
                     value = NodeManager.build(node.expressions, parent),
@@ -23971,21 +24235,22 @@ module plat {
 
                 for (var i = 0; i < length; ++i) {
                     attributes = <ui.Attributes>controls[i].attributes;
-                    oldValue = (<any>attributes)[key];
-                    (<any>attributes)[key] = value;
-                    attributes._attributeChanged(key, value, oldValue);
+                    oldValue = attributes[key];
+                    attributes[key] = value;
+
+                    (<any>attributes)._attributeChanged(key, value, oldValue);
                 }
 
                 if (!this.replace) {
                     (<Attr>node.node).value = value;
                 }
             }
-        
+
             /**
              * Runs through all the children of this manager and calls fulfillTemplate.
              * child managers have fullfilled their templates.
              */
-            _fulfillChildTemplates(): async.IThenable<void> {
+            protected _fulfillChildTemplates(): async.IThenable<void> {
                 var children = this.children,
                     child: IElementManager,
                     length = children.length,
@@ -24015,11 +24280,11 @@ module plat {
             $ManagerCache?: storage.ICache<IElementManager>,
             $ResourcesFactory?: ui.IResourcesFactory,
             $BindableTemplatesFactory?: ui.IBindableTemplatesFactory): IElementManagerFactory {
-                ElementManager.$Document = $Document;
-                ElementManager.$ManagerCache = $ManagerCache;
-                ElementManager.$ResourcesFactory = $ResourcesFactory;
-                ElementManager.$BindableTemplatesFactory = $BindableTemplatesFactory;
-                return ElementManager;
+            ElementManager.$Document = $Document;
+            ElementManager.$ManagerCache = $ManagerCache;
+            ElementManager.$ResourcesFactory = $ResourcesFactory;
+            ElementManager.$BindableTemplatesFactory = $BindableTemplatesFactory;
+            return ElementManager;
         }
 
         register.injectable(__ElementManagerFactory, IElementManagerFactory, [
@@ -24028,7 +24293,7 @@ module plat {
             __ResourcesFactory,
             __BindableTemplatesFactory
         ], __FACTORY);
-    
+
         /**
          * Creates and manages a class for dealing with Element nodes.
          */
@@ -24093,7 +24358,7 @@ module plat {
              */
             getInstance(): IElementManager;
         }
-    
+
         /**
          * Responsible for initializing and data-binding controls associated to an Element.
          */
@@ -24120,7 +24385,7 @@ module plat {
              * or inherits it from a parent.
              */
             hasOwnContext: boolean;
-        
+
             /**
              * Lets us know when an IElementManager is a cloned manager, or the compiled 
              * manager from IBindableTemplates. We do not want to bind and load compiled 
@@ -24236,7 +24501,6 @@ module plat {
                             nodes: [{
                                 node: node,
                                 expressions: expressions,
-                                identifiers: NodeManager.findUniqueIdentifiers(expressions),
                             }]
                         };
 
@@ -24256,11 +24520,10 @@ module plat {
              * @param {plat.processing.INodeMap} sourceMap The original INodeMap.
              * @param {Node} newNode The new text node used for cloning.
              */
-            static _cloneNodeMap(sourceMap: INodeMap, newNode: Node): INodeMap {
+            protected static _cloneNodeMap(sourceMap: INodeMap, newNode: Node): INodeMap {
                 var node = sourceMap.nodes[0],
                     nodeMap: INodeMap = {
                         nodes: [{
-                            identifiers: node.identifiers,
                             expressions: node.expressions,
                             nodeName: node.nodeName,
                             node: newNode
@@ -24276,7 +24539,7 @@ module plat {
              * @param {plat.processing.IElementManager} parent The parent IElementManager 
              * for the new clone.
              */
-            static _clone(sourceManager: INodeManager, node: Node, parent: IElementManager): ITextManager {
+            protected static _clone(sourceManager: INodeManager, node: Node, parent: IElementManager): ITextManager {
                 var map = sourceManager.nodeMap,
                     manager = new TextManager();
 
@@ -24316,7 +24579,7 @@ module plat {
                     textNode = node.node,
                     expressions = node.expressions;
 
-                NodeManager.observeIdentifiers(node.identifiers, parent,
+                NodeManager.observeExpressions(node.expressions, parent,
                     this._setText.bind(this, textNode, parent, expressions));
 
                 this._setText(textNode, parent, expressions);
@@ -24330,9 +24593,8 @@ module plat {
              * @param {Array<plat.expressions.IParsedExpression>} expressions An array of parsed expressions used to build 
              * the node value.
              */
-            _setText(node: Node, control: ui.ITemplateControl, expressions: Array<expressions.IParsedExpression>): void {
-                control = control || <ui.ITemplateControl>{};
-                node.nodeValue = NodeManager.build(expressions, control);
+            protected _setText(node: Node, control: ui.ITemplateControl, expressions: Array<expressions.IParsedExpression>): void {
+                node.nodeValue = NodeManager.build(expressions, (control || <ui.ITemplateControl>{}));
             }
         }
 
@@ -24580,7 +24842,7 @@ module plat {
              * IBaseNavigationOptions used during navigation
              * dispatch.
              */
-            _sendEvent(name: string, target: any, type: string, parameter: any,
+            protected _sendEvent(name: string, target: any, type: string, parameter: any,
                 options: IBaseNavigationOptions): events.INavigationEvent<any> {
                 return this.$NavigationEventStatic.dispatch(name, this, {
                     target: target,
@@ -24720,11 +24982,11 @@ module plat {
             viewport: ui.controls.IBaseport;
 
             /**
-             * Registers an {plat.ui.controls.Viewport|Viewport} with this navigator. 
-             * The {plat.ui.controls.Viewport|Viewport} will call this method and pass 
+             * Registers an Viewport with this navigator. 
+             * The Viewport will call this method and pass 
              * itself in so the navigator can store it and use it to facilitate navigation.
-             * @param {plat.ui.controls.Viewport} viewport The {plat.ui.controls.Viewport|Viewport} 
-             * associated with this INavigator.
+             * @param Viewport viewport The Viewport 
+             * associated with this INavigatorInstance.
              * @param {boolean} main? Whether or not this 
              */
             registerPort(viewport: ui.controls.IBaseport, main?: boolean): void {
@@ -25014,15 +25276,15 @@ module plat {
              * @param {new (...args: any[]) => plat.ui.IBaseViewControl} Constructor The 
              * IBaseViewControl constructor to search for in the history stack.
              */
-            _findInHistory(Constructor: new (...args: any[]) => ui.IBaseViewControl): number;
+            protected _findInHistory(Constructor: new (...args: any[]) => ui.IBaseViewControl): number;
             /**
              * Finds the given constructor in the history stack. Returns the index in the history where
              * the constructor is found, or -1 if no constructor is found.
              * @param {new (...args: any[]) => plat.ui.IBaseViewControl} Constructor The 
              * IBaseViewControl constructor to search for in the history stack.
              */
-            _findInHistory(Constructor: string): number;
-            _findInHistory(Constructor: any): number {
+            protected _findInHistory(Constructor: string): number;
+            protected _findInHistory(Constructor: any): number {
                 var history = this.history,
                     index = -1,
                     i: number;
@@ -25054,7 +25316,7 @@ module plat {
              * @param {number} length The number of entries to go back in the history stack.
              * INavigationState.
              */
-            _goBackLength(length?: number): INavigationState {
+            protected _goBackLength(length?: number): INavigationState {
                 length = isNumber(length) ? length : 1;
 
                 var last: INavigationState,
@@ -25330,7 +25592,7 @@ module plat {
              * the IBaseViewControl, the routing information, 
              * and the Router.
              */
-            _beforeRouteChange(ev: events.INavigationEvent<web.IRoute<any>>): void {
+            protected _beforeRouteChange(ev: events.INavigationEvent<web.IRoute<any>>): void {
                 var event = this._sendEvent(__beforeNavigate, ev.target, ev.type, ev.parameter, ev.options);
 
                 if (event.defaultPrevented) {
@@ -25346,7 +25608,7 @@ module plat {
              * the IBaseViewControl, the routing information, 
              * and the Router.
              */
-            _onRouteChanged(ev: events.INavigationEvent<web.IRoute<any>>): void {
+            protected _onRouteChanged(ev: events.INavigationEvent<web.IRoute<any>>): void {
                 var state = this.currentState || <IRouteNavigationState>{},
                     viewControl = state.control,
                     injector = ev.target,
@@ -25458,7 +25720,7 @@ module plat {
             /**
              * The property name on the ancestor controls to set as the INamedElement.
              */
-            _label: string;
+            protected _label: string;
 
             /**
              * Defines the property specified by the attribute value as the INamedElement 
@@ -25499,7 +25761,7 @@ module plat {
              * on all the ancestor controls, ignoring those that already have the property defined.
              * @param {string} name The name to define on all the ancestor controls.
              */
-            _define(name: string): void {
+            protected _define(name: string): void {
                 var templateControl = this.templateControl;
 
                 if (!isNull(templateControl)) {
@@ -25528,7 +25790,7 @@ module plat {
              * that it is, it shouldn't set itself on the ancestor controls.
              * @param {string} name The name to define on all the ancestor controls.
              */
-            _isPrecompiled(): boolean {
+            protected _isPrecompiled(): boolean {
                 var control = this.parent;
 
                 while (!isNull(control)) {
@@ -25588,12 +25850,17 @@ module plat {
             /**
              * A parsed form of the expression found in the attribute's value.
              */
-            _expression: Array<string> = [];
+            protected _expression: Array<string> = [];
+
+            /**
+             * The found function up the control's parent chain denoted by the attribute value.
+             */
+            protected _fn: IControlProperty;
 
             /**
              * An array of the aliases used in the expression.
              */
-            _aliases: Array<string> = [];
+            protected _aliases: Array<string> = [];
 
             /**
              * Kicks off finding and setting the listener.
@@ -25610,46 +25877,16 @@ module plat {
             /**
              * Sets the event listener.
              */
-            _setListener(): void {
-                var attr = this.attribute;
-                if (isEmpty(this.event) || isEmpty(attr)) {
+            protected _setListener(): void {
+                var event = this.event,
+                    fn = this.attributes[this.attribute];
+
+                if (isEmpty(event) || isEmpty(fn)) {
                     return;
                 }
 
-                this._parseArgs(this.attributes[attr]);
-
-                if (isNull(this._expression)) {
-                    return;
-                }
-
-                this.addEventListener(this.element, this.event, this._onEvent, false);
-            }
-
-            /**
-             * Finds the first instance of the specified function 
-             * in the parent control chain.
-             * @param {string} identifier the function identifer
-             */
-            _findListener(identifier: string): { control: ui.ITemplateControl; value: any; } {
-                var control: ui.ITemplateControl = <any>this,
-                    expression = this.$Parser.parse(identifier),
-                    value: any;
-
-                while (!isNull(control)) {
-                    value = expression.evaluate(control);
-                    if (!isNull(value)) {
-                        return {
-                            control: control,
-                            value: value
-                        };
-                    }
-                    control = control.parent;
-                }
-
-                return {
-                    control: null,
-                    value: null
-                };
+                this._parseArgs(fn);
+                this.addEventListener(this.element, event, this._onEvent, false);
             }
 
             /**
@@ -25658,17 +25895,24 @@ module plat {
              * into account.
              * The function to call and the associated arguments, as well as the control context with which to call the function.
              */
-            _buildExpression(): { fn: () => void; control: ui.ITemplateControl; args: Array<expressions.IParsedExpression>; } {
+            protected _buildExpression(): { fn: () => void; control: ui.ITemplateControl; args: Array<expressions.IParsedExpression>; } {
                 var expression = this._expression.slice(0),
-                    hasParent = !isNull(this.parent),
-                    aliases = hasParent ? this.parent.getResources(this._aliases) : null,
+                    parent = this.parent,
+                    hasParent = !isNull(parent),
                     listenerStr = expression.shift(),
                     listener: { control: ui.ITemplateControl; value: any; },
                     control: ui.ITemplateControl,
-                    fn: () => void;
+                    fn: () => void,
+                    aliases: IObject<any>,
+                    argContext: any;
+
+                if (!isNull(parent)) {
+                    aliases = parent.getResources(this._aliases);
+                    argContext = parent.context;
+                }
 
                 if (listenerStr[0] !== '@') {
-                    listener = this._findListener(listenerStr);
+                    listener = this._fn || (this._fn = this.findProperty(listenerStr));
 
                     if (isNull(listener)) {
                         return {
@@ -25681,8 +25925,8 @@ module plat {
                     fn = listener.value;
                     control = listener.control;
                 } else {
-                    fn = aliases[listenerStr];
-                    control = null;
+                    fn = isNull(aliases) ? noop : (aliases[listenerStr] || noop);
+                    control = undefined;
                 }
 
                 var length = expression.length,
@@ -25690,7 +25934,7 @@ module plat {
                     $parser = this.$Parser;
 
                 for (var i = 0; i < length; ++i) {
-                    args.push($parser.parse(expression[i]).evaluate(hasParent ? this.parent.context : null, aliases));
+                    args.push($parser.parse(expression[i]).evaluate(argContext, aliases));
                 }
 
                 return {
@@ -25704,11 +25948,9 @@ module plat {
              * Calls the specified function when the DOM event is fired.
              * @param {Event} ev The event object.
              */
-            _onEvent(ev: Event): void {
+            protected _onEvent(ev: Event): void {
                 var expression = this._buildExpression(),
-                    fn = expression.fn,
-                    control = expression.control,
-                    args = expression.args;
+                    fn = expression.fn;
 
                 if (!isFunction(fn)) {
                     var $exception: IExceptionStatic = acquire(__ExceptionStatic);
@@ -25717,14 +25959,14 @@ module plat {
                     return;
                 }
 
-                fn.apply(control, args.concat(<any>ev));
+                fn.apply(expression.control, expression.args.concat(<any>ev));
             }
 
             /**
              * Finds all alias contained within the expression.
              * @param {Array<string>} args The array of arguments as strings.
              */
-            _findAliases(args: Array<string>): Array<string> {
+            protected _findAliases(args: Array<string>): Array<string> {
                 var length = args.length,
                     arg: string,
                     exec: RegExpExecArray,
@@ -25748,15 +25990,13 @@ module plat {
              * from its arguments.
              * @param {string} expression The expression to parse.
              */
-            _parseArgs(expression: string): void {
-                var exec = this.$Regex.argumentRegex.exec(expression),
-                    haveArgs = !isNull(exec);
-
+            protected _parseArgs(expression: string): void {
                 if (isEmpty(expression)) {
                     return;
                 }
 
-                if (haveArgs) {
+                var exec = this.$Regex.argumentRegex.exec(expression);
+                if (!isNull(exec)) {
                     this._expression = [expression.slice(0, exec.index)]
                         .concat((exec[1] !== '') ? exec[1].split(',') : []);
                 } else {
@@ -26046,7 +26286,7 @@ module plat {
              * the "action" attribute is present.
              * @param {Event} ev The event object.
              */
-            _onEvent(ev: Event): void {
+            protected _onEvent(ev: Event): void {
                 if (!this.element.hasAttribute('action')) {
                     ev.preventDefault();
                 }
@@ -26200,7 +26440,7 @@ module plat {
              * Checks if the IKeyboardEventInput is an expression object 
              * and sets the necessary listener.
              */
-            _setListener(): void {
+            protected _setListener(): void {
                 var attr = this.attribute;
                 if (isEmpty(this.event) || isEmpty(attr)) {
                     return;
@@ -26240,7 +26480,7 @@ module plat {
              * a match is found or if there are no filter keyCodes.
              * @param {KeyboardEvent} ev The keyboard event object.
              */
-            _onEvent(ev: KeyboardEvent): void {
+            protected _onEvent(ev: KeyboardEvent): void {
                 var keyCodes = this.keyCodes,
                     code: { shifted?: boolean };
 
@@ -26261,7 +26501,7 @@ module plat {
              * @param {Array<string>} keys? The array of defined keys to satisfy the 
              * key press condition.
              */
-            _setKeyCodes(keys?: Array<string>): void {
+            protected _setKeyCodes(keys?: Array<string>): void {
                 if (!isArray(keys)) {
                     keys = [];
                 }
@@ -26578,7 +26818,7 @@ module plat {
             /**
              * The initial value of the property to be set.
              */
-            _initialValue = '';
+            protected _initialValue = '';
 
             /**
              * Hides the element.
@@ -26625,7 +26865,7 @@ module plat {
              * @param {string} value The value to set.
              * @param {string} importance? The priority or importance level to set.
              */
-            _setValue(value: string, importance?: string): void {
+            protected _setValue(value: string, importance?: string): void {
                 var property = this.property,
                     style: CSSStyleDeclaration = this.element.style || <any>{
                         setProperty: noop,
@@ -26816,33 +27056,33 @@ module plat {
             /**
              * The function used to add the proper event based on the input type.
              */
-            _addEventType: () => void;
+            protected _addEventType: () => void;
 
             /**
              * The function used to get the bound value.
              */
-            _getter: () => any;
+            protected _getter: () => any;
 
             /**
              * The function used to set the bound value.
              */
-            _setter: (newValue: any, oldValue?: any, firstTime?: boolean) => void;
+            protected _setter: (newValue: any, oldValue?: any, firstTime?: boolean) => void;
 
             /**
              * The expression to evaluate as the bound value.
              */
-            _expression: expressions.IParsedExpression;
+            protected _expression: expressions.IParsedExpression;
 
             /**
              * The IParsedExpression used to evaluate the context 
              * of the bound property.
              */
-            _contextExpression: expressions.IParsedExpression;
+            protected _contextExpression: expressions.IParsedExpression;
 
             /**
              * The bound property name.
              */
-            _property: string;
+            protected _property: string;
 
             /**
              * Whether or not the File API is supported.
@@ -26949,7 +27189,7 @@ module plat {
              * Adds a text event as the event listener. 
              * Used for textarea and input[type=text].
              */
-            _addTextEventListener(): void {
+            protected _addTextEventListener(): void {
                 var element = this.element,
                     $compat = this.$Compat,
                     composing = false,
@@ -27007,7 +27247,7 @@ module plat {
              * Adds a change event as the event listener. 
              * Used for select, input[type=radio], and input[type=range].
              */
-            _addChangeEventListener(): void {
+            protected _addChangeEventListener(): void {
                 this.addEventListener(this.element, 'change', this._propertyChanged, false);
             }
 
@@ -27015,14 +27255,14 @@ module plat {
              * Adds a $tap event as the event listener. 
              * Used for input[type=button] and button.
              */
-            _addButtonEventListener(): void {
+            protected _addButtonEventListener(): void {
                 this.addEventListener(this.element, __tap, this._propertyChanged, false);
             }
 
             /**
              * Getter for input[type=checkbox] and input[type=radio]
              */
-            _getChecked(): boolean {
+            protected _getChecked(): boolean {
                 return (<HTMLInputElement>this.element).checked;
             }
 
@@ -27030,14 +27270,14 @@ module plat {
              * Getter for input[type=text], input[type=range], 
              * textarea, and select.
              */
-            _getValue(): string {
+            protected _getValue(): string {
                 return (<HTMLInputElement>this.element).value;
             }
 
             /**
              * Getter for button.
              */
-            _getTextContent(): string {
+            protected _getTextContent(): string {
                 return (<HTMLInputElement>this.element).textContent;
             }
 
@@ -27045,7 +27285,7 @@ module plat {
              * Getter for input[type="file"]. Creates a partial IFile 
              * element if file is not supported.
              */
-            _getFile(): IFile {
+            protected _getFile(): IFile {
                 var element = <HTMLInputElement>this.element,
                     value = element.value;
 
@@ -27068,7 +27308,7 @@ module plat {
             /**
              * Getter for input[type="file"]-multiple
              */
-            _getFiles(): Array<IFile> {
+            protected _getFiles(): Array<IFile> {
                 var element = <HTMLInputElement>this.element;
 
                 if (this.__fileSupported) {
@@ -27102,7 +27342,7 @@ module plat {
             /**
              * Getter for select-multiple
              */
-            _getSelectedValues(): Array<string> {
+            protected _getSelectedValues(): Array<string> {
                 var options = (<HTMLSelectElement>this.element).options,
                     length = options.length,
                     option: HTMLOptionElement,
@@ -27126,7 +27366,7 @@ module plat {
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            _setText(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setText(newValue: any, oldValue?: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 }
@@ -27153,7 +27393,7 @@ module plat {
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            _setRange(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setRange(newValue: any, oldValue?: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 }
@@ -27180,7 +27420,7 @@ module plat {
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            _setChecked(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setChecked(newValue: any, oldValue?: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 } else if (!isBoolean(newValue)) {
@@ -27198,7 +27438,7 @@ module plat {
              * Setter for input[type=radio]
              * @param {any} newValue The new value to set
              */
-            _setRadio(newValue: any): void {
+            protected _setRadio(newValue: any): void {
                 var element = (<HTMLInputElement>this.element);
                 if (this.__isSelf) {
                     return;
@@ -27217,7 +27457,7 @@ module plat {
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            _setSelectedIndex(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setSelectedIndex(newValue: any, oldValue?: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 } else if (firstTime === true && this._checkAsynchronousSelect()) {
@@ -27275,7 +27515,7 @@ module plat {
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            _setSelectedIndices(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setSelectedIndices(newValue: any, oldValue?: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 } else if (firstTime === true && this._checkAsynchronousSelect()) {
@@ -27325,7 +27565,7 @@ module plat {
              * Determines the type of Element being bound to 
              * and sets the necessary handlers.
              */
-            _determineType(): void {
+            protected _determineType(): void {
                 if (!isNull(this.templateControl) && this._observingBindableProperty()) {
                     return;
                 }
@@ -27387,7 +27627,7 @@ module plat {
             /**
              * Observes the expression to bind to.
              */
-            _watchExpression(): void {
+            protected _watchExpression(): void {
                 var contextExpression = this._contextExpression,
                     context = this.evaluateExpression(contextExpression);
 
@@ -27427,7 +27667,7 @@ module plat {
              * Sets the context property being bound to when the 
              * element's property is changed.
              */
-            _propertyChanged(): void {
+            protected _propertyChanged(): void {
                 if (isNull(this._contextExpression)) {
                     return;
                 }
@@ -27450,7 +27690,7 @@ module plat {
             /**
              * Normalizes input[type="radio"] for cross-browser compatibility.
              */
-            _initializeRadio(): void {
+            protected _initializeRadio(): void {
                 var element = this.element;
 
                 this._addEventType = this._addChangeEventListener;
@@ -27474,7 +27714,7 @@ module plat {
             /**
              * Normalizes HTMLSelectElements for cross-browser compatibility.
              */
-            _initializeSelect(): void {
+            protected _initializeSelect(): void {
                 var element = <HTMLSelectElement>this.element,
                     multiple = element.multiple,
                     options = element.options,
@@ -27501,7 +27741,7 @@ module plat {
             /**
              * Checks to see if a Select or ForEach is loading items.
              */
-            _checkAsynchronousSelect(): boolean {
+            protected _checkAsynchronousSelect(): boolean {
                 var select = <ui.controls.Select>this.templateControl;
                 if (!isNull(select) && (select.type === __Select || select.type === __ForEach) && isPromise(select.itemsLoaded)) {
                     var split = select.absoluteContextPath.split('.'),
@@ -27530,7 +27770,7 @@ module plat {
              * initializes all listeners accordingly.
              * is an IBindablePropertyControl
              */
-            _observingBindableProperty(): boolean {
+            protected _observingBindableProperty(): boolean {
                 var templateControl = <ui.IBindablePropertyControl>this.templateControl;
 
                 if (isFunction(templateControl.observeProperty) &&
@@ -27554,7 +27794,7 @@ module plat {
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            _setBindableProperty(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setBindableProperty(newValue: any, oldValue?: any, firstTime?: boolean): void {
                 if (this.__isSelf || newValue === oldValue) {
                     return;
                 }
@@ -27566,7 +27806,7 @@ module plat {
              * Sets the value on an element.
              * @param {any} newValue The new value to set
              */
-            _setValue(newValue: any): void {
+            protected _setValue(newValue: any): void {
                 var element = <HTMLInputElement>this.element;
                 if (element.value === newValue) {
                     return;
@@ -27618,17 +27858,17 @@ module plat {
              * The set of functions added by the Template Control that listens 
              * for property changes.
              */
-            _listeners: Array<(newValue: any, oldValue?: any) => void> = [];
+            protected _listeners: Array<(newValue: any, oldValue?: any) => void> = [];
 
             /**
              * The function to stop listening for property changes.
              */
-            _removeListener: IRemoveListener;
+            protected _removeListener: IRemoveListener;
         
             /**
              * The _addListener function bound to this control.
              */
-            _boundAddListener = this._addListener.bind(this);
+            protected _boundAddListener = this._addListener.bind(this);
 
             /**
              * Sets the initial value of the property on 
@@ -27665,7 +27905,7 @@ module plat {
              * @param {any} value The new value of the evaluated expression.
              * @param {any} oldValue? The old value of the evaluated expression.
              */
-            _setProperty(value: any, oldValue?: any): void {
+            protected _setProperty(value: any, oldValue?: any): void {
                 var templateControl = this.templateControl;
 
                 if (isNull(templateControl)) {
@@ -27685,7 +27925,7 @@ module plat {
              * @param {any} value The new value of the evaluated expression.
              * @param {any} oldValue The old value of the evaluated expression.
              */
-            _callListeners(newValue: any, oldValue: any): void {
+            protected _callListeners(newValue: any, oldValue: any): void {
                 var listeners = this._listeners,
                     length = listeners.length;
 
@@ -27698,7 +27938,7 @@ module plat {
              * Adds a listener as defined by the Template Control.
              * @param {plat.IPropertyChangedListener} listener The listener added by the Template Control.
              */
-            _addListener(listener: (newValue: any, oldValue: any) => void): IRemoveListener {
+            protected _addListener(listener: (newValue: any, oldValue: any) => void): IRemoveListener {
                 var listeners = this._listeners;
 
                 listener = listener.bind(this.templateControl);
@@ -27717,7 +27957,7 @@ module plat {
             /**
              * Evaluates the attribute's value.
              */
-            _getValue(): any {
+            protected _getValue(): any {
                 if (isNull(this.templateControl)) {
                     return;
                 }
@@ -27728,7 +27968,7 @@ module plat {
             /**
              * Observes the attribute's value.
              */
-            _observeProperty(): void {
+            protected _observeProperty(): void {
                 if (isNull(this.templateControl)) {
                     return;
                 }
@@ -27819,14 +28059,15 @@ module plat {
         /**
          * A static method called upon app registration. Primarily used 
          * to initiate a ready state in the case that amd is being used.
-         * @param {any} app The app instance.
+         * @param {plat.dependency.IInjector<plat.IApp>} appInjector The injector for 
+         * injecting the app instance.
          */
-        static registerApp(app: any): void {
+        static registerApp(appInjector: dependency.IInjector<IApp>): void {
             if (!isNull(App.app) && isString(App.app.uid)) {
                 App.$EventManagerStatic.dispose(App.app.uid);
             }
 
-            App.app = app;
+            App.__injector = appInjector;
 
             if (App.$Compat.amd) {
                 var $LifecycleEventStatic = App.$LifecycleEventStatic,
@@ -27877,6 +28118,11 @@ module plat {
          * The instance of the registered IApp.
          */
         static app: IApp = null;
+        
+        /**
+         * The injector for injecting the instance of the currently registered IApp.
+         */
+        private static __injector: dependency.IInjector<IApp>;
 
         /**
          * A static method called when the application is ready. It calls the app instance's 
@@ -27887,10 +28133,7 @@ module plat {
          */
         private static __ready(ev: events.ILifecycleEvent): void {
             dependency.Injector.initialize();
-
-            if (!isNull(App.app)) {
-                App.__registerAppEvents(ev);
-            }
+            App.__registerAppEvents(ev);
 
             if (!ev.defaultPrevented) {
                 App.load();
@@ -27912,11 +28155,12 @@ module plat {
          * A static method called to register all the ILifecycleEvents for an app instance.
          */
         private static __registerAppEvents(ev: events.ILifecycleEvent): void {
-            var app = App.app;
-
-            if (isFunction((<dependency.IInjector<any>>(<any>app)).inject)) {
-                App.app = app = (<dependency.IInjector<any>>(<any>app)).inject();
+            var appInjector = App.__injector;
+            if (isNull(appInjector) || !isFunction(appInjector.inject)) {
+                return;
             }
+
+            var app = App.app = appInjector.inject();
 
             app.on(__suspend, app.suspend);
             app.on(__resume, app.resume);
@@ -28123,8 +28367,10 @@ module plat {
         /**
          * A static methods called upon app registration. Primarily used 
          * to initiate a ready state in the case that amd is being used.
+         * @param {plat.dependency.IInjector<plat.IApp>} appInjector The injector for 
+         * injecting the app instance.
          */
-        registerApp(app: dependency.IInjector<IApp>): void;
+        registerApp(appInjector: dependency.IInjector<IApp>): void;
 
         /**
          * Kicks off compilation of the DOM from the specified node. If no node is specified,

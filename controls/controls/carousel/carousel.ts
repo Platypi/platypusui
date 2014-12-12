@@ -141,7 +141,7 @@
          * @description
          * The orientation of this control.
          */
-        _orientation: string;
+        protected _orientation: string;
 
         /**
          * @name _transform
@@ -154,7 +154,7 @@
          * @description
          * The current browser's CSS3 transform property.
          */
-        _transform: string;
+        protected _transform: string;
 
         /**
          * @name _hasSwiped
@@ -167,7 +167,7 @@
          * @description
          * Whether or not the user has swiped.
          */
-        _hasSwiped = false;
+        protected _hasSwiped = false;
 
         /**
          * @name _inTouch
@@ -180,7 +180,7 @@
          * @description
          * Whether or not the user is currently touching the screen.
          */
-        _inTouch: boolean;
+        protected _inTouch: boolean;
 
         /**
          * @name _lastTouch
@@ -193,20 +193,7 @@
          * @description
          * The last touch start recorded.
          */
-        _lastTouch: plat.ui.IPoint = { x: 0, y: 0 };
-
-        /**
-         * @name _inTouch
-         * @memberof platui.Carousel
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the user is currently touching the screen.
-         */
-        //_inTouch: boolean;
+        protected _lastTouch: plat.ui.IPoint = { x: 0, y: 0 };
 
         /**
          * @name _loaded
@@ -219,7 +206,7 @@
          * @description
          * Whether or not the control has been loaded based on its context being an Array.
          */
-        _loaded = false;
+        protected _loaded = false;
 
         /**
          * @name _index
@@ -232,7 +219,7 @@
          * @description
          * The current index seen in the {@link platui.Carousel|Carousel}.
          */
-        _index = 0;
+        protected _index = 0;
 
         /**
          * @name _intervalOffset
@@ -245,7 +232,7 @@
          * @description
          * The interval offset to translate the {@link platui.Carousel|Carousel's} sliding element.
          */
-        _intervalOffset: number;
+        protected _intervalOffset: number;
 
         /**
          * @name _currentOffset
@@ -258,7 +245,7 @@
          * @description
          * The current offset of the translated {@link platui.Carousel|Carousel's} sliding element.
          */
-        _currentOffset = 0;
+        protected _currentOffset = 0;
 
         /**
          * @name _positionProperty
@@ -271,7 +258,7 @@
          * @description
          * Denotes whether we're using left or top as the position of the {@link platui.Carousel|Carousel}.
          */
-        _positionProperty: string;
+        protected _positionProperty: string;
 
         /**
          * @name _slider
@@ -284,7 +271,7 @@
          * @description
          * Denotes the sliding element contained within the control.
          */
-        _slider: HTMLElement;
+        protected _slider: HTMLElement;
 
         /**
          * @name _cloneAttempts
@@ -298,7 +285,7 @@
          * The current number of times we checked to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        _cloneAttempts = 0;
+        protected _cloneAttempts = 0;
 
         /**
          * @name _maxCloneCount
@@ -312,7 +299,7 @@
          * The max number of times we'll check to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        _maxCloneAttempts = 25;
+        protected _maxCloneAttempts = 25;
 
         /**
          * @name _animationThenable
@@ -326,7 +313,7 @@
          * The most recent animation thenable. Used to cancel the current animation if another needs 
          * to begin.
          */
-        _animationThenable: plat.ui.animations.IAnimationThenable<void>;
+        protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
 
         /**
          * @name _onLoad
@@ -339,7 +326,7 @@
          * @description
          * A function to call once items are loaded and the {@link platui.Carousel|Carousel} is set.
          */
-        _onLoad: () => void;
+        protected _onLoad: () => void;
 
         /**
          * @name setClasses
@@ -468,7 +455,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -491,7 +478,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(this._intervalOffset);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -518,7 +505,7 @@
 
             this._index = index;
             animationOptions[this._transform] = this._calculateStaticTranslation(interval);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -535,7 +522,7 @@
         reset(): void {
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
-            this._initiateAnimation(animationOptions);
+            this._initiateAnimation({ properties: animationOptions });
         }
 
         /**
@@ -552,7 +539,7 @@
          * 
          * @returns {void}
          */
-        _initiateAnimation(animationOptions: plat.IObject<string>): void {
+        protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): void {
             if (!this.$utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
                     this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
@@ -579,7 +566,7 @@
          * 
          * @returns {void}
          */
-        _init(): void {
+        protected _init(): void {
             var foreach = <plat.ui.controls.ForEach>this.controls[0];
             this._setTransform();
             this._slider = <HTMLElement>this.element.firstElementChild;
@@ -612,7 +599,7 @@
          * 
          * @returns {void}
          */
-        _addEventListeners(orientation: string): void {
+        protected _addEventListeners(orientation: string): void {
             var element = this.element,
                 trackFn = this._track,
                 touchEnd = this._touchEnd,
@@ -652,7 +639,7 @@
          * 
          * @returns {void}
          */
-        _touchStart(ev: plat.ui.IGestureEvent): void {
+        protected _touchStart(ev: plat.ui.IGestureEvent): void {
             if (this._inTouch) {
                 return;
             }
@@ -690,7 +677,7 @@
          * 
          * @returns {void}
          */
-        _touchEnd(ev: plat.ui.IGestureEvent): void {
+        protected _touchEnd(ev: plat.ui.IGestureEvent): void {
             var inTouch = this._inTouch,
                 hasSwiped = this._hasSwiped;
 
@@ -729,7 +716,7 @@
          * 
          * @returns {void}
          */
-        _track(ev: plat.ui.IGestureEvent): void {
+        protected _track(ev: plat.ui.IGestureEvent): void {
             this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
         }
 
@@ -746,7 +733,7 @@
          * 
          * @returns {string} The translation value.
          */
-        _calculateStaticTranslation(interval: number): string {
+        protected _calculateStaticTranslation(interval: number): string {
             if (this._orientation === 'vertical') {
                 return 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)';
             }
@@ -767,7 +754,7 @@
          * 
          * @returns {string} The translation value.
          */
-        _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
+        protected _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
             if (this._orientation === 'vertical') {
                 return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
             }
@@ -786,7 +773,7 @@
          * 
          * @returns {void}
          */
-        _setTransform(): void {
+        protected _setTransform(): void {
             var style = this.element.style,
                 isUndefined = this.$utils.isUndefined,
                 transform: string;
@@ -816,7 +803,7 @@
          * 
          * @returns {number} The interval length.
          */
-        _setPosition(element?: HTMLElement): number {
+        protected _setPosition(element?: HTMLElement): number {
             element = element || <HTMLElement>this.element.firstElementChild;
             switch (this._orientation) {
                 case 'vertical':
@@ -839,7 +826,7 @@
          * 
          * @returns {void}
          */
-        _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(): void {
             var element = this.element,
                 body = this.$document.body;
 

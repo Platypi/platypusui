@@ -50,7 +50,7 @@
          * @description
          * The check type to be placed in the element.
          */
-        _targetType = 'bullet';
+        protected _targetType = 'bullet';
 
         /**
          * @name _targetTypeSet
@@ -63,7 +63,7 @@
          * @description
          * Whether the target type has been set already or not.
          */
-        _targetTypeSet = true;
+        protected _targetTypeSet = true;
         
         /**
          * @name _removeListener
@@ -76,7 +76,7 @@
          * @description
          * A function to stop listening for dispatched group events.
          */
-        _removeListener: plat.IRemoveListener;
+        protected _removeListener: plat.IRemoveListener;
 
         /**
          * @name setClasses
@@ -191,7 +191,7 @@
          * 
          * @returns {void}
          */
-        _onTap(ev: plat.ui.IGestureEvent): void {
+        protected _onTap(ev: plat.ui.IGestureEvent): void {
             if (this.isActive) {
                 return;
             }
@@ -213,7 +213,7 @@
          * 
          * @returns {void}
          */
-        _toggle(setProperty?: boolean): void {
+        protected _toggle(setProperty?: boolean): void {
             super._toggle(setProperty);
             if (this.$utils.isFunction(this._removeListener)) {
                 this._removeListener();
@@ -245,7 +245,7 @@
          * 
          * @returns {void}
          */
-        _convertAttribute(newValue: any, oldValue?: any): void {
+        protected _convertAttribute(newValue: any, oldValue?: any): void {
             var $utils = this.$utils;
             if ($utils.isBoolean(newValue)) {
                 if (newValue) {
@@ -273,7 +273,7 @@
          * 
          * @returns {string} Returns the bindable value of this control.
          */
-        _getValue(): string {
+        protected _getValue(): string {
             var element = this.element;
             return element.hasAttribute('value') ? element.getAttribute('value').trim() : element.textContent.trim();
         }

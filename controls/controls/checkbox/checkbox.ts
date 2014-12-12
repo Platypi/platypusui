@@ -63,7 +63,7 @@
          * @description
          * Whether the target type has been set already or not.
          */
-        _targetTypeSet = false;
+        protected _targetTypeSet = false;
 
         /**
          * @name setClasses
@@ -182,7 +182,7 @@
          * 
          * @returns {void}
          */
-        _convertChecked(): void {
+        protected _convertChecked(): void {
             var element = this.element;
             if (element.hasAttribute(__Checked)) {
                 this._convertAttribute(element.getAttribute(__Checked));
@@ -210,7 +210,7 @@
          * 
          * @returns {void}
          */
-        _convertAttribute(newValue: any, oldValue?: any): void {
+        protected _convertAttribute(newValue: any, oldValue?: any): void {
             var $utils = this.$utils;
             if ($utils.isBoolean(newValue)) {
                 return this.setProperty(newValue, oldValue, true);
@@ -235,7 +235,7 @@
          * 
          * @returns {void}
          */
-        _activate(element: Element): void {
+        protected _activate(element: Element): void {
             if (this._targetTypeSet) {
                 this.dom.toggleClass(element, __Plat + this._targetType);
                 return;

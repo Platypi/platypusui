@@ -85,7 +85,7 @@ module platui {
          * @description
          * A boolean value showing the selected state of this {@link platui.Button|Button}.
          */
-        _isSelected: boolean;
+        protected _isSelected: boolean;
 
         /**
          * @name setClasses
@@ -202,7 +202,7 @@ module platui {
          * 
          * @returns {void}
          */
-        _addEventListeners(name: string): void {
+        protected _addEventListeners(name: string): void {
             var element = this.element,
                 dom = this.dom;
 
@@ -228,7 +228,7 @@ module platui {
          * 
          * @returns {void}
          */
-        _onTap(): void {
+        protected _onTap(): void {
             if (this._isSelected) {
                 return;
             }

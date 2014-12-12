@@ -141,7 +141,7 @@
          * @description
          * The HTMLElement representing the slider.
          */
-        _slider: HTMLElement;
+        protected _slider: HTMLElement;
 
         /**
          * @name _knob
@@ -154,7 +154,7 @@
          * @description
          * The HTMLElement representing the knob.
          */
-        _knob: HTMLElement;
+        protected _knob: HTMLElement;
 
         /**
          * @name _lastTouch
@@ -167,7 +167,7 @@
          * @description
          * The last touch start recorded.
          */
-        _lastTouch: plat.ui.IPoint;
+        protected _lastTouch: plat.ui.IPoint;
 
         /**
          * @name _maxOffset
@@ -180,7 +180,7 @@
          * @description
          * The maximum slider offset.
          */
-        _maxOffset: number;
+        protected _maxOffset: number;
 
         /**
          * @name _increment
@@ -193,7 +193,7 @@
          * @description
          * The slider's pixel based increment value.
          */
-        _increment: number;
+        protected _increment: number;
 
         /**
          * @name _step
@@ -206,7 +206,7 @@
          * @description
          * Denotes the incremental step value of the {@link platui.Slider|Slider's} value property.
          */
-        _step: number;
+        protected _step: number;
 
         /**
          * @name _orientation
@@ -219,7 +219,7 @@
          * @description
          * The orientation of this control.
          */
-        _orientation: string;
+        protected _orientation: string;
 
         /**
          * @name _reversed
@@ -232,7 +232,7 @@
          * @description
          * Whether the min and max positions have been reversed.
          */
-        _reversed: boolean;
+        protected _reversed: boolean;
 
         /**
          * @name _knobOffset
@@ -245,7 +245,7 @@
          * @description
          * The current knob offset.
          */
-        _knobOffset = 0;
+        protected _knobOffset = 0;
 
         /**
          * @name _loaded
@@ -259,7 +259,7 @@
          * Whether or not the slider has already been loaded. Useful for when 
          * the {@link plat.controls.Bind|Bind} tries to set a value.
          */
-        _loaded = false;
+        protected _loaded = false;
 
         /**
          * @name _lengthProperty
@@ -272,7 +272,7 @@
          * @description
          * Denotes whether we're using height or width as the length of the slider.
          */
-        _lengthProperty: string;
+        protected _lengthProperty: string;
 
         /**
          * @name _cloneAttempts
@@ -286,7 +286,7 @@
          * The current number of times we checked to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        _cloneAttempts = 0;
+        protected _cloneAttempts = 0;
 
         /**
          * @name _maxCloneCount
@@ -300,7 +300,7 @@
          * The max number of times we'll check to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        _maxCloneAttempts = 25;
+        protected _maxCloneAttempts = 25;
 
         /**
          * @name setClasses
@@ -459,7 +459,7 @@
          * 
          * @returns {void}
          */
-        _touchStart(ev: plat.ui.IGestureEvent): void {
+        protected _touchStart(ev: plat.ui.IGestureEvent): void {
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -479,7 +479,7 @@
          * 
          * @returns {void}
          */
-        _touchEnd(ev: plat.ui.IGestureEvent): void {
+        protected _touchEnd(ev: plat.ui.IGestureEvent): void {
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
@@ -507,7 +507,7 @@
          * 
          * @returns {void}
          */
-        _track(ev: plat.ui.IGestureEvent): void {
+        protected _track(ev: plat.ui.IGestureEvent): void {
             var length = this._calculateOffset(ev),
                 maxOffset = this._maxOffset,
                 value: number;
@@ -545,7 +545,7 @@
          * 
          * @returns {void}
          */
-        _initializeEvents(orientation: string): void {
+        protected _initializeEvents(orientation: string): void {
             var knob = this._knob,
                 trackFn: EventListener = this._track,
                 track: string,
@@ -583,7 +583,7 @@
          * 
          * @returns {number} The current value of the {link platui.Slider|Slider}.
          */
-        _calculateValue(width: number): number {
+        protected _calculateValue(width: number): number {
             var step = this._step;
             return (this.min + Math.round(width / this._increment / step) * step);
         }
@@ -601,7 +601,7 @@
          * 
          * @returns {number} The current position of the knob in pixels.
          */
-        _calculateKnobPosition(value: number): number {
+        protected _calculateKnobPosition(value: number): number {
             return (value - this.min) * this._increment;
         }
 
@@ -618,7 +618,7 @@
          * 
          * @returns {number} The current position of the knob in pixels.
          */
-        _calculateOffset(ev: plat.ui.IGestureEvent): number {
+        protected _calculateOffset(ev: plat.ui.IGestureEvent): number {
             switch (this._orientation) {
                 case 'horizontal':
                     return this._reversed ?
@@ -646,7 +646,7 @@
          * 
          * @returns {number} The length of the slider.
          */
-        _setLength(element?: HTMLElement): number {
+        protected _setLength(element?: HTMLElement): number {
             element = element || this._slider.parentElement;
             switch (this._orientation) {
                 case 'horizontal':
@@ -673,7 +673,7 @@
          * 
          * @returns {number} The slider's increment value.
          */
-        _setIncrement(): number {
+        protected _setIncrement(): number {
             return (this._increment = this._maxOffset / (this.max - this.min));
         }
 
@@ -692,7 +692,7 @@
          * 
          * @returns {void}
          */
-        _setValue(newValue: number, setKnob: boolean, setProperty: boolean): void {
+        protected _setValue(newValue: number, setKnob: boolean, setProperty: boolean): void {
             var value = this.value;
             if (newValue === value) {
                 return;
@@ -728,12 +728,14 @@
          * 
          * @returns {void}
          */
-        _setKnob(value?: number): void {
+        protected _setKnob(value?: number): void {
             var animationOptions: plat.IObject<string> = {},
                 length = this._calculateKnobPosition((value || this.value));
 
             animationOptions[this._lengthProperty] = length + 'px';
-            this.$animator.animate(this._slider, __Transition, animationOptions);
+            this.$animator.animate(this._slider, __Transition, {
+                properties: animationOptions
+            });
             this._knobOffset = length;
         }
 
@@ -748,7 +750,7 @@
          * 
          * @returns {void}
          */
-        _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(): void {
             var element = this.element,
                 body = this.$document.body;
 

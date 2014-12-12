@@ -15,15 +15,15 @@ module app {
             progress: 0,
             sliders: {
                 slider1: 20,
-                slider2: 35,   
+                slider2: 35,
                 slider3: 50,
                 slider4: 65,
             },
             ranges: {
                 range1: { lower: 10, upper: 30 },
-                range2: { lower: 15, upper: 50 },   
+                range2: { lower: 15, upper: 50 },
                 range3: { lower: 20, upper: 70 },
-                range4: { lower: 25, upper: 90 },  
+                range4: { lower: 25, upper: 90 },
             },
             test3: '',
             lower: 10,
@@ -64,10 +64,17 @@ module app {
     plat.register.viewControl('viewcontrol', MainViewControl, null, ['']);
 
     class App extends plat.App {
+        constructor(config: plat.web.IBrowserConfig) {
+            super();
+            config.baseUrl = 'app';
+        }
+
         error(ev: plat.events.IErrorEvent<Error>) {
             console.log(ev.error);
         }
     }
 
-    plat.register.app('app', App);
+    plat.register.app('app', App, [
+        plat.web.IBrowserConfig
+    ]);
 }
