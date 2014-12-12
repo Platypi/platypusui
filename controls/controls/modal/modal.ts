@@ -198,25 +198,25 @@
          */
         setTemplate(): void {
             var $utils = this.$utils,
-                modal: HTMLElement;
+                modalContainer: HTMLElement;
 
             if ($utils.isString(this.templateUrl)) {
                 var fragment = this.dom.serializeHtml(this.templateString),
                     childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
 
-                modal = this._modalElement = <HTMLElement>fragment.firstChild;
+                modalContainer = this._modalElement = <HTMLElement>fragment.firstChild;
                 while (childNodes.length > 0) {
-                    modal.appendChild(childNodes.shift());
+                    modalContainer.appendChild(childNodes.shift());
                 }
 
                 return;
             }
 
-            modal = this._modalElement = <HTMLElement>this.element.firstElementChild;
+            modalContainer = this._modalElement = <HTMLElement>this.element.firstElementChild;
 
             var innerTemplate = this.innerTemplate;
-            if (this.$utils.isNode(innerTemplate)) {
-                modal.appendChild(innerTemplate);
+            if ($utils.isNode(innerTemplate)) {
+                modalContainer.appendChild(innerTemplate);
             }
         }
 
