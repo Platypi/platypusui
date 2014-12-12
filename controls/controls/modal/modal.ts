@@ -202,13 +202,15 @@
 
             if ($utils.isString(this.templateUrl)) {
                 var fragment = this.dom.serializeHtml(this.templateString),
-                    childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
+                    element = this.element,
+                    childNodes: Array<Node> = Array.prototype.slice.call(element.childNodes);
 
                 modalContainer = this._modalElement = <HTMLElement>fragment.firstChild;
                 while (childNodes.length > 0) {
                     modalContainer.appendChild(childNodes.shift());
                 }
 
+                element.appendChild(fragment);
                 return;
             }
 
