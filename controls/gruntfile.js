@@ -16,7 +16,7 @@ module.exports = exports = function load(grunt) {
             server: {
                 options: {
                     port: 8080,
-                    base: '../'
+                    base: './'
                 }
             }
         },
@@ -47,7 +47,7 @@ module.exports = exports = function load(grunt) {
         },
         open: {
             dev: {
-                path: 'http://localhost:8080/controls/app/index.html'
+                path: 'http://localhost:8080/app/index.html'
             }
         },
         ts: {
@@ -78,15 +78,26 @@ module.exports = exports = function load(grunt) {
         license: grunt.file.read('license.txt')
     };
 
+    // grunt.initConfig(config);
+    // grunt.loadNpmTasks('grunt-contrib-connect');
+    // grunt.loadNpmTasks('grunt-contrib-less');
+    // grunt.loadNpmTasks('grunt-contrib-watch');
+    // grunt.loadNpmTasks('grunt-less-bundle');
+    // grunt.loadNpmTasks('grunt-open');
+    // grunt.loadNpmTasks('grunt-ts-bundle');
+    // grunt.loadNpmTasks('grunt-ts');
+    // grunt.renameTask('less', 'lessCompile');
+
     grunt.initConfig(config);
-    grunt.renameTask('less', 'lessCompile');
-    grunt.loadNpmTasks('grunt-contrib-connect');
-    grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadNpmTasks('grunt-less-bundle');
-    grunt.loadNpmTasks('grunt-open');
     grunt.loadNpmTasks('grunt-ts-bundle');
     grunt.loadNpmTasks('grunt-ts');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.renameTask('less', 'lessCompile');
+
+    grunt.loadNpmTasks('grunt-less-bundle');
+    grunt.loadNpmTasks('grunt-contrib-connect');
+    grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
     grunt.registerTask('default', ['bundle', 'less', 'lessCompile']);
