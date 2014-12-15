@@ -70,6 +70,7 @@ var __Promise = '$Promise',
     /**
      * Misc
      */
+    __CONTEXT = 'context',
     __Reversed = '-reversed',
     __transitionNegate: plat.IObject<string> = {
         right: 'left',

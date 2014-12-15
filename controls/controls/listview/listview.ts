@@ -8,8 +8,8 @@
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} for creating a complex list of items with a 
-     * high level of functionality.
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} for creating a complex list of items with 
+     * extensive functionality.
      */
     export class Listview extends plat.ui.TemplateControl implements IUIControl {
         /**
@@ -156,6 +156,19 @@
         protected _orientation: string;
 
         /**
+         * @name _listenerSet
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the Array listener has been set.
+         */
+        protected _listenerSet = false;
+
+        /**
          * @name setClasses
          * @memberof platui.Listview
          * @kind function
@@ -243,6 +256,8 @@
                 $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
                 return;
             }
+
+            this._setListener();
         }
 
         /**
@@ -321,6 +336,45 @@
                     bindableTemplates.add(templateName, fragment);
                     templates[templateName] = fragment;
                 }
+            }
+        }
+
+        /**
+         * @name _setListener
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets a listener for the changes to the array.
+         * 
+         * @returns {void}
+         */
+        protected _setListener(): void {
+            if (!this._listenerSet) {
+                this.observeArray(this, __CONTEXT, this._executeEvent);
+                this._listenerSet = true;
+            }
+        }
+
+        /**
+         * @name _executeEvent
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Receives an event when a method has been called on an array and maps the array 
+         * method to its associated method handler.
+         * 
+         * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _executeEvent(ev: plat.observable.IArrayMethodInfo<any>): void {
+            var method = '_' + ev.method;
+            if (this.$utils.isFunction((<any>this)[method])) {
+                (<any>this)[method](ev);
             }
         }
     }
