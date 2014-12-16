@@ -21186,10 +21186,10 @@ module plat {
                             if (animate === true) {
                                 var length = templates.length;
                                 for (var i = 0; i < length; ++i) {
-                                    this._addAnimatedItem(templates[i], __Enter);
+                                    this._appendAnimatedItem(templates[i], __Enter);
                                 }
                             } else {
-                                appendChildren(templates, this.element);
+                                this._appendItems(templates);
                             }
 
                             if (isFunction(this.__resolveFn)) {
@@ -21216,17 +21216,11 @@ module plat {
                 }
 
                 /**
-                 * Removes items from the control's element.
-                 * @param {number} numberOfItems The number of items to remove.
+                 * Adds an Array of items to the element without animating.
+                 * @param {Array<Node>} items The Array of items to add.
                  */
-                protected _removeItems(numberOfItems: number): void {
-                    for (var i = 0; i < numberOfItems; ++i) {
-                        this._removeItem();
-                    }
-
-                    if (this.controls.length > 0) {
-                        this._updateResources();
-                    }
+                protected _appendItems(items: Array<Node>): void {
+                    appendChildren(items, this.element);
                 }
 
                 /**
@@ -21234,7 +21228,7 @@ module plat {
                  * @param {DocumentFragment} item The HTML fragment representing a single item.
                  * @param {string} key The animation key/type.
                  */
-                protected _addAnimatedItem(item: DocumentFragment, key: string): void {
+                protected _appendAnimatedItem(item: DocumentFragment, key: string): void {
                     if (!isNode(item)) {
                         return;
                     }
@@ -21253,6 +21247,20 @@ module plat {
                                 currentAnimations.shift();
                             }));
                         }
+                    }
+                }
+
+                /**
+                 * Removes items from the control's element.
+                 * @param {number} numberOfItems The number of items to remove.
+                 */
+                protected _removeItems(numberOfItems: number): void {
+                    for (var i = 0; i < numberOfItems; ++i) {
+                        this._removeItem();
+                    }
+
+                    if (this.controls.length > 0) {
+                        this._updateResources();
                     }
                 }
 
