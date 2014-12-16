@@ -21087,6 +21087,8 @@ module plat {
                  */
                 contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
                     if (!isArray(newValue)) {
+                        var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                        $exception.warn(this.type + ' context set to something other than an Array.', $exception.CONTEXT);
                         return;
                     }
 
@@ -21112,14 +21114,16 @@ module plat {
                  */
                 loaded(): void {
                     var context = this.context;
-
                     if (!isArray(context)) {
+                        if (!isNull(context)) {
+                            var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                            $exception.warn(this.type + ' context set to something other than an Array.', $exception.CONTEXT);
+                        }
                         return;
                     }
 
                     this._setAliases();
                     this._addItems(context.length, 0);
-
                     this._setListener();
                 }
 
