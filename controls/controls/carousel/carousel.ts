@@ -416,7 +416,7 @@
                 context = this.context;
             if (!$utils.isArray(context)) {
                 var Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('The context of a ' + __Carousel + ' must be an Array.');
+                Exception.warn('The context of a ' + this.type + ' must be an Array.');
                 return;
             }
 
@@ -580,7 +580,7 @@
                 }
             }).catch(() => {
                     var Exception = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Error processing ' + __Carousel + '. Please ensure you\'re context is correct.');
+                    Exception.warn('Error processing ' + this.type + '. Please ensure you\'re context is correct.');
                     this._loaded = false;
                     return;
                 });
@@ -833,9 +833,10 @@
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    $exception.warn('Max clone attempts reached before the ' + __Carousel + ' was placed into the ' +
-                        'DOM. Disposing of the ' + __Carousel);
+                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                        type = this.type;
+                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }

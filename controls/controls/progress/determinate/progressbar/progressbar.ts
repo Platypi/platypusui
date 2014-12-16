@@ -152,7 +152,7 @@
 
             if (!this.$utils.isNumber(context) || context > 1 || context < 0) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1');
+                Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1');
                 return;
             }
 
@@ -192,7 +192,7 @@
             var barValue = value || this.context;
             if (!this.$utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('The context of a "' + __ProgressBar + '" control must be a number between 0 and 1');
+                Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1');
                 return;
             }
 
@@ -218,9 +218,10 @@
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    $exception.warn('Max clone attempts reached before the ' + __ProgressBar + ' was placed into the ' +
-                        'DOM. Disposing of the ' + __ProgressBar);
+                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                        type = this.type;
+                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }

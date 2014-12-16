@@ -252,7 +252,7 @@
             } else if (!this._transitionHash[transition]) {
                 var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Custom transition: "' + transition +
-                    '" defined for "' + __Modal + '." Please ensure the transition is defined to avoid errors.');
+                    '" defined for "' + this.type + '." Please ensure the transition is defined to avoid errors.');
             }
 
             this._transitionEnd = this.$compat.animationEvents.$transitionEnd;

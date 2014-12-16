@@ -961,7 +961,7 @@
                     } else {
                         if (this._usingBind) {
                             var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                            Exception.warn(__Input + ' control is bound to a value that does not satisfy ' +
+                            Exception.warn(this.type + ' control is bound to a value that does not satisfy ' +
                                 'the given pattern and/or type. The bound value will be reset to "".');
                         }
                         this.propertyChanged((this._inputElement.value = ''), value);
