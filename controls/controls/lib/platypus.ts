@@ -15579,13 +15579,13 @@ module plat {
                 return templatePromise.then((result: DocumentFragment) => {
                     return this._bindTemplate(key, <DocumentFragment>result.cloneNode(true), relativeIdentifier, resources);
                 }).then(null, (error: any) => {
-                    postpone(() => {
-                        $exception = acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.BIND);
-                    });
+                        postpone(() => {
+                            $exception = acquire(__ExceptionStatic);
+                            $exception.fatal(error, $exception.BIND);
+                        });
 
-                    return <DocumentFragment>null;
-                });
+                        return <DocumentFragment>null;
+                    });
             }
 
             /**
@@ -15663,7 +15663,7 @@ module plat {
                 this.cache = {};
                 this.templates = {};
             }
-        
+
             /**
              * Creates the template's bound control and INodeMap and initiates 
              * the binding of the INodeMap for a cloned template.
@@ -15675,7 +15675,7 @@ module plat {
              */
             protected _bindTemplate(key: string, template: DocumentFragment, contextId: string,
                 resources: IObject<IResource>): async.IThenable<DocumentFragment> {
-                var control = this._createBoundControl(key, template, contextId, resources),
+                var control = this._createBoundControl(key, template, resources),
                     nodeMap = this._createNodeMap(control, template, contextId),
                     disposed = false,
                     dispose = isFunction(control.dispose) ? control.dispose.bind(control) : noop;
@@ -15698,15 +15698,15 @@ module plat {
 
                     return template;
                 }, (error: any) => {
-                    postpone(() => {
-                        var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.COMPILE);
-                    });
+                        postpone(() => {
+                            var $exception: IExceptionStatic = acquire(__ExceptionStatic);
+                            $exception.fatal(error, $exception.COMPILE);
+                        });
 
-                    return <DocumentFragment>null;
-                });
+                        return <DocumentFragment>null;
+                    });
             }
-        
+
             /**
              * Clones the compiled IElementManager using the newly created 
              * INodeMap and binds and loads this control's 
@@ -15726,7 +15726,7 @@ module plat {
                 manager.clone(template, $managerCache.read(this.control.uid), nodeMap);
                 return $managerCache.read(child.uid).bindAndLoad();
             }
-        
+
             /**
              * Creates the template's compiled, bound control and INodeMap and initiates 
              * the compilation of the template.
@@ -15741,7 +15741,7 @@ module plat {
 
                 this._compileNodeMap(control, nodeMap, key);
             }
-        
+
             /**
              * Instantiates a new IElementManager for the root of this 
              * template and resolves any asynchronous url templates within the template being compiled.
@@ -15776,7 +15776,7 @@ module plat {
                     return clone;
                 });
             }
-        
+
             /**
              * Creates an INodeMap for either a template being compiled or a 
              * template being bound.
@@ -15798,19 +15798,16 @@ module plat {
                     }
                 };
             }
-        
+
             /**
              * Creates a ITemplateControl used for binding either a template being compiled 
              * or a template being bound.
              * @param {string} key The template key.
              * @param {DocumentFragment} template The template being compiled or being bound.
-             * @param {string} relativeIdentifier? A potential context string identifier identifying the 
-             * object's position off the context.
              * @param {plat.IObject<plat.ui.IResource>} resources? A set of resources to add to the control used to 
              * compile/bind this template.
              */
-            protected _createBoundControl(key: string, template: DocumentFragment,
-                relativeIdentifier?: string, resources?: IObject<IResource>): ITemplateControl {
+            protected _createBoundControl(key: string, template: DocumentFragment, resources?: IObject<IResource>): ITemplateControl {
                 var $TemplateControlFactory = this.$TemplateControlFactory,
                     control = $TemplateControlFactory.getInstance(),
                     $ResourcesFactory = this.$ResourcesFactory,
@@ -20399,7 +20396,7 @@ module plat {
                  * Clears the control element's innerHTML.
                  */
                 setTemplate(): void {
-                    this.dom.clearNode(this.element);
+                    clearNode(this.element);
                     this._load();
                 }
 
@@ -20880,10 +20877,10 @@ module plat {
 
                     if (!isNull(url)) {
                         template = this.$TemplateCache.read(url);
-                        this.dom.clearNodeBlock(this.elementNodes, parentNode);
+                        clearNodeBlock(this.elementNodes, parentNode);
                     } else {
                         template = this.$Document.createDocumentFragment();
-                        this.dom.appendChildren(this.elementNodes, template);
+                        appendChildren(this.elementNodes, template);
                     }
 
                     var controlPromise: async.IThenable<ITemplateControl>;
@@ -20927,7 +20924,7 @@ module plat {
                         return this.bindableTemplates.bind(this._id);
                     }).then((clone) => {
                         var endNode = this.endNode;
-                        this.dom.insertBefore(endNode.parentNode, clone, endNode);
+                        insertBefore(endNode.parentNode, clone, endNode);
                     }).catch((error) => {
                         postpone(() => {
                             $exception = acquire(__ExceptionStatic);
@@ -20978,7 +20975,7 @@ module plat {
                  * Removes the innerHTML from the DOM and saves it.
                  */
                 setTemplate(): void {
-                    this.innerTemplate = this.dom.appendChildren(this.element.childNodes);
+                    this.innerTemplate = <DocumentFragment>appendChildren(this.element.childNodes);
                 }
 
                 /**
@@ -21044,18 +21041,21 @@ module plat {
                 };
 
                 /**
-                 * The node length of the element's childNodes (innerHTML).
+                 * The node length of each item's childNodes (innerHTML). 
+                 * For the ForEach it should be a 
+                 * single constant number.
                  */
-                protected _blockLength = 0;
+                protected _blockLength: any = 0;
+
+                /**
+                 * An array to aggregate all current animation promises.
+                 */
+                protected _currentAnimations: Array<animations.IAnimationThenable<any>> = [];
 
                 /**
                  * Whether or not the Array listener has been set.
                  */
                 private __listenerSet = false;
-                /**
-                 * An array to aggregate all current animation promises.
-                 */
-                private __currentAnimations: Array<animations.IAnimationThenable<any>> = [];
                 /**
                  * The resolve function for the itemsLoaded promise.
                  */
@@ -21164,27 +21164,40 @@ module plat {
                  * @param {boolean} animate? Whether or not to animate the new items
                  */
                 protected _addItems(numberOfItems: number, index: number, animate?: boolean): async.IThenable<void> {
-                    var bindableTemplates = this.bindableTemplates,
-                        promises: Array<async.IThenable<void>> = [];
+                    var context = this.context,
+                        max = +(index + numberOfItems);
+                    if (!isArray(context) || !isNumber(max) || (context.length < max)) {
+                        return;
+                    }
 
-                    for (var i = 0; i < numberOfItems; ++i, ++index) {
-                        promises.push(bindableTemplates.bind('item', index, this._getAliases(index)).then((fragment: DocumentFragment) => {
-                            this._addItem(fragment, animate);
-                        }).catch((error: any) => {
-                                postpone(() => {
-                                    var $exception: IExceptionStatic = acquire(__ExceptionStatic);
-                                    $exception.fatal(error, $exception.BIND);
-                                });
-                            }));
+                    var promises: Array<async.IThenable<DocumentFragment>> = [];
+                    while (index < max) {
+                        promises.push(this._bindItem(index++));
                     }
 
                     if (promises.length > 0) {
-                        this.itemsLoaded = this.$Promise.all(promises).then<void>(() => {
+                        this.itemsLoaded = this.$Promise.all(promises).then<void>((templates) => {
+                            this._setBlockLength(templates);
+
+                            if (animate === true) {
+                                var length = templates.length;
+                                for (var i = 0; i < length; ++i) {
+                                    this._addAnimatedItem(templates[i], __Enter);
+                                }
+                            } else {
+                                appendChildren(templates, this.element);
+                            }
+
                             if (isFunction(this.__resolveFn)) {
                                 this.__resolveFn();
                                 this.__resolveFn = null;
                             }
-                        });
+                        }).catch((error) => {
+                                postpone(() => {
+                                    var $exception: IExceptionStatic = acquire(__ExceptionStatic);
+                                    $exception.warn(error, $exception.BIND);
+                                });
+                            });
                     } else {
                         if (isFunction(this.__resolveFn)) {
                             this.__resolveFn();
@@ -21213,43 +21226,26 @@ module plat {
                 }
 
                 /**
-                 * Adds an item to the control's element.
-                 * @param {DocumentFragment} item The HTML fragment representing a single item
-                 * @param {boolean} animate? Whether or not to animate the entering item
+                 * Adds an item to the control's element animating its elements.
+                 * @param {DocumentFragment} item The HTML fragment representing a single item.
+                 * @param {string} key The animation key/type.
                  */
-                protected _addItem(item: DocumentFragment, animate?: boolean): void {
-                    var context = this.context;
-                    if (!isNode(item) ||
-                        !isArray(context) ||
-                        context.length === 0 ||
-                        this.controls.length === 0) {
+                protected _addAnimatedItem(item: DocumentFragment, key: string): void {
+                    if (!isNode(item)) {
                         return;
                     }
 
                     var $animator = this.$Animator,
-                        childNodes: Array<Element>,
+                        childNodes: Array<Element> = Array.prototype.slice.call(item.childNodes),
                         childNode: Element;
 
-                    if (animate === true) {
-                        childNodes = Array.prototype.slice.call(item.childNodes);
-                        if (this._blockLength === 0) {
-                            this._blockLength = childNodes.length;
-                        }
-                    } else {
-                        if (this._blockLength === 0) {
-                            this._blockLength = item.childNodes.length;
-                        }
-                        this.dom.insertBefore(this.element, item);
-                        return;
-                    }
+                    insertBefore(this.element, item);
 
-                    this.dom.insertBefore(this.element, item);
-
-                    var currentAnimations = this.__currentAnimations;
+                    var currentAnimations = this._currentAnimations;
                     while (childNodes.length > 0) {
                         childNode = childNodes.shift();
                         if (childNode.nodeType === Node.ELEMENT_NODE) {
-                            currentAnimations.push($animator.animate(childNode, __Enter).then(() => {
+                            currentAnimations.push($animator.animate(childNode, key).then(() => {
                                 currentAnimations.shift();
                             }));
                         }
@@ -21264,6 +21260,24 @@ module plat {
                         length = controls.length - 1;
 
                     TemplateControl.dispose(controls[length]);
+                }
+
+                /**
+                 * Binds the item to a template at that index.
+                 */
+                protected _bindItem(index: number): async.IThenable<DocumentFragment> {
+                    return this.bindableTemplates.bind('item', index, this._getAliases(index));
+                }
+
+                /**
+                 * Sets the corresponding block length for animation.
+                 */
+                protected _setBlockLength(templates: Array<Node>): void {
+                    if (this._blockLength > 0 || templates.length === 0) {
+                        return;
+                    }
+
+                    this._blockLength = templates[0].childNodes.length;
                 }
 
                 /**
@@ -21366,21 +21380,7 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
                  */
                 protected _pop(ev: observable.IPostArrayChangeInfo<any>): void {
-                    var blockLength = this._blockLength,
-                        startNode: number,
-                        animationPromise: plat.async.IThenable<void>;
-
-                    if (blockLength > 0) {
-                        startNode = blockLength * ev.newArray.length;
-                        animationPromise = this._animateItems(startNode, undefined, __Leave);
-                    }
-
-                    if (isNull(animationPromise)) {
-                        this._removeItems(1);
-                        return;
-                    }
-
-                    this.itemsLoaded = animationPromise.then(() => {
+                    this._animateItems(ev.newArray.length, 1, __Leave).then(() => {
                         this._removeItems(1);
                     });
                 }
@@ -21390,10 +21390,7 @@ module plat {
                  * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
                  */
                 protected _preshift(ev: observable.IPreArrayChangeInfo): void {
-                    var blockLength = this._blockLength;
-                    if (blockLength > 0) {
-                        this._animateItems(0, blockLength, __Leave, true);
-                    }
+                    this._animateItems(0, 1, __Leave, true);
                 }
 
                 /**
@@ -21409,21 +21406,17 @@ module plat {
                  * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
                  */
                 protected _presplice(ev: observable.IPreArrayChangeInfo): void {
-                    var blockLength = this._blockLength,
-                        arguments = ev.arguments;
+                    var arguments = ev.arguments,
+                        addCount = arguments.length - 2,
+                        deleteCount = arguments[1];
 
-                    if (blockLength > 0) {
-                        var addCount = arguments.length - 2,
-                            deleteCount = arguments[1];
-
-                        // check if adding more items than deleting
-                        if (addCount >= deleteCount) {
-                            this._animateItems(blockLength * arguments[0], blockLength * addCount, __Enter);
-                            return;
-                        }
-
-                        this._animateItems(blockLength * arguments[0], blockLength * deleteCount, __Leave, true);
+                    // check if adding more items than deleting
+                    if (addCount >= deleteCount) {
+                        this._animateItems(arguments[0], addCount, __Enter);
+                        return;
                     }
+
+                    this._animateItems(arguments[0], deleteCount, __Leave, true);
                 }
 
                 /**
@@ -21446,10 +21439,7 @@ module plat {
                  * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
                  */
                 protected _preunshift(ev: observable.IPreArrayChangeInfo): void {
-                    var blockLength = this._blockLength;
-                    if (blockLength > 0) {
-                        this._animateItems(0, blockLength, __Enter);
-                    }
+                    this._animateItems(0, 1, __Enter);
                 }
 
                 /**
@@ -21473,17 +21463,38 @@ module plat {
                 protected _reverse(ev: observable.IPostArrayChangeInfo<any>): void { }
 
                 /**
-                 * Animates a block of elements.
-                 * @param {number} startNode The starting childNode of the ForEach to animate
-                 * @param {number} endNode The ending childNode of the ForEach to animate
-                 * @param {string} key The animation key/type
+                 * Animates the indicated items.
+                 * @param {number} startIndex The starting index of items to animate.
+                 * @param {number} numberOfItems The number of consecutive items to animate.
+                 * @param {string} key The animation key/type.
                  * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
                  * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
                  * Defaults to true.
                  */
-                protected _animateItems(startNode: number, endNode: number, key: string, clone?: boolean, cancel?: boolean): async.IThenable<void> {
+                protected _animateItems(startIndex: number, numberOfItems: number, key: string, clone?: boolean,
+                    cancel?: boolean): async.IThenable<void> {
+                    var blockLength = this._blockLength;
+                    if (blockLength === 0) {
+                        return this.$Promise.resolve<void>();
+                    }
+
+                    var start = startIndex * blockLength;
+                    return this._initiateAnimation(start, numberOfItems * blockLength + start, key, clone, cancel);
+                }
+
+                /**
+                 * Animates a block of elements.
+                 * @param {number} startNode The starting childNode of the ForEach to animate.
+                 * @param {number} endNode The ending childNode of the ForEach to animate.
+                 * @param {string} key The animation key/type.
+                 * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
+                 * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
+                 * Defaults to true.
+                 */
+                protected _initiateAnimation(startNode: number, endNode: number, key: string, clone?: boolean,
+                    cancel?: boolean): async.IThenable<void> {
                     var animationPromises: Array<animations.IAnimatingThenable> = [],
-                        currentAnimations = this.__currentAnimations,
+                        currentAnimations = this._currentAnimations,
                         length = currentAnimations.length;
 
                     if (length === 0 || cancel === false) {
@@ -21512,7 +21523,7 @@ module plat {
                         node: Node,
                         firstNode = nodes[0],
                         $animator = this.$Animator,
-                        currentAnimations = this.__currentAnimations,
+                        currentAnimations = this._currentAnimations,
                         callback: () => void,
                         animationPromise: animations.IAnimationThenable<void>;
 
@@ -21614,7 +21625,7 @@ module plat {
                         return;
                     }
 
-                    this.dom.setInnerHtml(this.element, context);
+                    setInnerHtml(this.element, context);
                 }
             }
 
