@@ -404,7 +404,7 @@
                 $utils = this.$utils;
             if (!$utils.isObject(context)) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + __Range + '\'s" context should be an object that implements the platui.IRangeContext interface.');
+                Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.');
                 return;
             }
 
@@ -486,7 +486,7 @@
 
             if (min >= max) {
                 Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + __Range + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
             }
 
@@ -501,7 +501,7 @@
 
             if (!$utils.isObject(this.context)) {
                 Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + __Range + '\'s" context should be an object that implements the platui.IRangeContext interface.');
+                Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.');
                 return;
             }
 
@@ -530,7 +530,7 @@
 
             if (!$utils.isObject(this.context)) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('Cannot set the lower value of a "' + __Range + '" whose context has ' +
+                Exception.warn('Cannot set the lower value of a "' + this.type + '" whose context has ' +
                     'not yet been set to an object.');
                 return;
             } else if (!isNumber(value)) {
@@ -565,7 +565,7 @@
 
             if (!$utils.isObject(this.context)) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('Cannot set the upper value of a "' + __Range + '" whose context has ' +
+                Exception.warn('Cannot set the upper value of a "' + this.type + '" whose context has ' +
                     'not yet been set to an object.');
                 return;
             } else if (!isNumber(value)) {
@@ -1110,7 +1110,7 @@
                     return (this._maxOffset = element.offsetHeight);
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + __Range + '."');
+                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."');
                     return 0;
             }
         }
@@ -1187,9 +1187,10 @@
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    $exception.warn('Max clone attempts reached before the ' + __Range + ' was placed into the ' +
-                        'DOM. Disposing of the ' + __Range);
+                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                        type = this.type;
+                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }

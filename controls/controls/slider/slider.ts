@@ -380,7 +380,7 @@
 
             if (min >= max) {
                 var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + __Slider + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
             }
 
@@ -657,7 +657,7 @@
                     return (this._maxOffset = element.offsetHeight);
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + __Slider + '."');
+                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."');
                     return 0;
             }
         }
@@ -757,9 +757,10 @@
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    $exception.warn('Max clone attempts reached before the ' + __Slider + ' was placed into the ' +
-                        'DOM. Disposing of the ' + __Slider);
+                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                        type = this.type;
+                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }

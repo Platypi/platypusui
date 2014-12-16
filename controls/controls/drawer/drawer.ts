@@ -202,8 +202,8 @@
             if (this.$utils.isNull(controller)) {
                 var $promise: plat.async.IPromise = plat.acquire(__Promise),
                     $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to open.',
-                    $exception.TEMPLATE);
+                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to open.', $exception.TEMPLATE);
                 return $promise.resolve(null);
             }
 
@@ -227,8 +227,8 @@
             if (this.$utils.isNull(controller)) {
                 var $promise: plat.async.IPromise = plat.acquire(__Promise),
                     $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to close.',
-                    $exception.TEMPLATE);
+                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to close.', $exception.TEMPLATE);
                 return $promise.resolve(null);
             }
 
@@ -252,8 +252,8 @@
             if (this.$utils.isNull(controller)) {
                 var $promise: plat.async.IPromise = plat.acquire(__Promise),
                     $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to toggle.',
-                    $exception.TEMPLATE);
+                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to toggle.', $exception.TEMPLATE);
                 return $promise.resolve(null);
             }
 
@@ -277,8 +277,8 @@
             if (this.$utils.isNull(controller)) {
                 var $promise: plat.async.IPromise = plat.acquire(__Promise),
                     $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to reset.',
-                    $exception.TEMPLATE);
+                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to reset.', $exception.TEMPLATE);
                 return $promise.resolve(null);
             }
 
@@ -300,8 +300,8 @@
             var controller = this._controllers[0];
             if (this.$utils.isNull(controller)) {
                 var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No ' + __DrawerController + ' found for the ' + __Drawer + ' attempting to check if is open.',
-                    $exception.TEMPLATE);
+                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to check if open.', $exception.TEMPLATE);
                 return false;
             }
 
@@ -1639,7 +1639,8 @@
                     default:
                         var Exception = plat.acquire(plat.IExceptionStatic);
                         Exception.warn('Incorrect position: "' + position +
-                            '" defined for "' + __Drawer + '" or "' + __DrawerController + '."');
+                            '" defined for the drawer control, such as "' +
+                            __Drawer + '", or "' + this.type + '."');
                         return;
                 }
 
@@ -1915,8 +1916,8 @@
                             position = drawerArg.position;
                         } else {
                             var Exception = plat.acquire(plat.IExceptionStatic);
-                            Exception.warn('"position" is incorrectly defined for "' +
-                                __Drawer + '" or "' + __DrawerController + '."' +
+                            Exception.warn('"position" is incorrectly defined for the drawer control, such as "' +
+                                __Drawer + '" or "' + this.type + '."' +
                                 ' Please ensure it is a string.');
                             return;
                         }
@@ -2040,15 +2041,16 @@
 
             if (isNull(this._drawerElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Could not find a corresponding "' + __Drawer + '" for this "' + __DrawerController + '."');
+                Exception.warn('Could not find a corresponding drawer control, such as "' + __Drawer +
+                    '" for this "' + this.type + '."');
                 return false;
             }
 
             var rootElement = this._rootElement = this._getRootElement(this.root);
             if (isNull(rootElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Cannot have a "' + __DrawerController +
-                    '" in a hierarchy above the corresponding "' + __Drawer + '."');
+                Exception.warn('Cannot have a "' + this.type +
+                    '" in a hierarchy above the corresponding drawer control, such as "' + __Drawer + '."');
                 return false;
             }
 
