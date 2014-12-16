@@ -29,7 +29,8 @@ module app {
             lower: 10,
             upper: 90,
             show: false,
-            carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }]
+            carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }],
+            listview: [0, 1, 2, 3, 4]
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;

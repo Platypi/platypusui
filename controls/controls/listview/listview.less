@@ -9,6 +9,18 @@
 
     .plat-listview-container {
         .fill();
-        .scroll();
+        .box-sizing(border-box);
+    }
+
+    &.plat-vertical {
+        .plat-listview-container {
+            .scroll(y);
+        }
+    }
+
+    &.plat-horizontal {
+        .plat-listview-container {
+            .scroll(x);
+        }
     }
 }

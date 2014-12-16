@@ -329,7 +329,12 @@
                 var element = this.element;
                 this.dom.clearNode(element);
                 element.appendChild(template);
-            });
+            }).catch((error) => {
+                    this.$utils.postpone(() => {
+                        var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                        $exception.fatal(error, $exception.BIND);
+                    });
+                });
         }
 
         /**
@@ -1292,7 +1297,12 @@
                 var element = this._drawerElement;
                 this.dom.clearNode(element);
                 element.appendChild(template);
-            });
+            }).catch((error) => {
+                    this.$utils.postpone(() => {
+                        var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                        $exception.fatal(error, $exception.BIND);
+                    });
+                });
         }
 
         /**
@@ -1432,13 +1442,13 @@
             return this.$animator.animate(rootElement, __Transition, {
                 properties: animationOptions
             }).then(() => {
-                if (this._isOpen) {
-                    return;
-                }
+                    if (this._isOpen) {
+                        return;
+                    }
 
-                drawerElement.setAttribute(__Hide, '');
-                dom.removeClass(rootElement, this._directionalTransitionPrep);
-            });
+                    drawerElement.setAttribute(__Hide, '');
+                    dom.removeClass(rootElement, this._directionalTransitionPrep);
+                });
         }
 
         /**

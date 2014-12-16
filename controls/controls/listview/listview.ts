@@ -100,6 +100,19 @@
         context: Array<any>;
 
         /**
+         * @name controls
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {Array<plat.ui.ITemplateControl>}
+         * 
+         * @description
+         * The child controls of the control. All will be of type {@link plat.ui.ITemplateControl|ITemplateControl}.
+         */
+        controls: Array<plat.ui.ITemplateControl>;
+
+        /**
          * @name options
          * @memberof platui.Listview
          * @kind property
@@ -167,6 +180,45 @@
          * Whether or not the Array listener has been set.
          */
         protected _listenerSet = false;
+
+        /**
+         * @name _usingRenderFunction
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not a render function is being used.
+         */
+        protected _usingRenderFunction = false;
+
+        /**
+         * @name _itemTemplate
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The item template key if a single item template is being used.
+         */
+        protected _itemTemplate: string;
+
+        /**
+         * @name _renderFunction
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {(item: any, templates: plat.IObject<Node>) => string}
+         * 
+         * @description
+         * The render function used to obtain the template key for each item.
+         */
+        protected _renderFunction: (item: any, templates: plat.IObject<Node>) => string;
 
         /**
          * @name setClasses
@@ -258,6 +310,7 @@
             }
 
             this._setListener();
+            this.render();
         }
 
         /**
@@ -282,10 +335,13 @@
 
             this.dom.addClass(this.element, __Plat + orientation);
 
-            if (!($utils.isUndefined(itemTemplate) || $utils.isNode(templates[itemTemplate]))) {
-                $exception = plat.acquire(__ExceptionStatic);
-                $exception.warn(__Listview + ' item template ' + itemTemplate + ' was not defined in the DOM.', $exception.TEMPLATE);
-                return;
+            if ($utils.isString(itemTemplate)) {
+                this._itemTemplate = itemTemplate;
+                if (!$utils.isNode(templates[itemTemplate])) {
+                    $exception = plat.acquire(__ExceptionStatic);
+                    $exception.warn(__Listview + ' item template "' + itemTemplate + '" was not defined in the DOM.', $exception.TEMPLATE);
+                    return;
+                }
             }
 
             if (!$utils.isArray(this.context)) {
@@ -294,6 +350,49 @@
                     $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
                 }
                 return;
+            }
+
+            this._setListener();
+            this.render();
+        }
+
+        /**
+         * @name render
+         * @memberof platui.Listview
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Blow out the DOM, determine how to render, and render accordingly.
+         * 
+         * @returns {void}
+         */
+        render(): void {
+            var $utils = this.$utils,
+                bindableTemplates = this.bindableTemplates,
+                container = this._container;
+
+            this.dom.clearNode(container);
+
+            if (this._usingRenderFunction) {
+                return;
+            }
+
+            var key = this._itemTemplate;
+            if ($utils.isUndefined(bindableTemplates.templates[key])) {
+                return;
+            }
+
+            var length = this.context.length;
+            for (var i = 0; i < length; ++i) {
+                bindableTemplates.bind(key, i).then((template) => {
+                    container.appendChild(template);
+                }).catch((error) => {
+                        this.$utils.postpone(() => {
+                            var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                            $exception.fatal(error, $exception.BIND);
+                        });
+                    });
             }
         }
 
@@ -352,8 +451,29 @@
          */
         protected _setListener(): void {
             if (!this._listenerSet) {
-                this.observeArray(this, __CONTEXT, this._executeEvent);
+                this.observeArray(this, __CONTEXT, this._preprocessEvent, this._executeEvent);
                 this._listenerSet = true;
+            }
+        }
+
+        /**
+         * @name _preprocessEvent
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Receives an event prior to the method being called on an array and maps the array 
+         * method to its associated method handler.
+         * 
+         * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _preprocessEvent(ev: plat.observable.IPreArrayChangeInfo): void {
+            var method = '_pre' + ev.method;
+            if (this.$utils.isFunction((<any>this)[method])) {
+                (<any>this)[method](ev);
             }
         }
 
@@ -367,11 +487,11 @@
          * Receives an event when a method has been called on an array and maps the array 
          * method to its associated method handler.
          * 
-         * @param {plat.observable.IArrayMethodInfo<any>} ev The Array mutation event information.
+         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
          * 
          * @returns {void}
          */
-        protected _executeEvent(ev: plat.observable.IArrayMethodInfo<any>): void {
+        protected _executeEvent(ev: plat.observable.IPostArrayChangeInfo<any>): void {
             var method = '_' + ev.method;
             if (this.$utils.isFunction((<any>this)[method])) {
                 (<any>this)[method](ev);
