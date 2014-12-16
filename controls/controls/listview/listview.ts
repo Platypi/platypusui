@@ -4,14 +4,14 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.ITemplateControl}
+     * @extends {plat.ui.controls.ForEach}
      * @implements {platui.IUIControl}
      * 
      * @description
      * An {@link plat.ui.ITemplateControl|ITemplateControl} for creating a complex list of items with 
      * extensive functionality.
      */
-    export class Listview extends plat.ui.TemplateControl implements IUIControl {
+    export class Listview extends plat.ui.controls.ForEach implements IUIControl {
         /**
          * @name $window
          * @memberof platui.Listview
@@ -60,18 +60,6 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
-        /**
-         * @name $animator
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ui.animations.IAnimator}
-         * 
-         * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
-         */
-        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
          * @name templateString
@@ -85,32 +73,6 @@
          * The HTML template represented as a string.
          */
         templateString = '<div class="plat-listview-container"></div>\n';
-
-        /**
-         * @name context
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {Array<any>}
-         * 
-         * @description
-         * The specifically defined Array type context for this control.
-         */
-        context: Array<any>;
-
-        /**
-         * @name controls
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {Array<plat.ui.ITemplateControl>}
-         * 
-         * @description
-         * The child controls of the control. All will be of type {@link plat.ui.ITemplateControl|ITemplateControl}.
-         */
-        controls: Array<plat.ui.ITemplateControl>;
 
         /**
          * @name options
@@ -167,19 +129,6 @@
          * - "horizontal"
          */
         protected _orientation: string;
-
-        /**
-         * @name _listenerSet
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the Array listener has been set.
-         */
-        protected _listenerSet = false;
 
         /**
          * @name _usingRenderFunction
@@ -437,66 +386,6 @@
                 }
             }
         }
-
-        /**
-         * @name _setListener
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Sets a listener for the changes to the array.
-         * 
-         * @returns {void}
-         */
-        protected _setListener(): void {
-            if (!this._listenerSet) {
-                this.observeArray(this, __CONTEXT, this._preprocessEvent, this._executeEvent);
-                this._listenerSet = true;
-            }
-        }
-
-        /**
-         * @name _preprocessEvent
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Receives an event prior to the method being called on an array and maps the array 
-         * method to its associated method handler.
-         * 
-         * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * 
-         * @returns {void}
-         */
-        protected _preprocessEvent(ev: plat.observable.IPreArrayChangeInfo): void {
-            var method = '_pre' + ev.method;
-            if (this.$utils.isFunction((<any>this)[method])) {
-                (<any>this)[method](ev);
-            }
-        }
-
-        /**
-         * @name _executeEvent
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Receives an event when a method has been called on an array and maps the array 
-         * method to its associated method handler.
-         * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * 
-         * @returns {void}
-         */
-        protected _executeEvent(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            var method = '_' + ev.method;
-            if (this.$utils.isFunction((<any>this)[method])) {
-                (<any>this)[method](ev);
-            }
-        }
     }
 
     plat.register.control(__Listview, Listview);
@@ -509,7 +398,7 @@
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Listview|Listview} control.
      */
-    export interface IListviewOptions {
+    export interface IListviewOptions extends plat.ui.controls.IForEachOptions {
         /**
          * @name orientation
          * @memberof platui.IListviewOptions
