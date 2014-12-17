@@ -251,16 +251,16 @@
          * 
          * @returns {void}
          */
-        contextChanged(): void {
-            if (!this.$utils.isArray(this.context)) {
-                var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
-                return;
-            }
+        //contextChanged(): void {
+            //if (!this.$utils.isArray(this.context)) {
+            //    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+            //    $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
+            //    return;
+            //}
 
-            this._setListener();
-            this.render();
-        }
+            //this._setListener();
+            //this.render();
+        //}
 
         /**
          * @name loaded
@@ -301,6 +301,7 @@
                 return;
             }
 
+            this._setAliases();
             this._setListener();
             this.render();
         }
@@ -312,16 +313,21 @@
          * @access public
          * 
          * @description
-         * Blow out the DOM, determine how to render, and render accordingly.
+         * Blow out the DOM starting at the index, determine how to render, and render accordingly.
+         * 
+         * @param {number} index The starting index to render.
          * 
          * @returns {void}
          */
-        render(): void {
+        render(index?: number): void {
             var $utils = this.$utils,
                 bindableTemplates = this.bindableTemplates,
                 container = this._container;
 
-            this.dom.clearNode(container);
+            //this.dom.clearNode(container);
+            if (!$utils.isNumber(index)) {
+                index = 0;
+            }
 
             if (this._usingRenderFunction) {
                 return;
@@ -332,17 +338,22 @@
                 return;
             }
 
-            var length = this.context.length;
-            for (var i = 0; i < length; ++i) {
-                bindableTemplates.bind(key, i).then((template) => {
-                    container.appendChild(template);
-                }).catch((error) => {
-                        this.$utils.postpone(() => {
-                            var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                            $exception.fatal(error, $exception.BIND);
-                        });
-                    });
-            }
+            this._addItems(this.context.length - index, index);
+        }
+
+        /**
+         * @name _bindItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Binds the item to a template at that index.
+         * 
+         * @returns {void}
+         */
+        protected _bindItem(index: number): plat.async.IThenable<DocumentFragment> {
+            return this.bindableTemplates.bind(this._itemTemplate, index, this._getAliases(index));
         }
 
         /**
