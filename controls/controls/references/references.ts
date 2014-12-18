@@ -81,6 +81,16 @@ var __Promise = '$Promise',
 /* tslint:enable:no-unused-variable */
 
 module platui {
+    if (typeof window !== 'undefined') {
+        if (typeof (<any>window).platui === 'undefined') {
+            (<any>window).platui = platui;
+        }
+
+        if (typeof (<any>window).module === 'undefined') {
+            (<any>window).module = {};
+        }
+    }
+
     /**
      * @name IUIControl
      * @memberof platui

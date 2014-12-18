@@ -1,3 +1,26 @@
+function stripDocs(data) {
+    var linkRegex = /\{@link (.*?)[|](.*?)\}/g;
+
+    data = data.replace(linkRegex, function(value, qualifiedPath, linkValue, index, content) {
+        return linkValue;
+    });
+
+    var lines = data.split(/\r\n|\n/g),
+        out = [];
+
+    lines.forEach(function (line) {       
+        if(line.trim() === '*') {
+            return;
+        } else if (line.indexOf('* @') === -1) {
+            out.push(line);
+        } else if (line.indexOf('@param') > -1) {
+            out.push(line);
+        }
+    });
+
+    return out.join('\r\n');
+}
+
 module.exports = exports = function load(grunt) {
     var config = {
         bundle: {
@@ -7,9 +30,73 @@ module.exports = exports = function load(grunt) {
                 version: '<%= pkg.version %>',
                 src: './app/index.html',
                 dest: [
-                    '../dist/platypusui.ts'
+                    './platypusui.ts'
                 ],
                 disableLint: true
+            }
+        },
+        clean: {
+            before: {
+                force: true,
+                src: [
+                    'dist/'
+                ]
+            },
+            after: {
+                force: true,
+                src: [
+                    './platypusui.ts'
+                ]
+            }
+        },
+        copy: {
+            main: {
+                options: {
+                    process: function (data) {
+                        return '/// <reference path="/node_modules/platypus/platypus-node.d.ts" />\r\n' + 
+						'var plat = require(\'platypus\');\r\n\r\n' + 
+						stripDocs(data) + 
+						'export = platui;\r\n';
+                    }
+                },
+                src: './platypusui.ts',
+                dest: 'dist/platypusui.ts'
+            },
+            bower: {
+                options: {
+                    process: function (data) {
+                        return data
+                            .split(/\r\n|\n/)
+                            .map(function (line, index, lines) {
+                                if (line.trim()[0] === '*') {
+                                    return ' ' + line;
+                                }
+
+                                return line;
+                            }).join('\r\n');
+                    }
+                },
+                src: 'dist/platypusui.d.ts',
+                dest: 'dist/platypusui.d.ts'
+            }, 
+            node: {
+                options: {
+                    process: function (data) {
+                        return data
+                            .split(/\r\n|\n/)
+                            .slice(0, -2)
+                            .concat([
+                                '',
+                                'declare module \'platypusui\' {',
+                                '    export = platui;',
+                                '}',
+                                ''
+                            ])
+                            .join('\r\n');
+                    }
+                },
+                src: 'dist/platypusui.d.ts',
+                dest: 'dist/platypusui-node.d.ts'
             }
         },
         connect: {
@@ -26,7 +113,7 @@ module.exports = exports = function load(grunt) {
                 version: '<%= pkg.version %>',
                 src: './app/index.html',
                 dest: [
-                    '../dist/platypus.less'
+                    'dist/platypus.less'
                 ]
             }
         },
@@ -43,7 +130,15 @@ module.exports = exports = function load(grunt) {
                 files: {
                     'app/viewcontrols/app.viewcontrol.css': 'app/viewcontrols/app.viewcontrol.less'
                 }
-            }
+            },
+	     packaging: {
+                options: {
+                    cleancss: true
+                },
+                files: {
+		      'dist/platypus.min.css': 'dist/platypus.less'
+                }
+	    }
         },
         open: {
             dev: {
@@ -62,6 +157,32 @@ module.exports = exports = function load(grunt) {
                 options: {
                     target: 'ES5'
                 }
+            },
+            packaging: {
+                options: {
+                    target: 'es5',
+                    module: 'commonjs',
+                    fast: 'never',
+                    sourceMap: true,
+                    declaration: true,
+                    removeComments: false
+                },
+                src: [
+                    'dist/platypusui.ts'
+                ]
+            }
+        },
+        uglify: {
+            main: {
+                options: {
+                    sourceMapIn: 'dist/platypusui.js.map',
+                    sourceMap: 'dist/platypusui.js.map'
+                },
+                files: {
+                    'dist/platypusui.js': [
+                        'dist/platypusui.js'
+                    ]
+                }
             }
         },
         watch: {
@@ -78,17 +199,10 @@ module.exports = exports = function load(grunt) {
         license: grunt.file.read('license.txt')
     };
 
-    // grunt.initConfig(config);
-    // grunt.loadNpmTasks('grunt-contrib-connect');
-    // grunt.loadNpmTasks('grunt-contrib-less');
-    // grunt.loadNpmTasks('grunt-contrib-watch');
-    // grunt.loadNpmTasks('grunt-less-bundle');
-    // grunt.loadNpmTasks('grunt-open');
-    // grunt.loadNpmTasks('grunt-ts-bundle');
-    // grunt.loadNpmTasks('grunt-ts');
-    // grunt.renameTask('less', 'lessCompile');
-
     grunt.initConfig(config);
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-ts-bundle');
     grunt.loadNpmTasks('grunt-ts');
     grunt.loadNpmTasks('grunt-contrib-less');
@@ -100,7 +214,8 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['bundle', 'less', 'lessCompile']);
+    grunt.registerTask('default', ['clean', 'bundle', 'less', 'copy:main', 'lessCompile:packaging',  'clean:after']);
+    // grunt.registerTask('default', ['bundle', 'less']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
     grunt.registerTask('compile', ['lessCompile', 'ts']);
 };
