@@ -43,6 +43,7 @@ var __Promise = '$Promise',
     __Context = __Plat + 'context',
     __CamelContext = 'platContext',
     __Bind = __Plat + 'bind',
+    __TemplateControlCache = '__templateControlCache',
 
     /**
      * Animations

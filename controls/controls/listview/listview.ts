@@ -157,7 +157,7 @@
         protected _itemTemplate: string;
 
         /**
-         * @name _renderFunction
+         * @name _itemTemplateSelector
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -165,9 +165,9 @@
          * @type {(item: any, templates: plat.IObject<Node>) => string}
          * 
          * @description
-         * The render function used to obtain the template key for each item.
+         * The selector function used to obtain the template key for each item.
          */
-        protected _renderFunction: (item: any, templates: plat.IObject<Node>) => string;
+        protected _itemTemplateSelector: (item: any, templates: plat.IObject<Node>) => string;
 
         /**
          * @name setClasses
@@ -252,14 +252,14 @@
          * @returns {void}
          */
         //contextChanged(): void {
-            //if (!this.$utils.isArray(this.context)) {
-            //    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-            //    $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
-            //    return;
-            //}
+        //if (!this.$utils.isArray(this.context)) {
+        //    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+        //    $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
+        //    return;
+        //}
 
-            //this._setListener();
-            //this.render();
+        //this._setListener();
+        //this.render();
         //}
 
         /**
@@ -284,19 +284,17 @@
 
             this.dom.addClass(this.element, __Plat + orientation);
 
-            if ($utils.isString(itemTemplate)) {
-                this._itemTemplate = itemTemplate;
-                if (!$utils.isNode(templates[itemTemplate])) {
-                    $exception = plat.acquire(__ExceptionStatic);
-                    $exception.warn(__Listview + ' item template "' + itemTemplate + '" was not defined in the DOM.', $exception.TEMPLATE);
-                    return;
-                }
+            if (!$utils.isString(itemTemplate)) {
+                $exception = plat.acquire(__ExceptionStatic);
+                $exception.warn('No item template or item template selector specified for ' + this.type + '.', $exception.TEMPLATE);
             }
+
+            this._determineItemTemplate(itemTemplate);
 
             if (!$utils.isArray(this.context)) {
                 if (!$utils.isNull(this.context)) {
                     $exception = plat.acquire(__ExceptionStatic);
-                    $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
+                    $exception.warn(this.type + ' context set to something other than an Array.', $exception.CONTEXT);
                 }
                 return;
             }
@@ -339,6 +337,42 @@
             }
 
             this._addItems(this.context.length - index, index);
+        }
+
+        /**
+         * @name _determineItemTemplate
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Determine the proper item template or method of item template selection.
+         * 
+         * @param {string} itemTemplate The property for indicating either the item template or the 
+         * item template selector.
+         * 
+         * @returns {void}
+         */
+        protected _determineItemTemplate(itemTemplate: string): void {
+            var $utils = this.$utils,
+                templates = this.templates;
+
+            if ($utils.isNode(templates[itemTemplate])) {
+                this._itemTemplate = itemTemplate;
+                return;
+            }
+
+            var controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
+            if (!$utils.isFunction(controlProperty.value)) {
+                var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
+                $exception.warn(__Listview + ' item template "' + itemTemplate +
+                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy',
+                    $exception.TEMPLATE);
+                return;
+            }
+
+            this._usingRenderFunction = true;
+            this._itemTemplateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
         }
 
         /**
@@ -419,7 +453,7 @@
          * @type {string}
          * 
          * @description
-         * The orientation (scroll direction) of the {@link platui.Listview|Listview's}. 
+         * The orientation (scroll direction) of the {@link platui.Listview|Listview}. 
          * Defaults to "vertical".
          * 
          * @remarks
@@ -434,15 +468,12 @@
          * @kind property
          * @access public
          * 
-         * @type {string}
+         * @type {string|(item?: any, templates?: plat.IObject<Node>) => string}
          * 
          * @description
-         * The camel-cased node name of the desired item template.
-         * 
-         * @remarks
-         * Unnecessary if a render function is defined.
+         * The camel-cased node name of the desired item template or a defined template selector function.
          */
-        itemTemplate: string;
+        itemTemplate: any;
 
         /**
          * @name templateUrl
