@@ -217,5 +217,5 @@ module.exports = exports = function load(grunt) {
     grunt.registerTask('default', ['clean', 'bundle', 'less', 'copy:main', 'lessCompile:packaging',  'clean:after']);
     // grunt.registerTask('default', ['bundle', 'less']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
-    grunt.registerTask('compile', ['lessCompile', 'ts']);
+    grunt.registerTask('compile', ['lessCompile', 'ts:base', 'ts:app']);
 };

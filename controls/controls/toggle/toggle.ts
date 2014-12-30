@@ -174,11 +174,26 @@
          * @returns {void}
          */
         protected _onTap(ev: plat.ui.IGestureEvent): void {
-            var domEvent = plat.acquire(plat.ui.IDomEventInstance);
-
             this._toggle(true);
+            this._trigger('change');
+        }
 
-            domEvent.initialize(this.element, 'change');
+        /**
+         * @name _trigger
+         * @memberof platui.Toggle
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Triggers an event starting from this control's element.
+         * 
+         * @param {string} event The event name to trigger.
+         * 
+         * @returns {void}
+         */
+        protected _trigger(event: string): void {
+            var domEvent: plat.ui.IDomEventInstance = plat.acquire(__DomEventInstance);
+            domEvent.initialize(this.element, event);
             domEvent.trigger();
         }
 

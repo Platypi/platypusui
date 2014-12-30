@@ -162,12 +162,12 @@
          * @kind property
          * @access protected
          * 
-         * @type {plat.ui.IPoint}
+         * @type {platui.IValuePoint}
          * 
          * @description
          * The last touch start recorded.
          */
-        protected _lastTouch: plat.ui.IPoint;
+        protected _lastTouch: IValuePoint;
 
         /**
          * @name _maxOffset
@@ -385,10 +385,6 @@
             }
 
             this._setLength();
-            if (!this._maxOffset) {
-                this._setOffsetWithClone();
-            }
-
             this._setIncrement();
             this._initializeEvents(orientation);
 
@@ -462,7 +458,8 @@
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
             this._lastTouch = {
                 x: ev.clientX,
-                y: ev.clientY
+                y: ev.clientY,
+                value: this.value
             };
         }
 
@@ -482,6 +479,10 @@
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
+
+            if (this._lastTouch.value !== this.value) {
+                this._trigger('change');
+            }
 
             if (newOffset < 0) {
                 this._knobOffset = 0;
@@ -568,6 +569,11 @@
             this.addEventListener(knob, track, trackFn, false);
             this.addEventListener(knob, reverseTrack, trackFn, false);
             this.addEventListener(knob, __$trackend, this._touchEnd, false);
+            this.addEventListener(this.$window, 'resize', () => {
+                this._setLength();
+                this._setIncrement();
+                this._setKnob();
+            }, false);
         }
 
         /**
@@ -644,21 +650,29 @@
          * 
          * @param {HTMLElement} element? The element to use to obtain the max length.
          * 
-         * @returns {number} The length of the slider.
+         * @returns {void}
          */
-        protected _setLength(element?: HTMLElement): number {
-            element = element || this._slider.parentElement;
+        protected _setLength(element?: HTMLElement): void {
+            var isNode = this.$utils.isNode(element),
+                el = isNode ? element : this._slider.parentElement;
+
             switch (this._orientation) {
                 case 'horizontal':
                     this._lengthProperty = 'width';
-                    return (this._maxOffset = element.offsetWidth);
+                    this._maxOffset = el.offsetWidth;
+                    break;
                 case 'vertical':
                     this._lengthProperty = 'height';
-                    return (this._maxOffset = element.offsetHeight);
+                    this._maxOffset = el.offsetHeight;
+                    break;
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
                     Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."');
-                    return 0;
+                    return;
+            }
+
+            if (!(isNode || this._maxOffset)) {
+                this._setOffsetWithClone();
             }
         }
 
@@ -688,11 +702,11 @@
          * 
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
-         * @param {boolean} setProperty Whether or not we need to fire a propertyChanged event.
+         * @param {boolean} propertyChanged Whether or not we need to fire a propertyChanged event.
          * 
          * @returns {void}
          */
-        protected _setValue(newValue: number, setKnob: boolean, setProperty: boolean): void {
+        protected _setValue(newValue: number, setKnob: boolean, propertyChanged: boolean): void {
             var value = this.value;
             if (newValue === value) {
                 return;
@@ -704,14 +718,17 @@
                 return;
             }
 
-            this.value = newValue;
+            this.value = (<any>this.element).value = newValue;
+
             if (setKnob) {
                 this._setKnob();
             }
 
-            if (setProperty) {
+            if (propertyChanged) {
                 this.propertyChanged(newValue, value);
             }
+
+            this._trigger('input');
         }
 
         /**
@@ -732,11 +749,34 @@
             var animationOptions: plat.IObject<string> = {},
                 length = this._calculateKnobPosition((value || this.value));
 
+            if (length === this._knobOffset) {
+                return;
+            }
+
             animationOptions[this._lengthProperty] = length + 'px';
             this.$animator.animate(this._slider, __Transition, {
                 properties: animationOptions
             });
             this._knobOffset = length;
+        }
+
+        /**
+         * @name _trigger
+         * @memberof platui.Slider
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Triggers an event starting from this control's element.
+         * 
+         * @param {string} event The event name to trigger.
+         * 
+         * @returns {void}
+         */
+        protected _trigger(event: string): void {
+            var domEvent: plat.ui.IDomEventInstance = plat.acquire(__DomEventInstance);
+            domEvent.initialize(this.element, event);
+            domEvent.trigger();
         }
 
         /**

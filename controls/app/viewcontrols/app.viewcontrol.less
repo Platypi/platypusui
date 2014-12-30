@@ -1,11 +1,9 @@
-html, body {
-    font-size: 16px;
-    font-weight: 100;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-    overflow-x: hidden;
+@import '../../controls/global/mixins.less';
+
+.content-container {
+    background-color: @defaultViewColor;
+    .fill();
+    .scroll();
 }
 
 .container {

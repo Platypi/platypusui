@@ -1603,6 +1603,8 @@
             // remove event listeners here first if we want to later be able to dynamically change position of drawer.
             // this._removeEventListeners();
 
+            this.addEventListener(this.$window, 'resize', this._setOffset, false);
+
             if (this._isTap = (types.indexOf('tap') !== -1)) {
                 this._addTapOpen();
             }
@@ -1917,10 +1919,8 @@
                         return;
                     }
 
-                    drawerElement.removeAttribute(__Hide);
                     this._addEventListeners(position.toLowerCase());
                     this._setOffset();
-                    drawerElement.setAttribute(__Hide, '');
 
                     if (isUndefined(this._isElastic)) {
                         this._isElastic = drawerArg.elastic === true;
@@ -2123,6 +2123,9 @@
          * @returns {void}
          */
         private _setOffset(): void {
+            var drawerElement = this._drawerElement;
+            drawerElement.removeAttribute(__Hide);
+
             switch (this._position) {
                 case 'left':
                 case 'right':
@@ -2133,8 +2136,10 @@
                     this._maxOffset = this._drawerElement.offsetHeight;
                     break;
                 default:
-                    return;
+                    break;
             }
+
+            drawerElement.setAttribute(__Hide, '');
         }
     }
 

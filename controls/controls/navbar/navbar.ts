@@ -1,7 +1,7 @@
 /// <reference path="../../references.d.ts" />
 
 module platui {
-	/**
+    /**
      * @name Navbar
      * @memberof platui
      * @kind class
@@ -12,7 +12,7 @@ module platui {
      * @description
      * An {@link plat.ui.ITemplateControl|ITemplateControl} that acts as a Navigation Element.
      */
-	export class Navbar extends plat.ui.TemplateControl implements IUIControl {
+    export class Navbar extends plat.ui.TemplateControl implements IUIControl {
 
         /**
          * @name $utils
@@ -116,7 +116,7 @@ module platui {
             var element = this.element,
                 navbarActions = element.querySelectorAll('.navbar-action'),
                 i: number;
-                
+
             for (i = 0; i < navbarActions.length; i++) {
                 this.addEventListener(navbarActions[i], __$tap, this._actionPressed, false);
             }
@@ -135,11 +135,11 @@ module platui {
          * 
          * @returns {void}
          */
-         _actionPressed(ev: plat.ui.IGestureEvent): void {
+        _actionPressed(ev: plat.ui.IGestureEvent): void {
             // this.dom.addClass(ev.srcElement, 'plat-navbar-action-pulse');
             this.$animator.animate(ev.srcElement, __NavbarActionPulse, { pseudo: '::after' });
-         }
-	}
+        }
+    }
 
-	plat.register.control(__Navbar, Navbar);
+    plat.register.control(__Navbar, Navbar);
 }
