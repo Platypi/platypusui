@@ -2,19 +2,25 @@
 
 /// ======= Globally Set Styles for PlatypusUI ======== ///
 
-html, body {
+html {
+    .fill();
+}
+
+body {
+    position: relative;
     font-size: @defaultFontSize;
     font-weight: 100;
+    overflow: hidden;
     .fill();
 }
 
 [plat-control="plat-routeport"],
 [plat-control="plat-viewport"] {
     position: relative;
-    background-color: @defaultViewColor;
     .fill();
 
     & > *:only-child {
+        position: relative;
         .fill();
     }
 }

@@ -31,22 +31,22 @@
     }
 
     &.plat-left {
-        width: @length-right;
+        width: @length-left;
         left: 0;
     }
 
     &.plat-right {
-        width: @length-left;
+        width: @length-right;
         right: 0;
     }
 
     &.plat-top {
-        height: @length-down;
+        height: @length-top;
         top: 0;
     }
 
     &.plat-bottom {
-        height: @length-up;
+        height: @length-bottom;
         bottom: 0;
     }
 }
@@ -60,19 +60,20 @@
     &.plat-drawer-transition-left,
     &.plat-drawer-transition-top,
     &.plat-drawer-transition-bottom {
-        overflow: hidden;
-        .touch-action(none);
-
-        &.plat-drawer-open::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-color: transparent;
-            overflow: hidden;
-            z-index: 100;
-            .fill();
+        &.plat-drawer-open {
             .touch-action(none);
+
+            &::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                background-color: transparent;
+                overflow: hidden;
+                z-index: 100;
+                .fill();
+                .touch-action(none);
+            }
         }
     }
 

@@ -491,10 +491,6 @@
             }
 
             this._setPositionAndLength();
-            if (!this._maxOffset) {
-                this._setOffsetWithClone();
-            }
-
             this._setIncrement();
             this._setLowerKnob(min);
             this._initializeEvents(orientation);
@@ -654,6 +650,12 @@
             this.addEventListener(upperKnob, reverseTrack, trackUpper, false);
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
+            this.addEventListener(this.$window, 'resize', () => {
+                this._setPositionAndLength();
+                this._setIncrement();
+                this._setLowerKnob();
+                this._setUpperKnob();
+            }, false);
         }
 
         /**
@@ -688,6 +690,7 @@
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY,
+                value: target === this._lowerKnob ? this.lower : this.upper,
                 target: target
             };
         }
@@ -715,6 +718,14 @@
 
             var isLower = target === this._lowerKnob,
                 newOffset = this._calculateOffset(ev, isLower);
+
+            if (isLower) {
+                if (lastTouch.value !== this.lower) {
+                    this._trigger('change');
+                }
+            } else if (lastTouch.value !== this.upper) {
+                this._trigger('change');
+            }
 
             this._setOffset(newOffset, isLower);
         }
@@ -916,7 +927,7 @@
                 return;
             }
 
-            this._setLower(value, false);
+            this._setLower(value, false, false);
             this._setUpper(value, false);
         }
 
@@ -993,10 +1004,11 @@
          * 
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
+         * @param {boolean} trigger Whether or not to trigger the 'input' event. Defaults to true.
          * 
          * @returns {void}
          */
-        protected _setLower(newValue: number, setKnob: boolean): void {
+        protected _setLower(newValue: number, setKnob: boolean, trigger?: boolean): void {
             var lower = this.lower,
                 context = this.context || <IRangeContext>{};
 
@@ -1011,8 +1023,6 @@
                 newValue = this.max;
             } else if (newValue <= this.min) {
                 newValue = this.min;
-            } else if (newValue >= this.upper) {
-                newValue = this.upper;
             } else if (Math.abs(newValue - lower) < this._step) {
                 return;
             }
@@ -1023,6 +1033,12 @@
             if (setKnob) {
                 this._setLowerKnob();
             }
+
+            if (trigger === false) {
+                return;
+            }
+
+            this._trigger('input');
         }
 
         /**
@@ -1036,10 +1052,11 @@
          * 
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
+         * @param {boolean} trigger? Whether or not to trigger the 'input' event. Defaults to true.
          * 
          * @returns {void}
          */
-        protected _setUpper(newValue: number, setKnob: boolean): void {
+        protected _setUpper(newValue: number, setKnob: boolean, trigger?: boolean): void {
             var upper = this.upper,
                 context = this.context || <IRangeContext>{};
 
@@ -1054,8 +1071,6 @@
                 newValue = this.max;
             } else if (newValue <= this.min) {
                 newValue = this.min;
-            } else if (newValue <= this.lower) {
-                newValue = this.lower;
             } else if (Math.abs(newValue - upper) < this._step) {
                 return;
             }
@@ -1066,6 +1081,12 @@
             if (setKnob) {
                 this._setUpperKnob();
             }
+
+            if (trigger === false) {
+                return;
+            }
+
+            this._trigger('input');
         }
 
         /**
@@ -1094,24 +1115,31 @@
          * 
          * @param {HTMLElement} element? The element to base the length off of.
          * 
-         * @returns {number} The length of the sliding element.
+         * @returns {void}
          */
-        protected _setPositionAndLength(element?: HTMLElement): number {
-            element = element || this._slider.parentElement;
+        protected _setPositionAndLength(element?: HTMLElement): void {
+            var isNode = this.$utils.isNode(element),
+                el = isNode ? element : this._slider.parentElement;
 
             switch (this._orientation) {
                 case 'horizontal':
                     this._lengthProperty = 'width';
                     this._positionProperty = this._reversed ? 'right' : 'left';
-                    return (this._maxOffset = element.offsetWidth);
+                    this._maxOffset = el.offsetWidth;
+                    break;
                 case 'vertical':
                     this._lengthProperty = 'height';
                     this._positionProperty = this._reversed ? 'bottom' : 'top';
-                    return (this._maxOffset = element.offsetHeight);
+                    this._maxOffset = el.offsetHeight;
+                    break;
                 default:
                     var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
                     Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."');
-                    return 0;
+                    return;
+            }
+
+            if (!(isNode || this._maxOffset)) {
+                this._setOffsetWithClone();
             }
         }
 
@@ -1135,6 +1163,10 @@
                 upperOffset = this.$utils.isNumber(upperKnobOffset) ? upperKnobOffset :
                 this._setOffset(this._calculateKnobPosition(this.upper), false),
                 position = this._calculateKnobPosition((value || this.lower));
+
+            if (position === this._lowerKnobOffset) {
+                return;
+            }
 
             animationOptions[this._positionProperty] = position + 'px';
             animationOptions[this._lengthProperty] = (upperOffset - position) + 'px';
@@ -1162,11 +1194,34 @@
             var animationOptions: plat.IObject<string> = {},
                 length = this._calculateKnobPosition((value || this.upper));
 
+            if (length === this._upperKnobOffset) {
+                return;
+            }
+
             animationOptions[this._lengthProperty] = (length - this._lowerKnobOffset) + 'px';
             this.$animator.animate(this._slider, __Transition, {
                 properties: animationOptions
             });
             this._upperKnobOffset = length;
+        }
+
+        /**
+         * @name _trigger
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Triggers an event starting from this control's element.
+         * 
+         * @param {string} event The event name to trigger.
+         * 
+         * @returns {void}
+         */
+        protected _trigger(event: string): void {
+            var domEvent: plat.ui.IDomEventInstance = plat.acquire(__DomEventInstance);
+            domEvent.initialize(this.element, event);
+            domEvent.trigger();
         }
 
         /**
@@ -1358,10 +1413,12 @@
      * @memberof platui
      * @kind interface
      * 
+     * @extends {platui.IValuePoint}
+     * 
      * @description
      * A point representing a potential knob position.
      */
-    export interface IKnobPosition extends plat.ui.IPoint {
+    export interface IKnobPosition extends IValuePoint {
         /**
          * @name target
          * @memberof platui.IKnobPosition

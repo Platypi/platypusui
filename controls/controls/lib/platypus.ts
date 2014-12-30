@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.9.8 (http://getplatypi.com) 
+ * PlatypusTS v0.9.9 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -62,6 +62,15 @@ module plat {
         __LocalStorage = __prefix + 'LocalStorage',
         __SessionStorage = __prefix + 'SessionStorage',
         __Geolocation = __prefix + 'Geolocation',
+        __BaseSegmentFactory = __prefix + 'BaseSegmentFactory',
+        __BaseSegmentInstance = __prefix + 'BaseSegmentInstance',
+        __StaticSegmentInstance = __prefix + 'StaticSegmentInstance',
+        __VariableSegmentInstance = __prefix + 'VariableSegmentInstance',
+        __DynamicSegmentInstance = __prefix + 'DynamicSegmentInstance',
+        __SplatSegmentInstance = __prefix + 'SplatSegmentInstance',
+        __StateStatic = __prefix + 'StateStatic',
+        __StateInstance = __prefix + 'StateInstance',
+        __RouteRecognizerInstance = __prefix + 'RouteRecognizerInstance',
     
         /**
          * Controls
@@ -107,6 +116,7 @@ module plat {
         __TrackUp = __Plat + 'trackup',
         __TrackDown = __Plat + 'trackdown',
         __TrackEnd = __Plat + 'trackend',
+        __React = __Plat + 'react',
         __Link = __Plat + 'link',
         __ForEach = __Plat + 'foreach',
         __Html = __Plat + 'html',
@@ -117,6 +127,11 @@ module plat {
         __Routeport = __Plat + 'routeport',
         __Viewport = __Plat + 'viewport',
         __Context = __Plat + __CONTEXT,
+    
+        /**
+         * Control Properties
+         */
+        __TemplateControlCache = '__templateControlCache',
     
         /**
          * Lifecycle events
@@ -212,6 +227,15 @@ module plat {
         },
     
         /**
+         * Routing
+         */
+        __BASE_SEGMENT_TYPE = 'base',
+        __VARIABLE_SEGMENT_TYPE = 'variable',
+        __STATIC_SEGMENT_TYPE = 'static',
+        __SPLAT_SEGMENT_TYPE = 'splat',
+        __DYNAMIC_SEGMENT_TYPE = 'dynamic',
+    
+        /**
          * Constants
          */
         __startSymbol = '{{',
@@ -252,7 +276,28 @@ module plat {
     
     /* tslint:disable:no-unused-variable */
     var __nativeIsArray = !!Array.isArray,
-        __uids__: plat.IObject<Array<string>> = {};
+        __uids__: plat.IObject<Array<string>> = {},
+        objToString = Object.prototype.toString,
+        toStringClass = '[object ',
+        errorClass = toStringClass + 'Error]',
+        fileClass = toStringClass + 'File]',
+        arrayClass = toStringClass + 'Array]',
+        boolClass = toStringClass + 'Boolean]',
+        dateClass = toStringClass + 'Date]',
+        funcClass = toStringClass + 'Function]',
+        numberClass = toStringClass + 'Number]',
+        objectClass = toStringClass + 'Object]',
+        regexpClass = toStringClass + 'RegExp]',
+        stringClass = toStringClass + 'String]',
+        promiseClass = toStringClass + 'Promise]',
+        objectTypes: any = {
+            'boolean': false,
+            'function': true,
+            'object': true,
+            'number': false,
+            'string': false,
+            'undefined': false
+        };
     
     function noop(): void { }
     
@@ -270,14 +315,14 @@ module plat {
         var keys: Array<string>,
             property: any;
     
-        forEach(sources, (source, k) => {
+        forEach((source, k) => {
             if (!isObject(source)) {
                 return;
             }
     
             keys = Object.keys(source);
     
-            forEach(keys, (key) => {
+            forEach((key) => {
                 property = source[key];
                 if (deep) {
                     if (isArray(property)) {
@@ -298,8 +343,8 @@ module plat {
                     }
                 }
                 destination[key] = property;
-            });
-        });
+            }, keys);
+        }, sources);
     
         return destination;
     }
@@ -335,7 +380,7 @@ module plat {
     }
     
     function isError(obj: any): boolean {
-        return Object.prototype.toString.call(obj) === '[object Error]';
+        return objToString.call(obj) === errorClass;
     }
     
     function isObject(obj: any): boolean {
@@ -359,19 +404,19 @@ module plat {
     }
     
     function isFile(obj: any): boolean {
-        return isObject(obj) && obj.toString() === '[object File]';
+        return isObject(obj) && objToString.call(obj) === fileClass;
     }
     
     function isString(obj: any): boolean {
-        return typeof obj === 'string';
+        return typeof obj === 'string' || isObject(obj) && objToString.call(obj) === stringClass;
     }
     
     function isRegExp(obj: any): boolean {
-        return Object.prototype.toString.call(obj) === '[object RegExp]';
+        return isObject(obj) && objToString.call(obj) === regexpClass;
     }
     
     function isPromise(obj: any): boolean {
-        return isObject(obj) && (obj.toString() === '[object Promise]' || isFunction(obj.then));
+        return isObject(obj) && (objToString.call(obj) === promiseClass || isFunction(obj.then));
     }
     
     function isEmpty(obj: any): boolean {
@@ -391,11 +436,11 @@ module plat {
     }
     
     function isBoolean(obj: any): boolean {
-        return typeof obj === 'boolean';
+        return obj === true || obj === false || isObject(obj) && objToString.call(obj) === boolClass;
     }
     
     function isNumber(obj: any): boolean {
-        return typeof obj === 'number' && !isNaN(obj);
+        return (typeof obj === 'number' || isObject(obj) && objToString.call(obj) === numberClass) && !isNaN(obj);
     }
     
     function isFunction(obj: any): boolean {
@@ -415,7 +460,7 @@ module plat {
             return Array.isArray(obj);
         }
     
-        return Object.prototype.toString.call(obj) === '[object Array]';
+        return objToString.call(obj) === arrayClass;
     }
     
     function isArrayLike(obj: any): boolean {
@@ -427,10 +472,10 @@ module plat {
     }
     
     function isDate(obj: any): boolean {
-        return Object.prototype.toString.call(obj) === '[object Date]';
+        return typeof obj === 'object' && objToString.call(obj) === dateClass;
     }
     
-    function filter<T>(obj: any, iterator: (value: T, key: any, obj: any) => boolean, context?: any): Array<T> {
+    function filter<T>(iterator: (value: T, key: any, obj: any) => boolean, obj: any, context?: any): Array<T> {
         var arr: Array<T> = [];
         if (isNull(obj)) {
             return arr;
@@ -440,24 +485,24 @@ module plat {
             return obj.filter(iterator, context);
         }
     
-        forEach<T>(obj, (value: T, key: any, obj: any) => {
+        forEach<T>((value: T, key: any, obj: any) => {
             if (iterator(value, key, obj)) {
                 arr.push(value);
             }
-        });
+        }, obj);
     
         return arr;
     }
     
-    function where(obj: any, properties: any): Array<any> {
-        return filter(obj, (value)
-            => !some(properties, (property, key)
-                => (<any>value)[key] !== property));
+    function where(properties: any, obj: any): Array<any> {
+        return filter((value)
+            => !some((property, key)
+                => (<any>value)[key] !== property, properties), obj);
     }
     
-    function forEach<T>(array: Array <T>, iterator: (value: T, index: number, obj: any) => void, context?: any): Array <T>;
-    function forEach<T>(obj: any, iterator: (value: T, key: string, obj: any) => void, context?: any): any;
-    function forEach<T>(obj: any, iterator: (value: T, key: any, obj: any) => void, context?: any): any {
+    function forEach<T>(iterator: (value: T, index: number, obj: any) => void, array: Array<T>, context?: any): Array<T>;
+    function forEach<T>(iterator: (value: T, key: string, obj: any) => void, obj: any, context?: any): any;
+    function forEach<T>(iterator: (value: T, key: any, obj: any) => void, obj: any, context?: any): any {
         if (isNull(obj) || !(isObject(obj) || isArrayLike(obj))) {
             return obj;
         }
@@ -484,7 +529,7 @@ module plat {
         return obj;
     }
     
-    function map<T, R>(obj: any, iterator: (value: T, key: any, obj: any) => R, context?: any): Array<R> {
+    function map<T, R>(iterator: (value: T, key: any, obj: any) => R, obj: any, context?: any): Array<R> {
         var arr: Array<R> = [];
     
         if (isNull(obj)) {
@@ -495,24 +540,23 @@ module plat {
             return obj.map(iterator, context);
         }
     
-        forEach(obj, (value, key) => {
+        forEach((value, key) => {
             arr.push(iterator.call(context, value, key, obj));
-        });
+        }, obj);
     
         return arr;
     }
     
     var Promise: plat.async.IPromise;
     
-    function mapAsync<T, R>(obj: any, iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>,
-        context?: any): plat.async.IThenable<Array<R>> {
+    function mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any, context?: any): plat.async.IThenable<Array<R>> {
         Promise = Promise || plat.acquire(__Promise);
     
-        return Promise.all(map(obj, iterator, context));
+        return Promise.all(map(iterator, obj, context));
     }
     
-    function mapAsyncWithOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
-        context: any, descending?: boolean): plat.async.IThenable<Array<R>> {
+    function mapAsyncWithOrder<T, R>(iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
+        array: Array<T>, context: any, descending?: boolean): plat.async.IThenable<Array<R>> {
         Promise = Promise || plat.acquire(__Promise);
         var initialValue = Promise.resolve<Array<R>>([]);
     
@@ -539,21 +583,21 @@ module plat {
         return array.reduce(inOrder, initialValue);
     }
     
-    function mapAsyncInOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
-        context?: any): plat.async.IThenable<Array<R>> {
-        return mapAsyncWithOrder(array, iterator, context);
+    function mapAsyncInOrder<T, R>(iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
+        array: Array<T>, context?: any): plat.async.IThenable<Array<R>> {
+        return mapAsyncWithOrder(iterator, array, context);
     }
     
-    function mapAsyncInDescendingOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
-        context?: any): plat.async.IThenable<Array<R>> {
-        return mapAsyncWithOrder(array, iterator, context, true);
+    function mapAsyncInDescendingOrder<T, R>(iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
+        array: Array<T>, context?: any): plat.async.IThenable<Array<R>> {
+        return mapAsyncWithOrder(iterator, array, context, true);
     }
     
-    function pluck<T, U>(obj: any, key: string): Array<U> {
-        return map<T, U>(obj, (value) => (<any>value)[key]);
+    function pluck<T, U>(key: string, obj: any): Array<U> {
+        return map<T, U>((value) => (<any>value)[key], obj);
     }
     
-    function some<T>(obj: any, iterator: (value: T, key: any, obj: any) => boolean, context?: any): boolean {
+    function some<T>(iterator: (value: T, key: any, obj: any) => boolean, obj: any, context?: any): boolean {
         if (isNull(obj) || isFunction(obj)) {
             return false;
         }
@@ -1243,14 +1287,14 @@ module plat {
          * @param {Array<any>} dependencies? An array of strings representing the dependencies needed for the IControl 
          * injector.
          */
-        export function control(name: string, Type: new (...args: any[]) => IControl, dependencies?: Array<any>): typeof register {
+        export function control(name: string, Type: new (...args: any[]) => IControl, dependencies?: Array<any>, isStatic?: boolean): typeof register {
             if (isString(name)) {
                 name = name.toLowerCase();
             } else {
                 throw new Error('A Control must be registered with a string name');
             }
 
-            return add(controlInjectors, name, Type, dependencies);
+            return add(controlInjectors, name, Type, dependencies, isStatic ? __STATIC : undefined);
         }
     
         /**
@@ -1565,22 +1609,17 @@ module plat {
                     return __Document;
                 }
 
-                var injectors = injectableInjectors,
-                    injector: IInjector<any>,
-                    keys = Object.keys(injectors),
-                    length = keys.length,
-                    key: string,
-                    value: any;
+                var find: (injectors: IInjectorObject<any>) => IInjector<any> =
+                    Injector.__findInjector.bind(Injector, dependency),
+                    injector = find(injectableInjectors) ||
+                    find(staticInjectors) ||
+                    find(viewControlInjectors) ||
+                    find(controlInjectors) ||
+                    find(animationInjectors) ||
+                    find(jsAnimationInjectors);
 
-                for (var i = 0; i < length; ++i) {
-                    key = keys[i];
-                    injector = injectors[key];
-
-                    value = injector.Constructor;
-
-                    if (value === dependency) {
-                        return key;
-                    }
+                if (isObject(injector)) {
+                    return injector.name;
                 }
 
                 return __NOOP_INJECTOR;
@@ -1612,16 +1651,35 @@ module plat {
             private static __locateInjector(Constructor: any): any {
                 if (isNull(Constructor)) {
                     return;
-                } else if (isString(Constructor)) {
-                    return injectableInjectors[Constructor] || Injector.__noop();
                 } else if (Constructor === window) {
                     return (<any>injectableInjectors).$Window;
                 } else if (Constructor === window.document) {
                     return (<any>injectableInjectors).$Document;
                 }
 
-                var injectors = injectableInjectors,
-                    injector: IInjector<any>,
+                var find: (injectors: IInjectorObject<any>) => IInjector<any> =
+                    Injector.__findInjector.bind(Injector, Constructor),
+                    injector = find(injectableInjectors) ||
+                    find(staticInjectors) ||
+                    find(viewControlInjectors) ||
+                    find(controlInjectors) ||
+                    find(animationInjectors) ||
+                    find(jsAnimationInjectors) ||
+                    Injector.__wrap(Constructor);
+
+                return injector;
+            }
+
+            /**
+             * Finds an injector object with the associated constructor in the given IInjectorObject.
+             * @param {Function} Constructor The Function
+             */
+            private static __findInjector(Constructor: any, injectors: IInjectorObject<any>) {
+                if (isString(Constructor)) {
+                    return injectors[Constructor] || Injector.__noop();
+                }
+
+                var injector: IInjector<any>,
                     keys = Object.keys(injectors),
                     length = keys.length;
 
@@ -1632,8 +1690,6 @@ module plat {
                         return injector;
                     }
                 }
-
-                return Injector.__wrap(Constructor);
             }
 
             /**
@@ -1885,12 +1941,14 @@ module plat {
                 export var jsAnimation = jsAnimationInjectors;
         }
     }
-    if (!isUndefined(window) && isUndefined((<any>window).plat)) {
-        (<any>window).plat = plat;
-    }
+    if (!isUndefined(window)) {
+        if (isUndefined((<any>window).plat)) {
+            (<any>window).plat = plat;
+        }
 
-    if (!isUndefined(window) && isUndefined((<any>window).module)) {
-        (<any>window).module = {};
+        if (isUndefined((<any>window).module)) {
+            (<any>window).module = {};
+        }
     }
 
     /**
@@ -3011,150 +3069,150 @@ module plat {
         /**
          * Takes in an array and a function to evaluate the properties in the array.
          * Returns a filtered array of objects resulting from evaluating the function.
-         * @param {Array<T>} array The Array to filter.
          * @param {plat.IListIterator<T, boolean>} iterator The iterator function to call with array's properties. 
          * Returns true if the property should be kept, false otherwise.
-         * @param {any} context? Optional context with which to call the iterator.
+         * @param {Array<T>} array The Array to filter.
+         * @param {any} context? An optional context to bind to the iterator.
          */
-        filter<T>(array: Array<T>, iterator: IListIterator<T, boolean>, context?: any): Array<T>;
+        filter<T>(iterator: IListIterator<T, boolean>, array: Array<T>, context?: any): Array<T>;
         /**
          * Takes in an object/array and a function to evaluate the properties in the object/array.
          * Returns a filtered array of objects resulting from evaluating the function.
-         * @param {plat.IObject<T>} obj The object to filter.
          * @param {plat.IObjectIterator<T, boolean>} iterator The iterator function to call with array's properties. 
          * Returns true if the property should be kept, false otherwise.
-         * @param {any} context? Optional context with which to call the iterator.
+         * @param {plat.IObject<T>} obj The object to filter.
+         * @param {any} context? An optional context to bind to the iterator.
          */
-        filter<T>(obj: IObject<T>, iterator: IObjectIterator<T, boolean>, context?: any): Array<T>;
-        filter(obj: any, iterator: (value: any, key: any, obj: any) => boolean, context?: any): Array<any> {
-            return filter(obj, iterator, context);
+        filter<T>(iterator: IObjectIterator<T, boolean>, obj: IObject<T>, context?: any): Array<T>;
+        filter(iterator: (value: any, key: any, obj: any) => boolean, obj: any, context?: any): Array<any> {
+            return filter(iterator, obj, context);
         }
 
         /**
          * Takes in a list and object containing key/value pairs to search for in the list.
+         * @param {Object} properties An object containing key/value pairs to match with obj's values.
          * @param {Array<T>} array The list used for searching for properties.
-         * @param {any} properties An object containing key/value pairs to match with obj's values.
          */
-        where<T, U extends {}>(array: Array<T>, properties: U): Array<T> {
-            return where(array, properties);
+        where<T>(properties: Object, array: Array<T>): Array<T> {
+            return where(properties, array);
         }
 
         /**
          * Takes in an Array and a function to iterate over. Calls the iterator function with every property
          * in the Array, then returns the object.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, void>} iterator A method that takes in a value, index, and the object.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        forEach<T>(array: Array<T>, iterator: IListIterator<T, void>, context?: any): Array<T>;
+        forEach<T>(iterator: IListIterator<T, void>, array: Array<T>, context?: any): Array<T>;
         /**
          * Takes in an Array and a function to iterate over. Calls the iterator function with every property
          * in the Array, then returns the object.
-         * @param {plat.IObject<T>} obj An object.
          * @param {plat.IObjectIterator<T, void>} iterator A method that takes in a value, index, and the object.
+         * @param {plat.IObject<T>} obj An object.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        forEach<T>(obj: IObject<T>, iterator: IObjectIterator<T, void>, context?: any): IObject<T>;
-        forEach(obj: any, iterator: (value: any, key: any, obj: any) => void, context?: any): any {
-            return forEach(obj, iterator, context);
+        forEach<T>(iterator: IObjectIterator<T, void>, obj: IObject<T>, context?: any): IObject<T>;
+        forEach(iterator: (value: any, key: any, obj: any) => void, obj: any, context?: any): any {
+            return forEach(iterator, obj, context);
         }
 
         /**
          * Takes in an object and an iterator function. Calls the iterator with all the values in the object. The 
          * iterator can transform the object and return it. The returned values will be pushed to an Array and 
          * returned.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, R>} iterator The transformation function.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        map<T, R>(array: Array<T>, iterator: IListIterator<T, R>, context?: any): Array<R>;
+        map<T, R>(iterator: IListIterator<T, R>, array: Array<T>, context?: any): Array<R>;
         /**
          * Takes in an object and an iterator function. Calls the iterator with all the values in the object. The 
          * iterator can transform the object and return it. The returned values will be pushed to an Array and 
          * returned.
-         * @param {plat.IObject<T>} obj An Object.
          * @param {(value: T, index: number, obj: any) => U} iterator The transformation function.
+         * @param {plat.IObject<T>} obj An Object.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        map<T, R>(obj: IObject<T>, iterator: IObjectIterator<T, R>, context?: any): Array<R>;
-        map(obj: any, iterator: (value: any, key: any, obj: any) => any, context?: any): Array<any> {
-            return map<any, any>(obj, iterator, context);
+        map<T, R>(iterator: IObjectIterator<T, R>, obj: IObject<T>, context?: any): Array<R>;
+        map(iterator: (value: any, key: any, obj: any) => any, obj: any, context?: any): Array<any> {
+            return map<any, any>(iterator, obj, context);
         }
 
         /**
          * Takes in an array and an iterator function. Calls the iterator with all the values in the array. The 
          * iterator can return a promise the will resolve with the mapped value. The returned values will be pushed 
          * to an Array. A promise is returned that will resolve when all the iterators have resolved.
-         * @param {Array<T>} array An array.
          * @param {plat.IListIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {Array<T>} array An array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsync<T, R>(array: Array<T>, iterator: IListIterator<T, async.IThenable<R>>, context?: any): async.IThenable<Array<R>>;
+        mapAsync<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): async.IThenable<Array<R>>;
         /**
          * Takes in an object and an iterator function. Calls the iterator with all the values in the object. The 
          * iterator can return a promise the will resolve with the mapped value. The returned values will be pushed 
          * to an Array. A promise is returned that will resolve when all the iterators have resolved.
-         * @param {plat.IObject<T>} obj An Object.
          * @param {plat.IObjectIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {plat.IObject<T>} obj An Object.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsync<T, R>(obj: IObject<T>, iterator: IObjectIterator<T, async.IThenable<R>>, context?: any): plat.async.IThenable<Array<R>>;
-        mapAsync<T, R>(obj: any, iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, context?: any): plat.async.IThenable<Array<R>> {
-            return mapAsync(obj, iterator, context);
+        mapAsync<T, R>(iterator: IObjectIterator<T, async.IThenable<R>>, obj: IObject<T>, context?: any): plat.async.IThenable<Array<R>>;
+        mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any, context?: any): plat.async.IThenable<Array<R>> {
+            return mapAsync(iterator, obj, context);
         }
 
         /**
          * Takes in an array and an iterator function. Calls the iterator with all the values in the array. The 
          * iterator can return a promise the will resolve with the mapped value. The next value in the array will not be passed to 
          * the iterator until the previous promise fulfills.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsyncInOrder<T, R>(array: Array<T>, iterator: IListIterator<T, async.IThenable<R>>, context?: any): plat.async.IThenable<Array<R>> {
-            return mapAsyncInOrder(array, iterator, context);
+        mapAsyncInOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): plat.async.IThenable<Array<R>> {
+            return mapAsyncInOrder(iterator, array, context);
         }
 
         /**
          * Takes in an array and an iterator function. Calls the iterator with all the values in the array in descending order. The 
          * iterator can return a promise the will resolve with the mapped value. The next value in the array will not be passed to 
          * the iterator until the previous promise fulfills.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsyncInDescendingOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>, context?: any): plat.async.IThenable<Array<R>> {
-            return mapAsyncInDescendingOrder(array, iterator, context);
+        mapAsyncInDescendingOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): plat.async.IThenable<Array<R>> {
+            return mapAsyncInDescendingOrder(iterator, array, context);
         }
 
         /**
          * Takes in an object and a property to extract from all of the object's values. Returns an array of
          * the 'plucked' values.
-         * @param {any} obj An object.
-         * @param {string} key The property to 'pluck' from each value in obj.
+         * @param {string} key The property to 'pluck' from each value in the array.
+         * @param {Array<T>} array The array to pluck the key from
          */
-        pluck<T extends {}>(obj: Array<T>, key: string): Array<any> {
-            return map<T, any>(obj, (value) => (<any>value)[key]);
+        pluck<T extends {}>(key: string, array: Array<T>): Array<any> {
+            return map<T, any>((value) => (<any>value)[key], array);
         }
 
         /**
          * Takes in an array and an iterator. Evaluates all the values in the array with the iterator.
          * Returns true if any of the iterators return true, otherwise returns false.
-         * @param {Array<T>} array An array.
          * @param {plat.IListIterator<T, boolean>} iterator A method with which to evaluate all the values in obj.
+         * @param {Array<T>} array An array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        some<T>(array: Array<T>, iterator: IListIterator<T, boolean>, context?: any): boolean;
+        some<T>(iterator: IListIterator<T, boolean>, array: Array<T>, context?: any): boolean;
         /**
          * Takes in an array and an iterator. Evaluates all the values in the array with the iterator.
          * Returns true if any of the iterators return true, otherwise returns false.
-         * @param {plat.IObject<T>} obj An object.
          * @param {plat.IObjectIterator<T, boolean>} iterator A method with which to evaluate all the values in obj.
+         * @param {plat.IObject<T>} obj An object.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        some<T>(obj: IObject<T>, iterator: IObjectIterator<T, boolean>, context?: any): boolean;
-        some(obj: any, iterator: (value: any, key: any, obj: any) => boolean, context?: any): boolean {
-            return some(obj, iterator, context);
+        some<T>(iterator: IObjectIterator<T, boolean>, obj: IObject<T>, context?: any): boolean;
+        some(iterator: (value: any, key: any, obj: any) => boolean, obj: any, context?: any): boolean {
+            return some(iterator, obj, context);
         }
 
         /**
@@ -3357,128 +3415,128 @@ module plat {
         /**
          * Takes in an array and a function to evaluate the properties in the array.
          * Returns a filtered array of objects resulting from evaluating the function.
-         * @param {Array<T>} array The Array to filter.
          * @param {plat.IListIterator<T, boolean>} iterator The iterator function to call with array's properties. 
          * Returns true if the property should be kept, false otherwise.
-         * @param {any} context? Optional context with which to call the iterator.
+         * @param {Array<T>} array The Array to filter.
+         * @param {any} context? An optional context to bind to the iterator.
          */
-        filter<T>(array: Array<T>, iterator: IListIterator<T, boolean>, context?: any): Array<T>;
+        filter<T>(iterator: IListIterator<T, boolean>, array: Array<T>, context?: any): Array<T>;
         /**
          * Takes in an object/array and a function to evaluate the properties in the object/array.
          * Returns a filtered array of objects resulting from evaluating the function.
-         * @param {plat.IObject<T>} obj The object to filter.
          * @param {plat.IObjectIterator<T, boolean>} iterator The iterator function to call with array's properties. 
          * Returns true if the property should be kept, false otherwise.
-         * @param {any} context? Optional context with which to call the iterator.
+         * @param {plat.IObject<T>} obj The object to filter.
+         * @param {any} context? An optional context to bind to the iterator.
          */
-        filter<T>(obj: IObject<T>, iterator: IObjectIterator<T, boolean>, context?: any): Array<T>;
+        filter<T>(iterator: IObjectIterator<T, boolean>, obj: IObject<T>, context?: any): Array<T>;
 
         /**
          * Takes in a list and object containing key/value pairs to search for in the list.
+         * @param {Object} properties An object containing key/value pairs to match with obj's values.
          * @param {Array<T>} array The list used for searching for properties.
-         * @param {any} properties An object containing key/value pairs to match with obj's values.
          */
-        where<T, U extends {}>(array: Array<T>, properties: U): Array<T>
+        where<T>(properties: Object, array: Array<T>): Array<T>;
 
         /**
          * Takes in an Array and a function to iterate over. Calls the iterator function with every property
          * in the Array, then returns the object.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, void>} iterator A method that takes in a value, index, and the object.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        forEach<T>(array: Array<T>, iterator: IListIterator<T, void>, context?: any): Array<T>;
+        forEach<T>(iterator: IListIterator<T, void>, array: Array<T>, context?: any): Array<T>;
         /**
          * Takes in an Array and a function to iterate over. Calls the iterator function with every property
          * in the Array, then returns the object.
-         * @param {plat.IObject<T>} obj An object.
          * @param {plat.IObjectIterator<T, void>} iterator A method that takes in a value, index, and the object.
+         * @param {plat.IObject<T>} obj An object.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        forEach<T>(obj: IObject<T>, iterator: IObjectIterator<T, void>, context?: any): IObject<T>;
+        forEach<T>(iterator: IObjectIterator<T, void>, obj: IObject<T>, context?: any): IObject<T>;
 
         /**
-         * Takes in an array and an iterator function. Calls the iterator with all the values in the array. The 
+         * Takes in an object and an iterator function. Calls the iterator with all the values in the object. The 
          * iterator can transform the object and return it. The returned values will be pushed to an Array and 
          * returned.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, R>} iterator The transformation function.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        map<T, R>(array: Array<T>, iterator: IListIterator<T, R>, context?: any): Array<R>;
+        map<T, R>(iterator: IListIterator<T, R>, array: Array<T>, context?: any): Array<R>;
         /**
          * Takes in an object and an iterator function. Calls the iterator with all the values in the object. The 
          * iterator can transform the object and return it. The returned values will be pushed to an Array and 
          * returned.
+         * @param {(value: T, index: number, obj: any) => U} iterator The transformation function.
          * @param {plat.IObject<T>} obj An Object.
-         * @param {plat.IObjectIterator<T, R>} iterator The transformation function.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        map<T, R>(obj: IObject<T>, iterator: IObjectIterator<T, R>, context?: any): Array<R>;
+        map<T, R>(iterator: IObjectIterator<T, R>, obj: IObject<T>, context?: any): Array<R>;
 
         /**
          * Takes in an array and an iterator function. Calls the iterator with all the values in the array. The 
          * iterator can return a promise the will resolve with the mapped value. The returned values will be pushed 
          * to an Array. A promise is returned that will resolve when all the iterators have resolved.
-         * @param {Array<T>} array An array.
          * @param {plat.IListIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {Array<T>} array An array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsync<T, R>(array: Array<T>, iterator: IListIterator<T, async.IThenable<R>>, context?: any): async.IThenable<Array<R>>;
+        mapAsync<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): async.IThenable<Array<R>>;
         /**
          * Takes in an object and an iterator function. Calls the iterator with all the values in the object. The 
          * iterator can return a promise the will resolve with the mapped value. The returned values will be pushed 
          * to an Array. A promise is returned that will resolve when all the iterators have resolved.
-         * @param {plat.IObject<T>} obj An Object.
          * @param {plat.IObjectIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {plat.IObject<T>} obj An Object.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsync<T, R>(obj: IObject<T>, iterator: IObjectIterator<T, async.IThenable<R>>, context?: any): plat.async.IThenable<Array<R>>;
+        mapAsync<T, R>(iterator: IObjectIterator<T, async.IThenable<R>>, obj: IObject<T>, context?: any): plat.async.IThenable<Array<R>>;
 
         /**
          * Takes in an array and an iterator function. Calls the iterator with all the values in the array. The 
          * iterator can return a promise the will resolve with the mapped value. The next value in the array will not be passed to 
          * the iterator until the previous promise fulfills.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsyncInOrder<T, R>(array: Array<T>, iterator: IListIterator<T, async.IThenable<R>>, context?: any): plat.async.IThenable<Array<R>>;
+        mapAsyncInOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): plat.async.IThenable<Array<R>>;
 
         /**
          * Takes in an array and an iterator function. Calls the iterator with all the values in the array in descending order. The 
          * iterator can return a promise the will resolve with the mapped value. The next value in the array will not be passed to 
          * the iterator until the previous promise fulfills.
-         * @param {Array<T>} array An Array.
          * @param {plat.IListIterator<T, plat.async.IThenable<R>>} iterator The transformation function.
+         * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsyncInDescendingOrder<T, R>(array: Array<T>, iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>, context?: any): plat.async.IThenable<Array<R>>;
+        mapAsyncInDescendingOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): plat.async.IThenable<Array<R>>;
 
         /**
          * Takes in an object and a property to extract from all of the object's values. Returns an array of
          * the 'plucked' values.
-         * @param {any} obj An object.
-         * @param {string} key The property to 'pluck' from each value in obj.
+         * @param {string} key The property to 'pluck' from each value in the array.
+         * @param {Array<T>} array The array to pluck the key from
          */
-        pluck<T extends {}>(obj: Array<T>, key: string): Array<any>;
+        pluck<T extends {}>(key: string, array: Array<T>): Array<any>;
 
         /**
          * Takes in an array and an iterator. Evaluates all the values in the array with the iterator.
          * Returns true if any of the iterators return true, otherwise returns false.
-         * @param {Array<T>} array An array.
          * @param {plat.IListIterator<T, boolean>} iterator A method with which to evaluate all the values in obj.
+         * @param {Array<T>} array An array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        some<T>(array: Array<T>, iterator: IListIterator<T, boolean>, context?: any): boolean;
+        some<T>(iterator: IListIterator<T, boolean>, array: Array<T>, context?: any): boolean;
         /**
          * Takes in an array and an iterator. Evaluates all the values in the array with the iterator.
          * Returns true if any of the iterators return true, otherwise returns false.
-         * @param {plat.IObject<T>} obj An object.
          * @param {plat.IObjectIterator<T, boolean>} iterator A method with which to evaluate all the values in obj.
+         * @param {plat.IObject<T>} obj An object.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        some<T>(obj: IObject<T>, iterator: IObjectIterator<T, boolean>, context?: any): boolean;
+        some<T>(iterator: IObjectIterator<T, boolean>, obj: IObject<T>, context?: any): boolean;
 
         /**
          * Takes in a method and array of arguments to pass to that method. Delays calling the method until 
@@ -3487,7 +3545,7 @@ module plat {
          * @param {Array<any>} args? The arguments to apply to the method.
          * @param {any} context? An optional context to bind to the method.
          */
-        postpone(method: (...args: any[]) => void, args?: Array<any>, context?: any): IRemoveListener;
+        postpone(method: (...args: any[]) => void, args?: Array < any>, context?: any): IRemoveListener;
 
         /**
          * Takes in a method and array of arguments to pass to that method. Delays calling the method until 
@@ -3497,7 +3555,7 @@ module plat {
          * @param {Array<any>} args? The arguments to apply to the method.
          * @param {any} context? An optional context to bind to the method.
          */
-        defer(method: (...args: any[]) => void, timeout: number, args?: Array<any>, context?: any): IRemoveListener;
+        defer(method: (...args: any[]) => void, timeout: number, args?: Array < any>, context?: any): IRemoveListener;
 
         /**
          * Takes in a prefix and returns a unique identifier string with the prefix preprended. If no prefix
@@ -3635,6 +3693,16 @@ module plat {
              * Determines if a telephone number is valid.
              */
             validateTelephone = /^\+?[0-9\.\-\s]*$/;
+
+            /**
+             * A regular expression for matching dynamic segments in a route.
+             */
+            dynamicSegmentsRegex = /^:([^\/]+)$/;
+
+            /**
+             * A regular expression for matching splat segments in a route.
+             */
+            splatSegmentRegex = /^\*([^\/]+)$/;
 
             /**
              * A regular expression for matching or removing all newline characters.
@@ -3865,6 +3933,16 @@ module plat {
              * Determines if a telephone number is valid.
              */
             validateTelephone: RegExp;
+
+            /**
+             * A regular expression for matching dynamic segments in a route.
+             */
+            dynamicSegmentsRegex: RegExp;
+
+            /**
+             * A regular expression for matching splat segments in a route.
+             */
+            splatSegmentRegex: RegExp;
         }
 
         /**
@@ -5642,14 +5720,13 @@ module plat {
                     location.href = url;
                     return;
                 }
+            
+                // make sure URL is absolute
+                if (!this.$Regex.fullUrlRegex.test(url) && url[0] !== '/') {
+                    url = '/' + url;
+                }
 
                 if (this.$Compat.pushState) {
-
-                    // make sure URL is absolute
-                    if (!this.$Regex.fullUrlRegex.test(url) && url[0] !== '/') {
-                        url = '/' + url;
-                    }
-
                     if (replace) {
                         history.replaceState(null, '', url);
                     } else {
@@ -9165,9 +9242,9 @@ module plat {
             constructor(storage: Storage) {
                 this._storage = storage;
 
-                forEach(storage, (value, key) => {
+                forEach((value, key) => {
                     this[key] = value;
-                });
+                }, storage);
             }
 
             /**
@@ -10570,8 +10647,8 @@ module plat {
              * array function.
              */
             protected _overwriteArrayFunction(absoluteIdentifier: string, method: string): (...args: any[]) => any {
-                var preCallbackObjects = ContextManager.preArrayListeners[absoluteIdentifier],
-                    postCallbackObjects = ContextManager.postArrayListeners[absoluteIdentifier],
+                var preCallbackObjects = ContextManager.preArrayListeners[absoluteIdentifier] || {},
+                    postCallbackObjects = ContextManager.postArrayListeners[absoluteIdentifier] || {},
                     _this = this;
 
                 // we can't use a fat-arrow function here because we need the array context.
@@ -11507,7 +11584,7 @@ module plat {
 
                 var eventListeners = eventsListener.listeners[eventName];
 
-                if (isNull(eventListeners)) {
+                if (!isArray(eventListeners)) {
                     eventListeners = eventsListener.listeners[eventName] = [];
                 }
 
@@ -12680,7 +12757,8 @@ module plat {
                 return noop;
             }
 
-            var contextManager = Control.$ContextManagerStatic.getManager(Control.getRootControl(this));
+            var $ContextManagerStatic: observable.IContextManagerStatic = Control.$ContextManagerStatic || acquire(__ContextManagerStatic),
+                contextManager = $ContextManagerStatic.getManager(Control.getRootControl(this));
 
             return contextManager.observe(absoluteIdentifier + '.' + property, {
                 listener: listener.bind(this),
@@ -12738,7 +12816,7 @@ module plat {
             }
 
             var absoluteIdentifier = (<ui.ITemplateControl>control).getAbsoluteIdentifier(context),
-                ContextManager = Control.$ContextManagerStatic;
+                ContextManager: observable.IContextManagerStatic = Control.$ContextManagerStatic || acquire(__ContextManagerStatic);
 
             if (isNull(absoluteIdentifier)) {
                 if (property === __CONTEXT) {
@@ -12810,7 +12888,7 @@ module plat {
                 length = aliases.length,
                 resources: IObject<observable.IContextManager> = {},
                 resourceObj: { resource: ui.IResource; control: ui.ITemplateControl; },
-                ContextManager = Control.$ContextManagerStatic,
+                ContextManager: observable.IContextManagerStatic = Control.$ContextManagerStatic || acquire(__ContextManagerStatic),
                 getManager = ContextManager.getManager,
                 TemplateControl = ui.TemplateControl,
                 findResource = TemplateControl.findResource,
@@ -12976,7 +13054,7 @@ module plat {
          */
         dispatchEvent(name: string, direction?: string, ...args: any[]): void;
         dispatchEvent(name: string, direction?: string, ...args: any[]) {
-            var manager = Control.$EventManagerStatic;
+            var manager: events.IEventManagerStatic = Control.$EventManagerStatic || acquire(__EventManagerStatic);
 
             if (!manager.hasDirection(direction)) {
                 if (!isUndefined(direction)) {
@@ -13002,7 +13080,8 @@ module plat {
          * DispatchEvent is fired.
          */
         on(name: string, listener: (ev: events.IDispatchEventInstance, ...args: any[]) => void): IRemoveListener {
-            return Control.$EventManagerStatic.on(this.uid, name, listener, this);
+            var $EventManagerStatic: events.IEventManagerStatic = Control.$EventManagerStatic || acquire(__EventManagerStatic);
+            return $EventManagerStatic.on(this.uid, name, listener, this);
         }
 
         /**
@@ -20781,19 +20860,19 @@ module plat {
                  * The evaluated plat-options object.
                  */
                 options: observable.IObservableProperty<ITemplateOptions>;
-        
+
                 /**
                  * The unique ID used to reference a particular 
                  * template.
                  */
                 protected _id: string;
-        
+
                 /**
                  * The optional URL associated with this 
                  * particular template.
                  */
                 protected _url: string;
-        
+
                 /**
                  * Whether or not this is the first instance of the control, 
                  * specifying that it defines the template to copy.
@@ -20814,17 +20893,20 @@ module plat {
                 constructor() {
                     super();
                     var $cacheFactory: storage.ICacheFactory = acquire(__CacheFactory);
-                    this.__templateControlCache = $cacheFactory.create<any>('__templateControlCache');
+                    this.__templateControlCache = $cacheFactory.create<any>(__TemplateControlCache);
                 }
 
                 /**
                  * Initializes the creation of the template.
                  */
                 initialize(): void {
-                    var id = this._id = this.options.value.id,
-                        options = this.options.value;
+                    var optionsObj = this.options || <observable.IObservableProperty<ITemplateOptions>>{},
+                        options = optionsObj.value || <ITemplateOptions>{},
+                        id = this._id = options.id;
 
                     if (isNull(id)) {
+                        var $exception: IExceptionStatic = acquire(__ExceptionStatic);
+                        $exception.warn(this.type + ' instantiated without an id option', $exception.COMPILE);
                         return;
                     }
 
@@ -20839,7 +20921,7 @@ module plat {
                     this.__isFirst = true;
                     this._initializeTemplate();
                 }
-        
+
                 /**
                  * Decides if this is a template definition or 
                  * a template instance.
@@ -20849,16 +20931,20 @@ module plat {
                         this._waitForTemplateControl(this.__templatePromise);
                     }
                 }
-        
+
                 /**
                  * Removes the template from the template cache.
                  */
                 dispose(): void {
                     if (this.__isFirst) {
-                        this.__templateControlCache.dispose();
+                        var cache = this.__templateControlCache;
+                        cache.remove(this._id);
+                        if (cache.info().size === 0) {
+                            cache.dispose();
+                        }
                     }
                 }
-        
+
                 /**
                  * Determines whether a URL or innerHTML is being used, 
                  * creates the bindable template, and stores the template 
@@ -20890,9 +20976,9 @@ module plat {
                                 return TemplateControl.determineTemplate(this, url);
                             }
                         }).then((template: DocumentFragment) => {
-                            this.bindableTemplates.add(id, template.cloneNode(true));
-                            return this;
-                        });
+                                this.bindableTemplates.add(id, template.cloneNode(true));
+                                return this;
+                            });
                     } else {
                         this.bindableTemplates.add(id, template.cloneNode(true));
 
@@ -20901,7 +20987,7 @@ module plat {
 
                     this.__templateControlCache.put(id, controlPromise);
                 }
-        
+
                 /**
                  * Waits for the template promise to resolve, then initializes 
                  * the binding of the bindable template and places it into the 
@@ -20915,7 +21001,7 @@ module plat {
                         if (!(isNull(this._url) || (this._url === templateControl._url))) {
                             $exception = acquire(__ExceptionStatic);
                             $exception.warn('The specified url: ' + this._url +
-                                ' does not match the original plat-template with id: ' +
+                                ' does not match the original ' + this.type + ' with id: ' +
                                 '"' + this._id + '". The original url will be loaded.',
                                 $exception.TEMPLATE);
                         }
@@ -20923,17 +21009,17 @@ module plat {
                         this.__mapBindableTemplates(templateControl);
                         return this.bindableTemplates.bind(this._id);
                     }).then((clone) => {
-                        var endNode = this.endNode;
-                        insertBefore(endNode.parentNode, clone, endNode);
-                    }).catch((error) => {
-                        postpone(() => {
-                            $exception = acquire(__ExceptionStatic);
-                            $exception.warn('Problem resolving plat-template url: ' +
-                                error.response, $exception.TEMPLATE);
+                            var endNode = this.endNode;
+                            insertBefore(endNode.parentNode, clone, endNode);
+                        }).catch((error) => {
+                            postpone(() => {
+                                $exception = acquire(__ExceptionStatic);
+                                $exception.warn('Problem resolving ' + this.type + ' url: ' +
+                                    error.response, $exception.TEMPLATE);
+                            });
                         });
-                    });
                 }
-        
+
                 /**
                  * Maps the bindable templates cache and html templates of the first 
                  * control with the proper ID to this control's bindable templates.
@@ -21023,14 +21109,14 @@ module plat {
                 itemsLoaded: async.IThenable<void>;
 
                 /**
-                 * The options for the foreach control. 
+                 * The options for the ForEach control.
                  */
                 options: observable.IObservableProperty<IForEachOptions>;
 
                 /**
                  * Used to hold the alias tokens for the built-in foreach aliases. You 
                  * can overwrite these with the options for 
-                 * the foreach control. 
+                 * the ForEach control. 
                  */
                 protected _aliases: IForEachAliasOptions = {
                     index: __forEachAliasOptions.index,
@@ -21080,7 +21166,7 @@ module plat {
                 }
 
                 /**
-                 * Re-syncs the ForEach children controls and DOM with the new 
+                 * Re-syncs the ForEach child controls and DOM with the new 
                  * array.
                  * @param {Array<any>} newValue? The new Array
                  * @param {Array<any>} oldValue? The old Array
@@ -21135,7 +21221,7 @@ module plat {
                 }
 
                 /**
-                 * Sets the alias tokens to use for all the items in the foreach context array.
+                 * Sets the alias tokens to use for all the items in the ForEach context array.
                  */
                 protected _setAliases() {
                     var optionsObj = this.options || <observable.IObservableProperty<IForEachOptions>>{},
@@ -22159,6 +22245,11 @@ module plat {
                 private __enterAnimation: animations.IAnimationThenable<any>;
 
                 /**
+                 * A promise that resolves when the template has been bound.
+                 */
+                private __initialBind: async.IThenable<void>;
+
+                /**
                  * The constructor for a If. Creates the 
                  * DocumentFragment for holding the conditional nodes.
                  */
@@ -22182,7 +22273,10 @@ module plat {
                     return this._setter(options);
                 }
 
-                setTemplate() {
+                /**
+                 * Creates a bindable template with the control element's childNodes (innerHTML).
+                 */
+                setTemplate(): void {
                     var childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
                     this.bindableTemplates.add('template', childNodes);
                 }
@@ -22207,7 +22301,6 @@ module plat {
 
                     var promise = this.contextChanged();
 
-                    this.__firstTime = false;
                     this.__removeListener = this.options.observe(this._setter);
 
                     return promise;
@@ -22252,7 +22345,7 @@ module plat {
                         if (!isNull(this.__enterAnimation)) {
                             promise = this.__enterAnimation.cancel().then(() => {
                                 this.__enterAnimation = null;
-                                return this._removeItem();
+                                return <any>this._removeItem();
                             });
                         } else {
                             this._removeItem();
@@ -22269,23 +22362,45 @@ module plat {
                  * Adds the conditional nodes to the DOM.
                  */
                 protected _addItem(): async.IThenable<void> {
-                    var commentNode = this.commentNode,
-                        parentNode = commentNode.parentNode;
-
-                    if (!isNode(parentNode) && !this.__firstTime) {
+                    if (!isNode(this.commentNode.parentNode) && !this.__firstTime) {
                         return this.$Promise.resolve(null);
                     }
 
                     if (this.__firstTime) {
-                        return this.bindableTemplates.bind('template').then((template) => {
-                            this.fragmentStore = template;
-                            this.element.appendChild(template);
+                        this.__firstTime = false;
+                        this.__initialBind = this.bindableTemplates.bind('template').then((template) => {
+                            var element = this.element;
 
-                            return this.__enterAnimation = this.$Animator.animate(this.element, __Enter);
+                            element.appendChild(template);
+                            this.__initialBind = null;
+
+                            if (element.parentNode === this.fragmentStore) {
+                                return <any>this._animateEntrance();
+                            }
+
+                            return this.__enterAnimation = this.$Animator.animate(element, __Enter);
                         }).then(() => {
                             this.__enterAnimation = null;
                         });
+
+                        return this.__initialBind;
                     }
+
+                    if (isPromise(this.__initialBind)) {
+                        return this.__initialBind.then(() => {
+                            return this._animateEntrance();
+                        });
+                    }
+
+                    return this._animateEntrance();
+                }
+
+                /**
+                 * Animates the template as it enters the DOM.
+                 */
+                protected _animateEntrance(): animations.IAnimationThenable<void> {
+                    var commentNode = this.commentNode,
+                        parentNode = commentNode.parentNode;
 
                     parentNode.replaceChild(this.fragmentStore, commentNode);
                     return this.__enterAnimation = this.$Animator.animate(this.element, __Enter).then(() => {
@@ -22296,16 +22411,31 @@ module plat {
                 /**
                  * Removes the conditional nodes from the DOM.
                  */
-                protected _removeItem(): void {
-                    var element = this.element;
-
-                    if (this.__firstTime) {
-                        return;
+                protected _removeItem(): async.IThenable<void> {
+                    if (isPromise(this.__initialBind)) {
+                        return this.__initialBind.then(() => {
+                            return this._animateLeave();
+                        });
                     }
 
-                    this.__leaveAnimation = this.$Animator.animate(element, __Leave).then(() => {
+                    return this._animateLeave();
+                }
+
+                /**
+                 * Animates the template as it leaves the DOM.
+                 */
+                protected _animateLeave(): animations.IAnimationThenable<void> {
+                    var element = this.element;
+
+                    return this.__leaveAnimation = this.$Animator.animate(element, __Leave).then(() => {
                         this.__leaveAnimation = null;
                         element.parentNode.insertBefore(this.commentNode, element);
+
+                        if (!isDocumentFragment(this.fragmentStore)) {
+                            var $document: Document = plat.acquire(__Document);
+                            this.fragmentStore = $document.createDocumentFragment();
+                        }
+
                         insertBefore(this.fragmentStore, element);
                     });
                 }
@@ -23759,7 +23889,7 @@ module plat {
             /**
              * Reference to the IBindableTemplatesFactory injectable.
              */
-            $BindableTeampltesFactory: ui.IBindableTemplatesFactory = acquire(__BindableTemplatesFactory);
+            $BindableTemplatesFactory: ui.IBindableTemplatesFactory = acquire(__BindableTemplatesFactory);
 
             /**
              * The child managers for this manager.
@@ -24032,7 +24162,7 @@ module plat {
                             if (isNull(error)) {
                                 var template: DocumentFragment = error;
 
-                                if (this.$BindableTeampltesFactory.isBoundControl(control)) {
+                                if (this.$BindableTemplatesFactory.isBoundControl(control)) {
                                     template = <DocumentFragment>appendChildren(control.element.childNodes);
                                 }
 
@@ -24932,6 +25062,1068 @@ module plat {
              * for the clone.
              */
             clone(newNode: Node, parentManager: IElementManager): number;
+        }
+    }
+    export module routing {
+        var specialCharacters = [
+            '/', '.', '*', '+', '?', '|',
+            '(', ')', '[', ']', '{', '}', '\\'
+        ],
+            escapeRegex = new RegExp('(\\' + specialCharacters.join('|\\') + ')', 'g'),
+            baseSegment: BaseSegment,
+            dynamicSegments: IObject<DynamicSegment> = {},
+            splatSegments: IObject<SplatSegment> = {},
+            staticSegments: IObject<StaticSegment> = {};
+
+        /**
+         * Stores information about a segment, publishes a regex for matching the segment as well as 
+         * methods for generating the segment and iterating over the characters in the segment.
+         */
+        export class BaseSegment {
+            /**
+             * Reference to the IRegex injectable.
+             */
+            static $Regex: expressions.IRegex;
+
+            /**
+             * Parses a route into segments, populating an array of names (for dynamic and splat segments) as well as 
+             * an ISegmentTypeCount object.
+             * @param {string} route The route to parse.
+             * @param {Array<string>} names An array to populate with dynamic/splat segment names
+             * @param {plat.routing.ISegmentTypeCount} types An object to use for counting segment types in the route.
+             */
+            static parse(route: string, names: Array<string>, types: ISegmentTypeCount): Array<BaseSegment> {
+                if (!isString(route) || !isArray(names) || !isObject(types)) {
+                    return [];
+                } else if (route[0] === '/') {
+                    route = route.slice(1);
+                }
+
+                var segments: Array<string> = route.split('/'),
+                    length = segments.length,
+                    __findSegment = BaseSegment.__findSegment,
+                    results: Array<BaseSegment> = [],
+                    result: BaseSegment,
+                    segment: string,
+                    name: string,
+                    match: RegExpMatchArray,
+                    $Regex = BaseSegment.$Regex;
+
+                for (var i = 0; i < length; ++i) {
+                    segment = segments[i];
+
+                    if (segment === '') {
+                        if (!isObject(baseSegment)) {
+                            baseSegment = acquire(__BaseSegmentInstance);
+                        }
+
+                        results.push(baseSegment);
+                    } else if (match = segment.match($Regex.dynamicSegmentsRegex)) {
+                        name = match[1];
+
+                        results.push(__findSegment(name, __DynamicSegmentInstance, dynamicSegments));
+                        names.push(name);
+                        types.dynamics++;
+                    } else if (match = segment.match($Regex.splatSegmentRegex)) {
+                        name = match[1];
+
+                        results.push(__findSegment(name, __SplatSegmentInstance, splatSegments));
+                        names.push(name);
+                        types.splats++;
+                    } else {
+                        results.push(__findSegment(segment, __StaticSegmentInstance, staticSegments));
+                        types.statics++;
+                    }
+                }
+
+                return results;
+            }
+
+            /**
+             * Parses a route into segments, populating an array of names (for dynamic and splat segments) as well as 
+             * an ISegmentTypeCount object.
+             * @param {string} name The name of the segment to look for.
+             * @param {string} token The token used to acquire a new segment if necessary.
+             * @param {plat.IObject<plat.routing.BaseSegment>} cache The cache in which to look for/store the segment.
+             */
+            private static __findSegment(name: string, token: string, cache: IObject<BaseSegment>): BaseSegment {
+                var segment = cache[name];
+
+                if (!isObject(segment)) {
+                    segment = cache[name] = <BaseSegment>acquire(token);
+                    segment.initialize(name);
+                }
+
+                return segment;
+            }
+
+            /**
+             * Denotes the type of segment for this instance.
+             */
+            type: string = __BASE_SEGMENT_TYPE;
+
+            /**
+             * The name of the segment.
+             */
+            name: string = '';
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            regex: string = '';
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            protected _specification: ICharacterSpecification;
+
+            /**
+             * Initializes the segment.
+             * @param {string} name? The name for the new segment.
+             */
+            initialize(name?: string): void {
+                this.name = name;
+            }
+
+            /**
+             * Iterates over the characters in the segment, calling an iterator method and accumulating the result of each call in 
+             * a defined object.
+             * @param {(previousValue: T, spec: plat.routing.ICharacterSpecification) => T} iterator The iterator to call with each character.
+             * @param {T} initialValue? An optional initial value with which to start the accumulation.
+             */
+            reduceCharacters<T>(iterator: (previousValue: T, spec: ICharacterSpecification) => T, initialValue?: T): T {
+                if (isObject(this._specification)) {
+                    initialValue = iterator(initialValue, this._specification);
+                }
+
+                return initialValue;
+            }
+
+            /**
+             * Generates a new segment, using the input parameters if necessary.
+             * @param {plat.IObject<string>} parameters? The input parameters for the segment.
+             */
+            generate(parameters?: IObject<string>): string {
+                return this.name;
+            }
+        }
+
+        /**
+         * The Type for referencing the '$BaseSegmentFactory' injectable as a dependency.
+         */
+        export function IBaseSegmentFactory($Regex: expressions.IRegex): typeof BaseSegment {
+            BaseSegment.$Regex = $Regex;
+            return BaseSegment;
+        }
+
+        plat.register.injectable(__BaseSegmentFactory, IBaseSegmentFactory, [__Regex], __FACTORY);
+
+        /**
+         * The Type for referencing the '$BaseSegmentInstance' injectable as a dependency.
+         */
+        export function IBaseSegmentInstance(): BaseSegment {
+            return new BaseSegment();
+        }
+
+        plat.register.injectable(__BaseSegmentInstance, IBaseSegmentInstance, null, __INSTANCE);
+
+        /**
+         * Stores information about a static segment, publishes a regex for matching the segment as well as 
+         * methods for generating the segment and iterating over the characters in the segment.
+         */
+        export class StaticSegment extends BaseSegment {
+            /**
+             * Denotes that this is a static segment.
+             */
+            type: string = __STATIC_SEGMENT_TYPE;
+
+            /**
+             * Initializes the segment.
+             * @param {string} name? The name for the new segment.
+             */
+            initialize(name?: string) {
+                super.initialize(name);
+
+                this.regex = this.name.replace(escapeRegex, '\\$1');
+            }
+
+            /**
+             * Iterates over the characters in the segment, calling an iterator method and accumulating the result of each call in 
+             * a defined object.
+             * @param {(previousValue: T, spec: plat.routing.ICharacterSpecification) => T} iterator The iterator to call with each character.
+             * @param {T} initialValue? An optional initial value with which to start the accumulation.
+             */
+            reduceCharacters<T>(iterator: (previousValue: T, spec: ICharacterSpecification) => T, initialValue?: T): T {
+                var name: string = this.name,
+                    length = name.length,
+                    value = initialValue;
+
+                for (var i = 0; i < length; ++i) {
+                    value = iterator(value, { validCharacters: name[i] });
+                }
+
+                return value;
+            }
+        }
+
+        /**
+         * The Type for referencing the '$StaticSegmentInstance' injectable as a dependency.
+         */
+        export function IStaticSegmentInstance(): StaticSegment {
+            return new StaticSegment();
+        }
+
+        plat.register.injectable(__StaticSegmentInstance, IStaticSegmentInstance, null, __INSTANCE);
+
+        /**
+         * Stores information about a variable segment (either dynamic or splat), publishes a regex for matching the segment as well as 
+         * methods for generating the segment and iterating over the characters in the segment.
+         */
+        export class VariableSegment extends BaseSegment {
+            /**
+             * Denotes that this is a variable segment.
+             */
+            type: string = __VARIABLE_SEGMENT_TYPE;
+
+            /**
+             * Generates a new segment, using the input parameters.
+             * @param {plat.IObject<string>} parameters? The input parameters for the segment.
+             */
+            generate(parameters?: IObject<string>) {
+                if (isObject(parameters)) {
+                    return parameters[this.name];
+                }
+            }
+        }
+
+        /**
+         * The Type for referencing the '$VariableSegmentInstance' injectable as a dependency.
+         */
+        export function IVariableSegmentInstance(): VariableSegment {
+            return new VariableSegment();
+        }
+
+        plat.register.injectable(__VariableSegmentInstance, IVariableSegmentInstance, null, __INSTANCE);
+
+        /**
+         * Stores information about a splat segment, publishes a regex for matching the segment as well as 
+         * methods for generating the segment and iterating over the characters in the segment.
+         */
+        export class SplatSegment extends VariableSegment {
+            /**
+             * Denotes that this is a splat segment.
+             */
+            type: string = __SPLAT_SEGMENT_TYPE;
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            regex: string = '(.+)';
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            protected _specification: ICharacterSpecification = {
+                invalidCharacters: '',
+                repeat: true
+            };
+        }
+
+        /**
+         * The Type for referencing the '$SplatSegmentInstance' injectable as a dependency.
+         */
+        export function ISplatSegmentInstance(): SplatSegment {
+            return new SplatSegment();
+        }
+
+        plat.register.injectable(__SplatSegmentInstance, ISplatSegmentInstance, null, __INSTANCE);
+
+        /**
+         * Stores information about a dynamic segment, publishes a regex for matching the segment as well as 
+         * methods for generating the segment and iterating over the characters in the segment.
+         */
+        export class DynamicSegment extends VariableSegment {
+            /**
+             * Denotes that this is a dynamic segment.
+             */
+            type: string = __DYNAMIC_SEGMENT_TYPE;
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            regex: string = '([^/]+)';
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            protected _specification: ICharacterSpecification = {
+                invalidCharacters: '/',
+                repeat: true
+            };
+        }
+
+        /**
+         * The Type for referencing the '$DynamicSegmentInstance' injectable as a dependency.
+         */
+        export function IDynamicSegmentInstance(): DynamicSegment {
+            return new DynamicSegment();
+        }
+
+        plat.register.injectable(__DynamicSegmentInstance, IDynamicSegmentInstance, null, __INSTANCE);
+
+        /**
+         * Contains information for validating characters.
+         */
+        export interface ICharacterSpecification {
+            /**
+             * Contains all the invalid characters
+             */
+            invalidCharacters?: string;
+
+            /**
+             * Contains all the valid characters
+             */
+            validCharacters?: string;
+
+            /**
+             * Whether or not the character should repeat.
+             */
+            repeat?: boolean;
+        }
+
+        /**
+         * Contains the total number of each segment type for a registered route. 
+         * Used to sort recognized route solutions for more accurate route 
+         * matching.
+         */
+        export interface ISegmentTypeCount {
+            /**
+             * A count of how many static segments exist in the route.
+             */
+            statics: number;
+
+            /**
+             * A count of how many dynamic segments exist in the route.
+             */
+            dynamics: number;
+
+            /**
+             * A count of how many splat segments exist in the route.
+             */
+            splats: number;
+        }
+
+        /**
+         * Route segment matching is done using a state machine. Each state contains 
+         * a specification indicating valid and invalid characters. Each State has a 
+         * list of potential next states. When matching a route segment you start with 
+         * a root state and then iteratively match next states until you complete the 
+         * segment or invalidate the segment.
+         */
+        export class State {
+            /**
+             * Compiles a segment into a state tree.
+             * @param {plat.routing.BaseSegment} segment The segment to compile.
+             * @param {plat.routing.State} state The initial state with which to start compilation.
+             */
+            static compile(segment: BaseSegment, state: State): State {
+                return segment.reduceCharacters((s, char) => {
+                    return s.add(char);
+                }, state);
+            }
+
+            /**
+             * Links a path to a compiled state, and returns the result.
+             * @param {plat.routing.State} state The state with which to link the result.
+             * @param {string} path The path to link to the given state.
+             */
+            static link(state: State, path: string): IRecognizeResult {
+                var delegates: Array<IDelegateParameterNames> = state.delegates,
+                    regex = state.regex,
+                    length = delegates.length,
+                    matches = path.match(regex),
+                    matchIndex = 1,
+                    result: IRecognizeResult = [],
+                    names: Array<string>,
+                    parameters: any,
+                    j: number,
+                    jLength: number,
+                    delegate: IDelegateParameterNames;
+
+                for (var i = 0; i < length; ++i) {
+                    delegate = delegates[i];
+                    names = delegate.names;
+                    parameters = {};
+
+                    for (j = 0, jLength = names.length; j < jLength; ++j) {
+                        parameters[names[j]] = matches[matchIndex++];
+                    }
+
+                    result.push({
+                        delegate: delegate.delegate,
+                        parameters: parameters,
+                        isDynamic: jLength > 0
+                    });
+                }
+
+                return result;
+            }
+
+            /**
+             * Finds all the next states for a given character.
+             * @param {string} char The character used to match next states.
+             * @param {Array<plat.routing.State>} states The states with which to match the character.
+             */
+            static recognize(char: string, states: Array<State>): Array<State> {
+                var nextStates: Array<State> = [],
+                    length = states.length,
+                    state: State;
+
+                for (var i = 0; i < length; ++i) {
+                    state = states[i];
+
+                    nextStates = nextStates.concat(state.match(char));
+                }
+
+                return nextStates;
+            }
+
+            /**
+             * Sorts states by statics/dynamics/splats.
+             * Favors less splat (*) segments 
+             * Favors less dynamic (:) segments
+             * Favors more static segments
+             * @param {Array<plat.routing.State>} states The states to sort.
+             */
+            static sort(states: Array<State>): Array<State> {
+                if (!isArray(states)) {
+                    return states;
+                }
+
+                var aTypes: ISegmentTypeCount,
+                    aSplats: number,
+                    aStatics: number,
+                    aDynamics: number,
+                    bTypes: ISegmentTypeCount,
+                    bSplats: number,
+                    bStatics: number,
+                    bDynamics: number;
+
+                return states.sort((a, b) => {
+                    aTypes = a.types;
+                    bTypes = b.types;
+                    aSplats = aTypes.splats;
+                    bSplats = bTypes.splats;
+
+                    if (aSplats !== bSplats) {
+                        return aSplats - bSplats;
+                    }
+
+                    aStatics = aTypes.statics;
+                    aDynamics = aTypes.dynamics;
+                    bStatics = bTypes.statics;
+                    bDynamics = bTypes.dynamics;
+
+                    if (aSplats > 0) {
+                        if (aStatics !== bStatics) {
+                            return bStatics - aStatics;
+                        }
+
+                        if (aDynamics !== bDynamics) {
+                            return bDynamics - aDynamics;
+                        }
+                    }
+
+                    if (aDynamics !== bDynamics) {
+                        return aDynamics - bDynamics;
+                    }
+
+                    if (aStatics !== bStatics) {
+                        return bStatics = aStatics;
+                    }
+
+                    return 0;
+                });
+            }
+
+            /**
+             * The possible next states for the current state.
+             */
+            nextStates: Array<State>;
+
+            /**
+             * The specification for the 
+             * assigned route segment for this state.
+             */
+            specification: ICharacterSpecification;
+
+            /**
+             * The associated delegate objects for this 
+             * state, with their parameter names.
+             */
+            delegates: Array<IDelegateParameterNames>;
+
+            /**
+             * A regular expression to match this state to a path.
+             */
+            regex: RegExp;
+
+            /**
+             * The totals for the different segment types 
+             * for this state.
+             */
+            types: ISegmentTypeCount;
+
+            /**
+             * The constructor for a State.
+             */
+            constructor() {
+                this.initialize();
+            }
+
+            /**
+             * Initializes the state with the given specification.
+             * @param {plat.routing.ICharacterSpecification} specification? The character specification for the state.
+             */
+            initialize(specification?: ICharacterSpecification) {
+                this.specification = specification;
+                this.nextStates = [];
+            }
+
+            /**
+             * Adds a new specification to the next states. If the specification 
+             * already exists as a next state a new one won't be used.
+             * @param {plat.routing.ICharacterSpecification} specification? The character specification used to create 
+             * the next state if necessary.
+             */
+            add(specification: ICharacterSpecification): State {
+                var state = this._find(specification);
+
+                if (isObject(state)) {
+                    return state;
+                }
+
+                state = new State();
+                state.initialize(specification);
+
+                this.nextStates.push(state);
+
+                if (specification.repeat) {
+                    state.nextStates.push(state);
+                }
+
+                return state;
+            }
+
+            /**
+             * Finds next states that match the input character. If the character exists 
+             * in the state's specification for valid characters, or if it does not 
+             * exist in the specification for invalid characters, then the state is considered 
+             * a match.
+             * @param {string} char The character with which to match next states.
+             */
+            match(char: string) {
+                var matches: Array<State> = [],
+                    spec: ICharacterSpecification,
+                    chars: string;
+
+                this._someChildren((child) => {
+                    spec = child.specification;
+
+                    // Check for valid characters first
+                    chars = spec.validCharacters;
+                    if (isString(chars) && chars.indexOf(char) > -1) {
+                        matches.push(child);
+                        return;
+                    }
+
+                    // Check for no invalid characters
+                    chars = spec.invalidCharacters;
+                    if (isString(chars) && chars.indexOf(char) === -1) {
+                        matches.push(child);
+                    }
+                });
+
+                return matches;
+            }
+
+            /**
+             * Finds the next state that shares the same specification 
+             * as the input spec.
+             * @param {plat.routing.ICharacterSpecification} spec The character specification used to find 
+             * the next state.
+             */
+            protected _find(spec: ICharacterSpecification): State {
+                var validChars = spec.validCharacters,
+                    invalidChars = spec.invalidCharacters,
+                    s: ICharacterSpecification,
+                    found: State;
+
+                this._someChildren((child) => {
+                    s = child.specification;
+
+                    if (s.validCharacters === validChars &&
+                        s.invalidCharacters === invalidChars) {
+                        found = child;
+                        return true;
+                    }
+                });
+
+                return found;
+            }
+
+            /**
+             * Iterates through the next states and calls the input callback with each state. Acts like 
+             * Utils.some. If the callback returns true, it will break out of the loop.
+             * @param {(child: plat.routing.State) => boolean} iterator The function with which to call for each 
+             * State. Can return true to break out of the loop
+             */
+            protected _someChildren(iterator: (child: State) => boolean): boolean;
+            /**
+             * Iterates through the next states and calls the input callback with each state.
+             * @param {(child: plat.routing.State) => void} iterator The function with which to call for each 
+             * State.
+             */
+            protected _someChildren(iterator: (child: State) => void): void;
+            protected _someChildren(iterator: (child: State) => any) {
+                var nextStates = this.nextStates,
+                    length = nextStates.length;
+
+                for (var i = 0; i < length; ++i) {
+                    if (iterator(nextStates[i]) === true) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        /**
+         * The Type for referencing the '$StateStatic' injectable as a dependency.
+         */
+        export function IStateStatic(): typeof State {
+            return State;
+        }
+
+        plat.register.injectable(__StateStatic, IStateStatic, null, __STATIC);
+
+        /**
+         * The Type for referencing the '$StateInstance' injectable as a dependency.
+         */
+        export function IStateInstance(): State {
+            return new State();
+        }
+
+        plat.register.injectable(__StateInstance, IStateInstance, null, __INSTANCE);
+
+        /**
+         * Contains a delegate and its associated segment names. Used for populating 
+         * the parameters in an IDelegateInfo object.
+         */
+        export interface IDelegateParameterNames {
+            /**
+             * The delegate for a registered route
+             */
+            delegate: any;
+
+            /**
+             * Contains the parameter names for a given delegate
+             */
+            names: Array<string>;
+        }
+
+        /**
+         * Assists in compiling and linking route strings. You can register route strings using 
+         * a defined scheme, and it will compile the routes. When you want to match a route, it will 
+         * find the associated compiled route and link it to the data given with the passed-in route.
+         */
+        export class RouteRecognizer {
+            /**
+             * Reference to the BaseSegment injectable.
+             */
+            $BaseSegmentFactory: typeof BaseSegment = acquire(__BaseSegmentFactory);
+
+            /**
+             * Reference to the State injectable.
+             */
+            $StateStatic: typeof State = acquire(__StateStatic);
+
+            /**
+             * A root state for the recognizer used to add next states.
+             */
+            protected _rootState: State = acquire(__StateInstance);
+
+            /**
+             * All the named routes for this recognizer.
+             */
+            protected _namedRoutes: IObject<INamedRoute> = {};
+
+            /**
+             * A method for registering routes to be identified later. Internally the 
+             * routes will be compiled into a series of states 
+             * which will be used to recognize the route later.
+             * @param {Array<plat.routing.IRouteDelegate>} routes The routes to register.
+             * @param {plat.routing.IRegisterOptions} options? An object containing options for the 
+             * registered route.
+             */
+            register(routes: Array<IRouteDelegate>, options?: IRegisterOptions): void {
+                if (!isArray(routes)) {
+                    return;
+                }
+
+                var finalState = this._rootState,
+                    length = routes.length,
+                    regex: Array<string> = ['^'],
+                    types: ISegmentTypeCount = {
+                        statics: 0,
+                        dynamics: 0,
+                        splats: 0
+                    },
+                    delegates: Array<IDelegateParameterNames> = [],
+                    allSegments: Array<BaseSegment> = [],
+                    segments: Array<BaseSegment>;
+
+                for (var i = 0; i < length; ++i) {
+                    segments = this._parse(routes[i], delegates, types);
+                    allSegments = allSegments.concat(segments);
+                    finalState = this._compile(segments, finalState, regex);
+                }
+
+                finalState = this._finalize(finalState, regex);
+                finalState.delegates = delegates;
+                finalState.regex = new RegExp(regex.join('') + '$');
+                finalState.types = types;
+
+                if (isObject(options) && isString(options.name)) {
+                    this._namedRoutes[options.name] = {
+                        segments: allSegments,
+                        delegates: delegates
+                    };
+                }
+            }
+
+            /**
+             * Searches for a match to the provided path. If a match is found, the path is deconstructed 
+             * to populate a parameters object (if the registered route was a dynamic/splat route).
+             * @param {string} path The path to recognize.
+             * returned.
+             */
+            recognize(path: string) {
+                var isTrailingSlashDropped: boolean = false,
+                    solutions: Array<State> = [];
+
+                path = this._addLeadingSlash(path);
+                isTrailingSlashDropped = this._hasTrailingSlash(path);
+
+                if (isTrailingSlashDropped) {
+                    path = path.substr(0, path.length - 1);
+                }
+
+                solutions = this._filter(this._findStates(path));
+                return this._link(solutions[0], path, isTrailingSlashDropped);
+            }
+
+            /**
+             * Finds a INamedRoute and generates a string 
+             * if it exists. Uses the parameters object to generate dynamic routes.
+             * @param {string} name The named route with which to generate the route string.
+             * @param {plat.IObject<string>} parameters The route parameters, in the case that the 
+             * named route is dynamic.
+             */
+            generate(name: string, parameters?: IObject<string>): string {
+                var route = this._namedRoutes[name],
+                    output = "",
+                    segments: Array<BaseSegment>,
+                    length: number;
+
+                if (!isObject(route)) {
+                    return;
+                }
+
+                segments = route.segments;
+                length = segments.length;
+
+                for (var i = 0; i < length; i++) {
+                    var segment = segments[i];
+
+                    if (segment.type === __BASE_SEGMENT_TYPE) {
+                        continue;
+                    }
+
+                    output += "/";
+                    output += segment.generate(parameters);
+                }
+
+                output = this._addLeadingSlash(output);
+
+                return output;
+            }
+
+            /**
+             * Finds the delegates for an INamedRoute
+             * @param {string} name The named route from which to get the delegates.
+             */
+            delegatesFor(name: string): Array<IDelegateParameterNames> {
+                var namedRoute = this._namedRoutes[name],
+                    delegates: Array<IDelegateParameterNames>;
+
+                if (!isObject(namedRoute)) {
+                    return [];
+                }
+
+                delegates = namedRoute.delegates;
+
+                if (!isArray(delegates)) {
+                    return [];
+                }
+
+                return delegates.slice(0);
+            }
+
+            /**
+             * Determines whether or not an INamedRoute is registered.
+             * @param {string} name The named route to search for.
+             */
+            exists(name: string): boolean {
+                return isObject(this._namedRoutes[name]);
+            }
+
+            /**
+             * Finalizes a compiled route, adding a final state if necessary. If the state is equal to the 
+             * root state for the recognizer, a new state will be created. This is because the root state does not 
+             * represent any route.
+             * @param {plat.routing.State} state The state to finalize.
+             * @param {string} regex The regular expression string built for the compiled routes. Used to recognize 
+             * routes and associate them with the compiled routes.
+             */
+            protected _finalize(state: State, regex: Array<string>) {
+                if (state === this._rootState) {
+                    state = state.add({
+                        validCharacters: '/'
+                    });
+                    regex.push('/');
+                }
+
+                return state;
+            }
+
+            /**
+             * Parses a route into different segments;
+             * @param {plat.routing.IRouteDelegate} route The route options to be parsed.
+             * @param {Array<plat.routing.IDelegateParameterNames>} delegates The delegates and associated names for mapping parameters.
+             * @param {plat.routing.ISegmentTypeCount} types A count of all the segment types in the route.
+             */
+            protected _parse(route: IRouteDelegate, delegates: Array<IDelegateParameterNames>, types: ISegmentTypeCount): Array<BaseSegment> {
+                var names: Array<string> = [];
+
+                delegates.push({
+                    delegate: route.delegate,
+                    names: names
+                });
+
+                return this.$BaseSegmentFactory.parse(route.pattern, names, types);
+            }
+
+            /**
+             * Compiles a list of segments into a series of states.
+             * @param {Array<plat.routing.BaseSegment>} segments The segments to compile.
+             * @param {plat.routing.State} state The initial state used to compile.
+             * @param {Array<string>} regex A regular expression string to build in order to match the segments.
+             */
+            protected _compile(segments: Array<BaseSegment>, state: State, regex: Array<string>): State {
+                var length = segments.length,
+                    compile = this.$StateStatic.compile,
+                    segment: BaseSegment;
+
+                for (var i = 0; i < length; ++i) {
+                    segment = segments[i];
+
+                    if (segment.type === __BASE_SEGMENT_TYPE) {
+                        continue;
+                    }
+
+                    state = state.add({ validCharacters: '/' });
+                    state = compile(segment, state);
+                    regex.push('/' + segment.regex);
+                }
+
+                return state;
+            }
+
+            /**
+             * Adds a leading slash to the passed-in string if necessary.
+             * @param {string} path The path to which to add the slash.
+             */
+            protected _addLeadingSlash(path: string): string {
+                path = decodeURI(path);
+
+                if (path[0] !== '/') {
+                    path = '/' + path;
+                }
+
+                return path;
+            }
+
+            /**
+             * Checks for a trailing slash on a given string.
+             * @param {string} path The path on which to look for a trailing slash.
+             */
+            protected _hasTrailingSlash(path: string): boolean {
+                var length = path.length;
+
+                return length > 1 && path[length - 1] === '/';
+            }
+
+            /**
+             * Finds the compiled states for a given path.
+             * @param {string} path The path with which to look for compiled states.
+             */
+            protected _findStates(path: string): Array<State> {
+                var states: Array<State> = [
+                    this._rootState
+                ],
+                    recognize = this.$StateStatic.recognize,
+                    length = path.length;
+
+                for (var i = 0; i < length; ++i) {
+                    states = recognize(path[i], states);
+
+                    if (states.length === 0) {
+                        break;
+                    }
+                }
+
+                return states;
+            }
+
+            /**
+             * Filters out states with no delegates, and sorts the states.
+             * @param {Array<plat.routing.State>} states The states to filter.
+             */
+            protected _filter(states: Array<State>): Array<State> {
+                var length = states.length,
+                    solutions: Array<State> = [],
+                    state: State;
+
+                for (var i = 0; i < length; ++i) {
+                    state = states[i];
+                    if (isArray(state.delegates)) {
+                        solutions.push(state);
+                    }
+                }
+
+                return this.$StateStatic.sort(solutions);
+            }
+
+            /**
+             * Links a state to a path, producing an IRecognizeResult.
+             * @param {plat.routing.State} states The state to link.
+             * @param {string} path The path to link.
+             * @param {boolean} isTrailingSlashDropped Whether or not the trailing slash is dropped from the path.
+             */
+            protected _link(state: State, path: string, isTrailingSlashDropped: boolean): IRecognizeResult {
+                if (isObject(state) && isArray(state.delegates)) {
+                    if (isTrailingSlashDropped && this._isDynamic(state)) {
+                        path = path + '/';
+                    }
+
+                    return this.$StateStatic.link(state, path);
+                }
+            }
+
+            /**
+             * Determines whether or not the state is dynamic.
+             * @param {plat.routing.State} states The state used to determine if it is dynamic or not.
+             */
+            protected _isDynamic(state: State): boolean {
+                return state.regex.source.slice(-5) === '(.+)$';
+            }
+        }
+
+        /**
+         * The Type for referencing the '$RouteRecognizerInstance' injectable as a dependency.
+         */
+        export function IRouteRecognizerInstance(): RouteRecognizer {
+            return new RouteRecognizer();
+        }
+
+        plat.register.injectable(__RouteRecognizerInstance, IRouteRecognizerInstance, null, __INSTANCE);
+
+        /**
+         * An Array of delegate information for a recognized route.
+         */
+        export interface IRecognizeResult extends Array<IDelegateInfo> { };
+
+        /**
+         * Information for a recognized route segment. Contains the registered 
+         * delegate, as well as a parameters object with key/value pairs for a 
+         * dynamic route segment.
+         */
+        export interface IDelegateInfo {
+            /**
+             * A delegate can be anything. It is an object that will provide functionality 
+             * for a route segment.
+             */
+            delegate: any;
+
+            /**
+             * The parameters for a route segment. If the segment is a dynamic or splat 
+             * segment, then the parameters will be a key/value pair object with the associated 
+             * variables.
+             */
+            parameters: any;
+
+            /**
+             * States whether or not the register delegate is for a dynamic/splat route. If 
+             * this value is true, then the parameters object will be filled with key/value pairs 
+             * associated to the registered route parameters.
+             */
+            isDynamic: boolean;
+        }
+
+        /**
+         * Contains information about a named route. Created when you register a route with an associated 
+         * name.
+         */
+        export interface INamedRoute {
+            /**
+             * All the segments for the named route.
+             */
+            segments: Array<BaseSegment>;
+
+            /**
+             * All the delegates for the named route.
+             */
+            delegates: Array<IDelegateParameterNames>;
+        }
+
+        /**
+         * Used during route registeration to specify a delegate object to associate 
+         * with a route.
+         */
+        export interface IRouteDelegate {
+            /**
+             * The pattern to match for the route, accepts dynamic routes as well as splat routes.
+             * /posts/new
+             * /posts/:id
+             * /posts/*path
+             */
+            pattern: string;
+
+            /**
+             * A delegate object which should provide functionality for the associated pattern. It can be anything, 
+             * it is up to the owner of the registered route to know what to do with the delegate.
+             */
+            delegate: any;
+        }
+
+        /**
+         * Options that you can pass in when registering routes.
+         */
+        export interface IRegisterOptions {
+            /**
+             * Allows you to assign a name to a registered route.
+             */
+            name?: string;
         }
     }
     /**
@@ -26088,18 +27280,24 @@ module plat {
             }
 
             /**
-             * Sets the event listener.
+             * Parses function args and sets the event listener.
              */
             protected _setListener(): void {
-                var event = this.event,
-                    fn = this.attributes[this.attribute];
+                var fn = this.attributes[this.attribute];
 
-                if (isEmpty(event) || isEmpty(fn)) {
+                if (isEmpty(this.event) || isEmpty(fn)) {
                     return;
                 }
 
                 this._parseArgs(fn);
-                this.addEventListener(this.element, event, this._onEvent, false);
+                this._addEventListeners();
+            }
+
+            /**
+             * Adds any and all necessary event listeners.
+             */
+            protected _addEventListeners(): void {
+                this.addEventListener(this.element, this.event, this._onEvent, false);
             }
 
             /**
@@ -26508,6 +27706,82 @@ module plat {
             }
         }
 
+        /**
+         * A SimpleEventControl for the 'input' event. If 
+         * 'input' is not an event, it will simulate an 'input' using other events like 'keydown', 
+         * 'cut', 'paste', etc. Also fires on the 'change' event.
+         */
+        export class React extends SimpleEventControl {
+            /**
+             * Reference to the ICompat injectable.
+             */
+            $Compat: ICompat = acquire(__Compat);
+
+            /**
+             * The event name.
+             */
+            event: string = 'input';
+
+            /**
+             * Adds any and all necessary event listeners.
+             */
+            protected _addEventListeners(): void {
+                var element = this.element,
+                    $compat = this.$Compat,
+                    composing = false,
+                    input = 'input',
+                    timeout: IRemoveListener,
+                    eventListener = (ev: Event) => {
+                        if (composing) {
+                            return;
+                        }
+
+                        this._onEvent(ev);
+                    },
+                    postponedEventListener = (ev: Event) => {
+                        if (isFunction(timeout)) {
+                            return;
+                        }
+
+                        timeout = postpone(() => {
+                            eventListener(ev);
+                            timeout = null;
+                        });
+                    };
+
+                if (isUndefined($compat.ANDROID)) {
+                    this.addEventListener(element, 'compositionstart', () => (composing = true), false);
+                    this.addEventListener(element, 'compositionend', (ev: Event) => {
+                        composing = false;
+                        eventListener(ev);
+                    }, false);
+                }
+
+                this.addEventListener(element, input, eventListener, false);
+                this.addEventListener(element, 'change', eventListener, false);
+
+                if ($compat.hasEvent(input)) {
+                    return;
+                }
+
+                this.addEventListener(element, 'keydown', (ev: KeyboardEvent) => {
+                    var key = ev.keyCode,
+                        codes = KeyCodes;
+
+                    if (key === codes.lwk ||
+                        key === codes.rwk ||
+                        (key >= codes.shift && key <= codes.escape) ||
+                        (key > codes.space && key <= codes.down)) {
+                        return;
+                    }
+
+                    postponedEventListener(ev);
+                }, false);
+                this.addEventListener(element, 'cut', postponedEventListener, false);
+                this.addEventListener(element, 'paste', postponedEventListener, false);
+            }
+        }
+
         register.control(__Tap, Tap);
         register.control(__Blur, Blur);
         register.control(__Change, Change);
@@ -26534,6 +27808,7 @@ module plat {
         register.control(__TrackUp, TrackUp);
         register.control(__TrackDown, TrackDown);
         register.control(__TrackEnd, TrackEnd);
+        register.control(__React, React);
 
         /**
          * A mapping of all keys to their equivalent keyCode.
@@ -27260,7 +28535,7 @@ module plat {
             $document: Document = acquire(__Document);
 
             /**
-             * The priority of Bind is set high to take precede 
+             * The priority of Bind is set high to precede 
              * other controls that may be listening to the same 
              * event.
              */
@@ -27324,12 +28599,14 @@ module plat {
              * Parses and watches the expression being bound to.
              */
             loaded(): void {
-                if (isNull(this.parent) || isNull(this.element)) {
+                var parent = this.parent;
+                if (isNull(parent) || isNull(this.element)) {
                     return;
                 }
 
                 var attr = camelCase(this.type),
-                    expression = this._expression = this.$Parser.parse(this.attributes[attr]);
+                    $parser = this.$Parser,
+                    expression = this._expression = $parser.parse(this.attributes[attr]);
 
                 var identifiers = expression.identifiers;
 
@@ -27345,10 +28622,10 @@ module plat {
                 this._property = split.pop();
 
                 if (split.length > 0) {
-                    this._contextExpression = this.$Parser.parse(split.join('.'));
+                    this._contextExpression = $parser.parse(split.join('.'));
                 } else if (expression.aliases.length > 0) {
                     var alias = expression.aliases[0],
-                        resourceObj = this.parent.findResource(alias);
+                        resourceObj = parent.findResource(alias);
 
                     if (isNull(resourceObj) || resourceObj.resource.type !== __OBSERVABLE_RESOURCE) {
                         return;
@@ -27367,7 +28644,7 @@ module plat {
                 } else {
                     this._contextExpression = {
                         evaluate: () => {
-                            return this.parent.context;
+                            return parent.context;
                         },
                         aliases: [],
                         identifiers: [],
@@ -27406,6 +28683,7 @@ module plat {
                 var element = this.element,
                     $compat = this.$Compat,
                     composing = false,
+                    input = 'input',
                     timeout: IRemoveListener,
                     eventListener = () => {
                         if (composing) {
@@ -27433,8 +28711,8 @@ module plat {
                     }, false);
                 }
 
-                if ($compat.hasEvent('input')) {
-                    this.addEventListener(element, 'input', eventListener, false);
+                if ($compat.hasEvent(input)) {
+                    this.addEventListener(element, input, eventListener, false);
                 } else {
                     this.addEventListener(element, 'keydown', (ev: KeyboardEvent) => {
                         var key = ev.keyCode,
@@ -28464,7 +29742,8 @@ module plat {
          * @param {Array<any>} ...args Any number of arguments to send to all the listeners.
          */
         dispatchEvent(name: string, ...args: any[]): void {
-            App.$EventManagerStatic.dispatch(name, this, App.$EventManagerStatic.DIRECT, args);
+            var $EventManagerStatic: events.IEventManagerStatic = App.$EventManagerStatic || acquire(__EventManagerStatic);
+            $EventManagerStatic.dispatch(name, this, $EventManagerStatic.DIRECT, args);
         }
 
         /**
@@ -28519,7 +29798,8 @@ module plat {
          * the DispatchEvent is fired.
          */
         on(name: string, listener: (ev: events.IDispatchEventInstance, ...args: any[]) => void): IRemoveListener {
-            return App.$EventManagerStatic.on(this.uid, name, listener, this);
+            var $EventManagerStatic: events.IEventManagerStatic = App.$EventManagerStatic || acquire(__EventManagerStatic);
+            return $EventManagerStatic.on(this.uid, name, listener, this);
         }
 
         /**

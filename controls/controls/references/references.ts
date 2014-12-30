@@ -2,15 +2,17 @@
 /*
  * Injectables
  */
-var __Promise = '$Promise',
-    __Compat = '$Compat',
-    __Regex = '$Regex',
-    __Window = '$Window',
-    __Document = '$Document',
-    __ExceptionStatic = '$ExceptionStatic',
-    __Utils = '$Utils',
-    __Animator = '$Animator',
-    __TemplateControlFactory = '$TemplateControlFactory',
+var __prefix = '$',
+    __Promise = __prefix + 'Promise',
+    __Compat = __prefix + 'Compat',
+    __Regex = __prefix + 'Regex',
+    __Window = __prefix + 'Window',
+    __Document = __prefix + 'Document',
+    __ExceptionStatic = __prefix + 'ExceptionStatic',
+    __Utils = __prefix + 'Utils',
+    __Animator = __prefix + 'Animator',
+    __DomEventInstance = __prefix + 'DomEventInstance',
+    __TemplateControlFactory = __prefix + 'TemplateControlFactory',
 
     /**
      * Controls
@@ -142,5 +144,26 @@ module platui {
          * @returns {boolean} Whether or not the user input is valid.
          */
         validate(): boolean;
+    }
+
+    /**
+     * @name IValuePoint
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * Describes a point with x and y coordinates and an associated value.
+     */
+    export interface IValuePoint extends plat.ui.IPoint {
+        /**
+         * @name value
+         * @memberof platui.IValuePoint
+         * @kind property
+         * @access public
+         * 
+         * @description
+         * A value associated with the given point.
+         */
+        value: number;
     }
 }
