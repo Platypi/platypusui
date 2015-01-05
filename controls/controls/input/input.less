@@ -2,11 +2,15 @@
 @import '../global/mixins.less';
 @import 'input.variables.less';
 
+/// ============= Input Constants ============= ///
+
 #Input_Local {
     @input-action-width: 1em;
     @input-left-distance: 0%;
     @input-width: 100% - @input-left-distance;
 }
+
+/// =========== Input Default Styles =========== ///
 
 .plat-input {
     #Input;
@@ -24,7 +28,6 @@
         position: relative;
         width: 100%;
         height: 100%;
-        border-bottom: 1px solid @neutralColorLight;
 
         input {
             .calc(width, '@{input-width} - @{input-action-width}');
@@ -39,6 +42,7 @@
             color: @text-color;
             outline: none;
             border: none;
+            border-bottom: 1px solid @neutralColorLight;
             font: inherit;
             -webkit-appearance: none;
 
@@ -51,6 +55,12 @@
             &::-webkit-inner-spin-button {
                 -webkit-appearance: none;
                 margin: 0;
+            }
+
+/// ============== Input States =============== ///
+
+            &:focus {
+                border-bottom-width: 2px;
             }
         }
 
@@ -118,5 +128,5 @@
                 }
             }
         }
-    }
+    }    
 }
