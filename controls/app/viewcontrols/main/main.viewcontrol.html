@@ -5,13 +5,14 @@
         <input type="checkbox" id="forms" checked />
         <label for="forms"></label>
         <div class="demo-stage">
+            <h4>Inputs</h4>
             <p>Text Input</p>
             <div class="demo-item">
                 <div class="demo-item-inline">
-                    <plat-input type="text" />
+                    <plat-input type="text" placeholder="First Name" />
                 </div>
                 <div class="demo-item-inline">
-                    <plat-input type="text" placeholder="First Name" class="input-box" />
+                    <plat-input type="text" placeholder="Last Name" />
                 </div>
             </div>
             <p>Password Input</p>
@@ -24,6 +25,44 @@
             <div class="demo-item">
                 <div class="demo-item-inline">
                     <plat-input type="email" placeholder="Email"></plat-input>
+                </div>
+            </div>
+
+            <h4>Input Groups</h4>
+            <p>Combines input-group with the grid system.</p>
+            <div class="demo-item">
+                <div class="input-group-container">
+                    <div class="input-group">
+                        <div class="row">
+                            <div class="col-dsk-6">
+                                <plat-input type="text" placeholder="First Name"></plat-input>
+                            </div>
+                            <div class="col-dsk-6">
+                                <plat-input type="text" placeholder="Last Name"></plat-input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-dsk-12">
+                                <plat-input type="email" placeholder="Email"></plat-input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-dsk-12">
+                                <plat-input type="text" placeholder="Street Address"></plat-input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-dsk-6">
+                                <plat-input type="text" placeholder="City"></plat-input>
+                            </div>
+                            <div class="col-dsk-2">
+                                <plat-input type="text" placeholder="State"></plat-input>
+                            </div>
+                            <div class="col-dsk-4">
+                                <plat-input type="text" placeholder="Zip"></plat-input>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -140,43 +179,6 @@
         </div>
     </div>
 
-     <!-- Navbar -->
-    <div class="demo-area">
-        <h2 class="demo-heading">Navbar</h2>
-        <input type="checkbox" id="navbar" checked>
-        <label for="navbar"></label>
-        <div class="demo-stage">
-            <div class="demo-item-inline">
-                <div class="device iPhone5">
-                    <plat-navbar class="navbar-absolute navbar-top">
-                        <div class="navbar-action">Back</div>
-                        <div class="navbar-title">
-                            <plat-input type="search" placeholder="search"></plat-input>
-                        </div>
-                        <div class="navbar-action">Option</div>
-                    </plat-navbar>
-                    <p>iPhone 5</p>
-                </div>
-            </div>
-            <div class="demo-item-inline">
-                <div class="device nexus7">
-                    <plat-navbar class="navbar-absolute navbar-top">
-                        <div class="navbar-action">
-                            <span>Back</span>
-                        </div>
-                        <div class="navbar-title">
-                            <plat-input type="search" placeholder="search"></plat-input>
-                        </div>
-                        <div class="navbar-action">
-                            <span>Option</span>
-                        </div>
-                    </plat-navbar>
-                    <p>Nexus 7</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Buttons -->
     <div class="demo-area">
         <h2 class="demo-heading">Buttons</h2>
@@ -260,7 +262,7 @@
         <h2 class="demo-heading">Grid</h2>
         <input type="checkbox" id="grid" />
         <label for="grid"></label>
-        <div class="demo-stage">
+        <div class="demo-stage grid-demo">
             <h3>Desktop</h3>
             <div class="row">
                 <div class="col-dsk-12">

@@ -22,7 +22,6 @@ var __prefix = '$',
     __Drawer = __Plat + 'drawer',
     __DrawerController = __Plat + 'drawer-controller',
     __Modal = __Plat + 'modal',
-    __Navbar = __Plat + 'navbar',
     __ProgressBar = __Plat + 'progress',
     __ProgressRing = __Plat + 'ring',
     __Radio = __Plat + 'radio',
@@ -49,7 +48,6 @@ var __prefix = '$',
      * Animations
      */
     __Transition = __Plat + 'transition',
-    __NavbarActionPulse = __Plat + 'navbar-action-pulse',
 
     /**
      * Events
