@@ -1,4 +1,29 @@
 <div class="container">
+    <!-- Progress Bars -->
+    <div class="demo-area">
+        <h2 class="demo-heading">Progress Bars</h2>
+        <input type="checkbox" id="progress" checked />
+        <label for="progress"></label>
+        <div class="demo-stage">
+            <div class="demo-item">
+                <plat-progress plat-context="progress"></plat-progress>
+            </div>
+            <div class="demo-item">
+                <plat-progress plat-context="progress" class="progress-primary"></plat-progress>
+            </div>
+            <div class="demo-item">
+                <plat-progress plat-context="progress" class="progress-secondary"></plat-progress>
+            </div>
+            <div class="demo-item">
+                <plat-progress plat-context="progress" class="progress-success"></plat-progress>
+            </div>
+            <div class="demo-item">
+                <plat-progress plat-context="progress" class="progress-caution"></plat-progress>
+            </div>
+            <plat-button plat-tap="bar">Make Progress!</plat-button>
+        </div>
+    </div>
+
     <!-- Form/Input -->
     <div class="demo-area">
         <h2 class="demo-heading">Forms</h2>
@@ -222,18 +247,6 @@
                     <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Paste</plat-button>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Progress Bars -->
-    <div class="demo-area">
-        <h2 class="demo-heading">Progress Bars</h2>
-        <input type="checkbox" id="progress" />
-        <label for="progress"></label>
-        <div class="demo-stage">
-            <plat-progress plat-context="progress" style="width: 400px;"></plat-progress>
-            <br />
-            <button plat-tap="bar">Progress!</button>
         </div>
     </div>
 
