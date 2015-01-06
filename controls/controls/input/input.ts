@@ -487,10 +487,6 @@
          * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any): void {
-            if (newValue === oldValue) {
-                return;
-            }
-
             if (!this._loaded) {
                 this._preloadedValue = newValue;
                 return;

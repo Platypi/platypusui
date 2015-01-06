@@ -363,7 +363,7 @@
                 bindValue = this.value,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
                 max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
-                value = isNumber(bindValue) ? bindValue : isNumber(optionValue) ? optionValue : min,
+                value = isNumber(optionValue) ? optionValue : isNumber(bindValue) ? bindValue : min,
                 className = __Plat + orientation;
 
             this._knob = <HTMLElement>slider.firstElementChild;
@@ -402,13 +402,12 @@
          * The function called when the {@link platui.Slider|Slider's} bindable property is set externally.
          * 
          * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any): void {
-            if (newValue === this.value) {
-                return;
-            } else if (!this.$utils.isNumber(newValue)) {
+        setProperty(newValue: any, oldValue?: any): void {
+            if (!this.$utils.isNumber(newValue)) {
                 newValue = this.min;
             }
 

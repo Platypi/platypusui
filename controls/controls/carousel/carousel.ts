@@ -1,18 +1,17 @@
 ﻿module platui {
-    
     /**
      * @name Carousel
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.TemplateControl}
+     * @extends {plat.ui.BindablePropertyControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that acts as a HTML template carousel.
+     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that acts as a HTML template carousel 
+     * and can bind the selected index to a value.
      */
-    export class Carousel extends plat.ui.TemplateControl implements IUIControl {
-        
+    export class Carousel extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
          * @name $utils
          * @memberof platui.Carousel
@@ -25,7 +24,7 @@
          * Reference to the {@link plat.IUtils|IUtils} injectable.
          */
         $utils: plat.IUtils = plat.acquire(__Utils);
-        
+
         /**
          * @name $compat
          * @memberof platui.Carousel
@@ -38,7 +37,7 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
-        
+
         /**
          * @name $document
          * @memberof platui.Carousel
@@ -51,7 +50,7 @@
          * Reference to the Document injectable.
          */
         $document: Document = plat.acquire(__Document);
-        
+
         /**
          * @name $window
          * @memberof platui.Carousel
@@ -64,7 +63,7 @@
          * Reference to the Window injectable.
          */
         $window: Window = plat.acquire(__Window);
-        
+
         /**
          * @name $animator
          * @memberof platui.Carousel
@@ -129,6 +128,22 @@
          * A Promise that fulfills when the items are loaded.
          */
         itemsLoaded: plat.async.IThenable<void>;
+
+        /**
+         * @name index
+         * @memberof platui.Carousel
+         * @kind property
+         * @access public
+         * @readonly
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current index of the {@link platui.Carousel|Carousel}.
+         */
+        get index(): number {
+            return this._index;
+        }
 
         /**
          * @name _orientation
@@ -426,13 +441,48 @@
                 index = options.index;
 
             this.dom.addClass(this.element, __Plat + orientation);
-            index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : 0;
+            index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
+            // reset index in case Bind is setting the value
+            this._index = 0;
             this._onLoad = () => {
                 this.goToIndex(index);
                 this._addEventListeners(orientation);
             };
+
             this._init();
             this._loaded = true;
+        }
+
+        /**
+         * @name setProperty
+         * @memberof platui.Toggle
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
+         * @param {boolean} firstSet? A boolean value indicating whether this is the first time 
+         * the value is being set.
+         * 
+         * @returns {void}
+         */
+        setProperty(newValue: any, oldValue?: any, firstSet?: boolean): void {
+            if (!this.$utils.isNumber(newValue)) {
+                newValue = Number(newValue);
+                if (!this.$utils.isNumber(newValue)) {
+                    return;
+                }
+            }
+
+            if (this._loaded) {
+                this.goToIndex(newValue);
+                return;
+            }
+
+            this._index = newValue;
         }
 
         /**
@@ -447,15 +497,16 @@
          * @returns {void}
          */
         goToNext(): void {
-            if (this._index >= this.context.length - 1) {
+            var index = this._index;
+            if (index >= this.context.length - 1) {
                 return;
             }
-
-            this._index++;
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
             this._initiateAnimation({ properties: animationOptions });
+
+            this.propertyChanged(++this._index, index);
         }
 
         /**
@@ -470,15 +521,16 @@
          * @returns {void}
          */
         goToPrevious(): void {
-            if (this._index <= 0) {
+            var index = this._index;
+            if (index <= 0) {
                 return;
             }
-
-            this._index--;
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(this._intervalOffset);
             this._initiateAnimation({ properties: animationOptions });
+
+            this.propertyChanged(--this._index, index);
         }
 
         /**
@@ -496,30 +548,32 @@
          * @returns {void}
          */
         goToIndex(index: number): void {
-            if (index === this._index || index < 0 || index >= this.context.length) {
+            var oldIndex = this._index;
+            if (index === oldIndex || index < 0 || index >= this.context.length) {
                 return;
             }
 
             var animationOptions: plat.IObject<string> = {},
                 interval = (this._index - index) * this._intervalOffset;
 
-            this._index = index;
             animationOptions[this._transform] = this._calculateStaticTranslation(interval);
             this._initiateAnimation({ properties: animationOptions });
+
+            this.propertyChanged((this._index = index), oldIndex);
         }
 
         /**
          * @name reset
          * @memberof platui.Carousel
          * @kind function
-         * @access public
+         * @access protected
          * 
          * @description
          * Resets the position of the {@link platui.Carousel|Carousel} to its current state.
          * 
          * @returns {void}
          */
-        reset(): void {
+        protected _reset(): void {
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
@@ -575,9 +629,10 @@
                 this._setPosition();
                 if (!this._intervalOffset) {
                     this._setOffsetWithClone();
-                } else {
-                    this._onLoad();
+                    return;
                 }
+
+                this._onLoad();
             }).catch(() => {
                     var Exception = plat.acquire(__ExceptionStatic);
                     Exception.warn('Error processing ' + this.type + '. Please ensure you\'re context is correct.');
@@ -624,6 +679,12 @@
             this.addEventListener(element, __$touchstart, this._touchStart, false);
             this.addEventListener(element, __$trackend, touchEnd, false);
             this.addEventListener(element, __$touchend, touchEnd, false);
+            this.addEventListener(this.$window, 'resize', () => {
+                this._setPosition();
+                if (!this._intervalOffset) {
+                    this._setOffsetWithClone();
+                }
+            }, false);
         }
 
         /**
@@ -699,7 +760,7 @@
                 }
             }
 
-            this.reset();
+            this._reset();
         }
 
         /**
@@ -801,17 +862,19 @@
          * 
          * @param {HTMLElement} element? The element to base the length off of.
          * 
-         * @returns {number} The interval length.
+         * @returns {void}
          */
-        protected _setPosition(element?: HTMLElement): number {
+        protected _setPosition(element?: HTMLElement): void {
             element = element || <HTMLElement>this.element.firstElementChild;
             switch (this._orientation) {
                 case 'vertical':
                     this._positionProperty = 'top';
-                    return (this._intervalOffset = element.offsetHeight);
+                    this._intervalOffset = element.offsetHeight;
+                    break;
                 default:
                     this._positionProperty = 'left';
-                    return (this._intervalOffset = element.offsetWidth);
+                    this._intervalOffset = element.offsetWidth;
+                    break;
             }
         }
 
