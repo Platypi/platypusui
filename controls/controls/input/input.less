@@ -5,9 +5,7 @@
 /// ============= Input Constants ============= ///
 
 #Input_Local {
-    @input-action-width: 1em;
-    @input-left-distance: 0%;
-    @input-width: 100% - @input-left-distance;
+        
 }
 
 /// =========== Input Default Styles =========== ///
@@ -30,11 +28,10 @@
         height: 100%;
 
         input {
-            .calc(width, '@{input-width} - @{input-action-width}');
             .box-sizing(border-box);
             position: absolute;
             height: 100%;
-            left: @input-left-distance;
+            width: 100%;
             bottom: 0;
             padding: 0;
             vertical-align: bottom;
