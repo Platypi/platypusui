@@ -1,8 +1,21 @@
 <div class="container">
+    <!-- Modal -->
+    <div class="demo-area">
+        <h2 class="demo-heading">Modal</h2>
+        <input type="checkbox" id="modal" checked />
+        <label for="modal"></label>
+        <div class="demo-stage">
+            <button plat-tap="__toggle">Show Modal!</button>
+        </div>
+    </div>
+    <plat-modal plat-name="modal" plat-options="{ transition: 'right' }" plat-bind="showModal" class="modal-popover">
+        <button plat-tap="__toggle">Close</button>
+    </plat-modal>
+
     <!-- Progress Bars -->
     <div class="demo-area">
         <h2 class="demo-heading">Progress Bars</h2>
-        <input type="checkbox" id="progress" checked />
+        <input type="checkbox" id="progress" />
         <label for="progress"></label>
         <div class="demo-stage">
             <div class="demo-item">
@@ -27,7 +40,7 @@
     <!-- Form/Input -->
     <div class="demo-area">
         <h2 class="demo-heading">Forms</h2>
-        <input type="checkbox" id="forms" checked />
+        <input type="checkbox" id="forms" />
         <label for="forms"></label>
         <div class="demo-stage">
             <h4>Inputs</h4>
@@ -504,26 +517,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal -->
-    <div class="demo-area">
-        <h2 class="demo-heading">Modal</h2>
-        <input type="checkbox" id="modal" />
-        <label for="modal"></label>
-        <div class="demo-stage">
-            <button plat-tap="__toggle">Show Modal!</button>
-        </div>
-    </div>
-    <plat-modal plat-name="modal" plat-options="{ transition: 'right' }" plat-bind="show">
-        <div style="background-color: red;">
-            header
-        </div>
-        <div>
-            <div class="inner-container">
-                <button plat-tap="__toggle">Hello Modo!</button>
-            </div>
-        </div>
-    </plat-modal>
 
     <!-- Carousel -->
     <div class="demo-area">

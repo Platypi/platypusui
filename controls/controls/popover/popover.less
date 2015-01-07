@@ -1,0 +1,62 @@
+@import '../global/variables.less';
+@import '../global/mixins.less';
+@import '../modal/modal.variables.less';
+@import './popover.variables.less';
+
+.plat-modal {
+    #Modal;
+    #Popover;
+    &.modal-popover {
+        background-color: rgba(0,0,0,0.6);
+        .box-sizing(content-box);
+
+        .plat-modal-container {
+            background-color: @white;
+            margin: 0 auto;
+            width: 80%;
+            max-width: 30em;
+            height: 20em;
+            max-height: 40%;
+            .border-radius(8px);
+            
+            &.plat-modal-transition {
+                
+                &.fade {}
+
+                &.plat-up, &.plat-down {
+                    left: 0;
+                    right: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+
+                &.plat-up {
+                    .transition(@down-transition);
+                    top: 100%;
+                    
+                    &.plat-activate {
+                        top: @popover-top;
+                    }
+                }
+
+                &.plat-down {
+                    &.plat-activate {
+                        top: @popover-top;
+                    }
+                }
+
+                &.plat-left,
+                &.plat-right {
+                    top: @popover-top;
+
+                    &.plat-activate {
+                        left: 0;
+                        right: 0;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                }
+            }
+        }
+    }
+}

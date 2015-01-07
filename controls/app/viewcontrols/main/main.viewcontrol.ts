@@ -28,7 +28,7 @@ module app {
             test3: '',
             lower: 10,
             upper: 90,
-            show: false,
+            showModal: false,
             carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }]
         };
 
@@ -57,7 +57,7 @@ module app {
         }
 
         __toggle() {
-            this.context.show = !this.context.show;
+            this.context.showModal = !this.context.showModal;
         }
     }
 
