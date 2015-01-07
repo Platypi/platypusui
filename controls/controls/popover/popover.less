@@ -8,21 +8,26 @@
     #Popover;
     &.modal-popover {
         background-color: rgba(0,0,0,0.6);
-        .box-sizing(content-box);
 
         .plat-modal-container {
-            background-color: @white;
             margin: 0 auto;
             width: 80%;
             max-width: 30em;
-            height: 20em;
-            max-height: 40%;
+            height: auto;
+            background-color: @white;
+            color: @textGrey;
             .border-radius(8px);
             
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade {
+                top: 20%;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
             &.plat-modal-transition {
-                
-                &.fade {}
-
                 &.plat-up, &.plat-down {
                     left: 0;
                     right: 0;
@@ -56,6 +61,25 @@
                         margin-right: auto;
                     }
                 }
+            }
+
+            & .popover-title {
+                padding: 1em 2em;
+                border-bottom: 1px solid darken(@neutralColorLight, 4%);
+                text-align: center;
+                font-size: 1.1em;
+            }
+
+            & .popover-body {
+                padding: 1em 2em;
+                text-align: center;
+                background-color: @neutralColorLight;
+            }
+
+            & .popover-action {
+                text-align: center;
+                padding: 0 2em 1em;
+                background-color: @neutralColorLight;
             }
         }
     }

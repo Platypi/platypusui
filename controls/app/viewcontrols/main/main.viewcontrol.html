@@ -8,8 +8,15 @@
             <button plat-tap="__toggle">Show Modal!</button>
         </div>
     </div>
-    <plat-modal plat-name="modal" plat-options="{ transition: 'right' }" plat-bind="showModal" class="modal-popover">
-        <button plat-tap="__toggle">Close</button>
+    <plat-modal plat-name="modal" plat-options="{ transition: 'fade' }" plat-bind="showModal" class="modal-popover">
+        <div class="popover-title">Warning</div>
+        <div class="popover-body">
+            <p>We suggest checking yourself before you wreck yourself.</p>
+        </div>
+        <div class="popover-action">
+            <plat-button class="button-primary" plat-tap="__toggle">Continue</plat-button>
+            <plat-button class="button-danger" plat-tap="__toggle">Cancel</plat-button>
+        </div>
     </plat-modal>
 
     <!-- Progress Bars -->
