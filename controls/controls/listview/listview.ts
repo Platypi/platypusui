@@ -88,30 +88,17 @@
         options: plat.observable.IObservableProperty<IListviewOptions>;
 
         /**
-         * @name templates
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IObject<Node>}
-         * 
-         * @description
-         * An object containing the {@link platui.Listview|Listview's} defined templates.
-         */
-        templates: plat.IObject<Node> = {};
-
-        /**
-         * @name _container
+         * @name _templates
          * @memberof platui.Listview
          * @kind property
          * @access protected
          * 
-         * @type {HTMLElement}
+         * @type {plat.IObject<boolean>}
          * 
          * @description
-         * The control's container element.
+         * An object containing the node names of the {@link platui.Listview|Listview's} defined templates.
          */
-        protected _container: HTMLElement;
+        protected _templates: plat.IObject<boolean> = {};
 
         /**
          * @name _orientation
@@ -277,7 +264,6 @@
             var optionObj = this.options || <plat.observable.IObservableProperty<IListviewOptions>>{},
                 options = optionObj.value || <IListviewOptions>{},
                 $utils = this.$utils,
-                templates = this.templates,
                 orientation = this._orientation = options.orientation || 'vertical',
                 itemTemplate = options.itemTemplate,
                 $exception: plat.IExceptionStatic;
@@ -289,7 +275,7 @@
                 $exception.warn('No item template or item template selector specified for ' + this.type + '.', $exception.TEMPLATE);
             }
 
-            this._determineItemTemplate(itemTemplate);
+            this._determineItemTemplate($utils.camelCase(itemTemplate));
 
             if (!$utils.isArray(this.context)) {
                 if (!$utils.isNull(this.context)) {
@@ -322,7 +308,7 @@
                 bindableTemplates = this.bindableTemplates,
                 container = this._container;
 
-            //this.dom.clearNode(container);
+            this.dom.clearNode(container);
             if (!$utils.isNumber(index)) {
                 index = 0;
             }
@@ -354,10 +340,9 @@
          * @returns {void}
          */
         protected _determineItemTemplate(itemTemplate: string): void {
-            var $utils = this.$utils,
-                templates = this.templates;
+            var $utils = this.$utils;
 
-            if ($utils.isNode(templates[itemTemplate])) {
+            if (this._templates[itemTemplate] === true) {
                 this._itemTemplate = itemTemplate;
                 return;
             }
@@ -384,7 +369,8 @@
          * @description
          * Binds the item to a template at that index.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<DocumentFragment>} A promise that resolves with 
+         * the a DocumentFragment that represents an item.
          */
         protected _bindItem(index: number): plat.async.IThenable<DocumentFragment> {
             return this.bindableTemplates.bind(this._itemTemplate, index, this._getAliases(index));
@@ -406,7 +392,7 @@
         protected _parseTemplates(node: Node): void {
             var $utils = this.$utils,
                 $document = this.$document,
-                templates = this.templates,
+                templates = this._templates,
                 bindableTemplates = this.bindableTemplates,
                 slice = Array.prototype.slice,
                 childNodes: Array<Node> = slice.call(node.childNodes),
@@ -427,7 +413,7 @@
 
                     templateName = $utils.camelCase(childNode.nodeName.toLowerCase());
                     bindableTemplates.add(templateName, fragment);
-                    templates[templateName] = fragment;
+                    templates[templateName] = true;
                 }
             }
         }

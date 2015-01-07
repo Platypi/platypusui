@@ -9,6 +9,7 @@
      * The entry point into the platypus library.
      */
 module plat {
+    'use strict;'
     /* tslint:disable:no-unused-variable */
     /*
      * Injectables
@@ -71,6 +72,7 @@ module plat {
         __StateStatic = __prefix + 'StateStatic',
         __StateInstance = __prefix + 'StateInstance',
         __RouteRecognizerInstance = __prefix + 'RouteRecognizerInstance',
+        __InjectorStatic = __prefix + 'InjectorStatic',
     
         /**
          * Controls
@@ -1238,6 +1240,8 @@ module plat {
      * Holds all the classes and interfaces related to registering components for platypus.
      */
     export module register {
+
+
         /**
          * Generic function for creating an Injector and 
          * adding it to an IInjectorObject.
@@ -1259,9 +1263,13 @@ module plat {
                 staticInjectors[name] = injector;
             }
 
+            if (!isNull(Type)) {
+                Type.__injectorToken = name;
+            }
+
             return register;
         }
-    
+
         /**
          * Registers the IApp with the framework. The framework will instantiate the IApp 
          * when needed, and wire up the Application Lifecycle events. The dependencies array corresponds to injectables that will be 
@@ -1277,7 +1285,7 @@ module plat {
             $appStatic.registerApp(app);
             return register;
         }
-    
+
         /**
          * Registers an IControl with the framework. The framework will instantiate the 
          * IControl when needed. The dependencies array corresponds to injectables that 
@@ -1296,7 +1304,7 @@ module plat {
 
             return add(controlInjectors, name, Type, dependencies, isStatic ? __STATIC : undefined);
         }
-    
+
         /**
          * Registers an IViewControl with the framework. The framework will 
          * instantiate the control when needed. The dependencies array corresponds to injectables that will be 
@@ -1339,7 +1347,7 @@ module plat {
 
             return ret;
         }
-    
+
         /**
          * Registers an injectable with the framework. Injectables are objects that can be used for dependency injection into other objects.
          * The dependencies array corresponds to injectables that will be passed into the Constructor of the injectable.
@@ -1386,7 +1394,7 @@ module plat {
 
             return add(injectableInjectors, name, Type, dependencies, injectableType, false);
         }
- 
+
         /**
          * Contains constants for injectable type.
          */
@@ -1397,28 +1405,28 @@ module plat {
                  * a static constructor and load dependencies into static class properties.
                  */
                 export var STATIC = __STATIC;
-        
+
                 /**
                  * Singleton injectables will contain a constructor. A Singleton injectable will be instantiated once and 
                  * used throughout the application lifetime. It will be instantiated when another component is injected 
                  * and lists it as a dependency.
                  */
                 export var SINGLETON = __SINGLETON;
-        
+
                 /**
                  * Instance injectables will contain a constructor. An Instance injectable will be instantiated multiple times 
                  * throughout the application lifetime. It will be instantiated whenever another component is injected 
                  * and lists it as a dependency.
                  */
                 export var INSTANCE = __INSTANCE;
-        
+
                 /**
                  * Factory injectables will not contain a constructor but will instead contain a method for obtaining an 
                  * instance, such as getInstance() or create(). It will be injected before the application loads, similar to a Static 
                  * injectable.
                  */
                 export var FACTORY = __FACTORY;
-        
+
                 /**
                  * Class injectables are essentially a direct reference to a class's constructor. It may contain both 
                  * static and instance methods as well as a constructor for creating a new instance.
@@ -1467,7 +1475,7 @@ module plat {
             return add((animationType === __JS ? jsAnimationInjectors : animationInjectors),
                 name, Type, dependencies, register.injectable.INSTANCE);
         }
-    
+
         /**
          * Contains constants for animation type.
          */
@@ -1477,7 +1485,7 @@ module plat {
                  * A CSS animation.
                  */
                 export var CSS = __CSS;
-        
+
                 /**
                  * A JavaScript animation.
                  */
@@ -1495,6 +1503,8 @@ module plat {
      * Holds classes and interfaces related to dependency injection components in platypus.
      */
     export module dependency {
+
+
         /**
          * The Injector class is used for dependency injection. You can create an injector object,
          * specify dependencies and a constructor for your component. When the injector object is
@@ -1609,6 +1619,10 @@ module plat {
                     return __Document;
                 }
 
+                if (isString(dependency.__injectorToken)) {
+                    dependency = dependency.__injectorToken;
+                }
+
                 var find: (injectors: IInjectorObject<any>) => IInjector<any> =
                     Injector.__findInjector.bind(Injector, dependency),
                     injector = find(injectableInjectors) ||
@@ -1657,6 +1671,10 @@ module plat {
                     return (<any>injectableInjectors).$Document;
                 }
 
+                if (isString(Constructor.__injectorToken)) {
+                    Constructor = Constructor.__injectorToken;
+                }
+
                 var find: (injectors: IInjectorObject<any>) => IInjector<any> =
                     Injector.__findInjector.bind(Injector, Constructor),
                     injector = find(injectableInjectors) ||
@@ -1675,7 +1693,11 @@ module plat {
              * @param {Function} Constructor The Function
              */
             private static __findInjector(Constructor: any, injectors: IInjectorObject<any>) {
-                if (isString(Constructor)) {
+                if (Constructor === Injector || Constructor === __InjectorStatic) {
+                    var ret = Injector.__wrap(Injector);
+                    ret.name = __InjectorStatic;
+                    return ret;
+                } else if (isNull(Constructor) || isString(Constructor)) {
                     return injectors[Constructor] || Injector.__noop();
                 }
 
@@ -1853,14 +1875,11 @@ module plat {
              * @param {any} value The value to wrap
              */
             protected _wrapInjector(value: any): IInjector<any> {
-                var name = this.name;
-                return injectableInjectors[name] = <IInjector<any>>{
-                    type: this.type,
-                    name: name,
-                    __dependencies: this.__dependencies,
-                    Constructor: this.Constructor,
-                    inject: () => <T>value
+                this.inject = () => {
+                    return <T>value;
                 };
+
+                return this;
             }
         }
 
@@ -1934,7 +1953,7 @@ module plat {
                  * An IInjectorObject of animations. Can be either CSS or JS implementations.
                  */
                 export var animation = animationInjectors;
-        
+
                 /**
                  * An IInjectorObject  of animations. Should only contain JS implementations.
                  */
@@ -21127,6 +21146,11 @@ module plat {
                 };
 
                 /**
+                 * The container to which items will be added.
+                 */
+                protected _container: HTMLElement;
+
+                /**
                  * The node length of each item's childNodes (innerHTML). 
                  * For the ForEach it should be a 
                  * single constant number.
@@ -21163,6 +21187,7 @@ module plat {
                 setTemplate(): void {
                     var childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
                     this.bindableTemplates.add('item', childNodes);
+                    this._container = this.element;
                 }
 
                 /**
@@ -21306,7 +21331,7 @@ module plat {
                  * @param {Array<Node>} items The Array of items to add.
                  */
                 protected _appendItems(items: Array<Node>): void {
-                    appendChildren(items, this.element);
+                    appendChildren(items, this._container);
                 }
 
                 /**
@@ -21323,7 +21348,7 @@ module plat {
                         childNodes: Array<Element> = Array.prototype.slice.call(item.childNodes),
                         childNode: Element;
 
-                    insertBefore(this.element, item);
+                    insertBefore(this._container, item);
 
                     var currentAnimations = this._currentAnimations;
                     while (childNodes.length > 0) {
@@ -21362,6 +21387,7 @@ module plat {
 
                 /**
                  * Binds the item to a template at that index.
+                 * the a DocumentFragment that represents an item.
                  */
                 protected _bindItem(index: number): async.IThenable<DocumentFragment> {
                     return this.bindableTemplates.bind('item', index, this._getAliases(index));
@@ -21616,8 +21642,8 @@ module plat {
                  * @param {boolean} clone Whether to clone the items and animate the clones or simply animate the items itself.
                  */
                 private __handleAnimation(startNode: number, endNode: number, key: string, clone: boolean): async.IThenable<void> {
-                    var element = this.element,
-                        nodes: Array<Node> = Array.prototype.slice.call(element.childNodes, startNode, endNode),
+                    var container = this._container,
+                        nodes: Array<Node> = Array.prototype.slice.call(container.childNodes, startNode, endNode),
                         node: Node,
                         firstNode = nodes[0],
                         $animator = this.$Animator,
@@ -21631,11 +21657,11 @@ module plat {
                         if (node.nodeType === Node.ELEMENT_NODE) {
                             if (clone) {
                                 node = node.cloneNode(true);
-                                element.insertBefore(node, firstNode);
+                                container.insertBefore(node, firstNode);
                                 // bind callback to current cloned node due to loop
                                 callback = function () {
                                     currentAnimations.shift();
-                                    element.removeChild(this);
+                                    container.removeChild(this);
                                 }.bind(node);
                             } else {
                                 callback = () => {
@@ -25731,6 +25757,8 @@ module plat {
             names: Array<string>;
         }
 
+
+
         /**
          * Assists in compiling and linking route strings. You can register route strings using 
          * a defined scheme, and it will compile the routes. When you want to match a route, it will 
@@ -25831,7 +25859,7 @@ module plat {
              */
             generate(name: string, parameters?: IObject<string>): string {
                 var route = this._namedRoutes[name],
-                    output = "",
+                    output = '',
                     segments: Array<BaseSegment>,
                     length: number;
 
@@ -25849,7 +25877,7 @@ module plat {
                         continue;
                     }
 
-                    output += "/";
+                    output += '/';
                     output += segment.generate(parameters);
                 }
 
@@ -27258,11 +27286,6 @@ module plat {
             protected _expression: Array<string> = [];
 
             /**
-             * The found function up the control's parent chain denoted by the attribute value.
-             */
-            protected _fn: IControlProperty;
-
-            /**
              * An array of the aliases used in the expression.
              */
             protected _aliases: Array<string> = [];
@@ -27323,7 +27346,7 @@ module plat {
                 }
 
                 if (listenerStr[0] !== '@') {
-                    listener = this._fn || (this._fn = this.findProperty(listenerStr));
+                    listener = this.findProperty(listenerStr);
 
                     if (isNull(listener)) {
                         return {
