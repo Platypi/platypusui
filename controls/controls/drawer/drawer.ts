@@ -38,6 +38,20 @@
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         /**
+         * @name storedProperties
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {{ position?: string; zIndex?: string; parentEl?: HTMLElement; parentOverflow?: string }}
+         * 
+         * @description
+         * An object to hold the stored style and element properties so that we can reference and reset them 
+         * when all {@link platui.DrawerController|Drawer Controllers} are disposed.
+         */
+        storedProperties: { position?: string; zIndex?: string; parentEl?: HTMLElement; parentOverflow?: string; };
+
+        /**
          * @name _currentPosition
          * @memberof platui.Drawer
          * @kind property
@@ -347,10 +361,11 @@
          * The function called when the bindable property is set externally.
          * 
          * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any): void {
+        setProperty(newValue: any, oldValue?: any): void {
             if (!this.loaded) {
                 this._preloadedValue = newValue;
                 return;
@@ -917,20 +932,6 @@
         protected _rootElement: HTMLElement;
 
         /**
-         * @name _rootElementStyle
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {{ position?: string; zIndex?: string; }}
-         * 
-         * @description
-         * An object to hold the _rootElement style so that we can reset it 
-         * when the {@link platui.DrawerController|Drawer Controller} is disposed.
-         */
-        protected _rootElementStyle: { position?: string; zIndex?: string; };
-
-        /**
          * @name _type
          * @memberof platui.DrawerController
          * @kind property
@@ -1115,7 +1116,7 @@
                 return;
             }
 
-            var storedStyle = this._rootElementStyle,
+            var storedStyle = drawer.storedProperties,
                 rootElement = this._rootElement,
                 disposeRootElement = true;
 
@@ -1136,8 +1137,14 @@
                 this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
 
                 if ($utils.isObject(storedStyle)) {
-                    var rootElementStyle = this._rootElement.style;
-                    $utils.extend(rootElementStyle, storedStyle);
+                    var rootElementStyle = rootElement.style,
+                        parent = rootElement.parentElement;
+
+                    rootElementStyle.position = storedStyle.position;
+                    rootElementStyle.zIndex = storedStyle.zIndex;
+                    if ($utils.isNode(parent)) {
+                        parent.style.overflow = storedStyle.parentOverflow;
+                    }
                 }
             }, 25);
 
@@ -1315,10 +1322,11 @@
          * The function called when the bindable property is set externally.
          * 
          * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue? The old value of the bindable property.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any): void {
+        setProperty(newValue: any, oldValue?: any): void {
             if (!this.loaded) {
                 this._preloadedValue = newValue;
                 return;
@@ -2046,7 +2054,7 @@
                 return false;
             }
 
-            var rootElement = this._rootElement = this._getRootElement(this.root);
+            var rootElement = this._rootElement = this._getRootElement();
             if (isNull(rootElement)) {
                 Exception = plat.acquire(plat.IExceptionStatic);
                 Exception.warn('Cannot have a "' + this.type +
@@ -2078,21 +2086,23 @@
          * @description
          * Obtains the root element to translate.
          * 
-         * @param {plat.ui.ITemplateControl} root The control to start searching at.
-         * 
          * @returns {HTMLElement} The root element.
          */
-        protected _getRootElement(root: plat.ui.ITemplateControl): HTMLElement {
-            var $utils = this.$utils,
-                isNode = $utils.isNode;
-            if (!$utils.isObject(root)) {
-                return null;
+        protected _getRootElement(): HTMLElement {
+            var drawer = this._drawer,
+                $utils = this.$utils;
+
+            if (!$utils.isNull(drawer.storedProperties)) {
+                return drawer.storedProperties.parentEl;
             }
 
-            var element = root.element,
-                drawer = this._drawerElement,
+            var isNode = $utils.isNode,
+                root = this.root,
+                element = $utils.isObject(root) && isNode(root.element) ? root.element : this.element,
+                drawerEl = this._drawerElement,
                 parent: HTMLElement;
-            while (isNode(element) && !((parent = element.parentElement).contains(drawer))) {
+
+            while (isNode(parent = element.parentElement) && !parent.contains(drawerEl)) {
                 element = parent;
             }
 
@@ -2101,22 +2111,27 @@
                 style = element.style,
                 position = computedStyle.position,
                 zIndex = Number(computedStyle.zIndex),
-                rootElementStyle: { position?: string; zIndex?: string; };
+                rootElementStyle: { position?: string; zIndex?: string; parentEl?: HTMLElement; parentOverflow?: string } = {
+                    parentEl: element
+                };
 
             if (position === 'static') {
-                rootElementStyle = {
-                    position: style.position
-                };
+                rootElementStyle.position = style.position;
                 style.position = 'relative';
             }
 
             if (!$utils.isNumber(zIndex) || zIndex < 1) {
-                rootElementStyle = rootElementStyle || {};
                 rootElementStyle.zIndex = style.zIndex;
                 style.zIndex = '1';
             }
 
-            this._rootElementStyle = rootElementStyle;
+            if (isNode(parent)) {
+                var parentStyle = parent.style;
+                rootElementStyle.parentOverflow = parentStyle.overflow;
+                parentStyle.overflow = 'hidden';
+            }
+
+            drawer.storedProperties = rootElementStyle;
 
             return element;
         }

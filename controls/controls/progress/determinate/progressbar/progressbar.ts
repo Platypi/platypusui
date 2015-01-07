@@ -12,6 +12,18 @@
      */
     export class ProgressBar extends plat.ui.TemplateControl implements IUIControl {
         /**
+         * @name $window
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access public
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        $window: Window = plat.acquire(__Window);
+        /**
          * @name $utils
          * @memberof platui.ProgressBar
          * @kind property
@@ -156,6 +168,12 @@
                 return;
             }
 
+            this.addEventListener(this.$window, 'resize', () => {
+                var offset = this._barMax = barElement.parentElement.offsetWidth;
+                if (!offset) {
+                    this._setOffsetWithClone();
+                }
+            }, false);
             this.setProgress();
         }
 
@@ -234,14 +252,13 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window: Window = plat.acquire(__Window),
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 width: string;
 
             shallowCopy.id = '';
-            while (!regex.test((width = (computedStyle = $window.getComputedStyle(element)).width))) {
+            while (!regex.test((width = (computedStyle = this.$window.getComputedStyle(element)).width))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }

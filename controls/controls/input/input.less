@@ -2,11 +2,16 @@
 @import '../global/mixins.less';
 @import 'input.variables.less';
 
+/// ============= Input Constants ============= ///
+
 #Input_Local {
-    @input-action-width: 1em;
-    @input-left-distance: 0%;
-    @input-width: 100% - @input-left-distance;
+    @input-border-color: @neutralColorLight;
+    @input-border-width: 2px;
+    @border-color-accent: darken(@neutralColor, 5%);
+    @input-height: 2.5em;
 }
+
+/// =========== Input Default Styles =========== ///
 
 .plat-input {
     #Input;
@@ -14,8 +19,7 @@
     .box-sizing(border-box);
     display: inline-block;
     width: @default-width;
-    height: 2.5em;
-    
+    height: @input-height;
 
     .plat-input-container {
         .border-radius(@primary-border-radius);
@@ -24,21 +28,19 @@
         position: relative;
         width: 100%;
         height: 100%;
-        border-bottom: 1px solid @neutralColorLight;
 
         input {
-            .calc(width, '@{input-width} - @{input-action-width}');
             .box-sizing(border-box);
             position: absolute;
             height: 100%;
-            left: @input-left-distance;
+            width: 100%;
             bottom: 0;
             padding: 0;
-            vertical-align: bottom;
             background-color: @transparent;
             color: @text-color;
             outline: none;
             border: none;
+            border-bottom: @input-border-width solid @input-border-color;
             font: inherit;
             -webkit-appearance: none;
 
@@ -51,6 +53,12 @@
             &::-webkit-inner-spin-button {
                 -webkit-appearance: none;
                 margin: 0;
+            }
+
+/// ============== Input States =============== ///
+
+            &:focus {
+                border-color: @border-color-accent;
             }
         }
 
@@ -78,12 +86,13 @@
             .box-sizing(content-box);
             display: inline-block;
             position: absolute;
-            right: 5%;
-            bottom: 0.1em;
-            width: 1em;
-            height: 80%;
+            right: 0;
+            width: @input-height;
+            height: @input-height;
+            line-height: @input-height;
+            text-align: center;
             text-align: right;
-            color: @action-color;
+            color: @border-color-accent;
             cursor: pointer;
         }
     }
@@ -91,32 +100,39 @@
 /// ============== Input Types =============== ///
 
     &.plat-email {
-        .plat-input-container {
-            input {
-                .calc(width; '100% - 4em');
-            }
-            .plat-input-action {
-                width: 2em;
-            }
-        }
+
     }
 
     &.plat-password {
-        .plat-input-container {
-            .plat-input-action {
-                .border-radius(1.2em);
-                width: 1.2em;
-                height: 1.2em;
-                text-align: center;
-                vertical-align: bottom;
-                line-height: 1.2em;
-                border: 1px solid @action-color;
+  
+    }    
+}
 
-                &:active {
-                    background-color: @action-color;
-                    color: @white;
-                }
-            }
+.input-group {
+    #Input_Local;
+
+    [class*="col-"] {
+        padding: 0;
+    }
+
+    .plat-input {
+        width: 100%;
+        position: relative;
+        margin-top: -3px;
+        
+        input {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .plat-input-action {
+            right: 8px;
+        }
+    }
+
+    [class*="col-"] ~ [class*="col-"] {
+        input {
+            border-left: @input-border-width solid @input-border-color;   
         }
     }
 }

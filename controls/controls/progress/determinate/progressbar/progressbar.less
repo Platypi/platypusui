@@ -11,20 +11,51 @@
         position: relative;
         height: @height;
         width: 100%;
-        background-color: @unfilled-color;
+        background-color: @neutralColorLight;
         overflow: hidden;
         border: @border;
         .border-radius(@height);
         .box-sizing(content-box);
+        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.13));
 
         .plat-animated-bar {
-            background-color: @fill-color;
+            background-color: @neutralColorDark;
             width: 0;
             height: @height;
-            .border-radius(@height);
+            .border-radius(@height / 2);
             .box-sizing(content-box);
             .translateZ(0);
             .transition(@transition);
+        }
+    }
+
+    &.progress-primary {
+        .plat-animated-bar {
+            background-color: @primaryColor;
+        }
+    }
+
+    &.progress-secondary {
+        .plat-animated-bar {
+            background-color: @secondaryColor;
+        }
+    }
+
+    &.progress-success {
+        .plat-animated-bar {
+            background-color: @successColor;
+        }
+    }
+
+    &.progress-danger {
+        .plat-animated-bar {
+            background-color: @dangerColor;
+        }
+    }
+
+    &.progress-caution {
+        .plat-animated-bar {
+            background-color: @cautionColor;
         }
     }
 }
