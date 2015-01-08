@@ -1,22 +1,51 @@
 <div class="container">
-    <!-- Modal -->
+    
+    <!-- Buttons -->
     <div class="demo-area">
-        <h2 class="demo-heading">Modals</h2>
-        <input type="checkbox" id="modal" checked />
-        <label for="modal"></label>
-        <h4>Popovers</h4>
+        <h2 class="demo-heading">Buttons</h2>
+        <input type="checkbox" id="buttons" checked />
+        <label for="buttons"></label>
         <div class="demo-stage">
-            <plat-button class="button-primary" plat-tap="toggleModal('modal1')">Basic Popover, Fade Transition</plat-button>
-            <plat-button class="button-secondary" plat-tap="toggleModal('modal2')">Button Row Popover, Down Transition</plat-button>
-        </div>
-        <h4>Modals</h4>
-        <div class="demo-stage">
-            <plat-button class="button-primary" plat-tap="toggleModal('modal3')">Full Screen, Up Transition</plat-button>
-            <plat-button class="button-secondary" plat-tap="toggleModal('modal4')">Full Screen, Left Transition</plat-button>
+            <p>Colors</p>
+            <plat-button class="button-primary">Primary</plat-button>
+            <plat-button class="button-secondary">Secondary</plat-button>
+            <plat-button class="button-neutral">Neutral</plat-button>
+            <plat-button class="button-success">Success</plat-button>
+            <plat-button class="button-danger">Danger</plat-button>
+            <plat-button class="button-caution">Caution</plat-button>
+            <p>Alternate Styles</p>
+            <plat-button class="button-primary button-outline">Primary</plat-button>
+            <plat-button class="button-secondary button-outline">Secondary</plat-button>
+            <plat-button class="button-neutral button-outline">Neutral</plat-button>
+            <plat-button class="button-success button-outline">Success</plat-button>
+            <plat-button class="button-danger button-outline">Danger</plat-button>
+            <plat-button class="button-caution button-outline">Caution</plat-button>
+            <p>Sizes</p>
+            <plat-button class="button-primary button-jumbo">Jumbo</plat-button>
+            <plat-button class="button-primary button-large">Large</plat-button>
+            <plat-button class="button-primary">Regular</plat-button>
+            <plat-button class="button-primary button-small">Small</plat-button>
+            <p>States</p>
+            <plat-button class="button-primary" disabled>Disabled</plat-button>
+            <plat-button class="button-danger button-large" disabled>Disabled</plat-button>
+            <p>Groups</p>
+            <div class="demo-item">
+                <div class="button-group">
+                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Select</plat-button>
+                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Copy</plat-button>
+                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Paste</plat-button>
+                </div>
+            </div>
+            <div class="demo-item">
+                <div class="button-group">
+                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Select</plat-button>
+                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Copy</plat-button>
+                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Paste</plat-button>
+                </div>
+            </div>
         </div>
     </div>
     
-
     <!-- Progress Bars -->
     <div class="demo-area">
         <h2 class="demo-heading">Progress Bars</h2>
@@ -39,6 +68,21 @@
                 <plat-progress plat-context="progress" class="progress-caution"></plat-progress>
             </div>
             <plat-button plat-tap="bar">Make Progress!</plat-button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="demo-area">
+        <h2 class="demo-heading">Modals</h2>
+        <input type="checkbox" id="modal" />
+        <label for="modal"></label>
+        <div class="demo-stage">
+            <h4>Popovers</h4>
+            <plat-button class="button-primary" plat-tap="toggleModal('modal1')">Basic Popover, Fade Transition</plat-button>
+            <plat-button class="button-secondary" plat-tap="toggleModal('modal2')">Button Row Popover, Down Transition</plat-button>
+            <h4>Modals</h4>
+            <plat-button class="button-primary" plat-tap="toggleModal('modal3')">Full Screen, Up Transition</plat-button>
+            <plat-button class="button-secondary" plat-tap="toggleModal('modal4')">Full Screen, Left Transition</plat-button>
         </div>
     </div>
 
@@ -219,52 +263,6 @@
                 <plat-toggle class="toggle-thin toggle-square toggle-primary"></plat-toggle>
                 <plat-toggle class="toggle-thin"></plat-toggle>
             </div> 
-        </div>
-    </div>
-
-    <!-- Buttons -->
-    <div class="demo-area">
-        <h2 class="demo-heading">Buttons</h2>
-        <input type="checkbox" id="buttons" />
-        <label for="buttons"></label>
-        <div class="demo-stage">
-            <p>Colors</p>
-            <plat-button class="button-primary">Primary</plat-button>
-            <plat-button class="button-secondary">Secondary</plat-button>
-            <plat-button class="button-neutral">Neutral</plat-button>
-            <plat-button class="button-success">Success</plat-button>
-            <plat-button class="button-danger">Danger</plat-button>
-            <plat-button class="button-caution">Caution</plat-button>
-            <p>Alternate Styles</p>
-            <plat-button class="button-primary button-outline">Primary</plat-button>
-            <plat-button class="button-secondary button-outline">Secondary</plat-button>
-            <plat-button class="button-neutral button-outline">Neutral</plat-button>
-            <plat-button class="button-success button-outline">Success</plat-button>
-            <plat-button class="button-danger button-outline">Danger</plat-button>
-            <plat-button class="button-caution button-outline">Caution</plat-button>
-            <p>Sizes</p>
-            <plat-button class="button-primary button-jumbo">Jumbo</plat-button>
-            <plat-button class="button-primary button-large">Large</plat-button>
-            <plat-button class="button-primary">Regular</plat-button>
-            <plat-button class="button-primary button-small">Small</plat-button>
-            <p>States</p>
-            <plat-button class="button-primary" disabled>Disabled</plat-button>
-            <plat-button class="button-danger button-large" disabled>Disabled</plat-button>
-            <p>Groups</p>
-            <div class="demo-item">
-                <div class="button-group">
-                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Select</plat-button>
-                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Copy</plat-button>
-                    <plat-button plat-options="{ group: 'controls' }" class="button-primary">Paste</plat-button>
-                </div>
-            </div>
-            <div class="demo-item">
-                <div class="button-group">
-                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Select</plat-button>
-                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Copy</plat-button>
-                    <plat-button plat-options="{ group: 'other' }" class="button-outline button-success">Paste</plat-button>
-                </div>
-            </div>
         </div>
     </div>
 

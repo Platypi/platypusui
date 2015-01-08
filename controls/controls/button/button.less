@@ -23,7 +23,6 @@
     
     &.button-outline {
         color: @neutralColor;
-        transition: all 250ms;
     }
 
 /// ============== Button Colors  =============== ///    
@@ -31,6 +30,12 @@
     &.button-primary {
         background-color: @primaryColor;
         border-color: @primaryColorDark;
+        
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: darken(@primaryColor, 10%);
+        }
 
         &.button-outline {
             border-color: @primaryColor;
@@ -48,6 +53,12 @@
         background-color: @secondaryColor;
         border-color: @secondaryColorDark;
 
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: darken(@secondaryColor, 10%);
+        }
+
         &.button-outline {
             border-color: @secondaryColor;
             color: @secondaryColor;
@@ -63,6 +74,12 @@
     &.button-neutral {
         background-color: @neutralColor;
         border-color: @neutralColorDark;
+
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: darken(@neutralColor, 10%);
+        }
 
         &.button-outline {
             border-color: @neutralColor;
@@ -80,6 +97,12 @@
         background-color: @successColor;
         border-color: @successColorDark;
 
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: darken(@successColor, 10%);
+        }
+
         &.button-outline {
             border-color: @successColor;
             color: @successColor;
@@ -96,6 +119,12 @@
         background-color: @dangerColor;
         border-color: @dangerColorDark;
 
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: darken(@dangerColor, 10%);
+        }
+
         &.button-outline {
             border-color: @dangerColor;
             color: @dangerColor;
@@ -111,6 +140,12 @@
     &.button-caution {
         background-color: @cautionColor;
         border-color: @cautionColorDark;
+
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: darken(@cautionColor, 10%);
+        }
 
         &.button-outline {
             border-color: @cautionColor;
@@ -143,15 +178,6 @@
     }
 
 /// ============== Button States =============== ///
-
-    &:hover {
-        opacity: 0.85;
-    }
-
-    &:active:not(.button-outline),
-    &.plat-selected:not(.button-outline) {
-        opacity: 0.8;
-    }
 
     &.button-disabled,
     &[disabled="disabled"],
