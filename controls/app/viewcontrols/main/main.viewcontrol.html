@@ -6,30 +6,16 @@
         <label for="modal"></label>
         <h4>Popovers</h4>
         <div class="demo-stage">
-            <plat-button class="button-primary" plat-tap="toggleModal('modal1')">Basic Popover</plat-button>
-            <plat-button class="button-secondary" plat-tap="toggleModal('modal2')">Button Row Popover</plat-button>
+            <plat-button class="button-primary" plat-tap="toggleModal('modal1')">Basic Popover, Fade Transition</plat-button>
+            <plat-button class="button-secondary" plat-tap="toggleModal('modal2')">Button Row Popover, Down Transition</plat-button>
+        </div>
+        <h4>Modals</h4>
+        <div class="demo-stage">
+            <plat-button class="button-primary" plat-tap="toggleModal('modal3')">Full Screen, Up Transition</plat-button>
+            <plat-button class="button-secondary" plat-tap="toggleModal('modal4')">Full Screen, Left Transition</plat-button>
         </div>
     </div>
-    <plat-modal plat-name="modal1" plat-options="{ transition: 'fade' }" plat-bind="modals.modal1" class="modal-popover">
-        <div class="popover-title">Warning</div>
-        <div class="popover-body">
-            <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
-        </div>
-        <div class="popover-action">
-            <plat-button class="button-primary" plat-tap="toggleModal('modal1')">Continue</plat-button>
-            <plat-button class="button-danger" plat-tap="toggleModal('modal1')">Cancel</plat-button>
-        </div>
-    </plat-modal>
-    <plat-modal plat-name="modal2" plat-options="{ transition: 'down' }" plat-bind="modals.modal2" class="modal-popover">
-        <div class="popover-title">Same Stuff, Different Day</div>
-        <div class="popover-body">
-            <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
-        </div>
-        <div class="popover-action button-group">
-            <plat-button class="button-primary" plat-tap="toggleModal('modal2')">Continue</plat-button>
-            <plat-button class="button-danger" plat-tap="toggleModal('modal2')">Cancel</plat-button>
-        </div>
-    </plat-modal>
+    
 
     <!-- Progress Bars -->
     <div class="demo-area">
@@ -564,3 +550,45 @@
         </div>
     </div>
 </div>
+
+<!-- Modals for Above Examples -->
+<plat-modal plat-name="modal1" plat-options="{ transition: 'fade' }" plat-bind="modals.modal1" class="modal-popover">
+    <div class="popover-title">For Your Information</div>
+    <div class="popover-body">
+        <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
+    </div>
+    <div class="popover-action">
+        <plat-button class="button-danger" plat-tap="toggleModal('modal1')">Cancel</plat-button>
+        <plat-button class="button-primary" plat-tap="toggleModal('modal1')">Continue</plat-button>
+    </div>
+</plat-modal>
+<plat-modal plat-name="modal2" plat-options="{ transition: 'down' }" plat-bind="modals.modal2" class="modal-popover">
+    <div class="popover-title">Once Again</div>
+    <div class="popover-body">
+        <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
+    </div>
+    <div class="popover-action button-group">
+        <plat-button plat-tap="toggleModal('modal2')">Cancel</plat-button>
+        <plat-button class="button-suggested" plat-tap="toggleModal('modal2')">Continue</plat-button>
+    </div>
+</plat-modal>
+<plat-modal plat-name="modal3" plat-options="{ transition: 'up' }" plat-bind="modals.modal3">
+    <div class="popover-title">Once Again</div>
+    <div class="popover-body">
+        <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
+    </div>
+    <div class="popover-action button-group">
+        <plat-button class="button-primary" plat-tap="toggleModal('modal3')">Continue</plat-button>
+        <plat-button class="button-danger" plat-tap="toggleModal('modal3')">Cancel</plat-button>
+    </div>
+</plat-modal>
+<plat-modal plat-name="modal4" plat-options="{ transition: 'left' }" plat-bind="modals.modal4">
+    <div class="popover-title">Once Again</div>
+    <div class="popover-body">
+        <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
+    </div>
+    <div class="popover-action button-group">
+        <plat-button class="button-primary" plat-tap="toggleModal('modal4')">Continue</plat-button>
+        <plat-button class="button-danger" plat-tap="toggleModal('modal4')">Cancel</plat-button>
+    </div>
+</plat-modal>

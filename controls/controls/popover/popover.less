@@ -96,7 +96,7 @@
                         border-width: 0;
                         border-top: 2px solid @popover-accent-color;
                         background-color: transparent;
-                        color: @textGrey;
+                        color: lighten(@textGrey, 20%);
                         .flex(1);
 
                         &:last-child {
@@ -105,6 +105,10 @@
 
                         &:hover {
                             opacity: 1;
+                        }
+
+                        &.button-suggested {
+                            color: @textGrey;
                         }
                     }
                 }
