@@ -188,7 +188,7 @@ module.exports = exports = function load(grunt) {
         watch: {
             ts: {
                 files: '**/*.ts',
-                tasks: ['ts']
+                tasks: ['ts:base', 'ts:app']
             },
             less: {
                 files: '**/*.less',

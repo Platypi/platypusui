@@ -28,13 +28,18 @@ module app {
             test3: '',
             lower: 10,
             upper: 90,
-            showModal: false,
+            modals: {
+                modal1: false,
+                modal2: false,
+                modal3: false,
+            },
             carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }]
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
         password: plat.controls.INamedElement<HTMLElement, void>;
-        modal: plat.controls.INamedElement<Element, platui.Modal>;
+        modal1: plat.controls.INamedElement<Element, platui.Modal>;
+        modal2: plat.controls.INamedElement<Element, platui.Modal>;
 
         navigatedTo(route: plat.web.IRoute<any>) {
             if (route.path.length === 0) {
@@ -56,8 +61,8 @@ module app {
             this.context.progress += 0.01;
         }
 
-        __toggle() {
-            this.context.showModal = !this.context.showModal;
+        toggleModal(modal: string) {
+            this.context.modals[modal] = !this.context.modals[modal];
         }
     }
 
