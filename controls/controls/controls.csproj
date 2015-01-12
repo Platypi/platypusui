@@ -402,6 +402,16 @@
   <ItemGroup>
     <Content Include="carousel\carousel.variables.less" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="lib\platypus.css.map">
+      <DependentUpon>platypus.css</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="toggle\toggle.css.map">
+      <DependentUpon>toggle.css</DependentUpon>
+    </Content>
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
   </PropertyGroup>
