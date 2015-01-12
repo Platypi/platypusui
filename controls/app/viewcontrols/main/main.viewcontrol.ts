@@ -28,7 +28,7 @@ module app {
             test3: '',
             lower: 10,
             upper: 90,
-            modals: {
+            modals: <any>{
                 modal1: false,
                 modal2: false,
                 modal3: false,
