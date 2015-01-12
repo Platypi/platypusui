@@ -11,6 +11,13 @@
 	.generate-partial-width-cols(@size; (@i - 1));
 }
 
+.generate-offset-cols(@size; @i: @num-columns) when (@i > 0) {
+	.col-@{size}-offset-@{i} {
+		margin-left: @base-percent * (@i / @num-columns);
+	}
+	.generate-offset-cols(@size; (@i - 1));
+}
+
 .generate-shiftable-cols(@size; @i: @num-columns) when (@i > 0) {
 	.col-@{size}-push-@{i} {
 		left: @base-percent * (@i / @num-columns);
