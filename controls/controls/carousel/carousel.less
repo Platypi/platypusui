@@ -37,10 +37,54 @@
         }
     }
 
+    .plat-back-arrow,
+    .plat-forward-arrow {
+        position: absolute;
+        display: table;
+        text-align: center;
+        color: @arrow-color;
+        font-size: @arrow-font-size;
+
+        span {
+            display: table-cell;
+            vertical-align: middle;
+            cursor: pointer;
+            font-family: "monospace";
+        }
+
+        &:active,
+        &:hover {
+            color: @arrow-active-color;
+        }
+    }
+
     &.plat-horizontal {
         .plat-carousel-container {
             .plat-carousel-item {
                 display: inline-block;
+            }
+        }
+
+        .plat-back-arrow,
+        .plat-forward-arrow {
+            top: 0;
+            width: @arrow-width;
+            height: @arrow-length;
+        }
+
+        .plat-back-arrow {
+            left: 0;
+
+            span::before {
+                content: "<";
+            }
+        }
+
+        .plat-forward-arrow {
+            right: 0;
+
+            span::before {
+                content: ">";
             }
         }
     }
@@ -49,6 +93,29 @@
         .plat-carousel-container {
             .plat-carousel-item {
                 display: block;
+            }
+        }
+
+        .plat-back-arrow,
+        .plat-forward-arrow {
+            left: 0;
+            width: @arrow-length;
+            height: @arrow-width;
+        }
+
+        .plat-back-arrow {
+            top: 0;
+            
+            span::before {
+                content: "^";
+            }
+        }
+
+        .plat-forward-arrow {
+            bottom: 0;
+
+            span::before {
+                content: "down";
             }
         }
     }
