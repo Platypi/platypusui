@@ -375,6 +375,8 @@
          * @returns {void}
          */
         contextChanged(): void {
+            this._verifyLength();
+
             if (this._loaded) {
                 return;
             }
@@ -564,7 +566,7 @@
         }
 
         /**
-         * @name reset
+         * @name _reset
          * @memberof platui.Carousel
          * @kind function
          * @access protected
@@ -578,6 +580,26 @@
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
+        }
+        
+        /**
+         * @name _verifyLength
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Verifies that the current length of the context aligns with the position of the {@link platui.Carousel|Carousel}.
+         * 
+         * @returns {void}
+         */
+        protected _verifyLength(): void {
+            var maxIndex = this.context.length - 1,
+                maxOffset = maxIndex * this._intervalOffset;
+
+            if (-this._currentOffset > maxOffset) {
+                this.goToIndex(maxIndex);
+            }
         }
 
         /**
@@ -669,6 +691,8 @@
             if (types.indexOf('track') !== -1) {
                 this._initializeTrack();
             }
+
+            this.observeArray(this, __CONTEXT, null, this._verifyLength);
 
             this.addEventListener(this.$window, 'resize', () => {
                 this._setPosition();
