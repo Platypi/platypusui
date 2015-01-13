@@ -375,6 +375,8 @@
          * @returns {void}
          */
         contextChanged(): void {
+            this._verifyLength();
+
             if (this._loaded) {
                 return;
             }
@@ -438,6 +440,7 @@
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
                 orientation = this._orientation = options.orientation || 'horizontal',
+                type = options.type || 'track',
                 index = options.index;
 
             this.dom.addClass(this.element, __Plat + orientation);
@@ -446,7 +449,7 @@
             this._index = 0;
             this._onLoad = () => {
                 this.goToIndex(index);
-                this._addEventListeners(orientation);
+                this._addEventListeners(type);
             };
 
             this._init();
@@ -563,7 +566,7 @@
         }
 
         /**
-         * @name reset
+         * @name _reset
          * @memberof platui.Carousel
          * @kind function
          * @access protected
@@ -577,6 +580,26 @@
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
+        }
+        
+        /**
+         * @name _verifyLength
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Verifies that the current length of the context aligns with the position of the {@link platui.Carousel|Carousel}.
+         * 
+         * @returns {void}
+         */
+        protected _verifyLength(): void {
+            var maxIndex = this.context.length - 1,
+                maxOffset = maxIndex * this._intervalOffset;
+
+            if (-this._currentOffset > maxOffset) {
+                this.goToIndex(maxIndex);
+            }
         }
 
         /**
@@ -650,25 +673,125 @@
          * @description
          * Adds all event listeners on this control's element.
          * 
-         * @param {string} orientation The orientation of the {@link platui.Carousel|Carousel}.
+         * @param {string} type The method of change of the {@link platui.Carousel|Carousel}.
          * 
          * @returns {void}
          */
-        protected _addEventListeners(orientation: string): void {
+        protected _addEventListeners(type: string): void {
+            var types = type.split(' ');
+
+            if (types.indexOf('tap') !== -1) {
+                this._initializeTap();
+            }
+
+            if (types.indexOf('swipe') !== -1) {
+                this._initializeSwipe();
+            }
+
+            if (types.indexOf('track') !== -1) {
+                this._initializeTrack();
+            }
+
+            this.observeArray(this, __CONTEXT, null, this._verifyLength);
+
+            this.addEventListener(this.$window, 'resize', () => {
+                this._setPosition();
+                if (!this._intervalOffset) {
+                    this._setOffsetWithClone();
+                }
+            }, false);
+        }
+        
+        /**
+         * @name _initializeTap
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all necessary elements and event listeners to handle tap events.
+         * 
+         * @returns {void}
+         */
+        protected _initializeTap(): void {
+            var $document = this.$document,
+                element = this.element,
+                backArrowContainer = $document.createElement('div'),
+                forwardArrowContainer = $document.createElement('div'),
+                backArrow = $document.createElement('span'),
+                forwardArrow = $document.createElement('span');
+
+            backArrowContainer.className = __Plat + 'back-arrow';
+            forwardArrowContainer.className = __Plat + 'forward-arrow';
+            backArrowContainer.appendChild(backArrow);
+            forwardArrowContainer.appendChild(forwardArrow);
+            element.appendChild(backArrowContainer);
+            element.appendChild(forwardArrowContainer);
+
+            this.addEventListener(backArrowContainer, __$tap, this.goToPrevious, false);
+            this.addEventListener(forwardArrowContainer, __$tap, this.goToNext, false);
+        }
+        
+        /**
+         * @name _initializeSwipe
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all event listeners to handle swipe events.
+         * 
+         * @returns {void}
+         */
+        protected _initializeSwipe(): void {
+            var element = this.element,
+                swipeFn = this._handleSwipe,
+                swipe: string,
+                reverseSwipe: string;
+
+            switch (this._orientation) {
+                case 'horizontal':
+                    swipe = __$swipe + 'left';
+                    reverseSwipe = __$swipe + 'right';
+                    break;
+                case 'vertical':
+                    swipe = __$swipe + 'up';
+                    reverseSwipe = __$swipe + 'down';
+                    break;
+                default:
+                    return;
+            }
+
+            this.addEventListener(element, swipe, swipeFn, false);
+            this.addEventListener(element, reverseSwipe, swipeFn, false);
+        }
+        
+        /**
+         * @name _initializeTrack
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all event listeners to handle tracking events.
+         * 
+         * @returns {void}
+         */
+        protected _initializeTrack(): void {
             var element = this.element,
                 trackFn = this._track,
                 touchEnd = this._touchEnd,
                 track: string,
                 reverseTrack: string;
 
-            switch (orientation) {
+            switch (this._orientation) {
                 case 'horizontal':
-                    track = __$track + 'right';
-                    reverseTrack = __$track + 'left';
+                    track = __$track + 'left';
+                    reverseTrack = __$track + 'right';
                     break;
                 case 'vertical':
-                    track = __$track + 'down';
-                    reverseTrack = __$track + 'up';
+                    track = __$track + 'up';
+                    reverseTrack = __$track + 'down';
                     break;
                 default:
                     return;
@@ -679,12 +802,47 @@
             this.addEventListener(element, __$touchstart, this._touchStart, false);
             this.addEventListener(element, __$trackend, touchEnd, false);
             this.addEventListener(element, __$touchend, touchEnd, false);
-            this.addEventListener(this.$window, 'resize', () => {
-                this._setPosition();
-                if (!this._intervalOffset) {
-                    this._setOffsetWithClone();
-                }
-            }, false);
+        }
+        
+        /**
+         * @name _handleSwipe
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles a swipe event.
+         * 
+         * @returns {void}
+         */
+        protected _handleSwipe(ev: plat.ui.IGestureEvent): void {
+            var direction = ev.direction.primary;
+            this._hasSwiped = true;
+
+            switch (direction) {
+                case 'left':
+                    if (this._orientation === 'horizontal') {
+                        this.goToNext();
+                    }
+                    break;
+                case 'right':
+                    if (this._orientation === 'horizontal') {
+                        this.goToPrevious();
+                    }
+                    break;
+                case 'up':
+                    if (this._orientation === 'vertical') {
+                        this.goToNext();
+                    }
+                    break;
+                case 'down':
+                    if (this._orientation === 'vertical') {
+                        this.goToPrevious();
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
 
         /**
@@ -965,6 +1123,26 @@
      * The available {@link plat.controls.Options|options} for the {@link platui.Carousel|Carousel} control.
      */
     export interface ICarouselOptions {
+        /**
+         * @name type
+         * @memberof platui.ICarouselOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * Specifies how the {@link platui.Carousel|Carousel} should change. Multiple types can be combined by making it space delimited. 
+         * It's default behavior is "track".
+         * 
+         * @remarks
+         * "tap": The carousel changes when the markers are tapped.
+         * "track": The carousel changes when it is dragged.
+         * "swipe": The carousel changes when it is swiped.
+         * default: The carousel changes when it is dragged.
+         */
+        type?: string;
+
         /**
          * @name orientation
          * @memberof platui.ICarouselOptions

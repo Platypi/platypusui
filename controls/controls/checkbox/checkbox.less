@@ -10,12 +10,13 @@
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);
+    .flex-vertical-center();
 
     & > span {
         font-size: 125%;
         
         &:first-of-type {
-            margin-left: 0.2em;
+            margin-left: 0.4em;
         }
     }
 
@@ -26,7 +27,7 @@
         height: @diameter;
         background-color: @background-color;
         overflow: hidden;
-        border: 1px solid @neutralColor;
+        border: 1px solid @border-color;
 
         .border-radius(@diameter);
         .box-sizing(content-box);
@@ -35,7 +36,7 @@
 
         &.plat-check,
         &.plat-x {
-            background-color: @neutralColor;
+            background-color: @border-color;
 
             .plat-mark::before,
             .plat-mark::after {

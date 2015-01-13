@@ -45,6 +45,7 @@
 		.generate-full-width-cols(@tablet-alias);
 		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@phone-alias);
+		.generate-offset-cols(@phone-alias);
 		.generate-shiftable-cols(@phone-alias);
 	}
 
@@ -53,6 +54,7 @@
 		.generate-full-width-cols(@tablet-alias);
 		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@phablet-alias);
+		.generate-offset-cols(@phablet-alias);
 		.generate-shiftable-cols(@phablet-alias);
 	}
 
@@ -60,12 +62,14 @@
 	@media (min-width: @tablet-start) {
 		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@tablet-alias);
+		.generate-offset-cols(@tablet-alias);
 		.generate-shiftable-cols(@tablet-alias);
 	}
 
 	/// Desktop
 	@media (min-width: @desktop-start) {
-		.generate-partial-width-cols(@desktop-alias);	
+		.generate-partial-width-cols(@desktop-alias);
+		.generate-offset-cols(@desktop-alias);	
 		.generate-shiftable-cols(@desktop-alias);
 	}
 }

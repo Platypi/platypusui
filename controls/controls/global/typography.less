@@ -5,11 +5,13 @@
 
 html, body {
 	font-family: @fontSansSerif;
+	color: @defaultFontColor;
 }
 
 h1, h2, h3,
 h4, h5, h6 {
 	font-weight: 600;
+	margin: 0.75em 0;
 }
 
 a {
@@ -21,9 +23,9 @@ blockquote {
 	display: block;
 	margin: 0.5em 0;
 	padding-left: 1em;
-	color: @grey;
+	color: lighten(@defaultFontColor, 30%);
 	font-size: @defaultFontSize;
-	border-left: 1px solid @grey;
+	border-left: 1px solid lighten(@defaultFontColor, 30%);
 }
 
 cite {

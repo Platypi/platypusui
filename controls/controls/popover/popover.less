@@ -1,0 +1,118 @@
+@import '../global/variables.less';
+@import '../global/mixins.less';
+@import '../modal/modal.variables.less';
+@import './popover.variables.less';
+
+.plat-modal {
+    #Modal;
+    #Popover;
+    &.modal-popover {
+        background-color: rgba(0,0,0,0.6);
+
+        .plat-modal-container {
+            margin: 0 auto;
+            width: 80%;
+            max-width: 30em;
+            height: auto;
+            background-color: @white;
+            color: @textGrey;
+            .border-radius(@popover-border-radius);
+            
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade {
+                top: 20%;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            &.plat-modal-transition {
+                &.plat-up, &.plat-down {
+                    left: 0;
+                    right: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+
+                &.plat-up {
+                    .transition(@down-transition);
+                    top: 100%;
+                    
+                    &.plat-activate {
+                        top: @popover-top;
+                    }
+                }
+
+                &.plat-down {
+                    &.plat-activate {
+                        top: @popover-top;
+                    }
+                }
+
+                &.plat-left,
+                &.plat-right {
+                    top: @popover-top;
+
+                    &.plat-activate {
+                        left: 0;
+                        right: 0;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                }
+            }
+
+            & .popover-title {
+                padding: 1em 2em;
+                border-bottom: 1px solid @popover-accent-color;
+                text-align: center;
+                font-size: 110%;
+            }
+
+            & .popover-body {
+                padding: 1em 2em;
+                text-align: center;
+                background-color: @popover-body-color;
+            }
+
+            & .popover-action {
+                text-align: center;
+                padding: 0 2em 1em;
+                background-color: @popover-body-color;
+
+                &.button-group {
+                    padding-left: 0;
+                    padding-right: 0;
+                    padding-bottom: 0;
+                    width: 100%;
+                    .flexbox();
+
+                    & > button {
+                        height: 100%;
+                        padding-top: 1em;
+                        padding-bottom: 1em;
+                        font-size: 110%;
+                        border-width: 0;
+                        border-top: 2px solid @popover-accent-color;
+                        background-color: transparent;
+                        color: lighten(@textGrey, 20%);
+                        .flex(1);
+
+                        &:last-child {
+                            border-left: 2px solid @popover-accent-color;
+                        }
+
+                        &:hover {
+                            opacity: 1;
+                        }
+
+                        &.button-suggested {
+                            color: @textGrey;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
