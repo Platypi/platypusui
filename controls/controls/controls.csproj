@@ -571,6 +571,10 @@
       <DependentUpon>button.mixins.css</DependentUpon>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="popover\popover.less" />
+    <Content Include="popover\popover.variables.less" />
+  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
   </PropertyGroup>
