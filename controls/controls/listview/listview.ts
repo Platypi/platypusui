@@ -144,19 +144,6 @@
         protected _increment: number;
 
         /**
-         * @name _usingRenderFunction
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not a render function is being used.
-         */
-        protected _usingRenderFunction = false;
-
-        /**
          * @name _itemTemplate
          * @memberof platui.Listview
          * @kind property
@@ -333,25 +320,16 @@
             var $utils = this.$utils,
                 isNumber = $utils.isNumber,
                 bindableTemplates = this.bindableTemplates,
-                container = this._container;
+                controls = this.controls,
+                container = this._container,
+                lastIndex = this.context.length,
+                maxCount = lastIndex - index,
+                increment = this._increment,
+                itemCount: number;
 
             if (!isNumber(index)) {
                 index = this.currentCount;
             }
-
-            if (this._usingRenderFunction) {
-                return;
-            }
-
-            var key = this._itemTemplate;
-            if ($utils.isUndefined(bindableTemplates.templates[key])) {
-                return;
-            }
-
-            var lastIndex = this.context.length,
-                maxCount = lastIndex - index,
-                increment = this._increment,
-                itemCount: number;
 
             if (isNumber(count)) {
                 itemCount = maxCount >= count ? count : maxCount;
@@ -361,16 +339,18 @@
                 itemCount = maxCount;
             }
 
-            var controls = this.controls;
-            if (controls.length > 0) {
-                var dispose = plat.ui.TemplateControl.dispose;
-                for (var i = lastIndex; i >= index; --i) {
-                    if (controls.length > i) {
-                        dispose(controls[i]);
-                    }
-                }
+            if ($utils.isFunction(this._itemTemplateSelector)) {
+                this._disposeFromIndex(index);
+                this._renderUsingFunction(index, itemCount);
+                return;
             }
 
+            var key = this._itemTemplate;
+            if ($utils.isUndefined(bindableTemplates.templates[key])) {
+                return;
+            }
+
+            this._disposeFromIndex(index);
             this._addItems(itemCount, index);
             this.currentCount = index + itemCount;
         }
@@ -421,8 +401,53 @@
                 return;
             }
 
-            this._usingRenderFunction = true;
             this._itemTemplateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
+        }
+
+        /**
+         * @name _disposeFromIndex
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Dispose of the controls and DOM starting at a given index.
+         * 
+         * @param {number} index The starting index to dispose.
+         * 
+         * @returns {void}
+         */
+        protected _disposeFromIndex(index: number): void {
+            var controls = this.controls;
+
+            if (controls.length > 0) {
+                var dispose = plat.ui.TemplateControl.dispose;
+                for (var i = this.context.length - 1; i >= index; --i) {
+                    if (controls.length > i) {
+                        dispose(controls[i]);
+                    }
+                }
+            }
+        }
+
+        /**
+         * @name _renderUsingFunction
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Render items using a defined render function starting at a given index and continuing 
+         * through for a set number of items. If undefined or null is returned from the function, 
+         * rendering will stop.
+         * 
+         * @param {number} index The starting index to render.
+         * @param {number} count The number of items to render.
+         * 
+         * @returns {void}
+         */
+        protected _renderUsingFunction(index: number, count: number): void {
+
         }
 
         /**
