@@ -127,7 +127,7 @@
          */
         loaded(): void {
             var element = this.element;
-            this._targetElement = this._targetElement || element.firstElementChild;
+            this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
         }
 

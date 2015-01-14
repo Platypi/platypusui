@@ -3,15 +3,25 @@
 @import 'toggle.variables.less';
 @import 'toggle.mixins.less';
 
+/// ============= Toggle Constants ============= ///
+
+#Toggle_Local {
+    #Toggle;
+    @height: @width * @ratio;
+    @toggle-thin-height: @width * @toggle-thin-ratio;
+    @knob-radius: @knob-diameter / 2;
+    @half-thin-height: @toggle-thin-height / 2;
+}
+
 /// ========== Toggle Default Style =========== ///
 
 .plat-toggle {
     #Toggle;
+    #Toggle_Local;
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);
     
-    @height: @width * @ratio;
     .plat-toggle-container {
         width: @width;
         height: @height;
@@ -63,7 +73,6 @@
 
 /// =============== Toggle Thin ================ ///
 
-    @toggle-thin-height: @width * @toggle-thin-ratio;
     &.toggle-thin {
         .plat-toggle-container {
             height: @toggle-thin-height;
@@ -71,8 +80,6 @@
             background-color: @neutralColorDark;
             border: none;
 
-            @knob-radius: @knob-diameter / 2;
-            @half-thin-height: @toggle-thin-height / 2;
             .plat-knob {
                 background-color: @toggle-thin-color;
                 border: 1px solid darken(@toggle-thin-color, 10%);

@@ -581,7 +581,7 @@
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
         }
-        
+
         /**
          * @name _verifyLength
          * @memberof platui.Carousel
@@ -701,7 +701,7 @@
                 }
             }, false);
         }
-        
+
         /**
          * @name _initializeTap
          * @memberof platui.Carousel
@@ -731,7 +731,7 @@
             this.addEventListener(backArrowContainer, __$tap, this.goToPrevious, false);
             this.addEventListener(forwardArrowContainer, __$tap, this.goToNext, false);
         }
-        
+
         /**
          * @name _initializeSwipe
          * @memberof platui.Carousel
@@ -765,7 +765,7 @@
             this.addEventListener(element, swipe, swipeFn, false);
             this.addEventListener(element, reverseSwipe, swipeFn, false);
         }
-        
+
         /**
          * @name _initializeTrack
          * @memberof platui.Carousel
@@ -803,7 +803,7 @@
             this.addEventListener(element, __$trackend, touchEnd, false);
             this.addEventListener(element, __$touchend, touchEnd, false);
         }
-        
+
         /**
          * @name _handleSwipe
          * @memberof platui.Carousel

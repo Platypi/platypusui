@@ -355,6 +355,10 @@
                 type = this._type = this._type || options.type || 'text',
                 pattern = options.pattern;
 
+            // in case of cloning
+            this._imageElement = this._imageElement || <HTMLElement>element.firstElementChild.firstElementChild;
+            this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
+
             this.dom.addClass(element, __Plat + type);
             this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
 
