@@ -10,7 +10,8 @@
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);
-
+    
+    @height: @width * @ratio;
     .plat-toggle-container {
         width: @width;
         height: @height;
@@ -62,6 +63,7 @@
 
 /// =============== Toggle Thin ================ ///
 
+    @toggle-thin-height: @width * @toggle-thin-ratio;
     &.toggle-thin {
         .plat-toggle-container {
             height: @toggle-thin-height;
@@ -69,10 +71,12 @@
             background-color: @neutralColorDark;
             border: none;
 
+            @knob-radius: @knob-diameter / 2;
+            @half-thin-height: @toggle-thin-height / 2;
             .plat-knob {
-                top: -(@knob-diameter * (@toggle-thin-ratio / 2));
                 background-color: @toggle-thin-color;
                 border: 1px solid darken(@toggle-thin-color, 10%);
+                .calc(top; '-@{knob-radius} + @{half-thin-height}');
                 .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
             }
 
@@ -115,6 +119,4 @@
             border-color: darken(@cautionColor, 5%);
         }
     }
-
-
 }
