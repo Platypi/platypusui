@@ -60,6 +60,18 @@
          * Reference to the {@link plat.ICompat|ICompat} injectable.
          */
         $compat: plat.ICompat = plat.acquire(__Compat);
+        /**
+         * @name $promise
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.async.IPromise}
+         * 
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        $promise: plat.async.IPromise = plat.acquire(__Promise);
 
         /**
          * @name templateString
@@ -162,12 +174,12 @@
          * @kind property
          * @access protected
          * 
-         * @type {(item: any, templates: plat.IObject<Node>) => string}
+         * @type {(item: any, templates?: plat.IObject<Node>) => any}
          * 
          * @description
          * The selector function used to obtain the template key for each item.
          */
-        protected _itemTemplateSelector: (item: any, templates: plat.IObject<Node>) => string;
+        protected _itemTemplateSelector: (item: any, templates?: plat.IObject<Node>) => any;
 
         /**
          * @name setClasses
@@ -321,15 +333,16 @@
                 isNumber = $utils.isNumber,
                 bindableTemplates = this.bindableTemplates,
                 controls = this.controls,
-                container = this._container,
-                lastIndex = this.context.length,
-                maxCount = lastIndex - index,
-                increment = this._increment,
-                itemCount: number;
+                container = this._container;
 
             if (!isNumber(index)) {
                 index = this.currentCount;
             }
+
+            var lastIndex = this.context.length,
+                maxCount = lastIndex - index,
+                increment = this._increment,
+                itemCount: number;
 
             if (isNumber(count)) {
                 itemCount = maxCount >= count ? count : maxCount;
@@ -396,7 +409,7 @@
             if (!$utils.isFunction(controlProperty.value)) {
                 var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
                 $exception.warn(__Listview + ' item template "' + itemTemplate +
-                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy',
+                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.',
                     $exception.TEMPLATE);
                 return;
             }
