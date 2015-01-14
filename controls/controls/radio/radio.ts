@@ -64,7 +64,7 @@
          * Whether the target type has been set already or not.
          */
         protected _targetTypeSet = true;
-        
+
         /**
          * @name _removeListener
          * @memberof platui.Radio
@@ -111,7 +111,7 @@
          */
         loaded(): void {
             var element = this.element;
-            this._targetElement = this._targetElement || element.firstElementChild;
+            this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
 
             if (element.hasAttribute('name')) {

@@ -238,6 +238,7 @@
                 options = optionObj.value || <IModalOptions>{},
                 transition = options.transition;
 
+            // in case of cloning
             this._modalElement = this._modalElement || <HTMLElement>this.element.firstElementChild;
             this._loaded = true;
 
