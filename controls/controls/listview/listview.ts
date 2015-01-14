@@ -88,6 +88,19 @@
         options: plat.observable.IObservableProperty<IListviewOptions>;
 
         /**
+         * @name currentCount
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The number of items currently loaded.
+         */
+        currentCount = 0;
+
+        /**
          * @name _templates
          * @memberof platui.Listview
          * @kind property
@@ -116,6 +129,19 @@
          * - "horizontal"
          */
         protected _orientation: string;
+
+        /**
+         * @name _increment
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The number of items to incrementally load.
+         */
+        protected _increment: number;
 
         /**
          * @name _usingRenderFunction
@@ -265,6 +291,7 @@
                 options = optionObj.value || <IListviewOptions>{},
                 $utils = this.$utils,
                 orientation = this._orientation = options.orientation || 'vertical',
+                increment = this._increment = options.increment,
                 itemTemplate = options.itemTemplate,
                 $exception: plat.IExceptionStatic;
 
@@ -297,20 +324,22 @@
          * @access public
          * 
          * @description
-         * Blow out the DOM starting at the index, determine how to render, and render accordingly.
+         * Blow out the DOM starting at the index, determine how to render, and render the count accordingly.
          * 
-         * @param {number} index The starting index to render.
+         * @param {number} index? The starting index to render. If not specified, it will start at currentCount.
+         * @param {number} count? The number of items to render. If not specified, the increment count 
+         * will be used. If no increment was specified, the whole context will be rendered.
          * 
          * @returns {void}
          */
-        render(index?: number): void {
+        render(index?: number, count?: number): void {
             var $utils = this.$utils,
+                isNumber = $utils.isNumber,
                 bindableTemplates = this.bindableTemplates,
                 container = this._container;
 
-            this.dom.clearNode(container);
-            if (!$utils.isNumber(index)) {
-                index = 0;
+            if (!isNumber(index)) {
+                index = this.currentCount;
             }
 
             if (this._usingRenderFunction) {
@@ -322,7 +351,46 @@
                 return;
             }
 
-            this._addItems(this.context.length - index, index);
+            var lastIndex = this.context.length,
+                maxCount = lastIndex - index,
+                increment = this._increment,
+                itemCount: number;
+
+            if (isNumber(count)) {
+                itemCount = maxCount >= count ? count : maxCount;
+            } else if (isNumber(increment)) {
+                itemCount = maxCount >= increment ? increment : maxCount;
+            } else {
+                itemCount = maxCount;
+            }
+
+            var controls = this.controls;
+            if (controls.length > 0) {
+                var dispose = plat.ui.TemplateControl.dispose;
+                for (var i = lastIndex; i >= index; --i) {
+                    if (controls.length > i) {
+                        dispose(controls[i]);
+                    }
+                }
+            }
+
+            this._addItems(itemCount, index);
+            this.currentCount = index + itemCount;
+        }
+        
+        /**
+         * @name rerender
+         * @memberof platui.Listview
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Blow out all the DOM, determine how to render, and render accordingly.
+         * 
+         * @returns {void}
+         */
+        rerender(): void {
+            this.render(0);
         }
 
         /**
@@ -417,6 +485,92 @@
                 }
             }
         }
+
+        /**
+         * @name _push
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * First checks if the push will do anything, then handles items being pushed into the array.
+         * 
+         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _push(ev: plat.observable.IPostArrayChangeInfo<any>): void {
+            if (this.context.length - 1 > this.currentCount) {
+                return;
+            }
+
+            super._push(ev);
+        }
+
+        /**
+         * @name _pop
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles items being popped off the array.
+         * 
+         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _pop(ev: plat.observable.IPostArrayChangeInfo<any>): void {
+            if (this.context.length - 1 > this.currentCount) {
+                return;
+            }
+
+            super._pop(ev);
+        }
+
+        /**
+         * @name _presplice
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles adding/removing items when an array is spliced.
+         * 
+         * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _presplice(ev: plat.observable.IPreArrayChangeInfo): void {
+            var firstArg = ev.arguments[0];
+            if (firstArg > this.currentCount) {
+                return;
+            }
+
+            super._presplice(ev);
+        }
+
+        /**
+         * @name _splice
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles adding/removing items when an array is spliced.
+         * 
+         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _splice(ev: plat.observable.IPostArrayChangeInfo<any>): void {
+            var firstArg = ev.arguments[0];
+            if (firstArg > this.currentCount) {
+                return;
+            }
+
+            super._splice(ev);
+        }
     }
 
     plat.register.control(__Listview, Listview);
@@ -446,7 +600,7 @@
          * - "vertical"
          * - "horizontal"
          */
-        orientation: string;
+        orientation?: string;
 
         /**
          * @name itemTemplate
@@ -459,7 +613,20 @@
          * @description
          * The camel-cased node name of the desired item template or a defined template selector function.
          */
-        itemTemplate: any;
+        itemTemplate?: any;
+
+        /**
+         * @name increment
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The number of items to incrementally load.
+         */
+        increment?: number;
 
         /**
          * @name templateUrl
