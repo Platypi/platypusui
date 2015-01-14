@@ -54,6 +54,15 @@ module app {
             var context = this.context;
         }
 
+        addListItem() {
+            var listview = this.context.listview;
+            listview.push(listview[listview.length - 1] + 1);
+        }
+
+        popListItem() {
+            this.context.listview.pop();
+        }
+
         foo(ev?: any) {
             console.log(this.context.test3);
         }

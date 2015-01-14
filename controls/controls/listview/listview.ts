@@ -238,16 +238,12 @@
                 var fragment = this.dom.serializeHtml(this.templateString),
                     element = this.element;
 
-                this._container = <HTMLElement>fragment.firstChild;
                 this._parseTemplates(element);
-
                 element.appendChild(fragment);
                 return;
             }
 
             var innerTemplate = this.innerTemplate;
-            this._container = <HTMLElement>this.element.firstElementChild;
-
             if ($utils.isNode(innerTemplate)) {
                 this._parseTemplates(innerTemplate);
             }
@@ -295,6 +291,7 @@
                 itemTemplate = options.itemTemplate,
                 $exception: plat.IExceptionStatic;
 
+            this._container = <HTMLElement>this.element.firstElementChild;
             this.dom.addClass(this.element, __Plat + orientation);
 
             if (!$utils.isString(itemTemplate)) {
@@ -377,7 +374,7 @@
             this._addItems(itemCount, index);
             this.currentCount = index + itemCount;
         }
-        
+
         /**
          * @name rerender
          * @memberof platui.Listview
@@ -505,6 +502,7 @@
             }
 
             super._push(ev);
+            this.currentCount++;
         }
 
         /**
@@ -521,11 +519,30 @@
          * @returns {void}
          */
         protected _pop(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            if (this.context.length - 1 > this.currentCount) {
+            if (this.context.length + 1 > this.currentCount) {
                 return;
             }
 
             super._pop(ev);
+            this.currentCount--;
+        }
+
+        /**
+         * @name _shift
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles items being shifted off the array.
+         * 
+         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _shift(ev: plat.observable.IPostArrayChangeInfo<any>): void {
+            super._shift(ev);
+            this.currentCount--;
         }
 
         /**
@@ -542,8 +559,7 @@
          * @returns {void}
          */
         protected _presplice(ev: plat.observable.IPreArrayChangeInfo): void {
-            var firstArg = ev.arguments[0];
-            if (firstArg > this.currentCount) {
+            if (ev.arguments[0] > this.currentCount) {
                 return;
             }
 
@@ -564,12 +580,31 @@
          * @returns {void}
          */
         protected _splice(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            var firstArg = ev.arguments[0];
-            if (firstArg > this.currentCount) {
+            if (ev.arguments[0] > this.currentCount) {
                 return;
             }
 
             super._splice(ev);
+            var args = ev.arguments;
+            this.currentCount += args.length - 2 - args[2];
+        }
+
+        /**
+         * @name _unshift
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles items being unshifted into the array.
+         * 
+         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * 
+         * @returns {void}
+         */
+        protected _unshift(ev: plat.observable.IPostArrayChangeInfo<any>): void {
+            super._unshift(ev);
+            this.currentCount++;
         }
     }
 
