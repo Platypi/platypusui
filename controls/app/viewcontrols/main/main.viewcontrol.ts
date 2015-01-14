@@ -1,7 +1,7 @@
 /// <reference path="../../../references.d.ts" />
 
 module app {
-    export class MainViewControl extends plat.ui.WebViewControl {
+    export class MainViewControl extends plat.ui.ViewControl {
         title = 'Main';
         templateUrl = 'viewcontrols/main/main.viewcontrol.html';
         context = {
@@ -42,14 +42,6 @@ module app {
         modal1: plat.controls.INamedElement<Element, platui.Modal>;
         modal2: plat.controls.INamedElement<Element, platui.Modal>;
 
-        navigatedTo(route: plat.web.IRoute<any>) {
-            if (route.path.length === 0) {
-                return;
-            }
-
-            this.title = route.path.replace(/\//g, ' ');
-        }
-
         loaded() {
             var context = this.context;
         }
@@ -76,12 +68,17 @@ module app {
         }
     }
 
-    plat.register.viewControl('viewcontrol', MainViewControl, null, ['']);
+    plat.register.viewControl('viewcontrol', MainViewControl);
 
     class App extends plat.App {
-        constructor(config: plat.web.IBrowserConfig) {
+        constructor(config: plat.web.IBrowserConfig, router: plat.routing.Router) {
             super();
             config.baseUrl = 'app';
+
+            router.configure({
+                pattern: '',
+                view: MainViewControl
+            });
         }
 
         error(ev: plat.events.IErrorEvent<Error>) {
@@ -90,6 +87,7 @@ module app {
     }
 
     plat.register.app('app', App, [
-        plat.web.IBrowserConfig
+        plat.web.IBrowserConfig,
+        plat.routing.IRouter
     ]);
 }
