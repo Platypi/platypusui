@@ -159,7 +159,7 @@
                 bar = this._barMax = barElement.parentElement.offsetWidth;
 
             if (!bar) {
-                this._setOffsetWithClone();
+                this._setOffsetWithClone('width');
             }
 
             if (!this.$utils.isNumber(context) || context > 1 || context < 0) {
@@ -171,7 +171,7 @@
             this.addEventListener(this.$window, 'resize', () => {
                 var offset = this._barMax = barElement.parentElement.offsetWidth;
                 if (!offset) {
-                    this._setOffsetWithClone();
+                    this._setOffsetWithClone('width');
                 }
             }, false);
             this.setProgress();
@@ -225,10 +225,12 @@
          * 
          * @description
          * Creates a clone of this element and uses it to find the max offset.
-         * 
+         *
+         * @param {string} dependencyProperty The property that the offset is being based off of.
+         *
          * @returns {void}
          */
-        protected _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
                 $document: Document = plat.acquire(__Document),
                 body = $document.body;
@@ -244,7 +246,7 @@
                     return;
                 }
 
-                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                this.$utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -252,17 +254,18 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
+                $window = this.$window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
-                width: string;
+                dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((width = (computedStyle = this.$window.getComputedStyle(element)).width))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }
-                shallowCopy.style.setProperty('width', width, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -284,7 +287,7 @@
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
             shallowStyle.setProperty('visibility', 'hidden', 'important');
             body.appendChild(shallowCopy);
             this._barMax = (<HTMLElement>clone.firstElementChild).offsetWidth;

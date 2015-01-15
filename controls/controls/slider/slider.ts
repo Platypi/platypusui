@@ -72,11 +72,11 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-slider-container">' +
-        '    <div class="plat-slider-offset">' +
-        '        <div class="plat-knob"></div>' +
-        '    </div>' +
-        '</div>';
+        '<div class="plat-slider-container">\n' +
+        '    <div class="plat-slider-offset">\n' +
+        '        <div class="plat-knob"></div>\n' +
+        '    </div>\n' +
+        '</div>\n';
 
         /**
          * @name options
@@ -631,8 +631,8 @@
                         (this._knobOffset + ev.clientX - this._lastTouch.x);
                 case 'vertical':
                     return this._reversed ?
-                        (this._knobOffset + this._lastTouch.y - ev.clientY) :
-                        (this._knobOffset + ev.clientY - this._lastTouch.y);
+                        (this._knobOffset + ev.clientY - this._lastTouch.y) :
+                        (this._knobOffset + this._lastTouch.y - ev.clientY);
                 default:
                     return 0;
             }
@@ -671,7 +671,7 @@
             }
 
             if (!(isNode || this._maxOffset)) {
-                this._setOffsetWithClone();
+                this._setOffsetWithClone(this._lengthProperty);
             }
         }
 
@@ -786,10 +786,12 @@
          * 
          * @description
          * Creates a clone of this element and uses it to find the max offset.
-         * 
+         *
+         * @param {string} dependencyProperty The property that the offset is being based off of.
+         *
          * @returns {void}
          */
-        protected _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
                 body = this.$document.body;
 
@@ -804,7 +806,7 @@
                     return;
                 }
 
-                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                this.$utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -816,14 +818,14 @@
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
-                width: string;
+                dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((width = (computedStyle = $window.getComputedStyle(element)).width))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }
-                shallowCopy.style.setProperty('width', width, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -845,7 +847,7 @@
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
             shallowStyle.setProperty('visibility', 'hidden', 'important');
             body.appendChild(shallowCopy);
             this._setLength(<HTMLElement>clone.firstElementChild);

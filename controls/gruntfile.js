@@ -45,22 +45,27 @@ module.exports = exports = function load(grunt) {
             after: {
                 force: true,
                 src: [
-                    './platypusui.ts'
+                    './platypusui.ts', './platypusui.js', './platypusui.d.ts', './platypusui.js.map'
                 ]
             }
         },
         copy: {
-            main: {
+			setup: {
                 options: {
                     process: function (data) {
-                        return '/// <reference path="/node_modules/platypus/platypus-node.d.ts" />\r\n' + 
+                        return '/// <reference path="./node_modules/platypus/platypus-node.d.ts" />\r\n' +
+						'/// <reference path="./node_modules/.bin/typings/node/node.d.ts" />\r\n' +
 						'var plat = require(\'platypus\');\r\n\r\n' + 
 						stripDocs(data) + 
-						'export = platui;\r\n';
+						'\r\nexport = platui;\r\n';
                     }
                 },
                 src: './platypusui.ts',
-                dest: 'dist/platypusui.ts'
+                dest: './platypusui.ts'
+            },
+            main: {
+                src: ['./platypusui.ts', './platypusui.js', './platypusui.d.ts', './platypusui.js.map'],
+                dest: 'dist/'
             },
             bower: {
                 options: {
@@ -136,7 +141,7 @@ module.exports = exports = function load(grunt) {
                     cleancss: true
                 },
                 files: {
-		      'dist/platypus.min.css': 'dist/platypus.less'
+					'dist/platypus.min.css': 'dist/platypus.less'
                 }
 	    }
         },
@@ -168,7 +173,7 @@ module.exports = exports = function load(grunt) {
                     removeComments: false
                 },
                 src: [
-                    'dist/platypusui.ts'
+                    './platypusui.ts'
                 ]
             }
         },
@@ -176,7 +181,8 @@ module.exports = exports = function load(grunt) {
             main: {
                 options: {
                     sourceMapIn: 'dist/platypusui.js.map',
-                    sourceMap: 'dist/platypusui.js.map'
+                    sourceMap: 'dist/platypusui.js.map',
+                    screwIE8: true
                 },
                 files: {
                     'dist/platypusui.js': [
@@ -214,7 +220,7 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['clean', 'bundle', 'less', 'copy:main', 'lessCompile:packaging',  'clean:after']);
+    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:setup', 'ts:packaging', 'copy:main', 'uglify', 'copy:bower', 'copy:node', 'clean:after']);
     // grunt.registerTask('default', ['bundle', 'less']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
     grunt.registerTask('compile', ['lessCompile', 'ts:base', 'ts:app']);

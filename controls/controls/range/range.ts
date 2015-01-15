@@ -86,12 +86,12 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-range-container">' +
-        '    <div class="plat-slider-offset">' +
-        '        <div class="plat-lower-knob"></div>' +
-        '        <div class="plat-upper-knob"></div>' +
-        '    </div>' +
-        '</div>';
+        '<div class="plat-range-container">\n' +
+        '    <div class="plat-slider-offset">\n' +
+        '        <div class="plat-lower-knob"></div>\n' +
+        '        <div class="plat-upper-knob"></div>\n' +
+        '    </div>\n' +
+        '</div>\n';
 
         /**
          * @name options
@@ -777,13 +777,13 @@
                 position = this._calculateOffset(ev, true),
                 value: number;
 
-            if (position < 0) {
+            if (position <= 0) {
                 value = this.min;
                 if (value - this.lower >= 0) {
                     value = null;
                 }
                 position = 0;
-            } else if (position > maxOffset) {
+            } else if (position >= maxOffset) {
                 value = this.max;
                 if (value - this.lower <= 0) {
                     value = null;
@@ -794,12 +794,12 @@
                 if (value - this.lower === 0) {
                     value = null;
                 }
+            }
 
-                if (position > this._upperKnobOffset) {
-                    this._positionTogether(position, value);
-                    this._setOffset(position, false);
-                    return;
-                }
+            if (position > this._upperKnobOffset) {
+                this._positionTogether(position, value);
+                this._setOffset(position, false);
+                return;
             }
 
             this._positionLower(position, value);
@@ -823,13 +823,13 @@
                 position = this._calculateOffset(ev, false),
                 value: number;
 
-            if (position < 0) {
+            if (position <= 0) {
                 value = this.min;
                 if (value - this.upper >= 0) {
                     value = null;
                 }
                 position = 0;
-            } else if (position > maxOffset) {
+            } else if (position >= maxOffset) {
                 value = this.max;
                 if (value - this.upper <= 0) {
                     value = null;
@@ -840,12 +840,12 @@
                 if (value - this.upper === 0) {
                     value = null;
                 }
+            }
 
-                if (position < this._lowerKnobOffset) {
-                    this._positionTogether(position, value);
-                    this._setOffset(position, true);
-                    return;
-                }
+            if (position < this._lowerKnobOffset) {
+                this._positionTogether(position, value);
+                this._setOffset(position, true);
+                return;
             }
 
             this._positionUpper(position, value);
@@ -968,7 +968,7 @@
                 displacement: number;
 
             if (this._orientation === 'vertical') {
-                displacement = this._reversed ? this._lastTouch.y - ev.clientY : ev.clientY - this._lastTouch.y;
+                displacement = this._reversed ? ev.clientY - this._lastTouch.y : this._lastTouch.y - ev.clientY;
             } else {
                 displacement = this._reversed ? this._lastTouch.x - ev.clientX : ev.clientX - this._lastTouch.x;
             }
@@ -1129,7 +1129,7 @@
                     break;
                 case 'vertical':
                     this._lengthProperty = 'height';
-                    this._positionProperty = this._reversed ? 'bottom' : 'top';
+                    this._positionProperty = this._reversed ? 'top' : 'bottom';
                     this._maxOffset = el.offsetHeight;
                     break;
                 default:
@@ -1139,7 +1139,7 @@
             }
 
             if (!(isNode || this._maxOffset)) {
-                this._setOffsetWithClone();
+                this._setOffsetWithClone(this._lengthProperty);
             }
         }
 
@@ -1232,10 +1232,12 @@
          * 
          * @description
          * Creates a clone of this element and uses it to find the max offset.
-         * 
+         *
+         * @param {string} dependencyProperty The property that the offset is being based off of.
+         *
          * @returns {void}
          */
-        protected _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
                 body = this.$document.body;
 
@@ -1250,7 +1252,7 @@
                     return;
                 }
 
-                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                this.$utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -1262,14 +1264,14 @@
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
-                width: string;
+                dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((width = (computedStyle = $window.getComputedStyle(element)).width))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }
-                shallowCopy.style.setProperty('width', width, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -1291,7 +1293,7 @@
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
             shallowStyle.setProperty('visibility', 'hidden', 'important');
             body.appendChild(shallowCopy);
             this._setPositionAndLength(<HTMLElement>clone.firstElementChild);
