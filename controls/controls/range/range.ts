@@ -86,12 +86,12 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-range-container">' +
-        '    <div class="plat-slider-offset">' +
-        '        <div class="plat-lower-knob"></div>' +
-        '        <div class="plat-upper-knob"></div>' +
-        '    </div>' +
-        '</div>';
+        '<div class="plat-range-container">\n' +
+        '    <div class="plat-slider-offset">\n' +
+        '        <div class="plat-lower-knob"></div>\n' +
+        '        <div class="plat-upper-knob"></div>\n' +
+        '    </div>\n' +
+        '</div>\n';
 
         /**
          * @name options

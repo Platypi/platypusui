@@ -2,38 +2,46 @@
 @import '../global/mixins.less';
 @import 'carousel.variables.less';
 
+/// =========== Carousel Default Styles =========== ///
+
 .plat-carousel {
     #Carousel;
     position: relative;
     display: inline-block;
-    overflow: hidden;
     .fill();
     .user-select();
     .touch-action(none);
     .box-sizing(border-box);
 
     .plat-carousel-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        background-color: @background-color;
-        white-space: nowrap;
+        position: relative;
+        overflow: hidden;
         .fill();
         .box-sizing(border-box);
 
-        .plat-carousel-item {
-            width: 100%;
-            height: 100%;
-            padding-left: @padding-left;
-            padding-right: @padding-right;
-            padding-top: @padding-top;
-            padding-bottom: @padding-bottom;
+        .plat-carousel-slider {
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-color: @background-color;
+            white-space: nowrap;
+            .fill();
             .box-sizing(border-box);
-        }
 
-        &.plat-transition {
-            .translateZ(0);
-            .transition(@transition);
+            .plat-carousel-item {
+                width: 100%;
+                height: 100%;
+                padding-left: @padding-left;
+                padding-right: @padding-right;
+                padding-top: @padding-top;
+                padding-bottom: @padding-bottom;
+                .box-sizing(border-box);
+            }
+
+            &.plat-transition {
+                .translateZ(0);
+                .transition(@transition);
+            }
         }
     }
 
@@ -60,8 +68,10 @@
 
     &.plat-horizontal {
         .plat-carousel-container {
-            .plat-carousel-item {
-                display: inline-block;
+            .plat-carousel-slider {
+                .plat-carousel-item {
+                    display: inline-block;
+                }
             }
         }
 
@@ -91,8 +101,10 @@
 
     &.plat-vertical {
         .plat-carousel-container {
-            .plat-carousel-item {
-                display: block;
+            .plat-carousel-slider {
+                .plat-carousel-item {
+                    display: block;
+                }
             }
         }
 

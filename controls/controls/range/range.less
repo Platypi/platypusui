@@ -2,8 +2,18 @@
 @import '../global/mixins.less';
 @import 'range.variables.less';
 
+/// ============= Range Constants ============= ///
+
+#Range_Local {
+    #Range;
+    @half-thickness: @thickness / 2;
+}
+
+/// ========== Range Default Style =========== ///
+
 .plat-range {
     #Range;
+    #Range_Local;
     position: relative;
     .fill();
     .user-select();
@@ -42,7 +52,6 @@
         }
     }
     
-    @half-thickness: @thickness / 2;
     &.plat-horizontal,
     &.plat-horizontal-reversed {
         height: max(@knob-diameter, @knob-radius);

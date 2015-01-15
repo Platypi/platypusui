@@ -219,6 +219,12 @@
     <Content Include="modal\modal.variables.min.css">
       <DependentUpon>modal.variables.css</DependentUpon>
     </Content>
+    <Content Include="popover\popover.css">
+      <DependentUpon>popover.less</DependentUpon>
+    </Content>
+    <Content Include="popover\popover.min.css">
+      <DependentUpon>popover.css</DependentUpon>
+    </Content>
     <Content Include="progress\determinate\progressbar\progressbar.css">
       <DependentUpon>progressbar.less</DependentUpon>
     </Content>

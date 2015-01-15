@@ -2,17 +2,25 @@
 @import '../global/mixins.less';
 @import 'slider.variables.less';
 
+/// ============= Slider Constants ============= ///
+
+#Slider_Local {
+    #Slider;
+    @knob-radius: @knob-diameter / 2;
+    @half-thickness: @thickness / 2;
+}
+
 /// ========== Slider Default Style =========== ///
 
 .plat-slider {
     #Slider;
+    #Slider_Local;
     position: relative;
     .fill();
     .user-select();
     .touch-action(none);
     .box-sizing(border-box);
     
-    @knob-radius: @knob-diameter / 2;
     .plat-slider-container {
         position: absolute;
         background-color: @neutralColorLight;
@@ -44,8 +52,6 @@
             }
         }
     }
-
-    @half-thickness: @thickness / 2;
 
 /// ============ Slider Orientations ============= ///
 

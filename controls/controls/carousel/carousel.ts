@@ -88,7 +88,10 @@
          * @description
          * The HTML template represented as a string.
          */
-        templateString = '<plat-foreach class="plat-carousel-container"></plat-foreach>';
+        templateString =
+        '<div class="plat-carousel-container">\n' +
+        '    <plat-foreach class="plat-carousel-slider"></plat-foreach>\n' +
+        '</div>\n';
 
         /**
          * @name context
@@ -276,6 +279,19 @@
         protected _positionProperty: string;
 
         /**
+         * @name _container
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * Denotes the interactive container element contained within the control.
+         */
+        protected _container: HTMLElement;
+
+        /**
          * @name _slider
          * @memberof platui.Carousel
          * @kind property
@@ -411,10 +427,11 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var itemContainer = this.$document.createElement('div');
+            var itemContainer = this.$document.createElement('div'),
+                container = this._container = <HTMLElement>this.element.firstElementChild;
             itemContainer.className = 'plat-carousel-item';
             itemContainer.appendChild(this.innerTemplate);
-            this.element.firstElementChild.appendChild(itemContainer);
+            container.firstElementChild.appendChild(itemContainer);
         }
 
         /**
@@ -644,9 +661,11 @@
          * @returns {void}
          */
         protected _init(): void {
-            var foreach = <plat.ui.controls.ForEach>this.controls[0];
+            var foreach = <plat.ui.controls.ForEach>this.controls[0],
+                container = this._container || <HTMLElement>this.element.firstElementChild;
+
+            this._slider = <HTMLElement>container.firstElementChild;
             this._setTransform();
-            this._slider = <HTMLElement>this.element.firstElementChild;
 
             this.itemsLoaded = foreach.itemsLoaded.then(() => {
                 if (this._setPosition()) {
@@ -654,7 +673,7 @@
                 }
             }).catch(() => {
                     var Exception = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Error processing ' + this.type + '. Please ensure you\'re context is correct.');
+                    Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.');
                     this._loaded = false;
                     return;
                 });
@@ -737,7 +756,7 @@
          * @returns {void}
          */
         protected _initializeSwipe(): void {
-            var element = this.element,
+            var container = this._container,
                 swipeFn = this._handleSwipe,
                 swipe: string,
                 reverseSwipe: string;
@@ -755,8 +774,8 @@
                     return;
             }
 
-            this.addEventListener(element, swipe, swipeFn, false);
-            this.addEventListener(element, reverseSwipe, swipeFn, false);
+            this.addEventListener(container, swipe, swipeFn, false);
+            this.addEventListener(container, reverseSwipe, swipeFn, false);
         }
 
         /**
@@ -771,7 +790,7 @@
          * @returns {void}
          */
         protected _initializeTrack(): void {
-            var element = this.element,
+            var container = this._container,
                 trackFn = this._track,
                 touchEnd = this._touchEnd,
                 track: string,
@@ -790,11 +809,11 @@
                     return;
             }
 
-            this.addEventListener(element, track, trackFn, false);
-            this.addEventListener(element, reverseTrack, trackFn, false);
-            this.addEventListener(element, __$touchstart, this._touchStart, false);
-            this.addEventListener(element, __$trackend, touchEnd, false);
-            this.addEventListener(element, __$touchend, touchEnd, false);
+            this.addEventListener(container, track, trackFn, false);
+            this.addEventListener(container, reverseTrack, trackFn, false);
+            this.addEventListener(container, __$touchstart, this._touchStart, false);
+            this.addEventListener(container, __$trackend, touchEnd, false);
+            this.addEventListener(container, __$touchend, touchEnd, false);
         }
 
         /**
@@ -1017,7 +1036,7 @@
          */
         protected _setPosition(element?: HTMLElement): boolean {
             var isNode = this.$utils.isNode(element),
-                el = isNode ? element : this._slider.parentElement,
+                el = isNode ? element : this._container,
                 dependencyProperty: string;
 
             switch (this._orientation) {
