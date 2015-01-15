@@ -54,7 +54,7 @@
         height: @knob-diameter;
 
         .plat-slider-container {
-            top: 50%;
+            .calc(top; '50% - @{half-thickness}');
             left: @knob-radius;
             height: @thickness;
 
@@ -63,7 +63,7 @@
                 height: 100%;
 
                 .plat-knob {
-                    .calc(top, '@{half-thickness} - @{knob-radius}');
+                    .calc(top; '@{half-thickness} - @{knob-radius}');
                 }
             }
 
@@ -103,7 +103,7 @@
         width: @knob-diameter;
 
         .plat-slider-container {
-            left: 50%;
+            .calc(left; '50% - @{half-thickness}');
             top: @knob-radius;
             width: @thickness;
 
@@ -112,7 +112,7 @@
                 height: 0;
 
                 .plat-knob {
-                    .calc(left, '@{half-thickness} - @{knob-radius}');
+                    .calc(left; '@{half-thickness} - @{knob-radius}');
                 }
             }
 

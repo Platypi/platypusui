@@ -48,10 +48,10 @@
         height: max(@knob-diameter, @knob-radius);
 
         .plat-range-container {
-            top: 50%;
+            .calc(top; '50% - @{half-thickness}');
+            .calc(width; '100% - @{knob-radius} - @{knob-radius}');
             left: @knob-radius;
             height: @thickness;
-            .calc(width; '100% - @{knob-radius} - @{knob-radius}');
 
             .plat-slider-offset {
                 width: 100%;
@@ -96,10 +96,10 @@
         width: @knob-diameter;
 
         .plat-range-container {
-            left: 50%;
+            .calc(left; '50% - @{half-thickness}');
+            .calc(height; '100% - @{knob-radius} - @{knob-radius}');
             top: @knob-radius;
             width: @thickness;
-            .calc(height; '100% - @{knob-radius} - @{knob-radius}');
 
             .plat-slider-offset {
                 width: 100%;
