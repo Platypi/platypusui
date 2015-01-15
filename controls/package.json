@@ -4,7 +4,7 @@
   "description": "",
   "main": "gruntfile.js",
   "dependencies": {
-    "platypus": "^0.9.8"
+    "platypus": "latest"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -21,6 +21,7 @@
     "grunt-ts": "^2.0.0",
     "grunt-ts-bundle": "~0.0.1",
     "grunt-typescript": "^0.3.8",
+    "tsd": "^0.6.0-beta.5",
     "typescript": "latest"
   },
   "scripts": {
