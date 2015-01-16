@@ -353,9 +353,9 @@
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error) => {
-                    this.$utils.postpone(() => {
-                        var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.BIND);
+                    this._utils.postpone(() => {
+                        var _Exception = this._Exception;
+                        _Exception.fatal(error, _Exception.BIND);
                     });
                 });
         }
@@ -1319,9 +1319,9 @@
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error) => {
-                    this.$utils.postpone(() => {
-                        var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                        $exception.fatal(error, $exception.BIND);
+                    this._utils.postpone(() => {
+                        var _Exception = this._Exception;
+                        _Exception.fatal(error, _Exception.BIND);
                     });
                 });
         }
