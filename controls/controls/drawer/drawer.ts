@@ -1318,7 +1318,12 @@
                 var element = this._drawerElement;
                 this.dom.clearNode(element);
                 element.appendChild(template);
-            });
+            }).catch((error) => {
+                    this._utils.postpone(() => {
+                        var _Exception = this._Exception;
+                        _Exception.fatal(error, _Exception.BIND);
+                    });
+                });
         }
 
         /**
