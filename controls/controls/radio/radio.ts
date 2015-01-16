@@ -22,9 +22,9 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-radio-container">' +
-        '    <div class="plat-mark"></div>' +
-        '</div>';
+        '<div class="plat-radio-container">\n' +
+        '    <div class="plat-mark"></div>\n' +
+        '</div>\n';
 
         /**
          * @name groupName
@@ -215,7 +215,7 @@
          */
         protected _toggle(setProperty?: boolean): void {
             super._toggle(setProperty);
-            if (this.$utils.isFunction(this._removeListener)) {
+            if (this._utils.isFunction(this._removeListener)) {
                 this._removeListener();
                 this._removeListener = null;
             }
@@ -246,7 +246,7 @@
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var $utils = this.$utils;
+            var $utils = this._utils;
             if ($utils.isBoolean(newValue)) {
                 if (newValue) {
                     this.setProperty(this._getValue(), null, true);

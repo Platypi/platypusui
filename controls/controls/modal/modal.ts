@@ -12,31 +12,6 @@
      */
     export class Modal extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * @name $utils
-         * @memberof platui.Modal
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-        /**
-         * @name $compat
-         * @memberof platui.Modal
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ICompat}
-         * 
-         * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
-         */
-        $compat: plat.ICompat = plat.acquire(__Compat);
-
-        /**
          * @name templateString
          * @memberof platui.Modal
          * @kind property
@@ -61,6 +36,32 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IModalOptions>;
+
+        /**
+         * @name _utils
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name _compat
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        protected _compat: plat.ICompat = plat.acquire(__Compat);
 
         /**
          * @name _modalElement
@@ -197,7 +198,7 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 modalContainer: HTMLElement;
 
             if ($utils.isString(this.templateUrl)) {
@@ -242,24 +243,24 @@
             this._modalElement = this._modalElement || <HTMLElement>this.element.firstElementChild;
             this._loaded = true;
 
-            if (!this.$utils.isString(transition) || transition === 'none') {
+            if (!this._utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._modalElement, __Plat + 'no-transition');
                 if (this._preloadedValue) {
-                    this.$utils.postpone(() => {
+                    this._utils.postpone(() => {
                         this._show();
                     });
                 }
                 return;
             } else if (!this._transitionHash[transition]) {
-                var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Custom transition: "' + transition +
-                    '" defined for "' + this.type + '." Please ensure the transition is defined to avoid errors.');
+                var _Exception = this._Exception;
+                _Exception.warn('Custom transition: "' + transition + '" defined for "' + this.type +
+                    '." Please ensure the transition is defined to avoid errors.', _Exception.CONTROL);
             }
 
-            this._transitionEnd = this.$compat.animationEvents.$transitionEnd;
+            this._transitionEnd = this._compat.animationEvents.$transitionEnd;
             this.dom.addClass(this._modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition');
             if (this._preloadedValue) {
-                this.$utils.postpone(() => {
+                this._utils.postpone(() => {
                     this._show();
                 });
             }
@@ -359,7 +360,7 @@
                 return;
             }
 
-            if (this.$utils.isBoolean(newValue)) {
+            if (this._utils.isBoolean(newValue)) {
                 if (newValue) {
                     if (this._isVisible) {
                         return;
@@ -388,7 +389,7 @@
         protected _show(): void {
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
-            this.$utils.defer(() => {
+            this._utils.defer(() => {
                 dom.addClass(this._modalElement, __Plat + 'activate');
             }, 25);
 
@@ -408,7 +409,7 @@
          */
         protected _hide(): void {
             var dom = this.dom;
-            if (this.$utils.isString(this._transitionEnd)) {
+            if (this._utils.isString(this._transitionEnd)) {
                 this._addHideOnTransitionEnd();
             } else {
                 dom.addClass(this.element, __Hide);

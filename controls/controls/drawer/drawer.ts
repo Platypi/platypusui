@@ -12,19 +12,6 @@
      */
     export class Drawer extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * @name $utils
-         * @memberof platui.Drawer
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
-        /**
          * @name options
          * @memberof platui.Drawer
          * @kind property
@@ -50,6 +37,32 @@
          * when all {@link platui.DrawerController|Drawer Controllers} are disposed.
          */
         storedProperties: { position?: string; zIndex?: string; parentEl?: HTMLElement; parentOverflow?: string; };
+
+        /**
+         * @name _utils
+         * @memberof platui.Drawer
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name _Promise
+         * @memberof platui.Drawer
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.async.IPromise}
+         * 
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
 
         /**
          * @name _currentPosition
@@ -168,7 +181,7 @@
          */
         loaded(): void {
             var element = this.element,
-                $utils = this.$utils,
+                $utils = this._utils,
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
                 position = this._currentPosition = options.position || 'left',
@@ -213,12 +226,11 @@
          */
         open(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this.$utils.isNull(controller)) {
-                var $promise: plat.async.IPromise = plat.acquire(__Promise),
-                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to open.', $exception.TEMPLATE);
-                return $promise.resolve(null);
+            if (this._utils.isNull(controller)) {
+                var _Exception = this._Exception;
+                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to open.', _Exception.TEMPLATE);
+                return this._Promise.resolve(null);
             }
 
             return controller.open();
@@ -238,12 +250,11 @@
          */
         close(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this.$utils.isNull(controller)) {
-                var $promise: plat.async.IPromise = plat.acquire(__Promise),
-                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to close.', $exception.TEMPLATE);
-                return $promise.resolve(null);
+            if (this._utils.isNull(controller)) {
+                var _Exception = this._Exception;
+                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to close.', _Exception.TEMPLATE);
+                return this._Promise.resolve(null);
             }
 
             return controller.close();
@@ -263,12 +274,11 @@
          */
         toggle(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this.$utils.isNull(controller)) {
-                var $promise: plat.async.IPromise = plat.acquire(__Promise),
-                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to toggle.', $exception.TEMPLATE);
-                return $promise.resolve(null);
+            if (this._utils.isNull(controller)) {
+                var _Exception = this._Exception;
+                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to toggle.', _Exception.TEMPLATE);
+                return this._Promise.resolve(null);
             }
 
             return controller.toggle();
@@ -288,12 +298,11 @@
          */
         reset(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this.$utils.isNull(controller)) {
-                var $promise: plat.async.IPromise = plat.acquire(__Promise),
-                    $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to reset.', $exception.TEMPLATE);
-                return $promise.resolve(null);
+            if (this._utils.isNull(controller)) {
+                var _Exception = this._Exception;
+                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to reset.', _Exception.TEMPLATE);
+                return this._Promise.resolve(null);
             }
 
             return controller.reset();
@@ -312,10 +321,10 @@
          */
         isOpen(): boolean {
             var controller = this._controllers[0];
-            if (this.$utils.isNull(controller)) {
-                var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to check if open.', $exception.TEMPLATE);
+            if (this._utils.isNull(controller)) {
+                var _Exception = this._Exception;
+                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to check if open.', _Exception.TEMPLATE);
                 return false;
             }
 
@@ -366,7 +375,7 @@
                 return;
             }
 
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 controller = this._controllers[0];
 
             if ($utils.isBoolean(newValue) && !$utils.isNull(controller)) {
@@ -439,7 +448,7 @@
          * @returns {void}
          */
         protected _changeDirection(position: string): void {
-            if (this.$utils.isNull(position) || position === this._currentPosition) {
+            if (this._utils.isNull(position) || position === this._currentPosition) {
                 return;
             }
 
@@ -469,7 +478,7 @@
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string, isElastic: boolean): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 isString = $utils.isString,
                 isNull = $utils.isNull,
                 innerTemplate = this.innerTemplate,
@@ -525,7 +534,7 @@
          */
         protected _checkPreload(): void {
             if (this._preloadedValue) {
-                var $utils = this.$utils;
+                var $utils = this._utils;
                 $utils.postpone(() => {
                     var controller = this._controllers[0];
                     if (!$utils.isNull(controller)) {
@@ -551,79 +560,6 @@
      */
     export class DrawerController extends plat.ui.BindablePropertyControl {
         /**
-         * @name $utils
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-        /**
-         * @name $compat
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ICompat}
-         * 
-         * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
-         */
-        $compat: plat.ICompat = plat.acquire(__Compat);
-        /**
-         * @name $window
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access public
-         * 
-         * @type {Window}
-         * 
-         * @description
-         * Reference to the Window injectable.
-         */
-        $window: Window = plat.acquire(__Window);
-        /**
-         * @name $document
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access public
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        $document: Document = plat.acquire(__Document);
-        /**
-         * @name $animator
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ui.animations.IAnimator}
-         * 
-         * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
-         */
-        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
-        /**
-         * @name $Promise
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.async.IPromise}
-         * 
-         * @description
-         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
-         */
-        $Promise: plat.async.IPromise = plat.acquire(__Promise);
-
-        /**
          * @name options
          * @memberof platui.DrawerController
          * @kind property
@@ -635,6 +571,84 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
+
+        /**
+         * @name _utils
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name _compat
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        protected _compat: plat.ICompat = plat.acquire(__Compat);
+
+        /**
+         * @name _window
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window = plat.acquire(__Window);
+
+        /**
+         * @name _document
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document = plat.acquire(__Document);
+
+        /**
+         * @name _animator
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         */
+        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+
+        /**
+         * @name _Promise
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.async.IPromise}
+         * 
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
 
         /**
          * @name _position
@@ -1100,7 +1114,7 @@
          * @returns {void}
          */
         dispose(): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 drawer = this._drawer;
             if ($utils.isNull(drawer)) {
                 return;
@@ -1160,13 +1174,13 @@
          */
         open(): plat.async.IThenable<void> {
             var wasClosed = !this._isOpen,
-                $utils = this.$utils;
+                $utils = this._utils;
 
             if ($utils.isFunction(this._toggleDelay)) {
                 this._toggleDelay();
             }
 
-            var promise = new this.$Promise<void>((resolve) => {
+            var promise = new this._Promise<void>((resolve) => {
                 this._toggleDelay = $utils.postpone(() => {
                     this._toggleDelay = null;
                     this._open().then(resolve);
@@ -1198,13 +1212,13 @@
          */
         close(): plat.async.IThenable<void> {
             var wasOpen = this._isOpen,
-                $utils = this.$utils;
+                $utils = this._utils;
 
             if ($utils.isFunction(this._toggleDelay)) {
                 this._toggleDelay();
             }
 
-            var promise = new this.$Promise<void>((resolve) => {
+            var promise = new this._Promise<void>((resolve) => {
                 this._toggleDelay = $utils.postpone(() => {
                     this._toggleDelay = null;
                     this._close().then(resolve);
@@ -1322,7 +1336,7 @@
                 return;
             }
 
-            var $utils = this.$utils;
+            var $utils = this._utils;
             if ($utils.isBoolean(newValue)) {
                 if (newValue) {
                     if (this._isOpen) {
@@ -1359,12 +1373,12 @@
         protected _open(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
-                $utils = this.$utils,
+                $utils = this._utils,
                 isNode = $utils.isNode,
                 wasClosed = !this._isOpen;
 
             if (!(isNode(rootElement) && isNode(drawerElement))) {
-                return this.$Promise.resolve(null);
+                return this._Promise.resolve(null);
             }
 
             var translation: string;
@@ -1382,7 +1396,7 @@
                     translation = 'translate3d(0,' + (-this._maxOffset) + 'px,0)';
                     break;
                 default:
-                    return <any>this.$animator.resolve();
+                    return <any>this._animator.resolve();
             }
 
             this._isOpen = true;
@@ -1398,7 +1412,7 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            return <any>this.$animator.animate(rootElement, __Transition, {
+            return <any>this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
             });
         }
@@ -1419,7 +1433,7 @@
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 dom = this.dom,
-                $utils = this.$utils,
+                $utils = this._utils,
                 isNode = $utils.isNode;
 
             if (this._isOpen) {
@@ -1430,14 +1444,14 @@
             this._isOpen = false;
 
             if (!(isNode(rootElement) && isNode(drawerElement))) {
-                return this.$Promise.resolve(null);
+                return this._Promise.resolve(null);
             }
 
             var animationOptions: plat.IObject<string> = {},
                 transform = <any>this._transform;
 
             animationOptions[transform] = this._preTransform;
-            return this.$animator.animate(rootElement, __Transition, {
+            return this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
             }).then(() => {
                 if (this._isOpen) {
@@ -1498,7 +1512,7 @@
          * @returns {void}
          */
         protected _removeEventIntercepts(): void {
-            var isFunction = this.$utils.isFunction;
+            var isFunction = this._utils.isFunction;
 
             if (this._isTap && isFunction(this._openTapRemover)) {
                 this._openTapRemover();
@@ -1603,7 +1617,7 @@
          */
         protected _addEventListeners(position: string): void {
             var element = this.element,
-                isNull = this.$utils.isNull,
+                isNull = this._utils.isNull,
                 types = this._type.split(' ');
 
             this._position = position;
@@ -1611,7 +1625,7 @@
             // remove event listeners here first if we want to later be able to dynamically change position of drawer.
             // this._removeEventListeners();
 
-            this.addEventListener(this.$window, 'resize', this._setOffset, false);
+            this.addEventListener(this._window, 'resize', this._setOffset, false);
 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
                 this._addTapOpen();
@@ -1637,10 +1651,10 @@
                         trackDirection = 'down';
                         break;
                     default:
-                        var Exception = plat.acquire(plat.IExceptionStatic);
-                        Exception.warn('Incorrect position: "' + position +
-                            '" defined for the drawer control, such as "' +
-                            __Drawer + '", or "' + this.type + '."');
+                        var _Exception = this._Exception;
+                        _Exception.warn('Incorrect position: "' + position +
+                            '" defined for the a control such as "' +
+                            __Drawer + '", or "' + this.type + '."', _Exception.CONTROL);
                         return;
                 }
 
@@ -1670,7 +1684,7 @@
          * @returns {void}
          */
         protected _removeEventListeners(): void {
-            var isFunction = this.$utils.isFunction;
+            var isFunction = this._utils.isFunction;
 
             if (this._isTap && isFunction(this._removeTap)) {
                 this._removeTap();
@@ -1762,11 +1776,11 @@
 
             if (this._isRightDirection(distanceMoved) &&
                 Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
-                this.$utils.postpone(this.toggle, null, this);
+                this._utils.postpone(this.toggle, null, this);
                 return;
             }
 
-            this.$utils.postpone(this.reset, null, this);
+            this._utils.postpone(this.reset, null, this);
         }
 
         /**
@@ -1904,7 +1918,7 @@
                 (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
                     eventRemover();
 
-                    var $utils = this.$utils,
+                    var $utils = this._utils,
                         isString = $utils.isString,
                         isUndefined = $utils.isUndefined,
                         drawer = (this._drawer = drawerArg.control) || {},
@@ -1915,10 +1929,10 @@
                         if (isString(drawerArg.position)) {
                             position = drawerArg.position;
                         } else {
-                            var Exception = plat.acquire(plat.IExceptionStatic);
-                            Exception.warn('"position" is incorrectly defined for the drawer control, such as "' +
+                            var _Exception = this._Exception;
+                            _Exception.warn('"position" is incorrectly defined for a control such as "' +
                                 __Drawer + '" or "' + this.type + '."' +
-                                ' Please ensure it is a string.');
+                                ' Please ensure it is a string.', _Exception.CONTROL);
                             return;
                         }
                     }
@@ -1979,7 +1993,7 @@
          * @returns {void}
          */
         protected _determineTemplate(fragment?: Node): void {
-            var $utils = this.$utils;
+            var $utils = this._utils;
 
             if ($utils.isString(this._templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template) => {
@@ -2003,11 +2017,11 @@
          */
         protected _setTransform(): void {
             var style = this.element.style,
-                isUndefined = this.$utils.isUndefined,
+                isUndefined = this._utils.isUndefined,
                 transform: string;
 
             if (isUndefined(style.transform)) {
-                var vendorPrefix = this.$compat.vendorPrefix;
+                var vendorPrefix = this._compat.vendorPrefix;
                 if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                     transform = this._transform = vendorPrefix.lowerCase + 'Transform';
                 } else if (!isUndefined(style[<any>(vendorPrefix.js + 'Transform')])) {
@@ -2034,21 +2048,21 @@
          * @returns {boolean} Whether or not this control is valid.
          */
         protected _controllerIsValid(position: string): boolean {
-            var isNull = this.$utils.isNull,
-                Exception: plat.IExceptionStatic;
+            var isNull = this._utils.isNull,
+                _Exception: plat.IExceptionStatic;
 
             if (isNull(this._drawerElement)) {
-                Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Could not find a corresponding drawer control, such as "' + __Drawer +
-                    '" for this "' + this.type + '."');
+                _Exception = this._Exception;
+                _Exception.warn('Could not find a corresponding control such as "' + __Drawer +
+                    '" for this "' + this.type + '."', _Exception.CONTROL);
                 return false;
             }
 
             var rootElement = this._rootElement = this._getRootElement();
             if (isNull(rootElement)) {
-                Exception = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('Cannot have a "' + this.type +
-                    '" in a hierarchy above the corresponding drawer control, such as "' + __Drawer + '."');
+                _Exception = this._Exception;
+                _Exception.warn('Cannot have a "' + this.type +
+                    '" in a hierarchy above the corresponding control such as "' + __Drawer + '."', _Exception.CONTROL);
                 return false;
             }
 
@@ -2080,7 +2094,7 @@
          */
         protected _getRootElement(): HTMLElement {
             var drawer = this._drawer,
-                $utils = this.$utils;
+                $utils = this._utils;
 
             if (!$utils.isNull(drawer.storedProperties)) {
                 return drawer.storedProperties.parentEl;
@@ -2096,7 +2110,7 @@
                 element = parent;
             }
 
-            var $window = this.$window,
+            var $window = this._window,
                 computedStyle = $window.getComputedStyle(element),
                 style = element.style,
                 position = computedStyle.position,

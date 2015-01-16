@@ -22,19 +22,6 @@ module platui {
      */
     export class Button extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * @name $document
-         * @memberof platui.Button
-         * @kind property
-         * @access public
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        $document: Document = plat.acquire(__Document);
-
-        /**
          * @name replaceWith
          * @memberof platui.Button
          * @kind property
@@ -73,6 +60,19 @@ module platui {
          * The button groups name if a button group is present.
          */
         groupName = '';
+
+        /**
+         * @name _document
+         * @memberof platui.Button
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document = plat.acquire(__Document);
 
         /**
          * @name _isSelected
@@ -134,7 +134,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var $document = this.$document,
+            var $document = this._document,
                 element = this.element,
                 childNodes = Array.prototype.slice.call(element.childNodes),
                 childNode: Node,
