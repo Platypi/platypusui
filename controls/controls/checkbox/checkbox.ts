@@ -11,19 +11,6 @@
      */
     export class Checkbox extends Toggle {
         /**
-         * @name $document
-         * @memberof platui.Checkbox
-         * @kind property
-         * @access public
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        $document: Document = plat.acquire(__Document);
-
-        /**
          * @name templateString
          * @memberof platui.Checkbox
          * @kind property
@@ -51,6 +38,19 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
+
+        /**
+         * @name _document
+         * @memberof platui.Checkbox
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document = plat.acquire(__Document);
 
         /**
          * @name _targetTypeSet
@@ -97,14 +97,14 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var isNull = this.$utils.isNull,
+            var isNull = this._utils.isNull,
                 innerTemplate = this.innerTemplate;
 
             if (isNull(innerTemplate)) {
                 return;
             }
 
-            var $document = this.$document,
+            var $document = this._document,
                 element = this.element,
                 childNodes = Array.prototype.slice.call(innerTemplate.childNodes),
                 childNode: Node,
@@ -153,8 +153,8 @@
                 case 'x':
                     break;
                 default:
-                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.');
+                    var _Exception = this._Exception;
+                    _Exception.warn('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.', _Exception.CONTROL);
                     this._targetType = 'check';
                     break;
             }
@@ -211,7 +211,7 @@
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var $utils = this.$utils;
+            var $utils = this._utils;
             if ($utils.isBoolean(newValue)) {
                 return this.setProperty(newValue, oldValue, true);
             } else if (!$utils.isString(newValue)) {

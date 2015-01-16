@@ -23,9 +23,9 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-progress-container">' +
-        '    <div class="plat-animated-ring"></div>' +
-        '</div>';
+        '<div class="plat-progress-container">\n' +
+        '    <div class="plat-animated-ring"></div>\n' +
+        '</div>\n';
 
         /**
          * @name setClasses

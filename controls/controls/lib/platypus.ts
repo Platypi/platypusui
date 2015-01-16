@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.0-beta.2 (http://getplatypi.com) 
+ * PlatypusTS v0.10.0-beta.4 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -757,7 +757,7 @@ module plat {
     }
     
     function serializeQuery(query: plat.IObject<string>): string {
-        return !isNull(query) ? '?' + map((value, key) => {
+        return (isArray(query) || isObject(query)) && !isEmpty(query) ? '?' + map((value, key) => {
             return key + '=' + value;
         }, query).join('&') : '';
     }
@@ -5879,11 +5879,17 @@ module plat {
              * @param url The URL to format.
              */
             formatUrl(url: string): string {
-                var $config = Browser.config;
+                var $config = Browser.config,
+                    baseUrl = $config.baseUrl;
+
+                if (url === $config.baseUrl) {
+                    return url;
+                }
 
                 if ((!this._regex.fullUrlRegex.test(url) || url.indexOf($config.baseUrl) > -1) && $config.routingType === $config.HASH) {
                     var hasProtocol = url.indexOf(this.urlUtils().protocol) !== -1,
                         prefix = $config.hashPrefix || '',
+                        append = '#' + prefix,
                         hashRegex = new RegExp('#' + prefix + '|#/');
 
                     if (url[0] === '/') {
@@ -21546,8 +21552,11 @@ module plat {
                         return;
                     }
 
-                    var options = this.options || {},
-                        value = this.options.value;
+                    if (!isObject(this.options)) {
+                        return '';
+                    }
+
+                    var value = this.options.value;
 
                     if (!isObject(value)) {
                         return '';
@@ -22471,7 +22480,7 @@ module plat {
 
                         var replacement = ElementManager._document.createElement(replacementType);
                         if (replacement.nodeType === Node.ELEMENT_NODE) {
-                            element = replaceWith(element, <HTMLElement>replacement.cloneNode(true));
+                            element = replaceWith(element, <HTMLElement>replacement);
                         }
                     }
                 }
@@ -22666,7 +22675,8 @@ module plat {
                         newNodes.push({
                             control: control,
                             expressions: node.expressions,
-                            node: !attributes ? null : (attributes.getNamedItem(nodeName) || attributes.getNamedItem(__AttributePrefix + nodeName)),
+                            node: !attributes ? null : (attributes.getNamedItem(nodeName) ||
+                            attributes.getNamedItem(__AttributePrefix + nodeName)),
                             nodeName: nodeName,
                             injector: injector
                         });
@@ -23477,8 +23487,7 @@ module plat {
                 ElementManager._ResourcesFactory.addControlResources(uiControl);
                 uiControl.type = controlNode.nodeName;
 
-                uiControl.bindableTemplates = uiControl.bindableTemplates ||
-                ElementManager._BindableTemplatesFactory.create(uiControl);
+                uiControl.bindableTemplates = uiControl.bindableTemplates || this._BindableTemplatesFactory.create(uiControl);
 
                 if (childNodes.length > 0 && (!isEmpty(uiControl.templateString) || !isEmpty(uiControl.templateUrl))) {
                     uiControl.innerTemplate = <DocumentFragment>appendChildren(childNodes);
@@ -24079,7 +24088,7 @@ module plat {
 
 
         export class Navigator {
-            protected static root: Navigator;
+            protected static _root: Navigator;
 
             /**
              * The IPromise injectable instance
@@ -24103,6 +24112,7 @@ module plat {
 
             protected _EventManager: events.IEventManagerStatic = acquire(__EventManagerStatic);
             protected _window: Window = acquire(__Window);
+            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
 
             /**
              * The router associated with this link.
@@ -24124,9 +24134,9 @@ module plat {
             initialize(router: Router) {
                 this.router = router;
 
-                if (router.isRoot) {
+                if (router.isRoot && !isObject(Navigator._root)) {
                     this.isRoot = true;
-                    Navigator.root = this;
+                    Navigator._root = this;
                     this._observeUrl();
                 }
             }
@@ -24147,7 +24157,7 @@ module plat {
             }
 
             protected _finishNavigating(): async.IThenable<void> {
-                var router = Navigator.root.router;
+                var router = Navigator._root.router;
 
                 if (router.navigating) {
                     return router.finishNavigating;
@@ -24158,7 +24168,7 @@ module plat {
 
             protected _navigate(url: string, replace?: boolean): async.IThenable<void> {
                 if (!this.isRoot) {
-                    return Navigator.root._navigate(url, replace);
+                    return Navigator._root._navigate(url, replace);
                 }
 
                 return new this._Promise<void>((resolve, reject) => {
@@ -24178,7 +24188,7 @@ module plat {
                 }
 
                 if (!this.isRoot) {
-                    Navigator.root.goBack(options);
+                    Navigator._root.goBack(options);
                 }
 
                 var _history = this._history,
@@ -24187,7 +24197,7 @@ module plat {
                 this.backNavigate = true;
                 _history.go(-length);
             
-                setTimeout(() => {
+                defer(() => {
                     if (!this.ignored && url === this._browser.url()) {
                         this._EventManager.dispatch(__shutdown, this, this._EventManager.DIRECT);
                     }
@@ -24209,7 +24219,8 @@ module plat {
                     prefix: string,
                     previousUrl: string,
                     previousQuery: string,
-                    backNavigate: boolean;
+                    backNavigate: boolean,
+                    _Exception = this._Exception;
 
                 this.previousUrl = this._browser.url();
 
@@ -24247,13 +24258,19 @@ module plat {
                                     this.resolveNavigate();
                                 }
                             })
-                            .catch((e) => {
+                            .catch((e: any) => {
                                 this.ignoreOnce = true;
                                 this.previousUrl = previousUrl;
+
                                 this._browser.url(previousUrl, !backNavigate);
+                                this._history.go(-1);
 
                                 if (isFunction(this.rejectNavigate)) {
                                     this.rejectNavigate(e);
+                                }
+
+                                if (!isEmpty(e)) {
+                                    _Exception.warn(e, _Exception.NAVIGATION);
                                 }
                             });
                     });
@@ -24282,8 +24299,8 @@ module plat {
 
         export interface INavigateOptions {
             isUrl?: boolean;
-            parameters?: IObject<string>;
-            query?: IObject<string>;
+            parameters?: IObject<any>;
+            query?: IObject<any>;
             replace?: boolean;
         }
 
@@ -25383,7 +25400,6 @@ module plat {
             protected _Promise: async.IPromise = acquire(__Promise);
             protected _Injector: typeof dependency.Injector = acquire(__InjectorStatic);
             protected _EventManager: events.IEventManagerStatic = acquire(__EventManagerStatic);
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
             protected _browser: web.IBrowser = acquire(__Browser);
             protected _browserConfig: web.IBrowserConfig = acquire(__BrowserConfig);
             protected _resolve: typeof async.Promise.resolve = this._Promise.resolve.bind(this._Promise);
@@ -25416,6 +25432,7 @@ module plat {
                 this.uid = uniqueId(__Plat);
                 this.isRoot = isNull(Router.currentRouter());
                 Router.currentRouter(this);
+                this.initialize();
             }
 
             initialize(parent?: Router) {
@@ -25490,17 +25507,22 @@ module plat {
             configure(routes: Array<IRouteMapping>): async.IThenable<void>;
             configure(routes: any) {
                 if (isArray(routes)) {
-                    return mapAsync((route: IRouteMapping) => {
-                        return this.configure(route);
-                    }, routes).then((): void => undefined);
+                    forEach((route: IRouteMapping) => {
+                        this._configureRoute(route);
+                    }, routes);
+                } else {
+                    this._configureRoute(routes);
                 }
 
+                return this.forceNavigate();
+            }
+
+            protected _configureRoute(route: IRouteMapping) {
                 var resolve = this._resolve,
-                    route: IRouteMapping = routes,
                     view: string = this._Injector.convertDependency(route.view);
 
                 if (view === __NOOP_INJECTOR) {
-                    return resolve();
+                    return;
                 }
 
                 route.view = view;
@@ -25520,8 +25542,6 @@ module plat {
 
                 this.recognizer.register([routeDelegate], { name: view });
                 this.childRecognizer.register([childDelegate]);
-
-                return this.forceNavigate();
             }
 
             param(handler: (value: any, parameters: any, query: any) => any, parameter: string, view: string): Router;
@@ -25537,7 +25557,9 @@ module plat {
             }
 
             protected _addHandler(handler: (value: string, values: any, query?: any) => any, parameter: string, view: any, handlers: IObject<IRouteTransforms>) {
-                view = this._Injector.convertDependency(view);
+                if (view !== '*') {
+                    view = this._Injector.convertDependency(view);
+                }
 
                 if (isEmpty(view) || isEmpty(parameter)) {
                     return this;
@@ -25563,7 +25585,9 @@ module plat {
             intercept(handler: (routeInfo: IRouteInfo) => any, view: string): Router;
             intercept(handler: (routeInfo: IRouteInfo) => any, view: new (...args: any[]) => any): Router;
             intercept(handler: (routeInfo: IRouteInfo) => any, view: any) {
-                view = this._Injector.convertDependency(view);
+                if (view !== '*') {
+                    view = this._Injector.convertDependency(view);
+                }
 
                 if (isEmpty(view)) {
                     return this;
@@ -25581,6 +25605,10 @@ module plat {
             }
 
             navigate(url: string, query?: IObject<any>, force?: boolean): async.IThenable<void> {
+                if (!isObject(query)) {
+                    query = {};
+                }
+
                 var resolve = this._resolve,
                     reject = this._reject,
                     queryString = serializeQuery(query);
@@ -25591,7 +25619,7 @@ module plat {
 
                 force = force === true;
 
-                if (!isString(url) || this.navigating || (!force && url === this.previousUrl)) {
+                if (!isString(url) || this.navigating || (!force && url === this.previousUrl && queryString === this.previousQuery)) {
                     if (this.navigating) {
                         return this.finishNavigating;
                     }
@@ -25698,8 +25726,7 @@ module plat {
                 }
 
                 if (isNull(router)) {
-                    var _Exception: IExceptionStatic = this._Exception;
-                    _Exception.fatal('Route does not exist', _Exception.NAVIGATION);
+                    throw new Error('Route: ' + name + ' does not exist');
                     return;
                 }
 
@@ -25716,11 +25743,14 @@ module plat {
             }
 
             navigateChildren(info: IRouteInfo) {
-                var resolve = this._resolve,
-                    childRoute = this.getChildRoute(info);
+                var childRoute = this.getChildRoute(info);
 
                 if (isNull(childRoute)) {
-                    return resolve();
+                    return this._resolve();
+                }
+
+                if (!isEmpty(childRoute) && childRoute !== '/' && isEmpty(this.children)) {
+                    return this._reject(new Error('Child route: ' + childRoute + ' does not exist'));
                 }
 
                 return mapAsync((child: Router) => {
@@ -25735,8 +25765,8 @@ module plat {
 
                 var childRoute = info.parameters.childRoute;
 
-                if (isEmpty(childRoute)) {
-                    return;
+                if (!isString(childRoute)) {
+                    childRoute = '';
                 }
 
                 return '/' + childRoute;
@@ -25788,13 +25818,18 @@ module plat {
                 var Promise = this._Promise,
                     resolve = Promise.resolve.bind(Promise);
 
-                return this.callHandlers(this.queryTransforms[view], query)
+                return this.callHandlers(this.queryTransforms['*'], query)
+                    .then(() => this.callHandlers(this.queryTransforms[view], query))
+                    .then(() => this.callHandlers(this.paramTransforms['*'], parameters, query))
                     .then(() => this.callHandlers(this.paramTransforms[view], parameters, query))
                     .then((): void => undefined);
             }
 
             callHandlers(allHandlers: IRouteTransforms, obj: any, query?: any) {
                 var resolve = this._resolve;
+                if (!isObject(obj)) {
+                    obj = {};
+                }
 
                 return mapAsync((handlers: Array<(value: string, values: any, query?: any) => any>, key: string) => {
                     return mapAsyncInOrder((handler) => {
@@ -25806,9 +25841,19 @@ module plat {
             callInterceptors(info: IRouteInfo): async.IThenable<boolean> {
                 var resolve = this._resolve;
 
-                return mapAsync((handler: (routeInfo: IRouteInfo) => any) => {
+                return mapAsyncInOrder((handler: (routeInfo: IRouteInfo) => any) => {
                     return resolve(handler(info));
-                }, this.interceptors[info.delegate.view])
+                }, this.interceptors['*'])
+                    .then(booleanReduce)
+                    .then((canNavigate: boolean) => {
+                        if (!canNavigate) {
+                            return <any>[canNavigate];
+                        }
+
+                        return mapAsync((handler: (routeInfo: IRouteInfo) => any) => {
+                            return resolve(handler(info));
+                        }, this.interceptors[info.delegate.view])
+                    })
                     .then(booleanReduce);
             }
 
@@ -25849,32 +25894,24 @@ module plat {
                         if (!canNavigateTo) {
                             promises = [canNavigateTo];
                         } else {
-                            var childRoute = this.getChildRoute(info);
+                            var childRoute = this.getChildRoute(info),
+                                childResult: IRouteResult,
+                                childInfo: IRouteInfo;
 
-                            if (isEmpty(childRoute)) {
-                                forEach((child: Router) => {
+                            promises = [];
+
+                            this.children.reduce((promises: Array<async.IThenable<boolean>>, child: Router) => {
+                                childResult = child.recognizer.recognize(childRoute);
+
+                                if (isEmpty(childResult)) {
                                     child._clearInfo();
-                                }, this.children);
-                                promises = [true];
-                            } else {
-                                var childResult: IRouteResult,
-                                    childInfo: IRouteInfo;
+                                    return;
+                                }
 
-                                promises = [];
-
-                                this.children.reduce((promises: Array<async.IThenable<boolean>>, child: Router) => {
-                                    childResult = child.childRecognizer.recognize(childRoute);
-
-                                    if (isEmpty(childResult)) {
-                                        child._clearInfo();
-                                        return;
-                                    }
-
-                                    childInfo = childResult[0];
-                                    childInfo.query = info.query;
-                                    return promises.concat(child.canNavigateTo(childInfo));
-                                }, promises);
-                            }
+                                childInfo = childResult[0];
+                                childInfo.query = info.query;
+                                return promises.concat(child.canNavigateTo(childInfo));
+                            }, promises);
                         }
 
                         return this._Promise.all(promises);
@@ -25885,14 +25922,27 @@ module plat {
             protected _isSameRoute(info: IRouteInfo) {
                 var currentRouteInfo = this.currentRouteInfo;
 
-                return isObject(currentRouteInfo) &&
-                currentRouteInfo.delegate.view === info.delegate.view &&
-                currentRouteInfo.delegate.pattern === info.delegate.pattern;
+                if (!isObject(currentRouteInfo)) {
+                    return false;
+                }
+
+                var currentDelegate = currentRouteInfo.delegate,
+                    delegate = info.delegate,
+                    currentParameters = serializeQuery(currentRouteInfo.parameters),
+                    parameters = serializeQuery(info.parameters),
+                    currentQuery = serializeQuery(currentRouteInfo.query),
+                    query = serializeQuery(info.query);
+
+                return currentDelegate.view === delegate.view &&
+                    currentDelegate.pattern === delegate.pattern &&
+                    currentParameters === parameters &&
+                    currentQuery === query;
             }
 
             protected _clearInfo() {
                 this.previousPattern = undefined;
                 this.previousUrl = undefined;
+                this.previousQuery = undefined;
                 this.currentRouteInfo = undefined;
                 this.navigating = false;
                 forEach((child) => {
@@ -25902,9 +25952,7 @@ module plat {
         }
 
         export function IRouter() {
-            var router = new Router();
-            router.initialize();
-            return router;
+            return new Router();
         }
 
         plat.register.injectable(__Router, IRouter, null, __INSTANCE);
@@ -28500,10 +28548,7 @@ module plat {
                 return;
             }
 
-            var app = App.app = appInjector.inject(),
-                navigator: routing.Navigator = app.navigator = acquire(__NavigatorInstance);
-
-            navigator.initialize((<typeof routing.Router>acquire(__RouterStatic)).currentRouter());
+            var app = App.app = appInjector.inject();
 
             app.on(__suspend, app.suspend);
             app.on(__resume, app.resume);
@@ -28550,7 +28595,9 @@ module plat {
          * as well as error handling and navigation events.
          */
         constructor() {
-            var _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
+            var _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic),
+                navigator: routing.Navigator = this.navigator = acquire(__NavigatorInstance);
+            navigator.initialize((<typeof routing.Router>acquire(__RouterStatic)).currentRouter());
             _ContextManager.defineGetter(this, 'uid', uniqueId(__Plat));
         }
 

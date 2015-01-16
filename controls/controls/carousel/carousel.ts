@@ -13,71 +13,6 @@
      */
     export class Carousel extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * @name $utils
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
-        /**
-         * @name $compat
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ICompat}
-         * 
-         * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
-         */
-        $compat: plat.ICompat = plat.acquire(__Compat);
-
-        /**
-         * @name $document
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        $document: Document = plat.acquire(__Document);
-
-        /**
-         * @name $window
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {Window}
-         * 
-         * @description
-         * Reference to the Window injectable.
-         */
-        $window: Window = plat.acquire(__Window);
-
-        /**
-         * @name $animator
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ui.animations.IAnimator}
-         * 
-         * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
-         */
-        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
-
-        /**
          * @name templateString
          * @memberof platui.Carousel
          * @kind property
@@ -147,6 +82,71 @@
         get index(): number {
             return this._index;
         }
+
+        /**
+         * @name _utils
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name _compat
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        protected _compat: plat.ICompat = plat.acquire(__Compat);
+
+        /**
+         * @name _document
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document = plat.acquire(__Document);
+
+        /**
+         * @name _window
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window = plat.acquire(__Window);
+
+        /**
+         * @name _animator
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         */
+        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
          * @name _orientation
@@ -427,7 +427,7 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var itemContainer = this.$document.createElement('div'),
+            var itemContainer = this._document.createElement('div'),
                 container = this._container = <HTMLElement>this.element.firstElementChild;
             itemContainer.className = 'plat-carousel-item';
             itemContainer.appendChild(this.innerTemplate);
@@ -446,11 +446,11 @@
          * @returns {void}
          */
         loaded(): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 context = this.context;
             if (!$utils.isArray(context)) {
-                var Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('The context of a ' + this.type + ' must be an Array.');
+                var _Exception = this._Exception;
+                _Exception.warn('The context of a ' + this.type + ' must be an Array.', _Exception.CONTEXT);
                 return;
             }
 
@@ -490,9 +490,9 @@
          * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any, firstSet?: boolean): void {
-            if (!this.$utils.isNumber(newValue)) {
+            if (!this._utils.isNumber(newValue)) {
                 newValue = Number(newValue);
-                if (!this.$utils.isNumber(newValue)) {
+                if (!this._utils.isNumber(newValue)) {
                     return;
                 }
             }
@@ -634,9 +634,9 @@
          * @returns {void}
          */
         protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): void {
-            if (!this.$utils.isNull(this._animationThenable)) {
+            if (!this._utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
-                    this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
+                    this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
                         this._animationThenable = null;
                     });
                 });
@@ -644,7 +644,7 @@
                 return;
             }
 
-            this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
+            this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
                 this._animationThenable = null;
             });
         }
@@ -672,8 +672,9 @@
                     this._onLoad();
                 }
             }).catch(() => {
-                    var Exception = plat.acquire(__ExceptionStatic);
-                    Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.');
+                    var _Exception = this._Exception;
+                _Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.',
+                    _Exception.CONTROL);
                     this._loaded = false;
                     return;
                 });
@@ -709,7 +710,7 @@
 
             this.observeArray(this, __CONTEXT, null, this._verifyLength);
 
-            this.addEventListener(this.$window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', () => {
                 this._setPosition();
             }, false);
         }
@@ -726,7 +727,7 @@
          * @returns {void}
          */
         protected _initializeTap(): void {
-            var $document = this.$document,
+            var $document = this._document,
                 element = this.element,
                 backArrowContainer = $document.createElement('div'),
                 forwardArrowContainer = $document.createElement('div'),
@@ -875,7 +876,7 @@
                 return;
             }
 
-            if (!this.$utils.isNull(this._animationThenable)) {
+            if (!this._utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
                     this._inTouch = true;
                     this._lastTouch = {
@@ -1006,11 +1007,11 @@
          */
         protected _setTransform(): void {
             var style = this.element.style,
-                isUndefined = this.$utils.isUndefined,
+                isUndefined = this._utils.isUndefined,
                 transform: string;
 
             if (isUndefined(style.transform)) {
-                var vendorPrefix = this.$compat.vendorPrefix;
+                var vendorPrefix = this._compat.vendorPrefix;
                 if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                     transform = this._transform = vendorPrefix.lowerCase + 'Transform';
                 } else if (!isUndefined(style[<any>(vendorPrefix.js + 'Transform')])) {
@@ -1035,7 +1036,7 @@
          * @returns {boolean} Whether or not all necessary dimensions were set.
          */
         protected _setPosition(element?: HTMLElement): boolean {
-            var isNode = this.$utils.isNode(element),
+            var isNode = this._utils.isNode(element),
                 el = isNode ? element : this._container,
                 dependencyProperty: string;
 
@@ -1075,20 +1076,20 @@
          */
         protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
-                body = this.$document.body;
+                body = this._document.body;
 
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                    var _Exception = this._Exception,
                         type = this.type;
-                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type);
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
 
-                this.$utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
+                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -1096,7 +1097,7 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this.$window,
+                $window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,

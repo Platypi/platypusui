@@ -13,55 +13,6 @@
      */
     export class Range extends plat.ui.TemplateControl implements IUIControl {
         /**
-         * @name $window
-         * @memberof platui.Range
-         * @kind property
-         * @access public
-         * 
-         * @type {Window}
-         * 
-         * @description
-         * Reference to the Window injectable.
-         */
-        $window: Window = plat.acquire(__Window);
-        /**
-         * @name $document
-         * @memberof platui.Range
-         * @kind property
-         * @access public
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        $document: Document = plat.acquire(__Document);
-        /**
-         * @name $utils
-         * @memberof platui.Range
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-        /**
-         * @name $animator
-         * @memberof platui.Range
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ui.animations.IAnimator}
-         * 
-         * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
-         */
-        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
-
-        /**
          * @name context
          * @memberof platui.Range
          * @kind property
@@ -157,6 +108,58 @@
          * The max value of the {@link platui.Range|Range}.
          */
         max: number;
+
+        /**
+         * @name _window
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window = plat.acquire(__Window);
+
+        /**
+         * @name _document
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document = plat.acquire(__Document);
+
+        /**
+         * @name _utils
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name _animator
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         */
+        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
          * @name _slider
@@ -401,10 +404,11 @@
          */
         contextChanged(): void {
             var context = this.context,
-                $utils = this.$utils;
+                $utils = this._utils;
             if (!$utils.isObject(context)) {
-                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.');
+                var _Exception = this._Exception;
+                _Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.',
+                    _Exception.CONTEXT);
                 return;
             }
 
@@ -446,7 +450,7 @@
             var context = this.context || <IRangeContext>{},
                 element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
-                $utils = this.$utils,
+                $utils = this._utils,
                 isNumber = $utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
                 options = optionObj.value || <IRangeOptions>{},
@@ -464,7 +468,7 @@
                 lower = isNumber(contextLower) ? contextLower : isNumber(optionLower) ? optionLower : min,
                 upper = isNumber(contextUpper) ? contextUpper : isNumber(optionUpper) ? optionUpper : max,
                 className = __Plat + orientation,
-                Exception: plat.IExceptionStatic;
+                _Exception: plat.IExceptionStatic;
 
             this._lowerKnob = <HTMLElement>slider.firstElementChild;
             this._upperKnob = <HTMLElement>slider.lastElementChild;
@@ -485,8 +489,9 @@
             this._step = isNumber(step) ? (step > 0 ? step : 1) : 1;
 
             if (min >= max) {
-                Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                _Exception = this._Exception;
+                _Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.',
+                    _Exception.CONTROL);
                 this.max = min + 1;
             }
 
@@ -496,8 +501,9 @@
             this._initializeEvents(orientation);
 
             if (!$utils.isObject(this.context)) {
-                Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.');
+                _Exception = this._Exception;
+                _Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.',
+                    _Exception.CONTROL);
                 return;
             }
 
@@ -521,13 +527,13 @@
          * @returns {void}
          */
         setLower(value: number): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 isNumber = $utils.isNumber;
 
             if (!$utils.isObject(this.context)) {
-                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('Cannot set the lower value of a "' + this.type + '" whose context has ' +
-                    'not yet been set to an object.');
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set the lower value of a "' + this.type + '" whose context has ' +
+                    'not yet been set to an object.', _Exception.CONTROL);
                 return;
             } else if (!isNumber(value)) {
                 var numberVal = Number(value);
@@ -556,13 +562,13 @@
          * @returns {void}
          */
         setUpper(value: number): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 isNumber = $utils.isNumber;
 
             if (!$utils.isObject(this.context)) {
-                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('Cannot set the upper value of a "' + this.type + '" whose context has ' +
-                    'not yet been set to an object.');
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set the upper value of a "' + this.type + '" whose context has ' +
+                    'not yet been set to an object.', _Exception.CONTROL);
                 return;
             } else if (!isNumber(value)) {
                 var numberVal = Number(value);
@@ -650,7 +656,7 @@
             this.addEventListener(upperKnob, reverseTrack, trackUpper, false);
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
-            this.addEventListener(this.$window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', () => {
                 this._setPositionAndLength();
                 this._setIncrement();
                 this._setLowerKnob();
@@ -678,7 +684,7 @@
 
             var target = <HTMLElement>ev.currentTarget,
                 lastTouch = this._lastTouch;
-            if (!this.$utils.isNull(lastTouch)) {
+            if (!this._utils.isNull(lastTouch)) {
                 if (lastTouch.target !== target) {
                     lastTouch.target.style.zIndex = '0';
                     target.style.zIndex = '1';
@@ -712,7 +718,7 @@
             var lastTouch = this._lastTouch,
                 target = ev.currentTarget;
 
-            if (this.$utils.isNull(lastTouch) || (lastTouch.target !== target)) {
+            if (this._utils.isNull(lastTouch) || (lastTouch.target !== target)) {
                 return;
             }
 
@@ -1118,7 +1124,7 @@
          * @returns {void}
          */
         protected _setPositionAndLength(element?: HTMLElement): void {
-            var isNode = this.$utils.isNode(element),
+            var isNode = this._utils.isNode(element),
                 el = isNode ? element : this._slider.parentElement;
 
             switch (this._orientation) {
@@ -1133,8 +1139,8 @@
                     this._maxOffset = el.offsetHeight;
                     break;
                 default:
-                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."');
+                    var _Exception = this._Exception;
+                    _Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."', _Exception.CONTROL);
                     return;
             }
 
@@ -1160,7 +1166,7 @@
         protected _setLowerKnob(value?: number): void {
             var animationOptions: plat.IObject<string> = {},
                 upperKnobOffset = this._upperKnobOffset,
-                upperOffset = this.$utils.isNumber(upperKnobOffset) ? upperKnobOffset :
+                upperOffset = this._utils.isNumber(upperKnobOffset) ? upperKnobOffset :
                 this._setOffset(this._calculateKnobPosition(this.upper), false),
                 position = this._calculateKnobPosition((value || this.lower));
 
@@ -1170,7 +1176,7 @@
 
             animationOptions[this._positionProperty] = position + 'px';
             animationOptions[this._lengthProperty] = (upperOffset - position) + 'px';
-            this.$animator.animate(this._slider, __Transition, {
+            this._animator.animate(this._slider, __Transition, {
                 properties: animationOptions
             });
             this._lowerKnobOffset = position;
@@ -1199,7 +1205,7 @@
             }
 
             animationOptions[this._lengthProperty] = (length - this._lowerKnobOffset) + 'px';
-            this.$animator.animate(this._slider, __Transition, {
+            this._animator.animate(this._slider, __Transition, {
                 properties: animationOptions
             });
             this._upperKnobOffset = length;
@@ -1239,20 +1245,20 @@
          */
         protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
-                body = this.$document.body;
+                body = this._document.body;
 
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                    var _Exception = this._Exception,
                         type = this.type;
-                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type);
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
 
-                this.$utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
+                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -1260,7 +1266,7 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this.$window,
+                $window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
