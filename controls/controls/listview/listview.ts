@@ -198,7 +198,31 @@
          */
         protected _itemTemplateSelector: (item: any, index: number) => any;
 
-        protected _nodeNameRegex = /-|./g;
+        /**
+         * @name _itemTemplatePromise
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.async.IThenable<any>}
+         * 
+         * @description
+         * A promise that denotes that items are currently being rendered.
+         */
+        protected _itemTemplatePromise: plat.async.IThenable<any>;
+
+        /**
+         * @name _nodeNameRegex
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {RegExp}
+         * 
+         * @description
+         * A regular expression for normalizing a node name by removing potential special characters.
+         */
+        protected _nodeNameRegex = /-|\.|_/g;
 
         /**
          * @name setClasses
@@ -251,8 +275,8 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var $utils = this._utils;
-            if ($utils.isString(this.templateUrl)) {
+            var _utils = this._utils;
+            if (_utils.isString(this.templateUrl)) {
                 var fragment = this.dom.serializeHtml(this.templateString),
                     element = this.element;
 
@@ -262,7 +286,7 @@
             }
 
             var innerTemplate = this.innerTemplate;
-            if ($utils.isNode(innerTemplate)) {
+            if (_utils.isNode(innerTemplate)) {
                 this._parseTemplates(innerTemplate);
             }
         }
@@ -279,14 +303,6 @@
          * @returns {void}
          */
         //contextChanged(): void {
-        //if (!this.$utils.isArray(this.context)) {
-        //    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-        //    $exception.warn(__Listview + ' context set to something other than an Array.', $exception.CONTEXT);
-        //    return;
-        //}
-
-        //this._setListener();
-        //this.render();
         //}
 
         /**
@@ -303,7 +319,7 @@
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IListviewOptions>>{},
                 options = optionObj.value || <IListviewOptions>{},
-                $utils = this._utils,
+                _utils = this._utils,
                 orientation = this._orientation = options.orientation || 'vertical',
                 increment = this._increment = options.increment,
                 itemTemplate = options.itemTemplate,
@@ -312,15 +328,16 @@
             this._container = <HTMLElement>this.element.firstElementChild;
             this.dom.addClass(this.element, __Plat + orientation);
 
-            if (!$utils.isString(itemTemplate)) {
+            if (!_utils.isString(itemTemplate)) {
                 _Exception = this._Exception;
                 _Exception.warn('No item template or item template selector specified for ' + this.type + '.', _Exception.TEMPLATE);
+                return;
             }
 
-            this._determineItemTemplate($utils.camelCase(itemTemplate));
+            this._determineItemTemplate(itemTemplate);
 
-            if (!$utils.isArray(this.context)) {
-                if (!$utils.isNull(this.context)) {
+            if (!_utils.isArray(this.context)) {
+                if (!_utils.isNull(this.context)) {
                     _Exception = this._Exception;
                     _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
                 }
@@ -348,8 +365,8 @@
          * @returns {void}
          */
         render(index?: number, count?: number): void {
-            var $utils = this._utils,
-                isNumber = $utils.isNumber,
+            var _utils = this._utils,
+                isNumber = _utils.isNumber,
                 bindableTemplates = this.bindableTemplates,
                 controls = this.controls,
                 container = this._container;
@@ -371,14 +388,14 @@
                 itemCount = maxCount;
             }
 
-            if ($utils.isFunction(this._itemTemplateSelector)) {
+            if (_utils.isFunction(this._itemTemplateSelector)) {
                 this._disposeFromIndex(index);
                 this._renderUsingFunction(index, itemCount);
                 return;
             }
 
             var key = this._itemTemplate;
-            if ($utils.isUndefined(bindableTemplates.templates[key])) {
+            if (_utils.isUndefined(bindableTemplates.templates[key])) {
                 return;
             }
 
@@ -417,15 +434,16 @@
          * @returns {void}
          */
         protected _determineItemTemplate(itemTemplate: string): void {
-            var $utils = this._utils;
+            var _utils = this._utils,
+                templateKey = this._normalizeTemplateName(itemTemplate);
 
-            if (this._templates[itemTemplate] === true) {
-                this._itemTemplate = itemTemplate;
+            if (this._templates[templateKey] === true) {
+                this._itemTemplate = templateKey;
                 return;
             }
 
             var controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
-            if (!$utils.isFunction(controlProperty.value)) {
+            if (!_utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
                 _Exception.warn(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.',
@@ -479,15 +497,36 @@
          * @returns {void}
          */
         protected _renderUsingFunction(index: number, count: number): void {
-            var renderFn = this._itemTemplateSelector,
-                retVals = <Array<string>>[];
+            var context = this.context,
+                renderFn = this._itemTemplateSelector,
+                _Promise = this._Promise,
+                retVals = <Array<any>>[],
+                i: number, j: number;
 
-            for (var i = 0; i < count; ++i, ++index) {
-                retVals.push(renderFn(this.context[index], index));
+            for (i = 0, j = index; i < count; ++i, ++j) {
+                retVals.push(renderFn(context[j], j));
             }
 
-            this._Promise.all(retVals).then((keys) => {
+            this._itemTemplatePromise = _Promise.all(retVals).then((keys: Array<string>) => {
+                var length = keys.length,
+                    bindableTemplates = this.bindableTemplates,
+                    templates = bindableTemplates.templates,
+                    isUndefined = this._utils.isUndefined,
+                    promises = <Array<plat.async.IThenable<DocumentFragment>>>[],
+                    key: string;
 
+                for (i = 0; i < length; ++i, ++index) {
+                    key = this._normalizeTemplateName(keys[i]);
+                    if (!isUndefined(templates[key])) {
+                        promises.push(bindableTemplates.bind(key, index, this._getAliases(index)));
+                        this.currentCount++;
+                    }
+                }
+
+                this._itemTemplatePromise = _Promise.all(promises).then((fragments) => {
+                    this._appendItems(fragments);
+                    this._itemTemplatePromise = null;
+                });
             });
         }
 
@@ -521,8 +560,8 @@
          * @returns {void}
          */
         protected _parseTemplates(node: Node): void {
-            var $utils = this._utils,
-                $document = this._document,
+            var _document = this._document,
+                regex = this._nodeNameRegex,
                 templates = this._templates,
                 bindableTemplates = this.bindableTemplates,
                 slice = Array.prototype.slice,
@@ -535,14 +574,14 @@
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
                 if (childNode.nodeType === Node.ELEMENT_NODE) {
-                    fragment = $document.createDocumentFragment();
+                    fragment = _document.createDocumentFragment();
                     subNodes = slice.call(childNode.childNodes);
 
                     while (subNodes.length > 0) {
                         fragment.appendChild(subNodes.shift());
                     }
 
-                    templateName = $utils.camelCase(childNode.nodeName.toLowerCase());
+                    templateName = this._normalizeTemplateName(childNode.nodeName);
                     bindableTemplates.add(templateName, fragment);
                     templates[templateName] = true;
                 }
@@ -563,7 +602,8 @@
          * @returns {void}
          */
         protected _push(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            if (this.context.length - 1 > this.currentCount) {
+            if (this._utils.isFunction(this._itemTemplateSelector)) {
+                this._renderUsingFunction(this.context.length - 1, 1);
                 return;
             }
 
@@ -585,10 +625,6 @@
          * @returns {void}
          */
         protected _pop(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            if (this.context.length + 1 > this.currentCount) {
-                return;
-            }
-
             super._pop(ev);
             this.currentCount--;
         }
@@ -624,13 +660,13 @@
          * 
          * @returns {void}
          */
-        protected _presplice(ev: plat.observable.IPreArrayChangeInfo): void {
-            if (ev.arguments[0] > this.currentCount) {
-                return;
-            }
+        //protected _presplice(ev: plat.observable.IPreArrayChangeInfo): void {
+        //    if (ev.arguments[0] > this.currentCount) {
+        //        return;
+        //    }
 
-            super._presplice(ev);
-        }
+        //    super._presplice(ev);
+        //}
 
         /**
          * @name _splice
@@ -646,10 +682,6 @@
          * @returns {void}
          */
         protected _splice(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            if (ev.arguments[0] > this.currentCount) {
-                return;
-            }
-
             super._splice(ev);
             var args = ev.arguments;
             this.currentCount += args.length - 2 - args[2];
@@ -671,6 +703,23 @@
         protected _unshift(ev: plat.observable.IPostArrayChangeInfo<any>): void {
             super._unshift(ev);
             this.currentCount++;
+        }
+
+        /**
+         * @name _normalizeTemplateName
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Normalizes template names by removing special characters.
+         * 
+         * @param {string} templateName The name to normalize.
+         * 
+         * @returns {string} The normalized template name.
+         */
+        protected _normalizeTemplateName(templateName: string): string {
+            return templateName.toLowerCase().replace(this._nodeNameRegex, '');
         }
     }
 

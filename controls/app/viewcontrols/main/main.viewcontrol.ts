@@ -34,7 +34,7 @@ module app {
                 modal3: false,
             },
             carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }],
-            listview: [0, 1, 2, 3, 4]
+            listview: [4, 3, 2, 1, 0]
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
@@ -65,6 +65,14 @@ module app {
 
         toggleModal(modal: string) {
             this.context.modals[modal] = !this.context.modals[modal];
+        }
+
+        renderListview(item: number, index: number) {
+            if (index % 2 === 0) {
+                return 'listview-template';
+            }
+
+            return 'listview-template2';
         }
     }
 
