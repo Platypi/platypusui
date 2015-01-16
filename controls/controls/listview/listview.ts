@@ -13,67 +13,6 @@
      */
     export class Listview extends plat.ui.controls.ForEach implements IUIControl {
         /**
-         * @name $window
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {Window}
-         * 
-         * @description
-         * Reference to the Window injectable.
-         */
-        $window: Window = plat.acquire(__Window);
-        /**
-         * @name $document
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        $document: Document = plat.acquire(__Document);
-        /**
-         * @name $utils
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-        /**
-         * @name $compat
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ICompat}
-         * 
-         * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
-         */
-        $compat: plat.ICompat = plat.acquire(__Compat);
-        /**
-         * @name $promise
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.async.IPromise}
-         * 
-         * @description
-         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
-         */
-        $promise: plat.async.IPromise = plat.acquire(__Promise);
-
-        /**
          * @name templateString
          * @memberof platui.Listview
          * @kind property
@@ -111,6 +50,84 @@
          * The number of items currently loaded.
          */
         currentCount = 0;
+
+        /**
+         * @name _window
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window = plat.acquire(__Window);
+
+        /**
+         * @name _document
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document = plat.acquire(__Document);
+
+        /**
+         * @name _utils
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name _compat
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        protected _compat: plat.ICompat = plat.acquire(__Compat);
+
+        /**
+         * @name _Promise
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.async.IPromise}
+         * 
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
+
+        /**
+         * @name _TemplateControl
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.ITemplateControlFactory}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
+         */
+        protected _TemplateControl: plat.ui.ITemplateControlFactory = plat.acquire(__TemplateControlFactory);
 
         /**
          * @name _templates
@@ -174,12 +191,14 @@
          * @kind property
          * @access protected
          * 
-         * @type {(item: any, templates?: plat.IObject<Node>) => any}
+         * @type {(item: any, index: number) => string|plat.async.IPromise}
          * 
          * @description
          * The selector function used to obtain the template key for each item.
          */
-        protected _itemTemplateSelector: (item: any, templates?: plat.IObject<Node>) => any;
+        protected _itemTemplateSelector: (item: any, index: number) => any;
+
+        protected _nodeNameRegex = /-|./g;
 
         /**
          * @name setClasses
@@ -232,7 +251,7 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var $utils = this.$utils;
+            var $utils = this._utils;
             if ($utils.isString(this.templateUrl)) {
                 var fragment = this.dom.serializeHtml(this.templateString),
                     element = this.element;
@@ -284,26 +303,26 @@
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IListviewOptions>>{},
                 options = optionObj.value || <IListviewOptions>{},
-                $utils = this.$utils,
+                $utils = this._utils,
                 orientation = this._orientation = options.orientation || 'vertical',
                 increment = this._increment = options.increment,
                 itemTemplate = options.itemTemplate,
-                $exception: plat.IExceptionStatic;
+                _Exception: plat.IExceptionStatic;
 
             this._container = <HTMLElement>this.element.firstElementChild;
             this.dom.addClass(this.element, __Plat + orientation);
 
             if (!$utils.isString(itemTemplate)) {
-                $exception = plat.acquire(__ExceptionStatic);
-                $exception.warn('No item template or item template selector specified for ' + this.type + '.', $exception.TEMPLATE);
+                _Exception = this._Exception;
+                _Exception.warn('No item template or item template selector specified for ' + this.type + '.', _Exception.TEMPLATE);
             }
 
             this._determineItemTemplate($utils.camelCase(itemTemplate));
 
             if (!$utils.isArray(this.context)) {
                 if (!$utils.isNull(this.context)) {
-                    $exception = plat.acquire(__ExceptionStatic);
-                    $exception.warn(this.type + ' context set to something other than an Array.', $exception.CONTEXT);
+                    _Exception = this._Exception;
+                    _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
                 }
                 return;
             }
@@ -329,7 +348,7 @@
          * @returns {void}
          */
         render(index?: number, count?: number): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 isNumber = $utils.isNumber,
                 bindableTemplates = this.bindableTemplates,
                 controls = this.controls,
@@ -398,7 +417,7 @@
          * @returns {void}
          */
         protected _determineItemTemplate(itemTemplate: string): void {
-            var $utils = this.$utils;
+            var $utils = this._utils;
 
             if (this._templates[itemTemplate] === true) {
                 this._itemTemplate = itemTemplate;
@@ -407,10 +426,10 @@
 
             var controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
             if (!$utils.isFunction(controlProperty.value)) {
-                var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                $exception.warn(__Listview + ' item template "' + itemTemplate +
+                var _Exception = this._Exception;
+                _Exception.warn(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.',
-                    $exception.TEMPLATE);
+                    _Exception.TEMPLATE);
                 return;
             }
 
@@ -434,7 +453,7 @@
             var controls = this.controls;
 
             if (controls.length > 0) {
-                var dispose = plat.ui.TemplateControl.dispose;
+                var dispose = this._TemplateControl.dispose;
                 for (var i = this.context.length - 1; i >= index; --i) {
                     if (controls.length > i) {
                         dispose(controls[i]);
@@ -460,7 +479,16 @@
          * @returns {void}
          */
         protected _renderUsingFunction(index: number, count: number): void {
+            var renderFn = this._itemTemplateSelector,
+                retVals = <Array<string>>[];
 
+            for (var i = 0; i < count; ++i, ++index) {
+                retVals.push(renderFn(this.context[index], index));
+            }
+
+            this._Promise.all(retVals).then((keys) => {
+
+            });
         }
 
         /**
@@ -493,8 +521,8 @@
          * @returns {void}
          */
         protected _parseTemplates(node: Node): void {
-            var $utils = this.$utils,
-                $document = this.$document,
+            var $utils = this._utils,
+                $document = this._document,
                 templates = this._templates,
                 bindableTemplates = this.bindableTemplates,
                 slice = Array.prototype.slice,
