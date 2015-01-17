@@ -499,9 +499,13 @@
         protected _renderUsingFunction(index: number, count: number): plat.async.IThenable<any> {
             var _utils = this._utils;
             if (!_utils.isNull(this._itemTemplatePromise)) {
-                return this._itemTemplatePromise = this._itemTemplatePromise.then(() => {
+                var templatePromise = this._itemTemplatePromise = this._itemTemplatePromise.then(() => {
+                    if (this._itemTemplatePromise === templatePromise) {
+                        this._itemTemplatePromise = null;
+                    }
                     return this._renderUsingFunction(index, count);
                 });
+                return templatePromise;
             }
 
             var context = this.context,
