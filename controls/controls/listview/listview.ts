@@ -494,9 +494,16 @@
          * @param {number} index The starting index to render.
          * @param {number} count The number of items to render.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
-        protected _renderUsingFunction(index: number, count: number): void {
+        protected _renderUsingFunction(index: number, count: number): plat.async.IThenable<any> {
+            var _utils = this._utils;
+            if (!_utils.isNull(this._itemTemplatePromise)) {
+                return this._itemTemplatePromise = this._itemTemplatePromise.then(() => {
+                    return this._renderUsingFunction(index, count);
+                });
+            }
+
             var context = this.context,
                 renderFn = this._itemTemplateSelector,
                 _Promise = this._Promise,
@@ -507,7 +514,7 @@
                 retVals.push(renderFn(context[j], j));
             }
 
-            this._itemTemplatePromise = _Promise.all(retVals).then((keys: Array<string>) => {
+            return this._itemTemplatePromise = _Promise.all(retVals).then((keys: Array<string>) => {
                 var length = keys.length,
                     bindableTemplates = this.bindableTemplates,
                     templates = bindableTemplates.templates,
@@ -523,7 +530,7 @@
                     }
                 }
 
-                this._itemTemplatePromise = _Promise.all(promises).then((fragments) => {
+                return this._itemTemplatePromise = _Promise.all(promises).then((fragments) => {
                     this._appendItems(fragments);
                     this._itemTemplatePromise = null;
                 });
