@@ -131,14 +131,14 @@ module.exports = exports = function load(grunt) {
                     'app/viewcontrols/app.viewcontrol.css': 'app/viewcontrols/app.viewcontrol.less'
                 }
             },
-	     packaging: {
+            packaging: {
                 options: {
                     cleancss: true
                 },
                 files: {
-		      'dist/platypus.min.css': 'dist/platypus.less'
+                    'dist/platypus.min.css': 'dist/platypus.less'
                 }
-	    }
+            }
         },
         open: {
             dev: {
