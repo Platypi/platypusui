@@ -12,53 +12,56 @@
      */
     export class Slider extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * @name $window
+         * @name _window
          * @memberof platui.Slider
          * @kind property
-         * @access public
+         * @access protected
          * 
          * @type {Window}
          * 
          * @description
          * Reference to the Window injectable.
          */
-        $window: Window = plat.acquire(__Window);
+        protected _window: Window = plat.acquire(__Window);
+
         /**
-         * @name $document
+         * @name _document
          * @memberof platui.Slider
          * @kind property
-         * @access public
+         * @access protected
          * 
          * @type {Document}
          * 
          * @description
          * Reference to the Document injectable.
          */
-        $document: Document = plat.acquire(__Document);
+        protected _document: Document = plat.acquire(__Document);
+
         /**
-         * @name $utils
+         * @name _utils
          * @memberof platui.Slider
          * @kind property
-         * @access public
+         * @access protected
          * 
          * @type {plat.IUtils}
          * 
          * @description
          * Reference to the {@link plat.IUtils|IUtils} injectable.
          */
-        $utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
         /**
-         * @name $animator
+         * @name _animator
          * @memberof platui.Slider
          * @kind property
-         * @access public
+         * @access protected
          * 
          * @type {plat.ui.animations.IAnimator}
          * 
          * @description
          * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
          */
-        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
          * @name templateString
@@ -72,11 +75,11 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-slider-container">' +
-        '    <div class="plat-slider-offset">' +
-        '        <div class="plat-knob"></div>' +
-        '    </div>' +
-        '</div>';
+        '<div class="plat-slider-container">\n' +
+        '    <div class="plat-slider-offset">\n' +
+        '        <div class="plat-knob"></div>\n' +
+        '    </div>\n' +
+        '</div>\n';
 
         /**
          * @name options
@@ -351,7 +354,7 @@
         loaded(): void {
             var element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
-                isNumber = this.$utils.isNumber,
+                isNumber = this._utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
                 options = optionObj.value || <ISliderOptions>{},
                 optionValue = Number(options.value),
@@ -379,8 +382,9 @@
             this._step = isNumber(step) ? (step > 0 ? step : 1) : 1;
 
             if (min >= max) {
-                var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                var _Exception = this._Exception;
+                _Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.',
+                    _Exception.CONTROL);
                 this.max = min + 1;
             }
 
@@ -407,7 +411,7 @@
          * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any): void {
-            if (!this.$utils.isNumber(newValue)) {
+            if (!this._utils.isNumber(newValue)) {
                 newValue = this.min;
             }
 
@@ -434,7 +438,7 @@
          * @returns {void}
          */
         setValue(value: number): void {
-            if (!this.$utils.isNumber(value)) {
+            if (!this._utils.isNumber(value)) {
                 return;
             }
 
@@ -568,7 +572,7 @@
             this.addEventListener(knob, track, trackFn, false);
             this.addEventListener(knob, reverseTrack, trackFn, false);
             this.addEventListener(knob, __$trackend, this._touchEnd, false);
-            this.addEventListener(this.$window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', () => {
                 this._setLength();
                 this._setIncrement();
                 this._setKnob();
@@ -631,8 +635,8 @@
                         (this._knobOffset + ev.clientX - this._lastTouch.x);
                 case 'vertical':
                     return this._reversed ?
-                        (this._knobOffset + this._lastTouch.y - ev.clientY) :
-                        (this._knobOffset + ev.clientY - this._lastTouch.y);
+                        (this._knobOffset + ev.clientY - this._lastTouch.y) :
+                        (this._knobOffset + this._lastTouch.y - ev.clientY);
                 default:
                     return 0;
             }
@@ -652,7 +656,7 @@
          * @returns {void}
          */
         protected _setLength(element?: HTMLElement): void {
-            var isNode = this.$utils.isNode(element),
+            var isNode = this._utils.isNode(element),
                 el = isNode ? element : this._slider.parentElement;
 
             switch (this._orientation) {
@@ -665,13 +669,13 @@
                     this._maxOffset = el.offsetHeight;
                     break;
                 default:
-                    var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."');
+                    var _Exception = this._Exception;
+                    _Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."', _Exception.CONTROL);
                     return;
             }
 
             if (!(isNode || this._maxOffset)) {
-                this._setOffsetWithClone();
+                this._setOffsetWithClone(this._lengthProperty);
             }
         }
 
@@ -753,7 +757,7 @@
             }
 
             animationOptions[this._lengthProperty] = length + 'px';
-            this.$animator.animate(this._slider, __Transition, {
+            this._animator.animate(this._slider, __Transition, {
                 properties: animationOptions
             });
             this._knobOffset = length;
@@ -786,25 +790,27 @@
          * 
          * @description
          * Creates a clone of this element and uses it to find the max offset.
-         * 
+         *
+         * @param {string} dependencyProperty The property that the offset is being based off of.
+         *
          * @returns {void}
          */
-        protected _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
-                body = this.$document.body;
+                body = this._document.body;
 
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                    var _Exception = this._Exception,
                         type = this.type;
-                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type);
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
 
-                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -812,18 +818,18 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this.$window,
+                $window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
-                width: string;
+                dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((width = (computedStyle = $window.getComputedStyle(element)).width))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }
-                shallowCopy.style.setProperty('width', width, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -845,7 +851,7 @@
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
             shallowStyle.setProperty('visibility', 'hidden', 'important');
             body.appendChild(shallowCopy);
             this._setLength(<HTMLElement>clone.firstElementChild);

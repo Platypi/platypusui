@@ -13,45 +13,6 @@
      */
     export class Input extends plat.ui.BindablePropertyControl implements IUIControl, IFormControl {
         /**
-         * @name $utils
-         * @memberof platui.Input
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
-        /**
-         * @name $compat
-         * @memberof platui.Input
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ICompat}
-         * 
-         * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
-         */
-        $compat: plat.ICompat = plat.acquire(__Compat);
-
-        /**
-         * @name $regex
-         * @memberof platui.Input
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.expressions.IRegex}
-         * 
-         * @description
-         * Reference to the {@link plat.expressions.IRegex|IRegex} injectable.
-         */
-        $regex: plat.expressions.IRegex = plat.acquire(__Regex);
-
-        /**
          * @name templateString
          * @memberof platui.Input
          * @kind property
@@ -81,6 +42,45 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IInputOptions>;
+
+        /**
+         * @name $utils
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name $compat
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        protected _compat: plat.ICompat = plat.acquire(__Compat);
+
+        /**
+         * @name $regex
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.expressions.IRegex}
+         * 
+         * @description
+         * Reference to the {@link plat.expressions.IRegex|IRegex} injectable.
+         */
+        protected _regex: plat.expressions.IRegex = plat.acquire(__Regex);
 
         /**
          * @name _imageElement
@@ -307,7 +307,7 @@
                 hasPlaceholder = false,
                 attrRegex = /plat-(?!control|hide|options)/,
                 attribute: Attr,
-                $utils = this.$utils,
+                $utils = this._utils,
                 name: string;
 
             for (var i = 0; i < length; ++i) {
@@ -355,10 +355,14 @@
                 type = this._type = this._type || options.type || 'text',
                 pattern = options.pattern;
 
+            // in case of cloning
+            this._imageElement = this._imageElement || <HTMLElement>element.firstElementChild.firstElementChild;
+            this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
+
             this.dom.addClass(element, __Plat + type);
             this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
 
-            if (this.$utils.isString(pattern)) {
+            if (this._utils.isString(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
                 }
@@ -513,7 +517,7 @@
 
             switch (type) {
                 case 'email':
-                    this._pattern = this._pattern || this.$regex.validateEmail;
+                    this._pattern = this._pattern || this._regex.validateEmail;
                     this._actionHandler = this._checkEmail.bind(this);
                     this._typeHandler = this._handleEmail;
                     break;
@@ -528,7 +532,7 @@
                     break;
                 case 'tel':
                 case 'telephone':
-                    this._pattern = this._pattern || this.$regex.validateTelephone;
+                    this._pattern = this._pattern || this._regex.validateTelephone;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
@@ -606,8 +610,8 @@
          */
         protected _addTextEventListener(): void {
             var input = this._inputElement,
-                $compat = this.$compat,
-                $utils = this.$utils,
+                $compat = this._compat,
+                $utils = this._utils,
                 composing = false,
                 timeout: plat.IRemoveListener,
                 eventListener = () => {
@@ -956,9 +960,9 @@
                         this._inputElement.value = value;
                     } else {
                         if (this._usingBind) {
-                            var Exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic);
-                            Exception.warn(this.type + ' control is bound to a value that does not satisfy ' +
-                                'the given pattern and/or type. The bound value will be reset to "".');
+                            var _Exception = this._Exception;
+                            _Exception.warn(this.type + ' control is bound to a value that does not satisfy ' +
+                                'the given pattern and/or type. The bound value will be reset to "".', _Exception.CONTROL);
                         }
                         this.propertyChanged((this._inputElement.value = ''), value);
                     }

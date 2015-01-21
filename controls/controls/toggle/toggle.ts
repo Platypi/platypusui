@@ -12,19 +12,6 @@
      */
     export class Toggle extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * @name $utils
-         * @memberof platui.Toggle
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
-        /**
          * @name templateString
          * @memberof platui.Toggle
          * @kind property
@@ -36,9 +23,9 @@
          * The HTML template represented as a string.
          */
         templateString =
-        '<div class="plat-toggle-container">' +
-        '    <div class="plat-knob"></div>' +
-        '</div>';
+        '<div class="plat-toggle-container">\n' +
+        '    <div class="plat-knob"></div>\n' +
+        '</div>\n';
 
         /**
          * @name isActive
@@ -52,6 +39,19 @@
          * A boolean value indicating whether the control is actively selected.
          */
         isActive = false;
+
+        /**
+         * @name _utils
+         * @memberof platui.Toggle
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
          * @name _targetType
@@ -127,7 +127,7 @@
          */
         loaded(): void {
             var element = this.element;
-            this._targetElement = this._targetElement || element.firstElementChild;
+            this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
         }
 

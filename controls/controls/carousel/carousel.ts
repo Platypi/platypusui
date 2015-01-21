@@ -13,71 +13,6 @@
      */
     export class Carousel extends plat.ui.BindablePropertyControl implements IUIControl {
         /**
-         * @name $utils
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
-        /**
-         * @name $compat
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ICompat}
-         * 
-         * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
-         */
-        $compat: plat.ICompat = plat.acquire(__Compat);
-
-        /**
-         * @name $document
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        $document: Document = plat.acquire(__Document);
-
-        /**
-         * @name $window
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {Window}
-         * 
-         * @description
-         * Reference to the Window injectable.
-         */
-        $window: Window = plat.acquire(__Window);
-
-        /**
-         * @name $animator
-         * @memberof platui.Carousel
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.ui.animations.IAnimator}
-         * 
-         * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
-         */
-        $animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
-
-        /**
          * @name templateString
          * @memberof platui.Carousel
          * @kind property
@@ -88,7 +23,10 @@
          * @description
          * The HTML template represented as a string.
          */
-        templateString = '<plat-foreach class="plat-carousel-container"></plat-foreach>';
+        templateString =
+        '<div class="plat-carousel-container">\n' +
+        '    <plat-foreach class="plat-carousel-slider"></plat-foreach>\n' +
+        '</div>\n';
 
         /**
          * @name context
@@ -144,6 +82,71 @@
         get index(): number {
             return this._index;
         }
+
+        /**
+         * @name _utils
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
+
+        /**
+         * @name _compat
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ICompat}
+         * 
+         * @description
+         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         */
+        protected _compat: plat.ICompat = plat.acquire(__Compat);
+
+        /**
+         * @name _document
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document = plat.acquire(__Document);
+
+        /**
+         * @name _window
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window = plat.acquire(__Window);
+
+        /**
+         * @name _animator
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         */
+        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
 
         /**
          * @name _orientation
@@ -276,6 +279,19 @@
         protected _positionProperty: string;
 
         /**
+         * @name _container
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * Denotes the interactive container element contained within the control.
+         */
+        protected _container: HTMLElement;
+
+        /**
          * @name _slider
          * @memberof platui.Carousel
          * @kind property
@@ -298,7 +314,7 @@
          * 
          * @description
          * The current number of times we checked to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
+         * Used for determining max offset width or height.
          */
         protected _cloneAttempts = 0;
 
@@ -312,7 +328,7 @@
          * 
          * @description
          * The max number of times we'll check to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
+         * Used for determining max offset width or height.
          */
         protected _maxCloneAttempts = 25;
 
@@ -375,6 +391,8 @@
          * @returns {void}
          */
         contextChanged(): void {
+            this._verifyLength();
+
             if (this._loaded) {
                 return;
             }
@@ -409,10 +427,11 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var itemContainer = this.$document.createElement('div');
+            var itemContainer = this._document.createElement('div'),
+                container = this._container = <HTMLElement>this.element.firstElementChild;
             itemContainer.className = 'plat-carousel-item';
             itemContainer.appendChild(this.innerTemplate);
-            this.element.firstElementChild.appendChild(itemContainer);
+            container.firstElementChild.appendChild(itemContainer);
         }
 
         /**
@@ -427,17 +446,18 @@
          * @returns {void}
          */
         loaded(): void {
-            var $utils = this.$utils,
+            var $utils = this._utils,
                 context = this.context;
             if (!$utils.isArray(context)) {
-                var Exception = plat.acquire(__ExceptionStatic);
-                Exception.warn('The context of a ' + this.type + ' must be an Array.');
+                var _Exception = this._Exception;
+                _Exception.warn('The context of a ' + this.type + ' must be an Array.', _Exception.CONTEXT);
                 return;
             }
 
             var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
                 orientation = this._orientation = options.orientation || 'horizontal',
+                type = options.type || 'track',
                 index = options.index;
 
             this.dom.addClass(this.element, __Plat + orientation);
@@ -446,7 +466,7 @@
             this._index = 0;
             this._onLoad = () => {
                 this.goToIndex(index);
-                this._addEventListeners(orientation);
+                this._addEventListeners(type);
             };
 
             this._init();
@@ -470,9 +490,9 @@
          * @returns {void}
          */
         setProperty(newValue: any, oldValue?: any, firstSet?: boolean): void {
-            if (!this.$utils.isNumber(newValue)) {
+            if (!this._utils.isNumber(newValue)) {
                 newValue = Number(newValue);
-                if (!this.$utils.isNumber(newValue)) {
+                if (!this._utils.isNumber(newValue)) {
                     return;
                 }
             }
@@ -563,7 +583,7 @@
         }
 
         /**
-         * @name reset
+         * @name _reset
          * @memberof platui.Carousel
          * @kind function
          * @access protected
@@ -577,6 +597,26 @@
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
+        }
+
+        /**
+         * @name _verifyLength
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Verifies that the current length of the context aligns with the position of the {@link platui.Carousel|Carousel}.
+         * 
+         * @returns {void}
+         */
+        protected _verifyLength(): void {
+            var maxIndex = this.context.length - 1,
+                maxOffset = maxIndex * this._intervalOffset;
+
+            if (-this._currentOffset > maxOffset) {
+                this.goToIndex(maxIndex);
+            }
         }
 
         /**
@@ -594,9 +634,9 @@
          * @returns {void}
          */
         protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): void {
-            if (!this.$utils.isNull(this._animationThenable)) {
+            if (!this._utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
-                    this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
+                    this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
                         this._animationThenable = null;
                     });
                 });
@@ -604,7 +644,7 @@
                 return;
             }
 
-            this._animationThenable = this.$animator.animate(this._slider, __Transition, animationOptions).then(() => {
+            this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
                 this._animationThenable = null;
             });
         }
@@ -621,21 +661,20 @@
          * @returns {void}
          */
         protected _init(): void {
-            var foreach = <plat.ui.controls.ForEach>this.controls[0];
+            var foreach = <plat.ui.controls.ForEach>this.controls[0],
+                container = this._container || <HTMLElement>this.element.firstElementChild;
+
+            this._slider = <HTMLElement>container.firstElementChild;
             this._setTransform();
-            this._slider = <HTMLElement>this.element.firstElementChild;
 
             this.itemsLoaded = foreach.itemsLoaded.then(() => {
-                this._setPosition();
-                if (!this._intervalOffset) {
-                    this._setOffsetWithClone();
-                    return;
+                if (this._setPosition()) {
+                    this._onLoad();
                 }
-
-                this._onLoad();
             }).catch(() => {
-                    var Exception = plat.acquire(__ExceptionStatic);
-                    Exception.warn('Error processing ' + this.type + '. Please ensure you\'re context is correct.');
+                    var _Exception = this._Exception;
+                _Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.',
+                    _Exception.CONTROL);
                     this._loaded = false;
                     return;
                 });
@@ -650,41 +689,173 @@
          * @description
          * Adds all event listeners on this control's element.
          * 
-         * @param {string} orientation The orientation of the {@link platui.Carousel|Carousel}.
+         * @param {string} type The method of change of the {@link platui.Carousel|Carousel}.
          * 
          * @returns {void}
          */
-        protected _addEventListeners(orientation: string): void {
-            var element = this.element,
-                trackFn = this._track,
-                touchEnd = this._touchEnd,
-                track: string,
-                reverseTrack: string;
+        protected _addEventListeners(type: string): void {
+            var types = type.split(' ');
 
-            switch (orientation) {
+            if (types.indexOf('tap') !== -1) {
+                this._initializeTap();
+            }
+
+            if (types.indexOf('swipe') !== -1) {
+                this._initializeSwipe();
+            }
+
+            if (types.indexOf('track') !== -1) {
+                this._initializeTrack();
+            }
+
+            this.observeArray(this, __CONTEXT, null, this._verifyLength);
+
+            this.addEventListener(this._window, 'resize', () => {
+                this._setPosition();
+            }, false);
+        }
+
+        /**
+         * @name _initializeTap
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all necessary elements and event listeners to handle tap events.
+         * 
+         * @returns {void}
+         */
+        protected _initializeTap(): void {
+            var $document = this._document,
+                element = this.element,
+                backArrowContainer = $document.createElement('div'),
+                forwardArrowContainer = $document.createElement('div'),
+                backArrow = $document.createElement('span'),
+                forwardArrow = $document.createElement('span');
+
+            backArrowContainer.className = __Plat + 'back-arrow';
+            forwardArrowContainer.className = __Plat + 'forward-arrow';
+            backArrowContainer.appendChild(backArrow);
+            forwardArrowContainer.appendChild(forwardArrow);
+            element.appendChild(backArrowContainer);
+            element.appendChild(forwardArrowContainer);
+
+            this.addEventListener(backArrowContainer, __$tap, this.goToPrevious, false);
+            this.addEventListener(forwardArrowContainer, __$tap, this.goToNext, false);
+        }
+
+        /**
+         * @name _initializeSwipe
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all event listeners to handle swipe events.
+         * 
+         * @returns {void}
+         */
+        protected _initializeSwipe(): void {
+            var container = this._container,
+                swipeFn = this._handleSwipe,
+                swipe: string,
+                reverseSwipe: string;
+
+            switch (this._orientation) {
                 case 'horizontal':
-                    track = __$track + 'right';
-                    reverseTrack = __$track + 'left';
+                    swipe = __$swipe + 'left';
+                    reverseSwipe = __$swipe + 'right';
                     break;
                 case 'vertical':
-                    track = __$track + 'down';
-                    reverseTrack = __$track + 'up';
+                    swipe = __$swipe + 'up';
+                    reverseSwipe = __$swipe + 'down';
                     break;
                 default:
                     return;
             }
 
-            this.addEventListener(element, track, trackFn, false);
-            this.addEventListener(element, reverseTrack, trackFn, false);
-            this.addEventListener(element, __$touchstart, this._touchStart, false);
-            this.addEventListener(element, __$trackend, touchEnd, false);
-            this.addEventListener(element, __$touchend, touchEnd, false);
-            this.addEventListener(this.$window, 'resize', () => {
-                this._setPosition();
-                if (!this._intervalOffset) {
-                    this._setOffsetWithClone();
-                }
-            }, false);
+            this.addEventListener(container, swipe, swipeFn, false);
+            this.addEventListener(container, reverseSwipe, swipeFn, false);
+        }
+
+        /**
+         * @name _initializeTrack
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all event listeners to handle tracking events.
+         * 
+         * @returns {void}
+         */
+        protected _initializeTrack(): void {
+            var container = this._container,
+                trackFn = this._track,
+                touchEnd = this._touchEnd,
+                track: string,
+                reverseTrack: string;
+
+            switch (this._orientation) {
+                case 'horizontal':
+                    track = __$track + 'left';
+                    reverseTrack = __$track + 'right';
+                    break;
+                case 'vertical':
+                    track = __$track + 'up';
+                    reverseTrack = __$track + 'down';
+                    break;
+                default:
+                    return;
+            }
+
+            this.addEventListener(container, track, trackFn, false);
+            this.addEventListener(container, reverseTrack, trackFn, false);
+            this.addEventListener(container, __$touchstart, this._touchStart, false);
+            this.addEventListener(container, __$trackend, touchEnd, false);
+            this.addEventListener(container, __$touchend, touchEnd, false);
+        }
+
+        /**
+         * @name _handleSwipe
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles a swipe event.
+         * 
+         * @returns {void}
+         */
+        protected _handleSwipe(ev: plat.ui.IGestureEvent): void {
+            var direction = ev.direction.primary;
+            this._hasSwiped = true;
+
+            switch (direction) {
+                case 'left':
+                    if (this._orientation === 'horizontal') {
+                        this.goToNext();
+                    }
+                    break;
+                case 'right':
+                    if (this._orientation === 'horizontal') {
+                        this.goToPrevious();
+                    }
+                    break;
+                case 'up':
+                    if (this._orientation === 'vertical') {
+                        this.goToNext();
+                    }
+                    break;
+                case 'down':
+                    if (this._orientation === 'vertical') {
+                        this.goToPrevious();
+                    }
+                    break;
+                default:
+                    return;
+            }
         }
 
         /**
@@ -705,7 +876,7 @@
                 return;
             }
 
-            if (!this.$utils.isNull(this._animationThenable)) {
+            if (!this._utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
                     this._inTouch = true;
                     this._lastTouch = {
@@ -836,11 +1007,11 @@
          */
         protected _setTransform(): void {
             var style = this.element.style,
-                isUndefined = this.$utils.isUndefined,
+                isUndefined = this._utils.isUndefined,
                 transform: string;
 
             if (isUndefined(style.transform)) {
-                var vendorPrefix = this.$compat.vendorPrefix;
+                var vendorPrefix = this._compat.vendorPrefix;
                 if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                     transform = this._transform = vendorPrefix.lowerCase + 'Transform';
                 } else if (!isUndefined(style[<any>(vendorPrefix.js + 'Transform')])) {
@@ -862,20 +1033,32 @@
          * 
          * @param {HTMLElement} element? The element to base the length off of.
          * 
-         * @returns {void}
+         * @returns {boolean} Whether or not all necessary dimensions were set.
          */
-        protected _setPosition(element?: HTMLElement): void {
-            element = element || <HTMLElement>this.element.firstElementChild;
+        protected _setPosition(element?: HTMLElement): boolean {
+            var isNode = this._utils.isNode(element),
+                el = isNode ? element : this._container,
+                dependencyProperty: string;
+
             switch (this._orientation) {
                 case 'vertical':
                     this._positionProperty = 'top';
-                    this._intervalOffset = element.offsetHeight;
+                    dependencyProperty = 'height';
+                    this._intervalOffset = el.offsetHeight;
                     break;
                 default:
                     this._positionProperty = 'left';
-                    this._intervalOffset = element.offsetWidth;
+                    dependencyProperty = 'width';
+                    this._intervalOffset = el.offsetWidth;
                     break;
             }
+
+            if (!(isNode || this._intervalOffset)) {
+                this._setOffsetWithClone(dependencyProperty);
+                return false;
+            }
+
+            return true;
         }
 
         /**
@@ -887,24 +1070,26 @@
          * @description
          * Creates a clone of this element and uses it to find the max offset.
          * 
+         * @param {string} dependencyProperty The property that the offset is being based off of.
+         * 
          * @returns {void}
          */
-        protected _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
-                body = this.$document.body;
+                body = this._document.body;
 
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                    var _Exception = this._Exception,
                         type = this.type;
-                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type);
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
 
-                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -912,18 +1097,18 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this.$window,
+                $window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
-                width: string;
+                dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((width = (computedStyle = $window.getComputedStyle(element)).width))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }
-                shallowCopy.style.setProperty('width', width, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -945,7 +1130,7 @@
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
             shallowStyle.setProperty('visibility', 'hidden', 'important');
             body.appendChild(shallowCopy);
             this._setPosition(<HTMLElement>clone.firstElementChild);
@@ -965,6 +1150,26 @@
      * The available {@link plat.controls.Options|options} for the {@link platui.Carousel|Carousel} control.
      */
     export interface ICarouselOptions {
+        /**
+         * @name type
+         * @memberof platui.ICarouselOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * Specifies how the {@link platui.Carousel|Carousel} should change. Multiple types can be combined by making it space delimited. 
+         * It's default behavior is "track".
+         * 
+         * @remarks
+         * "tap": The carousel changes when the markers are tapped.
+         * "track": The carousel changes when it is dragged.
+         * "swipe": The carousel changes when it is swiped.
+         * default: The carousel changes when it is dragged.
+         */
+        type?: string;
+
         /**
          * @name orientation
          * @memberof platui.ICarouselOptions

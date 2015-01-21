@@ -2,17 +2,25 @@
 @import '../global/mixins.less';
 @import 'slider.variables.less';
 
+/// ============= Slider Constants ============= ///
+
+#Slider_Local {
+    #Slider;
+    @knob-radius: @knob-diameter / 2;
+    @half-thickness: @thickness / 2;
+}
+
 /// ========== Slider Default Style =========== ///
 
 .plat-slider {
     #Slider;
+    #Slider_Local;
     position: relative;
     .fill();
     .user-select();
     .touch-action(none);
     .box-sizing(border-box);
     
-    @knob-radius: @knob-diameter / 2;
     .plat-slider-container {
         position: absolute;
         background-color: @neutralColorLight;
@@ -45,8 +53,6 @@
         }
     }
 
-    @half-thickness: @thickness / 2;
-
 /// ============ Slider Orientations ============= ///
 
     &.plat-horizontal,
@@ -54,7 +60,7 @@
         height: @knob-diameter;
 
         .plat-slider-container {
-            top: 50%;
+            .calc(top; '50% - @{half-thickness}');
             left: @knob-radius;
             height: @thickness;
 
@@ -63,7 +69,7 @@
                 height: 100%;
 
                 .plat-knob {
-                    .calc(top, '@{half-thickness} - @{knob-radius}');
+                    .calc(top; '@{half-thickness} - @{knob-radius}');
                 }
             }
 
@@ -103,7 +109,7 @@
         width: @knob-diameter;
 
         .plat-slider-container {
-            left: 50%;
+            .calc(left; '50% - @{half-thickness}');
             top: @knob-radius;
             width: @thickness;
 
@@ -112,7 +118,7 @@
                 height: 0;
 
                 .plat-knob {
-                    .calc(left, '@{half-thickness} - @{knob-radius}');
+                    .calc(left; '@{half-thickness} - @{knob-radius}');
                 }
             }
 
@@ -126,10 +132,10 @@
     &.plat-vertical {
         .plat-slider-container {
             .plat-slider-offset {
-                top: 0;
+                bottom: 0;
 
                 .plat-knob {
-                    bottom: -@knob-radius;
+                    top: -@knob-radius;
                 }
             }
         }
@@ -138,10 +144,10 @@
     &.plat-vertical-reversed {
         .plat-slider-container {
             .plat-slider-offset {
-                bottom: 0;
+                top: 0;
 
                 .plat-knob {
-                    top: -@knob-radius;
+                    bottom: -@knob-radius;
                 }
             }
         }

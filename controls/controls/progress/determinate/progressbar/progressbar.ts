@@ -12,31 +12,6 @@
      */
     export class ProgressBar extends plat.ui.TemplateControl implements IUIControl {
         /**
-         * @name $window
-         * @memberof platui.ProgressBar
-         * @kind property
-         * @access public
-         * 
-         * @type {Window}
-         * 
-         * @description
-         * Reference to the Window injectable.
-         */
-        $window: Window = plat.acquire(__Window);
-        /**
-         * @name $utils
-         * @memberof platui.ProgressBar
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
-         */
-        $utils: plat.IUtils = plat.acquire(__Utils);
-
-        /**
          * @name templateString
          * @memberof platui.ProgressBar
          * @kind property
@@ -51,6 +26,32 @@
         '<div class="plat-progress-container">\n' +
         '    <div class="plat-animated-bar"></div>\n' +
         '</div>\n';
+
+        /**
+         * @name _window
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access protected
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window = plat.acquire(__Window);
+
+        /**
+         * @name $utils
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         */
+        protected _utils: plat.IUtils = plat.acquire(__Utils);
 
         /**
          * @name _barElement
@@ -159,19 +160,19 @@
                 bar = this._barMax = barElement.parentElement.offsetWidth;
 
             if (!bar) {
-                this._setOffsetWithClone();
+                this._setOffsetWithClone('width');
             }
 
-            if (!this.$utils.isNumber(context) || context > 1 || context < 0) {
-                var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1');
+            if (!this._utils.isNumber(context) || context > 1 || context < 0) {
+                var _Exception = this._Exception;
+                _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
                 return;
             }
 
-            this.addEventListener(this.$window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', () => {
                 var offset = this._barMax = barElement.parentElement.offsetWidth;
                 if (!offset) {
-                    this._setOffsetWithClone();
+                    this._setOffsetWithClone('width');
                 }
             }, false);
             this.setProgress();
@@ -208,9 +209,9 @@
          */
         setProgress(value?: number): void {
             var barValue = value || this.context;
-            if (!this.$utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
-                var Exception: plat.IExceptionStatic = plat.acquire(plat.IExceptionStatic);
-                Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1');
+            if (!this._utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
+                var _Exception = this._Exception;
+                _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
                 return;
             }
 
@@ -225,10 +226,12 @@
          * 
          * @description
          * Creates a clone of this element and uses it to find the max offset.
-         * 
+         *
+         * @param {string} dependencyProperty The property that the offset is being based off of.
+         *
          * @returns {void}
          */
-        protected _setOffsetWithClone(): void {
+        protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
                 $document: Document = plat.acquire(__Document),
                 body = $document.body;
@@ -236,15 +239,15 @@
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var $exception: plat.IExceptionStatic = plat.acquire(__ExceptionStatic),
+                    var _Exception = this._Exception,
                         type = this.type;
-                    $exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type);
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
 
-                this.$utils.postpone(this._setOffsetWithClone, null, this);
+                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
                 return;
             }
 
@@ -252,17 +255,18 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
+                $window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
-                width: string;
+                dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((width = (computedStyle = this.$window.getComputedStyle(element)).width))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }
-                shallowCopy.style.setProperty('width', width, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -284,7 +288,7 @@
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty('width', width, 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
             shallowStyle.setProperty('visibility', 'hidden', 'important');
             body.appendChild(shallowCopy);
             this._barMax = (<HTMLElement>clone.firstElementChild).offsetWidth;

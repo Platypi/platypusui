@@ -8,10 +8,14 @@ var __prefix = '$',
     __Regex = __prefix + 'Regex',
     __Window = __prefix + 'Window',
     __Document = __prefix + 'Document',
-    __ExceptionStatic = __prefix + 'ExceptionStatic',
     __Utils = __prefix + 'Utils',
     __Animator = __prefix + 'Animator',
     __DomEventInstance = __prefix + 'DomEventInstance',
+
+    /**
+     * Constants
+     */
+    __CONTEXT = 'context',
 
     /**
      * Controls
@@ -37,10 +41,9 @@ var __prefix = '$',
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
-    __Hidden = __Plat + 'hidden',
     __Checked = __Plat + 'checked',
     __CamelChecked = 'platChecked',
-    __Context = __Plat + 'context',
+    __Context = __Plat + __CONTEXT,
     __CamelContext = 'platContext',
     __Bind = __Plat + 'bind',
 
