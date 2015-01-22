@@ -446,6 +446,49 @@
         }
 
         /**
+         * @name _initializeEvents
+         * @memberof platui.Slider
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Initialize the proper tracking events.
+         * 
+         * @param {string} orientation The orientation of the control.
+         * 
+         * @returns {void}
+         */
+        protected _initializeEvents(orientation: string): void {
+            var element = this.element,
+                trackFn: EventListener = this._track,
+                track: string,
+                reverseTrack: string;
+
+            switch (orientation) {
+                case 'horizontal':
+                    track = __$track + 'right';
+                    reverseTrack = __$track + 'left';
+                    break;
+                case 'vertical':
+                    track = __$track + 'down';
+                    reverseTrack = __$track + 'up';
+                    break;
+                default:
+                    return;
+            }
+
+            this.addEventListener(element, __$touchstart, this._touchStart, false);
+            this.addEventListener(element, track, trackFn, false);
+            this.addEventListener(element, reverseTrack, trackFn, false);
+            this.addEventListener(element, __$trackend, this._touchEnd, false);
+            this.addEventListener(this._window, 'resize', () => {
+                this._setLength();
+                this._setIncrement();
+                this._setKnob();
+            }, false);
+        }
+
+        /**
          * @name _touchStart
          * @memberof platui.Slider
          * @kind function
@@ -464,6 +507,24 @@
                 y: ev.clientY,
                 value: this.value
             };
+
+            if (ev.target === this._knob) {
+                return;
+            }
+
+            var offset: number;
+            switch (this._orientation) {
+                case 'horizontal':
+                    offset = ev.offsetX;
+                    break;
+                case 'vertical':
+                    offset = ev.offsetY;
+                    break;
+                default:
+                    return;
+            }
+
+            this._knobOffset = this._setSliderProperties(offset);
         }
 
         /**
@@ -512,71 +573,47 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            var length = this._calculateOffset(ev),
-                maxOffset = this._maxOffset,
-                value: number;
-
-            if (length < 0) {
-                value = this.min;
-                if (value - this.value >= 0) {
-                    return;
-                }
-                length = 0;
-            } else if (length > maxOffset) {
-                value = this.max;
-                if (value - this.value <= 0) {
-                    return;
-                }
-                length = maxOffset;
-            } else {
-                value = this._calculateValue(length);
-            }
-
-            this._setValue(value, false, true);
-            this._slider.style[<any>this._lengthProperty] = length + 'px';
+            this._setSliderProperties(this._calculateOffset(ev));
         }
 
         /**
-         * @name _initializeEvents
+         * @name _setSliderProperties
          * @memberof platui.Slider
          * @kind function
          * @access protected
          * 
          * @description
-         * Initialize the proper tracking events.
+         * Set the {@link platui.Slider|Slider's} knob position and corresponding value.
          * 
-         * @param {string} orientation The orientation of the control.
+         * @param {number} position The position value to set the knob to prior to 
+         * normalization.
          * 
-         * @returns {void}
+         * @returns {number} The normalized position value.
          */
-        protected _initializeEvents(orientation: string): void {
-            var knob = this._knob,
-                trackFn: EventListener = this._track,
-                track: string,
-                reverseTrack: string;
+        protected _setSliderProperties(position: number): number {
+            var maxOffset = this._maxOffset,
+                value: number;
 
-            switch (orientation) {
-                case 'horizontal':
-                    track = __$track + 'right';
-                    reverseTrack = __$track + 'left';
-                    break;
-                case 'vertical':
-                    track = __$track + 'down';
-                    reverseTrack = __$track + 'up';
-                    break;
-                default:
+            if (position <= 0) {
+                value = this.min;
+                if (value - this.value >= 0) {
                     return;
+                }
+                position = 0;
+            } else if (position >= maxOffset) {
+                value = this.max;
+                if (value - this.value <= 0) {
+                    return;
+                }
+                position = maxOffset;
+            } else {
+                value = this._calculateValue(position);
             }
 
-            this.addEventListener(knob, __$touchstart, this._touchStart, false);
-            this.addEventListener(knob, track, trackFn, false);
-            this.addEventListener(knob, reverseTrack, trackFn, false);
-            this.addEventListener(knob, __$trackend, this._touchEnd, false);
-            this.addEventListener(this._window, 'resize', () => {
-                this._setLength();
-                this._setIncrement();
-                this._setKnob();
-            }, false);
+            this._setValue(value, false, true);
+            this._slider.style[<any>this._lengthProperty] = position + 'px';
+
+            return position;
         }
 
         /**
