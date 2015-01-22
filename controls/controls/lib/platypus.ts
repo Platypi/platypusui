@@ -2424,7 +2424,7 @@ module plat {
         /**
          * The document injectable.
          */
-        _document: Document = acquire(__Document);
+        protected _document: Document = acquire(__Document);
 
         /**
          * Determines if the browser is modern enough to correctly 
@@ -5770,16 +5770,16 @@ module plat {
             urlUtils(url?: string): IUrlUtilsInstance {
                 url = url || this.url();
 
-                var $urlUtils: IUrlUtilsInstance = acquire(__UrlUtilsInstance),
-                    $config = Browser.config;
+                var _urlUtils: IUrlUtilsInstance = acquire(__UrlUtilsInstance),
+                    _config = Browser.config;
 
-                if ($config.routingType === $config.HASH) {
-                    url = url.replace(new RegExp('#' + ($config.hashPrefix || '') + '/?'), '');
+                if (_config.routingType === _config.HASH) {
+                    url = url.replace(new RegExp('#' + (_config.hashPrefix || '') + '/?'), '');
                 }
 
-                $urlUtils.initialize(url);
+                _urlUtils.initialize(url);
 
-                return $urlUtils;
+                return _urlUtils;
             }
 
             /**
@@ -5880,21 +5880,22 @@ module plat {
              */
             formatUrl(url: string): string {
                 var $config = Browser.config,
-                    baseUrl = $config.baseUrl;
+                    baseUrl = $config.baseUrl,
+                    isLocal = !this._regex.fullUrlRegex.test(url) || url.indexOf($config.baseUrl) > -1;
 
                 if (url === $config.baseUrl) {
                     return url;
                 }
 
-                if ((!this._regex.fullUrlRegex.test(url) || url.indexOf($config.baseUrl) > -1) && $config.routingType === $config.HASH) {
+                if (url[0] === '/') {
+                    url = url.slice(1);
+                }
+
+                if (isLocal && $config.routingType === $config.HASH) {
                     var hasProtocol = url.indexOf(this.urlUtils().protocol) !== -1,
                         prefix = $config.hashPrefix || '',
                         append = '#' + prefix,
                         hashRegex = new RegExp('#' + prefix + '|#/');
-
-                    if (url[0] === '/') {
-                        url = url.slice(1);
-                    }
 
                     if (url[url.length - 1] !== '/' && url.indexOf('?') === -1) {
                         url += '/';
@@ -5905,10 +5906,10 @@ module plat {
                     } else if (!hashRegex.test(url)) {
                         url = '#' + prefix + ((url[0] !== '/') ? '/' : '') + url;
                     }
+                }
 
-                    if (url.indexOf($config.baseUrl) === -1) {
-                        url = $config.baseUrl + url;
-                    }
+                if (isLocal && url.indexOf($config.baseUrl) === -1) {
+                    url = $config.baseUrl + url;
                 }
 
                 return url;
@@ -6214,11 +6215,11 @@ module plat {
 
                 element.setAttribute('href', url);
                 url = element.href;
-            
+
                 // we need to do this twice for cerain browsers (e.g. win8)
                 element.setAttribute('href', url);
                 url = element.href;
-            
+
                 var protocol = element.protocol ? element.protocol.replace(/:$/, '') : '';
 
                 define(this, 'href', url, true, true);
@@ -6238,6 +6239,8 @@ module plat {
                     ? element.pathname
                     : '/' + element.pathname;
                 }
+
+                path = path.replace(this._regex.initialUrlRegex, '/');
 
                 define(this, 'pathname', path.split('?')[0].split('#')[0], true, true);
                 define(this, 'query', UrlUtils.__getQuery(this.search), true, true);
@@ -13481,6 +13484,7 @@ module plat {
                         context: dataContext,
                         identifier: ''
                     },
+                    context: any,
                     length: number,
                     keys: Array<string>,
                     key: string,
@@ -13494,17 +13498,18 @@ module plat {
 
                 while (queue.length > 0) {
                     obj = queue.pop();
+                    context = obj.context;
 
-                    if (!isObject(obj.context)) {
+                    if (!isObject(context) || isEmpty(context)) {
                         continue;
                     }
 
-                    keys = Object.keys(obj.context);
+                    keys = Object.keys(context);
                     length = keys.length;
 
                     for (var i = 0; i < length; ++i) {
                         key = keys[i];
-                        newObj = obj.context[key];
+                        newObj = context[key];
 
                         if (newObj === context) {
                             return (obj.identifier !== '') ? (obj.identifier + '.' + key) : key;
@@ -16459,6 +16464,7 @@ module plat {
                 this.__hasMoved = false;
                 this.__lastTouchDown = this.__swipeOrigin = {
                     buttons: ev.buttons,
+                    _buttons: ev._buttons,
                     clientX: ev.clientX,
                     clientY: ev.clientY,
                     timeStamp: ev.timeStamp,
@@ -17321,6 +17327,7 @@ module plat {
                 }
 
                 this.__normalizeButtons(ev);
+
                 ev.touches = touches;
                 ev.offset = this.__getOffset(ev);
                 ev.timeStamp = timeStamp;
@@ -17333,14 +17340,42 @@ module plat {
              * @param {plat.ui.IExtendedEvent} ev The event.
              */
             private __normalizeButtons(ev: IExtendedEvent) {
+                var buttons: number;
                 if (isNumber(ev.buttons)) {
-                    return;
+                    if (ev.buttons === 0) {
+                        buttons = 1;
+                    } else {
+                        buttons = ev.buttons;
+                    }
                 } else if (isNumber((<any>ev).which) && (<any>ev).which > 0) {
-                    ev.buttons = (<any>ev).which;
-                    return;
+                    buttons = (<any>ev).which;
+                } else {
+                    switch ((<any>ev).button) {
+                        case -1:
+                            buttons = 0;
+                            break;
+                        case 0:
+                            buttons = 1;
+                            break;
+                        case 1:
+                            buttons = 4;
+                            break;
+                        case 2:
+                            buttons = 2;
+                            break;
+                        case 3:
+                            buttons = 8;
+                            break;
+                        case 4:
+                            buttons = 16;
+                            break;
+                        default:
+                            buttons = 1;
+                            break;
+                    }
                 }
 
-                ev.buttons = (<any>ev).button;
+                ev._buttons = buttons;
             }
 
             /**
@@ -17843,33 +17878,46 @@ module plat {
             event: string;
 
             /**
+             * The event type to dispatch. Defaults to 'CustomEvent'.
+             */
+            eventType: string;
+
+            /**
              * Initializes the element and event of this IDomEventInstance object.
              * @param {Node} element The element associated with this IDomEventInstance object.
              * @param {string} event The event associated with this IDomEventInstance object.
+             * @param {string} eventType? The event type associated with this IDomEventInstance object. 
+             * If not specified, it will default to 'CustomEvent'.
              */
-            initialize(element: Node, event: string): void;
+            initialize(element: Node, event: string, eventType?: string): void;
             /**
              * Initializes the element and event of this IDomEventInstance object.
              * @param {Window} element The window object.
              * @param {string} event The event associated with this IDomEventInstance object.
+             * @param {string} eventType? The event type associated with this IDomEventInstance object. 
+             * If not specified, it will default to 'CustomEvent'.
              */
-            initialize(element: Window, event: string): void;
-            initialize(element: any, event: string): void {
+            initialize(element: Window, event: string, eventType?: string): void;
+            initialize(element: any, event: string, eventType?: string): void {
                 this.element = element;
                 this.event = event;
+                this.eventType = isString(eventType) ? eventType : 'CustomEvent';
             }
 
             /**
              * Triggers its event on its element.
              * @param {Object} eventExtension? An event extension to extend the dispatched CustomEvent.
+             * @param {any} detailArg? The detail arg to include in the event object
+             * @param {Node} dispatchElement? The element to dispatch the Event from. If not specified, 
+             * this instance's element will be used.
              */
-            trigger(eventExtension?: Object): void {
-                var customEv = <CustomEvent>this._document.createEvent('CustomEvent');
+            trigger(eventExtension?: Object, detailArg?: any, dispatchElement?: Node): boolean {
+                var customEv = <CustomEvent>this._document.createEvent(this.eventType);
                 if (isObject(eventExtension)) {
                     extend(customEv, eventExtension);
                 }
-                customEv.initCustomEvent(this.event, true, true, 0);
-                this.element.dispatchEvent(customEv);
+                customEv.initCustomEvent(this.event, true, true, isNull(detailArg) ? 0 : detailArg);
+                return <boolean>(dispatchElement || this.element).dispatchEvent(customEv);
             }
         }
 
@@ -17917,11 +17965,20 @@ module plat {
              * @param {plat.ui.IPointerEvent} ev The current touch event object used to extend the 
              * newly created custom event.
              */
-            trigger(ev: IPointerEvent): void {
-                var customEv = <CustomEvent>this._document.createEvent('CustomEvent');
+            trigger(ev: IPointerEvent): boolean {
+                var customEv = <CustomEvent>this._document.createEvent('CustomEvent'),
+                    element = this.element,
+                    target = ev.target;
+
                 this.__extendEventObject(customEv, ev);
                 customEv.initCustomEvent(this.event, true, true, 0);
-                this.element.dispatchEvent(customEv);
+
+                var success = element.contains(target) ? target.dispatchEvent(customEv) : element.dispatchEvent(customEv);
+                if (!success) {
+                    ev.preventDefault();
+                }
+
+                return success;
             }
 
             /**
@@ -17950,7 +18007,7 @@ module plat {
                 customEv.screenY = ev.screenY;
                 customEv.pageX = ev.pageX;
                 customEv.pageY = ev.pageY;
-                customEv.buttons = ev.buttons;
+                customEv.buttons = ev._buttons;
             }
 
             /**
@@ -18088,6 +18145,8 @@ module plat {
              * Indicates which mouse button is being pressed in a mouse event.
              */
             buttons?: number;
+
+            _buttons?: number;
 
             /**
              * The x-coordinate of the event on the screen relative to the upper left corner of the 
@@ -19702,49 +19761,60 @@ module plat {
                 }
 
                 navigateTo(routeInfo: routing.IRouteInfo) {
-                    return this._Promise.resolve().then(() => {
-                        var injector = this.nextInjector || this._Injector.getDependency(routeInfo.delegate.view),
-                            nodeMap = this._createNodeMap(injector),
-                            element = this.element,
-                            node = nodeMap.element,
-                            parameters = routeInfo.parameters,
-                            query = routeInfo.query,
-                            control = <ViewControl>nodeMap.uiControlNode.control;
+                    var resolve = this._Promise.resolve.bind(this._Promise),
+                        injector = this.nextInjector || this._Injector.getDependency(routeInfo.delegate.view),
+                        nodeMap = this._createNodeMap(injector),
+                        element = this.element,
+                        node = nodeMap.element,
+                        parameters = routeInfo.parameters,
+                        query = routeInfo.query,
+                        control = <ViewControl>nodeMap.uiControlNode.control;
 
-                        element.appendChild(node);
+                    element.appendChild(node);
 
-                        var animationPromise = this._animationPromise;
-                        if (isPromise(animationPromise)) {
-                            animationPromise.dispose();
-                        }
+                    var animationPromise = this._animationPromise;
+                    if (isPromise(animationPromise)) {
+                        animationPromise.dispose();
+                    }
 
-                        this._animationPromise = this._animator.animate(this.element, __Enter);
+                    this._animationPromise = this._animator.animate(this.element, __Enter);
 
-                        var viewportManager = this._managerCache.read(this.uid),
-                            manager = this._ElementManagerFactory.getInstance();
+                    var viewportManager = this._managerCache.read(this.uid),
+                        manager = this._ElementManagerFactory.getInstance(),
+                        promise: async.IThenable<void>;
 
-                        viewportManager.children = [];
-                        manager.initialize(nodeMap, viewportManager);
+                    viewportManager.children = [];
+                    manager.initialize(nodeMap, viewportManager);
 
-                        if (isFunction(control.navigatedTo)) {
-                            control.navigatedTo(routeInfo.parameters, query);
-                        }
+                    if (isFunction(control.navigatedTo)) {
+                        promise = resolve(control.navigatedTo(routeInfo.parameters, query));
+                    } else {
+                        promise = resolve();
+                    }
 
-                        manager.setUiControlTemplate();
-                        return manager.templatePromise;
-                    });
+                    return promise
+                        .catch(noop)
+                        .then(() => {
+                            manager.setUiControlTemplate();
+                            return manager.templatePromise;
+                        });
                 }
 
                 navigateFrom() {
-                    var view = this.controls[0];
+                    var view = this.controls[0],
+                        promise: async.IThenable<void>;
 
                     if (isObject(view) && isFunction(view.navigatingFrom)) {
-                        view.navigatingFrom();
+                        promise = this._Promise.resolve(view.navigatingFrom());
+                    } else {
+                        promise = this._Promise.resolve();
                     }
 
-                    return this._Promise.resolve().then(() => {
-                        Control.dispose(view);
-                    });
+                    return promise
+                        .catch(noop)
+                        .then(() => {
+                            Control.dispose(view);
+                        });
                 }
 
                 dispose() {
@@ -21491,18 +21561,17 @@ module plat {
                         }
 
                         var href = this.getHref();
-
                         if (isUndefined(href)) {
                             return;
                         }
 
                         ev.preventDefault();
+                        element.href = '#';
 
-                        if (isEmpty(href)) {
-                            return;
-                        }
+                        postpone(() => {
+                            this._browser.url(href);
+                        });
 
-                        this._browser.url(href);
                         this.removeClickListener();
                         element.addEventListener('click', this.getListener(element));
                     }, false);
@@ -21541,6 +21610,7 @@ module plat {
 
                     if (!isEmpty(href)) {
                         this.element.href = href;
+                        this.element.setAttribute('data-href', href);
                     }
                 }
 
@@ -25417,7 +25487,7 @@ module plat {
 
             previousUrl: string;
             previousQuery: string;
-            previousPattern: string;
+            previousSegment: string;
 
             currentRouteInfo: IRouteInfo;
 
@@ -25471,6 +25541,7 @@ module plat {
                 ports.push(port);
 
                 if (isObject(this.currentRouteInfo)) {
+                
                     var routeInfo = _clone(this.currentRouteInfo, true);
 
                     return this.canNavigateTo(routeInfo)
@@ -25638,7 +25709,7 @@ module plat {
                         // route has not been matched
                         this.previousUrl = url;
                         this.previousQuery = queryString;
-                        return reject();
+                        return resolve();
                     }
 
                     routeInfo = result[0];
@@ -25646,7 +25717,7 @@ module plat {
                     pattern = routeInfo.delegate.pattern;
                     pattern = pattern.substr(0, pattern.length - __CHILD_ROUTE_LENGTH);
 
-                    if (this.previousPattern === pattern) {
+                    if (this.previousSegment === pattern) {
                         // the pattern for this router is the same as the last pattern so 
                         // only navigate child routers.
                         this.navigating = true;
@@ -25683,7 +25754,7 @@ module plat {
                         return this.performNavigation(routeInfo);
                     })
                     .then(() => {
-                        this.previousPattern = pattern;
+                        this.previousSegment = pattern;
                         this.currentRouteInfo = routeInfoCopy;
                         this.navigating = false;
                     }, (e) => {
@@ -25734,7 +25805,7 @@ module plat {
                     previous: string;
 
                 while (!isNull(router = router.parent)) {
-                    previous = router.previousPattern;
+                    previous = router.previousSegment;
                     previous = (!isNull(previous) && previous !== '/') ? previous : '';
                     prefix = previous + prefix;
                 }
@@ -25749,13 +25820,9 @@ module plat {
                     return this._resolve();
                 }
 
-                if (!isEmpty(childRoute) && childRoute !== '/' && isEmpty(this.children)) {
-                    return this._reject(new Error('Child route: ' + childRoute + ' does not exist'));
-                }
-
                 return mapAsync((child: Router) => {
                     return child.navigate(childRoute, info.query);
-                }, this.children).then((): void => undefined);
+                }, this.children).then(noop);
             }
 
             getChildRoute(info: IRouteInfo) {
@@ -25772,7 +25839,7 @@ module plat {
                 return '/' + childRoute;
             }
 
-            performNavigation(info: IRouteInfo) {
+            performNavigation(info: IRouteInfo): async.IThenable<void> {
                 var sameRoute = this._isSameRoute(info);
 
                 return this.performNavigateFrom(sameRoute).then(() => {
@@ -25801,7 +25868,7 @@ module plat {
                         return mapAsync((port: ISupportRouteNavigation) => {
                             return port.navigateFrom();
                         }, this.ports);
-                    }).then((): void => undefined);
+                    }).then(noop);
             }
 
             canNavigate(info: IRouteInfo) {
@@ -25822,7 +25889,7 @@ module plat {
                     .then(() => this.callHandlers(this.queryTransforms[view], query))
                     .then(() => this.callHandlers(this.paramTransforms['*'], parameters, query))
                     .then(() => this.callHandlers(this.paramTransforms[view], parameters, query))
-                    .then((): void => undefined);
+                    .then(noop);
             }
 
             callHandlers(allHandlers: IRouteTransforms, obj: any, query?: any) {
@@ -25881,7 +25948,7 @@ module plat {
                         return this.callInterceptors(info);
                     })
                     .then((canNavigateTo) => {
-                        if (!canNavigateTo || ignorePorts) {
+                        if (canNavigateTo === false || ignorePorts) {
                             return <any>[canNavigateTo];
                         }
 
@@ -25940,7 +26007,7 @@ module plat {
             }
 
             protected _clearInfo() {
-                this.previousPattern = undefined;
+                this.previousSegment = undefined;
                 this.previousUrl = undefined;
                 this.previousQuery = undefined;
                 this.currentRouteInfo = undefined;
