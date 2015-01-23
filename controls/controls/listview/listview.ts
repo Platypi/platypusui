@@ -160,19 +160,6 @@
         protected _orientation: string;
 
         /**
-         * @name _increment
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The number of items to incrementally load.
-         */
-        protected _increment: number;
-
-        /**
          * @name _itemTemplate
          * @memberof platui.Listview
          * @kind property
@@ -210,6 +197,20 @@
          * A promise that denotes that items are currently being rendered.
          */
         protected _itemTemplatePromise: plat.async.IThenable<any>;
+
+        /**
+         * @name _itemTemplateSelector
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {(item: any, index: number) => string|plat.async.IPromise}
+         * 
+         * @description
+         * An incremental loading function that will be called whenever more items should 
+         * are being requested.
+         */
+        protected _incrementalLoading: () => boolean;
 
         /**
          * @name _nodeNameRegex
@@ -321,7 +322,7 @@
                 options = optionObj.value || <IListviewOptions>{},
                 _utils = this._utils,
                 orientation = this._orientation = options.orientation || 'vertical',
-                increment = this._increment = options.increment,
+                incrementalLoading = options.incrementalLoading,
                 itemTemplate = options.itemTemplate,
                 _Exception: plat.IExceptionStatic;
 
@@ -377,16 +378,7 @@
 
             var lastIndex = this.context.length,
                 maxCount = lastIndex - index,
-                increment = this._increment,
-                itemCount: number;
-
-            if (isNumber(count)) {
-                itemCount = maxCount >= count ? count : maxCount;
-            } else if (isNumber(increment)) {
-                itemCount = maxCount >= increment ? increment : maxCount;
-            } else {
-                itemCount = maxCount;
-            }
+                itemCount = isNumber(count) && maxCount >= count ? count : maxCount;
 
             if (_utils.isFunction(this._itemTemplateSelector)) {
                 this._disposeFromIndex(index);
@@ -777,17 +769,17 @@
         itemTemplate?: any;
 
         /**
-         * @name increment
+         * @name incrementalLoading
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
          * 
-         * @type {number}
+         * @type {string}
          * 
          * @description
-         * The number of items to incrementally load.
+         * The function that will be called for incremental loading.
          */
-        increment?: number;
+        incrementalLoading?: string;
 
         /**
          * @name templateUrl
