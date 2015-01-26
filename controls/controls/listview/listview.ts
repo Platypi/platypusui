@@ -321,6 +321,7 @@
             var optionObj = this.options || <plat.observable.IObservableProperty<IListviewOptions>>{},
                 options = optionObj.value || <IListviewOptions>{},
                 _utils = this._utils,
+                isString = _utils.isString,
                 orientation = this._orientation = options.orientation || 'vertical',
                 incrementalLoading = options.incrementalLoading,
                 itemTemplate = options.itemTemplate,
@@ -329,13 +330,16 @@
             this._container = <HTMLElement>this.element.firstElementChild;
             this.dom.addClass(this.element, __Plat + orientation);
 
-            if (!_utils.isString(itemTemplate)) {
+            if (!isString(itemTemplate)) {
                 _Exception = this._Exception;
                 _Exception.warn('No item template or item template selector specified for ' + this.type + '.', _Exception.TEMPLATE);
                 return;
             }
 
             this._determineItemTemplate(itemTemplate);
+            if (isString(incrementalLoading)) {
+                this._determineIncrementalLoading(incrementalLoading);
+            }
 
             if (!_utils.isArray(this.context)) {
                 if (!_utils.isNull(this.context)) {
@@ -360,8 +364,8 @@
          * Blow out the DOM starting at the index, determine how to render, and render the count accordingly.
          * 
          * @param {number} index? The starting index to render. If not specified, it will start at currentCount.
-         * @param {number} count? The number of items to render. If not specified, the increment count 
-         * will be used. If no increment was specified, the whole context will be rendered.
+         * @param {number} count? The number of items to render. If not specified, the whole context 
+         * from the specified index will be rendered.
          * 
          * @returns {void}
          */
@@ -426,8 +430,7 @@
          * @returns {void}
          */
         protected _determineItemTemplate(itemTemplate: string): void {
-            var _utils = this._utils,
-                templateKey = this._normalizeTemplateName(itemTemplate);
+            var templateKey = this._normalizeTemplateName(itemTemplate);
 
             if (this._templates[templateKey] === true) {
                 this._itemTemplate = templateKey;
@@ -435,7 +438,7 @@
             }
 
             var controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
-            if (!_utils.isFunction(controlProperty.value)) {
+            if (!this._utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
                 _Exception.warn(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.',
@@ -444,6 +447,31 @@
             }
 
             this._itemTemplateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
+        }
+
+        /**
+         * @name _determineIncrementalLoading
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Find and determine the incremental loading function.
+         * 
+         * @param {string} incrementalLoading The property for indicating the incremental loading function.
+         * 
+         * @returns {void}
+         */
+        protected _determineIncrementalLoading(incrementalLoading: string): void {
+            var controlProperty = this.findProperty(incrementalLoading) || <plat.IControlProperty>{};
+            if (!this._utils.isFunction(controlProperty.value)) {
+                var _Exception = this._Exception;
+                _Exception.warn(__Listview + ' incremental loading function "' + incrementalLoading +
+                    '" was not found.', _Exception.CONTROL);
+                return;
+            }
+
+            this._incrementalLoading = (<Function>controlProperty.value).bind(controlProperty.control);
         }
 
         /**
