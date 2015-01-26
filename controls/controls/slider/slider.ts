@@ -186,6 +186,19 @@
         protected _maxOffset: number;
 
         /**
+         * @name _sliderOffset
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The slider's offset left.
+         */
+        protected _sliderOffset: number;
+
+        /**
          * @name _increment
          * @memberof platui.Slider
          * @kind property
@@ -508,17 +521,30 @@
                 value: this.value
             };
 
-            if (ev.target === this._knob) {
+            var target = ev.target;
+            if (target === this._knob) {
                 return;
             }
 
             var offset: number;
             switch (this._orientation) {
                 case 'horizontal':
-                    offset = ev.offsetX;
+                    if (target === this.element) {
+                        offset = this._reversed ? this._maxOffset - (ev.offsetX - this._sliderOffset) : ev.offsetX - this._sliderOffset;
+                    } else if (target === this._slider) {
+                        offset = this._reversed ? this._knobOffset - ev.offsetX : ev.offsetX;
+                    } else {
+                        offset = this._reversed ? this._maxOffset - ev.offsetX : ev.offsetX;
+                    }
                     break;
                 case 'vertical':
-                    offset = ev.offsetY;
+                    if (target === this.element) {
+                        offset = this._reversed ? ev.offsetY - this._sliderOffset : this._maxOffset - (ev.offsetY - this._sliderOffset);
+                    } else if (target === this._slider) {
+                        offset = this._reversed ? ev.offsetY : this._knobOffset - ev.offsetY;
+                    } else {
+                        offset = this._reversed ? ev.offsetY : this._maxOffset - ev.offsetY;
+                    }
                     break;
                 default:
                     return;
@@ -700,10 +726,12 @@
                 case 'horizontal':
                     this._lengthProperty = 'width';
                     this._maxOffset = el.offsetWidth;
+                    this._sliderOffset = el.offsetLeft;
                     break;
                 case 'vertical':
                     this._lengthProperty = 'height';
                     this._maxOffset = el.offsetHeight;
+                    this._sliderOffset = el.offsetTop;
                     break;
                 default:
                     var _Exception = this._Exception;
