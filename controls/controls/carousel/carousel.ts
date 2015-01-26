@@ -454,8 +454,8 @@
                 return;
             }
 
-            var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
-                options = optionObj.value || <IDrawerControllerOptions>{},
+            var optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
+                options = optionObj.value || <ICarouselOptions>{},
                 orientation = this._orientation = options.orientation || 'horizontal',
                 type = options.type || 'track',
                 index = options.index;
