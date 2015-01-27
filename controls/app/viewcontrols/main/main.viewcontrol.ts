@@ -67,6 +67,10 @@ module app {
             this.context.modals[modal] = !this.context.modals[modal];
         }
 
+        load() {
+            console.log('alert');
+        }
+
         renderListview(item: number, index: number) {
             if (index % 2 === 0) {
                 return 'listview-template';

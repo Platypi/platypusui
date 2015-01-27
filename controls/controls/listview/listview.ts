@@ -204,13 +204,13 @@
          * @kind property
          * @access protected
          * 
-         * @type {(item: any, index: number) => string|plat.async.IPromise}
+         * @type {(ev?: Event) => boolean}
          * 
          * @description
-         * An incremental loading function that will be called whenever more items should 
-         * are being requested.
+         * An incremental loading function that will be called with the container's scroll Event whenever more items should 
+         * are being requested. Returning false will end all incremental loading.
          */
-        protected _incrementalLoading: () => boolean;
+        protected _incrementalLoading: (ev?: Event) => boolean;
 
         /**
          * @name _nodeNameRegex
@@ -472,6 +472,40 @@
             }
 
             this._incrementalLoading = (<Function>controlProperty.value).bind(controlProperty.control);
+
+            var scrollPos = 0,
+                removeScroll = this.addEventListener(this._container, 'scroll', (ev) => {
+                    var target = <HTMLElement>ev.target,
+                        scrollPosition = target.scrollTop + target.offsetHeight;
+
+                    if (scrollPosition < scrollPos) {
+                        scrollPos = scrollPosition;
+                        return;
+                    } else if (scrollPos + 5 >= scrollPosition) {
+                        return;
+                    }
+
+                    scrollPos = scrollPosition;
+
+                    switch (this._orientation) {
+                        case 'horizontal':
+                            if (target.scrollWidth === 0) {
+                                return;
+                            }
+                            break;
+                        default:
+                            var scrollHeight = target.scrollHeight * 0.8;
+                            if (scrollHeight === 0) {
+                                return;
+                            } else if (scrollPosition >= scrollHeight) {
+                                var itemsRemain = this._incrementalLoading();
+                                if (itemsRemain === false) {
+                                    removeScroll();
+                                }
+                            }
+                            break;
+                    }
+                });
         }
 
         /**
@@ -575,6 +609,65 @@
          */
         protected _bindItem(index: number): plat.async.IThenable<DocumentFragment> {
             return this.bindableTemplates.bind(this._itemTemplate, index, this._getAliases(index));
+        }
+
+        /**
+         * @name _appendItems
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds an Array of items to the element without animating.
+         * 
+         * @param {Array<Node>} items The Array of items to add.
+         * 
+         * @returns {void}
+         */
+        protected _appendItems(items: Array<Node>): void {
+            var length = items.length,
+                document = this._document,
+                container = this._container,
+                item: HTMLElement;
+
+            while (items.length > 0) {
+                item = document.createElement('div');
+                item.className = 'plat-listview-item';
+                item.insertBefore(items.shift(), null);
+                container.insertBefore(item, null);
+            }
+        }
+
+        /**
+         * @name _appendAnimatedItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds an item to the control's element animating its elements.
+         * 
+         * @param {DocumentFragment} item The HTML fragment representing a single item.
+         * @param {string} key The animation key/type.
+         * 
+         * @returns {void}
+         */
+        protected _appendAnimatedItem(item: DocumentFragment, key: string): void {
+            if (!this._utils.isNode(item)) {
+                return;
+            }
+
+            var _animator = this._animator,
+                itemContainer = this._document.createElement('div');
+
+            itemContainer.className = 'plat-listview-item';
+            itemContainer.insertBefore(item, null);
+            this._container.insertBefore(itemContainer, null);
+
+            var currentAnimations = this._currentAnimations;
+            currentAnimations.push(_animator.animate(itemContainer, key).then(() => {
+                currentAnimations.shift();
+            }));
         }
 
         /**
