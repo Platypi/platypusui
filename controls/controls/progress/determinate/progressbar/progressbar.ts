@@ -49,9 +49,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _barElement

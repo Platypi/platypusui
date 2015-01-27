@@ -49,9 +49,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _targetType
@@ -192,7 +192,7 @@
          * @returns {void}
          */
         protected _trigger(event: string): void {
-            var domEvent: plat.ui.IDomEventInstance = plat.acquire(__DomEventInstance);
+            var domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
             domEvent.initialize(this.element, event);
             domEvent.trigger();
         }

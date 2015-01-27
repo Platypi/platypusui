@@ -46,9 +46,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _compat
@@ -59,9 +59,9 @@
          * @type {plat.ICompat}
          * 
          * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.ICompat = plat.acquire(__Compat);
+        protected _compat: plat.Compat = plat.acquire(__Compat);
 
         /**
          * @name _modalElement

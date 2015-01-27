@@ -47,9 +47,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _Promise
@@ -491,7 +491,7 @@
                 DIRECT = plat.events.EventManager.DIRECT;
 
             this.on(__DrawerControllerFetchEvent + '_' + id,
-                (event: plat.events.IDispatchEventInstance, controllerArg: IDrawerHandshakeEvent) => {
+                (event: plat.events.DispatchEvent, controllerArg: IDrawerHandshakeEvent) => {
                     var control = controllerArg.control;
                     if (isNull(control)) {
                         return;
@@ -586,9 +586,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _compat
@@ -599,9 +599,9 @@
          * @type {plat.ICompat}
          * 
          * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.ICompat = plat.acquire(__Compat);
+        protected _compat: plat.Compat = plat.acquire(__Compat);
 
         /**
          * @name _window
@@ -638,9 +638,9 @@
          * @type {plat.ui.animations.IAnimator}
          * 
          * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
 
         /**
          * @name _Promise
@@ -1135,7 +1135,7 @@
                 disposeRootElement = true;
 
             this._disposeRemover();
-            this.on(__DrawerControllerDisposingFound, (ev: plat.events.IDispatchEventInstance, otherRoot: HTMLElement) => {
+            this.on(__DrawerControllerDisposingFound, (ev: plat.events.DispatchEvent, otherRoot: HTMLElement) => {
                 if (!disposeRootElement) {
                     return;
                 }
@@ -1925,7 +1925,7 @@
             this._setTransform();
 
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
-                (event: plat.events.IDispatchEventInstance, drawerArg: IDrawerHandshakeEvent) => {
+                (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent) => {
                     eventRemover();
 
                     var $utils = this._utils,

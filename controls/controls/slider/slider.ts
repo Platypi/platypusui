@@ -46,9 +46,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _animator
@@ -59,9 +59,9 @@
          * @type {plat.ui.animations.IAnimator}
          * 
          * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
 
         /**
          * @name templateString
@@ -842,7 +842,7 @@
          * @returns {void}
          */
         protected _trigger(event: string): void {
-            var domEvent: plat.ui.IDomEventInstance = plat.acquire(__DomEventInstance);
+            var domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
             domEvent.initialize(this.element, event);
             domEvent.trigger();
         }
