@@ -71,13 +71,13 @@ module app {
             });
         }
 
-        error(ev: plat.events.IErrorEvent<Error>) {
+        error(ev: plat.events.ErrorEvent<Error>) {
             console.log(ev.error);
         }
     }
 
     plat.register.app('app', App, [
         plat.web.IBrowserConfig,
-        plat.routing.IRouter
+        plat.routing.Router
     ]);
 }

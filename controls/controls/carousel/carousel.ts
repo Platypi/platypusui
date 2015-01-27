@@ -92,9 +92,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _compat
@@ -105,9 +105,9 @@
          * @type {plat.ICompat}
          * 
          * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.ICompat = plat.acquire(__Compat);
+        protected _compat: plat.Compat = plat.acquire(__Compat);
 
         /**
          * @name _document
@@ -144,9 +144,9 @@
          * @type {plat.ui.animations.IAnimator}
          * 
          * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
 
         /**
          * @name _orientation
