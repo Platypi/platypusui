@@ -1072,5 +1072,23 @@
          * This URL must be a static string and cannot be a bound item on a parent control's context.
          */
         templateUrl?: string;
+
+        /**
+         * @name pullRefresh
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The function that will be called when the user pulls down/right to refresh.
+         * 
+         * @remarks
+         * When the {@link platui.Listview|Listview's} orientation is vertical the motion will 
+         * be to pull down when the list is scrolled all the way to the top, when horizontal the motion 
+         * will be to pull right when the list is scrolled all the way to the left.
+         */
+        pullRefresh?: string;
     }
 }
