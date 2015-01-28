@@ -922,16 +922,16 @@
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
-                        this.goToNext();
+                        this._utils.requestAnimationFrame(this.goToNext, this);
                         return;
                     }
                 } else if (this._index > 0) {
-                    this.goToPrevious();
+                    this._utils.requestAnimationFrame(this.goToPrevious, this);
                     return;
                 }
             }
 
-            this._reset();
+            this._utils.requestAnimationFrame(this._reset, this);
         }
 
         /**
@@ -949,7 +949,9 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
+            this._utils.requestAnimationFrame(() => {
+                this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
+            });
         }
 
         /**
