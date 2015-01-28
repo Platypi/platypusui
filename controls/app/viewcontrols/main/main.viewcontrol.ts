@@ -76,7 +76,7 @@ module app {
                     //this.context.listview = this.context.listview.concat(this.context.listview);
                     this.context.listview.unshift(0);
                     resolve();
-                }, 1000);
+                }, 10000);
             });
         }
 

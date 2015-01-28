@@ -227,6 +227,19 @@
         protected _incrementalLoading: (ev?: Event) => any;
 
         /**
+         * @name _incrementalProgressRing
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * An incremental loading ring that is shown when the user returns a promise from the incremental loading function.
+         */
+        protected _incrementalProgressRing: HTMLElement;
+
+        /**
          * @name _scrollPosition
          * @memberof platui.Listview
          * @kind property
@@ -378,7 +391,7 @@
 
             this._determineItemTemplate(itemTemplate);
             if (isString(incrementalLoading)) {
-                this._determineIncrementalLoading(incrementalLoading);
+                this._determineIncrementalLoading(incrementalLoading, options.incrementalLoadingRing === false);
             }
 
             if (!_utils.isArray(this.context)) {
@@ -501,10 +514,11 @@
          * Find and determine the incremental loading function.
          * 
          * @param {string} incrementalLoading The property for indicating the incremental loading function.
+         * @param {boolean} hideRing Whether or not to hide the incremental loading ring.
          * 
          * @returns {void}
          */
-        protected _determineIncrementalLoading(incrementalLoading: string): void {
+        protected _determineIncrementalLoading(incrementalLoading: string, hideRing: boolean): void {
             var controlProperty = this.findProperty(incrementalLoading) || <plat.IControlProperty>{};
             if (!this._utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
@@ -515,6 +529,14 @@
 
             this._incrementalLoading = (<Function>controlProperty.value).bind(controlProperty.control);
             this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
+
+            if (hideRing) {
+                return;
+            }
+
+            var progressRingContainer = this._incrementalProgressRing = this._document.createElement('div');
+            progressRingContainer.className = 'plat-incremental';
+            progressRingContainer.insertBefore(this._generateProgressRing(), null);
         }
 
         /**
@@ -544,16 +566,28 @@
 
             this._scrollPosition = scrollPosition;
 
-            var scrollLength = (this._orientation === 'horizontal' ? target.scrollWidth : target.scrollHeight) * 0.8;
+            var scrollLength = (this._orientation === 'horizontal' ? target.scrollWidth : target.scrollHeight) * 0.8,
+                _utils = this._utils;
             if (scrollLength === 0) {
                 return;
             } else if (scrollPosition >= scrollLength) {
                 var itemsRemain = this._incrementalLoading(ev);
                 if (itemsRemain === false) {
                     this._removeScroll();
-                } else if (this._utils.isPromise(itemsRemain)) {
+                } else if (_utils.isPromise(itemsRemain)) {
+                    var progressRing = this._incrementalProgressRing,
+                        showProgress = !_utils.isNull(progressRing),
+                        container = this._container;
+
                     this._removeScroll();
+                    if (showProgress) {
+                        container.insertBefore(progressRing, null);
+                    }
+
                     itemsRemain.then((moreItemsRemain: boolean) => {
+                        if (showProgress) {
+                            container.removeChild(progressRing);
+                        }
                         if (moreItemsRemain === false) {
                             return;
                         }
@@ -925,6 +959,32 @@
                 return templateName.toLowerCase().replace(this._nodeNameRegex, '');
             }
         }
+
+        /**
+         * @name _generateProgressRing
+         * @memberof platui.Listview
+         * @kind function
+         * @access private
+         * 
+         * @description
+         * Creates a progress ring element.
+         * 
+         * @returns {HTMLElement} The progress ring element.
+         */
+        protected _generateProgressRing(): HTMLElement {
+            var _document = this._document,
+                control = _document.createElement('div'),
+                container = _document.createElement('div'),
+                ring = _document.createElement('div');
+
+            ring.className = 'plat-animated-ring';
+            container.insertBefore(ring, null);
+            container.className = 'plat-progress-container';
+            control.insertBefore(container, null);
+            control.className = 'plat-ring';
+
+            return control;
+        }
     }
 
     plat.register.control(__Listview, Listview);
@@ -981,6 +1041,20 @@
          * The function that will be called for incremental loading.
          */
         incrementalLoading?: string;
+
+        /**
+         * @name incrementalLoading
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not to show an incremental loading ring when a promise is returned from the 
+         * incremental loading function. Defaults to true.
+         */
+        incrementalLoadingRing?: boolean;
 
         /**
          * @name templateUrl
