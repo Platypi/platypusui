@@ -39,7 +39,7 @@
         options: plat.observable.IObservableProperty<IListviewOptions>;
 
         /**
-         * @name currentCount
+         * @name count
          * @memberof platui.Listview
          * @kind property
          * @access public
@@ -49,7 +49,7 @@
          * @description
          * The number of items currently loaded.
          */
-        currentCount = 0;
+        count = 0;
 
         /**
          * @name _window
@@ -117,7 +117,7 @@
         protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
 
         /**
-         * @name _TemplateControl
+         * @name _TemplateControlFactory
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -127,7 +127,7 @@
          * @description
          * Reference to the {@link plat.ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
          */
-        protected _TemplateControl: plat.ui.ITemplateControlFactory = plat.acquire(__TemplateControlFactory);
+        protected _TemplateControlFactory: plat.ui.ITemplateControlFactory = plat.acquire(__TemplateControlFactory);
 
         /**
          * @name _templates
@@ -173,7 +173,7 @@
         protected _itemTemplate: string;
 
         /**
-         * @name _itemTemplateSelector
+         * @name _templateSelector
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -183,10 +183,10 @@
          * @description
          * The selector function used to obtain the template key for each item.
          */
-        protected _itemTemplateSelector: (item: any, index: number) => any;
+        protected _templateSelector: (item: any, index: number) => any;
 
         /**
-         * @name _itemTemplatePromise
+         * @name _templateSelectorPromise
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -196,7 +196,20 @@
          * @description
          * A promise that denotes that items are currently being rendered.
          */
-        protected _itemTemplatePromise: plat.async.IThenable<any>;
+        protected _templateSelectorPromise: plat.async.IThenable<any>;
+
+        /**
+         * @name _templateSelectorKeys
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IObject<string>}
+         * 
+         * @description
+         * An object containing template keys associated with an index.
+         */
+        protected _templateSelectorKeys: plat.IObject<string>;
 
         /**
          * @name _itemTemplateSelector
@@ -204,13 +217,40 @@
          * @kind property
          * @access protected
          * 
-         * @type {(ev?: Event) => boolean}
+         * @type {(ev?: Event) => any}
          * 
          * @description
          * An incremental loading function that will be called with the container's scroll Event whenever more items should 
-         * are being requested. Returning false will end all incremental loading.
+         * are being requested. Returning false will end all incremental loading. Returning a promise will pause all 
+         * other incremental loading until the promise resolves.
          */
-        protected _incrementalLoading: (ev?: Event) => boolean;
+        protected _incrementalLoading: (ev?: Event) => any;
+
+        /**
+         * @name _scrollPosition
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current scroll position of the container.
+         */
+        protected _scrollPosition = 0;
+
+        /**
+         * @name _removeScroll
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function that removes the scroll event listener.
+         */
+        protected _removeScroll: plat.IRemoveListener;
 
         /**
          * @name _nodeNameRegex
@@ -377,16 +417,17 @@
                 container = this._container;
 
             if (!isNumber(index)) {
-                index = this.currentCount;
+                index = this.count;
             }
 
             var lastIndex = this.context.length,
                 maxCount = lastIndex - index,
                 itemCount = isNumber(count) && maxCount >= count ? count : maxCount;
 
-            if (_utils.isFunction(this._itemTemplateSelector)) {
-                this._disposeFromIndex(index);
-                this._renderUsingFunction(index, itemCount);
+            if (_utils.isFunction(this._templateSelector)) {
+                while (itemCount-- > 0) {
+                    this._renderUsingFunction(index++);
+                }
                 return;
             }
 
@@ -397,7 +438,7 @@
 
             this._disposeFromIndex(index);
             this._addItems(itemCount, index);
-            this.currentCount = index + itemCount;
+            this.count += itemCount;
         }
 
         /**
@@ -446,7 +487,8 @@
                 return;
             }
 
-            this._itemTemplateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
+            this._templateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
+            this._templateSelectorKeys = {};
         }
 
         /**
@@ -472,40 +514,53 @@
             }
 
             this._incrementalLoading = (<Function>controlProperty.value).bind(controlProperty.control);
+            this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
+        }
 
-            var scrollPos = 0,
-                removeScroll = this.addEventListener(this._container, 'scroll', (ev) => {
-                    var target = <HTMLElement>ev.target,
-                        scrollPosition = target.scrollTop + target.offsetHeight;
+        /**
+         * @name _handleScroll
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The scroll event listener.
+         * 
+         * @param {Event} ev The scroll event object.
+         * 
+         * @returns {void}
+         */
+        protected _handleScroll(ev: Event): void {
+            var target = <HTMLElement>ev.target,
+                scrollPos = this._scrollPosition,
+                scrollPosition = target.scrollTop + target.offsetHeight;
 
-                    if (scrollPosition < scrollPos) {
-                        scrollPos = scrollPosition;
-                        return;
-                    } else if (scrollPos + 5 >= scrollPosition) {
-                        return;
-                    }
+            if (scrollPos > scrollPosition) {
+                this._scrollPosition = scrollPosition;
+                return;
+            } else if (scrollPos + 5 > scrollPosition) {
+                return;
+            }
 
-                    scrollPos = scrollPosition;
+            this._scrollPosition = scrollPosition;
 
-                    switch (this._orientation) {
-                        case 'horizontal':
-                            if (target.scrollWidth === 0) {
-                                return;
-                            }
-                            break;
-                        default:
-                            var scrollHeight = target.scrollHeight * 0.8;
-                            if (scrollHeight === 0) {
-                                return;
-                            } else if (scrollPosition >= scrollHeight) {
-                                var itemsRemain = this._incrementalLoading();
-                                if (itemsRemain === false) {
-                                    removeScroll();
-                                }
-                            }
-                            break;
-                    }
-                });
+            var scrollLength = (this._orientation === 'horizontal' ? target.scrollWidth : target.scrollHeight) * 0.8;
+            if (scrollLength === 0) {
+                return;
+            } else if (scrollPosition >= scrollLength) {
+                var itemsRemain = this._incrementalLoading(ev);
+                if (itemsRemain === false) {
+                    this._removeScroll();
+                } else if (this._utils.isPromise(itemsRemain)) {
+                    this._removeScroll();
+                    itemsRemain.then((moreItemsRemain: boolean) => {
+                        if (moreItemsRemain === false) {
+                            return;
+                        }
+                        this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
+                    });
+                }
+            }
         }
 
         /**
@@ -525,10 +580,11 @@
             var controls = this.controls;
 
             if (controls.length > 0) {
-                var dispose = this._TemplateControl.dispose;
+                var dispose = this._TemplateControlFactory.dispose;
                 for (var i = this.context.length - 1; i >= index; --i) {
                     if (controls.length > i) {
                         dispose(controls[i]);
+                        this.count--;
                     }
                 }
             }
@@ -546,52 +602,48 @@
          * rendering will stop.
          * 
          * @param {number} index The starting index to render.
-         * @param {number} count The number of items to render.
          * 
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
-        protected _renderUsingFunction(index: number, count: number): plat.async.IThenable<any> {
-            var _utils = this._utils;
-            if (!_utils.isNull(this._itemTemplatePromise)) {
-                var templatePromise = this._itemTemplatePromise = this._itemTemplatePromise.then(() => {
-                    if (this._itemTemplatePromise === templatePromise) {
-                        this._itemTemplatePromise = null;
-                    }
-                    return this._renderUsingFunction(index, count);
-                });
-                return templatePromise;
-            }
+        protected _renderUsingFunction(index: number): plat.async.IThenable<void> {
+            var _Promise = this._Promise,
+                _utils = this._utils;
 
-            var context = this.context,
-                renderFn = this._itemTemplateSelector,
-                _Promise = this._Promise,
-                retVals = <Array<any>>[],
-                i: number, j: number;
-
-            for (i = 0, j = index; i < count; ++i, ++j) {
-                retVals.push(renderFn(context[j], j));
-            }
-
-            return this._itemTemplatePromise = _Promise.all(retVals).then((keys: Array<string>) => {
-                var length = keys.length,
-                    bindableTemplates = this.bindableTemplates,
+            return _Promise.resolve(this._templateSelectorPromise).then(() => {
+                return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(this.context[index], index));
+            }).then((selectedTemplate) => {
+                var bindableTemplates = this.bindableTemplates,
                     templates = bindableTemplates.templates,
-                    isUndefined = this._utils.isUndefined,
-                    promises = <Array<plat.async.IThenable<DocumentFragment>>>[],
-                    key: string;
+                    controls = this.controls,
+                    key = this._normalizeTemplateName(selectedTemplate),
+                    controlExists = index < controls.length;
 
-                for (i = 0; i < length; ++i, ++index) {
-                    key = this._normalizeTemplateName(keys[i]);
-                    if (!isUndefined(templates[key])) {
-                        promises.push(bindableTemplates.bind(key, index, this._getAliases(index)));
-                        this.currentCount++;
+                if (!_utils.isUndefined(templates[key])) {
+                    if (controlExists) {
+                        if (key === this._templateSelectorKeys[index]) {
+                            return;
+                        }
+
+                        this._templateSelectorKeys[index] = key;
+                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, index, this._getAliases(index));
                     }
+
+                    this._templateSelectorKeys[index] = key;
+                    return bindableTemplates.bind(key, index, this._getAliases(index));
+                } else if (controlExists) {
+                    this._TemplateControlFactory.dispose(controls[index]);
+                    this.count--;
+                }
+            }).then((node) => {
+                if (_utils.isNull(node) || _utils.isArray(node)) {
+                    return;
                 }
 
-                return this._itemTemplatePromise = _Promise.all(promises).then((fragments) => {
-                    this._appendItems(fragments);
-                    this._itemTemplatePromise = null;
-                });
+                this._appendItem(node);
+                this.count++;
+            }).then(null, (error) => {
+                var _Exception = this._Exception;
+                _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
             });
         }
 
@@ -612,6 +664,26 @@
         }
 
         /**
+         * @name _appendItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds an item to the container without animating.
+         * 
+         * @param {Node} item The new Node to add.
+         * 
+         * @returns {void}
+         */
+        protected _appendItem(item: Node): void {
+            var platItem = this._document.createElement('div');
+            platItem.className = 'plat-listview-item';
+            platItem.insertBefore(item, null);
+            this._container.insertBefore(platItem, null);
+        }
+
+        /**
          * @name _appendItems
          * @memberof platui.Listview
          * @kind function
@@ -625,16 +697,8 @@
          * @returns {void}
          */
         protected _appendItems(items: Array<Node>): void {
-            var length = items.length,
-                document = this._document,
-                container = this._container,
-                item: HTMLElement;
-
             while (items.length > 0) {
-                item = document.createElement('div');
-                item.className = 'plat-listview-item';
-                item.insertBefore(items.shift(), null);
-                container.insertBefore(item, null);
+                this._appendItem(items.shift());
             }
         }
 
@@ -726,13 +790,13 @@
          * @returns {void}
          */
         protected _push(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            if (this._utils.isFunction(this._itemTemplateSelector)) {
-                this._renderUsingFunction(this.context.length - 1, 1);
+            if (this._utils.isFunction(this._templateSelector)) {
+                this._renderUsingFunction(this.context.length - 1);
                 return;
             }
 
             super._push(ev);
-            this.currentCount++;
+            this.count++;
         }
 
         /**
@@ -750,7 +814,7 @@
          */
         protected _pop(ev: plat.observable.IPostArrayChangeInfo<any>): void {
             super._pop(ev);
-            this.currentCount--;
+            this.count--;
         }
 
         /**
@@ -768,7 +832,7 @@
          */
         protected _shift(ev: plat.observable.IPostArrayChangeInfo<any>): void {
             super._shift(ev);
-            this.currentCount--;
+            this.count--;
         }
 
         /**
@@ -806,9 +870,18 @@
          * @returns {void}
          */
         protected _splice(ev: plat.observable.IPostArrayChangeInfo<any>): void {
+            var additions = ev.newArray.length - ev.oldArray.length;
+            if (additions > 0 && this._utils.isFunction(this._templateSelector)) {
+                if (this._utils.isNull(ev.arguments)) {
+                    this.rerender();
+                } else {
+                    this.render(ev.arguments[0], additions);
+                }
+                return;
+            }
+
             super._splice(ev);
-            var args = ev.arguments;
-            this.currentCount += args.length - 2 - args[2];
+            this.count += additions;
         }
 
         /**
@@ -825,8 +898,13 @@
          * @returns {void}
          */
         protected _unshift(ev: plat.observable.IPostArrayChangeInfo<any>): void {
+            if (this._utils.isFunction(this._templateSelector)) {
+                this.rerender();
+                return;
+            }
+
             super._unshift(ev);
-            this.currentCount++;
+            this.count++;
         }
 
         /**
@@ -843,7 +921,9 @@
          * @returns {string} The normalized template name.
          */
         protected _normalizeTemplateName(templateName: string): string {
-            return templateName.toLowerCase().replace(this._nodeNameRegex, '');
+            if (this._utils.isString(templateName)) {
+                return templateName.toLowerCase().replace(this._nodeNameRegex, '');
+            }
         }
     }
 
