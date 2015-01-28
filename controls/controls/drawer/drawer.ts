@@ -1787,11 +1787,14 @@
                 }
 
                 this._utils.requestAnimationFrame(this.reset, this);
-                return;
+            } else if (this._isElastic) {
+                if (Math.abs(distanceMoved) > 0) {
+                    this._utils.requestAnimationFrame(this.reset, this);
+                }
+            } else if (!this._isOpen) {
+                this._drawerElement.setAttribute(__Hide, '');
+                this.dom.removeClass(this._rootElement, this._directionalTransitionPrep);
             }
-
-            this._drawerElement.setAttribute(__Hide, '');
-            this.dom.removeClass(this._rootElement, this._directionalTransitionPrep);
         }
 
         /**
