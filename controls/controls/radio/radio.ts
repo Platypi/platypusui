@@ -246,13 +246,13 @@
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var $utils = this._utils;
-            if ($utils.isBoolean(newValue)) {
+            var _utils = this._utils;
+            if (_utils.isBoolean(newValue)) {
                 if (newValue) {
                     this.setProperty(this._getValue(), null, true);
                 }
                 return;
-            } else if (!$utils.isString(newValue)) {
+            } else if (!_utils.isString(newValue)) {
                 return;
             }
 

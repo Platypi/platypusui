@@ -446,9 +446,9 @@
          * @returns {void}
          */
         loaded(): void {
-            var $utils = this._utils,
+            var _utils = this._utils,
                 context = this.context;
-            if (!$utils.isArray(context)) {
+            if (!_utils.isArray(context)) {
                 var _Exception = this._Exception;
                 _Exception.warn('The context of a ' + this.type + ' must be an Array.', _Exception.CONTEXT);
                 return;
@@ -461,7 +461,7 @@
                 index = options.index;
 
             this.dom.addClass(this.element, __Plat + orientation);
-            index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
+            index = _utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
             // reset index in case Bind is setting the value
             this._index = 0;
             this._onLoad = () => {
@@ -672,12 +672,12 @@
                     this._onLoad();
                 }
             }).catch(() => {
-                    var _Exception = this._Exception;
+                var _Exception = this._Exception;
                 _Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.',
                     _Exception.CONTROL);
-                    this._loaded = false;
-                    return;
-                });
+                this._loaded = false;
+                return;
+            });
         }
 
         /**
@@ -727,12 +727,12 @@
          * @returns {void}
          */
         protected _initializeTap(): void {
-            var $document = this._document,
+            var _document = this._document,
                 element = this.element,
-                backArrowContainer = $document.createElement('div'),
-                forwardArrowContainer = $document.createElement('div'),
-                backArrow = $document.createElement('span'),
-                forwardArrow = $document.createElement('span');
+                backArrowContainer = _document.createElement('div'),
+                forwardArrowContainer = _document.createElement('div'),
+                backArrow = _document.createElement('span'),
+                forwardArrow = _document.createElement('span');
 
             backArrowContainer.className = __Plat + 'back-arrow';
             forwardArrowContainer.className = __Plat + 'forward-arrow';
@@ -1097,14 +1097,14 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this._window,
+                _window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }

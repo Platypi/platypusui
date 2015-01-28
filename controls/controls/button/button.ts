@@ -134,7 +134,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var $document = this._document,
+            var _document = this._document,
                 element = this.element,
                 childNodes = Array.prototype.slice.call(element.childNodes),
                 childNode: Node,
@@ -142,7 +142,7 @@ module platui {
                 match: Array<string>;
 
             if (childNodes.length === 0) {
-                span = $document.createElement('span');
+                span = _document.createElement('span');
                 element.insertBefore(span, null);
                 return;
             }
@@ -152,7 +152,7 @@ module platui {
                 if (childNode.nodeType === Node.TEXT_NODE) {
                     match = childNode.textContent.trim().match(/[^\r\n]/g);
                     if (match !== null && match.length > 0) {
-                        span = $document.createElement('span');
+                        span = _document.createElement('span');
                         span.insertBefore(childNode, null);
                         element.insertBefore(span, null);
                     }

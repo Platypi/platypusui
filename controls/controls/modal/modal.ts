@@ -198,10 +198,10 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var $utils = this._utils,
+            var _utils = this._utils,
                 modalContainer: HTMLElement;
 
-            if ($utils.isString(this.templateUrl)) {
+            if (_utils.isString(this.templateUrl)) {
                 var fragment = this.dom.serializeHtml(this.templateString),
                     element = this.element,
                     childNodes: Array<Node> = Array.prototype.slice.call(element.childNodes);
@@ -218,7 +218,7 @@
             modalContainer = this._modalElement = <HTMLElement>this.element.firstElementChild;
 
             var innerTemplate = this.innerTemplate;
-            if ($utils.isNode(innerTemplate)) {
+            if (_utils.isNode(innerTemplate)) {
                 modalContainer.appendChild(innerTemplate);
             }
         }
