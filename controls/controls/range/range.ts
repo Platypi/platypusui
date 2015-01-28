@@ -873,15 +873,17 @@
          * @returns {void}
          */
         protected _positionLower(position: number, value?: number): void {
-            var style = this._slider.style;
-            style[<any>this._positionProperty] = position + 'px';
-            style[<any>this._lengthProperty] = (this._upperKnobOffset - position) + 'px';
+            this._utils.requestAnimationFrame(() => {
+                var style = this._slider.style;
+                style[<any>this._positionProperty] = position + 'px';
+                style[<any>this._lengthProperty] = (this._upperKnobOffset - position) + 'px';
 
-            if (value === null) {
-                return;
-            }
+                if (value === null) {
+                    return;
+                }
 
-            this._setLower(value, false);
+                this._setLower(value, false);
+            });
         }
 
         /**
@@ -900,13 +902,15 @@
          * @returns {void}
          */
         protected _positionUpper(position: number, value?: number): void {
-            this._slider.style[<any>this._lengthProperty] = (position - this._lowerKnobOffset) + 'px';
+            this._utils.requestAnimationFrame(() => {
+                this._slider.style[<any>this._lengthProperty] = (position - this._lowerKnobOffset) + 'px';
 
-            if (value === null) {
-                return;
-            }
+                if (value === null) {
+                    return;
+                }
 
-            this._setUpper(value, false);
+                this._setUpper(value, false);
+            });
         }
 
         /**
@@ -925,16 +929,18 @@
          * @returns {void}
          */
         protected _positionTogether(position: number, value?: number): void {
-            var style = this._slider.style;
-            style[<any>this._positionProperty] = position + 'px';
-            style[<any>this._lengthProperty] = '0px';
+            this._utils.requestAnimationFrame(() => {
+                var style = this._slider.style;
+                style[<any>this._positionProperty] = position + 'px';
+                style[<any>this._lengthProperty] = '0px';
 
-            if (value === null) {
-                return;
-            }
+                if (value === null) {
+                    return;
+                }
 
-            this._setLower(value, false, false);
-            this._setUpper(value, false);
+                this._setLower(value, false, false);
+                this._setUpper(value, false);
+            });
         }
 
         /**

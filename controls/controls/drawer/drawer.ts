@@ -1782,11 +1782,11 @@
 
             if (this._isRightDirection(distanceMoved) &&
                 Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
-                this._utils.postpone(this.toggle, null, this);
+                this._utils.requestAnimationFrame(this.toggle, this);
                 return;
             }
 
-            this._utils.postpone(this.reset, null, this);
+            this._utils.requestAnimationFrame(this.reset, this);
         }
 
         /**
@@ -1804,7 +1804,9 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
+            this._utils.requestAnimationFrame(() => {
+                this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
+            });
         }
 
         /**

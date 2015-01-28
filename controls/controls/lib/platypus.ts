@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.0 (http://getplatypi.com) 
+ * PlatypusTS v0.10.1 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -48,13 +48,13 @@ module plat {
         __BindableTemplatesFactory = __prefix + 'BindableTemplatesFactory',
         __Dom = __prefix + 'Dom',
         __DomEvents = __prefix + 'DomEvents',
-        __DomEventsConfig = __prefix + 'DomEventsConfig',
+        __IDomEventsConfig = __prefix + 'IDomEventsConfig',
         __DomEventInstance = __prefix + 'DomEventInstance',
         __ResourcesFactory = __prefix + 'ResourcesFactory',
         __TemplateControlFactory = __prefix + 'TemplateControlFactory',
         __Utils = __prefix + 'Utils',
         __Browser = __prefix + 'Browser',
-        __IBrowserConfig = __prefix + 'IBrowserConfig',
+        __BrowserConfig = __prefix + 'BrowserConfig',
         __Router = __prefix + 'Router',
         __RouterStatic = __prefix + 'RouterStatic',
         __UrlUtilsInstance = __prefix + 'UrlUtilsInstance',
@@ -559,7 +559,8 @@ module plat {
     
     var Promise: plat.async.IPromise;
     
-    function mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any, context?: any): plat.async.IThenable<Array<R>> {
+    function mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any,
+        context?: any): plat.async.IThenable<Array<R>> {
         Promise = Promise || plat.acquire(__Promise);
     
         return Promise.all(map(iterator, obj, context));
@@ -651,9 +652,21 @@ module plat {
         }
     
         var timeoutId = setTimeout(defer, timeout);
-    
         return () => {
             clearTimeout(timeoutId);
+        };
+    }
+    
+    function requestAnimationFrameGlobal(method: FrameRequestCallback, context?: any): plat.IRemoveListener {
+        if (isUndefined(requestAnimationFrame)) {
+            return postpone(() => {
+                method.call(context, Date.now());
+            });
+        }
+    
+        var animationId = requestAnimationFrame(method.bind(context));
+        return () => {
+            cancelAnimationFrame(animationId);
         };
     }
     
@@ -1238,7 +1251,7 @@ module plat {
     }
     
     var ___templateCache: plat.storage.TemplateCache,
-        ___http: plat.async.IHttp,
+        ___http: plat.async.Http,
         ___Exception: plat.IExceptionStatic;
     
     function getTemplate(templateUrl: string) {
@@ -1320,10 +1333,10 @@ module plat {
          * @param {Array<any>} dependencies? An array of strings representing the dependencies needed for the app injector.
          */
         export function app(name: string, Type: new (...args: any[]) => App, dependencies?: Array<any>): typeof register {
-            var app = new dependency.Injector<App>(name, Type, dependencies),
+            var _Injector: typeof dependency.Injector = acquire(__InjectorStatic),
                 _AppStatic: IAppStatic = acquire(__AppStatic);
 
-            _AppStatic.registerApp(app);
+            _AppStatic.registerApp(new _Injector<App>(name, Type, dependencies));
             return register;
         }
 
@@ -1649,8 +1662,8 @@ module plat {
                 var Constructor = dependency,
                     _inject = isObject(Constructor._inject) ? Constructor._inject : {};
 
-                if (isString(_inject.name)) {
-                    dependency = _inject.name;
+                if (isString(Constructor.__injectorName)) {
+                    dependency = Constructor.__injectorName;
                 }
 
                 if (!isString(dependency)) {
@@ -1714,9 +1727,6 @@ module plat {
                 var Constructor = proto.constructor,
                     toInject = _clone(Constructor._inject, true);
 
-                deleteProperty(toInject, 'name');
-                deleteProperty(toInject, 'dependencies');
-
                 if (!isObject(toInject)) {
                     return;
                 }
@@ -1745,8 +1755,8 @@ module plat {
 
                 var dependency: string = Constructor;
 
-                if (isObject(Constructor._inject) && isString(Constructor._inject.name)) {
-                    dependency = Constructor._inject.name;
+                if (isString(Constructor.__injectorName)) {
+                    dependency = Constructor.__injectorName;
                 }
 
                 var find: (injectors: InjectorObject<any>) => Injector<any> =
@@ -1760,8 +1770,12 @@ module plat {
                     find(jsAnimationInjectors);
 
                 if (!isObject(injector)) {
-                    if (isString(dependency) && isFunction(Constructor)) {
-                        injector = unregisteredInjectors[dependency] = <Injector<any>>new Injector(dependency, Constructor, Constructor._inject.dependencies);
+                    if (isFunction(Constructor)) {
+                        injector = <Injector<any>>new Injector(dependency, Constructor, isObject(Constructor._inject) ? Constructor._injectorDependencies : []);
+
+                        if (isString(dependency)) {
+                            unregisteredInjectors[dependency] = injector;
+                        } 
                     } else {
                         injector = Injector.__wrap(Constructor);
                     }
@@ -1892,12 +1906,19 @@ module plat {
                     index = deps.indexOf(__NOOP_INJECTOR),
                     circularReference: string;
 
-                if (!isObject((<any>Constructor)._inject)) {
-                    (<any>Constructor)._inject = {};
-                }
+                Object.defineProperty(Constructor, '__injectorName', {
+                    value: name,
+                    enumerable: false,
+                    configurable: true,
+                    writable: true
+                });
 
-                (<any>Constructor)._inject.name = name;
-                (<any>Constructor)._inject.dependencies = deps;
+                Object.defineProperty(Constructor, '__injectorDependencies', {
+                    value: deps.slice(0),
+                    enumerable: false,
+                    configurable: true,
+                    writable: true
+                });
 
                 if (index > -1) {
                     var dependency = dependencies[index];
@@ -1918,7 +1939,7 @@ module plat {
                 circularReference = Injector.__findCircularReferences(this);
 
                 if (isString(circularReference)) {
-                    throw new Error('Circular dependency detected from ' + name + ' to ' + circularReference + '.');
+                    throw new Error('Circular dependency detected from ' + this.name + ' to ' + circularReference + '.');
                 }
 
                 if (name === __AppStatic) {
@@ -2415,20 +2436,26 @@ module plat {
      * and/or platform compatibilities.
      */
     export class Compat {
+        protected static _inject: any = {
+            _window: __Window,
+            _history: __History,
+            _document: __Document
+        };
+
         /**
          * The window injectable.
          */
-        protected _window: Window = acquire(__Window);
+        protected _window: Window;
 
         /**
          * The window.history injectable.
          */
-        protected _history: History = acquire(__History);
+        protected _history: History;
 
         /**
          * The document injectable.
          */
-        protected _document: Document = acquire(__Document);
+        protected _document: Document;
 
         /**
          * Determines if the browser is modern enough to correctly 
@@ -3131,7 +3158,8 @@ module plat {
          * @param {any} context? An optional context to bind to the iterator.
          */
         mapAsync<T, R>(iterator: IObjectIterator<T, async.IThenable<R>>, obj: IObject<T>, context?: any): plat.async.IThenable<Array<R>>;
-        mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any, context?: any): plat.async.IThenable<Array<R>> {
+        mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any,
+            context?: any): plat.async.IThenable<Array<R>> {
             return mapAsync(iterator, obj, context);
         }
 
@@ -3143,7 +3171,8 @@ module plat {
          * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsyncInOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): plat.async.IThenable<Array<R>> {
+        mapAsyncInOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>,
+            context?: any): plat.async.IThenable<Array<R>> {
             return mapAsyncInOrder(iterator, array, context);
         }
 
@@ -3155,7 +3184,8 @@ module plat {
          * @param {Array<T>} array An Array.
          * @param {any} context? An optional context to bind to the iterator.
          */
-        mapAsyncInDescendingOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>, context?: any): plat.async.IThenable<Array<R>> {
+        mapAsyncInDescendingOrder<T, R>(iterator: IListIterator<T, async.IThenable<R>>, array: Array<T>,
+            context?: any): plat.async.IThenable<Array<R>> {
             return mapAsyncInDescendingOrder(iterator, array, context);
         }
 
@@ -3210,6 +3240,15 @@ module plat {
          */
         defer(method: (...args: any[]) => void, timeout: number, args?: Array<any>, context?: any) {
             return defer(method, timeout, args, context);
+        }
+
+        /**
+         * Uses requestAnimationFrame if it is available, else it does a setTimeout.
+         * @param {FrameRequestCallback} method The method to call when the request is fulfilled.
+         * @param {any} context? An optional context to bind to the method.
+         */
+        requestAnimationFrame(method: FrameRequestCallback, context?: any): IRemoveListener {
+            return requestAnimationFrameGlobal(method, context);
         }
 
         /**
@@ -3459,10 +3498,14 @@ module plat {
          * finding all of its tokens (i.e. delimiters, operators, etc).
          */
         export class Tokenizer {
+            protected static _inject: any = {
+                _Exception: __ExceptionStatic
+            };
+
             /**
              * Reference to the IExceptionStatic injectable.
              */
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+            protected _Exception: IExceptionStatic;
 
             /**
              * The input string to tokenize.
@@ -4281,15 +4324,20 @@ module plat {
          * IParsedExpressions.
          */
         export class Parser {
+            protected static _inject: any = {
+                _tokenizer: __Tokenizer,
+                _Exception: __ExceptionStatic
+            };
+
             /**
              * Reference to the Tokenizer injectable.
              */
-            protected _tokenizer: Tokenizer = acquire(__Tokenizer);
+            protected _tokenizer: Tokenizer;
 
             /**
              * Reference to the IExceptionStatic injectable.
              */
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+            protected _Exception: IExceptionStatic;
 
             /**
              * A single expression's token representation created by a Tokenizer.
@@ -5004,6 +5052,16 @@ module plat {
          * The class that handles all interaction with the browser.
          */
         export class Browser {
+            protected static _inject: any = {
+                _EventManager: __EventManagerStatic,
+                _compat: __Compat,
+                _regex: __Regex,
+                _window: __Window,
+                _location: __Location,
+                _history: __History,
+                _dom: __Dom
+            };
+
             /**
              * The IBrowserConfig injectable object.
              */
@@ -5019,37 +5077,37 @@ module plat {
             /**
              * Reference to the IEventManagerStatic injectable.
              */
-            protected _EventManager: events.IEventManagerStatic = acquire(__EventManagerStatic);
+            protected _EventManager: events.IEventManagerStatic;
 
             /**
              * Reference to the Compat injectable.
              */
-            protected _compat: Compat = acquire(__Compat);
+            protected _compat: Compat;
 
             /**
              * Reference to the Regex injectable.
              */
-            protected _regex: expressions.Regex = acquire(__Regex);
+            protected _regex: expressions.Regex;
 
             /**
              * Reference to the Window injectable.
              */
-            protected _window: Window = acquire(__Window);
+            protected _window: Window;
 
             /**
              * Reference to the Location injectable.
              */
-            protected _location: Location = acquire(__Location);
+            protected _location: Location;
 
             /**
              * Reference to the History injectable.
              */
-            protected _history: History = acquire(__History);
+            protected _history: History;
 
             /**
              * Reference to the Dom injectable.
              */
-            protected _dom: ui.Dom = acquire(__Dom);
+            protected _dom: ui.Dom;
 
             /**
              * Keeps a history stack if using a windows store app.
@@ -5059,7 +5117,7 @@ module plat {
             /**
              * A unique string identifier.
              */
-            uid: string;
+            uid: string = uniqueId(__Plat);
 
             /**
              * The browser's current URL.
@@ -5080,8 +5138,6 @@ module plat {
              * The constructor for a Browser. Assigns a uid and subscribes to the 'beforeLoad' event.
              */
             constructor() {
-                var ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
-                ContextManager.defineGetter(this, 'uid', uniqueId(__Plat));
                 this._EventManager.on(this.uid, __beforeLoad, this.initialize, this);
 
                 if (this._compat.msApp) {
@@ -5343,7 +5399,7 @@ module plat {
             return Browser.config;
         }
 
-        register.injectable(__IBrowserConfig, IBrowserConfig);
+        register.injectable(__BrowserConfig, IBrowserConfig);
 
         /**
          * Specifies configuration properties for the Browser  
@@ -5405,6 +5461,15 @@ module plat {
          * associated URL.
          */
         export class UrlUtils {
+            protected static _inject: any = {
+                _EventManager: __EventManagerStatic,
+                _document: __Document,
+                _window: __Window,
+                _compat: __Compat,
+                _regex: __Regex,
+                _browserConfig: __BrowserConfig
+            };
+
             /**
              * Helps with URL initialization through it's href attribute.
              */
@@ -5440,33 +5505,28 @@ module plat {
             }
 
             /**
-             * Reference to the IContextManagerStatic injectable.
-             */
-            protected _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
-
-            /**
              * Reference to the Document injectable.
              */
-            protected _document: Document = acquire(__Document);
+            protected _document: Document;
 
             /**
              * Reference to the Window injectable.
              */
-            protected _window: Window = acquire(__Window);
+            protected _window: Window;
             /**
              * Reference to the Compat injectable.
              */
-            protected _compat: Compat = acquire(__Compat);
+            protected _compat: Compat;
 
             /**
              * Reference to the Regex injectable.
              */
-            protected _regex: expressions.Regex = acquire(__Regex);
+            protected _regex: expressions.Regex;
 
             /**
              * Reference to the IBrowserConfig injectable.
              */
-            protected _browserConfig: IBrowserConfig = acquire(__IBrowserConfig);
+            protected _browserConfig: IBrowserConfig;
 
             /**
              * The whole associated URL.
@@ -5568,7 +5628,6 @@ module plat {
 
                 var element = UrlUtils.__urlUtilsElement ||
                     (UrlUtils.__urlUtilsElement = this._document.createElement('a')),
-                    define = this._ContextManager.defineGetter,
                     _browserConfig = this._browserConfig;
 
                 // always make local urls relative to start page.
@@ -6322,35 +6381,49 @@ module plat {
              */
             jsonpCallback: string;
 
+            protected static _inject: any = {
+                _Exception: __ExceptionStatic,
+                _browser: __Browser,
+                _window: __Window,
+                _document: __Document,
+                _config: __HttpConfig,
+                _compat: __Compat
+            };
+
             /**
              * The plat.IExceptionStatic injectable instance
              */
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+            protected _Exception: IExceptionStatic;
 
             /**
              * The plat.web.Browser injectable instance
              */
-            protected _browser: web.Browser = acquire(__Browser);
+            protected _browser: web.Browser;
 
             /**
              * The injectable instance of type Window
              */
-            protected _window: Window = acquire(__Window);
+            protected _window: Window;
 
             /**
              * The injectable instance of type Document
              */
-            protected _document: Document = acquire(__Document);
+            protected _document: Document;
 
             /**
              * The configuration for an HTTP Request
              */
-            protected _config: IHttpConfig = acquire(__HttpConfig);
+            protected _config: IHttpConfig;
+
+            /**
+             * The injectable instance of Compat
+             */
+            protected _compat: Compat;
 
             /**
              * Whether or not the browser supports the File API.
              */
-            private __fileSupported = (<Compat>acquire(__Compat)).fileSupported;
+            private __fileSupported: boolean;
 
             /**
              * The configuration for the specific HTTP Request
@@ -6359,9 +6432,16 @@ module plat {
 
             /**
              * The constructor for a HttpRequest.
+             */
+            constructor() {
+                this.__fileSupported = this._compat.fileSupported
+            }
+
+            /**
+             * Initializes the HttpRequest with options.
              * @param {plat.async.IHttpConfig} options The IHttpConfigStatic used to customize this HttpRequest.
              */
-            constructor(options: IHttpConfig) {
+            initialize(options: IHttpConfig) {
                 this.__options = extend({}, this._config, options);
             }
 
@@ -7431,7 +7511,7 @@ module plat {
          * The instantiated class of the injectable for making 
          * AJAX requests.
          */
-        export class Http implements IHttp {
+        export class Http {
             /**
              * Default Http config
              */
@@ -7482,7 +7562,9 @@ module plat {
              * or rejected, will return an IAjaxResponse object.
              */
             ajax<R>(options: IHttpConfig): AjaxPromise<R> {
-                return new HttpRequest(options).execute<R>();
+                var request: HttpRequest = acquire(HttpRequest);
+                request.initialize(options);
+                return request.execute<R>();
             }
 
             /**
@@ -7491,7 +7573,9 @@ module plat {
              * IAjaxResponse object.
              */
             jsonp<R>(options: IJsonpConfig): AjaxPromise<R> {
-                return new HttpRequest(options).executeJsonp<R>();
+                var request: HttpRequest = acquire(HttpRequest);
+                request.initialize(options);
+                return request.executeJsonp<R>();
             }
 
             /**
@@ -7502,62 +7586,13 @@ module plat {
              * being a parsed JSON object (assuming valid JSON).
              */
             json<R>(options: IHttpConfig): AjaxPromise<R> {
-                return new HttpRequest(extend({}, options, { responseType: 'json' })).execute<R>();
+                var request: HttpRequest = acquire(HttpRequest);
+                request.initialize(extend({}, options, { responseType: 'json' }));
+                return request.execute<R>();
             }
         }
 
-        /**
-         * The Type for referencing the '_http' injectable as a dependency.
-         */
-        export function IHttp(): IHttp {
-            return new Http();
-        }
-
-        register.injectable(__Http, IHttp);
-
-        /**
-         * The interface of the injectable for making 
-         * AJAX requests.
-         */
-        export interface IHttp {
-            /**
-             * Provides value mappings for
-             * XMLHttpRequestResponseTypes
-             */
-            responseType: IHttpResponseType;
-
-            /**
-             * Provides Content-Type mappings for Http POST requests.
-             */
-            contentType: IHttpContentType;
-
-            /**
-             * A wrapper method for the Http class that creates and executes a new Http with
-             * the specified IHttpConfig. This function will check if 
-             * XMLHttpRequest level 2 is present, and will default to JSONP if it isn't and 
-             * the request is cross-domain.
-             * @param {plat.async.IHttpConfig} options The IHttpConfig for either the XMLHttpRequest 
-             * or the JSONP callback.
-             * or rejected, will return an IAjaxResponse object.
-             */
-            ajax<R>(options: IHttpConfig): AjaxPromise<R>;
-
-            /**
-             * A direct method to force a cross-domain JSONP request.
-             * @param {plat.async.IJsonpConfig} options The IJsonpConfig 
-             * IAjaxResponse object.
-             */
-            jsonp? <R>(options: IJsonpConfig): AjaxPromise<R>;
-
-            /**
-             * Makes an ajax request, specifying responseType: 'json'.
-             * @param {plat.async.IHttpConfig} options The IHttpConfig 
-             * for either the XMLHttpRequest or the JSONP callback.
-             * will return an IAjaxResponse object, with the response 
-             * being a parsed JSON object (assuming valid JSON).
-             */
-            json? <R>(options: IHttpConfig): AjaxPromise<R>;
-        }
+        register.injectable(__Http, Http);
 
         /**
          * The Type for referencing the '_httpConfig' injectable as a dependency.
@@ -7592,10 +7627,10 @@ module plat {
              * type of objects stored in the new cache.  If a cache with the same ID already exists
              * in the ICacheFactory, a new cache will not be created.
              * @param {string} id The ID of the new Cache.
-             * @param {plat.storage.CacheOptions} options CacheOptions 
+             * @param {plat.storage.ICacheOptions} options ICacheOptions 
              * for customizing the Cache.
              */
-            static create<T>(id: string, options?: CacheOptions): Cache<T> {
+            static create<T>(id: string, options?: ICacheOptions): Cache<T> {
                 var cache: Cache<T> = caches[id];
 
                 if (isNull(cache)) {
@@ -7638,14 +7673,14 @@ module plat {
             /**
              * The options for this cache.
              */
-            private __options: CacheOptions;
+            private __options: ICacheOptions;
 
             /**
              * The constructor for a Cache.
              * @param {string} id The id to use to retrieve the cache from the ICacheFactory.
-             * @param {plat.storage.CacheOptions} options The CacheOptions for customizing the cache.
+             * @param {plat.storage.ICacheOptions} options The ICacheOptions for customizing the cache.
              */
-            constructor(id: string, options?: CacheOptions) {
+            constructor(id: string, options?: ICacheOptions) {
                 this.__id = id;
                 this.__options = options;
                 this.__size = 0;
@@ -7660,10 +7695,10 @@ module plat {
             }
 
             /**
-             * Retrieves the CacheInfo about this cache 
+             * Retrieves the ICacheInfo about this cache 
              * (i.e. ID, size, options)
              */
-            info(): CacheInfo {
+            info(): ICacheInfo {
                 return {
                     id: this.__id,
                     size: this.__size,
@@ -7745,10 +7780,10 @@ module plat {
              * type of objects stored in the new cache.  If a cache with the same ID already exists
              * in the ICacheFactory, a new cache will not be created.
              * @param {string} id The ID of the new Cache.
-             * @param {plat.storage.CacheOptions} options CacheOptions 
+             * @param {plat.storage.ICacheOptions} options ICacheOptions 
              * for customizing the Cache.
              */
-            create<T>(id: string, options?: CacheOptions): Cache<T>;
+            create<T>(id: string, options?: ICacheOptions): Cache<T>;
 
             /**
              * Gets a cache out of the ICacheFactory if it exists.
@@ -7779,7 +7814,7 @@ module plat {
         /**
          * Options for a cache.
          */
-        export interface CacheOptions {
+        export interface ICacheOptions {
             /**
              * Specifies a timeout for a cache value. When a value 
              * is put in the cache, it will be valid for the given
@@ -7793,7 +7828,7 @@ module plat {
         /**
          * Contains information about an Cache.
          */
-        export interface CacheInfo {
+        export interface ICacheInfo {
             /**
              * A unique id for the Cache object, used to 
              * retrieve the ICache out of the CacheFactory.
@@ -7806,10 +7841,10 @@ module plat {
             size: number;
         
             /**
-             * Represents the CacheOptions that the 
+             * Represents the ICacheOptions that the 
              * Cache is using.
              */
-            options: CacheOptions;
+            options: ICacheOptions;
         }
 
         /**
@@ -7818,15 +7853,20 @@ module plat {
          * also clone the template when you retrieve it.
          */
         export class TemplateCache extends Cache<async.IThenable<DocumentFragment>> {
+            protected static _inject: any = {
+                _Promise: __Promise,
+                _Exception: __ExceptionStatic
+            };
+
             /**
              * Reference to the IPromise injectable.
              */
-            protected _Promise: async.IPromise = acquire(__Promise);
+            protected _Promise: async.IPromise;
 
             /**
              * Reference to the IExceptionStatic injectable.
              */
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+            protected _Exception: IExceptionStatic;
 
             /**
              * The constructor for a TemplateCache. Creates a new Cache  
@@ -8299,6 +8339,10 @@ module plat {
          * facilitating in data-binding.
          */
         export class ContextManager {
+            protected static _inject: any = {
+                _compat: __Compat
+            };
+
             /**
              * Reference to the IExceptionStatic injectable.
              */
@@ -8330,7 +8374,7 @@ module plat {
                     return contextManager;
                 }
 
-                contextManager = managers[uid] = new ContextManager();
+                contextManager = managers[uid] = acquire(ContextManager);
                 contextManager.context = control;
 
                 return contextManager;
@@ -8583,7 +8627,7 @@ module plat {
             /**
              * Reference to the Compat injectable.
              */
-            protected _compat: Compat = acquire(__Compat);
+            protected _compat: Compat;
 
             /**
              * The root context associated with and to be managed by this 
@@ -9659,15 +9703,20 @@ module plat {
          * not stop propagation of the event.
          */
         export class DispatchEvent {
+            protected static _inject: any = {
+                _EventManager: __EventManagerStatic,
+                _ContextManager: __ContextManagerStatic
+            };
+
             /**
              * Reference to the IEventManagerStatic injectable.
              */
-            protected _EventManager: IEventManagerStatic = acquire(__EventManagerStatic);
+            protected _EventManager: IEventManagerStatic;
 
             /**
              * Reference to the IContextManagerStatic injectable.
              */
-            protected _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
+            protected _ContextManager: observable.IContextManagerStatic;
 
             /**
              * The object that initiated the event.
@@ -9763,7 +9812,7 @@ module plat {
              * @param {any} sender The sender of the event.
              */
             static dispatch(name: string, sender: any): LifecycleEvent {
-                var event = new LifecycleEvent();
+                var event: LifecycleEvent = acquire(LifecycleEvent);
                 event.initialize(name, sender);
                 EventManager.sendEvent(event);
 
@@ -10044,10 +10093,10 @@ module plat {
              */
             static dispatch(name: string, sender: any, direction: string, args?: Array<any>): DispatchEvent;
             static dispatch(name: string, sender: any, direction: string, args?: Array<any>) {
-                var $dispatchEvent: DispatchEvent = acquire(__DispatchEventInstance);
-                $dispatchEvent.initialize(name, sender, direction);
-                EventManager.sendEvent($dispatchEvent, args);
-                return $dispatchEvent;
+                var _dispatchEvent: DispatchEvent = acquire(__DispatchEventInstance);
+                _dispatchEvent.initialize(name, sender, direction);
+                EventManager.sendEvent(_dispatchEvent, args);
+                return _dispatchEvent;
             }
 
             /**
@@ -10100,8 +10149,10 @@ module plat {
 
                 while (!isNull(parent) && EventManager.propagatingEvents[name]) {
                     if (isNull(parent.uid)) {
+                        parent = parent.parent;
                         continue;
                     }
+
                     EventManager.__executeEvent(parent.uid, event, args);
                     parent = parent.parent;
                 }
@@ -10438,7 +10489,7 @@ module plat {
              * @param {E} error The error that occurred, resulting in the event.
              */
             static dispatch<E extends Error>(name: string, sender: any, error: E): ErrorEvent<E> {
-                var event = new ErrorEvent<E>();
+                var event: ErrorEvent<E> = acquire(ErrorEvent);
 
                 event.initialize(name, sender, null, error);
                 ErrorEvent._EventManager.sendEvent(event);
@@ -10503,6 +10554,11 @@ module plat {
      * class for all types of controls.
      */
     export class Control {
+        protected static _inject: any = {
+            _Exception: __ExceptionStatic,
+            dom: __Dom
+        };
+
         /**
          * Reference to the Parser injectable.
          */
@@ -10668,7 +10724,7 @@ module plat {
          * Returns a new instance of Control.
          */
         static getInstance(): Control {
-            return new Control();
+            return acquire(Control);
         }
 
         /**
@@ -10749,12 +10805,12 @@ module plat {
         /**
          * The plat.IExceptionStatic injectable instance
          */
-        protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+        protected _Exception: IExceptionStatic;
 
         /**
          * A unique id, created during instantiation and found on every Control.
          */
-        uid: string;
+        uid: string = uniqueId(__Plat);
 
         /**
          * The type of a Control.
@@ -10797,7 +10853,7 @@ module plat {
         /**
          * Contains DOM helper methods for manipulating this control's element.
          */
-        dom: ui.Dom = acquire(__Dom);
+        dom: ui.Dom;
 
         /**
          * The constructor for a control. Any injectables specified during control registration will be
@@ -10805,9 +10861,6 @@ module plat {
          * injector.
          */
         constructor() {
-            var ContextManager: observable.IContextManagerStatic = Control._ContextManager ||
-                acquire(__ContextManagerStatic);
-            ContextManager.defineGetter(this, 'uid', uniqueId(__Plat));
         }
 
         /**
@@ -11363,7 +11416,7 @@ module plat {
          * Returns a new instance of AttributeControl.
          */
         static getInstance(): AttributeControl {
-            return new AttributeControl();
+            return acquire(AttributeControl);
         }
 
         /**
@@ -11437,7 +11490,7 @@ module plat {
             /**
              * Reference to the IHttp injectable.
              */
-            protected static _http: async.IHttp;
+            protected static _http: async.Http;
 
             /**
              * Reference to the IPromise injectable.
@@ -11841,7 +11894,7 @@ module plat {
              * Returns a new instance of TemplateControl.
              */
             static getInstance(): TemplateControl {
-                return new TemplateControl();
+                return acquire(TemplateControl);
             }
 
             /**
@@ -12129,7 +12182,7 @@ module plat {
             _managerCache?: storage.Cache<processing.ElementManager>,
             _templateCache?: storage.TemplateCache,
             _parser?: expressions.Parser,
-            _http?: async.IHttp,
+            _http?: async.Http,
             _Promise?: async.IPromise,
             _Exception?: IExceptionStatic): ITemplateControlFactory {
             (<any>TemplateControl)._ResourcesFactory = _ResourcesFactory;
@@ -12343,7 +12396,7 @@ module plat {
              * Returns a new instance of a ViewControl.
              */
             static getInstance(): ViewControl {
-                return new ViewControl();
+                return acquire(ViewControl);
             }
 
             /**
@@ -12385,6 +12438,10 @@ module plat {
          * of DOM.
          */
         export class Dom {
+            protected static _inject: any = {
+                _domEvents: __DomEvents
+            };
+
             /**
              * Reference to the DomEvents injectable.
              */
@@ -12751,7 +12808,6 @@ module plat {
                 }
 
                 var parent = control.parent;
-
                 if (isNull(parent)) {
                     return false;
                 }
@@ -12817,9 +12873,9 @@ module plat {
             private __compiledControls: Array<TemplateControl> = [];
 
             /**
-             * Method for linking a new template to a data context and returning a clone of the template, 
-             * with all new Controls created if the template contains controls. It is not necessary
-             * to specify a data context.
+             * Method for linking a compiled template to a data context and returning a clone of the template, 
+             * with all new Controls created if the template contains controls. If no data context 
+             * is specified, it will be inherited.
              * @param {string} key The key used to retrieve the template.
              * @param {string} relativeIdentifier? The identifier string relative to this control's context
              * (e.g. 'foo.bar.baz' would signify the object this.context.foo.bar.baz). This is the 
@@ -12831,9 +12887,9 @@ module plat {
              */
             bind(key: string, relativeIdentifier?: string, resources?: IObject<IResource>): async.IThenable<DocumentFragment>;
             /**
-             * Method for linking a new template to a data context and returning a clone of the template, 
-             * with all new Controls created if the template contains controls. It is not necessary
-             * to specify a data context.
+             * Method for linking a compiled template to a data context and returning a clone of the template, 
+             * with all new Controls created if the template contains controls. If no data context 
+             * is specified, it will be inherited.
              * @param {string} key The key used to retrieve the template.
              * @param {number} relativeIdentifier? The identifier number relative to this control's context
              * (e.g. '1' would signify the object this.context[1]). Only necessary when context is an array.
@@ -12843,31 +12899,7 @@ module plat {
              */
             bind(key: string, relativeIdentifier?: number, resources?: IObject<IResource>): async.IThenable<DocumentFragment>;
             bind(key: any, relativeIdentifier?: any, resources?: IObject<IResource>): async.IThenable<DocumentFragment> {
-                var templatePromise = this.templates[key],
-                    _Exception: IExceptionStatic = this._Exception;
-
-                if (isNull(templatePromise)) {
-                    _Exception.fatal('Cannot bind template, no template stored with key: ' + key,
-                        _Exception.TEMPLATE);
-                    return;
-                }
-
-                if (!(isNull(relativeIdentifier) || isNumber(relativeIdentifier) || isString(relativeIdentifier))) {
-                    _Exception.warn('Cannot bind template with relativeIdentifier: ' +
-                        relativeIdentifier +
-                        '. Identifier must be either a string or number', _Exception.BIND);
-                    return;
-                }
-
-                return templatePromise.then((result: DocumentFragment) => {
-                    return this._bindTemplate(key, <DocumentFragment>result.cloneNode(true), relativeIdentifier, resources);
-                }).then(null, (error: any) => {
-                        postpone(() => {
-                            _Exception.fatal(error, _Exception.BIND);
-                        });
-
-                        return <DocumentFragment>null;
-                    });
+                return this._bind(key, relativeIdentifier, resources);
             }
 
             /**
@@ -12929,6 +12961,55 @@ module plat {
             }
 
             /**
+             * Replaces the bound TemplateControl in the child control Array 
+             * specified by the index with another bound control generated by the template key, relative context 
+             * identifier, and resources.
+             * @param {number} index The index of the bound TemplateControl 
+             * in the child control Array to replace.
+             * @param {string} key The key used to retrieve the template.
+             * @param {string} relativeIdentifier? The identifier string relative to this control's context
+             * (e.g. 'foo.bar.baz' would signify the object this.context.foo.bar.baz). This is the 
+             * most efficient way of specifying context, else the framework has to search for the 
+             * object.
+             * @param {plat.IObject<plat.IResource>} resources? An object used as the resources for any top-level 
+             * controls created in the template.
+             * been replaced. It resolves with an Array containing the newly added nodes.
+             */
+            replace(index: number, key: string, relativeIdentifier?: string, resources?: IObject<IResource>): async.IThenable<Array<Node>>;
+            /**
+             * Replaces the bound TemplateControl in the child control Array 
+             * specified by the index with another bound control generated by the template key, relative context 
+             * identifier, and resources.
+             * @param {number} index The index of the bound TemplateControl 
+             * in the child control Array to replace.
+             * @param {string} key The key used to retrieve the template.
+             * @param {number} relativeIdentifier? The identifier number relative to this control's context
+             * (e.g. '1' would signify the object this.context[1]). Only necessary when context is an array.
+             * @param {plat.IObject<plat.IResource>} resources? An object used as the resources for any top-level 
+             * controls created in the template.
+             * been replaced. It resolves with an Array containing the newly added nodes.
+             */
+            replace(index: number, key: string, relativeIdentifier?: number, resources?: IObject<IResource>): async.IThenable<Array<Node>>;
+            replace(index: number, key: string, relativeIdentifier?: any, resources?: IObject<IResource>): async.IThenable<Array<Node>> {
+                var control = <TemplateControl>this.control.controls[index],
+                    _Exception = this._Exception;
+                if (!BindableTemplates.isBoundControl(control)) {
+                    _Exception.warn('The child control at the specified index: ' + index + ' is not a bound control and thus cannot be ' +
+                        'replaced by BindableTemplates.', _Exception.BIND);
+                    return this._Promise.resolve([]);
+                }
+
+                var endNode = control.endNode;
+                if (!(isNode(endNode) && isNode(endNode.parentNode))) {
+                    _Exception.warn('The child control at the specified index: ' + index + ' had either no placeholding comment nodes ' +
+                        'or its comment nodes had no parent and thus cannot be replaced by BindableTemplates.', _Exception.BIND);
+                    return this._Promise.resolve([]);
+                }
+
+                return this._bind(key, relativeIdentifier, resources, index);
+            }
+
+            /**
              * Clears the memory being held by this instance.
              */
             dispose(): void {
@@ -12947,18 +13028,79 @@ module plat {
             }
 
             /**
+             * Method for linking a template to a data context and returning a clone of the template, 
+             * with all new Controls created if the template contains controls. If no data context 
+             * is specified, it will be inherited.
+             * @param {string} key The key used to retrieve the template.
+             * @param {string} relativeIdentifier? The identifier string relative to this control's context
+             * (e.g. 'foo.bar.baz' would signify the object this.context.foo.bar.baz). This is the 
+             * most efficient way of specifying context, else the framework has to search for the 
+             * object.
+             * @param {plat.IObject<plat.IResource>} resources? An object used as the resources for any top-level 
+             * controls created in the template.
+             * @param {number} index? An optional index only to be used if the newly bound template is intended to 
+             * replace an existing Control in the child controls Array and its element in the DOM.
+             * ready to return or after the template and its control have replaced the bound control specified by the index.
+             */
+            protected _bind(key: any, relativeIdentifier?: any, resources?: IObject<IResource>, index?: number): async.IThenable<any> {
+                var templatePromise = this.templates[key],
+                    _Exception: IExceptionStatic = this._Exception,
+                    noIndex = isNull(index);
+
+                if (isNull(templatePromise)) {
+                    _Exception.fatal('Cannot bind template, no template stored with key: ' + key,
+                        _Exception.TEMPLATE);
+                    return;
+                }
+
+                if (!(isNull(relativeIdentifier) || isNumber(relativeIdentifier) || isString(relativeIdentifier))) {
+                    _Exception.warn('Cannot bind template with relativeIdentifier: ' + relativeIdentifier +
+                        '. Identifier must be either a string or number', _Exception.BIND);
+                    return;
+                }
+
+                return templatePromise.then((result: DocumentFragment) => {
+                    var template = <DocumentFragment>result.cloneNode(true),
+                        control = this._createBoundControl(key, template, resources),
+                        nodeMap = this._createNodeMap(control, template, relativeIdentifier);
+
+                    if (noIndex) {
+                        this.control.controls.push(control);
+                    }
+
+                    return this._bindTemplate(key, nodeMap);
+                }).then((fragment) => {
+                    if (noIndex) {
+                        return fragment;
+                    }
+
+                    var childNodes = Array.prototype.slice.call(fragment.childNodes),
+                        oldControl = <TemplateControl>this.control.controls[index],
+                        endNode = oldControl.endNode,
+                        parentNode = endNode.parentNode,
+                        nextSibling = endNode.nextSibling;
+
+                    this._TemplateControlFactory.dispose(oldControl);
+                    parentNode.insertBefore(fragment, nextSibling);
+
+                    return childNodes;
+                }).then(null, (error: any) => {
+                    postpone(() => {
+                        _Exception.fatal(error, _Exception.BIND);
+                    });
+
+                    return <DocumentFragment>null;
+                });
+            }
+
+            /**
              * Creates the template's bound control and INodeMap and initiates 
              * the binding of the INodeMap for a cloned template.
              * @param {string} key The template key.
-             * @param {DocumentFragment} template The cached HTML template.
-             * @param {string} contextId The relative path from the context used to bind this template.
-             * @param {plat.IObject<plat.ui.IResource>} A set of resources to add to the control used to bind this 
-             * template.
+             * @param {plat.processing.INodeMap} nodeMap The node map to bind.
              */
-            protected _bindTemplate(key: string, template: DocumentFragment, contextId: string,
-                resources: IObject<IResource>): async.IThenable<DocumentFragment> {
-                var control = this._createBoundControl(key, template, resources),
-                    nodeMap = this._createNodeMap(control, template, contextId),
+            protected _bindTemplate(key: string, nodeMap: processing.INodeMap): async.IThenable<DocumentFragment> {
+                var control = nodeMap.uiControlNode.control,
                     disposed = false,
                     dispose = isFunction(control.dispose) ? control.dispose.bind(control) : noop;
 
@@ -12968,8 +13110,10 @@ module plat {
                     control.dispose = dispose;
                 };
 
-                return this._bindNodeMap(nodeMap, key).then(() => {
-                    var _document = this._document;
+                return this._bindNodeMap(key, nodeMap).then(() => {
+                    var _document = this._document,
+                        template = nodeMap.element;
+
                     if (disposed) {
                         return _document.createDocumentFragment();
                     }
@@ -12993,17 +13137,15 @@ module plat {
              * Clones the compiled ElementManager using the newly created 
              * INodeMap and binds and loads this control's 
              * ElementManager.
-             * @param {plat.processing.INodeMap} nodeMap The node map to bind.
              * @param {string} key The template key used to grab the ElementManager.
+             * @param {plat.processing.INodeMap} nodeMap The node map to bind.
              * ElementManager is bound and loaded.
              */
-            protected _bindNodeMap(nodeMap: processing.INodeMap, key: string): async.IThenable<void> {
+            protected _bindNodeMap(key: string, nodeMap: processing.INodeMap): async.IThenable<void> {
                 var manager = this.cache[key],
                     child = nodeMap.uiControlNode.control,
                     template = nodeMap.element,
                     _managerCache = this._managerCache;
-
-                this.control.controls.push(child);
 
                 manager.clone(template, _managerCache.read(this.control.uid), nodeMap);
                 return _managerCache.read(child.uid).bindAndLoad();
@@ -13513,7 +13655,7 @@ module plat {
              * Returns a new instance with type Resources.
              */
             static getInstance(): Resources {
-                return new Resources();
+                return acquire(Resources);
             }
 
             /**
@@ -13834,10 +13976,15 @@ module plat {
          * A class for managing DOM event registration and handling.
          */
         export class DomEvents {
+            protected static _inject: any = {
+                _document: __Document,
+                _compat: __Compat
+            };
+
             /**
              * A configuration object for all DOM events.
              */
-            static config: DomEventsConfig = {
+            static config: IDomEventsConfig = {
                 /**
                  * An object containing the different time intervals that govern the behavior of certain 
                  * custom DOM events.
@@ -13946,12 +14093,12 @@ module plat {
             /**
              * Reference to the Document injectable.
              */
-            protected _document: Document = acquire(__Document);
+            protected _document: Document;
 
             /**
              * Reference to the Compat injectable.
              */
-            protected _compat: Compat = acquire(__Compat);
+            protected _compat: Compat;
 
             /**
              * Whether or not the DomEvents are currently active. 
@@ -15654,11 +15801,11 @@ module plat {
         /**
          * The Type for referencing the '_domEventsConfig' injectable as a dependency.
          */
-        export function DomEventsConfig(): DomEventsConfig {
+        export function IDomEventsConfig(): IDomEventsConfig {
             return DomEvents.config;
         }
 
-        register.injectable(__DomEventsConfig, DomEventsConfig);
+        register.injectable(__IDomEventsConfig, IDomEventsConfig);
 
         /**
          * A class for managing a single custom event.
@@ -16324,7 +16471,7 @@ module plat {
         /**
          * Describes a configuration object for all custom DOM events.
          */
-        export interface DomEventsConfig {
+        export interface IDomEventsConfig {
             /**
              * An object containing the different time intervals that govern the behavior of certain 
              * custom DOM events.
@@ -16357,10 +16504,14 @@ module plat {
              * A class used for animating elements.
              */
             export class Animator {
+                protected static _inject: any = {
+                    _compat: __Compat
+                };
+
                 /**
                  * Reference to the Compat injectable.
                  */
-                protected _compat: Compat = acquire(__Compat);
+                protected _compat: Compat;
 
                 /**
                  * All elements currently being animated.
@@ -16781,10 +16932,15 @@ module plat {
              * A class representing a single animation for a single element.
              */
             export class BaseAnimation {
+                protected static _inject: any = {
+                    _compat: __Compat,
+                    dom: __Dom
+                };
+
                 /**
                  * Reference to the Compat injectable.
                  */
-                protected _compat: Compat = acquire(__Compat);
+                protected _compat: Compat;
 
                 /**
                  * The node having the animation performed on it.
@@ -16794,7 +16950,7 @@ module plat {
                 /**
                  * Contains DOM helper methods for manipulating this control's element.
                  */
-                dom: Dom = acquire(__Dom);
+                dom: Dom;
 
                 /**
                  * Specified options for the animation.
@@ -16973,10 +17129,14 @@ module plat {
              * element, checks for animation properties, and waits for the animation to end.
              */
             export class SimpleCssAnimation extends CssAnimation {
+                protected static _inject: any = {
+                    _window: __Window
+                };
+
                 /**
                  * Reference to the Window injectable.
                  */
-                protected _window: Window = acquire(__Window);
+                protected _window: Window;
 
                 /**
                  * The class name added to the animated element.
@@ -17114,10 +17274,14 @@ module plat {
              * element, checks for transition properties, and waits for the transition to end.
              */
             export class SimpleCssTransition extends CssAnimation {
+                protected static _inject: any = {
+                    _window: __Window
+                };
+
                 /**
                  * Reference to the Window injectable.
                  */
-                protected _window: Window = acquire(__Window);
+                protected _window: Window;
 
                 /**
                  * An optional options object that can denote a pseudo element animation and specify 
@@ -17263,28 +17427,39 @@ module plat {
 
 
             export class Viewport extends TemplateControl implements routing.ISupportRouteNavigation {
-                protected _routerStatic: typeof routing.Router = acquire(__RouterStatic);
-                protected _Promise: async.IPromise = acquire(__Promise);
-                protected _Injector: typeof dependency.Injector = acquire(__InjectorStatic);
-                protected _ElementManagerFactory: processing.IElementManagerFactory = acquire(__ElementManagerFactory);
-                protected _document: Document = acquire(__Document);
+                protected static _inject: any = {
+                    _Router: __RouterStatic,
+                    _Promise: __Promise,
+                    _Injector: __InjectorStatic,
+                    _ElementManagerFactory: __ElementManagerFactory,
+                    _document: __Document,
+                    _managerCache: __ManagerCache,
+                    _animator: __Animator,
+                    navigator: __NavigatorInstance
+                };
+
+                protected _Router: typeof routing.Router;
+                protected _Promise: async.IPromise;
+                protected _Injector: typeof dependency.Injector;
+                protected _ElementManagerFactory: processing.IElementManagerFactory;
+                protected _document: Document;
 
                 /**
                  * Reference to an injectable that caches ElementManagers.
                  */
-                protected _managerCache: storage.Cache<processing.ElementManager> = acquire(__ManagerCache);
+                protected _managerCache: storage.Cache<processing.ElementManager>;
 
                 /**
                  * Reference to the Animator injectable.
                  */
-                protected _animator: animations.Animator = acquire(__Animator);
+                protected _animator: animations.Animator;
 
                 /**
                  * A promise used for disposing the end state of the previous animation prior to starting a new one.
                  */
                 protected _animationPromise: animations.IAnimationThenable<animations.IGetAnimatingThenable>;
 
-                navigator: routing.Navigator = acquire(__NavigatorInstance);
+                navigator: routing.Navigator;
                 router: routing.Router;
                 parentRouter: routing.Router;
                 controls: Array<ViewControl>;
@@ -17292,7 +17467,7 @@ module plat {
                 nextView: ViewControl;
 
                 initialize() {
-                    var router = this.router = this._routerStatic.currentRouter(),
+                    var router = this.router = this._Router.currentRouter(),
                         parentViewport = this._getParentViewport(),
                         parentRouter: routing.Router;
 
@@ -17311,7 +17486,7 @@ module plat {
                 }
 
                 canNavigateTo(routeInfo: routing.IRouteInfo): async.IThenable<boolean> {
-                    var getRouter = this._routerStatic.currentRouter,
+                    var getRouter = this._Router.currentRouter,
                         currentRouter = getRouter(),
                         response: any = true,
                         injector: dependency.Injector<ViewControl> = this._Injector.getDependency(routeInfo.delegate.view),
@@ -17461,20 +17636,26 @@ module plat {
              * defined HTML template.
              */
             export class Template extends TemplateControl {
+                protected static _inject: any = {
+                    _Promise: __Promise,
+                    _templateCache: __TemplateCache,
+                    _document: __Document
+                };
+
                 /**
                  * Reference to the IPromise injectable.
                  */
-                protected _Promise: async.IPromise = acquire(__Promise);
+                protected _Promise: async.IPromise;
 
                 /**
                  * Reference to an injectable for storing HTML templates.
                  */
-                protected _templateCache: storage.TemplateCache = acquire(__TemplateCache);
+                protected _templateCache: storage.TemplateCache;
 
                 /**
                  * Reference to the Document injectable.
                  */
-                protected _document: Document = acquire(__Document);
+                protected _document: Document;
 
                 /**
                  * Removes the <plat-template> node from the DOM
@@ -17704,15 +17885,20 @@ module plat {
              * DOM nodes bound to an array.
              */
             export class ForEach extends TemplateControl {
+                protected static _inject: any = {
+                    _animator: __Animator,
+                    _Promise: __Promise
+                };
+
                 /**
                  * Reference to the Animator injectable.
                  */
-                protected _animator: animations.Animator = acquire(__Animator);
+                protected _animator: animations.Animator;
 
                 /**
                  * Reference to the IPromise injectable.
                  */
-                protected _Promise: async.IPromise = acquire(__Promise);
+                protected _Promise: async.IPromise;
 
                 /**
                  * The required context of the control (must be of type Array).
@@ -18368,15 +18554,20 @@ module plat {
              * to an Array context.
              */
             export class Select extends TemplateControl {
+                protected static _inject: any = {
+                    _Promise: __Promise,
+                    _document: __Document
+                };
+
                 /**
                  * Reference to the IPromise injectable.
                  */
-                protected _Promise: async.IPromise = acquire(__Promise);
+                protected _Promise: async.IPromise;
 
                 /**
                  * Reference to the Document injectable.
                  */
-                protected _document: Document = acquire(__Document);
+                protected _document: Document;
 
                 /**
                  * Replaces the <plat-select> node with 
@@ -18831,15 +19022,20 @@ module plat {
              * a block of nodes to or from the DOM.
              */
             export class If extends TemplateControl {
+                protected static _inject: any = {
+                    _animator: __Animator,
+                    _Promise: __Promise
+                };
+
                 /**
                  * Reference to the Animator injectable.
                  */
-                protected _animator: animations.Animator = acquire(__Animator);
+                protected _animator: animations.Animator;
 
                 /**
                  * Reference to the IPromise injectable.
                  */
-                protected _Promise: async.IPromise = acquire(__Promise);
+                protected _Promise: async.IPromise;
 
                 /**
                  * The evaluated plat-options object.
@@ -19094,6 +19290,12 @@ module plat {
              * functionality to a native HTML anchor tag.
              */
             export class Link extends TemplateControl {
+                protected static _inject: any = {
+                    _Router: __RouterStatic,
+                    _Injector: __InjectorStatic,
+                    _browser: __Browser
+                };
+
                 /**
                  * Replaces the Link's element with a native anchor tag.
                  */
@@ -19102,17 +19304,17 @@ module plat {
                 /**
                  * The RouterStatic injectable instance
                  */
-                protected _router: typeof routing.Router = acquire(__RouterStatic);
+                protected _Router: typeof routing.Router;
 
                 /**
                  * The Injector injectable instance
                  */
-                protected _Injector: typeof dependency.Injector = acquire(__InjectorStatic);
+                protected _Injector: typeof dependency.Injector;
 
                 /**
                  * The Browser injectable instance
                  */
-                protected _browser: web.Browser = acquire(__Browser);
+                protected _browser: web.Browser;
 
                 /**
                  * The router associated with this link.
@@ -19136,7 +19338,7 @@ module plat {
 
                 constructor() {
                     super();
-                    this.router = this._router.currentRouter();
+                    this.router = this._Router.currentRouter();
                 }
 
                 /**
@@ -19145,10 +19347,9 @@ module plat {
                 initialize(): void {
                     var element = this.element;
 
-                    this.removeClickListener = this.addEventListener(element, 'click', (ev: Event) => {
+                    this.addEventListener(element, 'click', (ev: Event) => {
                         ev.preventDefault();
-                        this.removeClickListener();
-                    });
+                    }, false);
 
                     this.addEventListener(element, __tap, (ev: IExtendedEvent) => {
                         if (ev.buttons !== 1) {
@@ -19167,8 +19368,8 @@ module plat {
                             this._browser.url(href);
                         });
 
-                        this.removeClickListener();
-                        element.addEventListener('click', this.getListener(element));
+                        //this.removeClickListener();
+                        //element.addEventListener('click', this.getListener(element));
                     }, false);
                 }
 
@@ -19260,25 +19461,32 @@ module plat {
          * Responsible for iterating through the DOM and collecting controls.
          */
         export class Compiler {
+            protected static _inject: any = {
+                _ElementManagerFactory: __ElementManagerFactory,
+                _TextManagerFactory: __TextManagerFactory,
+                _CommentManagerFactory: __CommentManagerFactory,
+                _managerCache: __ManagerCache
+            };
+
             /**
              * Reference to the IElementManagerFactory injectable.
              */
-            protected _ElementManagerFactory: IElementManagerFactory = acquire(__ElementManagerFactory);
+            protected _ElementManagerFactory: IElementManagerFactory;
 
             /**
              * Reference to the ITextManagerFactory injectable.
              */
-            protected _TextManagerFactory: ITextManagerFactory = acquire(__TextManagerFactory);
+            protected _TextManagerFactory: ITextManagerFactory;
 
             /**
              * Reference to the ICommentManagerFactory injectable.
              */
-            protected _CommentManagerFactory: ICommentManagerFactory = acquire(__CommentManagerFactory);
+            protected _CommentManagerFactory: ICommentManagerFactory;
 
             /**
              * Reference to a cache injectable that stores ElementManagers.
              */
-            protected _managerCache: storage.Cache<NodeManager> = acquire(__ManagerCache);
+            protected _managerCache: storage.Cache<NodeManager>;
 
             /**
              * Goes through the child Nodes of the given Node, finding elements that contain controls as well as
@@ -19984,12 +20192,12 @@ module plat {
             protected static _managerCache: storage.Cache<ElementManager>;
 
             /**
-             * Reference to the IResourcesFactory injectable.
+             * Reference to the ResourcesFactory injectable.
              */
             protected static _ResourcesFactory: ui.IResourcesFactory;
 
             /**
-             * Reference to the IBindableTemplatesFactory injectable.
+             * Reference to the BindableTemplatesFactory injectable.
              */
             protected static _BindableTemplatesFactory: ui.IBindableTemplatesFactory;
 
@@ -20062,7 +20270,7 @@ module plat {
                 }
 
                 var elementMap = ElementManager._collectAttributes(element.attributes),
-                    manager = new ElementManager();
+                    manager: ElementManager = acquire(ElementManager);
 
                 elementMap.element = <HTMLElement>element;
                 elementMap.uiControlNode = uiControlNode;
@@ -20119,7 +20327,7 @@ module plat {
                         parent.getParentControl(), newControl);
                 }
 
-                var manager = new ElementManager(),
+                var manager: ElementManager = acquire(ElementManager),
                     hasNewControl = !isNull(newControl);
 
                 manager.nodeMap = nodeMap;
@@ -20309,7 +20517,7 @@ module plat {
              * Returns a new instance of an ElementManager.
              */
             static getInstance(): ElementManager {
-                return new ElementManager();
+                return acquire(ElementManager);
             }
 
             /**
@@ -20447,45 +20655,56 @@ module plat {
                 return nodeMap;
             }
 
+            protected static _inject: any = {
+                _Promise: __Promise,
+                _ContextManager: __ContextManagerStatic,
+                _compiler: __Compiler,
+                _CommentManagerFactory: __CommentManagerFactory,
+                _ControlFactory: __ControlFactory,
+                _TemplateControlFactory: __TemplateControlFactory,
+                _BindableTemplatesFactory: __BindableTemplatesFactory,
+                _Exception: __ExceptionStatic
+            };
+
             /**
              * Reference to the IPromise injectable.
              */
-            protected _Promise: async.IPromise = acquire(__Promise);
+            protected _Promise: async.IPromise;
 
             /**
              * Reference to the Compiler injectable.
              */
-            protected _compiler: Compiler = acquire(__Compiler);
+            protected _compiler: Compiler;
 
             /**
              * Reference to the ContextManagerStatic injectable.
              */
-            protected _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
+            protected _ContextManager: observable.IContextManagerStatic;
 
             /**
              * Reference to the ICommentManagerFactory injectable.
              */
-            protected _CommentManagerFactory: ICommentManagerFactory = acquire(__CommentManagerFactory);
+            protected _CommentManagerFactory: ICommentManagerFactory;
 
             /**
              * Reference to the IControlFactory injectable.
              */
-            protected _ControlFactory: IControlFactory = acquire(__ControlFactory);
+            protected _ControlFactory: IControlFactory;
 
             /**
              * Reference to the ITemplateControlFactory injectable.
              */
-            protected _TemplateControlFactory: ui.ITemplateControlFactory = acquire(__TemplateControlFactory);
+            protected _TemplateControlFactory: ui.ITemplateControlFactory;
 
             /**
              * Reference to the IBindableTemplatesFactory injectable.
              */
-            protected _BindableTemplatesFactory: ui.IBindableTemplatesFactory = acquire(__BindableTemplatesFactory);
+            protected _BindableTemplatesFactory: ui.IBindableTemplatesFactory;
 
             /**
              * Reference to the IExceptionStatic injectable.
              */
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+            protected _Exception: IExceptionStatic;
 
             /**
              * The child managers for this manager.
@@ -21313,7 +21532,7 @@ module plat {
              */
             static create(node: Node, parent: ElementManager): TextManager {
                 var value = node.nodeValue,
-                    manager = new TextManager();
+                    manager = acquire(TextManager);
 
                 if (NodeManager.hasMarkup(value)) {
                     var expressions = NodeManager.findMarkup(value),
@@ -21361,7 +21580,7 @@ module plat {
              */
             protected static _clone(sourceManager: NodeManager, node: Node, parent: ElementManager): TextManager {
                 var map = sourceManager.nodeMap,
-                    manager = new TextManager();
+                    manager = acquire(TextManager);
 
                 if (!isNull(map)) {
                     manager.initialize(TextManager._cloneNodeMap(map, node), parent);
@@ -21456,7 +21675,7 @@ module plat {
              * responsible for the passed in Comment Node.
              */
             static create(node: Node, parent: ElementManager): CommentManager {
-                var manager = new CommentManager();
+                var manager = acquire(CommentManager);
 
                 manager.initialize({
                     nodes: [{
@@ -21509,54 +21728,124 @@ module plat {
             create(node: Node, parent: ElementManager): CommentManager;
         }
     }
+    /**
+     * Holds all classes and interfaces related to routing components in platypus.
+     */
     export module routing {
 
 
+        /**
+         * Ties the browser and routers together, facilitating app navigation at every router level. 
+         * Listens for url changes and responds accordingly. Also contains functionality for generating 
+         * and changing the url.
+         */
         export class Navigator {
+            protected static _inject: any = {
+                _Promise: __Promise,
+                _Injector: __InjectorStatic,
+                _browserConfig: __BrowserConfig,
+                _browser: __Browser,
+                _EventManager: __EventManagerStatic,
+                _window: __Window,
+                _Exception: __ExceptionStatic,
+                _history: __History
+            };
+
+            /**
+             * The navigator associated with the root router.
+             */
             protected static _root: Navigator;
 
             /**
              * The IPromise injectable instance
              */
-            protected _Promise: async.IPromise = acquire(__Promise);
+            protected _Promise: async.IPromise;
 
             /**
              * The Injector injectable instance
              */
-            protected _Injector: typeof dependency.Injector = acquire(__InjectorStatic);
+            protected _Injector: typeof dependency.Injector;
 
             /**
              * The IBrowserConfig injectable instance
              */
-            protected _browserConfig: web.IBrowserConfig = acquire(__IBrowserConfig);
+            protected _browserConfig: web.IBrowserConfig;
 
             /**
              * The Browser injectable instance
              */
-            protected _browser: web.Browser = acquire(__Browser);
-
-            protected _EventManager: events.IEventManagerStatic = acquire(__EventManagerStatic);
-            protected _window: Window = acquire(__Window);
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+            protected _browser: web.Browser;
 
             /**
-             * The router associated with this link.
+             * The IEventManagerStatic injectable instance
+             */
+            protected _EventManager: events.IEventManagerStatic;
+
+            /**
+             * The window injectable instance
+             */
+            protected _window: Window;
+
+            /**
+             * The IExceptionStatic injectable instance
+             */
+            protected _Exception: IExceptionStatic;
+
+            /**
+             * The History injectable instance
+             */
+            protected _history: History;
+
+            /**
+             * The router associated with this navigator.
              */
             router: Router;
 
-            protected _history: History = plat.acquire(__History);
-
+            /**
+             * A unique id, created during instantiation and found on every Navigator.
+             */
             uid = uniqueId(__Plat);
-            removeUrlListener: IRemoveListener = noop;
-            ignoreOnce = false;
-            ignored = false;
-            isRoot: boolean = false;
-            previousUrl: string;
-            backNavigate: boolean = false;
-            resolveNavigate: () => void;
-            rejectNavigate: (err: any) => void;
 
-            initialize(router: Router) {
+            /**
+             * States whether or not the Navigator is the root Navigator.
+             */
+            isRoot: boolean = false;
+
+            /**
+             * A method to call to stop listening for url changes, only works on the root navigator.
+             */
+            protected _removeUrlListener: IRemoveListener = noop;
+
+            /**
+             * A method to call to stop listening for url changes, only works on the root navigator.
+             */
+            protected _ignoreOnce = false;
+
+            /**
+             * A method to call to stop listening for url changes, only works on the root navigator.
+             */
+            protected _previousUrl: string;
+
+            /**
+             * A method to call to stop listening for url changes, only works on the root navigator.
+             */
+            protected _backNavigate: boolean = false;
+
+            /**
+             * A method to resolve the current navigation.
+             */
+            protected _resolveNavigate: () => void;
+
+            /**
+             * A method to reject the current navigation.
+             */
+            protected _rejectNavigate: (err: any) => void;
+
+            /**
+             * Initializes this Navigator with a router.
+             * @param {plat.routing.Router} router The router that the navigator should use to match/generate routes.
+             */
+            initialize(router: Router): void {
                 this.router = router;
 
                 if (router.isRoot && !isObject(Navigator._root)) {
@@ -21566,43 +21855,59 @@ module plat {
                 }
             }
 
-            navigate(view: any, options?: INavigateOptions) {
+            /**
+             * Tells the navigator to navigate to the url registered for a particular view.
+             * @param {any} view The view to which the Navigator should navigate.
+             * @param {plat.routing.INavigationOptions} Options used to generate the url and perform navigation.
+             */
+            navigate(view: any, options?: INavigateOptions): async.IThenable<void> {
                 options = isObject(options) ? options : {};
                 var url: string;
-
+            
                 return this._finishNavigating().then(() => {
                     if (options.isUrl) {
                         url = view;
                     } else {
-                        url = this.generate(view, options.parameters, options.query);
+                        url = this._generate(view, options.parameters, options.query);
                     }
+                    var x = 'will',
+                        y = `Hello ${x} world`;
 
                     return this._navigate(url, options.replace);
                 });
             }
 
+            /**
+             * Returns a promise that resolves when all navigation has finished.
+             */
             protected _finishNavigating(): async.IThenable<void> {
                 var router = Navigator._root.router;
 
                 if (router.navigating) {
-                    return router.finishNavigating;
+                    return router.finishNavigating.catch(() => { });
                 }
 
                 return this._Promise.resolve();
             }
 
+            /**
+             * Internal method for navigating to the specified url.
+             */
             protected _navigate(url: string, replace?: boolean): async.IThenable<void> {
                 if (!this.isRoot) {
                     return Navigator._root._navigate(url, replace);
                 }
 
                 return new this._Promise<void>((resolve, reject) => {
-                    this.resolveNavigate = resolve;
-                    this.rejectNavigate = reject;
+                    this._resolveNavigate = resolve;
+                    this._rejectNavigate = reject;
                     this._browser.url(url, replace);
                 });
             }
 
+            /**
+             * Tells the router to go back with the given options.
+             */
             goBack(options?: IBackNavigationOptions): async.IThenable<void> {
                 options = isObject(options) ? options : {};
 
@@ -21619,26 +21924,36 @@ module plat {
                 var _browser = this._browser,
                     url = _browser.url();
 
-                this.backNavigate = true;
+                this._backNavigate = true;
                 return this._finishNavigating()
                     .then(() => {
                         return this._goBack(length);
                     });
             }
 
+            /**
+             * Internal method for going back a certain length in history
+             */
             protected _goBack(length: number) {
                 return new this._Promise<void>((resolve, reject) => {
-                    this.resolveNavigate = resolve;
-                    this.rejectNavigate = reject;
-                    this._history.go(-length);
+                    this._resolveNavigate = resolve;
+                    this._rejectNavigate = reject;
+                    this._browser.back(length);
                 });
             }
 
+            /**
+             * Lets the router dispose of all of the necessary properties.
+             */
             dispose() {
-                this.removeUrlListener();
+                this._removeUrlListener();
                 deleteProperty(this, 'router');
             }
 
+            /**
+             * The root navigator will always observe for url changes and handle them accordingly. This means instructing the 
+             * router to navigate, and determining what to do in the event that navigation is prevented.
+             */
             protected _observeUrl() {
                 if (!isObject(this.router)) {
                     return;
@@ -21652,8 +21967,9 @@ module plat {
                     backNavigate: boolean,
                     _Exception = this._Exception;
 
-                this.previousUrl = this._browser.url();
+                this._previousUrl = this._browser.url();
 
+                // Protect against accidentally calling this method twice.
                 EventManager.dispose(this.uid);
                 EventManager.on(this.uid, __backButton, () => {
                     var ev: events.DispatchEvent = acquire(__DispatchEventInstance);
@@ -21669,34 +21985,32 @@ module plat {
                 });
 
                 EventManager.on(this.uid, __urlChanged, (ev: events.DispatchEvent, utils?: web.UrlUtils) => {
-                    if (this.ignoreOnce) {
-                        this.ignoreOnce = false;
-                        this.ignored = true;
+                    if (this._ignoreOnce) {
+                        this._ignoreOnce = false;
                         return;
                     }
 
-                    this.ignored = false;
-                    backNavigate = this.backNavigate;
-                    this.backNavigate = false;
+                    backNavigate = this._backNavigate;
+                    this._backNavigate = false;
 
                     postpone(() => {
-                        previousUrl = this.previousUrl;
+                        previousUrl = this._previousUrl;
                         this.router.navigate(utils.pathname, utils.query)
                             .then(() => {
-                                this.previousUrl = utils.pathname;
-                                if (isFunction(this.resolveNavigate)) {
-                                    this.resolveNavigate();
+                                this._previousUrl = utils.pathname;
+                                if (isFunction(this._resolveNavigate)) {
+                                    this._resolveNavigate();
                                 }
                             })
                             .catch((e: any) => {
-                                this.ignoreOnce = true;
-                                this.previousUrl = previousUrl;
+                                this._ignoreOnce = true;
+                                this._previousUrl = previousUrl;
 
                                 this._browser.url(previousUrl, !backNavigate);
                                 this._history.go(-1);
 
-                                if (isFunction(this.rejectNavigate)) {
-                                    this.rejectNavigate(e);
+                                if (isFunction(this._rejectNavigate)) {
+                                    this._rejectNavigate(e);
                                 }
 
                                 if (!isEmpty(e)) {
@@ -21707,7 +22021,10 @@ module plat {
                 });
             }
 
-            generate(view: any, parameters: any, query: any): string {
+            /**
+             * Generates a url with the given view, parameters, and query.
+             */
+            protected _generate(view: any, parameters: any, query: any): string {
                 if (isNull(this.router)) {
                     return;
                 }
@@ -21723,19 +22040,44 @@ module plat {
 
         register.injectable(__NavigatorInstance, Navigator, null, __INSTANCE);
 
+        /**
+         * Specifies options used during navigation. Can help build the url, as well as change 
+         * the behavior of the navigation.
+         */
         export interface INavigateOptions {
+            /**
+             * Indicates that the url is specified and does not need to be generated.
+             */
             isUrl?: boolean;
+
+            /**
+             * Url parameters, used to generate a url if the associated view is a variable route (i.e. '/posts/:id')
+             */
             parameters?: IObject<any>;
+
+            /**
+             * An object used to generate a query string.
+             */
             query?: IObject<any>;
+
+            /**
+             * Whether or not this url should replace the current url in the browser history.
+             */
             replace?: boolean;
         }
 
+        /**
+         * Specifies options used during backward navigation.
+         */
         export interface IBackNavigationOptions {
+            /**
+             * The length in history to go back.
+             */
             length?: number;
         }
 
         /**
-         * The Type for referencing the '_history' injectable as a dependency. 
+         * The Type for referencing the 'History' injectable as a dependency. 
          * Used so that the window.history can be mocked.
          */
         export function History(_window?: Window): History {
@@ -22247,7 +22589,7 @@ module plat {
                     return state;
                 }
 
-                state = new State();
+                state = acquire(State);
                 state.initialize(specification);
 
                 this.nextStates.push(state);
@@ -22376,20 +22718,26 @@ module plat {
          * find the associated compiled route and link it to the data given with the passed-in route.
          */
         export class RouteRecognizer {
+            protected static _inject: any = {
+                _BaseSegmentFactory: __BaseSegmentFactory,
+                _State: __StateStatic,
+                _rootState: __StateInstance
+            };
+
             /**
              * Reference to the BaseSegment injectable.
              */
-            protected _BaseSegmentFactory: typeof BaseSegment = acquire(__BaseSegmentFactory);
+            protected _BaseSegmentFactory: typeof BaseSegment;
 
             /**
              * Reference to the State injectable.
              */
-            protected _State: typeof State = acquire(__StateStatic);
+            protected _State: typeof State;
 
             /**
              * A root state for the recognizer used to add next states.
              */
-            protected _rootState: State = acquire(__StateInstance);
+            protected _rootState: State;
 
             /**
              * All the named routes for this recognizer.
@@ -22763,7 +23111,25 @@ module plat {
         var __CHILD_ROUTE = '/*childRoute',
             __CHILD_ROUTE_LENGTH = __CHILD_ROUTE.length;
 
+        /**
+         * Matches URLs to registered views. Allows for rejecting navigation, as well as 
+         * processing route and query parameters. When a route is matches, the current view 
+         * has the opportunity to reject/delay navigation. The next view can also reject navigation, 
+         * or redirect. 
+         * This is done asynchronously, giving the application the ability to make web service calls 
+         * to determing 
+         */
         export class Router {
+            protected static _inject: any = {
+                _Promise: __Promise,
+                _Injector: __InjectorStatic,
+                _EventManager: __EventManagerStatic,
+                _browser: __Browser,
+                _browserConfig: __BrowserConfig,
+                recognizer: __RouteRecognizerInstance,
+                childRecognizer: __RouteRecognizerInstance
+            };
+
             static currentRouter(router?: Router) {
                 if (!isNull(router)) {
                     Router.__currentRouter = router;
@@ -22774,16 +23140,16 @@ module plat {
 
             private static __currentRouter: Router;
 
-            protected _Promise: async.IPromise = acquire(__Promise);
-            protected _Injector: typeof dependency.Injector = acquire(__InjectorStatic);
-            protected _EventManager: events.IEventManagerStatic = acquire(__EventManagerStatic);
-            protected _browser: web.Browser = acquire(__Browser);
-            protected _browserConfig: web.IBrowserConfig = acquire(__IBrowserConfig);
+            protected _Promise: async.IPromise;
+            protected _Injector: typeof dependency.Injector;
+            protected _EventManager: events.IEventManagerStatic;
+            protected _browser: web.Browser;
+            protected _browserConfig: web.IBrowserConfig;
             protected _resolve: typeof async.Promise.resolve = this._Promise.resolve.bind(this._Promise);
             protected _reject: typeof async.Promise.reject = this._Promise.reject.bind(this._Promise);
 
-            recognizer: RouteRecognizer = acquire(__RouteRecognizerInstance);
-            childRecognizer: RouteRecognizer = acquire(__RouteRecognizerInstance);
+            recognizer: RouteRecognizer;
+            childRecognizer: RouteRecognizer;
 
             paramTransforms: IObject<IRouteTransforms> = {};
             queryTransforms: IObject<IRouteTransforms> = {};
@@ -23475,15 +23841,20 @@ module plat {
          * An AttributeControl that binds to a specified DOM event handler.
          */
         export class SimpleEventControl extends AttributeControl implements ISendEvents {
+            protected static _inject: any = {
+                _parser: __Parser,
+                _regex: __Regex
+            };
+
             /**
              * Reference to the Parser injectable.
              */
-            protected _parser: expressions.Parser = acquire(__Parser);
+            protected _parser: expressions.Parser;
 
             /**
              * Reference to the Regex injectable.
              */
-            protected _regex: expressions.Regex = acquire(__Regex);
+            protected _regex: expressions.Regex;
 
             /**
              * The event name.
@@ -23562,11 +23933,10 @@ module plat {
                 }
 
                 if (listenerStr[0] !== '@') {
-                    var _Exception: IExceptionStatic;
+                    var _Exception: IExceptionStatic = this._Exception;
                     listener = this.findProperty(listenerStr);
 
                     if (isNull(listener)) {
-                        _Exception = acquire(__ExceptionStatic);
                         _Exception.warn('Could not find property ' + listenerStr + ' on any parent control.',
                             _Exception.CONTROL);
                         return {
@@ -23580,7 +23950,6 @@ module plat {
                         identifiers = parsedExpression.identifiers;
 
                     if (identifiers.length > 1) {
-                        _Exception = acquire(__ExceptionStatic);
                         _Exception.warn('Cannot have more than one identifier in a ' + this.type +
                             '\'s expression.', _Exception.CONTROL);
                         return {
@@ -23973,10 +24342,14 @@ module plat {
          * 'cut', 'paste', etc. Also fires on the 'change' event.
          */
         export class React extends SimpleEventControl {
+            protected static _inject: any = {
+                _compat: __Compat
+            };
+
             /**
              * Reference to the Compat injectable.
              */
-            protected _compat: Compat = acquire(__Compat);
+            protected _compat: Compat;
 
             /**
              * The event name.
@@ -24175,10 +24548,14 @@ module plat {
          * Base class used for filtering keys on KeyboardEvents.
          */
         export class KeyCodeEventControl extends SimpleEventControl implements IKeyCodeEventControl {
+            protected static _inject: any = {
+                _regex: __Regex
+            };
+
             /**
              * Reference to the Regex injectable.
              */
-            protected _regex: plat.expressions.Regex = plat.acquire(__Regex);
+            protected _regex: plat.expressions.Regex;
 
             /**
              * Holds the key mappings to filter for in a KeyboardEvent.
@@ -24739,6 +25116,10 @@ module plat {
          * A type of ElementPropertyControl used to set 'src' on an anchor tag.
          */
         export class Src extends ElementPropertyControl {
+            protected static _inject: any = {
+                _browser: __Browser
+            };
+
             /**
              * Used to set the element's src property.
              */
@@ -24747,7 +25128,7 @@ module plat {
             /**
              * The plat.web.Browser injectable instance
              */
-            protected _browser: web.Browser = acquire(__Browser);
+            protected _browser: web.Browser;
 
             /**
              * The function for setting the corresponding 
@@ -24775,25 +25156,32 @@ module plat {
          * Facilitates two-way databinding for HTMLInputElements, HTMLSelectElements, and HTMLTextAreaElements.
          */
         export class Bind extends AttributeControl {
+            protected static _inject: any = {
+                _parser: __Parser,
+                _ContextManager: __ContextManagerStatic,
+                _compat: __Compat,
+                _document: __Document
+            };
+
             /**
              * Reference to the Parser injectable.
              */
-            protected _parser: expressions.Parser = acquire(__Parser);
+            protected _parser: expressions.Parser;
 
             /**
              * Reference to the IContextManagerStatic injectable.
              */
-            protected _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
+            protected _ContextManager: observable.IContextManagerStatic;
 
             /**
              * Reference to the Compat injectable.
              */
-            protected _compat: Compat = acquire(__Compat);
+            protected _compat: Compat;
 
             /**
              * Reference to the Document injectable.
              */
-            protected _document: Document = acquire(__Document);
+            protected _document: Document;
 
             /**
              * The priority of Bind is set high to precede 
@@ -25586,10 +25974,14 @@ module plat {
          * An AttributeControl that deals with observing changes for a specified property.
          */
         export class ObservableAttributeControl extends AttributeControl implements IObservableAttributeControl {
+            protected static _inject: any = {
+                _ContextManager: __ContextManagerStatic
+            };
+
             /**
              * Reference to the IContextManagerStatic injectable.
              */
-            protected _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
+            protected _ContextManager: observable.IContextManagerStatic;
 
             /**
              * The property to set on the associated template control.
@@ -25961,7 +26353,7 @@ module plat {
         /**
          * A unique id, created during instantiation.
          */
-        uid: string;
+        uid: string = uniqueId(__Plat);
 
         /**
          * A Navigator instance, exists when a router is injected into the app.
@@ -25973,10 +26365,8 @@ module plat {
          * as well as error handling and navigation events.
          */
         constructor() {
-            var _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic),
-                navigator: routing.Navigator = this.navigator = acquire(__NavigatorInstance);
+            var navigator: routing.Navigator = this.navigator = acquire(__NavigatorInstance);
             navigator.initialize((<typeof routing.Router>acquire(__RouterStatic)).currentRouter());
-            _ContextManager.defineGetter(this, 'uid', uniqueId(__Plat));
         }
 
         /**

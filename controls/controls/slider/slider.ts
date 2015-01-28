@@ -550,7 +550,9 @@
                     return;
             }
 
-            this._knobOffset = this._setSliderProperties(offset);
+            this._utils.requestAnimationFrame(() => {
+                this._knobOffset = this._setSliderProperties(offset);
+            });
         }
 
         /**
@@ -570,19 +572,21 @@
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
-            if (this._lastTouch.value !== this.value) {
-                this._trigger('change');
-            }
+            this._utils.requestAnimationFrame(() => {
+                if (this._lastTouch.value !== this.value) {
+                    this._trigger('change');
+                }
 
-            if (newOffset < 0) {
-                this._knobOffset = 0;
-                return;
-            } else if (newOffset > maxOffset) {
-                this._knobOffset = maxOffset;
-                return;
-            }
+                if (newOffset < 0) {
+                    this._knobOffset = 0;
+                    return;
+                } else if (newOffset > maxOffset) {
+                    this._knobOffset = maxOffset;
+                    return;
+                }
 
-            this._knobOffset = newOffset;
+                this._knobOffset = newOffset;
+            });
         }
 
         /**
@@ -599,7 +603,9 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            this._setSliderProperties(this._calculateOffset(ev));
+            this._utils.requestAnimationFrame(() => {
+                this._setSliderProperties(this._calculateOffset(ev));
+            });
         }
 
         /**
