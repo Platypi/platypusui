@@ -181,11 +181,11 @@
          */
         loaded(): void {
             var element = this.element,
-                $utils = this._utils,
+                _utils = this._utils,
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
                 position = this._currentPosition = options.position || 'left',
-                useContext = this._useContext = (options.useContext === true) || !$utils.isUndefined(this.attributes[__CamelContext]),
+                useContext = this._useContext = (options.useContext === true) || !_utils.isUndefined(this.attributes[__CamelContext]),
                 id = options.id || '',
                 templateUrl = options.templateUrl,
                 isElastic = options.elastic === true;
@@ -193,7 +193,7 @@
             element.setAttribute(__Hide, '');
             this.dom.addClass(element, __Plat + position);
 
-            if ($utils.isString(templateUrl)) {
+            if (_utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
                     this.innerTemplate = template;
                     if (this._useContext) {
@@ -204,7 +204,7 @@
                     this._initializeEvents(id, position, isElastic);
                 });
                 return;
-            } else if (useContext && $utils.isNode(this.innerTemplate)) {
+            } else if (useContext && _utils.isNode(this.innerTemplate)) {
                 this.bindTemplate('drawer', this.innerTemplate.cloneNode(true));
                 this._checkPreload();
             }
@@ -353,11 +353,9 @@
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error) => {
-                    this._utils.postpone(() => {
-                        var _Exception = this._Exception;
-                        _Exception.fatal(error, _Exception.BIND);
-                    });
-                });
+                var _Exception = this._Exception;
+                _Exception.warn('Error binding template for ' + this.type + ': ' + error, _Exception.BIND);
+            });
         }
 
         /**
@@ -380,10 +378,10 @@
                 return;
             }
 
-            var $utils = this._utils,
+            var _utils = this._utils,
                 controller = this._controllers[0];
 
-            if ($utils.isBoolean(newValue) && !$utils.isNull(controller)) {
+            if (_utils.isBoolean(newValue) && !_utils.isNull(controller)) {
                 if (newValue) {
                     if (controller.isOpen()) {
                         return;
@@ -483,9 +481,9 @@
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string, isElastic: boolean): void {
-            var $utils = this._utils,
-                isString = $utils.isString,
-                isNull = $utils.isNull,
+            var _utils = this._utils,
+                isString = _utils.isString,
+                isNull = _utils.isNull,
                 innerTemplate = this.innerTemplate,
                 useContext = this._useContext,
                 DIRECT = plat.events.EventManager.DIRECT;
@@ -510,7 +508,7 @@
                             received: true,
                             position: position,
                             useContext: useContext,
-                            template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                            template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                             elastic: isElastic
                         });
                     }
@@ -521,7 +519,7 @@
                 received: false,
                 position: position,
                 useContext: useContext,
-                template: $utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                 elastic: isElastic
             });
         }
@@ -539,10 +537,10 @@
          */
         protected _checkPreload(): void {
             if (this._preloadedValue) {
-                var $utils = this._utils;
-                $utils.postpone(() => {
+                var _utils = this._utils;
+                _utils.postpone(() => {
                     var controller = this._controllers[0];
-                    if (!$utils.isNull(controller)) {
+                    if (!_utils.isNull(controller)) {
                         controller.open();
                     }
                 });
@@ -1119,9 +1117,9 @@
          * @returns {void}
          */
         dispose(): void {
-            var $utils = this._utils,
+            var _utils = this._utils,
                 drawer = this._drawer;
-            if ($utils.isNull(drawer)) {
+            if (_utils.isNull(drawer)) {
                 return;
             }
 
@@ -1135,7 +1133,7 @@
                 disposeRootElement = true;
 
             this._disposeRemover();
-            this.on(__DrawerControllerDisposingFound, (ev: plat.events.DispatchEvent, otherRoot: HTMLElement) => {
+            this.on(__DrawerControllerDisposingFound,(ev: plat.events.DispatchEvent, otherRoot: HTMLElement) => {
                 if (!disposeRootElement) {
                     return;
                 }
@@ -1143,20 +1141,20 @@
                 disposeRootElement = rootElement !== otherRoot;
             });
 
-            $utils.defer(() => {
+            _utils.defer(() => {
                 if (!disposeRootElement) {
                     return;
                 }
 
                 this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
 
-                if ($utils.isObject(storedStyle)) {
+                if (_utils.isObject(storedStyle)) {
                     var rootElementStyle = rootElement.style,
                         parent = rootElement.parentElement;
 
                     rootElementStyle.position = storedStyle.position;
                     rootElementStyle.zIndex = storedStyle.zIndex;
-                    if ($utils.isNode(parent)) {
+                    if (_utils.isNode(parent)) {
                         parent.style.overflow = storedStyle.parentOverflow;
                     }
                 }
@@ -1179,14 +1177,14 @@
          */
         open(): plat.async.IThenable<void> {
             var wasClosed = !this._isOpen,
-                $utils = this._utils;
+                _utils = this._utils;
 
-            if ($utils.isFunction(this._toggleDelay)) {
+            if (_utils.isFunction(this._toggleDelay)) {
                 this._toggleDelay();
             }
 
             var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = $utils.postpone(() => {
+                this._toggleDelay = _utils.postpone(() => {
                     this._toggleDelay = null;
                     this._open().then(resolve);
                 });
@@ -1195,7 +1193,7 @@
             if (wasClosed) {
                 if (this._useContext) {
                     this.propertyChanged(true);
-                } else if (!$utils.isNull(this._drawer)) {
+                } else if (!_utils.isNull(this._drawer)) {
                     this._drawer.propertyChanged(true);
                 }
             }
@@ -1217,14 +1215,14 @@
          */
         close(): plat.async.IThenable<void> {
             var wasOpen = this._isOpen,
-                $utils = this._utils;
+                _utils = this._utils;
 
-            if ($utils.isFunction(this._toggleDelay)) {
+            if (_utils.isFunction(this._toggleDelay)) {
                 this._toggleDelay();
             }
 
             var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = $utils.postpone(() => {
+                this._toggleDelay = _utils.postpone(() => {
                     this._toggleDelay = null;
                     this._close().then(resolve);
                 });
@@ -1233,7 +1231,7 @@
             if (wasOpen) {
                 if (this._useContext) {
                     this.propertyChanged(false);
-                } else if (!$utils.isNull(this._drawer)) {
+                } else if (!_utils.isNull(this._drawer)) {
                     this._drawer.propertyChanged(false);
                 }
             }
@@ -1319,11 +1317,9 @@
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error) => {
-                    this._utils.postpone(() => {
-                        var _Exception = this._Exception;
-                        _Exception.fatal(error, _Exception.BIND);
-                    });
-                });
+                var _Exception = this._Exception;
+                _Exception.warn('Error binding template for ' + this.type + ': ' + error, _Exception.BIND);
+            });
         }
 
         /**
@@ -1346,13 +1342,13 @@
                 return;
             }
 
-            var $utils = this._utils;
-            if ($utils.isBoolean(newValue)) {
+            var _utils = this._utils;
+            if (_utils.isBoolean(newValue)) {
                 if (newValue) {
                     if (this._isOpen) {
                         return;
                     }
-                    this._toggleDelay = $utils.postpone(() => {
+                    this._toggleDelay = _utils.postpone(() => {
                         this._toggleDelay = null;
                         this._open();
                     });
@@ -1360,7 +1356,7 @@
                 }
 
                 if (this._isOpen) {
-                    this._toggleDelay = $utils.postpone(() => {
+                    this._toggleDelay = _utils.postpone(() => {
                         this._toggleDelay = null;
                         this._close();
                     });
@@ -1383,8 +1379,8 @@
         protected _open(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
-                $utils = this._utils,
-                isNode = $utils.isNode,
+                _utils = this._utils,
+                isNode = _utils.isNode,
                 wasClosed = !this._isOpen;
 
             if (!(isNode(rootElement) && isNode(drawerElement))) {
@@ -1443,8 +1439,8 @@
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 dom = this.dom,
-                $utils = this._utils,
-                isNode = $utils.isNode;
+                _utils = this._utils,
+                isNode = _utils.isNode;
 
             if (this._isOpen) {
                 this._removeEventIntercepts();
@@ -1552,7 +1548,7 @@
          * @returns {void}
          */
         protected _addSwipeOpen(): void {
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], () => {
+            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position],() => {
                 this._hasSwiped = true;
                 this.open();
             }, false);
@@ -1570,7 +1566,7 @@
          * @returns {void}
          */
         protected _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position, () => {
+            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position,() => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1588,7 +1584,7 @@
          * @returns {void}
          */
         protected _addTapOpen(): void {
-            this._removeTap = this.addEventListener(this.element, __$tap, () => {
+            this._removeTap = this.addEventListener(this.element, __$tap,() => {
                 this._hasTapped = true;
                 this.open();
             }, false);
@@ -1606,7 +1602,7 @@
          * @returns {void}
          */
         protected _addTapClose(): void {
-            this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
+            this._openTapRemover = this.addEventListener(this._rootElement, __$tap,() => {
                 this._hasTapped = true;
                 this.close();
             }, false);
@@ -1856,23 +1852,23 @@
             switch (this._position) {
                 case 'left':
                     distanceMoved = this._isOpen ?
-                    this._checkElasticity(this._maxOffset + ev.clientX - this._lastTouch.x) :
-                    this._checkElasticity(ev.clientX - this._lastTouch.x);
+                        this._checkElasticity(this._maxOffset + ev.clientX - this._lastTouch.x) :
+                        this._checkElasticity(ev.clientX - this._lastTouch.x);
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
                 case 'right':
                     distanceMoved = this._isOpen ?
-                    this._checkElasticity(this._maxOffset + this._lastTouch.x - ev.clientX) :
-                    this._checkElasticity(this._lastTouch.x - ev.clientX);
+                        this._checkElasticity(this._maxOffset + this._lastTouch.x - ev.clientX) :
+                        this._checkElasticity(this._lastTouch.x - ev.clientX);
                     return 'translate3d(' + (-distanceMoved) + 'px,0,0)';
                 case 'top':
                     distanceMoved = this._isOpen ?
-                    this._checkElasticity(this._maxOffset + ev.clientY - this._lastTouch.y) :
-                    this._checkElasticity(ev.clientY - this._lastTouch.y);
+                        this._checkElasticity(this._maxOffset + ev.clientY - this._lastTouch.y) :
+                        this._checkElasticity(ev.clientY - this._lastTouch.y);
                     return 'translate3d(0,' + distanceMoved + 'px,0)';
                 case 'bottom':
                     distanceMoved = this._isOpen ?
-                    this._checkElasticity(this._maxOffset + this._lastTouch.y - ev.clientY) :
-                    this._checkElasticity(this._lastTouch.y - ev.clientY);
+                        this._checkElasticity(this._maxOffset + this._lastTouch.y - ev.clientY) :
+                        this._checkElasticity(this._lastTouch.y - ev.clientY);
                     return 'translate3d(0,' + (-distanceMoved) + 'px,0)';
                 default:
                     return this._preTransform;
@@ -1928,9 +1924,9 @@
                 (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent) => {
                     eventRemover();
 
-                    var $utils = this._utils,
-                        isString = $utils.isString,
-                        isUndefined = $utils.isUndefined,
+                    var _utils = this._utils,
+                        isString = _utils.isString,
+                        isUndefined = _utils.isUndefined,
                         drawer = (this._drawer = drawerArg.control) || {},
                         drawerElement = this._drawerElement = drawer.element,
                         useContext = this._useContext;
@@ -1974,7 +1970,7 @@
                     this._determineTemplate(drawerArg.template);
 
                     if (this._preloadedValue) {
-                        this._toggleDelay = $utils.postpone(() => {
+                        this._toggleDelay = _utils.postpone(() => {
                             this._toggleDelay = null;
                             this._open();
                         });
@@ -2003,13 +1999,13 @@
          * @returns {void}
          */
         protected _determineTemplate(fragment?: Node): void {
-            var $utils = this._utils;
+            var _utils = this._utils;
 
-            if ($utils.isString(this._templateUrl)) {
+            if (_utils.isString(this._templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template) => {
                     this.bindTemplate('drawer', template);
                 });
-            } else if ($utils.isNode(fragment)) {
+            } else if (_utils.isNode(fragment)) {
                 this.bindTemplate('drawer', fragment);
             }
         }
@@ -2084,7 +2080,7 @@
 
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
 
-            this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
+            this._disposeRemover = this.on(__DrawerControllerDisposing,() => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
             });
 
@@ -2104,15 +2100,15 @@
          */
         protected _getRootElement(): HTMLElement {
             var drawer = this._drawer,
-                $utils = this._utils;
+                _utils = this._utils;
 
-            if (!$utils.isNull(drawer.storedProperties)) {
+            if (!_utils.isNull(drawer.storedProperties)) {
                 return drawer.storedProperties.parentEl;
             }
 
-            var isNode = $utils.isNode,
+            var isNode = _utils.isNode,
                 root = this.root,
-                element = $utils.isObject(root) && isNode(root.element) ? root.element : this.element,
+                element = _utils.isObject(root) && isNode(root.element) ? root.element : this.element,
                 drawerEl = this._drawerElement,
                 parent: HTMLElement;
 
@@ -2120,8 +2116,8 @@
                 element = parent;
             }
 
-            var $window = this._window,
-                computedStyle = $window.getComputedStyle(element),
+            var _window = this._window,
+                computedStyle = _window.getComputedStyle(element),
                 style = element.style,
                 position = computedStyle.position,
                 zIndex = Number(computedStyle.zIndex),
@@ -2134,7 +2130,7 @@
                 style.position = 'relative';
             }
 
-            if (!$utils.isNumber(zIndex) || zIndex < 1) {
+            if (!_utils.isNumber(zIndex) || zIndex < 1) {
                 rootElementStyle.zIndex = style.zIndex;
                 style.zIndex = '1';
             }

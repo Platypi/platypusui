@@ -404,8 +404,8 @@
          */
         contextChanged(): void {
             var context = this.context,
-                $utils = this._utils;
-            if (!$utils.isObject(context)) {
+                _utils = this._utils;
+            if (!_utils.isObject(context)) {
                 var _Exception = this._Exception;
                 _Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.',
                     _Exception.CONTEXT);
@@ -414,7 +414,7 @@
 
             var lower = context.lower,
                 upper = context.upper,
-                isNumber = $utils.isNumber;
+                isNumber = _utils.isNumber;
 
             this.setLower(isNumber(lower) ? lower : 0);
             this.setUpper(isNumber(upper) ? upper : this.max);
@@ -450,8 +450,8 @@
             var context = this.context || <IRangeContext>{},
                 element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
-                $utils = this._utils,
-                isNumber = $utils.isNumber,
+                _utils = this._utils,
+                isNumber = _utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
                 options = optionObj.value || <IRangeOptions>{},
                 optionLower = Number(options.lower),
@@ -500,7 +500,7 @@
             this._setLowerKnob(min);
             this._initializeEvents(orientation);
 
-            if (!$utils.isObject(this.context)) {
+            if (!_utils.isObject(this.context)) {
                 _Exception = this._Exception;
                 _Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.',
                     _Exception.CONTROL);
@@ -527,10 +527,10 @@
          * @returns {void}
          */
         setLower(value: number): void {
-            var $utils = this._utils,
-                isNumber = $utils.isNumber;
+            var _utils = this._utils,
+                isNumber = _utils.isNumber;
 
-            if (!$utils.isObject(this.context)) {
+            if (!_utils.isObject(this.context)) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the lower value of a "' + this.type + '" whose context has ' +
                     'not yet been set to an object.', _Exception.CONTROL);
@@ -562,10 +562,10 @@
          * @returns {void}
          */
         setUpper(value: number): void {
-            var $utils = this._utils,
-                isNumber = $utils.isNumber;
+            var _utils = this._utils,
+                isNumber = _utils.isNumber;
 
-            if (!$utils.isObject(this.context)) {
+            if (!_utils.isObject(this.context)) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the upper value of a "' + this.type + '" whose context has ' +
                     'not yet been set to an object.', _Exception.CONTROL);
@@ -1266,14 +1266,14 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this._window,
+                _window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }

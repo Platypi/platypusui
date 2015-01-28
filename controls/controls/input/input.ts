@@ -44,7 +44,7 @@
         options: plat.observable.IObservableProperty<IInputOptions>;
 
         /**
-         * @name $utils
+         * @name _utils
          * @memberof platui.Input
          * @kind property
          * @access protected
@@ -57,7 +57,7 @@
         protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
-         * @name $compat
+         * @name _compat
          * @memberof platui.Input
          * @kind property
          * @access protected
@@ -70,7 +70,7 @@
         protected _compat: plat.Compat = plat.acquire(__Compat);
 
         /**
-         * @name $regex
+         * @name _regex
          * @memberof platui.Input
          * @kind property
          * @access protected
@@ -307,7 +307,7 @@
                 hasPlaceholder = false,
                 attrRegex = /plat-(?!control|hide|options)/,
                 attribute: Attr,
-                $utils = this._utils,
+                _utils = this._utils,
                 name: string;
 
             for (var i = 0; i < length; ++i) {
@@ -332,7 +332,7 @@
             }
 
             var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!$utils.isEmpty(placeholder)) {
+            if (!_utils.isEmpty(placeholder)) {
                 input.placeholder = placeholder;
             }
         }
@@ -610,8 +610,8 @@
          */
         protected _addTextEventListener(): void {
             var input = this._inputElement,
-                $compat = this._compat,
-                $utils = this._utils,
+                _compat = this._compat,
+                _utils = this._utils,
                 composing = false,
                 timeout: plat.IRemoveListener,
                 eventListener = () => {
@@ -622,17 +622,17 @@
                     this._onInput();
                 },
                 postponedEventListener = () => {
-                    if ($utils.isFunction(timeout)) {
+                    if (_utils.isFunction(timeout)) {
                         return;
                     }
 
-                    timeout = $utils.postpone(() => {
+                    timeout = _utils.postpone(() => {
                         eventListener();
                         timeout = null;
                     });
                 };
 
-            if ($utils.isUndefined($compat.ANDROID)) {
+            if (_utils.isUndefined(_compat.ANDROID)) {
                 this.addEventListener(input, 'compositionstart', () => (composing = true), false);
                 this.addEventListener(input, 'compositionend', () => {
                     composing = false;
@@ -640,7 +640,7 @@
                 }, false);
             }
 
-            if ($compat.hasEvent('input')) {
+            if (_compat.hasEvent('input')) {
                 this.addEventListener(input, 'input', eventListener, false);
             } else {
                 this.addEventListener(input, 'keydown', (ev: KeyboardEvent) => {
