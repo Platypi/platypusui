@@ -1133,7 +1133,7 @@
                 disposeRootElement = true;
 
             this._disposeRemover();
-            this.on(__DrawerControllerDisposingFound,(ev: plat.events.DispatchEvent, otherRoot: HTMLElement) => {
+            this.on(__DrawerControllerDisposingFound, (ev: plat.events.DispatchEvent, otherRoot: HTMLElement) => {
                 if (!disposeRootElement) {
                     return;
                 }
@@ -1548,7 +1548,7 @@
          * @returns {void}
          */
         protected _addSwipeOpen(): void {
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position],() => {
+            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], () => {
                 this._hasSwiped = true;
                 this.open();
             }, false);
@@ -1566,7 +1566,7 @@
          * @returns {void}
          */
         protected _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position,() => {
+            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position, () => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1584,7 +1584,7 @@
          * @returns {void}
          */
         protected _addTapOpen(): void {
-            this._removeTap = this.addEventListener(this.element, __$tap,() => {
+            this._removeTap = this.addEventListener(this.element, __$tap, () => {
                 this._hasTapped = true;
                 this.open();
             }, false);
@@ -1602,7 +1602,7 @@
          * @returns {void}
          */
         protected _addTapClose(): void {
-            this._openTapRemover = this.addEventListener(this._rootElement, __$tap,() => {
+            this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
                 this._hasTapped = true;
                 this.close();
             }, false);
@@ -1780,13 +1780,18 @@
                     return;
             }
 
-            if (this._isRightDirection(distanceMoved) &&
-                Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
-                this._utils.requestAnimationFrame(this.toggle, this);
+            if (this._isRightDirection(distanceMoved)) {
+                if (Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
+                    this._utils.requestAnimationFrame(this.toggle, this);
+                    return;
+                }
+
+                this._utils.requestAnimationFrame(this.reset, this);
                 return;
             }
 
-            this._utils.requestAnimationFrame(this.reset, this);
+            this._drawerElement.setAttribute(__Hide, '');
+            this.dom.removeClass(this._rootElement, this._directionalTransitionPrep);
         }
 
         /**
@@ -2082,7 +2087,7 @@
 
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
 
-            this._disposeRemover = this.on(__DrawerControllerDisposing,() => {
+            this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
             });
 
