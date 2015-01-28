@@ -23,7 +23,7 @@
          * @description
          * The HTML template represented as a string.
          */
-        templateString = '<div class="plat-listview-container"></div>\n';
+        templateString = '<div class="plat-listview-viewport"><div class="plat-listview-container"></div></div>\n';
 
         /**
          * @name options
@@ -128,6 +128,19 @@
          * Reference to the {@link plat.ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
          */
         protected _TemplateControlFactory: plat.ui.ITemplateControlFactory = plat.acquire(__TemplateControlFactory);
+
+        /**
+         * @name _viewport
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * An element wrapping the item container to be used for pull-to-refresh.
+         */
+        protected _viewport: HTMLElement;
 
         /**
          * @name _templates
@@ -235,7 +248,8 @@
          * @type {HTMLElement}
          * 
          * @description
-         * An incremental loading ring that is shown when the user returns a promise from the incremental loading function.
+         * An incremental loading ring that is shown when a promise is returned from the incremental loading function and 
+         * the incrementalLoadingRing option is not set to false.
          */
         protected _incrementalProgressRing: HTMLElement;
 
@@ -264,6 +278,32 @@
          * A function that removes the scroll event listener.
          */
         protected _removeScroll: plat.IRemoveListener;
+
+        /**
+         * @name _pullRefresh
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {() => void}
+         * 
+         * @description
+         * A function that is called when the user pulls the list to refresh its content.
+         */
+        protected _pullRefresh: () => void;
+
+        /**
+         * @name _refreshProgressRing
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * A loading ring that is shown when the user pulls the list to refresh its contents.
+         */
+        protected _refreshProgressRing: HTMLElement;
 
         /**
          * @name _nodeNameRegex
@@ -375,12 +415,14 @@
                 options = optionObj.value || <IListviewOptions>{},
                 _utils = this._utils,
                 isString = _utils.isString,
+                viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
                 orientation = this._orientation = options.orientation || 'vertical',
                 incrementalLoading = options.incrementalLoading,
+                pullRefresh = options.pullRefresh,
                 itemTemplate = options.itemTemplate,
                 _Exception: plat.IExceptionStatic;
 
-            this._container = <HTMLElement>this.element.firstElementChild;
+            this._container = <HTMLElement>viewport.firstElementChild;
             this.dom.addClass(this.element, __Plat + orientation);
 
             if (!isString(itemTemplate)) {
@@ -392,6 +434,10 @@
             this._determineItemTemplate(itemTemplate);
             if (isString(incrementalLoading)) {
                 this._determineIncrementalLoading(incrementalLoading, options.incrementalLoadingRing === false);
+            }
+
+            if (isString(pullRefresh)) {
+                this._initializePullRefresh(pullRefresh);
             }
 
             if (!_utils.isArray(this.context)) {
@@ -595,6 +641,64 @@
                     });
                 }
             }
+        }
+
+        /**
+         * @name _initializePullRefresh
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Find and determine the incremental loading function.
+         * 
+         * @param {string} pullRefresh The property for indicating the pull-to-refresh function.
+         * 
+         * @returns {void}
+         */
+        protected _initializePullRefresh(pullRefresh: string): void {
+            var controlProperty = this.findProperty(pullRefresh) || <plat.IControlProperty>{};
+            if (!this._utils.isFunction(controlProperty.value)) {
+                var _Exception = this._Exception;
+                _Exception.warn(__Listview + ' pull-to-refresh function "' + pullRefresh +
+                    '" was not found.', _Exception.CONTROL);
+                return;
+            }
+
+            this._pullRefresh = (<Function>controlProperty.value).bind(controlProperty.control);
+            var progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
+            progressRingContainer.className = 'plat-refresh';
+            progressRingContainer.insertBefore(this._generateProgressRing(), null);
+
+            var trackEvent: string;
+            switch (this._orientation) {
+                case 'vertical':
+                    trackEvent = __$track + 'down';
+                    break;
+                case 'horizontal':
+                    break;
+                default:
+                    return;
+            }
+
+            this.addEventListener(this.element, trackEvent, this._trackRefresh, false);
+        }
+
+        /**
+         * @name _trackRefresh
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The scroll event listener.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
+         * 
+         * @returns {void}
+         */
+        protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
+
         }
 
         /**
