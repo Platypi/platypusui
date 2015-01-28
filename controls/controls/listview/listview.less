@@ -19,40 +19,45 @@
     }
 
     &.plat-vertical {
+        .plat-ring-constants() {
+            position: relative;
+            height: 2em;
+            width: 100%;
+
+            .plat-ring {
+                height: 2em;
+                width: 2em;
+                position: absolute;
+                .calc(left, '50% - 1em');
+
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .border-radius(2em);
+                    }
+                }
+            }
+        }
+
         .plat-listview-viewport {
             .plat-listview-container {
                 .scroll(y);
 
-                .plat-incremental,
-                .plat-refresh {
-                    position: relative;
-                    height: 2em;
-                    width: 100%;
-
-                    .plat-ring {
-                        height: 2em;
-                        width: 2em;
-                        position: absolute;
-                        .calc(left, '50% - 1em');
-
-                        .plat-progress-container {
-                            .plat-animated-ring {
-                                .border-radius(2em);
-                            }
-                        }
-                    }
+                .plat-incremental {
+                    .plat-ring-constants();
                 }
+            }
+        }
 
-                .plat-refresh {
-                    .plat-ring {
-                        .plat-progress-container {
-                            .plat-animated-ring {
-                                .animation-play-state(paused);
+        .plat-refresh {
+            .plat-ring-constants();
 
-                                &.plat-play {
-                                    .animation-play-state(running);
-                                }
-                            }
+            .plat-ring {
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .animation-play-state(paused);
+
+                        &.plat-play {
+                            .animation-play-state(running);
                         }
                     }
                 }

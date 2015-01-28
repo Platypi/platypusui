@@ -681,7 +681,44 @@
                     return;
             }
 
-            this.addEventListener(this.element, trackEvent, this._trackRefresh, false);
+            var viewport = this._viewport;
+            this.addEventListener(viewport, __$touchstart, this._touchStartRefresh, false);
+            this.addEventListener(viewport, __$touchend, this._touchEndRefresh, false);
+            this.addEventListener(viewport, trackEvent, this._trackRefresh, false);
+        }
+
+        /**
+         * @name _touchStartRefresh
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The touch start event listener for when looking for a refresh.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $touchstart event object.
+         * 
+         * @returns {void}
+         */
+        protected _touchStartRefresh(ev: plat.ui.IGestureEvent): void {
+
+        }
+
+        /**
+         * @name _touchEndRefresh
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The touch end event listener for when looking for a refresh.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $touchend event object.
+         * 
+         * @returns {void}
+         */
+        protected _touchEndRefresh(ev: plat.ui.IGestureEvent): void {
+
         }
 
         /**
@@ -691,7 +728,7 @@
          * @access protected
          * 
          * @description
-         * The scroll event listener.
+         * The tracking event listener for looking for a refresh.
          * 
          * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
          * 
