@@ -238,19 +238,35 @@
         protected _templateSelectorKeys: plat.IObject<string>;
 
         /**
-         * @name _infiniteScrolling
+         * @name _loading
          * @memberof platui.Listview
          * @kind property
          * @access protected
          * 
-         * @type {(ev?: Event) => any}
+         * @type {string}
          * 
          * @description
-         * An infinite scrolling function that will be called with the container's scroll Event as an argument whenever more items 
+         * Denotes how the items in the list should load. Infinite scrolling will call a function whenever more items 
          * are being requested due to the list being 80% scrolled. Returning false will end all item requests. 
+         * Returning a promise will pause all other item requests until the promise resolves. Incremental loading 
+         * will call a function whenever more items are being requested due to the user requesting more items by 
+         * pulling past the end of the list. Returning false will end all item requests. 
          * Returning a promise will pause all other item requests until the promise resolves.
          */
-        protected _infiniteScrolling: (ev?: Event) => any;
+        protected _loading: string;
+
+        /**
+         * @name _requestItems
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {() => any}
+         * 
+         * @description
+         * A function that will be called when more items should be added to the list (e.g. - "infinite" and "incremental" loading).
+         */
+        protected _requestItems: () => any;
 
         /**
          * @name _infiniteScrollingRing
@@ -261,8 +277,8 @@
          * @type {HTMLElement}
          * 
          * @description
-         * An infinite scrolling loading ring that is shown when a promise is returned from the infinite scrolling function and 
-         * the infiniteScrollingRing option is not set to false.
+         * An infinite scrolling progress ring that is shown when a promise is returned from the _requestItems function, 
+         * _loading is set to "infinite", and the infiniteScrollingRing option is not set to false.
          */
         protected _infiniteScrollingRing: HTMLElement;
 
@@ -293,7 +309,7 @@
         protected _removeScroll: plat.IRemoveListener;
 
         /**
-         * @name _pullRefresh
+         * @name _refresh
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -304,7 +320,7 @@
          * A function that is called when the user pulls the list to refresh its content. 
          * A promise can be returned.
          */
-        protected _pullRefresh: () => any;
+        protected _refresh: () => any;
 
         /**
          * @name _refreshProgressRing
@@ -497,8 +513,9 @@
                 isString = _utils.isString,
                 viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
                 orientation = this._orientation = options.orientation || 'vertical',
-                incrementalLoading = options.infiniteScrolling,
-                pullRefresh = options.pullRefresh,
+                loading = this._loading = options.loading,
+                requestItems = options.onItemsRequested,
+                refresh = options.onRefresh,
                 itemTemplate = options.itemTemplate,
                 _Exception: plat.IExceptionStatic;
 
@@ -512,12 +529,18 @@
             }
 
             this._determineItemTemplate(itemTemplate);
-            if (isString(incrementalLoading)) {
-                this._determineIncrementalLoading(incrementalLoading, options.infiniteScrollingRing === false);
+            if (isString(loading)) {
+                if (isString(requestItems)) {
+                    this._determineLoading(requestItems, options.infiniteProgress === false);
+                } else {
+                    _Exception = this._Exception;
+                    _Exception.warn(this.type + ' loading type specified as "' + loading +
+                        '" but no option specifying an onItemsRequested handler.', _Exception.CONTROL);
+                }
             }
 
-            if (isString(pullRefresh)) {
-                this._initializePullRefresh(pullRefresh);
+            if (isString(refresh)) {
+                this._initializeRefresh(refresh);
             }
 
             if (!_utils.isArray(this.context)) {
@@ -631,38 +654,46 @@
         }
 
         /**
-         * @name _determineIncrementalLoading
+         * @name _determineLoading
          * @memberof platui.Listview
          * @kind function
          * @access protected
          * 
          * @description
-         * Find and determine the incremental loading function.
+         * Find and determine the proper loading function.
          * 
-         * @param {string} incrementalLoading The property for indicating the incremental loading function.
-         * @param {boolean} hideRing Whether or not to hide the incremental loading ring.
+         * @param {string} requestItems The property for indicating the function for requesting more items.
+         * @param {boolean} hideRing? Whether or not to hide the progress ring for "incremental" loading.
          * 
          * @returns {void}
          */
-        protected _determineIncrementalLoading(incrementalLoading: string, hideRing: boolean): void {
-            var controlProperty = this.findProperty(incrementalLoading) || <plat.IControlProperty>{};
+        protected _determineLoading(requestItems: string, hideRing?: boolean): void {
+            var controlProperty = this.findProperty(requestItems) || <plat.IControlProperty>{};
             if (!this._utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
-                _Exception.warn(__Listview + ' incremental loading function "' + incrementalLoading +
+                _Exception.warn(__Listview + ' onItemsRequested function "' + requestItems +
                     '" was not found.', _Exception.CONTROL);
                 return;
             }
 
-            this._infiniteScrolling = (<Function>controlProperty.value).bind(controlProperty.control);
-            this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
+            this._requestItems = (<Function>controlProperty.value).bind(controlProperty.control);
+            switch (this._loading) {
+                case 'infinite':
+                    this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
 
-            if (hideRing) {
-                return;
+                    if (hideRing) {
+                        return;
+                    }
+
+                    var progressRingContainer = this._infiniteScrollingRing = this._document.createElement('div');
+                    progressRingContainer.className = 'plat-incremental';
+                    progressRingContainer.insertBefore(this._generateProgressRing(), null);
+                    break;
+                case 'incremental':
+                    break;
+                default:
+                    return;
             }
-
-            var progressRingContainer = this._infiniteScrollingRing = this._document.createElement('div');
-            progressRingContainer.className = 'plat-incremental';
-            progressRingContainer.insertBefore(this._generateProgressRing(), null);
         }
 
         /**
@@ -687,6 +718,7 @@
                 this._scrollPosition = scrollPosition;
                 return;
             } else if (scrollPos + 5 > scrollPosition) {
+                // debounce excessive scroll event calls
                 return;
             }
 
@@ -697,7 +729,7 @@
             if (scrollLength === 0) {
                 return;
             } else if (scrollPosition >= scrollLength) {
-                var itemsRemain = this._infiniteScrolling(ev);
+                var itemsRemain = this._requestItems();
                 if (itemsRemain === false) {
                     this._removeScroll();
                 } else if (_utils.isPromise(itemsRemain)) {
@@ -724,30 +756,30 @@
         }
 
         /**
-         * @name _initializePullRefresh
+         * @name _initializeRefresh
          * @memberof platui.Listview
          * @kind function
          * @access protected
          * 
          * @description
-         * Find and determine the incremental loading function.
+         * Find and determine the pull-to-refresh function.
          * 
          * @param {string} pullRefresh The property for indicating the pull-to-refresh function.
          * 
          * @returns {void}
          */
-        protected _initializePullRefresh(pullRefresh: string): void {
+        protected _initializeRefresh(refresh: string): void {
             this._setTransform();
 
-            var controlProperty = this.findProperty(pullRefresh) || <plat.IControlProperty>{};
+            var controlProperty = this.findProperty(refresh) || <plat.IControlProperty>{};
             if (!this._utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
-                _Exception.warn(__Listview + ' pull-to-refresh function "' + pullRefresh +
+                _Exception.warn(__Listview + ' onRefresh function "' + refresh +
                     '" was not found.', _Exception.CONTROL);
                 return;
             }
 
-            this._pullRefresh = (<Function>controlProperty.value).bind(controlProperty.control);
+            this._refresh = (<Function>controlProperty.value).bind(controlProperty.control);
             var progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
             progressRingContainer.className = 'plat-refresh';
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
@@ -856,7 +888,7 @@
                     this._refreshState = 4;
                     this._animationThenable = null;
                     if (refreshState) {
-                        return this._Promise.resolve(this._pullRefresh());
+                        return this._Promise.resolve(this._refresh());
                     }
 
                     dom.removeClass(viewport, 'plat-refresh-prep');
@@ -1405,7 +1437,7 @@
         itemTemplate?: any;
 
         /**
-         * @name infiniteScrolling
+         * @name loading
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
@@ -1413,13 +1445,31 @@
          * @type {string}
          * 
          * @description
-         * The function that will be called for an infinite scrolling capability where items are 
-         * continuously requested to add to the list until false is returned from the function.
+         * Indicates a special type of loading. Available options are "infinite" or "incremental".
+         * 
+         * @remarks
+         * - "infinite" - denotes infinite scrolling where items are continuously requested when the user scrolls the container 
+         * past 80% to add to the list until false is returned from the function.
+         * - "incremental" - denotes giving the user the ability to pull the list when its fully scrolled to indicate adding more items. 
+         * Returning false indicates no more items.
          */
-        infiniteScrolling?: string;
+        loading?: string;
 
         /**
-         * @name infiniteScrollingRing
+         * @name onItemsRequested
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The function that will be called when more items are being requested to add to the list.
+         */
+        onItemsRequested?: string;
+
+        /**
+         * @name infiniteProgress
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
@@ -1427,10 +1477,10 @@
          * @type {boolean}
          * 
          * @description
-         * Whether or not to show an infinite scrolling loading ring when a promise is returned from the 
-         * infinite scrolling function. Defaults to true.
+         * Whether or not to show an infinite scrolling progress ring whenever the loading type is set to 
+         * "infinite" and a promise is returned from the onItemsRequested function. Defaults to true.
          */
-        infiniteScrollingRing?: boolean;
+        infiniteProgress?: boolean;
 
         /**
          * @name templateUrl
@@ -1450,7 +1500,7 @@
         templateUrl?: string;
 
         /**
-         * @name pullRefresh
+         * @name onRefresh
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
@@ -1458,13 +1508,13 @@
          * @type {string}
          * 
          * @description
-         * The function that will be called when the user pulls down/right to refresh.
+         * The function that will be called when the user pulls to refresh.
          * 
          * @remarks
          * When the {@link platui.Listview|Listview's} orientation is vertical the motion will 
          * be to pull down when the list is scrolled all the way to the top, when horizontal the motion 
          * will be to pull right when the list is scrolled all the way to the left.
          */
-        pullRefresh?: string;
+        onRefresh?: string;
     }
 }

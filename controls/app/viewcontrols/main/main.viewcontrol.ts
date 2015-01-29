@@ -72,8 +72,6 @@ module app {
 
             return new promise((resolve, reject) => {
                 setTimeout(() => {
-                    //this.context.listview.push(this.context.listview[this.context.listview.length - 1] + 1);
-                    //this.context.listview = this.context.listview.concat(this.context.listview);
                     this.context.listview.unshift(0);
                     resolve();
                 }, 10000);
