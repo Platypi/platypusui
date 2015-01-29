@@ -19,7 +19,6 @@
     background-color: @background-color;
     -webkit-backface-visibility: hidden;
     .scroll();
-    .user-select(none);
     .box-sizing(border-box);
 
     &.plat-left,
@@ -66,9 +65,10 @@
     &.plat-drawer-transition-left,
     &.plat-drawer-transition-top,
     &.plat-drawer-transition-bottom {
-        &.plat-drawer-open {
-            .touch-action(none);
+        .user-select(none);
+        .touch-action(none);
 
+        &.plat-drawer-open {
             &::after {
                 content: "";
                 position: absolute;
@@ -78,6 +78,7 @@
                 overflow: hidden;
                 z-index: 100;
                 .fill();
+                .user-select(none);
                 .touch-action(none);
             }
         }
