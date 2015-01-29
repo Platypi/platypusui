@@ -117,6 +117,19 @@
         protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
 
         /**
+         * @name _animator
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
+         */
+        protected _animator: plat.ui.animations.Animator;
+
+        /**
          * @name _TemplateControlFactory
          * @memberof platui.Listview
          * @kind property
@@ -225,7 +238,7 @@
         protected _templateSelectorKeys: plat.IObject<string>;
 
         /**
-         * @name _itemTemplateSelector
+         * @name _infiniteScrolling
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -233,14 +246,14 @@
          * @type {(ev?: Event) => any}
          * 
          * @description
-         * An incremental loading function that will be called with the container's scroll Event whenever more items should 
-         * are being requested. Returning false will end all incremental loading. Returning a promise will pause all 
-         * other incremental loading until the promise resolves.
+         * An infinite scrolling function that will be called with the container's scroll Event as an argument whenever more items 
+         * are being requested due to the list being 80% scrolled. Returning false will end all item requests. 
+         * Returning a promise will pause all other item requests until the promise resolves.
          */
-        protected _incrementalLoading: (ev?: Event) => any;
+        protected _infiniteScrolling: (ev?: Event) => any;
 
         /**
-         * @name _incrementalProgressRing
+         * @name _infiniteScrollingRing
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -248,10 +261,10 @@
          * @type {HTMLElement}
          * 
          * @description
-         * An incremental loading ring that is shown when a promise is returned from the incremental loading function and 
-         * the incrementalLoadingRing option is not set to false.
+         * An infinite scrolling loading ring that is shown when a promise is returned from the infinite scrolling function and 
+         * the infiniteScrollingRing option is not set to false.
          */
-        protected _incrementalProgressRing: HTMLElement;
+        protected _infiniteScrollingRing: HTMLElement;
 
         /**
          * @name _scrollPosition
@@ -285,12 +298,13 @@
          * @kind property
          * @access protected
          * 
-         * @type {() => void}
+         * @type {() => any}
          * 
          * @description
-         * A function that is called when the user pulls the list to refresh its content.
+         * A function that is called when the user pulls the list to refresh its content. 
+         * A promise can be returned.
          */
-        protected _pullRefresh: () => void;
+        protected _pullRefresh: () => any;
 
         /**
          * @name _refreshProgressRing
@@ -304,6 +318,72 @@
          * A loading ring that is shown when the user pulls the list to refresh its contents.
          */
         protected _refreshProgressRing: HTMLElement;
+
+        /**
+         * @name _refreshState
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * An enumeration value signifying the stage in refresh.
+         */
+        protected _refreshState = 0;
+
+        /**
+         * @name _hasMoved
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the user is tracking in a fashion that attempts to refresh the list.
+         */
+        protected _hasMoved = false;
+
+        /**
+         * @name _lastTouch
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.IPoint}
+         * 
+         * @description
+         * The last touch start recorded.
+         */
+        protected _lastTouch: plat.ui.IPoint = { x: 0, y: 0 };
+        
+        /**
+         * @name _transform
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The current browser's CSS3 transform property.
+         */
+        protected _transform: string;
+
+        /**
+         * @name _animationThenable
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimationThenable<void>}
+         * 
+         * @description
+         * The most recent animation thenable. Used to cancel the current animation if another needs 
+         * to begin.
+         */
+        protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
 
         /**
          * @name _nodeNameRegex
@@ -417,7 +497,7 @@
                 isString = _utils.isString,
                 viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
                 orientation = this._orientation = options.orientation || 'vertical',
-                incrementalLoading = options.incrementalLoading,
+                incrementalLoading = options.infiniteScrolling,
                 pullRefresh = options.pullRefresh,
                 itemTemplate = options.itemTemplate,
                 _Exception: plat.IExceptionStatic;
@@ -433,7 +513,7 @@
 
             this._determineItemTemplate(itemTemplate);
             if (isString(incrementalLoading)) {
-                this._determineIncrementalLoading(incrementalLoading, options.incrementalLoadingRing === false);
+                this._determineIncrementalLoading(incrementalLoading, options.infiniteScrollingRing === false);
             }
 
             if (isString(pullRefresh)) {
@@ -573,14 +653,14 @@
                 return;
             }
 
-            this._incrementalLoading = (<Function>controlProperty.value).bind(controlProperty.control);
+            this._infiniteScrolling = (<Function>controlProperty.value).bind(controlProperty.control);
             this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
 
             if (hideRing) {
                 return;
             }
 
-            var progressRingContainer = this._incrementalProgressRing = this._document.createElement('div');
+            var progressRingContainer = this._infiniteScrollingRing = this._document.createElement('div');
             progressRingContainer.className = 'plat-incremental';
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
         }
@@ -617,11 +697,11 @@
             if (scrollLength === 0) {
                 return;
             } else if (scrollPosition >= scrollLength) {
-                var itemsRemain = this._incrementalLoading(ev);
+                var itemsRemain = this._infiniteScrolling(ev);
                 if (itemsRemain === false) {
                     this._removeScroll();
                 } else if (_utils.isPromise(itemsRemain)) {
-                    var progressRing = this._incrementalProgressRing,
+                    var progressRing = this._infiniteScrollingRing,
                         showProgress = !_utils.isNull(progressRing),
                         container = this._container;
 
@@ -657,6 +737,8 @@
          * @returns {void}
          */
         protected _initializePullRefresh(pullRefresh: string): void {
+            this._setTransform();
+
             var controlProperty = this.findProperty(pullRefresh) || <plat.IControlProperty>{};
             if (!this._utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
@@ -670,10 +752,12 @@
             progressRingContainer.className = 'plat-refresh';
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
 
-            var trackEvent: string;
+            var track: string,
+                reverseTrack: string;
             switch (this._orientation) {
                 case 'vertical':
-                    trackEvent = __$track + 'down';
+                    track = __$track + 'down';
+                    reverseTrack = __$track + 'up';
                     break;
                 case 'horizontal':
                     break;
@@ -681,10 +765,14 @@
                     return;
             }
 
-            var viewport = this._viewport;
+            var viewport = this._viewport,
+                touchEnd = this._touchEndRefresh,
+                trackFn = this._trackRefresh;
             this.addEventListener(viewport, __$touchstart, this._touchStartRefresh, false);
-            this.addEventListener(viewport, __$touchend, this._touchEndRefresh, false);
-            this.addEventListener(viewport, trackEvent, this._trackRefresh, false);
+            this.addEventListener(viewport, __$touchend, touchEnd, false);
+            this.addEventListener(viewport, __$trackend, touchEnd, false);
+            this.addEventListener(viewport, track, trackFn, false);
+            this.addEventListener(viewport, reverseTrack, trackFn, false);
         }
 
         /**
@@ -701,7 +789,24 @@
          * @returns {void}
          */
         protected _touchStartRefresh(ev: plat.ui.IGestureEvent): void {
+            if (this._refreshState !== 0) {
+                return;
+            }
 
+            this._refreshState = 1;
+            this._lastTouch = {
+                x: ev.clientX,
+                y: ev.clientY
+            };
+
+            if (!this._utils.isNull(this._animationThenable)) {
+                this._animationThenable.cancel().then(() => {
+                    this._refreshState = 2;
+                });
+                return;
+            }
+
+            this._refreshState = 2;
         }
 
         /**
@@ -718,7 +823,59 @@
          * @returns {void}
          */
         protected _touchEndRefresh(ev: plat.ui.IGestureEvent): void {
+            var state = this._refreshState,
+                hasMoved = this._hasMoved,
+                dom = this.dom;
 
+            this._refreshState = 0;
+            this._hasMoved = false;
+            if (state < 2 || !hasMoved) {
+                return;
+            }
+
+            var animationOptions: plat.IObject<string> = {},
+                viewport = this._viewport,
+                refreshProgressRing = this._refreshProgressRing,
+                refreshState = state === 3,
+                resetTranslation = 'translate3d(0,0,0)';
+
+            if (refreshState) {
+                switch (this._orientation) {
+                    case 'horizontal':
+                        resetTranslation = 'translate3d(' + refreshProgressRing.offsetWidth + 'px,0,0)';
+                        break;
+                    default:
+                        resetTranslation = 'translate3d(0,' + refreshProgressRing.offsetHeight + 'px,0)';
+                        break;
+                }
+            }
+
+            animationOptions[this._transform] = resetTranslation;
+            this._utils.requestAnimationFrame(() => {
+                this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
+                    this._refreshState = 4;
+                    this._animationThenable = null;
+                    if (refreshState) {
+                        return this._Promise.resolve(this._pullRefresh());
+                    }
+
+                    dom.removeClass(viewport, 'plat-refresh-prep');
+                    return this._Promise.resolve();
+                }).then(() => {
+                    if (!refreshState) {
+                        this._refreshState = 0;
+                        return;
+                    }
+
+                    dom.removeClass(refreshProgressRing, 'plat-play');
+                    animationOptions[this._transform] = 'translate3d(0,0,0)';
+                    this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
+                        this._refreshState = 0;
+                        this._animationThenable = null;
+                        dom.removeClass(viewport, 'plat-refresh-prep');
+                    });
+                });
+            });
         }
 
         /**
@@ -735,7 +892,84 @@
          * @returns {void}
          */
         protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
+            if (this._refreshState < 2 || this._container.scrollTop > 0) {
+                return;
+            }
 
+            this._utils.requestAnimationFrame(() => {
+                this._viewport.style[<any>this._transform] = this._calculateRefreshTranslation(ev);
+            });
+        }
+        
+        /**
+         * @name _calculateRefreshTranslation
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Calculates the translation value for setting the transform value during tracking.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $tracking event.
+         * 
+         * @returns {string} The translation value.
+         */
+        protected _calculateRefreshTranslation(ev: plat.ui.IGestureEvent): string {
+            var isHorizontal = this._orientation === 'horizontal',
+                diff: number,
+                threshold: number;
+
+            if (isHorizontal) {
+                diff = ev.clientX - this._lastTouch.x;
+                threshold = this._refreshProgressRing.offsetWidth;
+            } else {
+                diff = ev.clientY - this._lastTouch.y;
+                threshold = this._refreshProgressRing.offsetHeight;
+            }
+
+            if (diff < 0) {
+                diff = 0;
+            } else if (!this._hasMoved) {
+                this._hasMoved = true;
+                var element = this.element;
+                this.dom.addClass(this._viewport, 'plat-refresh-prep');
+                element.insertBefore(this._refreshProgressRing, element.firstElementChild);
+            } else if (diff >= threshold && this._refreshState < 3) {
+                this._refreshState = 3;
+                this.dom.addClass(this._refreshProgressRing, 'plat-play');
+            }
+
+            if (isHorizontal) {
+                return 'translate3d(' + diff + 'px,0,0)';
+            }
+            return 'translate3d(0,' + diff + 'px,0)';
+        }
+
+        /**
+         * @name _setTransform
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Obtains the current browser's transform property value.
+         * 
+         * @returns {void}
+         */
+        protected _setTransform(): void {
+            var style = this.element.style,
+                isUndefined = this._utils.isUndefined;
+
+            if (isUndefined(style.transform)) {
+                var vendorPrefix = this._compat.vendorPrefix;
+                if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
+                    this._transform = vendorPrefix.lowerCase + 'Transform';
+                } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
+                    this._transform = vendorPrefix.lowerCase + 'Transform';
+                }
+            } else {
+                this._transform = 'transform';
+            }
         }
 
         /**
@@ -1171,7 +1405,7 @@
         itemTemplate?: any;
 
         /**
-         * @name incrementalLoading
+         * @name infiniteScrolling
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
@@ -1179,12 +1413,13 @@
          * @type {string}
          * 
          * @description
-         * The function that will be called for incremental loading.
+         * The function that will be called for an infinite scrolling capability where items are 
+         * continuously requested to add to the list until false is returned from the function.
          */
-        incrementalLoading?: string;
+        infiniteScrolling?: string;
 
         /**
-         * @name incrementalLoading
+         * @name infiniteScrollingRing
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
@@ -1192,10 +1427,10 @@
          * @type {boolean}
          * 
          * @description
-         * Whether or not to show an incremental loading ring when a promise is returned from the 
-         * incremental loading function. Defaults to true.
+         * Whether or not to show an infinite scrolling loading ring when a promise is returned from the 
+         * infinite scrolling function. Defaults to true.
          */
-        incrementalLoadingRing?: boolean;
+        infiniteScrollingRing?: boolean;
 
         /**
          * @name templateUrl

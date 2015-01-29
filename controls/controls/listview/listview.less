@@ -6,11 +6,14 @@
     #Listview;
     .fill();
     .box-sizing(border-box);
+    position: relative;
     overflow: hidden;
 
     .plat-listview-viewport {
         .fill();
         .box-sizing(border-box);
+        background-color: @viewport-background-color;
+        z-index: 1;
 
         .plat-listview-container {
             .fill();
@@ -20,7 +23,6 @@
 
     &.plat-vertical {
         .plat-ring-constants() {
-            position: relative;
             height: 2em;
             width: 100%;
 
@@ -44,12 +46,28 @@
 
                 .plat-incremental {
                     .plat-ring-constants();
+                    position: relative;
                 }
+            }
+
+            &.plat-refresh-prep {
+                .plat-listview-container {
+                    overflow: hidden;
+                }
+            }
+            
+            &.plat-transition {
+                .translateZ(0);
+                .transition(@refresh-transition);
             }
         }
 
         .plat-refresh {
             .plat-ring-constants();
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
 
             .plat-ring {
                 .plat-progress-container {
@@ -57,6 +75,16 @@
                         .animation-play-state(paused);
 
                         &.plat-play {
+                            .animation-play-state(running);
+                        }
+                    }
+                }
+            }
+
+            &.plat-play {
+                .plat-ring {
+                    .plat-progress-container {
+                        .plat-animated-ring {
                             .animation-play-state(running);
                         }
                     }

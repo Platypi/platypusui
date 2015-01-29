@@ -8,7 +8,7 @@
             <button plat-tap="addListItem">add</button>
             <button plat-tap="popListItem">pop</button>
             <div class="demo-item">
-                <plat-listview style="height: 50px;" plat-context="listview" plat-options="{ itemTemplate: 'listview-template' }">
+                <plat-listview style="height: 150px;" plat-context="listview" plat-options="{ itemTemplate: 'listview-template', pullRefresh: 'refresh' }">
                     <listview-template>
                         <div style="color: red;">{{@context}}</div>
                     </listview-template>
