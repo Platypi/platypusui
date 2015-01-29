@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.1 (http://getplatypi.com) 
+ * PlatypusTS v0.10.2 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -285,22 +285,25 @@ module plat {
     /* tslint:enable:no-unused-variable */
     
     /* tslint:disable:no-unused-variable */
-    var __nativeIsArray = !!Array.isArray,
-        __uids__: plat.IObject<Array<string>> = {},
-        objToString = Object.prototype.toString,
-        toStringClass = '[object ',
-        errorClass = toStringClass + 'Error]',
-        fileClass = toStringClass + 'File]',
-        arrayClass = toStringClass + 'Array]',
-        boolClass = toStringClass + 'Boolean]',
-        dateClass = toStringClass + 'Date]',
-        funcClass = toStringClass + 'Function]',
-        numberClass = toStringClass + 'Number]',
-        objectClass = toStringClass + 'Object]',
-        regexpClass = toStringClass + 'RegExp]',
-        stringClass = toStringClass + 'String]',
-        promiseClass = toStringClass + 'Promise]',
-        objectTypes: any = {
+    var _nativeIsArray = !!Array.isArray,
+        _uids: plat.IObject<Array<string>> = {},
+        _Promise: plat.async.IPromise,
+        _compat: plat.Compat,
+        _camelCaseRegex: RegExp,
+        _objToString = Object.prototype.toString,
+        _toStringClass = '[object ',
+        _errorClass = _toStringClass + 'Error]',
+        _fileClass = _toStringClass + 'File]',
+        _arrayClass = _toStringClass + 'Array]',
+        _boolClass = _toStringClass + 'Boolean]',
+        _dateClass = _toStringClass + 'Date]',
+        _funcClass = _toStringClass + 'Function]',
+        _numberClass = _toStringClass + 'Number]',
+        _objectClass = _toStringClass + 'Object]',
+        _regexpClass = _toStringClass + 'RegExp]',
+        _stringClass = _toStringClass + 'String]',
+        _promiseClass = _toStringClass + 'Promise]',
+        _objectTypes: any = {
             'boolean': false,
             'function': true,
             'object': true,
@@ -390,7 +393,7 @@ module plat {
     }
     
     function isError(obj: any): boolean {
-        return objToString.call(obj) === errorClass;
+        return _objToString.call(obj) === _errorClass;
     }
     
     function isObject(obj: any): boolean {
@@ -414,19 +417,19 @@ module plat {
     }
     
     function isFile(obj: any): boolean {
-        return isObject(obj) && objToString.call(obj) === fileClass;
+        return isObject(obj) && _objToString.call(obj) === _fileClass;
     }
     
     function isString(obj: any): boolean {
-        return typeof obj === 'string' || isObject(obj) && objToString.call(obj) === stringClass;
+        return typeof obj === 'string' || isObject(obj) && _objToString.call(obj) === _stringClass;
     }
     
     function isRegExp(obj: any): boolean {
-        return isObject(obj) && objToString.call(obj) === regexpClass;
+        return isObject(obj) && _objToString.call(obj) === _regexpClass;
     }
     
     function isPromise(obj: any): boolean {
-        return isObject(obj) && (objToString.call(obj) === promiseClass || isFunction(obj.then));
+        return isObject(obj) && (_objToString.call(obj) === _promiseClass || isFunction(obj.then));
     }
     
     function isEmpty(obj: any): boolean {
@@ -446,11 +449,11 @@ module plat {
     }
     
     function isBoolean(obj: any): boolean {
-        return obj === true || obj === false || isObject(obj) && objToString.call(obj) === boolClass;
+        return obj === true || obj === false || isObject(obj) && _objToString.call(obj) === _boolClass;
     }
     
     function isNumber(obj: any): boolean {
-        return (typeof obj === 'number' || isObject(obj) && objToString.call(obj) === numberClass) && !isNaN(obj);
+        return (typeof obj === 'number' || isObject(obj) && _objToString.call(obj) === _numberClass) && !isNaN(obj);
     }
     
     function isFunction(obj: any): boolean {
@@ -466,11 +469,11 @@ module plat {
     }
     
     function isArray(obj: any): boolean {
-        if (__nativeIsArray) {
+        if (_nativeIsArray) {
             return Array.isArray(obj);
         }
     
-        return objToString.call(obj) === arrayClass;
+        return _objToString.call(obj) === _arrayClass;
     }
     
     function isArrayLike(obj: any): boolean {
@@ -482,7 +485,7 @@ module plat {
     }
     
     function isDate(obj: any): boolean {
-        return typeof obj === 'object' && objToString.call(obj) === dateClass;
+        return typeof obj === 'object' && _objToString.call(obj) === _dateClass;
     }
     
     function filter<T>(iterator: (value: T, key: any, obj: any) => boolean, obj: any, context?: any): Array<T> {
@@ -557,19 +560,17 @@ module plat {
         return arr;
     }
     
-    var Promise: plat.async.IPromise;
-    
     function mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any,
         context?: any): plat.async.IThenable<Array<R>> {
-        Promise = Promise || plat.acquire(__Promise);
+        _Promise = _Promise || plat.acquire(__Promise);
     
-        return Promise.all(map(iterator, obj, context));
+        return _Promise.all(map(iterator, obj, context));
     }
     
     function mapAsyncWithOrder<T, R>(iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
         array: Array<T>, context: any, descending?: boolean): plat.async.IThenable<Array<R>> {
-        Promise = Promise || plat.acquire(__Promise);
-        var initialValue = Promise.resolve<Array<R>>([]);
+        _Promise = _Promise || plat.acquire(__Promise);
+        var initialValue = _Promise.resolve<Array<R>>([]);
     
         if (!isArray(array)) {
             return initialValue;
@@ -658,15 +659,20 @@ module plat {
     }
     
     function requestAnimationFrameGlobal(method: FrameRequestCallback, context?: any): plat.IRemoveListener {
-        if (isUndefined(requestAnimationFrame)) {
+        _compat = _compat || (plat.acquire(__Compat));
+    
+        var requestAnimFrame = _compat.requestAnimationFrame;
+        if (isUndefined(requestAnimFrame)) {
             return postpone(() => {
                 method.call(context, Date.now());
             });
         }
     
-        var animationId = requestAnimationFrame(method.bind(context));
+        var animationId = requestAnimFrame(method.bind(context)),
+            cancelAnimFrame = _compat.cancelAnimationFrame || noop;
+    
         return () => {
-            cancelAnimationFrame(animationId);
+            cancelAnimFrame(animationId);
         };
     }
     
@@ -675,10 +681,10 @@ module plat {
             prefix = '';
         }
     
-        var puid = __uids__[prefix];
+        var puid = _uids[prefix];
     
         if (isNull(puid)) {
-            puid = __uids__[prefix] = ['0', '/'];
+            puid = _uids[prefix] = ['0', '/'];
         }
     
         var index = puid.length,
@@ -716,17 +722,15 @@ module plat {
         return join();
     }
     
-    var camelCaseRegex: RegExp;
-    
     function camelCase(str: string): string {
         if (!isString(str) || isEmpty(str)) {
             return str;
         }
     
         str = str.charAt(0).toLowerCase() + str.slice(1);
-        camelCaseRegex = camelCaseRegex || (<plat.expressions.Regex>plat.acquire(__Regex)).camelCaseRegex;
+        _camelCaseRegex = _camelCaseRegex || (<plat.expressions.Regex>plat.acquire(__Regex)).camelCaseRegex;
     
-        return str.replace(camelCaseRegex,
+        return str.replace(_camelCaseRegex,
             (match: string, delimiter?: string, char?: string, index?: number)
                 => index ? char.toUpperCase() : char);
     }
@@ -1789,12 +1793,14 @@ module plat {
              * @param {Function} Constructor The Function
              */
             private static __findInjector(Constructor: any, injectors: InjectorObject<any>) {
-                if (Constructor === Injector || Constructor === __InjectorStatic) {
+                if (isNull(Constructor)) {
+                    return;
+                } else if (Constructor === Injector || Constructor === __InjectorStatic) {
                     var ret = Injector.__wrap(Injector);
                     ret.name = __InjectorStatic;
                     return ret;
-                } else if (isNull(Constructor) || isString(Constructor)) {
-                    return injectors[Constructor];
+                } else if (isString(Constructor)) {
+                    return injectors[Constructor] || injectors[(<string>Constructor).toLowerCase()];
                 }
 
                 var injector: Injector<any>,
@@ -2550,7 +2556,8 @@ module plat {
         mappedEvents: IMappedTouchEvents;
 
         /**
-         * An object containing the properly prefixed animation events.
+         * An object containing the properly prefixed animation events. 
+         * Undefined if animation isn't supported.
          */
         animationEvents: IAnimationEvents;
 
@@ -2558,6 +2565,16 @@ module plat {
          * An object containing information regarding any potential vendor prefix.
          */
         vendorPrefix: IVendorPrefix;
+
+        /**
+         * The browser's requestAnimationFrame function if one exists. Otherwise undefined.
+         */
+        requestAnimationFrame: (callback: FrameRequestCallback) => number;
+
+        /**
+         * The browser's cancelAnimationFrame function if one exists. Otherwise undefined.
+         */
+        cancelAnimationFrame: (handle: number) => void;
 
         /**
          * The version of Internet Explorer being used. If not Internet Explorer, the value is undefined.
@@ -2683,68 +2700,57 @@ module plat {
          * Define animation events
          */
         private __defineAnimationEvents(): void {
-            var documentElement = this._document.documentElement,
-                styles = this._window.getComputedStyle(documentElement, ''),
-                prefix: string;
+            var _window = this._window,
+                documentElement = this._document.documentElement,
+                styles = _window.getComputedStyle(documentElement, ''),
+                prefix: string,
+                jsSyntax: string;
 
             if (!isUndefined((<any>styles).OLink)) {
                 prefix = 'o';
+                jsSyntax = 'O';
             } else {
                 var matches = Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/);
                 prefix = (isArray(matches) && matches.length > 1) ? matches[1] : '';
+                jsSyntax = prefix === 'ms' ? 'MS' : prefix[0].toUpperCase() + prefix.slice(1);
             }
 
             this.vendorPrefix = {
                 lowerCase: prefix,
                 css: prefix === '' ? '' : '-' + prefix + '-',
-                js: prefix[0].toUpperCase() + prefix.slice(1)
+                upperCase: jsSyntax
             };
 
-            if (prefix === 'webkit') {
-                this.animationSupported = !isUndefined((<any>documentElement.style).WebkitAnimation);
-                if (!this.animationSupported) {
-                    this.animationEvents = {
-                        $animation: '',
-                        $animationStart: '',
-                        $animationEnd: '',
-                        $transition: '',
-                        $transitionStart: '',
-                        $transitionEnd: ''
-                    };
-                    return;
-                }
+            this.requestAnimationFrame = _window.requestAnimationFrame || (<any>_window)[prefix + 'RequestAnimationFrame'];
+            this.cancelAnimationFrame = _window.cancelAnimationFrame ||
+            (<any>_window)[prefix + 'CancelRequestAnimationFrame'] ||
+            (<any>_window)[prefix + 'CancelAnimationFrame'];
 
-                this.animationEvents = {
-                    $animation: 'webkitAnimation',
-                    $animationStart: 'webkitAnimationStart',
-                    $animationEnd: 'webkitAnimationEnd',
-                    $transition: 'webkitTransition',
-                    $transitionStart: 'webkitTransitionStart',
-                    $transitionEnd: 'webkitTransitionEnd'
-                };
-            } else {
-                this.animationSupported = !isUndefined((<any>documentElement.style).animation);
-                if (!this.animationSupported) {
-                    this.animationEvents = {
-                        $animation: '',
-                        $animationStart: '',
-                        $animationEnd: '',
-                        $transition: '',
-                        $transitionStart: '',
-                        $transitionEnd: ''
-                    };
-                    return;
-                }
-
+            var style = documentElement.style,
+                animationSupported: boolean;
+            if (animationSupported = !isUndefined(style.animation)) {
                 this.animationEvents = {
                     $animation: 'animation',
                     $animationStart: 'animationstart',
                     $animationEnd: 'animationend',
+                    $animationIteration: 'animationiteration',
                     $transition: 'transition',
                     $transitionStart: 'transitionstart',
                     $transitionEnd: 'transitionend'
                 };
+            } else if (animationSupported = !isUndefined((<any>style)[jsSyntax + 'Animation'])) {
+                this.animationEvents = {
+                    $animation: prefix + 'Animation',
+                    $animationStart: prefix + 'AnimationStart',
+                    $animationEnd: prefix + 'AnimationEnd',
+                    $animationIteration: prefix + 'AnimationIteration',
+                    $transition: prefix + 'Transition',
+                    $transitionStart: prefix + 'TransitionStart',
+                    $transitionEnd: prefix + 'TransitionEnd'
+                };
             }
+
+            this.animationSupported = animationSupported;
         }
 
         /**
@@ -2844,6 +2850,11 @@ module plat {
         $animationEnd: string;
 
         /**
+         * The animation iteration event.
+         */
+        $animationIteration: string;
+
+        /**
          * The transition identifier.
          */
         $transition: string;
@@ -2876,10 +2887,11 @@ module plat {
         css: string;
 
         /**
-         * The JavaScript representation of the browser's vendor prefix 
-         * denoted by it beginning with a capital letter.
+         * The common uppercase representation of the browser's vendor prefix 
+         * generally denoted by it beginning with a capital letter or all capital 
+         * in the case of MS.
          */
-        js: string;
+        upperCase: string;
     }
 
     /**
@@ -5338,7 +5350,6 @@ module plat {
                         this._urlChanged();
                     }
                 } else {
-                    console.log('test');
                     this.__currentUrl = url;
                     if (replace) {
                         _location.replace(url);
@@ -17049,7 +17060,12 @@ module plat {
                  * @param {() => void} listener The function to call when the animation begins.
                  */
                 animationStart(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$animationStart, listener);
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return this;
+                    }
+
+                    return this.__addEventListener(animationEvents.$animationStart, listener);
                 }
         
                 /**
@@ -17057,7 +17073,12 @@ module plat {
                  * @param {() => void} listener The function to call when the transition begins.
                  */
                 transitionStart(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$transitionStart, listener);
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return this;
+                    }
+
+                    return this.__addEventListener(animationEvents.$transitionStart, listener);
                 }
         
                 /**
@@ -17065,7 +17086,12 @@ module plat {
                  * @param {() => void} listener The function to call when the animation ends.
                  */
                 animationEnd(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$animationEnd, listener);
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return this;
+                    }
+
+                    return this.__addEventListener(animationEvents.$animationEnd, listener);
                 }
         
                 /**
@@ -17073,7 +17099,12 @@ module plat {
                  * @param {() => void} listener The function to call when the transition ends.
                  */
                 transitionEnd(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$transitionEnd, listener);
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return this;
+                    }
+
+                    return this.__addEventListener(animationEvents.$transitionEnd, listener);
                 }
         
                 /**
@@ -21992,32 +22023,30 @@ module plat {
 
                     backNavigate = this._backNavigate;
                     this._backNavigate = false;
+                    previousUrl = this._previousUrl;
+                    this._finishNavigating()
+                        .then(() => {
+                            return this.router.navigate(utils.pathname, utils.query)
+                        }).then(() => {
+                            this._previousUrl = utils.pathname;
+                            if (isFunction(this._resolveNavigate)) {
+                                this._resolveNavigate();
+                            }
+                        }).catch((e: any) => {
+                            this._ignoreOnce = true;
+                            this._previousUrl = previousUrl;
 
-                    postpone(() => {
-                        previousUrl = this._previousUrl;
-                        this.router.navigate(utils.pathname, utils.query)
-                            .then(() => {
-                                this._previousUrl = utils.pathname;
-                                if (isFunction(this._resolveNavigate)) {
-                                    this._resolveNavigate();
-                                }
-                            })
-                            .catch((e: any) => {
-                                this._ignoreOnce = true;
-                                this._previousUrl = previousUrl;
+                            this._browser.url(previousUrl, !backNavigate);
+                            this._history.go(-1);
 
-                                this._browser.url(previousUrl, !backNavigate);
-                                this._history.go(-1);
+                            if (isFunction(this._rejectNavigate)) {
+                                this._rejectNavigate(e);
+                            }
 
-                                if (isFunction(this._rejectNavigate)) {
-                                    this._rejectNavigate(e);
-                                }
-
-                                if (!isEmpty(e)) {
-                                    _Exception.warn(e, _Exception.NAVIGATION);
-                                }
-                            });
-                    });
+                            if (!isEmpty(e)) {
+                                _Exception.warn(e, _Exception.NAVIGATION);
+                            }
+                        });
                 });
             }
 
@@ -23161,6 +23190,7 @@ module plat {
             previousUrl: string;
             previousQuery: string;
             previousSegment: string;
+            previousPattern: string;
 
             currentRouteInfo: IRouteInfo;
 
@@ -23208,25 +23238,31 @@ module plat {
                 var ports = this.ports;
 
                 if (isNull(port) || ports.indexOf(port) > -1) {
-                    return this._Promise.resolve();
+                    return this._resolve();
                 }
 
                 ports.push(port);
 
                 if (isObject(this.currentRouteInfo)) {
-
-                    var routeInfo = _clone(this.currentRouteInfo, true);
-
-                    return this.canNavigateTo(routeInfo)
-                        .then((canNavigateTo) => {
-                        if (!canNavigateTo) {
-                            return;
-                        }
-                        this.currentRouteInfo = undefined;
-                        return this.performNavigation(routeInfo);
-                    }).then(() => {
-                        this.currentRouteInfo = routeInfo;
-                    });
+                    this.navigating = true;
+                    return this._resolve(this.finishNavigating)
+                        .catch(() => { })
+                        .then(() => {
+                            var routeInfo = _clone(this.currentRouteInfo, true);
+                            return this.finishNavigating = this.canNavigateTo(routeInfo)
+                                .then((canNavigateTo) => {
+                                if (!canNavigateTo) {
+                                    return;
+                                }
+                                this.currentRouteInfo = undefined;
+                                return this.performNavigation(routeInfo);
+                            }).then(() => {
+                                this.navigating = false;
+                                this.currentRouteInfo = routeInfo;
+                            },() => {
+                                    this.navigating = false;
+                                });
+                        });
                 }
 
                 return this._Promise.resolve();
@@ -23301,6 +23337,10 @@ module plat {
             }
 
             protected _addHandler(handler: (value: string, values: any, query?: any) => any, parameter: string, view: any, handlers: IObject<IRouteTransforms>) {
+                if (isUndefined(view)) {
+                    view = '*';
+                }
+
                 if (view !== '*') {
                     view = this._Injector.convertDependency(view);
                 }
@@ -23326,15 +23366,15 @@ module plat {
                 return this;
             }
 
-            intercept(handler: (routeInfo: IRouteInfo) => any, view: string): Router;
-            intercept(handler: (routeInfo: IRouteInfo) => any, view: new (...args: any[]) => any): Router;
-            intercept(handler: (routeInfo: IRouteInfo) => any, view: any) {
-                if (view !== '*') {
-                    view = this._Injector.convertDependency(view);
+            intercept(handler: (routeInfo: IRouteInfo) => any, view?: string): Router;
+            intercept(handler: (routeInfo: IRouteInfo) => any, view?: new (...args: any[]) => any): Router;
+            intercept(handler: (routeInfo: IRouteInfo) => any, view?: any) {
+                if (isUndefined(view)) {
+                    view = '*';
                 }
 
-                if (isEmpty(view)) {
-                    return this;
+                if (view !== '*') {
+                    view = this._Injector.convertDependency(view);
                 }
 
                 var interceptors = this.interceptors[view];
@@ -23373,7 +23413,8 @@ module plat {
 
                 var result: IRouteResult = this.recognizer.recognize(url),
                     routeInfo: IRouteInfo,
-                    pattern: string;
+                    pattern: string,
+                    segment: string;
 
                 if (isEmpty(result)) {
                     result = this.childRecognizer.recognize(url);
@@ -23390,7 +23431,7 @@ module plat {
                     pattern = routeInfo.delegate.pattern;
                     pattern = pattern.substr(0, pattern.length - __CHILD_ROUTE_LENGTH);
 
-                    if (this.previousSegment === pattern) {
+                    if (this.previousPattern === pattern) {
                         // the pattern for this router is the same as the last pattern so 
                         // only navigate child routers.
                         this.navigating = true;
@@ -23399,7 +23440,7 @@ module plat {
                             this.previousUrl = url;
                             this.previousQuery = queryString;
                             this.navigating = false;
-                        },(e) => {
+                            },(e) => {
                                 this.navigating = false;
                                 throw e;
                             });
@@ -23409,6 +23450,8 @@ module plat {
                     routeInfo.query = query;
                     pattern = routeInfo.delegate.pattern;
                 }
+            
+                segment = this.recognizer.generate(routeInfo.delegate.view, routeInfo.parameters);
 
                 this.navigating = true;
 
@@ -23427,7 +23470,8 @@ module plat {
                     return this.performNavigation(routeInfo);
                 })
                     .then(() => {
-                    this.previousSegment = pattern;
+                    this.previousPattern = pattern;
+                    this.previousSegment = segment;
                     this.currentRouteInfo = routeInfoCopy;
                     this.navigating = false;
                 },(e) => {
@@ -23614,7 +23658,9 @@ module plat {
 
             canNavigateTo(info: IRouteInfo, ignorePorts?: boolean): async.IThenable<boolean> {
                 var promises: Array<any> = [];
-
+                if (isEmpty(this.ports)) {
+                    return this._resolve(true);
+                }
                 return this.callAllHandlers(info.delegate.view, info.parameters, info.query)
                     .then(() => {
                     return this.callInterceptors(info);
@@ -23680,6 +23726,7 @@ module plat {
 
             protected _clearInfo() {
                 this.previousSegment = undefined;
+                this.previousPattern = undefined;
                 this.previousUrl = undefined;
                 this.previousQuery = undefined;
                 this.currentRouteInfo = undefined;

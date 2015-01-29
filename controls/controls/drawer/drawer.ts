@@ -2040,7 +2040,7 @@
                 var vendorPrefix = this._compat.vendorPrefix;
                 if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                     transform = this._transform = vendorPrefix.lowerCase + 'Transform';
-                } else if (!isUndefined(style[<any>(vendorPrefix.js + 'Transform')])) {
+                } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
                     transform = this._transform = vendorPrefix.lowerCase + 'Transform';
                 }
             } else {
