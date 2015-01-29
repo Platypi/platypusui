@@ -104,7 +104,7 @@
                 return;
             }
 
-            var $document = this._document,
+            var _document = this._document,
                 element = this.element,
                 childNodes = Array.prototype.slice.call(innerTemplate.childNodes),
                 childNode: Node,
@@ -116,7 +116,7 @@
                 if (childNode.nodeType === Node.TEXT_NODE) {
                     match = childNode.textContent.trim().match(/[^\r\n]/g);
                     if (match !== null && match.length > 0) {
-                        span = $document.createElement('span');
+                        span = _document.createElement('span');
                         span.insertBefore(childNode, null);
                         element.insertBefore(span, null);
                     }
@@ -211,10 +211,10 @@
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var $utils = this._utils;
-            if ($utils.isBoolean(newValue)) {
+            var _utils = this._utils;
+            if (_utils.isBoolean(newValue)) {
                 return this.setProperty(newValue, oldValue, true);
-            } else if (!$utils.isString(newValue)) {
+            } else if (!_utils.isString(newValue)) {
                 return;
             }
 

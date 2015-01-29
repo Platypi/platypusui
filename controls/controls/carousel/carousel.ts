@@ -92,9 +92,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _compat
@@ -105,9 +105,9 @@
          * @type {plat.ICompat}
          * 
          * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.ICompat = plat.acquire(__Compat);
+        protected _compat: plat.Compat = plat.acquire(__Compat);
 
         /**
          * @name _document
@@ -144,9 +144,9 @@
          * @type {plat.ui.animations.IAnimator}
          * 
          * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
 
         /**
          * @name _orientation
@@ -446,22 +446,22 @@
          * @returns {void}
          */
         loaded(): void {
-            var $utils = this._utils,
+            var _utils = this._utils,
                 context = this.context;
-            if (!$utils.isArray(context)) {
+            if (!_utils.isArray(context)) {
                 var _Exception = this._Exception;
                 _Exception.warn('The context of a ' + this.type + ' must be an Array.', _Exception.CONTEXT);
                 return;
             }
 
-            var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
-                options = optionObj.value || <IDrawerControllerOptions>{},
+            var optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
+                options = optionObj.value || <ICarouselOptions>{},
                 orientation = this._orientation = options.orientation || 'horizontal',
                 type = options.type || 'track',
                 index = options.index;
 
             this.dom.addClass(this.element, __Plat + orientation);
-            index = $utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
+            index = _utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
             // reset index in case Bind is setting the value
             this._index = 0;
             this._onLoad = () => {
@@ -672,12 +672,12 @@
                     this._onLoad();
                 }
             }).catch(() => {
-                    var _Exception = this._Exception;
+                var _Exception = this._Exception;
                 _Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.',
                     _Exception.CONTROL);
-                    this._loaded = false;
-                    return;
-                });
+                this._loaded = false;
+                return;
+            });
         }
 
         /**
@@ -727,12 +727,12 @@
          * @returns {void}
          */
         protected _initializeTap(): void {
-            var $document = this._document,
+            var _document = this._document,
                 element = this.element,
-                backArrowContainer = $document.createElement('div'),
-                forwardArrowContainer = $document.createElement('div'),
-                backArrow = $document.createElement('span'),
-                forwardArrow = $document.createElement('span');
+                backArrowContainer = _document.createElement('div'),
+                forwardArrowContainer = _document.createElement('div'),
+                backArrow = _document.createElement('span'),
+                forwardArrow = _document.createElement('span');
 
             backArrowContainer.className = __Plat + 'back-arrow';
             forwardArrowContainer.className = __Plat + 'forward-arrow';
@@ -922,16 +922,16 @@
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
-                        this.goToNext();
+                        this._utils.requestAnimationFrame(this.goToNext, this);
                         return;
                     }
                 } else if (this._index > 0) {
-                    this.goToPrevious();
+                    this._utils.requestAnimationFrame(this.goToPrevious, this);
                     return;
                 }
             }
 
-            this._reset();
+            this._utils.requestAnimationFrame(this._reset, this);
         }
 
         /**
@@ -949,7 +949,9 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
+            this._utils.requestAnimationFrame(() => {
+                this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
+            });
         }
 
         /**
@@ -1097,14 +1099,14 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this._window,
+                _window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }

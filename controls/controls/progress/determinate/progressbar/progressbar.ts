@@ -41,7 +41,7 @@
         protected _window: Window = plat.acquire(__Window);
 
         /**
-         * @name $utils
+         * @name _utils
          * @memberof platui.ProgressBar
          * @kind property
          * @access protected
@@ -49,9 +49,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _barElement
@@ -233,8 +233,8 @@
          */
         protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
-                $document: Document = plat.acquire(__Document),
-                body = $document.body;
+                _document: Document = plat.acquire(__Document),
+                body = _document.body;
 
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
@@ -255,14 +255,14 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this._window,
+                _window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }

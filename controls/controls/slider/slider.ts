@@ -46,9 +46,9 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
          * @name _animator
@@ -59,9 +59,9 @@
          * @type {plat.ui.animations.IAnimator}
          * 
          * @description
-         * Reference to the {@link plat.ui.animations.IAnimator|IAnimator} injectable.
+         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.IAnimator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
 
         /**
          * @name templateString
@@ -184,6 +184,19 @@
          * The maximum slider offset.
          */
         protected _maxOffset: number;
+
+        /**
+         * @name _sliderOffset
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The slider's offset left.
+         */
+        protected _sliderOffset: number;
 
         /**
          * @name _increment
@@ -446,6 +459,49 @@
         }
 
         /**
+         * @name _initializeEvents
+         * @memberof platui.Slider
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Initialize the proper tracking events.
+         * 
+         * @param {string} orientation The orientation of the control.
+         * 
+         * @returns {void}
+         */
+        protected _initializeEvents(orientation: string): void {
+            var element = this.element,
+                trackFn: EventListener = this._track,
+                track: string,
+                reverseTrack: string;
+
+            switch (orientation) {
+                case 'horizontal':
+                    track = __$track + 'right';
+                    reverseTrack = __$track + 'left';
+                    break;
+                case 'vertical':
+                    track = __$track + 'down';
+                    reverseTrack = __$track + 'up';
+                    break;
+                default:
+                    return;
+            }
+
+            this.addEventListener(element, __$touchstart, this._touchStart, false);
+            this.addEventListener(element, track, trackFn, false);
+            this.addEventListener(element, reverseTrack, trackFn, false);
+            this.addEventListener(element, __$trackend, this._touchEnd, false);
+            this.addEventListener(this._window, 'resize', () => {
+                this._setLength();
+                this._setIncrement();
+                this._setKnob();
+            }, false);
+        }
+
+        /**
          * @name _touchStart
          * @memberof platui.Slider
          * @kind function
@@ -464,6 +520,39 @@
                 y: ev.clientY,
                 value: this.value
             };
+
+            var target = ev.target;
+            if (target === this._knob) {
+                return;
+            }
+
+            var offset: number;
+            switch (this._orientation) {
+                case 'horizontal':
+                    if (target === this.element) {
+                        offset = this._reversed ? this._maxOffset - (ev.offsetX - this._sliderOffset) : ev.offsetX - this._sliderOffset;
+                    } else if (target === this._slider) {
+                        offset = this._reversed ? this._knobOffset - ev.offsetX : ev.offsetX;
+                    } else {
+                        offset = this._reversed ? this._maxOffset - ev.offsetX : ev.offsetX;
+                    }
+                    break;
+                case 'vertical':
+                    if (target === this.element) {
+                        offset = this._reversed ? ev.offsetY - this._sliderOffset : this._maxOffset - (ev.offsetY - this._sliderOffset);
+                    } else if (target === this._slider) {
+                        offset = this._reversed ? ev.offsetY : this._knobOffset - ev.offsetY;
+                    } else {
+                        offset = this._reversed ? ev.offsetY : this._maxOffset - ev.offsetY;
+                    }
+                    break;
+                default:
+                    return;
+            }
+
+            this._utils.requestAnimationFrame(() => {
+                this._knobOffset = this._setSliderProperties(offset);
+            });
         }
 
         /**
@@ -483,19 +572,21 @@
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
-            if (this._lastTouch.value !== this.value) {
-                this._trigger('change');
-            }
+            this._utils.requestAnimationFrame(() => {
+                if (this._lastTouch.value !== this.value) {
+                    this._trigger('change');
+                }
 
-            if (newOffset < 0) {
-                this._knobOffset = 0;
-                return;
-            } else if (newOffset > maxOffset) {
-                this._knobOffset = maxOffset;
-                return;
-            }
+                if (newOffset < 0) {
+                    this._knobOffset = 0;
+                    return;
+                } else if (newOffset > maxOffset) {
+                    this._knobOffset = maxOffset;
+                    return;
+                }
 
-            this._knobOffset = newOffset;
+                this._knobOffset = newOffset;
+            });
         }
 
         /**
@@ -512,71 +603,49 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            var length = this._calculateOffset(ev),
-                maxOffset = this._maxOffset,
-                value: number;
-
-            if (length < 0) {
-                value = this.min;
-                if (value - this.value >= 0) {
-                    return;
-                }
-                length = 0;
-            } else if (length > maxOffset) {
-                value = this.max;
-                if (value - this.value <= 0) {
-                    return;
-                }
-                length = maxOffset;
-            } else {
-                value = this._calculateValue(length);
-            }
-
-            this._setValue(value, false, true);
-            this._slider.style[<any>this._lengthProperty] = length + 'px';
+            this._utils.requestAnimationFrame(() => {
+                this._setSliderProperties(this._calculateOffset(ev));
+            });
         }
 
         /**
-         * @name _initializeEvents
+         * @name _setSliderProperties
          * @memberof platui.Slider
          * @kind function
          * @access protected
          * 
          * @description
-         * Initialize the proper tracking events.
+         * Set the {@link platui.Slider|Slider's} knob position and corresponding value.
          * 
-         * @param {string} orientation The orientation of the control.
+         * @param {number} position The position value to set the knob to prior to 
+         * normalization.
          * 
-         * @returns {void}
+         * @returns {number} The normalized position value.
          */
-        protected _initializeEvents(orientation: string): void {
-            var knob = this._knob,
-                trackFn: EventListener = this._track,
-                track: string,
-                reverseTrack: string;
+        protected _setSliderProperties(position: number): number {
+            var maxOffset = this._maxOffset,
+                value: number;
 
-            switch (orientation) {
-                case 'horizontal':
-                    track = __$track + 'right';
-                    reverseTrack = __$track + 'left';
-                    break;
-                case 'vertical':
-                    track = __$track + 'down';
-                    reverseTrack = __$track + 'up';
-                    break;
-                default:
+            if (position <= 0) {
+                value = this.min;
+                if (value - this.value >= 0) {
                     return;
+                }
+                position = 0;
+            } else if (position >= maxOffset) {
+                value = this.max;
+                if (value - this.value <= 0) {
+                    return;
+                }
+                position = maxOffset;
+            } else {
+                value = this._calculateValue(position);
             }
 
-            this.addEventListener(knob, __$touchstart, this._touchStart, false);
-            this.addEventListener(knob, track, trackFn, false);
-            this.addEventListener(knob, reverseTrack, trackFn, false);
-            this.addEventListener(knob, __$trackend, this._touchEnd, false);
-            this.addEventListener(this._window, 'resize', () => {
-                this._setLength();
-                this._setIncrement();
-                this._setKnob();
-            }, false);
+            this._setValue(value, false, true);
+            this._slider.style[<any>this._lengthProperty] = position + 'px';
+
+            return position;
         }
 
         /**
@@ -663,10 +732,12 @@
                 case 'horizontal':
                     this._lengthProperty = 'width';
                     this._maxOffset = el.offsetWidth;
+                    this._sliderOffset = el.offsetLeft;
                     break;
                 case 'vertical':
                     this._lengthProperty = 'height';
                     this._maxOffset = el.offsetHeight;
+                    this._sliderOffset = el.offsetTop;
                     break;
                 default:
                     var _Exception = this._Exception;
@@ -777,7 +848,7 @@
          * @returns {void}
          */
         protected _trigger(event: string): void {
-            var domEvent: plat.ui.IDomEventInstance = plat.acquire(__DomEventInstance);
+            var domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
             domEvent.initialize(this.element, event);
             domEvent.trigger();
         }
@@ -818,14 +889,14 @@
 
             var clone = <HTMLElement>element.cloneNode(true),
                 regex = /\d+(?!\d+|%)/,
-                $window = this._window,
+                _window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 dependencyValue: string;
 
             shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>$window.getComputedStyle(element)))[dependencyProperty]))) {
+            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
                     shallowCopy.style.setProperty('display', 'block', 'important');
                 }

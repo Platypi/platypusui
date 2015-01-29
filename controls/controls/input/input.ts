@@ -44,7 +44,7 @@
         options: plat.observable.IObservableProperty<IInputOptions>;
 
         /**
-         * @name $utils
+         * @name _utils
          * @memberof platui.Input
          * @kind property
          * @access protected
@@ -52,12 +52,12 @@
          * @type {plat.IUtils}
          * 
          * @description
-         * Reference to the {@link plat.IUtils|IUtils} injectable.
+         * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.IUtils = plat.acquire(__Utils);
+        protected _utils: plat.Utils = plat.acquire(__Utils);
 
         /**
-         * @name $compat
+         * @name _compat
          * @memberof platui.Input
          * @kind property
          * @access protected
@@ -65,12 +65,12 @@
          * @type {plat.ICompat}
          * 
          * @description
-         * Reference to the {@link plat.ICompat|ICompat} injectable.
+         * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.ICompat = plat.acquire(__Compat);
+        protected _compat: plat.Compat = plat.acquire(__Compat);
 
         /**
-         * @name $regex
+         * @name _regex
          * @memberof platui.Input
          * @kind property
          * @access protected
@@ -78,9 +78,9 @@
          * @type {plat.expressions.IRegex}
          * 
          * @description
-         * Reference to the {@link plat.expressions.IRegex|IRegex} injectable.
+         * Reference to the {@link plat.expressions.Regex|Regex} injectable.
          */
-        protected _regex: plat.expressions.IRegex = plat.acquire(__Regex);
+        protected _regex: plat.expressions.Regex = plat.acquire(__Regex);
 
         /**
          * @name _imageElement
@@ -307,7 +307,7 @@
                 hasPlaceholder = false,
                 attrRegex = /plat-(?!control|hide|options)/,
                 attribute: Attr,
-                $utils = this._utils,
+                _utils = this._utils,
                 name: string;
 
             for (var i = 0; i < length; ++i) {
@@ -332,7 +332,7 @@
             }
 
             var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!$utils.isEmpty(placeholder)) {
+            if (!_utils.isEmpty(placeholder)) {
                 input.placeholder = placeholder;
             }
         }
@@ -610,8 +610,8 @@
          */
         protected _addTextEventListener(): void {
             var input = this._inputElement,
-                $compat = this._compat,
-                $utils = this._utils,
+                _compat = this._compat,
+                _utils = this._utils,
                 composing = false,
                 timeout: plat.IRemoveListener,
                 eventListener = () => {
@@ -622,17 +622,17 @@
                     this._onInput();
                 },
                 postponedEventListener = () => {
-                    if ($utils.isFunction(timeout)) {
+                    if (_utils.isFunction(timeout)) {
                         return;
                     }
 
-                    timeout = $utils.postpone(() => {
+                    timeout = _utils.postpone(() => {
                         eventListener();
                         timeout = null;
                     });
                 };
 
-            if ($utils.isUndefined($compat.ANDROID)) {
+            if (_utils.isUndefined(_compat.ANDROID)) {
                 this.addEventListener(input, 'compositionstart', () => (composing = true), false);
                 this.addEventListener(input, 'compositionend', () => {
                     composing = false;
@@ -640,7 +640,7 @@
                 }, false);
             }
 
-            if ($compat.hasEvent('input')) {
+            if (_compat.hasEvent('input')) {
                 this.addEventListener(input, 'input', eventListener, false);
             } else {
                 this.addEventListener(input, 'keydown', (ev: KeyboardEvent) => {
