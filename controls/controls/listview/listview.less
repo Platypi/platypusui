@@ -12,7 +12,11 @@
     .plat-listview-viewport {
         .fill();
         .box-sizing(border-box);
+        position: absolute;
+        top: 0;
+        left: 0;
         z-index: 1;
+        overflow: hidden;
         
         .plat-scroll-container {
             .fill();
@@ -27,12 +31,14 @@
 
     &.plat-vertical {
         .plat-ring-constants() {
-            height: 2em;
+            height: 2.5em;
             width: 100%;
 
             .plat-ring {
                 height: 2em;
                 width: 2em;
+                margin-top: 0.25em;
+                margin-bottom: 0.25em;
                 position: absolute;
                 .calc(left, '50% - 1em');
 

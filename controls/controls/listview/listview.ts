@@ -862,6 +862,7 @@
 
             if (!this._utils.isNull(this._animationThenable)) {
                 this._animationThenable.cancel().then(() => {
+                    this._animationThenable = null;
                     this._refreshState = 2;
                 });
                 return;
@@ -898,7 +899,7 @@
                 viewport = this._viewport,
                 refreshProgressRing = this._refreshProgressRing,
                 refreshState = state === 3,
-                resetTranslation = 'translate3d(0,0,0)';
+                resetTranslation: string;
 
             if (refreshState) {
                 switch (this._orientation) {
@@ -909,32 +910,32 @@
                         resetTranslation = 'translate3d(0,' + refreshProgressRing.offsetHeight + 'px,0)';
                         break;
                 }
+            } else {
+                resetTranslation = this._preTransform;
             }
 
             animationOptions[this._transform] = resetTranslation;
-            this._utils.requestAnimationFrame(() => {
+            this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
+                this._refreshState = 4;
+                this._animationThenable = null;
+                if (refreshState) {
+                    return this._Promise.resolve(this._refresh());
+                }
+
+                dom.removeClass(viewport, 'plat-refresh-prep');
+                return this._Promise.resolve();
+            }).then(() => {
+                if (!refreshState) {
+                    this._refreshState = 0;
+                    return;
+                }
+
+                dom.removeClass(refreshProgressRing, 'plat-play');
+                animationOptions[this._transform] = this._preTransform;
                 this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
-                    this._refreshState = 4;
+                    this._refreshState = 0;
                     this._animationThenable = null;
-                    if (refreshState) {
-                        return this._Promise.resolve(this._refresh());
-                    }
-
                     dom.removeClass(viewport, 'plat-refresh-prep');
-                    return this._Promise.resolve();
-                }).then(() => {
-                    if (!refreshState) {
-                        this._refreshState = 0;
-                        return;
-                    }
-
-                    dom.removeClass(refreshProgressRing, 'plat-play');
-                    animationOptions[this._transform] = 'translate3d(0,0,0)';
-                    this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
-                        this._refreshState = 0;
-                        this._animationThenable = null;
-                        dom.removeClass(viewport, 'plat-refresh-prep');
-                    });
                 });
             });
         }
@@ -977,15 +978,16 @@
          */
         protected _calculateRefreshTranslation(ev: plat.ui.IGestureEvent): string {
             var isHorizontal = this._orientation === 'horizontal',
+                progressRing = this._refreshProgressRing,
                 diff: number,
                 threshold: number;
 
             if (isHorizontal) {
                 diff = ev.clientX - this._lastTouch.x;
-                threshold = this._refreshProgressRing.offsetWidth;
+                threshold = progressRing.offsetWidth;
             } else {
                 diff = ev.clientY - this._lastTouch.y;
-                threshold = this._refreshProgressRing.offsetHeight;
+                threshold = progressRing.offsetHeight;
             }
 
             if (diff < 0) {
@@ -995,9 +997,14 @@
                 var element = this.element;
                 this.dom.addClass(this._viewport, 'plat-refresh-prep');
                 element.insertBefore(this._refreshProgressRing, element.firstElementChild);
-            } else if (diff >= threshold && this._refreshState < 3) {
-                this._refreshState = 3;
-                this.dom.addClass(this._refreshProgressRing, 'plat-play');
+            } else if (diff >= threshold) {
+                if (this._refreshState < 3) {
+                    this._refreshState = 3;
+                    this.dom.addClass(progressRing, 'plat-play');
+                }
+            } else if (this._refreshState === 3) {
+                this._refreshState = 2;
+                this.dom.removeClass(progressRing, 'plat-play');
             }
 
             if (isHorizontal) {
@@ -1021,15 +1028,15 @@
             var style = this.element.style,
                 isUndefined = this._utils.isUndefined;
 
-            if (isUndefined(this._preTransform = style.transform)) {
-                var vendorPrefix = this._compat.vendorPrefix;
-                if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                    this._transform = vendorPrefix.lowerCase + 'Transform';
-                } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                    this._transform = vendorPrefix.lowerCase + 'Transform';
-                }
-            } else {
+            if (!isUndefined(this._preTransform = style.transform)) {
                 this._transform = 'transform';
+            }
+
+            var vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
+            } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
             }
         }
 
