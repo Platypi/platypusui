@@ -12,12 +12,16 @@
     .plat-listview-viewport {
         .fill();
         .box-sizing(border-box);
-        background-color: @viewport-background-color;
         z-index: 1;
-
-        .plat-listview-container {
+        
+        .plat-scroll-container {
             .fill();
             .box-sizing(border-box);
+
+            .plat-container {
+                .fill();
+                .box-sizing(border-box);
+            }
         }
     }
 
@@ -41,18 +45,22 @@
         }
 
         .plat-listview-viewport {
-            .plat-listview-container {
+            .plat-scroll-container {
                 .scroll(y);
 
-                .plat-incremental {
-                    .plat-ring-constants();
-                    position: relative;
+                .plat-container {
+                    .plat-incremental {
+                        .plat-ring-constants();
+                        position: relative;
+                    }
                 }
             }
 
             &.plat-refresh-prep {
-                .plat-listview-container {
-                    overflow: hidden;
+                .plat-scroll-container {
+                    .plat-container {
+                        overflow: hidden;
+                    }
                 }
             }
             
@@ -90,12 +98,20 @@
                     }
                 }
             }
+
+            & + .plat-listview-viewport {
+                background-color: @viewport-background-color;
+            }
         }
     }
 
     &.plat-horizontal {
-        .plat-listview-container {
+        .plat-scroll-container {
             .scroll(x);
+
+            .plat-container {
+
+            }
         }
     }
 }

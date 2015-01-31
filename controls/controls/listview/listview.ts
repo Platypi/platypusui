@@ -23,7 +23,12 @@
          * @description
          * The HTML template represented as a string.
          */
-        templateString = '<div class="plat-listview-viewport"><div class="plat-listview-container"></div></div>\n';
+        templateString =
+        '<div class="plat-listview-viewport">\n' +
+        '    <div class="plat-scroll-container">\n' +
+        '        <div class="plat-container"></div>\n' +
+        '    </div>\n' +
+        '</div>\n';
 
         /**
          * @name options
@@ -151,9 +156,22 @@
          * @type {HTMLElement}
          * 
          * @description
-         * An element wrapping the item container to be used for pull-to-refresh.
+         * An element wrapping the scrollable container to be used for pull-to-refresh.
          */
         protected _viewport: HTMLElement;
+
+        /**
+         * @name _scrollContainer
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * An element wrapping the item container for scrolling purposes.
+         */
+        protected _scrollContainer: HTMLElement;
 
         /**
          * @name _templates
@@ -388,6 +406,19 @@
         protected _transform: string;
 
         /**
+         * @name _preTransform
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The value of the inline transform property prior to the Drawer manipulating it.
+         */
+        protected _preTransform: string;
+
+        /**
          * @name _animationThenable
          * @memberof platui.Listview
          * @kind property
@@ -512,6 +543,7 @@
                 _utils = this._utils,
                 isString = _utils.isString,
                 viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
+                scrollContainer = this._scrollContainer = <HTMLElement>viewport.firstElementChild,
                 orientation = this._orientation = options.orientation || 'vertical',
                 loading = this._loading = options.loading,
                 requestItems = options.onItemsRequested,
@@ -519,7 +551,7 @@
                 itemTemplate = options.itemTemplate,
                 _Exception: plat.IExceptionStatic;
 
-            this._container = <HTMLElement>viewport.firstElementChild;
+            this._container = <HTMLElement>scrollContainer.firstElementChild;
             this.dom.addClass(this.element, __Plat + orientation);
 
             if (!isString(itemTemplate)) {
@@ -573,10 +605,7 @@
          */
         render(index?: number, count?: number): void {
             var _utils = this._utils,
-                isNumber = _utils.isNumber,
-                bindableTemplates = this.bindableTemplates,
-                controls = this.controls,
-                container = this._container;
+                isNumber = _utils.isNumber;
 
             if (!isNumber(index)) {
                 index = this.count;
@@ -594,7 +623,7 @@
             }
 
             var key = this._itemTemplate;
-            if (_utils.isUndefined(bindableTemplates.templates[key])) {
+            if (_utils.isUndefined(this.bindableTemplates.templates[key])) {
                 return;
             }
 
@@ -679,7 +708,7 @@
             this._requestItems = (<Function>controlProperty.value).bind(controlProperty.control);
             switch (this._loading) {
                 case 'infinite':
-                    this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
+                    this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._handleScroll, false);
 
                     if (hideRing) {
                         return;
@@ -749,7 +778,7 @@
                         if (moreItemsRemain === false) {
                             return;
                         }
-                        this._removeScroll = this.addEventListener(this._container, 'scroll', this._handleScroll, false);
+                        this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._handleScroll, false);
                     });
                 }
             }
@@ -924,7 +953,7 @@
          * @returns {void}
          */
         protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
-            if (this._refreshState < 2 || this._container.scrollTop > 0) {
+            if (this._refreshState < 2 || this._scrollContainer.scrollTop > 0) {
                 return;
             }
 
@@ -992,11 +1021,11 @@
             var style = this.element.style,
                 isUndefined = this._utils.isUndefined;
 
-            if (isUndefined(style.transform)) {
+            if (isUndefined(this._preTransform = style.transform)) {
                 var vendorPrefix = this._compat.vendorPrefix;
-                if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
+                if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                     this._transform = vendorPrefix.lowerCase + 'Transform';
-                } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
+                } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
                     this._transform = vendorPrefix.lowerCase + 'Transform';
                 }
             } else {
