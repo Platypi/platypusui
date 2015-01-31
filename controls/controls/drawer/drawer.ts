@@ -2092,21 +2092,19 @@
          */
         protected _setTransform(): void {
             var style = this.element.style,
-                isUndefined = this._utils.isUndefined,
-                transform: string;
+                isUndefined = this._utils.isUndefined;
 
-            if (isUndefined(style.transform)) {
-                var vendorPrefix = this._compat.vendorPrefix;
-                if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
-                } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
-                }
-            } else {
-                transform = this._transform = 'transform';
+            if (!isUndefined(this._preTransform = style.transform)) {
+                this._transform = 'transform';
+                return;
             }
 
-            this._preTransform = style[<any>transform];
+            var vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
+            } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
+            }
         }
 
         /**

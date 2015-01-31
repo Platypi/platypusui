@@ -1030,15 +1030,16 @@
             var style = this.element.style,
                 isUndefined = this._utils.isUndefined;
 
-            if (isUndefined(style.transform)) {
-                var vendorPrefix = this._compat.vendorPrefix;
-                if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                    this._transform = vendorPrefix.lowerCase + 'Transform';
-                } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                    this._transform = vendorPrefix.lowerCase + 'Transform';
-                }
-            } else {
+            if (!isUndefined(style.transform)) {
                 this._transform = 'transform';
+                return;
+            }
+
+            var vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
+            } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
             }
         }
 
