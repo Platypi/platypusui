@@ -886,16 +886,15 @@
          */
         protected _touchEndRefresh(ev: plat.ui.IGestureEvent): void {
             var state = this._refreshState,
-                hasMoved = this._hasMoved,
-                dom = this.dom;
+                hasMoved = this._hasMoved;
 
-            this._refreshState = 0;
             this._hasMoved = false;
             if (state < 2 || !hasMoved) {
                 return;
             }
 
             var animationOptions: plat.IObject<string> = {},
+                dom = this.dom,
                 viewport = this._viewport,
                 refreshProgressRing = this._refreshProgressRing,
                 refreshState = state === 3,
@@ -917,6 +916,7 @@
             animationOptions[this._transform] = resetTranslation;
             this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
                 this._refreshState = 4;
+                this._hasMoved = false;
                 this._animationThenable = null;
                 if (refreshState) {
                     return this._Promise.resolve(this._refresh());
@@ -954,7 +954,8 @@
          * @returns {void}
          */
         protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
-            if (this._refreshState < 2 || this._scrollContainer.scrollTop > 0) {
+            var refreshState = this._refreshState;
+            if (this._scrollContainer.scrollTop > 0 || !(refreshState === 2 || refreshState === 3)) {
                 return;
             }
 
