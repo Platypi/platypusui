@@ -38,7 +38,7 @@
          */
         templateString =
         '<div class="plat-range-container">\n' +
-        '    <div class="plat-slider-offset">\n' +
+        '    <div class="plat-range-track">\n' +
         '        <div class="plat-lower-knob"></div>\n' +
         '        <div class="plat-upper-knob"></div>\n' +
         '    </div>\n' +
@@ -344,6 +344,19 @@
         protected _isSelf = false;
 
         /**
+         * @name _touchState
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * An enum denoting the current touch state of the user.
+         */
+        protected _touchState = 0;
+
+        /**
          * @name _cloneAttempts
          * @memberof platui.Range
          * @kind property
@@ -542,6 +555,11 @@
                 } else {
                     return;
                 }
+            } else if (this._touchState === 2) {
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set value of ' + this.type +
+                    '\'s lower knob while the user is modifying the value.', _Exception.CONTROL);
+                return;
             }
 
             this._setLower(value, true);
@@ -577,6 +595,11 @@
                 } else {
                     return;
                 }
+            } else if (this._touchState === 3) {
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set value of ' + this.type +
+                    '\'s upper knob while the user is modifying the value.', _Exception.CONTROL);
+                return;
             }
 
             this._setUpper(value, true);
@@ -598,6 +621,11 @@
             this.observe(context, 'lower', (newValue: number, oldValue: number) => {
                 if (this._isSelf || newValue === oldValue) {
                     return;
+                } else if (this._touchState === 2) {
+                    var _Exception = this._Exception;
+                    _Exception.warn('Cannot set value of ' + this.type +
+                        ' while the user is modifying the value.', _Exception.CONTROL);
+                    return;
                 }
 
                 this.setLower(newValue);
@@ -605,6 +633,11 @@
 
             this.observe(context, 'upper', (newValue: number, oldValue: number) => {
                 if (this._isSelf || newValue === oldValue) {
+                    return;
+                } else if (this._touchState === 3) {
+                    var _Exception = this._Exception;
+                    _Exception.warn('Cannot set value of ' + this.type +
+                        ' while the user is modifying the value.', _Exception.CONTROL);
                     return;
                 }
 
@@ -654,6 +687,8 @@
             this.addEventListener(lowerKnob, reverseTrack, trackLower, false);
             this.addEventListener(upperKnob, track, trackUpper, false);
             this.addEventListener(upperKnob, reverseTrack, trackUpper, false);
+            this.addEventListener(lowerKnob, __$touchend, touchEnd, false);
+            this.addEventListener(upperKnob, __$touchend, touchEnd, false);
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
             this.addEventListener(this._window, 'resize', () => {
@@ -678,9 +713,12 @@
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
-            if (ev.touches.length > 1) {
+            var touchState = this._touchState;
+            if (touchState === 1 || touchState === 2 || touchState === 3) {
                 return;
             }
+
+            this._touchState = 1;
 
             var target = <HTMLElement>ev.currentTarget,
                 lastTouch = this._lastTouch;
@@ -715,6 +753,14 @@
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
+            var touchState = this._touchState;
+            if (touchState === 0 || touchState === 4) {
+                this._touchState = 0;
+                return;
+            }
+
+            this._touchState = 4;
+
             var lastTouch = this._lastTouch,
                 target = ev.currentTarget;
 
@@ -722,18 +768,22 @@
                 return;
             }
 
-            var isLower = target === this._lowerKnob,
-                newOffset = this._calculateOffset(ev, isLower);
+            this._utils.requestAnimationFrame(() => {
+                this._touchState = 0;
 
-            if (isLower) {
-                if (lastTouch.value !== this.lower) {
+                var isLower = target === this._lowerKnob,
+                    newOffset = this._calculateOffset(ev, isLower);
+
+                if (isLower) {
+                    if (lastTouch.value !== this.lower) {
+                        this._trigger('change');
+                    }
+                } else if (lastTouch.value !== this.upper) {
                     this._trigger('change');
                 }
-            } else if (lastTouch.value !== this.upper) {
-                this._trigger('change');
-            }
 
-            this._setOffset(newOffset, isLower);
+                this._setOffset(newOffset, isLower);
+            });
         }
 
         /**
@@ -779,6 +829,15 @@
          * @returns {void}
          */
         protected _trackLower(ev: plat.ui.IGestureEvent): void {
+            var touchState = this._touchState;
+            if (touchState !== 2) {
+                if (touchState === 1) {
+                    this._touchState = 2;
+                } else if (touchState === 0 || touchState === 3) {
+                    return;
+                }
+            }
+
             var maxOffset = this._maxOffset,
                 position = this._calculateOffset(ev, true),
                 value: number;
@@ -825,6 +884,15 @@
          * @returns {void}
          */
         protected _trackUpper(ev: plat.ui.IGestureEvent): void {
+            var touchState = this._touchState;
+            if (touchState !== 3) {
+                if (touchState === 1) {
+                    this._touchState = 3;
+                } else if (touchState === 0 || touchState === 2) {
+                    return;
+                }
+            }
+
             var maxOffset = this._maxOffset,
                 position = this._calculateOffset(ev, false),
                 value: number;

@@ -76,7 +76,7 @@
          */
         templateString =
         '<div class="plat-slider-container">\n' +
-        '    <div class="plat-slider-offset">\n' +
+        '    <div class="plat-slider-track">\n' +
         '        <div class="plat-knob"></div>\n' +
         '    </div>\n' +
         '</div>\n';
@@ -278,6 +278,19 @@
         protected _loaded = false;
 
         /**
+         * @name _touchState
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * An enum denoting the current touch state of the user.
+         */
+        protected _touchState = 0;
+
+        /**
          * @name _lengthProperty
          * @memberof platui.Slider
          * @kind property
@@ -429,6 +442,13 @@
             }
 
             if (this._loaded) {
+                if (this._touchState === 1) {
+                    var _Exception = this._Exception;
+                    _Exception.warn('Cannot set value of ' + this.type +
+                        ' while the user is modifying the value.', _Exception.CONTROL);
+                    return;
+                }
+
                 this._setValue(newValue, true, false);
                 return;
             }
@@ -453,6 +473,11 @@
         setValue(value: number): void {
             if (!this._utils.isNumber(value)) {
                 return;
+            } else if (this._touchState === 1) {
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set value of ' + this.type +
+                    ' while the user is modifying the value.', _Exception.CONTROL);
+                return;
             }
 
             this._setValue(value, true, true);
@@ -473,7 +498,8 @@
          */
         protected _initializeEvents(orientation: string): void {
             var element = this.element,
-                trackFn: EventListener = this._track,
+                trackFn = this._track,
+                touchEnd = this._touchEnd,
                 track: string,
                 reverseTrack: string;
 
@@ -493,7 +519,8 @@
             this.addEventListener(element, __$touchstart, this._touchStart, false);
             this.addEventListener(element, track, trackFn, false);
             this.addEventListener(element, reverseTrack, trackFn, false);
-            this.addEventListener(element, __$trackend, this._touchEnd, false);
+            this.addEventListener(element, __$touchend, touchEnd, false);
+            this.addEventListener(element, __$trackend, touchEnd, false);
             this.addEventListener(this._window, 'resize', () => {
                 this._setLength();
                 this._setIncrement();
@@ -515,6 +542,12 @@
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
+            if (this._touchState === 1) {
+                return;
+            }
+
+            this._touchState = 1;
+
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY,
@@ -569,10 +602,19 @@
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
+            if (this._touchState !== 1) {
+                this._touchState = 0;
+                return;
+            }
+
+            this._touchState = 2;
+
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
             this._utils.requestAnimationFrame(() => {
+                this._touchState = 0;
+
                 if (this._lastTouch.value !== this.value) {
                     this._trigger('change');
                 }
@@ -603,6 +645,10 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
+            if (this._touchState === 0) {
+                return;
+            }
+
             this._utils.requestAnimationFrame(() => {
                 this._setSliderProperties(this._calculateOffset(ev));
             });

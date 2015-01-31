@@ -31,7 +31,7 @@
         .box-sizing(content-box);
         .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.13));
 
-        .plat-slider-offset {
+        .plat-slider-track {
             position: absolute;
             background-color: @neutralColorDark;
             overflow: visible;
@@ -64,25 +64,25 @@
             left: @knob-radius;
             height: @thickness;
 
-            .plat-slider-offset {
+            .plat-slider-track {
                 width: 0;
                 height: 100%;
 
                 .plat-knob {
                     .calc(top; '@{half-thickness} - @{knob-radius}');
                 }
-            }
 
-            &.plat-transition {
-                .translateZ(0);
-                .transition(@horizontal-transition);
+                &.plat-transition {
+                    .translateZ(0);
+                    .transition(@horizontal-transition);
+                }
             }
         }
     }
 
     &.plat-horizontal {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 left: 0;
 
                 .plat-knob {
@@ -94,7 +94,7 @@
 
     &.plat-horizontal-reversed {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 right: 0;
 
                 .plat-knob {
@@ -113,25 +113,25 @@
             top: @knob-radius;
             width: @thickness;
 
-            .plat-slider-offset {
+            .plat-slider-track {
                 width: 100%;
                 height: 0;
 
                 .plat-knob {
                     .calc(left; '@{half-thickness} - @{knob-radius}');
                 }
-            }
 
-            &.plat-transition {
-                .translateZ(0);
-                .transition(@vertical-transition);
+                &.plat-transition {
+                    .translateZ(0);
+                    .transition(@vertical-transition);
+                }
             }
         }
     }
 
     &.plat-vertical {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 bottom: 0;
 
                 .plat-knob {
@@ -143,7 +143,7 @@
 
     &.plat-vertical-reversed {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 top: 0;
 
                 .plat-knob {
@@ -157,7 +157,7 @@
 
     &.slider-primary {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 background-color: @primaryColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@primaryColor, 10%));
             }
@@ -166,7 +166,7 @@
 
     &.slider-secondary {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 background-color: @secondaryColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@secondaryColor, 10%));
             }
@@ -175,7 +175,7 @@
 
     &.slider-success {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 background-color: @successColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@successColor, 10%));
             }
@@ -184,7 +184,7 @@
 
     &.slider-caution {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 background-color: @cautionColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@cautionColor, 10%));
             }
@@ -193,7 +193,7 @@
 
     &.slider-danger {
         .plat-slider-container {
-            .plat-slider-offset {
+            .plat-slider-track {
                 background-color: @dangerColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@dangerColor, 10%));
             }

@@ -787,17 +787,17 @@
         protected _isElastic: boolean;
 
         /**
-         * @name _inTouch
+         * @name _touchState
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
          * 
-         * @type {boolean}
+         * @type {number}
          * 
          * @description
-         * Whether or not the user is currently touching the screen.
+         * An enum denoting the current touch state of the user.
          */
-        protected _inTouch: boolean;
+        protected _touchState = 0;
 
         /**
          * @name _useContext
@@ -1065,6 +1065,20 @@
         protected _toggleDelay: plat.IRemoveListener;
 
         /**
+         * @name _animationThenable
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimationThenable<void>}
+         * 
+         * @description
+         * The most recent animation thenable. Used to cancel the current animation if another needs 
+         * to begin.
+         */
+        protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
+
+        /**
          * @name initialize
          * @memberof platui.DrawerController
          * @kind function
@@ -1184,7 +1198,8 @@
             }
 
             var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = _utils.postpone(() => {
+                this._toggleDelay = _utils.requestAnimationFrame(() => {
+                    this._touchState = 0;
                     this._toggleDelay = null;
                     this._open().then(resolve);
                 });
@@ -1222,7 +1237,8 @@
             }
 
             var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = _utils.postpone(() => {
+                this._toggleDelay = _utils.requestAnimationFrame(() => {
+                    this._touchState = 0;
                     this._toggleDelay = null;
                     this._close().then(resolve);
                 });
@@ -1348,7 +1364,8 @@
                     if (this._isOpen) {
                         return;
                     }
-                    this._toggleDelay = _utils.postpone(() => {
+                    this._toggleDelay = _utils.requestAnimationFrame(() => {
+                        this._touchState = 0;
                         this._toggleDelay = null;
                         this._open();
                     });
@@ -1356,7 +1373,8 @@
                 }
 
                 if (this._isOpen) {
-                    this._toggleDelay = _utils.postpone(() => {
+                    this._toggleDelay = _utils.requestAnimationFrame(() => {
+                        this._touchState = 0;
                         this._toggleDelay = null;
                         this._close();
                     });
@@ -1418,8 +1436,10 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            return <any>this._animator.animate(rootElement, __Transition, {
+            return this._animationThenable = this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
+            }).then(() => {
+                this._animationThenable = null;
             });
         }
 
@@ -1457,9 +1477,10 @@
                 transform = <any>this._transform;
 
             animationOptions[transform] = this._preTransform;
-            return this._animator.animate(rootElement, __Transition, {
+            return this._animationThenable = this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
             }).then(() => {
+                this._animationThenable = null;
                 if (this._isOpen) {
                     return;
                 }
@@ -1729,7 +1750,37 @@
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
-            this._inTouch = true;
+            if (this._touchState === 1) {
+                return;
+            }
+
+            if (!this._utils.isNull(this._animationThenable)) {
+                this._animationThenable.cancel().then(() => {
+                    this._animationThenable = null;
+                    this._initTouch(ev);
+                });
+            }
+
+            this._initTouch(ev);
+        }
+
+        /**
+         * @name _initTouch
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Indicates touch is in progress and sets the initial touch point 
+         * when the user touches the {@link platui.DrawerController|DrawerController}.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The touch event.
+         * 
+         * @returns {void}
+         */
+        protected _initTouch(ev: plat.ui.IGestureEvent): void {
+            this._touchState = 1;
+
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -1757,14 +1808,17 @@
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var inTouch = this._inTouch,
+            var noTouch = this._touchState !== 1,
                 hasSwiped = this._hasSwiped,
                 hasTapped = this._hasTapped;
 
-            this._inTouch = this._hasSwiped = this._hasTapped = false;
-            if (hasTapped || !inTouch || hasSwiped) {
+            this._hasSwiped = this._hasTapped = false;
+            if (hasTapped || noTouch || hasSwiped) {
+                this._touchState = 0;
                 return;
             }
+
+            this._touchState = 2;
 
             var distanceMoved: number;
             switch (this._position) {
@@ -1782,14 +1836,14 @@
 
             if (this._isRightDirection(distanceMoved)) {
                 if (Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
-                    this._utils.requestAnimationFrame(this.toggle, this);
+                    this.toggle();
                     return;
                 }
 
-                this._utils.requestAnimationFrame(this.reset, this);
+                this.reset();
             } else if (this._isElastic) {
                 if (Math.abs(distanceMoved) > 0) {
-                    this._utils.requestAnimationFrame(this.reset, this);
+                    this.reset();
                 }
             } else if (!this._isOpen) {
                 this._drawerElement.setAttribute(__Hide, '');
@@ -1812,6 +1866,10 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
+            if (this._touchState === 0) {
+                return;
+            }
+
             this._utils.requestAnimationFrame(() => {
                 this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
             });
@@ -1980,7 +2038,8 @@
                     this._determineTemplate(drawerArg.template);
 
                     if (this._preloadedValue) {
-                        this._toggleDelay = _utils.postpone(() => {
+                        this._toggleDelay = _utils.requestAnimationFrame(() => {
+                            this._touchState = 0;
                             this._toggleDelay = null;
                             this._open();
                         });
