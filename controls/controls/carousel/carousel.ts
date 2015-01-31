@@ -829,33 +829,39 @@
          * @returns {void}
          */
         protected _handleSwipe(ev: plat.ui.IGestureEvent): void {
-            var direction = ev.direction.primary;
-            this._hasSwiped = true;
+            var direction = ev.direction.primary,
+                hasSwiped = false;
 
             switch (direction) {
                 case 'left':
-                    if (this._orientation === 'horizontal') {
+                    if (this._orientation === 'horizontal' && this.index + 1 < this.context.length) {
+                        hasSwiped = true;
                         this.goToNext();
                     }
                     break;
                 case 'right':
-                    if (this._orientation === 'horizontal') {
+                    if (this._orientation === 'horizontal' && this.index - 1 >= 0) {
+                        hasSwiped = true;
                         this.goToPrevious();
                     }
                     break;
                 case 'up':
-                    if (this._orientation === 'vertical') {
+                    if (this._orientation === 'vertical' && this.index + 1 < this.context.length) {
+                        hasSwiped = true;
                         this.goToNext();
                     }
                     break;
                 case 'down':
-                    if (this._orientation === 'vertical') {
+                    if (this._orientation === 'vertical' && this.index - 1 >= 0) {
+                        hasSwiped = true;
                         this.goToPrevious();
                     }
                     break;
                 default:
                     return;
             }
+
+            this._hasSwiped = hasSwiped;
         }
 
         /**
@@ -878,17 +884,30 @@
 
             if (!this._utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
-                    this._inTouch = true;
-                    this._lastTouch = {
-                        x: ev.clientX,
-                        y: ev.clientY
-                    };
-
                     this._animationThenable = null;
+                    this._initTouch(ev);
                 });
                 return;
             }
 
+            this._initTouch(ev);
+        }
+
+        /**
+         * @name _initTouch
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Indicates touch is in progress and sets the initial touch point 
+         * when the user touches the {@link platui.Carousel|Carousel}.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The touch event.
+         * 
+         * @returns {void}
+         */
+        protected _initTouch(ev: plat.ui.IGestureEvent): void {
             this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
@@ -922,16 +941,16 @@
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
-                        this._utils.requestAnimationFrame(this.goToNext, this);
+                        this.goToNext();
                         return;
                     }
                 } else if (this._index > 0) {
-                    this._utils.requestAnimationFrame(this.goToPrevious, this);
+                    this.goToPrevious();
                     return;
                 }
             }
 
-            this._utils.requestAnimationFrame(this._reset, this);
+            this._reset();
         }
 
         /**
