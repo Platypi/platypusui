@@ -944,6 +944,19 @@
         protected _rootElement: HTMLElement;
 
         /**
+         * @name _clickEater
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * An HTMLElement to eat clicks when the {@link platui.Drawer|Drawer} is open.
+         */
+        protected _clickEater: HTMLElement;
+
+        /**
          * @name _type
          * @memberof platui.DrawerController
          * @kind property
@@ -1497,11 +1510,21 @@
          * @access protected
          * 
          * @description
-         * Adds all event listeners to the moving root element when tracking and closing an open {@link platui.Drawer|Drawer}.
+         * Adds a click eater and all event listeners to the click eater when tracking 
+         * and closing an open {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
         protected _addEventIntercepts(): void {
+            var clickEater = this._clickEater,
+                style = clickEater.style,
+                rootElement = this._rootElement;
+
+            // align clickEater to fill the rootElement
+            style.top = rootElement.scrollTop + 'px';
+            style.left = rootElement.scrollLeft + 'px';
+            rootElement.insertBefore(clickEater, null);
+
             if (this._isTap) {
                 this._addTapClose();
             }
@@ -1511,12 +1534,11 @@
             }
 
             if (this._isTrack) {
-                var rootElement = this._rootElement;
-                var touchStartRemover = this.addEventListener(rootElement, __$touchstart, this._touchStart, false),
-                    trackRemover = this.addEventListener(rootElement, __$track, this._track, false),
+                var touchStartRemover = this.addEventListener(clickEater, __$touchstart, this._touchStart, false),
+                    trackRemover = this.addEventListener(clickEater, __$track, this._track, false),
                     touchEnd = this._touchEnd,
-                    trackEndRemover = this.addEventListener(rootElement, __$trackend, touchEnd, false),
-                    touchEndRemover = this.addEventListener(rootElement, __$touchend, touchEnd, false);
+                    trackEndRemover = this.addEventListener(clickEater, __$trackend, touchEnd, false),
+                    touchEndRemover = this.addEventListener(clickEater, __$touchend, touchEnd, false);
 
                 this._openTrackRemover = () => {
                     touchStartRemover();
@@ -1534,13 +1556,14 @@
          * @access protected
          * 
          * @description
-         * Removes all event intercepts on the moving root element when closing an open {@link platui.Drawer|Drawer}.
+         * Removes the click eater and all event intercepts on the click eater when closing an open {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
         protected _removeEventIntercepts(): void {
-            var isFunction = this._utils.isFunction;
+            this._rootElement.removeChild(this._clickEater);
 
+            var isFunction = this._utils.isFunction;
             if (this._isTap && isFunction(this._openTapRemover)) {
                 this._openTapRemover();
                 this._openTapRemover = null;
@@ -1587,7 +1610,7 @@
          * @returns {void}
          */
         protected _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position, () => {
+            this._openSwipeRemover = this.addEventListener(this._clickEater, __$swipe + this._position, () => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1623,7 +1646,7 @@
          * @returns {void}
          */
         protected _addTapClose(): void {
-            this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
+            this._openTapRemover = this.addEventListener(this._clickEater, __$tap, () => {
                 this._hasTapped = true;
                 this.close();
             }, false);
@@ -1986,8 +2009,6 @@
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string): void {
-            this._setTransform();
-
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
                 (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent) => {
                     eventRemover();
@@ -2015,6 +2036,7 @@
                         return;
                     }
 
+                    this._setTransform();
                     this._addEventListeners(position.toLowerCase());
                     this._setOffset();
 
@@ -2091,7 +2113,7 @@
          * @returns {void}
          */
         protected _setTransform(): void {
-            var style = this.element.style,
+            var style = this._rootElement.style,
                 isUndefined = this._utils.isUndefined;
 
             if (!isUndefined(this._preTransform = style.transform)) {
@@ -2139,12 +2161,9 @@
                 return false;
             }
 
-            var dom = this.dom,
-                transitionPrep = 'plat-drawer-transition-prep';
-            if (!dom.hasClass(rootElement, transitionPrep)) {
-                dom.addClass(rootElement, transitionPrep);
-            }
-
+            this._clickEater = this._document.createElement('div');
+            this._clickEater.className = 'plat-clickeater';
+            this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
 
             this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
