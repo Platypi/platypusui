@@ -1025,7 +1025,7 @@
          * @returns {void}
          */
         protected _setTransform(): void {
-            var style = this.element.style,
+            var style = this._viewport.style,
                 isUndefined = this._utils.isUndefined;
 
             if (!isUndefined(this._preTransform = style.transform)) {
