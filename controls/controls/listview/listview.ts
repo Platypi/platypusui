@@ -431,7 +431,7 @@
         protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
 
         /**
-         * @name _nodeNameRegex
+         * @name _nodeNormalizeRegex
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -441,7 +441,7 @@
          * @description
          * A regular expression for normalizing a node name by removing potential special characters.
          */
-        protected _nodeNameRegex = /-|\.|_/g;
+        protected _nodeNormalizeRegex = /-|\.|_/g;
 
         /**
          * @name setClasses
@@ -509,20 +509,6 @@
                 this._parseTemplates(innerTemplate);
             }
         }
-
-        /**
-         * @name contextChanged
-         * @memberof platui.Listview
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Check new context, re-determine item templates, and kick off re-rendering.
-         * 
-         * @returns {void}
-         */
-        //contextChanged(): void {
-        //}
 
         /**
          * @name loaded
@@ -702,7 +688,7 @@
          * 
          * @returns {void}
          */
-        protected _determineLoading(requestItems: string, hideRing?: boolean): void {
+        protected _determineLoading(requestItems: string, showRing: boolean): void {
             var controlProperty = this.findProperty(requestItems) || <plat.IControlProperty>{};
             if (!this._utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
@@ -713,20 +699,23 @@
 
             this._requestItems = (<Function>controlProperty.value).bind(controlProperty.control);
 
+            var progressRingContainer: HTMLElement;
             switch (this._loading) {
                 case 'infinite':
-                    this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._handleScroll, false);
+                    this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._onScroll, false);
 
-                    if (hideRing) {
-                        return;
+                    if (showRing) {
+                        progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
+                        progressRingContainer.className = 'plat-infinite';
+                        progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
 
-                    var progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                    progressRingContainer.className = 'plat-infinite';
-                    progressRingContainer.insertBefore(this._generateProgressRing(), null);
+                    this.itemsLoaded.then(() => {
+                        this._handleScroll();
+                    });
                     break;
                 case 'incremental':
-                    var progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
+                    progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
                     progressRingContainer.className = 'plat-incremental';
                     progressRingContainer.setAttribute(__Hide, '');
                     progressRingContainer.insertBefore(this._generateProgressRing(), null);
@@ -738,7 +727,7 @@
         }
 
         /**
-         * @name _handleScroll
+         * @name _onScroll
          * @memberof platui.Listview
          * @kind function
          * @access protected
@@ -750,11 +739,12 @@
          * 
          * @returns {void}
          */
-        protected _handleScroll(ev: Event): void {
-            var target = <HTMLElement>ev.target,
+        protected _onScroll(ev?: Event): void {
+            var scrollContainer = this._scrollContainer,
                 scrollPos = this._scrollPosition,
-                isVertical = this._isVertical,
-                scrollPosition = isVertical ? target.scrollTop + target.offsetHeight : target.scrollLeft + target.offsetWidth;
+                scrollPosition = this._isVertical ?
+                    scrollContainer.scrollTop + scrollContainer.offsetHeight :
+                    scrollContainer.scrollLeft + scrollContainer.offsetWidth;
 
             if (scrollPos > scrollPosition) {
                 this._scrollPosition = scrollPosition;
@@ -765,12 +755,29 @@
             }
 
             this._scrollPosition = scrollPosition;
+            this._handleScroll();
+        }
 
-            var scrollLength = (isVertical ? target.scrollHeight : target.scrollWidth) * 0.8,
+        /**
+         * @name _handleScroll
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Checks if the scrolling has hit the proper threshold and requests more items if it has.
+         * 
+         * @returns {void}
+         */
+        protected _handleScroll(): void {
+            // infinite scrolling set to load items at 80% of scroll length
+            var scrollContainer = this._scrollContainer,
+                scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth),
                 _utils = this._utils;
+
             if (scrollLength === 0) {
                 return;
-            } else if (scrollPosition >= scrollLength) {
+            } else if (this._scrollPosition >= scrollLength) {
                 var itemsRemain = this._requestItems();
                 if (itemsRemain === false) {
                     this._removeScroll();
@@ -792,10 +799,12 @@
                                 container.removeChild(progressRing);
                             });
                         }
+
                         if (moreItemsRemain === false) {
                             return;
                         }
-                        this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._handleScroll, false);
+
+                        this._removeScroll = this.addEventListener(scrollContainer, 'scroll', this._onScroll, false);
                     });
                 }
             }
@@ -1397,7 +1406,7 @@
          */
         protected _parseTemplates(node: Node): void {
             var _document = this._document,
-                regex = this._nodeNameRegex,
+                regex = this._nodeNormalizeRegex,
                 templates = this._templates,
                 bindableTemplates = this.bindableTemplates,
                 slice = Array.prototype.slice,
@@ -1570,7 +1579,7 @@
          */
         protected _normalizeTemplateName(templateName: string): string {
             if (this._utils.isString(templateName)) {
-                return templateName.toLowerCase().replace(this._nodeNameRegex, '');
+                return templateName.toLowerCase().replace(this._nodeNormalizeRegex, '');
             }
         }
 
