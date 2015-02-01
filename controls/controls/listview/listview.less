@@ -2,8 +2,35 @@
 @import '../global/mixins.less';
 @import 'listview.variables.less';
 
+/// ============= Listview Constants ============= ///
+
+#Listview_Local {
+    .plat-ring-constants() {
+        height: 2.5em;
+        width: 100%;
+
+        .plat-ring {
+            height: 2em;
+            width: 2em;
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+            position: absolute;
+            .calc(left, '50% - 1em');
+
+            .plat-progress-container {
+                .plat-animated-ring {
+                    .border-radius(2em);
+                }
+            }
+        }
+    }
+}
+
+/// =========== Listview Default Styles =========== ///
+
 .plat-listview {
     #Listview;
+    #Listview_Local;
     .fill();
     .box-sizing(border-box);
     position: relative;
@@ -30,43 +57,21 @@
     }
 
     &.plat-vertical {
-        .plat-ring-constants() {
-            height: 2.5em;
-            width: 100%;
-
-            .plat-ring {
-                height: 2em;
-                width: 2em;
-                margin-top: 0.25em;
-                margin-bottom: 0.25em;
-                position: absolute;
-                .calc(left, '50% - 1em');
-
-                .plat-progress-container {
-                    .plat-animated-ring {
-                        .border-radius(2em);
-                    }
-                }
-            }
-        }
-
         .plat-listview-viewport {
             .plat-scroll-container {
                 .scroll(y);
 
                 .plat-container {
-                    .plat-incremental {
+                    .plat-infinite {
                         .plat-ring-constants();
                         position: relative;
                     }
                 }
             }
 
-            &.plat-refresh-prep {
+            &.plat-manipulation-prep {
                 .plat-scroll-container {
-                    .plat-container {
-                        overflow: hidden;
-                    }
+                    overflow: hidden;
                 }
             }
             
@@ -87,10 +92,6 @@
                 .plat-progress-container {
                     .plat-animated-ring {
                         .animation-play-state(paused);
-
-                        &.plat-play {
-                            .animation-play-state(running);
-                        }
                     }
                 }
             }
@@ -105,7 +106,37 @@
                 }
             }
 
-            & + .plat-listview-viewport {
+            & ~ .plat-listview-viewport {
+                background-color: @viewport-background-color;
+            }
+        }
+
+        .plat-incremental {
+            .plat-ring-constants();
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 0;
+
+            .plat-ring {
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .animation-play-state(paused);
+                    }
+                }
+            }
+
+            &.plat-play {
+                .plat-ring {
+                    .plat-progress-container {
+                        .plat-animated-ring {
+                            .animation-play-state(running);
+                        }
+                    }
+                }
+            }
+
+            & ~ .plat-listview-viewport {
                 background-color: @viewport-background-color;
             }
         }
