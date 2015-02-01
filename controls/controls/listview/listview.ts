@@ -550,7 +550,7 @@
             if (isString(loading)) {
                 if (isString(requestItems)) {
                     isLoading = true;
-                    this._determineLoading(requestItems, options.infiniteProgress === false);
+                    this._determineLoading(requestItems, options.infiniteProgress !== false);
                 } else {
                     _Exception = this._Exception;
                     _Exception.warn(this.type + ' loading type specified as "' + loading +
