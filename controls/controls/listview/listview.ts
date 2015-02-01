@@ -187,21 +187,17 @@
         protected _templates: plat.IObject<boolean> = {};
 
         /**
-         * @name _orientation
+         * @name _isVertical
          * @memberof platui.Listview
          * @kind property
          * @access protected
          * 
-         * @type {string}
+         * @type {boolean}
          * 
          * @description
-         * The control's orientation.
-         * 
-         * @remarks
-         * - "vertical"
-         * - "horizontal"
+         * Whether the control is vertical or horizontal.
          */
-        protected _orientation: string;
+        protected _isVertical = true;
 
         /**
          * @name _itemTemplate
@@ -546,7 +542,6 @@
                 isString = _utils.isString,
                 viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
                 scrollContainer = this._scrollContainer = <HTMLElement>viewport.firstElementChild,
-                orientation = this._orientation = options.orientation || 'vertical',
                 loading = this._loading = options.loading,
                 requestItems = options.onItemsRequested,
                 refresh = options.onRefresh,
@@ -554,7 +549,7 @@
                 _Exception: plat.IExceptionStatic;
 
             this._container = <HTMLElement>scrollContainer.firstElementChild;
-            this.dom.addClass(this.element, __Plat + orientation);
+            this.dom.addClass(this.element, __Plat + this._validateOrientation(options.orientation));
 
             if (!isString(itemTemplate)) {
                 _Exception = this._Exception;
@@ -744,7 +739,8 @@
         protected _handleScroll(ev: Event): void {
             var target = <HTMLElement>ev.target,
                 scrollPos = this._scrollPosition,
-                scrollPosition = target.scrollTop + target.offsetHeight;
+                isVertical = this._isVertical,
+                scrollPosition = isVertical ? target.scrollTop + target.offsetHeight : target.scrollLeft + target.offsetWidth;
 
             if (scrollPos > scrollPosition) {
                 this._scrollPosition = scrollPosition;
@@ -756,7 +752,7 @@
 
             this._scrollPosition = scrollPosition;
 
-            var scrollLength = (this._orientation === 'horizontal' ? target.scrollWidth : target.scrollHeight) * 0.8,
+            var scrollLength = (isVertical ? target.scrollHeight : target.scrollWidth) * 0.8,
                 _utils = this._utils;
             if (scrollLength === 0) {
                 return;
@@ -842,15 +838,12 @@
 
             var track: string,
                 reverseTrack: string;
-            switch (this._orientation) {
-                case 'vertical':
-                    track = __$track + 'down';
-                    reverseTrack = __$track + 'up';
-                    break;
-                case 'horizontal':
-                    break;
-                default:
-                    return;
+            if (this._isVertical) {
+                track = __$track + 'down';
+                reverseTrack = __$track + 'up';
+            } else {
+                track = __$track + 'right';
+                reverseTrack = __$track + 'left';
             }
 
             //var viewport = this._viewport,
@@ -985,14 +978,9 @@
                 resetTranslation: string;
 
             if (refreshState) {
-                switch (this._orientation) {
-                    case 'horizontal':
-                        resetTranslation = 'translate3d(' + refreshProgressRing.offsetWidth + 'px,0,0)';
-                        break;
-                    default:
-                        resetTranslation = 'translate3d(0,' + refreshProgressRing.offsetHeight + 'px,0)';
-                        break;
-                }
+                resetTranslation = this._isVertical ?
+                    'translate3d(0,' + refreshProgressRing.offsetHeight + 'px,0)' :
+                    'translate3d(' + refreshProgressRing.offsetWidth + 'px,0,0)';
             } else {
                 resetTranslation = this._preTransform;
             }
@@ -1060,7 +1048,7 @@
          */
         protected _trackLoad(ev: plat.ui.IGestureEvent): void {
             var scrollContainer = this._scrollContainer,
-                threshold = this._orientation === 'vertical' ? scrollContainer.offsetHeight : scrollContainer.offsetWidth;
+                threshold = this._isVertical ? scrollContainer.offsetHeight : scrollContainer.offsetWidth;
             if (scrollContainer.scrollTop < threshold) {
                 return;
             }
@@ -1107,17 +1095,17 @@
          * @returns {string} The translation value.
          */
         protected _calculateTranslation(ev: plat.ui.IGestureEvent, refresh: boolean): string {
-            var isHorizontal = this._orientation === 'horizontal',
+            var isVertical = this._isVertical,
                 progressRing = refresh ? this._refreshProgressRing : this._loadingProgressRing,
                 diff: number,
                 threshold: number;
 
-            if (isHorizontal) {
-                diff = ev.clientX - this._lastTouch.x;
-                threshold = progressRing.offsetWidth;
-            } else {
+            if (isVertical) {
                 diff = ev.clientY - this._lastTouch.y;
                 threshold = progressRing.offsetHeight;
+            } else {
+                diff = ev.clientX - this._lastTouch.x;
+                threshold = progressRing.offsetWidth;
             }
 
             if ((refresh && diff < 0) || (!refresh && diff > 0)) {
@@ -1137,10 +1125,10 @@
                 this.dom.removeClass(progressRing, 'plat-play');
             }
 
-            if (isHorizontal) {
-                return 'translate3d(' + diff + 'px,0,0)';
+            if (isVertical) {
+                return 'translate3d(0,' + diff + 'px,0)';
             }
-            return 'translate3d(0,' + diff + 'px,0)';
+            return 'translate3d(' + diff + 'px,0,0)';
         }
 
         /**
@@ -1557,6 +1545,41 @@
             control.className = 'plat-ring';
 
             return control;
+        }
+
+        /**
+         * @name _validateOrientation
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Checks the orientation of the control and ensures it is valid. 
+         * Will default to "horizontal" if invalid.
+         * 
+         * @param {string} orientation The element to base the length off of.
+         * 
+         * @returns {string} The orientation to be used.
+         */
+        protected _validateOrientation(orientation: string): string {
+            if (this._utils.isUndefined(orientation)) {
+                return 'vertical';
+            }
+
+            var validOrientation: string;
+            if (orientation === 'vertical') {
+                validOrientation = orientation;
+            } else if (orientation === 'horizontal') {
+                validOrientation = orientation;
+                this._isVertical = false;
+            } else {
+                var _Exception = this._Exception;
+                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "vertical."',
+                    _Exception.CONTROL);
+                validOrientation = 'vertical';
+            }
+
+            return validOrientation;
         }
     }
 
