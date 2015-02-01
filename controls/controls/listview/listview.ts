@@ -768,12 +768,16 @@
 
                     this._removeScroll();
                     if (showProgress) {
-                        container.insertBefore(progressRing, null);
+                        _utils.requestAnimationFrame(() => {
+                            container.insertBefore(progressRing, null);
+                        });
                     }
 
                     itemsRemain.then((moreItemsRemain: boolean) => {
                         if (showProgress) {
-                            container.removeChild(progressRing);
+                            _utils.requestAnimationFrame(() => {
+                                container.removeChild(progressRing);
+                            });
                         }
                         if (moreItemsRemain === false) {
                             return;
