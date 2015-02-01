@@ -70,6 +70,8 @@
             }
 
             &.plat-manipulation-prep {
+                background-color: @manipulated-viewport-background-color;
+
                 .plat-scroll-container {
                     overflow: hidden;
                 }
@@ -81,40 +83,10 @@
             }
         }
 
-        .plat-refresh {
-            .plat-ring-constants();
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 0;
-
-            .plat-ring {
-                .plat-progress-container {
-                    .plat-animated-ring {
-                        .animation-play-state(paused);
-                    }
-                }
-            }
-
-            &.plat-play {
-                .plat-ring {
-                    .plat-progress-container {
-                        .plat-animated-ring {
-                            .animation-play-state(running);
-                        }
-                    }
-                }
-            }
-
-            & ~ .plat-listview-viewport {
-                background-color: @viewport-background-color;
-            }
-        }
-
+        .plat-refresh,
         .plat-incremental {
             .plat-ring-constants();
             position: absolute;
-            bottom: 0;
             left: 0;
             z-index: 0;
 
@@ -135,10 +107,14 @@
                     }
                 }
             }
+        }
 
-            & ~ .plat-listview-viewport {
-                background-color: @viewport-background-color;
-            }
+        .plat-refresh {
+            top: 0;
+        }
+
+        .plat-incremental {
+            bottom: 0;
         }
     }
 

@@ -362,7 +362,7 @@
          * @description
          * An enumeration value signifying the current touch state.
          */
-        protected _touchState: number;
+        protected _touchState = 0;
 
         /**
          * @name _hasMoved
@@ -558,8 +558,12 @@
             }
 
             this._determineItemTemplate(itemTemplate);
+
+            var isLoading = false,
+                isRefreshing = false;
             if (isString(loading)) {
                 if (isString(requestItems)) {
+                    isLoading = true;
                     this._determineLoading(requestItems, options.infiniteProgress === false);
                 } else {
                     _Exception = this._Exception;
@@ -569,8 +573,11 @@
             }
 
             if (isString(refresh)) {
+                isRefreshing = true;
                 this._initializeRefresh(refresh);
             }
+
+            this._initializeTracking(isLoading, isRefreshing);
 
             if (!_utils.isArray(this.context)) {
                 if (!_utils.isNull(this.context)) {
@@ -613,9 +620,11 @@
                 itemCount = isNumber(count) && maxCount >= count ? count : maxCount;
 
             if (_utils.isFunction(this._templateSelector)) {
+                var promises: Array<plat.async.IThenable<void>> = [];
                 while (itemCount-- > 0) {
-                    this._renderUsingFunction(index++);
+                    promises.push(this._renderUsingFunction(index++));
                 }
+                this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises);
                 return;
             }
 
@@ -717,9 +726,14 @@
                     progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     break;
                 case 'incremental':
+                    var progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
+                    progressRingContainer.className = 'plat-incremental';
+                    progressRingContainer.setAttribute(__Hide, '');
+                    progressRingContainer.insertBefore(this._generateProgressRing(), null);
+                    this.element.insertBefore(progressRingContainer, null);
                     break;
                 default:
-                    return;
+                    break;
             }
         }
 
@@ -801,8 +815,6 @@
          * @returns {void}
          */
         protected _initializeRefresh(refresh: string): void {
-            this._setTransform();
-
             var controlProperty = this.findProperty(refresh) || <plat.IControlProperty>{};
             if (!this._utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
@@ -814,8 +826,9 @@
             this._refresh = (<Function>controlProperty.value).bind(controlProperty.control);
             var progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
             progressRingContainer.className = 'plat-refresh';
+            progressRingContainer.setAttribute(__Hide, '');
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
-            this._initializeTracking();
+            this.element.insertBefore(progressRingContainer, null);
         }
 
         /**
@@ -827,14 +840,17 @@
          * @description
          * Initializes the proper tracking events.
          * 
+         * @param {boolean} loading Whether or not to initialize the loading tracking events.
+         * @param {boolean} refresh Whether or not to initialize the refresh tracking events.
+         * 
          * @returns {void}
          */
-        protected _initializeTracking(): void {
-            if (!this._utils.isUndefined(this._touchState)) {
+        protected _initializeTracking(loading: boolean, refresh: boolean): void {
+            if (!(loading || refresh)) {
                 return;
             }
 
-            this._touchState = 0;
+            this._setTransform();
 
             var track: string,
                 reverseTrack: string;
@@ -846,14 +862,29 @@
                 reverseTrack = __$track + 'left';
             }
 
-            //var viewport = this._viewport,
-            //    touchEnd = this._touchEnd,
-            //    trackFn = this._track;
-            //this.addEventListener(viewport, __$touchstart, this._touchStart, false);
-            //this.addEventListener(viewport, __$touchend, touchEnd, false);
-            //this.addEventListener(viewport, __$trackend, touchEnd, false);
-            //this.addEventListener(viewport, track, trackFn, false);
-            //this.addEventListener(viewport, reverseTrack, trackFn, false);
+            var viewport = this._viewport,
+                touchEnd: EventListener,
+                trackFn: EventListener;
+
+            this.addEventListener(viewport, __$touchstart, this._touchStart, false);
+
+            if (loading) {
+                touchEnd = this._touchEndLoad;
+                trackFn = this._trackLoad;
+                this.addEventListener(viewport, __$touchend, touchEnd, false);
+                this.addEventListener(viewport, __$trackend, touchEnd, false);
+                this.addEventListener(viewport, track, trackFn, false);
+                this.addEventListener(viewport, reverseTrack, trackFn, false);
+            }
+
+            if (refresh) {
+                touchEnd = this._touchEndRefresh;
+                trackFn = this._trackRefresh;
+                this.addEventListener(viewport, __$touchend, touchEnd, false);
+                this.addEventListener(viewport, __$trackend, touchEnd, false);
+                this.addEventListener(viewport, track, trackFn, false);
+                this.addEventListener(viewport, reverseTrack, trackFn, false);
+            }
         }
 
         /**
@@ -892,60 +923,36 @@
         }
 
         /**
-         * @name _trackRefreshVertical
+         * @name _touchEndLoad
          * @memberof platui.Listview
          * @kind function
          * @access protected
          * 
          * @description
-         * A common tracking event listener for both vertical refresh and incremental loading.
-         * 
-         * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
-         * 
-         * @returns {void}
-         */
-        protected _trackRefreshVertical(ev: plat.ui.IGestureEvent): void {
-            var scrollContainer = this._scrollContainer,
-                scrollTop = scrollContainer.scrollTop;
-            if (scrollTop === 0 && this._utils.isFunction(this._refresh)) {
-
-            } else if (scrollTop === scrollContainer.offsetHeight && this._loading === 'incremental') {
-
-            }
-        }
-
-        /**
-         * @name _trackHorizontal
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * A common tracking event listener for both vertical refresh and incremental loading.
-         * 
-         * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
-         * 
-         * @returns {void}
-         */
-        protected _trackHorizontal(ev: plat.ui.IGestureEvent): void {
-            throw Error;
-        }
-
-        /**
-         * @name _touchEnd
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * A common touch end event listener for both refresh and incremental loading.
+         * The touch end event listener for when looking for an incremental load.
          * 
          * @param {plat.ui.IGestureEvent} ev The $touchend event object.
          * 
          * @returns {void}
          */
-        protected _touchEnd(ev: plat.ui.IGestureEvent): void {
+        protected _touchEndLoad(ev: plat.ui.IGestureEvent): void {
+            var scrollContainer = this._scrollContainer,
+                scrollLength: number,
+                threshold: number;
 
+            if (this._isVertical) {
+                scrollLength = scrollContainer.scrollTop + scrollContainer.offsetHeight;
+                threshold = scrollContainer.scrollHeight;
+            } else {
+                scrollLength = scrollContainer.scrollLeft + scrollContainer.offsetWidth;
+                threshold = scrollContainer.scrollWidth;
+            }
+
+            if (scrollLength < threshold) {
+                return;
+            }
+
+            this._touchEnd(ev, false);
         }
 
         /**
@@ -962,6 +969,28 @@
          * @returns {void}
          */
         protected _touchEndRefresh(ev: plat.ui.IGestureEvent): void {
+            if ((this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
+                return;
+            }
+
+            this._touchEnd(ev, true);
+        }
+
+        /**
+         * @name _touchEnd
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * A common touch end event listener for both refresh and incremental loading.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $touchend event object.
+         * @param {boolean} refreshing Whether this translation is for refresh or incremental loading.
+         * 
+         * @returns {void}
+         */
+        protected _touchEnd(ev: plat.ui.IGestureEvent, refreshing: boolean): void {
             var state = this._touchState,
                 hasMoved = this._hasMoved;
 
@@ -973,64 +1002,57 @@
             var animationOptions: plat.IObject<string> = {},
                 dom = this.dom,
                 viewport = this._viewport,
-                refreshProgressRing = this._refreshProgressRing,
-                refreshState = state === 3,
-                resetTranslation: string;
+                progressRing = refreshing ? this._refreshProgressRing : this._loadingProgressRing,
+                isActionState = state === 3,
+                nextTranslation: string;
 
-            if (refreshState) {
-                resetTranslation = this._isVertical ?
-                    'translate3d(0,' + refreshProgressRing.offsetHeight + 'px,0)' :
-                    'translate3d(' + refreshProgressRing.offsetWidth + 'px,0,0)';
+            if (isActionState) {
+                var offset: number;
+                if (this._isVertical) {
+                    offset = refreshing ? progressRing.offsetHeight : -progressRing.offsetHeight;
+                    nextTranslation = 'translate3d(0,' + offset + 'px,0)';
+                } else {
+                    offset = refreshing ? progressRing.offsetWidth : -progressRing.offsetWidth;
+                    nextTranslation = 'translate3d(' + offset + 'px,0,0)';
+                }
             } else {
-                resetTranslation = this._preTransform;
+                nextTranslation = this._preTransform;
             }
 
-            animationOptions[this._transform] = resetTranslation;
-            this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
+            animationOptions[this._transform] = nextTranslation;
+            this._animationThenable = this._animator.animate(viewport, __Transition, {
+                properties: animationOptions
+            }).then(() => {
                 this._touchState = 4;
                 this._hasMoved = false;
                 this._animationThenable = null;
-                if (refreshState) {
-                    return this._Promise.resolve(this._refresh());
+                if (isActionState) {
+                    return this._Promise.resolve(refreshing ? this._refresh() : this._requestItems());
                 }
 
                 dom.removeClass(viewport, 'plat-manipulation-prep');
+                progressRing.setAttribute(__Hide, '');
                 return this._Promise.resolve();
             }).then(() => {
-                if (!refreshState) {
+                if (!isActionState) {
                     this._touchState = 0;
                     return;
                 }
 
-                dom.removeClass(refreshProgressRing, 'plat-play');
+                dom.removeClass(progressRing, 'plat-play');
                 animationOptions[this._transform] = this._preTransform;
-                this._animationThenable = this._animator.animate(viewport, __Transition, { properties: animationOptions }).then(() => {
+                return this._animationThenable = this._animator.animate(viewport, __Transition, {
+                    properties: animationOptions
+                }).then(() => {
                     this._touchState = 0;
                     this._animationThenable = null;
                     dom.removeClass(viewport, 'plat-manipulation-prep');
+                    progressRing.setAttribute(__Hide, '');
                 });
+            }).then(null, (error) => {
+                var _Exception = this._Exception;
+                _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
             });
-        }
-
-        /**
-         * @name _trackRefresh
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * The tracking event listener for looking for a refresh.
-         * 
-         * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
-         * 
-         * @returns {void}
-         */
-        protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
-            if (this._scrollContainer.scrollTop > 0) {
-                return;
-            }
-
-            this._translate(ev, true);
         }
 
         /**
@@ -1048,16 +1070,47 @@
          */
         protected _trackLoad(ev: plat.ui.IGestureEvent): void {
             var scrollContainer = this._scrollContainer,
-                threshold = this._isVertical ? scrollContainer.offsetHeight : scrollContainer.offsetWidth;
-            if (scrollContainer.scrollTop < threshold) {
+                scrollLength: number,
+                threshold: number;
+
+            if (this._isVertical) {
+                scrollLength = scrollContainer.scrollTop + scrollContainer.offsetHeight;
+                threshold = scrollContainer.scrollHeight;
+            } else {
+                scrollLength = scrollContainer.scrollLeft + scrollContainer.offsetWidth;
+                threshold = scrollContainer.scrollWidth;
+            }
+
+            if (scrollLength < threshold) {
                 return;
             }
 
-            this._translate(ev, false);
+            this._track(ev, false);
         }
 
         /**
-         * @name _translate
+         * @name _trackRefresh
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The tracking event listener for looking for a refresh.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
+         * 
+         * @returns {void}
+         */
+        protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
+            if ((this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
+                return;
+            }
+
+            this._track(ev, true);
+        }
+
+        /**
+         * @name _track
          * @memberof platui.Listview
          * @kind function
          * @access protected
@@ -1066,18 +1119,18 @@
          * Handles the translation of the viewport while tracking.
          * 
          * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
-         * @param {boolean} refresh Whether this track is for refresh or incremental loading.
+         * @param {boolean} refreshing Whether this translation is for refresh or incremental loading.
          * 
          * @returns {void}
          */
-        protected _translate(ev: plat.ui.IGestureEvent, refresh: boolean): void {
+        protected _track(ev: plat.ui.IGestureEvent, refreshing: boolean): void {
             var touchState = this._touchState;
             if (!(touchState === 2 || touchState === 3)) {
                 return;
             }
 
             this._utils.requestAnimationFrame(() => {
-                this._viewport.style[<any>this._transform] = this._calculateTranslation(ev, refresh);
+                this._viewport.style[<any>this._transform] = this._calculateTranslation(ev, refreshing);
             });
         }
         
@@ -1091,12 +1144,13 @@
          * Calculates the translation value for setting the transform value during tracking.
          * 
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
+         * @param {boolean} refreshing Whether this translation is for refresh or incremental loading.
          * 
          * @returns {string} The translation value.
          */
-        protected _calculateTranslation(ev: plat.ui.IGestureEvent, refresh: boolean): string {
+        protected _calculateTranslation(ev: plat.ui.IGestureEvent, refreshing: boolean): string {
             var isVertical = this._isVertical,
-                progressRing = refresh ? this._refreshProgressRing : this._loadingProgressRing,
+                progressRing = refreshing ? this._refreshProgressRing : this._loadingProgressRing,
                 diff: number,
                 threshold: number;
 
@@ -1108,14 +1162,13 @@
                 threshold = progressRing.offsetWidth;
             }
 
-            if ((refresh && diff < 0) || (!refresh && diff > 0)) {
+            if ((refreshing && diff < 0) || (!refreshing && diff > 0)) {
                 diff = 0;
             } else if (!this._hasMoved) {
                 this._hasMoved = true;
-                var element = this.element;
                 this.dom.addClass(this._viewport, 'plat-manipulation-prep');
-                element.insertBefore(progressRing, element.firstElementChild);
-            } else if (diff >= threshold) {
+                progressRing.removeAttribute(__Hide);
+            } else if (Math.abs(diff) >= threshold) {
                 if (this._touchState < 3) {
                     this._touchState = 3;
                     this.dom.addClass(progressRing, 'plat-play');
