@@ -71,13 +71,16 @@
     <!-- Listview -->
     <div class="demo-area">
         <h2 class="demo-heading">Listview</h2>
-        <input type="checkbox" id="listview">
+        <input type="checkbox" id="listview" checked>
         <label for="listview"></label>
         <div class="demo-stage">
             <button plat-tap="addListItem">add</button>
             <button plat-tap="popListItem">pop</button>
             <div class="demo-item">
-                <plat-listview style="height: 150px;" plat-context="listview" plat-options="{ itemTemplate: 'listview-template', onRefresh: 'refresh', loading: 'incremental', onItemsRequested: 'load' }">
+                <plat-listview style="height: 150px;" plat-context="listview" plat-options="{ itemTemplate: 'listview-template', groupHeaderTemplate: 'listview-header' }">
+                    <listview-header>
+                        <div>{{@group}}</div>
+                    </listview-header>
                     <listview-template>
                         <div style="color: red;">{{@context}}</div>
                     </listview-template>

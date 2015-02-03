@@ -4,6 +4,7 @@
 /// <reference path="controls/checkbox/checkbox.ts" />
 /// <reference path="controls/drawer/drawer.ts" />
 /// <reference path="controls/input/input.ts" />
+/// <reference path="controls/listview/listview.ts" />
 /// <reference path="controls/modal/modal.ts" />
 /// <reference path="controls/progress/determinate/progressbar/progressbar.ts" />
 /// <reference path="controls/progress/indeterminate/progressring/progressring.ts" />

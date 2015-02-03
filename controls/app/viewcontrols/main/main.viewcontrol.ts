@@ -34,7 +34,11 @@ module app {
                 modal3: false,
             },
             carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }],
-            listview: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+            //listview: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+            listview: <Array<platui.IListviewGroup>>[
+                { group: 'A', items: ['apple', 'apricot', 'ardvark'] },
+                { group: 'B', items: ['ballin', 'bark', 'basket'] }
+            ]
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
@@ -48,7 +52,7 @@ module app {
 
         addListItem() {
             var listview = this.context.listview;
-            listview.push(listview[listview.length - 1] + 1);
+            //listview.push(listview[listview.length - 1] + 1);
         }
 
         popListItem() {
@@ -72,7 +76,7 @@ module app {
 
             return new promise((resolve, reject) => {
                 setTimeout(() => {
-                    this.context.listview.unshift(0);
+                    //this.context.listview.unshift(0);
                     resolve();
                 }, 10000);
             });
@@ -91,7 +95,7 @@ module app {
 
             return new promise((resolve, reject) => {
                 setTimeout(() => {
-                    this.context.listview = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                    //this.context.listview = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
                     resolve();
                 }, 5000);
             });

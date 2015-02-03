@@ -190,6 +190,13 @@
     <Content Include="grid\grid.variables.min.css">
       <DependentUpon>grid.variables.css</DependentUpon>
     </Content>
+    <Content Include="icons\icons.css">
+      <DependentUpon>icons.less</DependentUpon>
+    </Content>
+    <Content Include="icons\icons.min.css">
+      <DependentUpon>icons.css</DependentUpon>
+    </Content>
+    <Content Include="icons\fonts\icons.svg" />
     <Content Include="input\input.css">
       <DependentUpon>input.less</DependentUpon>
     </Content>
@@ -430,6 +437,12 @@
   <ItemGroup>
     <Content Include="popover\popover.less" />
     <Content Include="popover\popover.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="icons\fonts\icons.eot" />
+    <Content Include="icons\icons.less" />
+    <Content Include="icons\fonts\icons.ttf" />
+    <Content Include="icons\fonts\icons.woff" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
