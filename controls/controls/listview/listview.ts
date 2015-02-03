@@ -547,16 +547,16 @@
          * @returns {void}
          */
         //contextChanged(newValue?: any, oldValue?: any): void {
-            //if (this._isGrouped) {
-            //    this._handleGroupedContextChange(newValue, oldValue);
-            //    return;
-            //} else if (!this._utils.isArray(newValue)) {
-            //    var _Exception = this._Exception;
-            //    _Exception.warn('Ungrouped ' + this.type + '\'s context set to something other than an Array.', _Exception.CONTEXT);
-            //    return;
-            //}
+        //if (this._isGrouped) {
+        //    this._handleGroupedContextChange(newValue, oldValue);
+        //    return;
+        //} else if (!this._utils.isArray(newValue)) {
+        //    var _Exception = this._Exception;
+        //    _Exception.warn('Ungrouped ' + this.type + '\'s context set to something other than an Array.', _Exception.CONTEXT);
+        //    return;
+        //}
 
-            //this._handleUngroupedContextChange(newValue, oldValue);
+        //this._handleUngroupedContextChange(newValue, oldValue);
         //}
 
         /**
@@ -612,6 +612,10 @@
         //        newArray: newValue || []
         //    });
         //}
+
+        protected _childContextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
+
+        }
 
         /**
          * @name loaded
@@ -756,7 +760,7 @@
                         '" was not a template defined in the DOM.', _Exception.TEMPLATE);
                 }
 
-                 this._groupHeaderTemplatePromise = this._createGroupTemplate();
+                this._groupHeaderTemplatePromise = this._createGroupTemplate();
             }
 
             if (this._templates[templateKey] === true) {
@@ -812,53 +816,88 @@
             return this._Promise.resolve(headerPromise).then(() => {
                 group.insertBefore(groupContainer, null);
                 bindableTemplates.add(listviewGroup, group);
-            }).then(null, (error) => {
+            }).then(null,(error) => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' error: ' + error, _Exception.COMPILE);
             });
         }
 
         /**
-         * @name _createGroups
-         * @memberof platui.Listview
+         * @name _addGroups
+         * @memberof plat.ui.controls.ForEach
          * @kind function
          * @access protected
          * 
          * @description
-         * Handle group creation.
+         * Adds new groups to the control's element when items are added to 
+         * the context.
          * 
-         * @returns {void}
+         * @param {number} numberOfGroups The number of groups to add.
+         * @param {number} index The point in the array to start adding groups.
+         * @param {boolean} animate? Whether or not to animate the new groups
+         * 
+         * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
          */
-        protected _createGroups(): void {
+        protected _addGroups(numberOfGroups: number, index: number, animate?: boolean): plat.async.IThenable<void> {
             var context = this.context,
                 length = context.length,
                 groups = this._groups = <plat.IObject<HTMLElement>>{},
-                container = this._container,
-                group: IListviewGroup;
+                promises = <Array<plat.async.IThenable<DocumentFragment>>>[],
+                fragment: DocumentFragment,
+                group: IListviewGroup,
+                i: number;
 
-            for (var i = 0; i < length; ++i) {
+            for (i = 0; i < length; ++i) {
                 group = context[i];
-                this._createGroup(i).then((fragment) => {
-                    groups[group.group] = <HTMLElement>fragment.firstChild;
-                    container.insertBefore(fragment, null);
-                });
+                promises.push(this._bindGroup(i));
             }
+
+            return this._Promise.all(promises).then((fragments) => {
+                length = fragments.length;
+                for (i = 0; i < length; ++i) {
+                    this._addGroup(i, fragments[i]);
+                }
+            });
         }
 
         /**
-         * @name _createGroup
+         * @name _addGroup
+         * @memberof plat.ui.controls.ForEach
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds new group to the control's element.
+         * 
+         * @param {number} index The index of the group.
+         * @param {DocumentFragment} fragment The group fragment to add to the DOM.
+         * 
+         * @returns {void}
+         */
+        protected _addGroup(index: number, fragment: DocumentFragment): void {
+            var groups = this._groups,
+                group = this.context[index];
+
+            groups[group.group] = <HTMLElement>fragment.firstChild;
+
+
+            this._container.insertBefore(fragment, null);
+        }
+
+        /**
+         * @name _bindGroup
          * @memberof platui.Listview
          * @kind function
          * @access protected
          * 
          * @description
-         * Handle creation of a single group.
+         * Handle binding of a single group.
          * 
          * @param {number} index The index of the group in context.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<DocumentFragment>}
          */
-        protected _createGroup(index: number): plat.async.IThenable<HTMLElement> {
+        protected _bindGroup(index: number): plat.async.IThenable<DocumentFragment> {
             return this.bindableTemplates.bind(__Listview + '-group', index, this._getGroupAliases(index));
         }
 
@@ -879,7 +918,7 @@
         protected _createItems(index: number, count: number): void {
             if (this._isGrouped) {
                 this._groupHeaderTemplatePromise.then(() => {
-                    this._createGroups();
+                    this._addGroups(count, index);
                 }).then(null,(error) => {
                     var _Exception = this._Exception;
                     _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
@@ -1564,6 +1603,38 @@
         }
 
         /**
+         * @name _updateResources
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Updates the control's children resource objects when 
+         * the array changes.
+         * 
+         * @param {plat.ui.TemplateControl} control? The control whose resources are to be updated.
+         * 
+         * @returns {void}
+         */
+        protected _updateResources(control?: plat.ui.TemplateControl): void {
+            control = control || this;
+
+            var controls = <Array<plat.ui.TemplateControl>>control.controls,
+                length = controls.length;
+
+            if (control === this && this._isGrouped) {
+                for (var i = 0; i < length; ++i) {
+                    controls[i].resources.add(this._getGroupAliases(i));
+                }
+                return;
+            }
+
+            for (var i = 0; i < length; ++i) {
+                controls[i].resources.add(this._getAliases(i));
+            }
+        }
+
+        /**
          * @name _getGroupAliases
          * @memberof platui.Listview
          * @kind function
@@ -1572,7 +1643,7 @@
          * @description
          * Returns a resource alias object for an item in the array. The 
          * resource object contains index:number, even:boolean, odd:boolean, 
-         * first:boolean, and last:boolean.
+         * first:boolean, last:boolean, and group:string.
          * 
          * @param {number} index The index used to create the resource aliases.
          * 
@@ -1583,7 +1654,7 @@
                 _aliases = this._aliases;
 
             aliases[(<any>_aliases).group || 'group'] = {
-                value: this.context[index].group,
+                value: '\'' + this.context[index].group + '\'',
                 type: __OBSERVABLE_RESOURCE
             };
 
@@ -1678,9 +1749,7 @@
          * @returns {void}
          */
         protected _parseInnerTemplate(): void {
-            var _document = this._document,
-                regex = this._nodeNormalizeRegex,
-                templates = this._templates,
+            var templates = this._templates,
                 bindableTemplates = this.bindableTemplates,
                 slice = Array.prototype.slice,
                 appendChildren = this.dom.appendChildren,
