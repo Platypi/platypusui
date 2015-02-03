@@ -42,12 +42,13 @@ var __prefix = '$',
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
+    __Options = __Plat + 'options',
     __Checked = __Plat + 'checked',
+    __ForEach = __Plat + 'foreach',
     __CamelChecked = 'platChecked',
     __Context = __Plat + __CONTEXT,
     __CamelContext = 'platContext',
     __Bind = __Plat + 'bind',
-    __TemplateControlCache = '__templateControlCache',
 
     /**
      * Animations
@@ -76,6 +77,7 @@ var __prefix = '$',
      */
     __CONTEXT = 'context',
     __Reversed = '-reversed',
+    __OBSERVABLE_RESOURCE = 'observable',
     __transitionNegate: plat.IObject<string> = {
         right: 'left',
         left: 'right',

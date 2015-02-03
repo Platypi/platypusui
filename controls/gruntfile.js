@@ -1,14 +1,12 @@
 function stripDocs(data) {
-    var linkRegex = /\{@link (.*?)[|](.*?)\}/g;
-
-    data = data.replace(linkRegex, function(value, qualifiedPath, linkValue, index, content) {
-        return linkValue;
-    });
-
-    var lines = data.split(/\r\n|\n/g),
+    var linkRegex = /\{@link (.*?)[|](.*?)\}/g,
         out = [];
 
-    lines.forEach(function (line) {       
+    data.forEach(function (line) {
+        line = line.replace(linkRegex, function(value, qualifiedPath, linkValue, index, content) {
+            return linkValue;
+        });
+
         if(line.trim() === '*') {
             return;
         } else if (line.indexOf('* @') === -1) {
@@ -18,7 +16,67 @@ function stripDocs(data) {
         }
     });
 
-    return out.join('\r\n');
+    return out;
+}
+
+function useStrict(data) {
+    var plat;
+
+    data = data
+        .map(function (line, index, lines) {
+            var trim = line.trim();
+            if (trim === '\'use strict\';') {
+                return '';
+            } else if (trim.indexOf('module plat ') > -1) {
+                plat = index + 1;
+            }
+
+            return line;
+        });
+
+    data.splice(plat, 0, '    \'use strict;\'');
+    return data;
+}
+
+function normalizeBlockComments(data) {
+    return data
+        .map(function (line, index, lines) {
+            if (line.trim()[0] === '*') {
+                return ' ' + line;
+            }
+
+            return line;
+        })
+        .join('\r\n');
+
+}
+
+function addNodeTypeDefinition(data) {
+    return data
+        .slice(0, -2)
+        .concat([
+            '',
+            'declare module \'platypus\' {',
+            '    export = plat;',
+            '}',
+            ''
+        ]);
+}
+
+function getCompileLib() {
+	return '/// <reference path="../node_modules/platypus/platypus.d.ts" />\r\n';
+}
+
+function getReferenceLib() {
+	return '/// <reference path="../platypus/platypus.d.ts" />\r\n\r\n';
+}
+
+function prependLib(data) {
+	return getCompileLib() + data;
+}
+
+function removeLib(data) {
+	return data.replace(getCompileLib(), '');
 }
 
 module.exports = exports = function load(grunt) {
@@ -45,63 +103,42 @@ module.exports = exports = function load(grunt) {
             after: {
                 force: true,
                 src: [
-                    './platypusui.ts', './platypusui.js', './platypusui.d.ts', './platypusui.js.map'
+                    './platypusui.ts', 
+					'dist/platypusui.ts'
                 ]
             }
         },
         copy: {
-			setup: {
+			main: {
                 options: {
                     process: function (data) {
-                        return '/// <reference path="./node_modules/platypus/platypus.d.ts" />\r\n' +
-						'/// <reference path="./node_modules/.bin/typings/node/node.d.ts" />\r\n' +
-						'var plat = require(\'platypus\');\r\n\r\n' + 
-						stripDocs(data) + 
-						'\r\nexport = platui;\r\n';
+                        return prependLib(stripDocs(useStrict(data.split(/\r\n|\n/)))
+						.concat(['export = platui;', ''])
+						.join('\r\n'));
                     }
                 },
                 src: './platypusui.ts',
-                dest: './platypusui.ts'
+                dest: 'dist/platypusui.ts'
             },
-            main: {
-                src: ['./platypusui.ts', './platypusui.js', './platypusui.d.ts', './platypusui.js.map'],
-                dest: 'dist/'
-            },
-            bower: {
+            libs: {
                 options: {
                     process: function (data) {
-                        return data
-                            .split(/\r\n|\n/)
-                            .map(function (line, index, lines) {
-                                if (line.trim()[0] === '*') {
-                                    return ' ' + line;
-                                }
-
-                                return line;
-                            }).join('\r\n');
+                        return removeLib(data);
                     }
                 },
                 src: 'dist/platypusui.d.ts',
-                dest: 'dist/platypusui.d.ts'
-            }, 
-            node: {
+				dest: 'dist/platypusui.d.ts'
+            },
+            typings: {
                 options: {
                     process: function (data) {
-                        return data
-                            .split(/\r\n|\n/)
-                            .slice(0, -2)
-                            .concat([
-                                '',
-                                'declare module \'platypusui\' {',
-                                '    export = platui;',
-                                '}',
-                                ''
-                            ])
-                            .join('\r\n');
+                        data = normalizeBlockComments(data.split(/\r\n|\n/));
+                        return addNodeTypeDefinition(data.split(/\r\n|\n/))
+                            .join('\r\n')
                     }
                 },
-                src: 'dist/platypusui.d.ts',
-                dest: 'dist/platypusui-node.d.ts'
+                src: 'dist/platypus.d.ts',
+                dest: 'dist/platypus.d.ts'
             }
         },
         connect: {
@@ -173,19 +210,17 @@ module.exports = exports = function load(grunt) {
                     removeComments: false
                 },
                 src: [
-                    './platypusui.ts'
+                    'dist/platypusui.ts'
                 ]
             }
         },
         uglify: {
             main: {
                 options: {
-                    sourceMapIn: 'dist/platypusui.js.map',
-                    sourceMap: 'dist/platypusui.js.map',
                     screwIE8: true
                 },
                 files: {
-                    'dist/platypusui.js': [
+                    'dist/platypusui.min.js': [
                         'dist/platypusui.js'
                     ]
                 }
@@ -220,8 +255,7 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:setup', 'ts:packaging', 'copy:main', 'uglify', 'copy:bower', 'copy:node', 'clean:after']);
-    // grunt.registerTask('default', ['bundle', 'less']);
+    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'clean:after']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
     grunt.registerTask('compile', ['lessCompile', 'ts:base', 'ts:app']);
 };

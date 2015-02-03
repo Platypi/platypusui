@@ -109,32 +109,6 @@
         protected _compat: plat.Compat = plat.acquire(__Compat);
 
         /**
-         * @name _Promise
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.async.IPromise}
-         * 
-         * @description
-         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
-         */
-        protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
-
-        /**
-         * @name _animator
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.ui.animations.IAnimator}
-         * 
-         * @description
-         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
-         */
-        protected _animator: plat.ui.animations.Animator;
-
-        /**
          * @name _TemplateControlFactory
          * @memberof platui.Listview
          * @kind property
@@ -208,7 +182,7 @@
          * @type {string}
          * 
          * @description
-         * The item template key if a single item template is being used.
+         * The normalized node name / item template key if a single item template is being used.
          */
         protected _itemTemplate: string;
 
@@ -444,6 +418,58 @@
         protected _nodeNormalizeRegex = /-|\.|_/g;
 
         /**
+         * @name _isGrouped
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the select is grouped.
+         */
+        protected _isGrouped = false;
+
+        /**
+         * @name _groups
+         * @memberof platui.Listview
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.IObject<HTMLElement>}
+         * 
+         * @description
+         * An object that keeps track of unique groups.
+         */
+        protected _groups: plat.IObject<HTMLElement>;
+
+        /**
+         * @name _groupHeaderTemplate
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The normalized node name of the group header template.
+         */
+        protected _groupHeaderTemplate: string;
+
+        /**
+         * @name _groupHeaderTemplatePromise
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.async.IThenable<void>}
+         * 
+         * @description
+         * A promise that resolves when the group template has been created.
+         */
+        protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
+
+        /**
          * @name setClasses
          * @memberof platui.Listview
          * @kind function
@@ -475,10 +501,10 @@
          * @returns {void}
          */
         initialize(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IListviewOptions>>{},
-                options = optionObj.value || <IListviewOptions>{};
+            var optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IListviewOptions>>{}),
+                options = optionObj.value || (optionObj.value = <IListviewOptions>{});
 
-            this.templateUrl = options.templateUrl;
+            this.templateUrl = this.templateUrl || options.templateUrl;
             this.setClasses();
         }
 
@@ -494,21 +520,98 @@
          * @returns {void}
          */
         setTemplate(): void {
-            var _utils = this._utils;
-            if (_utils.isString(this.templateUrl)) {
-                var fragment = this.dom.serializeHtml(this.templateString),
-                    element = this.element;
-
-                this._parseTemplates(element);
-                element.appendChild(fragment);
+            if (!this._utils.isString(this.templateUrl)) {
                 return;
             }
 
-            var innerTemplate = this.innerTemplate;
-            if (_utils.isNode(innerTemplate)) {
-                this._parseTemplates(innerTemplate);
-            }
+            var fragment = this.dom.serializeHtml(this.templateString),
+                element = this.element;
+
+            this.innerTemplate = this.dom.appendChildren(element.childNodes);
+            element.appendChild(fragment);
         }
+
+        /**
+         * @name contextChanged
+         * @memberof platui.Listview
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Re-syncs the {@link platui.Listview|Listview} child controls and DOM with the new 
+         * array.
+         * 
+         * @param {any} newValue? The new context
+         * @param {any} oldValue? The old context
+         * 
+         * @returns {void}
+         */
+        //contextChanged(newValue?: any, oldValue?: any): void {
+            //if (this._isGrouped) {
+            //    this._handleGroupedContextChange(newValue, oldValue);
+            //    return;
+            //} else if (!this._utils.isArray(newValue)) {
+            //    var _Exception = this._Exception;
+            //    _Exception.warn('Ungrouped ' + this.type + '\'s context set to something other than an Array.', _Exception.CONTEXT);
+            //    return;
+            //}
+
+            //this._handleUngroupedContextChange(newValue, oldValue);
+        //}
+
+        /**
+         * @name _handleGroupedContextChange
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Re-syncs the {@link platui.Listview|Listview} child controls and DOM with the new 
+         * context object.
+         * 
+         * @param {any} newValue? The new context
+         * @param {any} oldValue? The old context
+         * 
+         * @returns {void}
+         */
+        //protected _handleGroupedContextChange(newValue?: any, oldValue?: any): void {
+        //    if (this._utils.isEmpty(newValue)) {
+        //        this._removeItems(this.controls.length);
+        //    }
+        //}
+
+        /**
+         * @name _handleUngroupedContextChange
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Re-syncs the {@link platui.Listview|Listview} child controls and DOM with the new 
+         * context array.
+         * 
+         * @param {any} newValue? The new context
+         * @param {any} oldValue? The old context
+         * 
+         * @returns {void}
+         */
+        //protected _handleUngroupedContextChange(newValue?: Array<any>, oldValue?: Array<any>): void {
+        //    this._setListener();
+
+        //    if (newValue.length === 0) {
+        //        this._removeItems(this.controls.length);
+        //        return;
+        //    }
+
+        //    this._setAliases();
+        //    this._executeEvent({
+        //        method: 'splice',
+        //        arguments: null,
+        //        returnValue: null,
+        //        oldArray: oldValue || [],
+        //        newArray: newValue || []
+        //    });
+        //}
 
         /**
          * @name loaded
@@ -522,8 +625,7 @@
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IListviewOptions>>{},
-                options = optionObj.value || <IListviewOptions>{},
+            var options = this.options.value,
                 _utils = this._utils,
                 isString = _utils.isString,
                 viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
@@ -543,7 +645,8 @@
                 return;
             }
 
-            this._determineItemTemplate(itemTemplate);
+            this._parseInnerTemplate();
+            this._determineTemplates(itemTemplate, options.groupHeaderTemplate);
 
             var isLoading = false,
                 isRefreshing = false;
@@ -568,7 +671,7 @@
             if (!_utils.isArray(this.context)) {
                 if (!_utils.isNull(this.context)) {
                     _Exception = this._Exception;
-                    _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                    _Exception.warn(this.type + '\'s context must be an Array.', _Exception.CONTEXT);
                 }
                 return;
             }
@@ -594,34 +697,16 @@
          * @returns {void}
          */
         render(index?: number, count?: number): void {
-            var _utils = this._utils,
-                isNumber = _utils.isNumber;
+            var isNumber = this._utils.isNumber;
 
             if (!isNumber(index)) {
                 index = this.count;
             }
 
-            var lastIndex = this.context.length,
-                maxCount = lastIndex - index,
+            var maxCount = this.context.length - index,
                 itemCount = isNumber(count) && maxCount >= count ? count : maxCount;
 
-            if (_utils.isFunction(this._templateSelector)) {
-                var promises: Array<plat.async.IThenable<void>> = [];
-                while (itemCount-- > 0) {
-                    promises.push(this._renderUsingFunction(index++));
-                }
-                this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises);
-                return;
-            }
-
-            var key = this._itemTemplate;
-            if (_utils.isUndefined(this.bindableTemplates.templates[key])) {
-                return;
-            }
-
-            this._disposeFromIndex(index);
-            this._addItems(itemCount, index);
-            this.count += itemCount;
+            this._createItems(index, itemCount);
         }
 
         /**
@@ -650,11 +735,29 @@
          * 
          * @param {string} itemTemplate The property for indicating either the item template or the 
          * item template selector.
+         * @param {string} groupHeaderTemplate The property for indicating the group header template.
          * 
          * @returns {void}
          */
-        protected _determineItemTemplate(itemTemplate: string): void {
-            var templateKey = this._normalizeTemplateName(itemTemplate);
+        protected _determineTemplates(itemTemplate: string, groupHeaderTemplate: string): void {
+            var _Exception: plat.IExceptionStatic,
+                _utils = this._utils,
+                templateKey = this._normalizeTemplateName(itemTemplate);
+
+            if (_utils.isString(groupHeaderTemplate)) {
+                this._isGrouped = true;
+
+                var groupTemplateKey = this._normalizeTemplateName(groupHeaderTemplate);
+                if (this._templates[groupTemplateKey] === true) {
+                    this._groupHeaderTemplate = groupTemplateKey;
+                } else {
+                    _Exception = this._Exception;
+                    _Exception.warn(__Listview + ' group header template "' + groupHeaderTemplate +
+                        '" was not a template defined in the DOM.', _Exception.TEMPLATE);
+                }
+
+                 this._groupHeaderTemplatePromise = this._createGroupTemplate();
+            }
 
             if (this._templates[templateKey] === true) {
                 this._itemTemplate = templateKey;
@@ -662,8 +765,8 @@
             }
 
             var controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
-            if (!this._utils.isFunction(controlProperty.value)) {
-                var _Exception = this._Exception;
+            if (!_utils.isFunction(controlProperty.value)) {
+                _Exception = this._Exception;
                 _Exception.warn(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.',
                     _Exception.TEMPLATE);
@@ -672,6 +775,137 @@
 
             this._templateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
             this._templateSelectorKeys = {};
+        }
+
+        /**
+         * @name _createGroupTemplate
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Construct the group template and add it to bindable templates.
+         * 
+         * @returns {plat.async.IThenable<void>} A promise that resolves when 
+         * the group template has been added to bindable templates.
+         */
+        protected _createGroupTemplate(): plat.async.IThenable<void> {
+            var _document = this._document,
+                _utils = this._utils,
+                options = this.options.value,
+                bindableTemplates = this.bindableTemplates,
+                groupHeaderTemplate = this._groupHeaderTemplate,
+                groupHeader = this._templates[groupHeaderTemplate],
+                listviewGroup = __Listview + '-group',
+                group = _document.createElement('div'),
+                groupContainer = _document.createElement('div'),
+                headerPromise: plat.async.IThenable<void>;
+
+            group.className = listviewGroup;
+            groupContainer.className = __Listview + '-items';
+            if (_utils.isString(groupHeaderTemplate)) {
+                headerPromise = bindableTemplates.templates[groupHeaderTemplate].then((headerTemplate) => {
+                    group.insertBefore(headerTemplate.cloneNode(true), null);
+                });
+            }
+
+            return this._Promise.resolve(headerPromise).then(() => {
+                group.insertBefore(groupContainer, null);
+                bindableTemplates.add(listviewGroup, group);
+            }).then(null, (error) => {
+                var _Exception = this._Exception;
+                _Exception.warn(this.type + ' error: ' + error, _Exception.COMPILE);
+            });
+        }
+
+        /**
+         * @name _createGroups
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handle group creation.
+         * 
+         * @returns {void}
+         */
+        protected _createGroups(): void {
+            var context = this.context,
+                length = context.length,
+                groups = this._groups = <plat.IObject<HTMLElement>>{},
+                container = this._container,
+                group: IListviewGroup;
+
+            for (var i = 0; i < length; ++i) {
+                group = context[i];
+                this._createGroup(i).then((fragment) => {
+                    groups[group.group] = <HTMLElement>fragment.firstChild;
+                    container.insertBefore(fragment, null);
+                });
+            }
+        }
+
+        /**
+         * @name _createGroup
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handle creation of a single group.
+         * 
+         * @param {number} index The index of the group in context.
+         * 
+         * @returns {void}
+         */
+        protected _createGroup(index: number): plat.async.IThenable<HTMLElement> {
+            return this.bindableTemplates.bind(__Listview + '-group', index, this._getGroupAliases(index));
+        }
+
+        /**
+         * @name _createItems
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a specified number of items.
+         * 
+         * @param {number} index The index to start creating items.
+         * @param {number} count The number of items to create.
+         * 
+         * @returns {void}
+         */
+        protected _createItems(index: number, count: number): void {
+            if (this._isGrouped) {
+                this._groupHeaderTemplatePromise.then(() => {
+                    this._createGroups();
+                }).then(null,(error) => {
+                    var _Exception = this._Exception;
+                    _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
+                });
+
+                return;
+            }
+
+            var _utils = this._utils;
+            if (_utils.isFunction(this._templateSelector)) {
+                var promises: Array<plat.async.IThenable<void>> = [];
+                while (count-- > 0) {
+                    promises.push(this._renderUsingFunction(index++));
+                }
+                this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises);
+                return;
+            }
+
+            var key = this._itemTemplate;
+            if (_utils.isUndefined(this.bindableTemplates.templates[key])) {
+                return;
+            }
+
+            this._disposeFromIndex(index);
+            this._addItems(count, index);
+            this.count += count;
         }
 
         /**
@@ -1230,17 +1464,25 @@
          * Dispose of the controls and DOM starting at a given index.
          * 
          * @param {number} index The starting index to dispose.
+         * @param {plat.ui.TemplateControl} control? The control whose controls we are to dispose.
          * 
          * @returns {void}
          */
-        protected _disposeFromIndex(index: number): void {
-            var controls = this.controls;
+        protected _disposeFromIndex(index: number, control?: plat.ui.TemplateControl): void {
+            control = control || this;
 
-            if (controls.length > 0) {
-                var dispose = this._TemplateControlFactory.dispose;
-                for (var i = this.context.length - 1; i >= index; --i) {
-                    if (controls.length > i) {
-                        dispose(controls[i]);
+            var controls = <Array<plat.ui.TemplateControl>>control.controls;
+            if (controls.length === 0) {
+                return;
+            }
+
+            var dispose = this._TemplateControlFactory.dispose,
+                disposingGroups = control === this && this._isGrouped;
+
+            for (var i = control.context.length - 1; i >= index; --i) {
+                if (controls.length > i) {
+                    dispose(controls[i]);
+                    if (!disposingGroups) {
                         this.count--;
                     }
                 }
@@ -1317,7 +1559,35 @@
          * the a DocumentFragment that represents an item.
          */
         protected _bindItem(index: number): plat.async.IThenable<DocumentFragment> {
-            return this.bindableTemplates.bind(this._itemTemplate, index, this._getAliases(index));
+            return this.bindableTemplates.bind(this._isGrouped ? __Listview + '-group' : this._itemTemplate,
+                index, this._getAliases(index));
+        }
+
+        /**
+         * @name _getGroupAliases
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Returns a resource alias object for an item in the array. The 
+         * resource object contains index:number, even:boolean, odd:boolean, 
+         * first:boolean, and last:boolean.
+         * 
+         * @param {number} index The index used to create the resource aliases.
+         * 
+         * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
+         */
+        protected _getGroupAliases(index: number): plat.IObject<plat.ui.IResource> {
+            var aliases: plat.IObject<plat.ui.IResource> = this._getAliases(index),
+                _aliases = this._aliases;
+
+            aliases[(<any>_aliases).group || 'group'] = {
+                value: this.context[index].group,
+                type: __OBSERVABLE_RESOURCE
+            };
+
+            return aliases;
         }
 
         /**
@@ -1331,13 +1601,23 @@
          * 
          * @param {Node} item The new Node to add.
          * 
-         * @returns {void}
+         * @returns {HTMLElement} The plat-listview-item container element.
          */
-        protected _appendItem(item: Node): void {
-            var platItem = this._document.createElement('div');
-            platItem.className = 'plat-listview-item';
-            platItem.insertBefore(item, null);
-            this._container.insertBefore(platItem, null);
+        protected _appendItem(item: Node): HTMLElement {
+            //var platItem: HTMLElement;
+            //if (this._isGrouped) {
+            //    platItem = <HTMLElement>item.firstChild;
+            //    this._container.insertBefore(item, null);
+            //} else {
+            //    platItem = this._document.createElement('div');
+            //    platItem.className = __Listview + '-item';
+            //    platItem.insertBefore(item, null);
+            //    this._container.insertBefore(platItem, null);
+            //}
+
+            var platItem = <HTMLElement>item.firstChild;
+            this._container.insertBefore(item, null);
+            return platItem;
         }
 
         /**
@@ -1378,15 +1658,10 @@
                 return;
             }
 
-            var _animator = this._animator,
-                itemContainer = this._document.createElement('div');
+            var itemContainer = this._appendItem(item),
+                currentAnimations = this._currentAnimations;
 
-            itemContainer.className = 'plat-listview-item';
-            itemContainer.insertBefore(item, null);
-            this._container.insertBefore(itemContainer, null);
-
-            var currentAnimations = this._currentAnimations;
-            currentAnimations.push(_animator.animate(itemContainer, key).then(() => {
+            currentAnimations.push(this._animator.animate(itemContainer, key).then(() => {
                 currentAnimations.shift();
             }));
         }
@@ -1398,38 +1673,33 @@
          * @access protected
          * 
          * @description
-         * Parse the Listview templates and create the templates object.
-         * 
-         * @param {Node} node The node whose childNodes we want to parse.
+         * Clones and parses thes innerTemplate and creates the templates object.
          * 
          * @returns {void}
          */
-        protected _parseTemplates(node: Node): void {
+        protected _parseInnerTemplate(): void {
             var _document = this._document,
                 regex = this._nodeNormalizeRegex,
                 templates = this._templates,
                 bindableTemplates = this.bindableTemplates,
                 slice = Array.prototype.slice,
-                childNodes: Array<Node> = slice.call(node.childNodes),
+                appendChildren = this.dom.appendChildren,
+                childNodes: Array<Node> = slice.call(this.innerTemplate.childNodes),
+                length = childNodes.length,
                 childNode: Node,
-                subNodes: Array<Node>,
                 templateName: string,
                 fragment: DocumentFragment;
 
             while (childNodes.length > 0) {
-                childNode = childNodes.shift();
-                if (childNode.nodeType === Node.ELEMENT_NODE) {
-                    fragment = _document.createDocumentFragment();
-                    subNodes = slice.call(childNode.childNodes);
-
-                    while (subNodes.length > 0) {
-                        fragment.appendChild(subNodes.shift());
-                    }
-
-                    templateName = this._normalizeTemplateName(childNode.nodeName);
-                    bindableTemplates.add(templateName, fragment);
-                    templates[templateName] = true;
+                childNode = childNodes.pop();
+                if (childNode.nodeType !== Node.ELEMENT_NODE) {
+                    continue;
                 }
+
+                fragment = appendChildren(childNode.childNodes);
+                templateName = this._normalizeTemplateName(childNode.nodeName);
+                bindableTemplates.add(templateName, fragment);
+                templates[templateName] = true;
             }
         }
 
@@ -1680,12 +1950,25 @@
          * @kind property
          * @access public
          * 
-         * @type {string|(item?: any, templates?: plat.IObject<Node>) => string}
+         * @type {string|(item?: any, index?: number) => string}
          * 
          * @description
-         * The camel-cased node name of the desired item template or a defined template selector function.
+         * The node name of the desired item template or a defined item template selector function.
          */
         itemTemplate?: any;
+
+        /**
+         * @name groupHeaderTemplate
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The node name of the desired group template or a defined group template selector function.
+         */
+        groupHeaderTemplate?: any;
 
         /**
          * @name loading
@@ -1767,5 +2050,45 @@
          * will be to pull right when the list is scrolled all the way to the left.
          */
         onRefresh?: string;
+    }
+
+    /**
+     * @name IListviewGroup
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * Defines the necessary key-value pairs for a {@link platui.Listview|Listview} group that makes up 
+     * a grouped {@link platui.Listview|Listview's} context.
+     */
+    export interface IListviewGroup {
+        /**
+         * @name group
+         * @memberof platui.IListviewGroup
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The group name.
+         * 
+         * @remarks
+         * Will be available in the groupHeaderTemplate as @group.
+         */
+        group: string;
+
+        /**
+         * @name items
+         * @memberof platui.IListviewGroup
+         * @kind property
+         * @access public
+         * 
+         * @type {Array<any>}
+         * 
+         * @description
+         * The items contained in each group.
+         */
+        items: Array<any>;
     }
 }

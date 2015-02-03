@@ -25,7 +25,7 @@
          */
         templateString =
         '<div class="plat-carousel-container">\n' +
-        '    <plat-foreach class="plat-carousel-slider"></plat-foreach>\n' +
+        '    <' + __ForEach + ' class="plat-carousel-slider"></' + __ForEach + '>\n' +
         '</div>\n';
 
         /**

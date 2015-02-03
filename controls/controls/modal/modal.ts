@@ -179,8 +179,8 @@
          * @returns {void}
          */
         initialize(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IModalOptions>>{},
-                options = optionObj.value || <IModalOptions>{};
+            var optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IModalOptions>>{}),
+                options = optionObj.value || (optionObj.value = <IModalOptions>{});
 
             this.templateUrl = options.templateUrl;
             this.setClasses();
@@ -235,8 +235,7 @@
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IModalOptions>>{},
-                options = optionObj.value || <IModalOptions>{},
+            var options = this.options.value,
                 transition = options.transition;
 
             // in case of cloning
