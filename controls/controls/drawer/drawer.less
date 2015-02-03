@@ -70,16 +70,12 @@
         .touch-action(none);
 
         &.plat-drawer-open {
-            &::after {
-                content: "";
+            .plat-clickeater {
                 position: absolute;
-                top: 0;
-                left: 0;
                 background-color: transparent;
                 overflow: hidden;
-                z-index: 100;
+                z-index: 9999;
                 .fill();
-                .user-select(none);
                 .touch-action(none);
             }
         }

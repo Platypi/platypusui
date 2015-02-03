@@ -149,17 +149,17 @@
         protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
 
         /**
-         * @name _orientation
+         * @name _isVertical
          * @memberof platui.Carousel
          * @kind property
          * @access protected
          * 
-         * @type {string}
+         * @type {boolean}
          * 
          * @description
-         * The orientation of this control.
+         * Whether the control is vertical or horizontal.
          */
-        protected _orientation: string;
+        protected _isVertical = false;
 
         /**
          * @name _transform
@@ -456,12 +456,13 @@
 
             var optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
                 options = optionObj.value || <ICarouselOptions>{},
-                orientation = this._orientation = options.orientation || 'horizontal',
                 type = options.type || 'track',
-                index = options.index;
+                index = options.index,
+                orientation = this._validateOrientation(options.orientation);
 
             this.dom.addClass(this.element, __Plat + orientation);
             index = _utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
+
             // reset index in case Bind is setting the value
             this._index = 0;
             this._onLoad = () => {
@@ -762,17 +763,12 @@
                 swipe: string,
                 reverseSwipe: string;
 
-            switch (this._orientation) {
-                case 'horizontal':
-                    swipe = __$swipe + 'left';
-                    reverseSwipe = __$swipe + 'right';
-                    break;
-                case 'vertical':
-                    swipe = __$swipe + 'up';
-                    reverseSwipe = __$swipe + 'down';
-                    break;
-                default:
-                    return;
+            if (this._isVertical) {
+                swipe = __$swipe + 'up';
+                reverseSwipe = __$swipe + 'down';
+            } else {
+                swipe = __$swipe + 'left';
+                reverseSwipe = __$swipe + 'right';
             }
 
             this.addEventListener(container, swipe, swipeFn, false);
@@ -797,17 +793,12 @@
                 track: string,
                 reverseTrack: string;
 
-            switch (this._orientation) {
-                case 'horizontal':
-                    track = __$track + 'left';
-                    reverseTrack = __$track + 'right';
-                    break;
-                case 'vertical':
-                    track = __$track + 'up';
-                    reverseTrack = __$track + 'down';
-                    break;
-                default:
-                    return;
+            if (this._isVertical) {
+                track = __$track + 'up';
+                reverseTrack = __$track + 'down';
+            } else {
+                track = __$track + 'left';
+                reverseTrack = __$track + 'right';
             }
 
             this.addEventListener(container, track, trackFn, false);
@@ -829,33 +820,39 @@
          * @returns {void}
          */
         protected _handleSwipe(ev: plat.ui.IGestureEvent): void {
-            var direction = ev.direction.primary;
-            this._hasSwiped = true;
+            var direction = ev.direction.primary,
+                hasSwiped = false;
 
             switch (direction) {
                 case 'left':
-                    if (this._orientation === 'horizontal') {
+                    if (!this._isVertical && this.index + 1 < this.context.length) {
+                        hasSwiped = true;
                         this.goToNext();
                     }
                     break;
                 case 'right':
-                    if (this._orientation === 'horizontal') {
+                    if (!this._isVertical && this.index - 1 >= 0) {
+                        hasSwiped = true;
                         this.goToPrevious();
                     }
                     break;
                 case 'up':
-                    if (this._orientation === 'vertical') {
+                    if (this._isVertical && this.index + 1 < this.context.length) {
+                        hasSwiped = true;
                         this.goToNext();
                     }
                     break;
                 case 'down':
-                    if (this._orientation === 'vertical') {
+                    if (this._isVertical && this.index - 1 >= 0) {
+                        hasSwiped = true;
                         this.goToPrevious();
                     }
                     break;
                 default:
                     return;
             }
+
+            this._hasSwiped = hasSwiped;
         }
 
         /**
@@ -878,17 +875,30 @@
 
             if (!this._utils.isNull(this._animationThenable)) {
                 this._animationThenable = this._animationThenable.cancel().then(() => {
-                    this._inTouch = true;
-                    this._lastTouch = {
-                        x: ev.clientX,
-                        y: ev.clientY
-                    };
-
                     this._animationThenable = null;
+                    this._initTouch(ev);
                 });
                 return;
             }
 
+            this._initTouch(ev);
+        }
+
+        /**
+         * @name _initTouch
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Indicates touch is in progress and sets the initial touch point 
+         * when the user touches the {@link platui.Carousel|Carousel}.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The touch event.
+         * 
+         * @returns {void}
+         */
+        protected _initTouch(ev: plat.ui.IGestureEvent): void {
             this._inTouch = true;
             this._lastTouch = {
                 x: ev.clientX,
@@ -918,20 +928,20 @@
                 return;
             }
 
-            var distanceMoved = (this._orientation === 'vertical') ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
+            var distanceMoved = this._isVertical ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
                     if (this._index < this.context.length - 1) {
-                        this._utils.requestAnimationFrame(this.goToNext, this);
+                        this.goToNext();
                         return;
                     }
                 } else if (this._index > 0) {
-                    this._utils.requestAnimationFrame(this.goToPrevious, this);
+                    this.goToPrevious();
                     return;
                 }
             }
 
-            this._utils.requestAnimationFrame(this._reset, this);
+            this._reset();
         }
 
         /**
@@ -968,7 +978,7 @@
          * @returns {string} The translation value.
          */
         protected _calculateStaticTranslation(interval: number): string {
-            if (this._orientation === 'vertical') {
+            if (this._isVertical) {
                 return 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)';
             }
 
@@ -989,7 +999,7 @@
          * @returns {string} The translation value.
          */
         protected _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
-            if (this._orientation === 'vertical') {
+            if (this._isVertical) {
                 return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
             }
 
@@ -1008,19 +1018,19 @@
          * @returns {void}
          */
         protected _setTransform(): void {
-            var style = this.element.style,
-                isUndefined = this._utils.isUndefined,
-                transform: string;
+            var style = this._slider.style,
+                isUndefined = this._utils.isUndefined;
 
-            if (isUndefined(style.transform)) {
-                var vendorPrefix = this._compat.vendorPrefix;
-                if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
-                } else if (!isUndefined(style[<any>(vendorPrefix.js + 'Transform')])) {
-                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
-                }
-            } else {
-                transform = this._transform = 'transform';
+            if (!isUndefined(style.transform)) {
+                this._transform = 'transform';
+                return;
+            }
+
+            var vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
+            } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
             }
         }
 
@@ -1042,17 +1052,14 @@
                 el = isNode ? element : this._container,
                 dependencyProperty: string;
 
-            switch (this._orientation) {
-                case 'vertical':
-                    this._positionProperty = 'top';
-                    dependencyProperty = 'height';
-                    this._intervalOffset = el.offsetHeight;
-                    break;
-                default:
-                    this._positionProperty = 'left';
-                    dependencyProperty = 'width';
-                    this._intervalOffset = el.offsetWidth;
-                    break;
+            if (this._isVertical) {
+                this._positionProperty = 'top';
+                dependencyProperty = 'height';
+                this._intervalOffset = el.offsetHeight;
+            } else {
+                this._positionProperty = 'left';
+                dependencyProperty = 'width';
+                this._intervalOffset = el.offsetWidth;
             }
 
             if (!(isNode || this._intervalOffset)) {
@@ -1061,6 +1068,41 @@
             }
 
             return true;
+        }
+
+        /**
+         * @name _validateOrientation
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Checks the orientation of the control and ensures it is valid. 
+         * Will default to "horizontal" if invalid.
+         * 
+         * @param {string} orientation The element to base the length off of.
+         * 
+         * @returns {string} The orientation to be used.
+         */
+        protected _validateOrientation(orientation: string): string {
+            if (this._utils.isUndefined(orientation)) {
+                return 'horizontal';
+            }
+
+            var validOrientation: string;
+            if (orientation === 'horizontal') {
+                validOrientation = orientation;
+            } else if (orientation === 'vertical') {
+                validOrientation = orientation;
+                this._isVertical = true;
+            } else {
+                var _Exception = this._Exception;
+                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."',
+                    _Exception.CONTROL);
+                validOrientation = 'horizontal';
+            }
+
+            return validOrientation;
         }
 
         /**

@@ -1,0 +1,130 @@
+﻿@import '../global/variables.less';
+@import '../global/mixins.less';
+@import 'listview.variables.less';
+
+/// ============= Listview Constants ============= ///
+
+#Listview_Local {
+    .plat-ring-constants() {
+        height: 2.5em;
+        width: 100%;
+
+        .plat-ring {
+            height: 2em;
+            width: 2em;
+            margin-top: 0.25em;
+            margin-bottom: 0.25em;
+            position: absolute;
+            .calc(left, '50% - 1em');
+
+            .plat-progress-container {
+                .plat-animated-ring {
+                    .border-radius(2em);
+                }
+            }
+        }
+    }
+}
+
+/// =========== Listview Default Styles =========== ///
+
+.plat-listview {
+    #Listview;
+    #Listview_Local;
+    .fill();
+    .box-sizing(border-box);
+    position: relative;
+    overflow: hidden;
+
+    .plat-listview-viewport {
+        .fill();
+        .box-sizing(border-box);
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        overflow: hidden;
+        
+        .plat-scroll-container {
+            .fill();
+            .box-sizing(border-box);
+
+            .plat-container {
+                .fill();
+                .box-sizing(border-box);
+            }
+        }
+    }
+
+    &.plat-vertical {
+        .plat-listview-viewport {
+            .plat-scroll-container {
+                .scroll(y);
+
+                .plat-container {
+                    .plat-infinite {
+                        .plat-ring-constants();
+                        position: relative;
+                    }
+                }
+            }
+
+            &.plat-manipulation-prep {
+                background-color: @manipulated-viewport-background-color;
+
+                .plat-scroll-container {
+                    overflow: hidden;
+                }
+            }
+            
+            &.plat-transition {
+                .translateZ(0);
+                .transition(@refresh-transition);
+            }
+        }
+
+        .plat-refresh,
+        .plat-incremental {
+            .plat-ring-constants();
+            position: absolute;
+            left: 0;
+            z-index: 0;
+
+            .plat-ring {
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .animation-play-state(paused);
+                    }
+                }
+            }
+
+            &.plat-play {
+                .plat-ring {
+                    .plat-progress-container {
+                        .plat-animated-ring {
+                            .animation-play-state(running);
+                        }
+                    }
+                }
+            }
+        }
+
+        .plat-refresh {
+            top: 0;
+        }
+
+        .plat-incremental {
+            bottom: 0;
+        }
+    }
+
+    &.plat-horizontal {
+        .plat-scroll-container {
+            .scroll(x);
+
+            .plat-container {
+
+            }
+        }
+    }
+}

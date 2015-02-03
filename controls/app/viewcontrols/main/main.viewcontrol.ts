@@ -33,7 +33,8 @@ module app {
                 modal2: false,
                 modal3: false,
             },
-            carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }]
+            carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }],
+            listview: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
@@ -43,6 +44,15 @@ module app {
 
         loaded() {
             var context = this.context;
+        }
+
+        addListItem() {
+            var listview = this.context.listview;
+            listview.push(listview[listview.length - 1] + 1);
+        }
+
+        popListItem() {
+            this.context.listview.pop();
         }
 
         foo(ev?: any) {
@@ -55,6 +65,36 @@ module app {
 
         toggleModal(modal: string) {
             this.context.modals[modal] = !this.context.modals[modal];
+        }
+
+        load() {
+            var promise: plat.async.IPromise = plat.acquire('$Promise');
+
+            return new promise((resolve, reject) => {
+                setTimeout(() => {
+                    this.context.listview.unshift(0);
+                    resolve();
+                }, 10000);
+            });
+        }
+
+        renderListview(item: number, index: number) {
+            if (index % 2 === 0) {
+                return 'listview-template';
+            }
+
+            return 'listview-template2';
+        }
+
+        refresh() {
+            var promise: plat.async.IPromise = plat.acquire('$Promise');
+
+            return new promise((resolve, reject) => {
+                setTimeout(() => {
+                    this.context.listview = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                    resolve();
+                }, 5000);
+            });
         }
     }
 

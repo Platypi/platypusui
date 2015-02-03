@@ -28,7 +28,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>61244</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
@@ -57,6 +57,7 @@
     <TypeScriptCompile Include="drawer\drawer.ts" />
     <TypeScriptCompile Include="input\input.ts" />
     <TypeScriptCompile Include="lib\platypus.ts" />
+    <TypeScriptCompile Include="listview\listview.ts" />
     <TypeScriptCompile Include="modal\modal.ts" />
     <TypeScriptCompile Include="progress\determinate\progressbar\progressbar.ts" />
     <TypeScriptCompile Include="progress\indeterminate\progressring\progressring.ts" />
@@ -206,6 +207,18 @@
     </Content>
     <Content Include="lib\platypus.min.css">
       <DependentUpon>platypus.css</DependentUpon>
+    </Content>
+    <Content Include="listview\listview.css">
+      <DependentUpon>listview.less</DependentUpon>
+    </Content>
+    <Content Include="listview\listview.min.css">
+      <DependentUpon>listview.css</DependentUpon>
+    </Content>
+    <Content Include="listview\listview.variables.css">
+      <DependentUpon>listview.variables.less</DependentUpon>
+    </Content>
+    <Content Include="listview\listview.variables.min.css">
+      <DependentUpon>listview.variables.css</DependentUpon>
     </Content>
     <Content Include="modal\modal.css">
       <DependentUpon>modal.less</DependentUpon>
@@ -409,173 +422,10 @@
     <Content Include="carousel\carousel.variables.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="lib\platypus.css.map">
-      <DependentUpon>platypus.css</DependentUpon>
-    </Content>
+    <Content Include="listview\listview.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="toggle\toggle.css.map">
-      <DependentUpon>toggle.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="button\button.css.map">
-      <DependentUpon>button.css</DependentUpon>
-    </Content>
-    <Content Include="carousel\carousel.css.map">
-      <DependentUpon>carousel.css</DependentUpon>
-    </Content>
-    <Content Include="checkbox\checkbox.css.map">
-      <DependentUpon>checkbox.css</DependentUpon>
-    </Content>
-    <Content Include="drawer\drawer.css.map">
-      <DependentUpon>drawer.css</DependentUpon>
-    </Content>
-    <Content Include="global\platypus.css.map">
-      <DependentUpon>platypus.css</DependentUpon>
-    </Content>
-    <Content Include="global\typography.css.map">
-      <DependentUpon>typography.css</DependentUpon>
-    </Content>
-    <Content Include="grid\grid.css.map">
-      <DependentUpon>grid.css</DependentUpon>
-    </Content>
-    <Content Include="input\input.css.map">
-      <DependentUpon>input.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="modal\modal.css.map">
-      <DependentUpon>modal.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="global\animations.css.map">
-      <DependentUpon>animations.css</DependentUpon>
-    </Content>
-    <Content Include="global\gestures.css.map">
-      <DependentUpon>gestures.css</DependentUpon>
-    </Content>
-    <Content Include="progress\indeterminate\progressring\progressring.css.map">
-      <DependentUpon>progressring.css</DependentUpon>
-    </Content>
-    <Content Include="radio\radio.css.map">
-      <DependentUpon>radio.css</DependentUpon>
-    </Content>
-    <Content Include="range\range.css.map">
-      <DependentUpon>range.css</DependentUpon>
-    </Content>
-    <Content Include="select\select.css.map">
-      <DependentUpon>select.css</DependentUpon>
-    </Content>
-    <Content Include="slider\slider.css.map">
-      <DependentUpon>slider.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="progress\determinate\progressbar\progressbar.css.map">
-      <DependentUpon>progressbar.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="global\variables.css.map">
-      <DependentUpon>variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="carousel\carousel.variables.css.map">
-      <DependentUpon>carousel.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="checkbox\checkbox.variables.css.map">
-      <DependentUpon>checkbox.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="global\mixins.css.map">
-      <DependentUpon>mixins.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="drawer\drawer.variables.css.map">
-      <DependentUpon>drawer.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="modal\modal.variables.css.map">
-      <DependentUpon>modal.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="input\input.variables.css.map">
-      <DependentUpon>input.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="range\range.variables.css.map">
-      <DependentUpon>range.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="progress\progress.variables.css.map">
-      <DependentUpon>progress.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="radio\radio.variables.css.map">
-      <DependentUpon>radio.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="slider\slider.variables.css.map">
-      <DependentUpon>slider.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="toggle\toggle.variables.css.map">
-      <DependentUpon>toggle.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="select\select.variables.css.map">
-      <DependentUpon>select.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="checkbox\checkbox.mixins.css.map">
-      <DependentUpon>checkbox.mixins.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="toggle\toggle.mixins.css.map">
-      <DependentUpon>toggle.mixins.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="global\media.css.map">
-      <DependentUpon>media.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="grid\grid.mixins.css.map">
-      <DependentUpon>grid.mixins.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="grid\grid.variables.css.map">
-      <DependentUpon>grid.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="button\button.variables.css.map">
-      <DependentUpon>button.variables.css</DependentUpon>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="button\button.mixins.css.map">
-      <DependentUpon>button.mixins.css</DependentUpon>
-    </Content>
+    <Content Include="listview\listview.variables.less" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="popover\popover.less" />

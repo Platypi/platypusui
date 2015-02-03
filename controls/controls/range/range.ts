@@ -38,7 +38,7 @@
          */
         templateString =
         '<div class="plat-range-container">\n' +
-        '    <div class="plat-slider-offset">\n' +
+        '    <div class="plat-range-track">\n' +
         '        <div class="plat-lower-knob"></div>\n' +
         '        <div class="plat-upper-knob"></div>\n' +
         '    </div>\n' +
@@ -253,17 +253,17 @@
         protected _step: number;
 
         /**
-         * @name _orientation
+         * @name _isVertical
          * @memberof platui.Range
          * @kind property
          * @access protected
          * 
-         * @type {string}
+         * @type {boolean}
          * 
          * @description
-         * The orientation of this control.
+         * Whether the control is vertical or horizontal.
          */
-        protected _orientation: string;
+        protected _isVertical = false;
 
         /**
          * @name _reversed
@@ -342,6 +342,19 @@
          * A boolean value specifying that this control is the one modifying the observed context values.
          */
         protected _isSelf = false;
+
+        /**
+         * @name _touchState
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * An enum denoting the current touch state of the user.
+         */
+        protected _touchState = 0;
 
         /**
          * @name _cloneAttempts
@@ -459,7 +472,6 @@
                 optionMin = options.min,
                 optionMax = options.max,
                 step = options.step,
-                orientation = this._orientation = options.orientation || 'horizontal',
                 reversed = this._reversed = (options.reverse === true),
                 contextLower = context.lower,
                 contextUpper = context.upper,
@@ -467,7 +479,7 @@
                 max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
                 lower = isNumber(contextLower) ? contextLower : isNumber(optionLower) ? optionLower : min,
                 upper = isNumber(contextUpper) ? contextUpper : isNumber(optionUpper) ? optionUpper : max,
-                className = __Plat + orientation,
+                className = __Plat + this._validateOrientation(options.orientation),
                 _Exception: plat.IExceptionStatic;
 
             this._lowerKnob = <HTMLElement>slider.firstElementChild;
@@ -498,7 +510,7 @@
             this._setPositionAndLength();
             this._setIncrement();
             this._setLowerKnob(min);
-            this._initializeEvents(orientation);
+            this._initializeEvents();
 
             if (!_utils.isObject(this.context)) {
                 _Exception = this._Exception;
@@ -542,6 +554,11 @@
                 } else {
                     return;
                 }
+            } else if (this._touchState === 2) {
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set value of ' + this.type +
+                    '\'s lower knob while the user is modifying the value.', _Exception.CONTROL);
+                return;
             }
 
             this._setLower(value, true);
@@ -577,6 +594,11 @@
                 } else {
                     return;
                 }
+            } else if (this._touchState === 3) {
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set value of ' + this.type +
+                    '\'s upper knob while the user is modifying the value.', _Exception.CONTROL);
+                return;
             }
 
             this._setUpper(value, true);
@@ -598,6 +620,11 @@
             this.observe(context, 'lower', (newValue: number, oldValue: number) => {
                 if (this._isSelf || newValue === oldValue) {
                     return;
+                } else if (this._touchState === 2) {
+                    var _Exception = this._Exception;
+                    _Exception.warn('Cannot set value of ' + this.type +
+                        ' while the user is modifying the value.', _Exception.CONTROL);
+                    return;
                 }
 
                 this.setLower(newValue);
@@ -605,6 +632,11 @@
 
             this.observe(context, 'upper', (newValue: number, oldValue: number) => {
                 if (this._isSelf || newValue === oldValue) {
+                    return;
+                } else if (this._touchState === 3) {
+                    var _Exception = this._Exception;
+                    _Exception.warn('Cannot set value of ' + this.type +
+                        ' while the user is modifying the value.', _Exception.CONTROL);
                     return;
                 }
 
@@ -621,11 +653,9 @@
          * @description
          * Initialize the proper tracking events.
          * 
-         * @param {string} orientation The orientation of the control.
-         * 
          * @returns {void}
          */
-        protected _initializeEvents(orientation: string): void {
+        protected _initializeEvents(): void {
             var lowerKnob = this._lowerKnob,
                 upperKnob = this._upperKnob,
                 touchstart = this._touchStart,
@@ -635,17 +665,12 @@
                 track: string,
                 reverseTrack: string;
 
-            switch (orientation) {
-                case 'horizontal':
-                    track = __$track + 'right';
-                    reverseTrack = __$track + 'left';
-                    break;
-                case 'vertical':
-                    track = __$track + 'down';
-                    reverseTrack = __$track + 'up';
-                    break;
-                default:
-                    return;
+            if (this._isVertical) {
+                track = __$track + 'down';
+                reverseTrack = __$track + 'up';
+            } else {
+                track = __$track + 'right';
+                reverseTrack = __$track + 'left';
             }
 
             this.addEventListener(lowerKnob, __$touchstart, touchstart, false);
@@ -654,6 +679,8 @@
             this.addEventListener(lowerKnob, reverseTrack, trackLower, false);
             this.addEventListener(upperKnob, track, trackUpper, false);
             this.addEventListener(upperKnob, reverseTrack, trackUpper, false);
+            this.addEventListener(lowerKnob, __$touchend, touchEnd, false);
+            this.addEventListener(upperKnob, __$touchend, touchEnd, false);
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
             this.addEventListener(this._window, 'resize', () => {
@@ -678,9 +705,12 @@
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
-            if (ev.touches.length > 1) {
+            var touchState = this._touchState;
+            if (touchState === 1 || touchState === 2 || touchState === 3) {
                 return;
             }
+
+            this._touchState = 1;
 
             var target = <HTMLElement>ev.currentTarget,
                 lastTouch = this._lastTouch;
@@ -715,6 +745,14 @@
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
+            var touchState = this._touchState;
+            if (touchState === 0 || touchState === 4) {
+                this._touchState = 0;
+                return;
+            }
+
+            this._touchState = 4;
+
             var lastTouch = this._lastTouch,
                 target = ev.currentTarget;
 
@@ -722,18 +760,22 @@
                 return;
             }
 
-            var isLower = target === this._lowerKnob,
-                newOffset = this._calculateOffset(ev, isLower);
+            this._utils.requestAnimationFrame(() => {
+                this._touchState = 0;
 
-            if (isLower) {
-                if (lastTouch.value !== this.lower) {
+                var isLower = target === this._lowerKnob,
+                    newOffset = this._calculateOffset(ev, isLower);
+
+                if (isLower) {
+                    if (lastTouch.value !== this.lower) {
+                        this._trigger('change');
+                    }
+                } else if (lastTouch.value !== this.upper) {
                     this._trigger('change');
                 }
-            } else if (lastTouch.value !== this.upper) {
-                this._trigger('change');
-            }
 
-            this._setOffset(newOffset, isLower);
+                this._setOffset(newOffset, isLower);
+            });
         }
 
         /**
@@ -779,6 +821,15 @@
          * @returns {void}
          */
         protected _trackLower(ev: plat.ui.IGestureEvent): void {
+            var touchState = this._touchState;
+            if (touchState !== 2) {
+                if (touchState === 1) {
+                    this._touchState = 2;
+                } else if (touchState === 0 || touchState === 3) {
+                    return;
+                }
+            }
+
             var maxOffset = this._maxOffset,
                 position = this._calculateOffset(ev, true),
                 value: number;
@@ -825,6 +876,15 @@
          * @returns {void}
          */
         protected _trackUpper(ev: plat.ui.IGestureEvent): void {
+            var touchState = this._touchState;
+            if (touchState !== 3) {
+                if (touchState === 1) {
+                    this._touchState = 3;
+                } else if (touchState === 0 || touchState === 2) {
+                    return;
+                }
+            }
+
             var maxOffset = this._maxOffset,
                 position = this._calculateOffset(ev, false),
                 value: number;
@@ -979,7 +1039,7 @@
             var currentOffset = isLower ? this._lowerKnobOffset : this._upperKnobOffset,
                 displacement: number;
 
-            if (this._orientation === 'vertical') {
+            if (this._isVertical) {
                 displacement = this._reversed ? ev.clientY - this._lastTouch.y : this._lastTouch.y - ev.clientY;
             } else {
                 displacement = this._reversed ? this._lastTouch.x - ev.clientX : ev.clientX - this._lastTouch.x;
@@ -1133,21 +1193,14 @@
             var isNode = this._utils.isNode(element),
                 el = isNode ? element : this._slider.parentElement;
 
-            switch (this._orientation) {
-                case 'horizontal':
-                    this._lengthProperty = 'width';
-                    this._positionProperty = this._reversed ? 'right' : 'left';
-                    this._maxOffset = el.offsetWidth;
-                    break;
-                case 'vertical':
-                    this._lengthProperty = 'height';
-                    this._positionProperty = this._reversed ? 'top' : 'bottom';
-                    this._maxOffset = el.offsetHeight;
-                    break;
-                default:
-                    var _Exception = this._Exception;
-                    _Exception.warn('Invalid orientation "' + this._orientation + '" for "' + this.type + '."', _Exception.CONTROL);
-                    return;
+            if (this._isVertical) {
+                this._lengthProperty = 'height';
+                this._positionProperty = this._reversed ? 'top' : 'bottom';
+                this._maxOffset = el.offsetHeight;
+            } else {
+                this._lengthProperty = 'width';
+                this._positionProperty = this._reversed ? 'right' : 'left';
+                this._maxOffset = el.offsetWidth;
             }
 
             if (!(isNode || this._maxOffset)) {
@@ -1234,6 +1287,41 @@
             var domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
             domEvent.initialize(this.element, event);
             domEvent.trigger();
+        }
+
+        /**
+         * @name _validateOrientation
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Checks the orientation of the control and ensures it is valid. 
+         * Will default to "horizontal" if invalid.
+         * 
+         * @param {string} orientation The element to base the length off of.
+         * 
+         * @returns {string} The orientation to be used.
+         */
+        protected _validateOrientation(orientation: string): string {
+            if (this._utils.isUndefined(orientation)) {
+                return 'horizontal';
+            }
+
+            var validOrientation: string;
+            if (orientation === 'horizontal') {
+                validOrientation = orientation;
+            } else if (orientation === 'vertical') {
+                validOrientation = orientation;
+                this._isVertical = true;
+            } else {
+                var _Exception = this._Exception;
+                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."',
+                    _Exception.CONTROL);
+                validOrientation = 'horizontal';
+            }
+
+            return validOrientation;
         }
 
         /**

@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.1 (http://getplatypi.com) 
+ * PlatypusTS v0.10.3 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -19,6 +19,7 @@ module plat {
         __AppStatic = __prefix + 'AppStatic',
         __App = __prefix + 'App',
         __Http = __prefix + 'Http',
+        __HttpRequestInstance = __prefix + 'HttpRequestInstance',
         __HttpConfig = __prefix + 'HttpConfig',
         __Promise = __prefix + 'Promise',
         __Compat = __prefix + 'Compat',
@@ -29,21 +30,27 @@ module plat {
         __ErrorEventStatic = __prefix + 'ErrorEventStatic',
         __EventManagerStatic = __prefix + 'EventManagerStatic',
         __LifecycleEventStatic = __prefix + 'LifecycleEventStatic',
+        __LifecycleEventInstance = __prefix + 'LifecycleEventInstance',
         __ExceptionStatic = __prefix + 'ExceptionStatic',
         __Parser = __prefix + 'Parser',
         __Regex = __prefix + 'Regex',
         __Tokenizer = __prefix + 'Tokenizer',
         __NavigatorInstance = __prefix + 'NavigatorInstance',
         __ContextManagerStatic = __prefix + 'ContextManagerStatic',
+        __ContextManagerInstance = __prefix + 'ContextManagerInstance',
         __Compiler = __prefix + 'Compiler',
         __CommentManagerFactory = __prefix + 'CommentManagerFactory',
+        __CommentManagerInstance = __prefix + 'CommentManagerInstance',
         __ElementManagerFactory = __prefix + 'ElementManagerFactory',
+        __ElementManagerInstance = __prefix + 'ElementManagerInstance',
         __NodeManagerStatic = __prefix + 'NodeManagerStatic',
         __TextManagerFactory = __prefix + 'TextManagerFactory',
+        __TextManagerInstance = __prefix + 'TextManagerInstance',
         __CacheFactory = __prefix + 'CacheFactory',
         __ManagerCache = __prefix + 'ManagerCache',
         __TemplateCache = __prefix + 'TemplateCache',
         __Animator = __prefix + 'Animator',
+        __AttributesFactory = __prefix + 'AttributesFactory',
         __AttributesInstance = __prefix + 'AttributesInstance',
         __BindableTemplatesFactory = __prefix + 'BindableTemplatesFactory',
         __Dom = __prefix + 'Dom',
@@ -51,7 +58,9 @@ module plat {
         __IDomEventsConfig = __prefix + 'IDomEventsConfig',
         __DomEventInstance = __prefix + 'DomEventInstance',
         __ResourcesFactory = __prefix + 'ResourcesFactory',
+        __ResourcesInstance = __prefix + 'ResourcesInstance',
         __TemplateControlFactory = __prefix + 'TemplateControlFactory',
+        __TemplateControlInstance = __prefix + 'TemplateControlInstance',
         __Utils = __prefix + 'Utils',
         __Browser = __prefix + 'Browser',
         __BrowserConfig = __prefix + 'BrowserConfig',
@@ -285,22 +294,25 @@ module plat {
     /* tslint:enable:no-unused-variable */
     
     /* tslint:disable:no-unused-variable */
-    var __nativeIsArray = !!Array.isArray,
-        __uids__: plat.IObject<Array<string>> = {},
-        objToString = Object.prototype.toString,
-        toStringClass = '[object ',
-        errorClass = toStringClass + 'Error]',
-        fileClass = toStringClass + 'File]',
-        arrayClass = toStringClass + 'Array]',
-        boolClass = toStringClass + 'Boolean]',
-        dateClass = toStringClass + 'Date]',
-        funcClass = toStringClass + 'Function]',
-        numberClass = toStringClass + 'Number]',
-        objectClass = toStringClass + 'Object]',
-        regexpClass = toStringClass + 'RegExp]',
-        stringClass = toStringClass + 'String]',
-        promiseClass = toStringClass + 'Promise]',
-        objectTypes: any = {
+    var _nativeIsArray = !!Array.isArray,
+        _uids: plat.IObject<Array<string>> = {},
+        _Promise: plat.async.IPromise,
+        _compat: plat.Compat,
+        _camelCaseRegex: RegExp,
+        _objToString = Object.prototype.toString,
+        _toStringClass = '[object ',
+        _errorClass = _toStringClass + 'Error]',
+        _fileClass = _toStringClass + 'File]',
+        _arrayClass = _toStringClass + 'Array]',
+        _boolClass = _toStringClass + 'Boolean]',
+        _dateClass = _toStringClass + 'Date]',
+        _funcClass = _toStringClass + 'Function]',
+        _numberClass = _toStringClass + 'Number]',
+        _objectClass = _toStringClass + 'Object]',
+        _regexpClass = _toStringClass + 'RegExp]',
+        _stringClass = _toStringClass + 'String]',
+        _promiseClass = _toStringClass + 'Promise]',
+        _objectTypes: any = {
             'boolean': false,
             'function': true,
             'object': true,
@@ -390,7 +402,7 @@ module plat {
     }
     
     function isError(obj: any): boolean {
-        return objToString.call(obj) === errorClass;
+        return _objToString.call(obj) === _errorClass;
     }
     
     function isObject(obj: any): boolean {
@@ -414,19 +426,19 @@ module plat {
     }
     
     function isFile(obj: any): boolean {
-        return isObject(obj) && objToString.call(obj) === fileClass;
+        return isObject(obj) && _objToString.call(obj) === _fileClass;
     }
     
     function isString(obj: any): boolean {
-        return typeof obj === 'string' || isObject(obj) && objToString.call(obj) === stringClass;
+        return typeof obj === 'string' || isObject(obj) && _objToString.call(obj) === _stringClass;
     }
     
     function isRegExp(obj: any): boolean {
-        return isObject(obj) && objToString.call(obj) === regexpClass;
+        return isObject(obj) && _objToString.call(obj) === _regexpClass;
     }
     
     function isPromise(obj: any): boolean {
-        return isObject(obj) && (objToString.call(obj) === promiseClass || isFunction(obj.then));
+        return isObject(obj) && (_objToString.call(obj) === _promiseClass || isFunction(obj.then));
     }
     
     function isEmpty(obj: any): boolean {
@@ -446,11 +458,11 @@ module plat {
     }
     
     function isBoolean(obj: any): boolean {
-        return obj === true || obj === false || isObject(obj) && objToString.call(obj) === boolClass;
+        return obj === true || obj === false || isObject(obj) && _objToString.call(obj) === _boolClass;
     }
     
     function isNumber(obj: any): boolean {
-        return (typeof obj === 'number' || isObject(obj) && objToString.call(obj) === numberClass) && !isNaN(obj);
+        return (typeof obj === 'number' || isObject(obj) && _objToString.call(obj) === _numberClass) && !isNaN(obj);
     }
     
     function isFunction(obj: any): boolean {
@@ -466,11 +478,11 @@ module plat {
     }
     
     function isArray(obj: any): boolean {
-        if (__nativeIsArray) {
+        if (_nativeIsArray) {
             return Array.isArray(obj);
         }
     
-        return objToString.call(obj) === arrayClass;
+        return _objToString.call(obj) === _arrayClass;
     }
     
     function isArrayLike(obj: any): boolean {
@@ -482,7 +494,7 @@ module plat {
     }
     
     function isDate(obj: any): boolean {
-        return typeof obj === 'object' && objToString.call(obj) === dateClass;
+        return typeof obj === 'object' && _objToString.call(obj) === _dateClass;
     }
     
     function filter<T>(iterator: (value: T, key: any, obj: any) => boolean, obj: any, context?: any): Array<T> {
@@ -557,19 +569,17 @@ module plat {
         return arr;
     }
     
-    var Promise: plat.async.IPromise;
-    
     function mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any,
         context?: any): plat.async.IThenable<Array<R>> {
-        Promise = Promise || plat.acquire(__Promise);
+        _Promise = _Promise || plat.acquire(__Promise);
     
-        return Promise.all(map(iterator, obj, context));
+        return _Promise.all(map(iterator, obj, context));
     }
     
     function mapAsyncWithOrder<T, R>(iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
         array: Array<T>, context: any, descending?: boolean): plat.async.IThenable<Array<R>> {
-        Promise = Promise || plat.acquire(__Promise);
-        var initialValue = Promise.resolve<Array<R>>([]);
+        _Promise = _Promise || plat.acquire(__Promise);
+        var initialValue = _Promise.resolve<Array<R>>([]);
     
         if (!isArray(array)) {
             return initialValue;
@@ -658,15 +668,20 @@ module plat {
     }
     
     function requestAnimationFrameGlobal(method: FrameRequestCallback, context?: any): plat.IRemoveListener {
-        if (isUndefined(requestAnimationFrame)) {
+        _compat = _compat || (plat.acquire(__Compat));
+    
+        var requestAnimFrame = _compat.requestAnimationFrame;
+        if (isUndefined(requestAnimFrame)) {
             return postpone(() => {
                 method.call(context, Date.now());
             });
         }
     
-        var animationId = requestAnimationFrame(method.bind(context));
+        var animationId = requestAnimFrame(method.bind(context)),
+            cancelAnimFrame = _compat.cancelAnimationFrame || noop;
+    
         return () => {
-            cancelAnimationFrame(animationId);
+            cancelAnimFrame(animationId);
         };
     }
     
@@ -675,10 +690,10 @@ module plat {
             prefix = '';
         }
     
-        var puid = __uids__[prefix];
+        var puid = _uids[prefix];
     
         if (isNull(puid)) {
-            puid = __uids__[prefix] = ['0', '/'];
+            puid = _uids[prefix] = ['0', '/'];
         }
     
         var index = puid.length,
@@ -716,17 +731,15 @@ module plat {
         return join();
     }
     
-    var camelCaseRegex: RegExp;
-    
     function camelCase(str: string): string {
         if (!isString(str) || isEmpty(str)) {
             return str;
         }
     
         str = str.charAt(0).toLowerCase() + str.slice(1);
-        camelCaseRegex = camelCaseRegex || (<plat.expressions.Regex>plat.acquire(__Regex)).camelCaseRegex;
+        _camelCaseRegex = _camelCaseRegex || (<plat.expressions.Regex>plat.acquire(__Regex)).camelCaseRegex;
     
-        return str.replace(camelCaseRegex,
+        return str.replace(_camelCaseRegex,
             (match: string, delimiter?: string, char?: string, index?: number)
                 => index ? char.toUpperCase() : char);
     }
@@ -1207,13 +1220,19 @@ module plat {
         if (!isString(cName) || !isString(newClass) || newClass === '') {
             return;
         }
+        
+        if (isUndefined(element.classList)) {
+            var startRegex = new RegExp('^' + oldClass + '\\s+', 'g'),
+                midRegex = new RegExp('\\s+' + oldClass + '\\s+', 'g'),
+                endRegex = new RegExp('\\s+' + oldClass + '$', 'g');
+            element.className = cName.replace(startRegex, newClass + ' ')
+                .replace(midRegex, ' ' + newClass + ' ')
+                .replace(endRegex, ' ' + newClass);
+            return;
+        }
     
-        var startRegex = new RegExp('^' + oldClass + '\\s+', 'g'),
-            midRegex = new RegExp('\\s+' + oldClass + '\\s+', 'g'),
-            endRegex = new RegExp('\\s+' + oldClass + '$', 'g');
-        element.className = cName.replace(startRegex, newClass + ' ')
-            .replace(midRegex, ' ' + newClass + ' ')
-            .replace(endRegex, ' ' + newClass);
+        element.classList.add(newClass);
+        element.classList.remove(oldClass);
     }
     
     function hasClass(element: HTMLElement, className: string): boolean {
@@ -1526,6 +1545,7 @@ module plat {
     }
     var controlInjectors: plat.dependency.InjectorObject<plat.Control> = {};
     var viewControlInjectors: plat.dependency.InjectorObject<plat.ui.ViewControl> = {};
+    var instanceInjectorDependencies: plat.IObject<plat.IObject<string>> = {};
     var injectableInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {};
     var unregisteredInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {};
     var staticInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {};
@@ -1653,10 +1673,6 @@ module plat {
                     return __NOOP_INJECTOR;
                 } else if (isString(dependency)) {
                     return dependency;
-                } else if (dependency === window) {
-                    return __Window;
-                } else if (dependency === window.document) {
-                    return __Document;
                 }
 
                 var Constructor = dependency,
@@ -1696,13 +1712,33 @@ module plat {
              * @param {any} Constructor The Constructor to call.
              * @param {Array<any>} args The arguments to pass to the constructor.
              */
-            private static __construct(Constructor: any, args: Array<any>): any {
+            private static __construct(Constructor: any, args: Array<any>, type?: string): any {
                 if (isNull(Constructor) || isNull(Constructor.prototype)) {
                     return Constructor;
                 }
-                var obj = Object.create(Constructor.prototype);
+                var obj = Object.create(Constructor.prototype),
+                    isInstance = type === __INSTANCE,
+                    toInject: any;
 
-                Injector.__walk(obj, Object.getPrototypeOf(obj));
+                if (isInstance) {
+                    toInject = instanceInjectorDependencies[Constructor.__injectorName];
+                }
+
+                if (!isObject(toInject)) {
+                    toInject = Injector.__walk(obj, Object.getPrototypeOf(obj), {});
+
+                    if (isInstance) {
+                        instanceInjectorDependencies[Constructor.__injectorName] = toInject;
+                    }
+                }
+
+                var dependencies = acquire(map((value) => value, toInject)),
+                    keys = Object.keys(toInject),
+                    length = keys.length;
+
+                for (var i = 0; i < length; ++i) {
+                    obj[keys[i]] = dependencies[i];
+                }
 
                 var ret = obj.constructor.apply(obj, args);
 
@@ -1719,25 +1755,17 @@ module plat {
              * @param {any} obj The object to walk.
              * @param {any} proto the prototype of the object.
              */
-            private static __walk(obj: any, proto: any): void {
-                if (proto.constructor !== Object) {
-                    Injector.__walk(obj, Object.getPrototypeOf(proto));
-                }
-
+            private static __walk(obj: any, proto: any, extendWith: any): any {
                 var Constructor = proto.constructor,
-                    toInject = _clone(Constructor._inject, true);
-
-                if (!isObject(toInject)) {
-                    return;
+                    parentInject = {};
+                
+                if (isObject(Constructor._inject) && Constructor !== Object) {
+                    parentInject = Injector.__walk(obj, Object.getPrototypeOf(proto), extendWith);
                 }
 
-                var dependencies = acquire(map((value) => value, toInject)),
-                    keys = Object.keys(toInject),
-                    length = keys.length;
+                var toInject = _clone(Constructor._inject, true);
 
-                for (var i = 0; i < length; ++i) {
-                    obj[keys[i]] = dependencies[i];
-                }
+                return extend({}, extendWith, parentInject, toInject);
             }
 
             /**
@@ -1747,10 +1775,6 @@ module plat {
             private static __locateInjector(Constructor: any): any {
                 if (isNull(Constructor)) {
                     return;
-                } else if (Constructor === window) {
-                    return (<any>injectableInjectors)._window;
-                } else if (Constructor === window.document) {
-                    return (<any>injectableInjectors)._document;
                 }
 
                 var dependency: string = Constructor;
@@ -1764,18 +1788,19 @@ module plat {
                     injector = find(injectableInjectors) ||
                     find(unregisteredInjectors) ||
                     find(staticInjectors) ||
-                    find(viewControlInjectors) ||
                     find(controlInjectors) ||
+                    find(viewControlInjectors) ||
                     find(animationInjectors) ||
                     find(jsAnimationInjectors);
 
                 if (!isObject(injector)) {
                     if (isFunction(Constructor)) {
-                        injector = <Injector<any>>new Injector(dependency, Constructor, isObject(Constructor._inject) ? Constructor._injectorDependencies : []);
+                        if (!isString(dependency)) {
+                            dependency = uniqueId(__Plat);
+                        }
 
-                        if (isString(dependency)) {
-                            unregisteredInjectors[dependency] = injector;
-                        } 
+                        injector = <Injector<any>>new Injector(dependency, Constructor, isObject(Constructor._inject) ? Constructor._injectorDependencies : []);
+                        unregisteredInjectors[dependency] = injector;
                     } else {
                         injector = Injector.__wrap(Constructor);
                     }
@@ -1789,24 +1814,14 @@ module plat {
              * @param {Function} Constructor The Function
              */
             private static __findInjector(Constructor: any, injectors: InjectorObject<any>) {
-                if (Constructor === Injector || Constructor === __InjectorStatic) {
+                if (isNull(Constructor)) {
+                    return;
+                } else if (Constructor === Injector || Constructor === __InjectorStatic) {
                     var ret = Injector.__wrap(Injector);
                     ret.name = __InjectorStatic;
                     return ret;
-                } else if (isNull(Constructor) || isString(Constructor)) {
-                    return injectors[Constructor];
-                }
-
-                var injector: Injector<any>,
-                    keys = Object.keys(injectors),
-                    length = keys.length;
-
-                for (var i = 0; i < length; ++i) {
-                    injector = injectors[keys[i]];
-
-                    if (injector.Constructor === Constructor) {
-                        return injector;
-                    }
+                } else if (isString(Constructor)) {
+                    return injectors[Constructor] || injectors[(<string>Constructor).toLowerCase()];
                 }
             }
 
@@ -1969,10 +1984,9 @@ module plat {
                     toInject.push(dependency.inject());
                 }
 
-                injectable = <T>Injector.__construct(this.Constructor, toInject);
+                injectable = <T>Injector.__construct(this.Constructor, toInject, type);
 
-                if (type === __SINGLETON || type === __FACTORY ||
-                    type === __STATIC || type === __CLASS) {
+                if (isString(type) && type !== __INSTANCE) {
                     this._wrapInjector(injectable);
                 }
 
@@ -2550,7 +2564,8 @@ module plat {
         mappedEvents: IMappedTouchEvents;
 
         /**
-         * An object containing the properly prefixed animation events.
+         * An object containing the properly prefixed animation events. 
+         * Undefined if animation isn't supported.
          */
         animationEvents: IAnimationEvents;
 
@@ -2558,6 +2573,16 @@ module plat {
          * An object containing information regarding any potential vendor prefix.
          */
         vendorPrefix: IVendorPrefix;
+
+        /**
+         * The browser's requestAnimationFrame function if one exists. Otherwise undefined.
+         */
+        requestAnimationFrame: (callback: FrameRequestCallback) => number;
+
+        /**
+         * The browser's cancelAnimationFrame function if one exists. Otherwise undefined.
+         */
+        cancelAnimationFrame: (handle: number) => void;
 
         /**
          * The version of Internet Explorer being used. If not Internet Explorer, the value is undefined.
@@ -2683,68 +2708,57 @@ module plat {
          * Define animation events
          */
         private __defineAnimationEvents(): void {
-            var documentElement = this._document.documentElement,
-                styles = this._window.getComputedStyle(documentElement, ''),
-                prefix: string;
+            var _window = this._window,
+                documentElement = this._document.documentElement,
+                styles = _window.getComputedStyle(documentElement, ''),
+                prefix: string,
+                jsSyntax: string;
 
             if (!isUndefined((<any>styles).OLink)) {
                 prefix = 'o';
+                jsSyntax = 'O';
             } else {
                 var matches = Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/);
                 prefix = (isArray(matches) && matches.length > 1) ? matches[1] : '';
+                jsSyntax = prefix === 'ms' ? 'MS' : prefix[0].toUpperCase() + prefix.slice(1);
             }
 
             this.vendorPrefix = {
                 lowerCase: prefix,
                 css: prefix === '' ? '' : '-' + prefix + '-',
-                js: prefix[0].toUpperCase() + prefix.slice(1)
+                upperCase: jsSyntax
             };
 
-            if (prefix === 'webkit') {
-                this.animationSupported = !isUndefined((<any>documentElement.style).WebkitAnimation);
-                if (!this.animationSupported) {
-                    this.animationEvents = {
-                        $animation: '',
-                        $animationStart: '',
-                        $animationEnd: '',
-                        $transition: '',
-                        $transitionStart: '',
-                        $transitionEnd: ''
-                    };
-                    return;
-                }
+            this.requestAnimationFrame = _window.requestAnimationFrame || (<any>_window)[prefix + 'RequestAnimationFrame'];
+            this.cancelAnimationFrame = _window.cancelAnimationFrame ||
+            (<any>_window)[prefix + 'CancelRequestAnimationFrame'] ||
+            (<any>_window)[prefix + 'CancelAnimationFrame'];
 
-                this.animationEvents = {
-                    $animation: 'webkitAnimation',
-                    $animationStart: 'webkitAnimationStart',
-                    $animationEnd: 'webkitAnimationEnd',
-                    $transition: 'webkitTransition',
-                    $transitionStart: 'webkitTransitionStart',
-                    $transitionEnd: 'webkitTransitionEnd'
-                };
-            } else {
-                this.animationSupported = !isUndefined((<any>documentElement.style).animation);
-                if (!this.animationSupported) {
-                    this.animationEvents = {
-                        $animation: '',
-                        $animationStart: '',
-                        $animationEnd: '',
-                        $transition: '',
-                        $transitionStart: '',
-                        $transitionEnd: ''
-                    };
-                    return;
-                }
-
+            var style = documentElement.style,
+                animationSupported: boolean;
+            if (animationSupported = !isUndefined(style.animation)) {
                 this.animationEvents = {
                     $animation: 'animation',
                     $animationStart: 'animationstart',
                     $animationEnd: 'animationend',
+                    $animationIteration: 'animationiteration',
                     $transition: 'transition',
                     $transitionStart: 'transitionstart',
                     $transitionEnd: 'transitionend'
                 };
+            } else if (animationSupported = !isUndefined((<any>style)[jsSyntax + 'Animation'])) {
+                this.animationEvents = {
+                    $animation: prefix + 'Animation',
+                    $animationStart: prefix + 'AnimationStart',
+                    $animationEnd: prefix + 'AnimationEnd',
+                    $animationIteration: prefix + 'AnimationIteration',
+                    $transition: prefix + 'Transition',
+                    $transitionStart: prefix + 'TransitionStart',
+                    $transitionEnd: prefix + 'TransitionEnd'
+                };
             }
+
+            this.animationSupported = animationSupported;
         }
 
         /**
@@ -2844,6 +2858,11 @@ module plat {
         $animationEnd: string;
 
         /**
+         * The animation iteration event.
+         */
+        $animationIteration: string;
+
+        /**
          * The transition identifier.
          */
         $transition: string;
@@ -2876,10 +2895,11 @@ module plat {
         css: string;
 
         /**
-         * The JavaScript representation of the browser's vendor prefix 
-         * denoted by it beginning with a capital letter.
+         * The common uppercase representation of the browser's vendor prefix 
+         * generally denoted by it beginning with a capital letter or all capital 
+         * in the case of MS.
          */
-        js: string;
+        upperCase: string;
     }
 
     /**
@@ -5338,7 +5358,6 @@ module plat {
                         this._urlChanged();
                     }
                 } else {
-                    console.log('test');
                     this.__currentUrl = url;
                     if (replace) {
                         _location.replace(url);
@@ -5356,6 +5375,10 @@ module plat {
                 var $config = Browser.config,
                     baseUrl = $config.baseUrl,
                     isLocal = !this._regex.fullUrlRegex.test(url) || url.indexOf($config.baseUrl) > -1;
+
+                if (!isString(url)) {
+                    return '';
+                }
 
                 if (url === $config.baseUrl) {
                     return url;
@@ -5488,15 +5511,16 @@ module plat {
              * @param {string} url The initial URL passed into the Browser.
              */
             private static __getBaseUrl(url: string): string {
-                var _regex = acquire(__Regex),
-                    origin = (<any>window.location).origin,
-                    protocol = window.location.protocol,
-                    host = window.location.host;
+                var _regex: expressions.Regex = acquire(__Regex),
+                    _location: Location = acquire(__Location),
+                    origin = (<any>_location).origin,
+                    protocol = _location.protocol,
+                    host = _location.host;
 
                 if (protocol === 'file:' || protocol.indexOf('wmapp') > -1 || protocol.indexOf('ms-appx') > -1) {
-                    origin = window.location.href;
+                    origin = _location.href;
                 } else if(isUndefined(origin)) {
-                    origin = window.location.protocol + '//' + window.location.host;
+                    origin = _location.protocol + '//' + _location.host;
                 }
 
                 origin = origin.replace(_regex.initialUrlRegex, '');
@@ -5988,13 +6012,14 @@ module plat {
             private static __handleThenable<R>(promise: Promise<R>, value: Promise<R>): boolean {
                 var resolved: boolean;
 
-                try {
-                    if (promise === value) {
-                        throw new TypeError('A promises callback cannot return the same promise.');
-                    }
+                if (promise === value) {
+                    Promise.__reject(promise, new TypeError('A promises callback cannot return the same promise.'));
+                    return true;
+                }
 
-                    if (isPromise(value)) {
-                        value.then.call(value, (val: any) => {
+                if (isPromise(value)) {
+                    try {
+                        value.then.call(value,(val: any) => {
                             if (resolved) {
                                 return true;
                             }
@@ -6005,7 +6030,7 @@ module plat {
                             } else {
                                 Promise.__fulfill<R>(promise, val);
                             }
-                        }, (val: any) => {
+                        },(val: any) => {
                             if (resolved) {
                                 return true;
                             }
@@ -6015,13 +6040,13 @@ module plat {
                         });
 
                         return true;
-                    }
-                } catch (error) {
-                    if (resolved) {
+                    } catch (error) {
+                        if (resolved) {
+                            return true;
+                        }
+                        Promise.__reject(promise, error);
                         return true;
                     }
-                    Promise.__reject(promise, error);
-                    return true;
                 }
 
                 return false;
@@ -7562,7 +7587,7 @@ module plat {
              * or rejected, will return an IAjaxResponse object.
              */
             ajax<R>(options: IHttpConfig): AjaxPromise<R> {
-                var request: HttpRequest = acquire(HttpRequest);
+                var request: HttpRequest = acquire(__HttpRequestInstance);
                 request.initialize(options);
                 return request.execute<R>();
             }
@@ -7573,7 +7598,7 @@ module plat {
              * IAjaxResponse object.
              */
             jsonp<R>(options: IJsonpConfig): AjaxPromise<R> {
-                var request: HttpRequest = acquire(HttpRequest);
+                var request: HttpRequest = acquire(__HttpRequestInstance);
                 request.initialize(options);
                 return request.executeJsonp<R>();
             }
@@ -7586,13 +7611,14 @@ module plat {
              * being a parsed JSON object (assuming valid JSON).
              */
             json<R>(options: IHttpConfig): AjaxPromise<R> {
-                var request: HttpRequest = acquire(HttpRequest);
+                var request: HttpRequest = acquire(__HttpRequestInstance);
                 request.initialize(extend({}, options, { responseType: 'json' }));
                 return request.execute<R>();
             }
         }
 
         register.injectable(__Http, Http);
+        register.injectable(__HttpRequestInstance, HttpRequest, null, __INSTANCE);
 
         /**
          * The Type for referencing the '_httpConfig' injectable as a dependency.
@@ -8339,10 +8365,6 @@ module plat {
          * facilitating in data-binding.
          */
         export class ContextManager {
-            protected static _inject: any = {
-                _compat: __Compat
-            };
-
             /**
              * Reference to the IExceptionStatic injectable.
              */
@@ -8374,7 +8396,7 @@ module plat {
                     return contextManager;
                 }
 
-                contextManager = managers[uid] = acquire(ContextManager);
+                contextManager = managers[uid] = new ContextManager();
                 contextManager.context = control;
 
                 return contextManager;
@@ -8627,7 +8649,7 @@ module plat {
             /**
              * Reference to the Compat injectable.
              */
-            protected _compat: Compat;
+            protected _compat: Compat = acquire(__Compat);
 
             /**
              * The root context associated with and to be managed by this 
@@ -8643,7 +8665,7 @@ module plat {
              * An object for quickly accessing child context associations (helps with 
              * notifying child properties).
              */
-            private __identifierHash: IObject<Array<string>> = {};
+            private __identifierHash: IObject<IObject<boolean>> = {};
             /**
              * An object for storing listeners for Array length changes.
              */
@@ -9061,7 +9083,7 @@ module plat {
              * @param {any} oldValue The old value of the property.
              */
             protected _notifyChildProperties(identifier: string, newValue: any, oldValue: any): void {
-                var mappings = this.__identifierHash[identifier];
+                var mappings = Object.keys(this.__identifierHash[identifier]);
 
                 if (isNull(mappings)) {
                     return;
@@ -9377,7 +9399,7 @@ module plat {
                             return;
                         }
 
-                        var childPropertiesExist = (this.__identifierHash[identifier] || []).length > 0;
+                        var childPropertiesExist = Object.keys(this.__identifierHash[identifier]).length > 0;
                         this._execute(identifier, value, oldValue);
 
                         if (childPropertiesExist) {
@@ -9425,7 +9447,7 @@ module plat {
                             return;
                         }
 
-                        var childPropertiesExist = (this.__identifierHash[identifier] || []).length > 0;
+                        var childPropertiesExist = Object.keys(this.__identifierHash[identifier]).length > 0;
                         this._execute(identifier, newValue, oldValue);
 
                         if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
@@ -9471,14 +9493,14 @@ module plat {
                     hashValue = this.__identifierHash[ident];
 
                 if (isNull(hashValue)) {
-                    hashValue = this.__identifierHash[ident] = [];
+                    hashValue = this.__identifierHash[ident] = {};
                     if (split.length === 0) {
                         return;
                     }
                 }
 
-                if (ident !== identifier && hashValue.indexOf(identifier) === -1) {
-                    hashValue.push(identifier);
+                if (ident !== identifier && !hashValue[identifier]) {
+                    hashValue[identifier] = true;
                 }
 
                 while (split.length > 0) {
@@ -9486,12 +9508,12 @@ module plat {
                     hashValue = this.__identifierHash[ident];
 
                     if (isNull(hashValue)) {
-                        hashValue = this.__identifierHash[ident] = [];
+                        hashValue = this.__identifierHash[ident] = {};
                         if (ident !== identifier) {
-                            hashValue.push(identifier);
+                            hashValue[identifier] = true;
                         }
-                    } else if (ident !== identifier && hashValue.indexOf(identifier) === -1) {
-                        hashValue.push(identifier);
+                    } else if (ident !== identifier && !hashValue[identifier]) {
+                        hashValue[identifier] = true;
                     }
                 }
             }
@@ -9506,6 +9528,7 @@ module plat {
         }
 
         register.injectable(__ContextManagerStatic, IContextManagerStatic, null, __STATIC);
+        register.injectable(__ContextManagerInstance, ContextManager, null, __INSTANCE);
 
         /**
          * Creates and manages ContextManagers and has 
@@ -9812,7 +9835,7 @@ module plat {
              * @param {any} sender The sender of the event.
              */
             static dispatch(name: string, sender: any): LifecycleEvent {
-                var event: LifecycleEvent = acquire(LifecycleEvent);
+                var event: LifecycleEvent = acquire(__LifecycleEventInstance);
                 event.initialize(name, sender);
                 EventManager.sendEvent(event);
 
@@ -9837,6 +9860,8 @@ module plat {
         }
 
         register.injectable(__LifecycleEventStatic, ILifecycleEventStatic, null, __STATIC);
+
+        register.injectable(__LifecycleEventInstance, LifecycleEvent, null, __INSTANCE);
 
         /**
          * Dispatches LifecycleEvent
@@ -10554,10 +10579,15 @@ module plat {
      * class for all types of controls.
      */
     export class Control {
-        protected static _inject: any = {
-            _Exception: __ExceptionStatic,
-            dom: __Dom
-        };
+        /**
+         * Reference to the IExceptionStatic injectable.
+         */
+        protected static _Exception: IExceptionStatic;
+
+        /**
+         * Reference to the Dom injectable.
+         */
+        protected static _dom: ui.Dom;
 
         /**
          * Reference to the Parser injectable.
@@ -10724,7 +10754,7 @@ module plat {
          * Returns a new instance of Control.
          */
         static getInstance(): Control {
-            return acquire(Control);
+            return new Control();
         }
 
         /**
@@ -10805,7 +10835,7 @@ module plat {
         /**
          * The plat.IExceptionStatic injectable instance
          */
-        protected _Exception: IExceptionStatic;
+        protected _Exception: IExceptionStatic = Control._Exception;
 
         /**
          * A unique id, created during instantiation and found on every Control.
@@ -10853,7 +10883,7 @@ module plat {
         /**
          * Contains DOM helper methods for manipulating this control's element.
          */
-        dom: ui.Dom;
+        dom: ui.Dom = Control._dom;
 
         /**
          * The constructor for a control. Any injectables specified during control registration will be
@@ -11318,11 +11348,15 @@ module plat {
         _parser?: expressions.Parser,
         _ContextManager?: observable.IContextManagerStatic,
         _EventManager?: events.IEventManagerStatic,
-        _Promise?: async.IPromise): IControlFactory {
+        _Promise?: async.IPromise,
+        _dom?: ui.Dom,
+        _Exception?: IExceptionStatic): IControlFactory {
         (<any>Control)._parser = _parser;
         (<any>Control)._ContextManager = _ContextManager;
         (<any>Control)._EventManager = _EventManager;
         (<any>Control)._Promise = _Promise;
+        (<any>Control)._dom = _dom;
+        (<any>Control)._Exception = _Exception;
         return Control;
     }
 
@@ -11330,7 +11364,9 @@ module plat {
         __Parser,
         __ContextManagerStatic,
         __EventManagerStatic,
-        __Promise
+        __Promise,
+        __Dom,
+        __ExceptionStatic
     ], __FACTORY);
 
     /**
@@ -11416,7 +11452,7 @@ module plat {
          * Returns a new instance of AttributeControl.
          */
         static getInstance(): AttributeControl {
-            return acquire(AttributeControl);
+            return new AttributeControl();
         }
 
         /**
@@ -11894,7 +11930,7 @@ module plat {
              * Returns a new instance of TemplateControl.
              */
             static getInstance(): TemplateControl {
-                return acquire(TemplateControl);
+                return new TemplateControl();
             }
 
             /**
@@ -12207,6 +12243,8 @@ module plat {
             __ExceptionStatic
         ], __FACTORY);
 
+        register.injectable(__TemplateControlInstance, TemplateControl, null, __INSTANCE);
+
         /**
          * Creates and manages TemplateControls.
          */
@@ -12396,7 +12434,7 @@ module plat {
              * Returns a new instance of a ViewControl.
              */
             static getInstance(): ViewControl {
-                return acquire(ViewControl);
+                return new ViewControl();
             }
 
             /**
@@ -13059,7 +13097,7 @@ module plat {
                     return;
                 }
 
-                return templatePromise.then((result: DocumentFragment) => {
+                templatePromise = templatePromise.then((result: DocumentFragment) => {
                     var template = <DocumentFragment>result.cloneNode(true),
                         control = this._createBoundControl(key, template, resources),
                         nodeMap = this._createNodeMap(control, template, relativeIdentifier);
@@ -13069,28 +13107,37 @@ module plat {
                     }
 
                     return this._bindTemplate(key, nodeMap);
-                }).then((fragment) => {
-                    if (noIndex) {
-                        return fragment;
-                    }
+                });
 
-                    var childNodes = Array.prototype.slice.call(fragment.childNodes),
-                        oldControl = <TemplateControl>this.control.controls[index],
-                        endNode = oldControl.endNode,
-                        parentNode = endNode.parentNode,
-                        nextSibling = endNode.nextSibling;
+                if (!noIndex) {
+                    return templatePromise.then((fragment) => {
+                        var childNodes = Array.prototype.slice.call(fragment.childNodes),
+                            oldControl = <TemplateControl>this.control.controls[index],
+                            endNode = oldControl.endNode,
+                            parentNode = endNode.parentNode,
+                            nextSibling = endNode.nextSibling;
 
-                    this._TemplateControlFactory.dispose(oldControl);
-                    parentNode.insertBefore(fragment, nextSibling);
+                        this._TemplateControlFactory.dispose(oldControl);
+                        parentNode.insertBefore(fragment, nextSibling);
 
-                    return childNodes;
-                }).then(null, (error: any) => {
+                        return childNodes;
+                    }).then(null,(error: any) => {
+                        postpone(() => {
+                            _Exception.fatal(error, _Exception.BIND);
+                        });
+
+                        return <DocumentFragment>null;
+                    });
+                }
+
+                return templatePromise.then(null,(error: any) => {
                     postpone(() => {
                         _Exception.fatal(error, _Exception.BIND);
                     });
 
                     return <DocumentFragment>null;
                 });
+
             }
 
             /**
@@ -13117,6 +13164,7 @@ module plat {
                     if (disposed) {
                         return _document.createDocumentFragment();
                     }
+
                     control.startNode = template.insertBefore(_document.createComment(control.type + __START_NODE),
                         template.firstChild);
                     control.endNode = template.insertBefore(_document.createComment(control.type + __END_NODE),
@@ -13313,6 +13361,10 @@ module plat {
          * Attributes for this object are converted from dash-notation to camelCase notation.
          */
         export class Attributes {
+            static getInstance() {
+                return new Attributes();
+            }
+
             [property: string]: any;
 
             /**
@@ -13387,7 +13439,12 @@ module plat {
             }
         }
 
+        export function IAttributesFactory(): typeof Attributes {
+            return Attributes;
+        }
+
         register.injectable(__AttributesInstance, Attributes, null, __INSTANCE);
+        register.injectable(__AttributesFactory, IAttributesFactory, null, __FACTORY);
 
         /**
          * Resources are used for providing aliases to use in markup expressions. They 
@@ -13557,7 +13614,7 @@ module plat {
                 for (var i = 0; i < length; ++i) {
                     alias = aliases[i];
 
-                    if (controlResources.indexOf(alias) !== -1) {
+                    if (controlResources[alias] === true) {
                         continue;
                     }
 
@@ -13624,7 +13681,7 @@ module plat {
                     child = children.pop();
                     nodeName = child.nodeName.toLowerCase();
 
-                    if (types.indexOf(nodeName) === -1) {
+                    if (!types[nodeName]) {
                         continue;
                     }
 
@@ -13655,7 +13712,7 @@ module plat {
              * Returns a new instance with type Resources.
              */
             static getInstance(): Resources {
-                return acquire(Resources);
+                return new Resources();
             }
 
             /**
@@ -13712,12 +13769,12 @@ module plat {
             /**
              * A list of resources to place on a control.
              */
-            private static __controlResources = [__CONTROL_RESOURCE, __CONTEXT_RESOURCE, __ROOT_RESOURCE, __ROOT_CONTEXT_RESOURCE];
+            private static __controlResources: IObject<boolean>;
 
             /**
              * A list of all resource types.
              */
-            private static __resourceTypes = [__INJECTABLE_RESOURCE, __OBJECT_RESOURCE, __OBSERVABLE_RESOURCE, __FUNCTION_RESOURCE, __LITERAL_RESOURCE];
+            private static __resourceTypes: IObject<boolean>;
 
             /**
              * An object consisting of keyed arrays containing functions for removing observation listeners.
@@ -13859,6 +13916,13 @@ module plat {
             (<any>Resources)._ContextManager = _ContextManager;
             (<any>Resources)._regex = _regex;
             (<any>Resources)._Exception = _Exception;
+            var controlResources: IObject<boolean> = {},
+                resourceTypes: IObject<boolean> = {};
+
+            controlResources[__CONTROL_RESOURCE] = controlResources[__CONTEXT_RESOURCE] = controlResources[__ROOT_RESOURCE] = controlResources[__ROOT_CONTEXT_RESOURCE] = true;
+            resourceTypes[__INJECTABLE_RESOURCE] = resourceTypes[__OBJECT_RESOURCE] = resourceTypes[__OBSERVABLE_RESOURCE] = resourceTypes[__FUNCTION_RESOURCE] = resourceTypes[__LITERAL_RESOURCE] = true;
+            (<any>Resources).__controlResources = controlResources;
+            (<any>Resources).__resourceTypes = resourceTypes;
             return Resources;
         }
 
@@ -13867,6 +13931,8 @@ module plat {
             __Regex,
             __ExceptionStatic
         ], __FACTORY);
+
+        register.injectable(__ResourcesInstance, Resources, null, __INSTANCE);
 
         /**
          * Creates and manages Resources for TemplateControls.
@@ -16934,13 +17000,24 @@ module plat {
             export class BaseAnimation {
                 protected static _inject: any = {
                     _compat: __Compat,
-                    dom: __Dom
+                    dom: __Dom,
+                    _Exception: __ExceptionStatic
                 };
+
+                /**
+                 * Reference to the IExceptionStatic injectable.
+                 */
+                protected _Exception: IExceptionStatic;
 
                 /**
                  * Reference to the Compat injectable.
                  */
                 protected _compat: Compat;
+
+                /**
+                 * An Array of remove functions to dispose of event listeners.
+                 */
+                private __eventListeners: Array<IRemoveListener> = [];
 
                 /**
                  * The node having the animation performed on it.
@@ -16980,6 +17057,11 @@ module plat {
                         this._resolve();
                         this._resolve = null;
                     }
+
+                    var eventListeners = this.__eventListeners;
+                    while (eventListeners.length > 0) {
+                        eventListeners.pop()();
+                    }
                 }
 
                 /**
@@ -16992,6 +17074,35 @@ module plat {
                  * result of this animation.
                  */
                 dispose(): void { }
+
+                /**
+                 * Adds an event listener of the specified type to this animation's element. Removal of the 
+                 * event is handled automatically upon animation end.
+                 * @param {string} type The type of event to listen to.
+                 * @param {EventListener} listener The listener to fire when the event occurs.
+                 * @param {boolean} useCapture? Whether to fire the event on the capture or the bubble phase 
+                 * of event propagation.
+                 */
+                addEventListener(type: string, listener: EventListener, useCapture?: boolean): IRemoveListener {
+                    if (!isFunction(listener)) {
+                        var _Exception = this._Exception;
+                        _Exception.warn('An animation\'s "addEventListener" must take a function as the second argument.', _Exception.EVENT);
+                        return noop;
+                    }
+
+                    listener = listener.bind(this);
+                    var removeListener = this.dom.addEventListener(this.element, type, listener, useCapture),
+                        eventListeners = this.__eventListeners;
+
+                    eventListeners.push(removeListener);
+                    return () => {
+                        removeListener();
+                        var index = eventListeners.indexOf(removeListener);
+                        if (index !== -1) {
+                            eventListeners.splice(index, 1);
+                        }
+                    };
+                }
 
                 /**
                  * Initializes the element and key properties of this animation and grabs a 
@@ -17023,94 +17134,70 @@ module plat {
                  * A set of browser compatible CSS animation events capable of being listened to.
                  */
                 private __animationEvents: IAnimationEvents = this._compat.animationEvents;
-                /**
-                 * A collection of animation event subscriptions used for chaining.
-                 */
-                private __subscribers: Array<() => void> = [];
-                /**
-                 * The function to stop listening to the current event/animation in occurrence.
-                 */
-                private __removeListener: IRemoveListener;
-
-                /**
-                 * A function for reverting any modifications or changes that may have been made as a 
-                 * result of this animation.
-                 */
-                dispose(): void {
-                    if (isFunction(this.__removeListener)) {
-                        this.__removeListener();
-                        this.__removeListener = null;
-                    }
-                    this.__subscribers = [];
-                }
         
                 /**
                  * A function to listen to the start of an animation event.
                  * @param {() => void} listener The function to call when the animation begins.
                  */
-                animationStart(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$animationStart, listener);
-                }
-        
-                /**
-                 * A function to listen to the start of a transition event.
-                 * @param {() => void} listener The function to call when the transition begins.
-                 */
-                transitionStart(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$transitionStart, listener);
+                animationStart(listener: (ev?: AnimationEvent) => void): IRemoveListener {
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return noop;
+                    }
+
+                    return this.addEventListener(animationEvents.$animationStart, listener, false);
                 }
         
                 /**
                  * A function to listen to the end of an animation event.
-                 * @param {() => void} listener The function to call when the animation ends.
+                 * @param {(ev?: AnimationEvent) => void} listener The function to call when the animation ends.
                  */
-                animationEnd(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$animationEnd, listener);
+                animationEnd(listener: (ev?: AnimationEvent) => void): IRemoveListener {
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return noop;
+                    }
+
+                    return this.addEventListener(animationEvents.$animationEnd, listener, false);
+                }
+        
+                /**
+                 * A function to listen to the completion of an animation iteration.
+                 * @param {(ev?: AnimationEvent) => void} listener The function to call when the animation iteration completes.
+                 */
+                animationIteration(listener: (ev?: AnimationEvent) => void): IRemoveListener {
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return noop;
+                    }
+
+                    return this.addEventListener(animationEvents.$animationIteration, listener, false);
+                }
+        
+                /**
+                 * A function to listen to the start of a transition event.
+                 * @param {(ev?: TransitionEvent) => void} listener The function to call when the transition begins.
+                 */
+                transitionStart(listener: (ev?: TransitionEvent) => void): IRemoveListener {
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return noop;
+                    }
+
+                    return this.addEventListener(animationEvents.$transitionStart, listener, false);
                 }
         
                 /**
                  * A function to listen to the end of a transition event.
-                 * @param {() => void} listener The function to call when the transition ends.
+                 * @param {(ev?: TransitionEvent) => void} listener The function to call when the transition ends.
                  */
-                transitionEnd(listener: () => void): CssAnimation {
-                    return this.__addEventListener(this.__animationEvents.$transitionEnd, listener);
-                }
-        
-                /**
-                 * Adds the listener for the desired event and handles subscription management and 
-                 * chaining.
-                 * @param {string} event The event to subscribe to.
-                 * @param {() => void} listener The function to call when the event fires.
-                 */
-                private __addEventListener(event: string, listener: () => void): CssAnimation {
-                    var subscribers = this.__subscribers,
-                        subscriber = () => {
-                            this.__removeListener = this.dom.addEventListener(this.element, event,(ev: Event) => {
-                                this.__removeListener();
-                                this.__removeListener = null;
-
-                                if (subscribers.length === 0) {
-                                    return;
-                                }
-
-                                listener.call(this);
-                                subscribers.shift();
-
-                                if (subscribers.length === 0) {
-                                    return;
-                                }
-
-                                subscribers[0]();
-                            }, false);
-                        };
-
-                    subscribers.push(subscriber);
-
-                    if (subscribers.length === 1) {
-                        subscriber();
+                transitionEnd(listener: (ev?: TransitionEvent) => void): IRemoveListener {
+                    var animationEvents = this.__animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return noop;
                     }
 
-                    return this;
+                    return this.addEventListener(animationEvents.$transitionEnd, listener, false);
                 }
             }
 
@@ -17152,17 +17239,8 @@ module plat {
                  * Adds the class to start the animation.
                  */
                 initialize(): void {
-                    var element = this.element,
-                        className = this.className,
-                        hasClassName = hasClass(element, className);
-
-                    removeClass(element, className + ' ' + className + __END_SUFFIX);
-                    if (hasClassName) {
-                        postpone(addClass, [element, className]);
-                        return;
-                    }
-
-                    addClass(element, className);
+                    var className = this.className;
+                    removeClass(this.element, className + ' ' + className + __END_SUFFIX);
                 }
 
                 /**
@@ -17171,21 +17249,28 @@ module plat {
                 start(): void {
                     var animationId = this._compat.animationEvents.$animation,
                         element = this.element,
-                        className = this.className,
-                        computedStyle = this._window.getComputedStyle(element, (this.options || <ISimpleCssAnimationOptions>{}).pseudo),
-                        animationName = computedStyle[<any>(animationId + 'Name')];
+                        className = this.className;
 
-                    if (animationName === '' ||
-                        animationName === 'none' ||
-                        computedStyle[<any>(animationId + 'PlayState')] === 'paused') {
-                        replaceClass(element, className, className + __END_SUFFIX);
-                        this.end();
-                        return;
-                    }
+                    requestAnimationFrameGlobal(() => {
+                        addClass(element, className);
 
-                    this.animationEnd(() => {
-                        replaceClass(element, className, className + __END_SUFFIX);
-                        this.end();
+                        var computedStyle = this._window.getComputedStyle(element,(this.options || <ISimpleCssAnimationOptions>{}).pseudo),
+                            animationName = computedStyle[<any>(animationId + 'Name')];
+
+                        if (animationName === '' ||
+                            animationName === 'none' ||
+                            computedStyle[<any>(animationId + 'PlayState')] === 'paused') {
+                            replaceClass(element, className, className + __END_SUFFIX);
+                            this.end();
+                            return;
+                        }
+
+                        this.animationEnd(() => {
+                            requestAnimationFrameGlobal(() => {
+                                replaceClass(element, className, className + __END_SUFFIX);
+                                this.end();
+                            });
+                        });
                     });
                 }
 
@@ -17302,6 +17387,21 @@ module plat {
                 protected _modifiedProperties: IObject<string> = {};
 
                 /**
+                 * A regular expression to normalize modified property keys.
+                 */
+                protected _normalizeRegex = /-/g;
+
+                /**
+                 * An Array of the normalized keys of modified properties.
+                 */
+                protected _normalizedKeys: Array<string> = [];
+
+                /**
+                 * The "transitionend" event handler call count.
+                 */
+                protected _transitionCount = 0;
+
+                /**
                  * Denotes whether or not the animation was ever started.
                  */
                 protected _started = false;
@@ -17318,12 +17418,7 @@ module plat {
                  */
                 start(): void {
                     var transitionId = this._compat.animationEvents.$transition,
-                        element = this.element,
-                        endFn = () => {
-                            removeClass(element, this.className);
-                            this.end();
-                        },
-                        computedStyle = this._window.getComputedStyle(element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
+                        computedStyle = this._window.getComputedStyle(this.element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
                         transitionProperty = computedStyle[<any>(transitionId + 'Property')],
                         transitionDuration = computedStyle[<any>(transitionId + 'Duration')];
 
@@ -17331,18 +17426,22 @@ module plat {
 
                     if (transitionProperty === '' || transitionProperty === 'none' ||
                         transitionDuration === '' || transitionDuration === '0s') {
-                        this._animate();
-                        endFn();
+                        requestAnimationFrameGlobal(() => {
+                            this._animate();
+                            this._done(null, true);
+                        });
                         return;
                     }
 
-                    this.transitionEnd(endFn);
+                    this.transitionEnd(this._done);
 
-                    if (this._animate()) {
-                        return;
-                    }
+                    requestAnimationFrameGlobal(() => {
+                        if (this._animate()) {
+                            return;
+                        }
 
-                    endFn();
+                        this._done(null, true);
+                    });
                 }
 
                 /**
@@ -17374,6 +17473,27 @@ module plat {
                 }
 
                 /**
+                 * A handler for the "transitionend" event. Will clean up the class and resolve the 
+                 * promise when necessary based on the options that were input.
+                 * @param {TransitionEvent} ev? The transition event object.
+                 * @param {boolean} immediate? Whether clean up should be immediate or conditional.
+                 */
+                protected _done(ev?: TransitionEvent, immediate?: boolean): void {
+                    if (!immediate) {
+                        var keys = Object.keys(this._modifiedProperties),
+                            propertyName = ev.propertyName;
+                        if (isString(propertyName)) {
+                            propertyName = propertyName.replace(this._normalizeRegex, '').toLowerCase();
+                            if (this._normalizedKeys.indexOf(propertyName) !== -1 && ++this._transitionCount < keys.length) {
+                                return;
+                            }
+                        }
+                    }
+                    removeClass(this.element, this.className);
+                    this.end();
+                }
+
+                /**
                  * Animate the element based on the options passed in.
                  * If false, the control should begin cleaning up.
                  */
@@ -17402,6 +17522,7 @@ module plat {
                             unchanged++;
                         } else {
                             modifiedProperties[key] = currentProperty;
+                            this._normalizedKeys.push(key.replace(this._normalizeRegex, '').toLowerCase());
                         }
                     }
 
@@ -17479,8 +17600,8 @@ module plat {
                     this.navigator.initialize(router);
                 }
 
-                setTemplate() {
-                    postpone(() => {
+                loaded() {
+                    this._Promise.resolve(this.router.finishNavigating).then(() => {
                         this.router.register(this);
                     });
                 }
@@ -17550,24 +17671,17 @@ module plat {
                     this._animationPromise = this._animator.animate(this.element, __Enter);
 
                     var viewportManager = this._managerCache.read(this.uid),
-                        manager = this._ElementManagerFactory.getInstance(),
-                        promise: async.IThenable<void>;
+                        manager = this._ElementManagerFactory.getInstance();
 
                     viewportManager.children = [];
                     manager.initialize(nodeMap, viewportManager);
 
                     if (isFunction(control.navigatedTo)) {
-                        promise = resolve(control.navigatedTo(routeInfo.parameters, query));
-                    } else {
-                        promise = resolve();
+                        control.navigatedTo(routeInfo.parameters, query);
                     }
 
-                    return promise
-                        .catch(noop)
-                        .then(() => {
-                            manager.setUiControlTemplate();
-                            return manager.templatePromise;
-                        });
+                    manager.setUiControlTemplate();
+                    return manager.templatePromise;
                 }
 
                 navigateFrom() {
@@ -19364,12 +19478,12 @@ module plat {
                         ev.preventDefault();
                         element.href = '#';
 
-                        postpone(() => {
+                        requestAnimationFrameGlobal(() => {
                             this._browser.url(href);
                         });
 
-                        //this.removeClickListener();
-                        //element.addEventListener('click', this.getListener(element));
+                        this.removeClickListener();
+                        element.addEventListener('click', this.getListener(element));
                     }, false);
                 }
 
@@ -19711,10 +19825,6 @@ module plat {
                         }
                     } else if (!isNull(value)) {
                         text += value;
-                    }
-
-                    if (expression.oneTime && !isUndefined(value)) {
-                        expressions[i] = NodeManager._wrapExpression(value);
                     }
                 }
 
@@ -20197,6 +20307,11 @@ module plat {
             protected static _ResourcesFactory: ui.IResourcesFactory;
 
             /**
+             * Reference to the Attributes injectable.
+             */
+            protected static _AttributesFactory: typeof ui.Attributes;
+
+            /**
              * Reference to the BindableTemplatesFactory injectable.
              */
             protected static _BindableTemplatesFactory: ui.IBindableTemplatesFactory;
@@ -20270,7 +20385,7 @@ module plat {
                 }
 
                 var elementMap = ElementManager._collectAttributes(element.attributes),
-                    manager: ElementManager = acquire(ElementManager);
+                    manager: ElementManager = ElementManager.getInstance();
 
                 elementMap.element = <HTMLElement>element;
                 elementMap.uiControlNode = uiControlNode;
@@ -20327,7 +20442,7 @@ module plat {
                         parent.getParentControl(), newControl);
                 }
 
-                var manager: ElementManager = acquire(ElementManager),
+                var manager: ElementManager = ElementManager.getInstance(),
                     hasNewControl = !isNull(newControl);
 
                 manager.nodeMap = nodeMap;
@@ -20369,7 +20484,7 @@ module plat {
                 var uiControl = uiControlNode.control,
                     newUiControl = <ui.TemplateControl>uiControlNode.injector.inject(),
                     resources = ElementManager._ResourcesFactory.getInstance(),
-                    attributes: ui.Attributes = acquire(__AttributesInstance);
+                    attributes: ui.Attributes = ElementManager._AttributesFactory.getInstance();
 
                 newUiControl.parent = parent;
                 parent.controls.push(newUiControl);
@@ -20442,7 +20557,7 @@ module plat {
                         control.parent = parent;
                         control.element = <HTMLElement>element;
 
-                        newAttributes = acquire(__AttributesInstance);
+                        newAttributes = ElementManager._AttributesFactory.getInstance();
                         newAttributes.initialize(control, attrs);
                         control.attributes = newAttributes;
 
@@ -20517,7 +20632,17 @@ module plat {
              * Returns a new instance of an ElementManager.
              */
             static getInstance(): ElementManager {
-                return acquire(ElementManager);
+                var manager = new ElementManager();
+
+                manager._Promise = acquire(__Promise);
+                manager._ContextManager = NodeManager._ContextManager;
+                manager._compiler = acquire(__Compiler);
+                manager._CommentManagerFactory = acquire(__CommentManagerFactory);
+                manager._ControlFactory = acquire(__ControlFactory);
+                manager._TemplateControlFactory = NodeManager._TemplateControlFactory;
+                manager._BindableTemplatesFactory = ElementManager._BindableTemplatesFactory;
+                manager._Exception = ElementManager._Exception;
+                return manager;
             }
 
             /**
@@ -21247,7 +21372,7 @@ module plat {
                     resources = uiControl.resources,
                     element = nodeMap.element,
                     childNodes = Array.prototype.slice.call(element.childNodes),
-                    newAttributes: ui.Attributes = acquire(__AttributesInstance),
+                    newAttributes: ui.Attributes = ElementManager._AttributesFactory.getInstance(),
                     replace = this.replace = (uiControl.replaceWith === null || uiControl.replaceWith === '');
 
                 if (!isString(uid)) {
@@ -21434,23 +21559,28 @@ module plat {
             _document?: Document,
             _managerCache?: storage.Cache<ElementManager>,
             _ResourcesFactory?: ui.IResourcesFactory,
+            _AttributesFactory?: typeof ui.Attributes,
             _BindableTemplatesFactory?: ui.IBindableTemplatesFactory,
             _Exception?: IExceptionStatic): IElementManagerFactory {
             (<any>ElementManager)._document = _document;
             (<any>ElementManager)._managerCache = _managerCache;
-            (<any>ElementManager)._ResourcesFactory = _ResourcesFactory;
+            (<any>ElementManager)._ResourcesFactory = _ResourcesFactory; 
+            (<any>ElementManager)._AttributesFactory = _AttributesFactory;
             (<any>ElementManager)._BindableTemplatesFactory = _BindableTemplatesFactory;
             (<any>ElementManager)._Exception = _Exception;
             return ElementManager;
         }
-
+    
         register.injectable(__ElementManagerFactory, IElementManagerFactory, [
             __Document,
             __ManagerCache,
             __ResourcesFactory,
+            __AttributesFactory,
             __BindableTemplatesFactory,
             __ExceptionStatic
         ], __FACTORY);
+
+        register.injectable(__ElementManagerInstance, ElementManager, null, __INSTANCE);
 
         /**
          * Creates and manages a class for dealing with Element nodes.
@@ -21532,7 +21662,7 @@ module plat {
              */
             static create(node: Node, parent: ElementManager): TextManager {
                 var value = node.nodeValue,
-                    manager = acquire(TextManager);
+                    manager = new TextManager();
 
                 if (NodeManager.hasMarkup(value)) {
                     var expressions = NodeManager.findMarkup(value),
@@ -21580,7 +21710,7 @@ module plat {
              */
             protected static _clone(sourceManager: NodeManager, node: Node, parent: ElementManager): TextManager {
                 var map = sourceManager.nodeMap,
-                    manager = acquire(TextManager);
+                    manager = new TextManager();
 
                 if (!isNull(map)) {
                     manager.initialize(TextManager._cloneNodeMap(map, node), parent);
@@ -21645,6 +21775,7 @@ module plat {
         }
 
         register.injectable(__TextManagerFactory, ITextManagerFactory, null, __FACTORY);
+        register.injectable(__TextManagerInstance, TextManager, null, __INSTANCE);
     
         /**
          * Creates and manages a class for dealing with DOM Text Nodes.
@@ -21675,7 +21806,7 @@ module plat {
              * responsible for the passed in Comment Node.
              */
             static create(node: Node, parent: ElementManager): CommentManager {
-                var manager = acquire(CommentManager);
+                var manager = new CommentManager();
 
                 manager.initialize({
                     nodes: [{
@@ -21713,6 +21844,7 @@ module plat {
         }
 
         register.injectable(__CommentManagerFactory, ICommentManagerFactory, null, __FACTORY);
+        register.injectable(__CommentManagerInstance, CommentManager, null, __INSTANCE);
     
         /**
          * Creates and manages a class for dealing with Comment nodes.
@@ -21848,7 +21980,7 @@ module plat {
             initialize(router: Router): void {
                 this.router = router;
 
-                if (router.isRoot && !isObject(Navigator._root)) {
+                if (isObject(router) && router.isRoot && !isObject(Navigator._root)) {
                     this.isRoot = true;
                     Navigator._root = this;
                     this._observeUrl();
@@ -21864,14 +21996,12 @@ module plat {
                 options = isObject(options) ? options : {};
                 var url: string;
             
-                return this._finishNavigating().then(() => {
+                return this.finishNavigating().then(() => {
                     if (options.isUrl) {
                         url = view;
                     } else {
                         url = this._generate(view, options.parameters, options.query);
                     }
-                    var x = 'will',
-                        y = `Hello ${x} world`;
 
                     return this._navigate(url, options.replace);
                 });
@@ -21880,11 +22010,11 @@ module plat {
             /**
              * Returns a promise that resolves when all navigation has finished.
              */
-            protected _finishNavigating(): async.IThenable<void> {
+            finishNavigating(): async.IThenable<void> {
                 var router = Navigator._root.router;
 
                 if (router.navigating) {
-                    return router.finishNavigating.catch(() => { });
+                    return router.finishNavigating.catch(noop);
                 }
 
                 return this._Promise.resolve();
@@ -21925,7 +22055,7 @@ module plat {
                     url = _browser.url();
 
                 this._backNavigate = true;
-                return this._finishNavigating()
+                return this.finishNavigating()
                     .then(() => {
                         return this._goBack(length);
                     });
@@ -21971,11 +22101,8 @@ module plat {
 
                 // Protect against accidentally calling this method twice.
                 EventManager.dispose(this.uid);
-                EventManager.on(this.uid, __backButton, () => {
-                    var ev: events.DispatchEvent = acquire(__DispatchEventInstance);
-                    ev.initialize('backButtonPressed', this);
-
-                    EventManager.sendEvent(ev);
+                EventManager.on(this.uid, __backButton,() => {
+                    var ev = EventManager.dispatch('backButtonPressed', this, EventManager.DIRECT);;
 
                     if (ev.defaultPrevented) {
                         return;
@@ -21987,36 +22114,35 @@ module plat {
                 EventManager.on(this.uid, __urlChanged, (ev: events.DispatchEvent, utils?: web.UrlUtils) => {
                     if (this._ignoreOnce) {
                         this._ignoreOnce = false;
+                        this._resolveNavigate();
                         return;
                     }
 
                     backNavigate = this._backNavigate;
                     this._backNavigate = false;
+                    previousUrl = this._previousUrl;
 
-                    postpone(() => {
-                        previousUrl = this._previousUrl;
-                        this.router.navigate(utils.pathname, utils.query)
-                            .then(() => {
-                                this._previousUrl = utils.pathname;
-                                if (isFunction(this._resolveNavigate)) {
-                                    this._resolveNavigate();
-                                }
-                            })
-                            .catch((e: any) => {
-                                this._ignoreOnce = true;
-                                this._previousUrl = previousUrl;
+                    this.finishNavigating()
+                    .then(() => {
+                        return this.router.navigate(utils.pathname, utils.query);
+                    }).then(() => {
+                        this._previousUrl = utils.pathname;
+                        if (isFunction(this._resolveNavigate)) {
+                            this._resolveNavigate();
+                        }
+                    }, (e: any) => {
+                        this._ignoreOnce = true;
+                        this._previousUrl = previousUrl;
+                        this._browser.url(previousUrl, !backNavigate);
+                        this._history.go(-1);
 
-                                this._browser.url(previousUrl, !backNavigate);
-                                this._history.go(-1);
+                        if (isFunction(this._rejectNavigate)) {
+                            this._rejectNavigate(e);
+                        }
 
-                                if (isFunction(this._rejectNavigate)) {
-                                    this._rejectNavigate(e);
-                                }
-
-                                if (!isEmpty(e)) {
-                                    _Exception.warn(e, _Exception.NAVIGATION);
-                                }
-                            });
+                        if (!isEmpty(e)) {
+                            _Exception.warn(e, _Exception.NAVIGATION);
+                        }
                     });
                 });
             }
@@ -23161,6 +23287,7 @@ module plat {
             previousUrl: string;
             previousQuery: string;
             previousSegment: string;
+            previousPattern: string;
 
             currentRouteInfo: IRouteInfo;
 
@@ -23208,25 +23335,31 @@ module plat {
                 var ports = this.ports;
 
                 if (isNull(port) || ports.indexOf(port) > -1) {
-                    return this._Promise.resolve();
+                    return this._resolve();
                 }
 
                 ports.push(port);
 
                 if (isObject(this.currentRouteInfo)) {
-
-                    var routeInfo = _clone(this.currentRouteInfo, true);
-
-                    return this.canNavigateTo(routeInfo)
-                        .then((canNavigateTo) => {
-                        if (!canNavigateTo) {
-                            return;
-                        }
-                        this.currentRouteInfo = undefined;
-                        return this.performNavigation(routeInfo);
-                    }).then(() => {
-                        this.currentRouteInfo = routeInfo;
-                    });
+                    this.navigating = true;
+                    return this._resolve(this.finishNavigating)
+                        .catch(() => { })
+                        .then(() => {
+                            var routeInfo = _clone(this.currentRouteInfo, true);
+                            return this.finishNavigating = this.canNavigateTo(routeInfo)
+                                .then((canNavigateTo) => {
+                                if (!canNavigateTo) {
+                                    return;
+                                }
+                                this.currentRouteInfo = undefined;
+                                return this.performNavigation(routeInfo);
+                            }).then(() => {
+                                this.navigating = false;
+                                this.currentRouteInfo = routeInfo;
+                            },() => {
+                                this.navigating = false;
+                            });
+                        });
                 }
 
                 return this._Promise.resolve();
@@ -23301,6 +23434,10 @@ module plat {
             }
 
             protected _addHandler(handler: (value: string, values: any, query?: any) => any, parameter: string, view: any, handlers: IObject<IRouteTransforms>) {
+                if (isUndefined(view)) {
+                    view = '*';
+                }
+
                 if (view !== '*') {
                     view = this._Injector.convertDependency(view);
                 }
@@ -23326,15 +23463,15 @@ module plat {
                 return this;
             }
 
-            intercept(handler: (routeInfo: IRouteInfo) => any, view: string): Router;
-            intercept(handler: (routeInfo: IRouteInfo) => any, view: new (...args: any[]) => any): Router;
-            intercept(handler: (routeInfo: IRouteInfo) => any, view: any) {
-                if (view !== '*') {
-                    view = this._Injector.convertDependency(view);
+            intercept(handler: (routeInfo: IRouteInfo) => any, view?: string): Router;
+            intercept(handler: (routeInfo: IRouteInfo) => any, view?: new (...args: any[]) => any): Router;
+            intercept(handler: (routeInfo: IRouteInfo) => any, view?: any) {
+                if (isUndefined(view)) {
+                    view = '*';
                 }
 
-                if (isEmpty(view)) {
-                    return this;
+                if (view !== '*') {
+                    view = this._Injector.convertDependency(view);
                 }
 
                 var interceptors = this.interceptors[view];
@@ -23365,7 +23502,9 @@ module plat {
 
                 if (!isString(url) || this.navigating || (!force && url === this.previousUrl && queryString === this.previousQuery)) {
                     if (this.navigating) {
-                        return this.finishNavigating;
+                        return this.finishNavigating.then(() => {
+                            return this.navigate(url, query, force);
+                        });
                     }
 
                     return resolve();
@@ -23373,7 +23512,8 @@ module plat {
 
                 var result: IRouteResult = this.recognizer.recognize(url),
                     routeInfo: IRouteInfo,
-                    pattern: string;
+                    pattern: string,
+                    segment: string;
 
                 if (isEmpty(result)) {
                     result = this.childRecognizer.recognize(url);
@@ -23389,8 +23529,7 @@ module plat {
                     routeInfo.query = query;
                     pattern = routeInfo.delegate.pattern;
                     pattern = pattern.substr(0, pattern.length - __CHILD_ROUTE_LENGTH);
-
-                    if (this.previousSegment === pattern) {
+                    if (this.previousPattern === pattern) {
                         // the pattern for this router is the same as the last pattern so 
                         // only navigate child routers.
                         this.navigating = true;
@@ -23399,7 +23538,7 @@ module plat {
                             this.previousUrl = url;
                             this.previousQuery = queryString;
                             this.navigating = false;
-                        },(e) => {
+                            },(e) => {
                                 this.navigating = false;
                                 throw e;
                             });
@@ -23409,13 +23548,14 @@ module plat {
                     routeInfo.query = query;
                     pattern = routeInfo.delegate.pattern;
                 }
+            
+                segment = this.recognizer.generate(routeInfo.delegate.view, routeInfo.parameters);
 
                 this.navigating = true;
 
                 var routeInfoCopy = _clone(routeInfo, true);
-
                 return this.finishNavigating = this.canNavigate(routeInfo)
-                    .then((canNavigate: boolean) => {
+                .then((canNavigate: boolean) => {
                     if (!canNavigate) {
                         this.navigating = false;
                         throw new Error('Not cleared to navigate');
@@ -23425,23 +23565,28 @@ module plat {
                     this.previousQuery = queryString;
 
                     return this.performNavigation(routeInfo);
-                })
-                    .then(() => {
-                    this.previousSegment = pattern;
+                }).then(() => {
+                    if (!isEmpty(this.ports)) {
+                        this.previousPattern = pattern;
+                    }
+
+                    this.previousSegment = segment;
                     this.currentRouteInfo = routeInfoCopy;
                     this.navigating = false;
                 },(e) => {
-                        this.navigating = false;
-                        throw e;
-                    });
+                    this.navigating = false;
+                    throw e;
+                });
             }
 
-            forceNavigate() {
+            forceNavigate(): async.IThenable<void> {
                 var resolve = this._resolve,
                     query: IObject<any>;
 
                 if (this.navigating) {
-                    return resolve();
+                    return this.finishNavigating.then(() => {
+                        return this.forceNavigate();
+                    });
                 }
 
                 if (this.isRoot && isEmpty(this.previousUrl)) {
@@ -23614,7 +23759,9 @@ module plat {
 
             canNavigateTo(info: IRouteInfo, ignorePorts?: boolean): async.IThenable<boolean> {
                 var promises: Array<any> = [];
-
+                if (isEmpty(this.ports)) {
+                    return this._resolve(true);
+                }
                 return this.callAllHandlers(info.delegate.view, info.parameters, info.query)
                     .then(() => {
                     return this.callInterceptors(info);
@@ -23680,6 +23827,7 @@ module plat {
 
             protected _clearInfo() {
                 this.previousSegment = undefined;
+                this.previousPattern = undefined;
                 this.previousUrl = undefined;
                 this.previousQuery = undefined;
                 this.currentRouteInfo = undefined;
@@ -26260,7 +26408,9 @@ module plat {
                 return;
             }
 
-            _compiler.compile(node);
+            postpone(() => {
+                _compiler.compile(node);
+            });
         }
 
         /**

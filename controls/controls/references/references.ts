@@ -11,6 +11,7 @@ var __prefix = '$',
     __Utils = __prefix + 'Utils',
     __Animator = __prefix + 'Animator',
     __DomEventInstance = __prefix + 'DomEventInstance',
+    __TemplateControlFactory = __prefix + 'TemplateControlFactory',
 
     /**
      * Constants
@@ -35,7 +36,7 @@ var __prefix = '$',
     __Select = __Plat + 'select',
     __Input = __Plat + 'input',
     __Carousel = __Plat + 'carousel',
-    __TemplateControlFactory = '$TemplateControlFactory',
+    __Listview = __Plat + 'listview',
 
     /**
      * Referenced Controls / Vars
@@ -46,6 +47,7 @@ var __prefix = '$',
     __Context = __Plat + __CONTEXT,
     __CamelContext = 'platContext',
     __Bind = __Plat + 'bind',
+    __TemplateControlCache = '__templateControlCache',
 
     /**
      * Animations
@@ -72,6 +74,7 @@ var __prefix = '$',
     /**
      * Misc
      */
+    __CONTEXT = 'context',
     __Reversed = '-reversed',
     __transitionNegate: plat.IObject<string> = {
         right: 'left',

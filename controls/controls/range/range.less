@@ -29,7 +29,7 @@
         .box-sizing(content-box);
         .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
 
-        .plat-slider-offset {
+        .plat-range-track {
             position: absolute;
             background-color: @neutralColorDark;
             overflow: visible;
@@ -62,7 +62,7 @@
             left: @knob-radius;
             height: @thickness;
 
-            .plat-slider-offset {
+            .plat-range-track {
                 width: 100%;
                 height: 100%;
 
@@ -75,18 +75,18 @@
                     .calc(top, '@{half-thickness} - @{knob-radius}');
                     right: -@knob-radius;
                 }
-            }
 
-            &.plat-transition {
-                .translateZ(0);
-                .transition(@horizontal-transition);
+                &.plat-transition {
+                    .translateZ(0);
+                    .transition(@horizontal-transition);
+                }
             }
         }
     }
 
     &.plat-horizontal {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 left: 0;
             }
         }
@@ -94,7 +94,7 @@
 
     &.plat-horizontal-reversed {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 right: 0;
             }
         }
@@ -110,7 +110,7 @@
             top: @knob-radius;
             width: @thickness;
 
-            .plat-slider-offset {
+            .plat-range-track {
                 width: 100%;
                 height: 0;
 
@@ -123,18 +123,18 @@
                     .calc(left, '@{half-thickness} - @{knob-radius}');
                     top: -@knob-radius;
                 }
-            }
 
-            &.plat-transition {
-                .translateZ(0);
-                .transition(@vertical-transition);
+                &.plat-transition {
+                    .translateZ(0);
+                    .transition(@vertical-transition);
+                }
             }
         }
     }
 
     &.plat-vertical {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 bottom: 0;
             }
         }
@@ -142,7 +142,7 @@
 
     &.plat-vertical-reversed {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 top: 0;
             }
         }
@@ -152,7 +152,7 @@
 
     &.range-primary {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 background-color: @primaryColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@primaryColor, 10%));
             }
@@ -161,7 +161,7 @@
 
     &.range-secondary {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 background-color: @secondaryColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@secondaryColor, 10%));
             }
@@ -170,7 +170,7 @@
         
     &.range-success {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 background-color: @successColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@successColor, 10%));
             }
@@ -179,7 +179,7 @@
 
     &.range-caution {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 background-color: @cautionColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@cautionColor, 10%));
             }
@@ -188,7 +188,7 @@
 
     &.range-danger {
         .plat-range-container {
-            .plat-slider-offset {
+            .plat-range-track {
                 background-color: @dangerColor;
                 .box-shadow(inset 0px 1px 1px 0px darken(@dangerColor, 10%));
             }

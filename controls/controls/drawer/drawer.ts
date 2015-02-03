@@ -787,17 +787,17 @@
         protected _isElastic: boolean;
 
         /**
-         * @name _inTouch
+         * @name _touchState
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
          * 
-         * @type {boolean}
+         * @type {number}
          * 
          * @description
-         * Whether or not the user is currently touching the screen.
+         * An enum denoting the current touch state of the user.
          */
-        protected _inTouch: boolean;
+        protected _touchState = 0;
 
         /**
          * @name _useContext
@@ -944,6 +944,19 @@
         protected _rootElement: HTMLElement;
 
         /**
+         * @name _clickEater
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * An HTMLElement to eat clicks when the {@link platui.Drawer|Drawer} is open.
+         */
+        protected _clickEater: HTMLElement;
+
+        /**
          * @name _type
          * @memberof platui.DrawerController
          * @kind property
@@ -1065,6 +1078,20 @@
         protected _toggleDelay: plat.IRemoveListener;
 
         /**
+         * @name _animationThenable
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimationThenable<void>}
+         * 
+         * @description
+         * The most recent animation thenable. Used to cancel the current animation if another needs 
+         * to begin.
+         */
+        protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
+
+        /**
          * @name initialize
          * @memberof platui.DrawerController
          * @kind function
@@ -1184,7 +1211,8 @@
             }
 
             var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = _utils.postpone(() => {
+                this._toggleDelay = _utils.requestAnimationFrame(() => {
+                    this._touchState = 0;
                     this._toggleDelay = null;
                     this._open().then(resolve);
                 });
@@ -1222,7 +1250,8 @@
             }
 
             var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = _utils.postpone(() => {
+                this._toggleDelay = _utils.requestAnimationFrame(() => {
+                    this._touchState = 0;
                     this._toggleDelay = null;
                     this._close().then(resolve);
                 });
@@ -1348,7 +1377,8 @@
                     if (this._isOpen) {
                         return;
                     }
-                    this._toggleDelay = _utils.postpone(() => {
+                    this._toggleDelay = _utils.requestAnimationFrame(() => {
+                        this._touchState = 0;
                         this._toggleDelay = null;
                         this._open();
                     });
@@ -1356,7 +1386,8 @@
                 }
 
                 if (this._isOpen) {
-                    this._toggleDelay = _utils.postpone(() => {
+                    this._toggleDelay = _utils.requestAnimationFrame(() => {
+                        this._touchState = 0;
                         this._toggleDelay = null;
                         this._close();
                     });
@@ -1418,8 +1449,10 @@
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
-            return <any>this._animator.animate(rootElement, __Transition, {
+            return this._animationThenable = this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
+            }).then(() => {
+                this._animationThenable = null;
             });
         }
 
@@ -1457,9 +1490,10 @@
                 transform = <any>this._transform;
 
             animationOptions[transform] = this._preTransform;
-            return this._animator.animate(rootElement, __Transition, {
+            return this._animationThenable = this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
             }).then(() => {
+                this._animationThenable = null;
                 if (this._isOpen) {
                     return;
                 }
@@ -1476,11 +1510,21 @@
          * @access protected
          * 
          * @description
-         * Adds all event listeners to the moving root element when tracking and closing an open {@link platui.Drawer|Drawer}.
+         * Adds a click eater and all event listeners to the click eater when tracking 
+         * and closing an open {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
         protected _addEventIntercepts(): void {
+            var clickEater = this._clickEater,
+                style = clickEater.style,
+                rootElement = this._rootElement;
+
+            // align clickEater to fill the rootElement
+            style.top = rootElement.scrollTop + 'px';
+            style.left = rootElement.scrollLeft + 'px';
+            rootElement.insertBefore(clickEater, null);
+
             if (this._isTap) {
                 this._addTapClose();
             }
@@ -1490,12 +1534,11 @@
             }
 
             if (this._isTrack) {
-                var rootElement = this._rootElement;
-                var touchStartRemover = this.addEventListener(rootElement, __$touchstart, this._touchStart, false),
-                    trackRemover = this.addEventListener(rootElement, __$track, this._track, false),
+                var touchStartRemover = this.addEventListener(clickEater, __$touchstart, this._touchStart, false),
+                    trackRemover = this.addEventListener(clickEater, __$track, this._track, false),
                     touchEnd = this._touchEnd,
-                    trackEndRemover = this.addEventListener(rootElement, __$trackend, touchEnd, false),
-                    touchEndRemover = this.addEventListener(rootElement, __$touchend, touchEnd, false);
+                    trackEndRemover = this.addEventListener(clickEater, __$trackend, touchEnd, false),
+                    touchEndRemover = this.addEventListener(clickEater, __$touchend, touchEnd, false);
 
                 this._openTrackRemover = () => {
                     touchStartRemover();
@@ -1513,13 +1556,14 @@
          * @access protected
          * 
          * @description
-         * Removes all event intercepts on the moving root element when closing an open {@link platui.Drawer|Drawer}.
+         * Removes the click eater and all event intercepts on the click eater when closing an open {@link platui.Drawer|Drawer}.
          * 
          * @returns {void}
          */
         protected _removeEventIntercepts(): void {
-            var isFunction = this._utils.isFunction;
+            this._rootElement.removeChild(this._clickEater);
 
+            var isFunction = this._utils.isFunction;
             if (this._isTap && isFunction(this._openTapRemover)) {
                 this._openTapRemover();
                 this._openTapRemover = null;
@@ -1566,7 +1610,7 @@
          * @returns {void}
          */
         protected _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._rootElement, __$swipe + this._position, () => {
+            this._openSwipeRemover = this.addEventListener(this._clickEater, __$swipe + this._position, () => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1602,7 +1646,7 @@
          * @returns {void}
          */
         protected _addTapClose(): void {
-            this._openTapRemover = this.addEventListener(this._rootElement, __$tap, () => {
+            this._openTapRemover = this.addEventListener(this._clickEater, __$tap, () => {
                 this._hasTapped = true;
                 this.close();
             }, false);
@@ -1729,7 +1773,37 @@
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
-            this._inTouch = true;
+            if (this._touchState === 1) {
+                return;
+            }
+
+            if (!this._utils.isNull(this._animationThenable)) {
+                this._animationThenable.cancel().then(() => {
+                    this._animationThenable = null;
+                    this._initTouch(ev);
+                });
+            }
+
+            this._initTouch(ev);
+        }
+
+        /**
+         * @name _initTouch
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Indicates touch is in progress and sets the initial touch point 
+         * when the user touches the {@link platui.DrawerController|DrawerController}.
+         * 
+         * @param {plat.ui.IGestureEvent} ev The touch event.
+         * 
+         * @returns {void}
+         */
+        protected _initTouch(ev: plat.ui.IGestureEvent): void {
+            this._touchState = 1;
+
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
@@ -1757,14 +1831,17 @@
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var inTouch = this._inTouch,
+            var noTouch = this._touchState !== 1,
                 hasSwiped = this._hasSwiped,
                 hasTapped = this._hasTapped;
 
-            this._inTouch = this._hasSwiped = this._hasTapped = false;
-            if (hasTapped || !inTouch || hasSwiped) {
+            this._hasSwiped = this._hasTapped = false;
+            if (hasTapped || noTouch || hasSwiped) {
+                this._touchState = 0;
                 return;
             }
+
+            this._touchState = 2;
 
             var distanceMoved: number;
             switch (this._position) {
@@ -1782,14 +1859,14 @@
 
             if (this._isRightDirection(distanceMoved)) {
                 if (Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
-                    this._utils.requestAnimationFrame(this.toggle, this);
+                    this.toggle();
                     return;
                 }
 
-                this._utils.requestAnimationFrame(this.reset, this);
+                this.reset();
             } else if (this._isElastic) {
                 if (Math.abs(distanceMoved) > 0) {
-                    this._utils.requestAnimationFrame(this.reset, this);
+                    this.reset();
                 }
             } else if (!this._isOpen) {
                 this._drawerElement.setAttribute(__Hide, '');
@@ -1812,6 +1889,10 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
+            if (this._touchState === 0) {
+                return;
+            }
+
             this._utils.requestAnimationFrame(() => {
                 this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
             });
@@ -1928,8 +2009,6 @@
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string): void {
-            this._setTransform();
-
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
                 (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent) => {
                     eventRemover();
@@ -1957,6 +2036,7 @@
                         return;
                     }
 
+                    this._setTransform();
                     this._addEventListeners(position.toLowerCase());
                     this._setOffset();
 
@@ -1980,7 +2060,8 @@
                     this._determineTemplate(drawerArg.template);
 
                     if (this._preloadedValue) {
-                        this._toggleDelay = _utils.postpone(() => {
+                        this._toggleDelay = _utils.requestAnimationFrame(() => {
+                            this._touchState = 0;
                             this._toggleDelay = null;
                             this._open();
                         });
@@ -2032,22 +2113,20 @@
          * @returns {void}
          */
         protected _setTransform(): void {
-            var style = this.element.style,
-                isUndefined = this._utils.isUndefined,
-                transform: string;
+            var style = this._rootElement.style,
+                isUndefined = this._utils.isUndefined;
 
-            if (isUndefined(style.transform)) {
-                var vendorPrefix = this._compat.vendorPrefix;
-                if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
-                } else if (!isUndefined(style[<any>(vendorPrefix.js + 'Transform')])) {
-                    transform = this._transform = vendorPrefix.lowerCase + 'Transform';
-                }
-            } else {
-                transform = this._transform = 'transform';
+            if (!isUndefined(this._preTransform = style.transform)) {
+                this._transform = 'transform';
+                return;
             }
 
-            this._preTransform = style[<any>transform];
+            var vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
+            } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
+                this._transform = vendorPrefix.lowerCase + 'Transform';
+            }
         }
 
         /**
@@ -2082,12 +2161,9 @@
                 return false;
             }
 
-            var dom = this.dom,
-                transitionPrep = 'plat-drawer-transition-prep';
-            if (!dom.hasClass(rootElement, transitionPrep)) {
-                dom.addClass(rootElement, transitionPrep);
-            }
-
+            this._clickEater = this._document.createElement('div');
+            this._clickEater.className = 'plat-clickeater';
+            this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
 
             this._disposeRemover = this.on(__DrawerControllerDisposing, () => {

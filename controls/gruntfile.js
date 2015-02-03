@@ -53,7 +53,7 @@ module.exports = exports = function load(grunt) {
 			setup: {
                 options: {
                     process: function (data) {
-                        return '/// <reference path="./node_modules/platypus/platypus-node.d.ts" />\r\n' +
+                        return '/// <reference path="./node_modules/platypus/platypus.d.ts" />\r\n' +
 						'/// <reference path="./node_modules/.bin/typings/node/node.d.ts" />\r\n' +
 						'var plat = require(\'platypus\');\r\n\r\n' + 
 						stripDocs(data) + 
