@@ -54,7 +54,7 @@
          * The number of items currently loaded.
          */
         count = 0;
-        
+
         /**
          * @name context
          * @memberof platui.Listview
@@ -475,7 +475,7 @@
          * The last touch start recorded.
          */
         protected _lastTouch: plat.ui.IPoint = { x: 0, y: 0 };
-        
+
         /**
          * @name _transform
          * @memberof platui.Listview
@@ -811,8 +811,8 @@
             }
 
             this._setAliases();
-            this._setListener();
             this.render();
+            this._setListener();
         }
 
         /**
@@ -1408,6 +1408,296 @@
         }
 
         /**
+         * @name _disposeFromIndex
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Dispose of the controls and DOM starting at a given index.
+         * 
+         * @param {number} index The starting index to dispose.
+         * @param {plat.ui.TemplateControl} control? The control whose controls we are to dispose.
+         * 
+         * @returns {void}
+         */
+        protected _disposeFromIndex(index: number, control?: plat.ui.TemplateControl): void {
+            control = control || this;
+
+            var controls = <Array<plat.ui.TemplateControl>>control.controls;
+            if (controls.length === 0) {
+                return;
+            }
+
+            var dispose = this._TemplateControlFactory.dispose,
+                disposingGroups = control === this && this._isGrouped;
+
+            for (var i = control.context.length - 1; i >= index; --i) {
+                if (controls.length > i) {
+                    dispose(controls[i]);
+                    if (!disposingGroups) {
+                        this.count--;
+                    }
+                }
+            }
+        }
+
+        /**
+         * @name _renderUsingFunction
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Render items using a defined render function starting at a given index and continuing 
+         * through for a set number of items. If undefined or null is returned from the function, 
+         * rendering will stop.
+         * 
+         * @param {number} index The starting index to render.
+         * @param {HTMLElement} container The element to place the rendered item into.
+         * 
+         * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
+         */
+        protected _renderUsingFunction(index: number, container: HTMLElement): plat.async.IThenable<void> {
+            var _Promise = this._Promise,
+                _utils = this._utils;
+
+            return _Promise.resolve(this._templateSelectorPromise).then(() => {
+                return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(this.context[index], index));
+            }).then((selectedTemplate) => {
+                var bindableTemplates = this.bindableTemplates,
+                    templates = bindableTemplates.templates,
+                    controls = this.controls,
+                    key = this._normalizeTemplateName(selectedTemplate),
+                    controlExists = index < controls.length;
+
+                if (!_utils.isUndefined(templates[key])) {
+                    if (controlExists) {
+                        if (key === this._templateSelectorKeys[index]) {
+                            return;
+                        }
+
+                        this._templateSelectorKeys[index] = key;
+                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, index, this._getAliases(index));
+                    }
+
+                    this._templateSelectorKeys[index] = key;
+                    return bindableTemplates.bind(key, index, this._getAliases(index));
+                } else if (controlExists) {
+                    this._TemplateControlFactory.dispose(controls[index]);
+                    this.count--;
+                }
+            }).then((node) => {
+                if (_utils.isNull(node) || _utils.isArray(node)) {
+                    return;
+                }
+
+                container.insertBefore(node, null);
+                this.count++;
+            }).then(null, (error) => {
+                var _Exception = this._Exception;
+                _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
+            });
+        }
+
+        /**
+         * @name _bindItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Binds the item to a template at that index.
+         * 
+         * @returns {plat.async.IThenable<DocumentFragment>} A promise that resolves with 
+         * the a DocumentFragment that represents an item.
+         */
+        protected _bindItem(index: number): plat.async.IThenable<DocumentFragment> {
+            return this.bindableTemplates.bind(this._isGrouped ? __Listview + '-group' : this._itemTemplate,
+                index, this._getAliases(index));
+        }
+
+        /**
+         * @name _updateResources
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Updates the control's children resource objects when 
+         * the array changes.
+         * 
+         * @param {number} index? The index to begin updating.
+         * @param {number} count? The number of resources to update.
+         * @param {plat.ui.TemplateControl} control? The control whose resources are to be updated.
+         * 
+         * @returns {void}
+         */
+        protected _updateResource(index: number, control?: plat.ui.TemplateControl): void {
+            control = control || this;
+
+            var controls = <Array<plat.ui.TemplateControl>>control.controls;
+            if (index <= 0 || index >= controls.length) {
+                return;
+            } else if (control === this && this._isGrouped) {
+                controls[index].resources.add(this._getGroupAliases(index));
+                return;
+            }
+
+            controls[index].resources.add(this._getAliases(index));
+        }
+
+        /**
+         * @name _getAliases
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Returns a resource alias object for an item in the array. The 
+         * resource object contains index:number, even:boolean, odd:boolean, 
+         * first:boolean, and last:boolean.
+         * 
+         * @param {number} index The index used to create the resource aliases.
+         * 
+         * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
+         */
+        protected _getAliases(index: number): plat.IObject<plat.ui.IResource> {
+            var isEven = (index & 1) === 0,
+                aliases: plat.IObject<plat.ui.IResource> = {},
+                _aliases = this._aliases,
+                type = __OBSERVABLE_RESOURCE;
+
+            aliases[_aliases.index] = {
+                value: index,
+                type: type
+            };
+
+            aliases[_aliases.even] = {
+                value: isEven,
+                type: type
+            };
+
+            aliases[_aliases.odd] = {
+                value: !isEven,
+                type: type
+            };
+
+            aliases[_aliases.first] = {
+                value: index === 0,
+                type: type
+            };
+
+            aliases[_aliases.last] = {
+                value: index === (this.context.length - 1),
+                type: type
+            };
+
+            return aliases;
+        }
+
+        /**
+         * @name _getGroupAliases
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Returns a resource alias object for an item in the array. The 
+         * resource object contains index:number, even:boolean, odd:boolean, 
+         * first:boolean, last:boolean, and group:string.
+         * 
+         * @param {number} index The index used to create the resource aliases.
+         * 
+         * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
+         */
+        protected _getGroupAliases(index: number): plat.IObject<plat.ui.IResource> {
+            var aliases: plat.IObject<plat.ui.IResource> = this._getAliases(index),
+                _aliases = this._aliases;
+
+            aliases[_aliases.group] = {
+                value: this.context[index].group,
+                type: __LITERAL_RESOURCE
+            };
+
+            return aliases;
+        }
+
+        /**
+         * @name _appendItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds an item to the container without animating.
+         * 
+         * @param {Node} item The new Node to add.
+         * 
+         * @returns {HTMLElement} The plat-listview-item container element.
+         */
+        protected _appendItem(item: Node): HTMLElement {
+            var platItem = <HTMLElement>item.firstChild;
+            this._container.insertBefore(item, null);
+            this.count++;
+            return platItem;
+        }
+
+        /**
+         * @name _appendItems
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds an Array of items to the element without animating.
+         * 
+         * @param {Array<DocumentFragment>} items The Array of items to add.
+         * @param {boolean} animate? Whether to animate the appended items.
+         * 
+         * @returns {void}
+         */
+        protected _appendItems(items: Array<DocumentFragment>, animate?: boolean): void {
+            if (animate === true) {
+                while (items.length > 0) {
+                    this._appendAnimatedItem(items.shift(), __Enter);
+                }
+                return;
+            }
+
+            while (items.length > 0) {
+                this._appendItem(items.shift());
+            }
+        }
+
+        /**
+         * @name _appendAnimatedItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds an item to the control's element animating its elements.
+         * 
+         * @param {DocumentFragment} item The HTML fragment representing a single item.
+         * @param {string} key The animation key/type.
+         * 
+         * @returns {void}
+         */
+        protected _appendAnimatedItem(item: DocumentFragment, key: string): void {
+            if (!this._utils.isNode(item)) {
+                return;
+            }
+
+            var itemContainer = this._appendItem(item),
+                currentAnimations = this._currentAnimations;
+
+            currentAnimations.push(this._animator.animate(itemContainer, key).then(() => {
+                currentAnimations.shift();
+            }));
+        }
+
+        /**
          * @name _determineLoading
          * @memberof platui.Listview
          * @kind function
@@ -1791,7 +2081,7 @@
                     dom.removeClass(viewport, 'plat-manipulation-prep');
                     progressRing.setAttribute(__Hide, '');
                 });
-            }).then(null, (error) => {
+            }).then(null,(error) => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
             });
@@ -1875,7 +2165,7 @@
                 this._viewport.style[<any>this._transform] = this._calculateTranslation(ev, refreshing);
             });
         }
-        
+
         /**
          * @name _calculateTranslation
          * @memberof platui.Listview
@@ -1951,296 +2241,6 @@
             } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
                 this._transform = vendorPrefix.lowerCase + 'Transform';
             }
-        }
-
-        /**
-         * @name _disposeFromIndex
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Dispose of the controls and DOM starting at a given index.
-         * 
-         * @param {number} index The starting index to dispose.
-         * @param {plat.ui.TemplateControl} control? The control whose controls we are to dispose.
-         * 
-         * @returns {void}
-         */
-        protected _disposeFromIndex(index: number, control?: plat.ui.TemplateControl): void {
-            control = control || this;
-
-            var controls = <Array<plat.ui.TemplateControl>>control.controls;
-            if (controls.length === 0) {
-                return;
-            }
-
-            var dispose = this._TemplateControlFactory.dispose,
-                disposingGroups = control === this && this._isGrouped;
-
-            for (var i = control.context.length - 1; i >= index; --i) {
-                if (controls.length > i) {
-                    dispose(controls[i]);
-                    if (!disposingGroups) {
-                        this.count--;
-                    }
-                }
-            }
-        }
-
-        /**
-         * @name _renderUsingFunction
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Render items using a defined render function starting at a given index and continuing 
-         * through for a set number of items. If undefined or null is returned from the function, 
-         * rendering will stop.
-         * 
-         * @param {number} index The starting index to render.
-         * @param {HTMLElement} container The element to place the rendered item into.
-         * 
-         * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
-         */
-        protected _renderUsingFunction(index: number, container: HTMLElement): plat.async.IThenable<void> {
-            var _Promise = this._Promise,
-                _utils = this._utils;
-
-            return _Promise.resolve(this._templateSelectorPromise).then(() => {
-                return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(this.context[index], index));
-            }).then((selectedTemplate) => {
-                var bindableTemplates = this.bindableTemplates,
-                    templates = bindableTemplates.templates,
-                    controls = this.controls,
-                    key = this._normalizeTemplateName(selectedTemplate),
-                    controlExists = index < controls.length;
-
-                if (!_utils.isUndefined(templates[key])) {
-                    if (controlExists) {
-                        if (key === this._templateSelectorKeys[index]) {
-                            return;
-                        }
-
-                        this._templateSelectorKeys[index] = key;
-                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, index, this._getAliases(index));
-                    }
-
-                    this._templateSelectorKeys[index] = key;
-                    return bindableTemplates.bind(key, index, this._getAliases(index));
-                } else if (controlExists) {
-                    this._TemplateControlFactory.dispose(controls[index]);
-                    this.count--;
-                }
-            }).then((node) => {
-                if (_utils.isNull(node) || _utils.isArray(node)) {
-                    return;
-                }
-
-                container.insertBefore(node, null);
-                this.count++;
-            }).then(null, (error) => {
-                var _Exception = this._Exception;
-                _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
-            });
-        }
-
-        /**
-         * @name _bindItem
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Binds the item to a template at that index.
-         * 
-         * @returns {plat.async.IThenable<DocumentFragment>} A promise that resolves with 
-         * the a DocumentFragment that represents an item.
-         */
-        protected _bindItem(index: number): plat.async.IThenable<DocumentFragment> {
-            return this.bindableTemplates.bind(this._isGrouped ? __Listview + '-group' : this._itemTemplate,
-                index, this._getAliases(index));
-        }
-
-        /**
-         * @name _updateResources
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Updates the control's children resource objects when 
-         * the array changes.
-         * 
-         * @param {number} index? The index to begin updating.
-         * @param {number} count? The number of resources to update.
-         * @param {plat.ui.TemplateControl} control? The control whose resources are to be updated.
-         * 
-         * @returns {void}
-         */
-        protected _updateResource(index: number, control?: plat.ui.TemplateControl): void {
-            control = control || this;
-
-            var controls = <Array<plat.ui.TemplateControl>>control.controls;
-            if (index <= 0 || index >= controls.length) {
-                return;
-            } else if (control === this && this._isGrouped) {
-                controls[index].resources.add(this._getGroupAliases(index));
-                return;
-            }
-
-            controls[index].resources.add(this._getAliases(index));
-        }
-
-        /**
-         * @name _getAliases
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Returns a resource alias object for an item in the array. The 
-         * resource object contains index:number, even:boolean, odd:boolean, 
-         * first:boolean, and last:boolean.
-         * 
-         * @param {number} index The index used to create the resource aliases.
-         * 
-         * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
-         */
-        protected _getAliases(index: number): plat.IObject<plat.ui.IResource> {
-            var isEven = (index & 1) === 0,
-                aliases: plat.IObject<plat.ui.IResource> = {},
-                _aliases = this._aliases,
-                type = __OBSERVABLE_RESOURCE;
-
-            aliases[_aliases.index] = {
-                value: index,
-                type: type
-            };
-
-            aliases[_aliases.even] = {
-                value: isEven,
-                type: type
-            };
-
-            aliases[_aliases.odd] = {
-                value: !isEven,
-                type: type
-            };
-
-            aliases[_aliases.first] = {
-                value: index === 0,
-                type: type
-            };
-
-            aliases[_aliases.last] = {
-                value: index === (this.context.length - 1),
-                type: type
-            };
-
-            return aliases;
-        }
-
-        /**
-         * @name _getGroupAliases
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Returns a resource alias object for an item in the array. The 
-         * resource object contains index:number, even:boolean, odd:boolean, 
-         * first:boolean, last:boolean, and group:string.
-         * 
-         * @param {number} index The index used to create the resource aliases.
-         * 
-         * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
-         */
-        protected _getGroupAliases(index: number): plat.IObject<plat.ui.IResource> {
-            var aliases: plat.IObject<plat.ui.IResource> = this._getAliases(index),
-                _aliases = this._aliases;
-
-            aliases[_aliases.group] = {
-                value: this.context[index].group,
-                type: __LITERAL_RESOURCE
-            };
-
-            return aliases;
-        }
-
-        /**
-         * @name _appendItem
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Adds an item to the container without animating.
-         * 
-         * @param {Node} item The new Node to add.
-         * 
-         * @returns {HTMLElement} The plat-listview-item container element.
-         */
-        protected _appendItem(item: Node): HTMLElement {
-            var platItem = <HTMLElement>item.firstChild;
-            this._container.insertBefore(item, null);
-            this.count++;
-            return platItem;
-        }
-
-        /**
-         * @name _appendItems
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Adds an Array of items to the element without animating.
-         * 
-         * @param {Array<DocumentFragment>} items The Array of items to add.
-         * @param {boolean} animate? Whether to animate the appended items.
-         * 
-         * @returns {void}
-         */
-        protected _appendItems(items: Array<DocumentFragment>, animate?: boolean): void {
-            if (animate === true) {
-                while (items.length > 0) {
-                    this._appendAnimatedItem(items.shift(), __Enter);
-                }
-                return;
-            }
-
-            while (items.length > 0) {
-                this._appendItem(items.shift());
-            }
-        }
-
-        /**
-         * @name _appendAnimatedItem
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Adds an item to the control's element animating its elements.
-         * 
-         * @param {DocumentFragment} item The HTML fragment representing a single item.
-         * @param {string} key The animation key/type.
-         * 
-         * @returns {void}
-         */
-        protected _appendAnimatedItem(item: DocumentFragment, key: string): void {
-            if (!this._utils.isNode(item)) {
-                return;
-            }
-
-            var itemContainer = this._appendItem(item),
-                currentAnimations = this._currentAnimations;
-
-            currentAnimations.push(this._animator.animate(itemContainer, key).then(() => {
-                currentAnimations.shift();
-            }));
         }
 
         /**
