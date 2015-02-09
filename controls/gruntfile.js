@@ -134,7 +134,7 @@ module.exports = exports = function load(grunt) {
                     process: function (data) {
                         data = normalizeBlockComments(data.split(/\r\n|\n/));
                         return addNodeTypeDefinition(data.split(/\r\n|\n/))
-                            .join('\r\n')
+                            .join('\r\n');
                     }
                 },
                 src: 'dist/platypus.d.ts',
@@ -188,26 +188,24 @@ module.exports = exports = function load(grunt) {
             }
         },
         ts: {
+            options: {
+                target: 'es5',
+                module: 'commonjs',
+                sourceMap: true,
+                removeComments: false,
+                fast: 'always'
+            },
             base: {
-                src: ['controls/**/*.ts'],
-                options: {
-                    target: 'ES5',
-                }
+                src: ['controls/**/*.ts']
             },
             app: {
-                src: ['app/**/*.ts'],
-                options: {
-                    target: 'ES5'
-                }
+                src: ['app/**/*.ts']
             },
             packaging: {
                 options: {
-                    target: 'es5',
-                    module: 'commonjs',
                     fast: 'never',
-                    sourceMap: true,
-                    declaration: true,
-                    removeComments: false
+                    sourceMap: false,
+                    declaration: true
                 },
                 src: [
                     'dist/platypusui.ts'
