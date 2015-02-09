@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.3 (http://getplatypi.com) 
+ * PlatypusTS v0.10.5 (http://getplatypi.com) 
  * Copyright 2014 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -149,6 +149,23 @@ module plat {
          * Control Properties
          */
         __TemplateControlCache = '__templateControlCache',
+        __Head = 'head',
+        __Meta = 'meta',
+        __Title = 'title',
+        __Description = 'description',
+        __Author = 'author',
+        __Creator = 'creator',
+        __MetaLink = 'link',
+        __MetaHref = 'href',
+        __MetaName = 'name',
+        __MetaProperty = 'property',
+        __MetaImage = 'image',
+        __Rel = 'rel',
+        __Url = 'url',
+        __Article = 'article:',
+        __OpenGraph = 'og:',
+        __Twitter = 'twitter:',
+        __Content = 'content',
     
         /**
          * Lifecycle events
@@ -268,7 +285,7 @@ module plat {
         __CSS = 'css',
         __COMPILED = '-compiled',
         __BOUND_PREFIX = '-@',
-        __END_SUFFIX = '-end',
+        __INIT_SUFFIX = '-init',
         __START_NODE = ': start node',
         __END_NODE = ': end node',
         __POPSTATE = 'popstate',
@@ -294,25 +311,25 @@ module plat {
     /* tslint:enable:no-unused-variable */
     
     /* tslint:disable:no-unused-variable */
-    var _nativeIsArray = !!Array.isArray,
-        _uids: plat.IObject<Array<string>> = {},
-        _Promise: plat.async.IPromise,
-        _compat: plat.Compat,
-        _camelCaseRegex: RegExp,
-        _objToString = Object.prototype.toString,
-        _toStringClass = '[object ',
-        _errorClass = _toStringClass + 'Error]',
-        _fileClass = _toStringClass + 'File]',
-        _arrayClass = _toStringClass + 'Array]',
-        _boolClass = _toStringClass + 'Boolean]',
-        _dateClass = _toStringClass + 'Date]',
-        _funcClass = _toStringClass + 'Function]',
-        _numberClass = _toStringClass + 'Number]',
-        _objectClass = _toStringClass + 'Object]',
-        _regexpClass = _toStringClass + 'RegExp]',
-        _stringClass = _toStringClass + 'String]',
-        _promiseClass = _toStringClass + 'Promise]',
-        _objectTypes: any = {
+    var ___Promise: plat.async.IPromise,
+        ___compat: plat.Compat,
+        __nativeIsArray = !!Array.isArray,
+        __uids: plat.IObject<Array<string>> = {},
+        __camelCaseRegex: RegExp,
+        __objToString = Object.prototype.toString,
+        __toStringClass = '[object ',
+        __errorClass = __toStringClass + 'Error]',
+        __fileClass = __toStringClass + 'File]',
+        __arrayClass = __toStringClass + 'Array]',
+        __boolClass = __toStringClass + 'Boolean]',
+        __dateClass = __toStringClass + 'Date]',
+        __funcClass = __toStringClass + 'Function]',
+        __numberClass = __toStringClass + 'Number]',
+        __objectClass = __toStringClass + 'Object]',
+        __regexpClass = __toStringClass + 'RegExp]',
+        __stringClass = __toStringClass + 'String]',
+        __promiseClass = __toStringClass + 'Promise]',
+        __objectTypes: any = {
             'boolean': false,
             'function': true,
             'object': true,
@@ -337,14 +354,14 @@ module plat {
         var keys: Array<string>,
             property: any;
     
-        forEach((source, k) => {
+        forEach((source, k): void => {
             if (!isObject(source)) {
                 return;
             }
     
             keys = Object.keys(source);
     
-            forEach((key) => {
+            forEach((key): void => {
                 property = source[key];
                 if (deep) {
                     if (isArray(property)) {
@@ -375,7 +392,7 @@ module plat {
         return extend.apply(null, [true, destination].concat(sources));
     }
     
-    function _clone(obj: any, deep?: boolean) {
+    function _clone(obj: any, deep?: boolean): any {
         if (!isObject(obj)) {
             return obj;
         } else if (isDate(obj)) {
@@ -402,7 +419,7 @@ module plat {
     }
     
     function isError(obj: any): boolean {
-        return _objToString.call(obj) === _errorClass;
+        return __objToString.call(obj) === __errorClass;
     }
     
     function isObject(obj: any): boolean {
@@ -426,19 +443,19 @@ module plat {
     }
     
     function isFile(obj: any): boolean {
-        return isObject(obj) && _objToString.call(obj) === _fileClass;
+        return isObject(obj) && __objToString.call(obj) === __fileClass;
     }
     
     function isString(obj: any): boolean {
-        return typeof obj === 'string' || isObject(obj) && _objToString.call(obj) === _stringClass;
+        return typeof obj === 'string' || isObject(obj) && __objToString.call(obj) === __stringClass;
     }
     
     function isRegExp(obj: any): boolean {
-        return isObject(obj) && _objToString.call(obj) === _regexpClass;
+        return isObject(obj) && __objToString.call(obj) === __regexpClass;
     }
     
     function isPromise(obj: any): boolean {
-        return isObject(obj) && (_objToString.call(obj) === _promiseClass || isFunction(obj.then));
+        return isObject(obj) && (__objToString.call(obj) === __promiseClass || isFunction(obj.then));
     }
     
     function isEmpty(obj: any): boolean {
@@ -458,11 +475,11 @@ module plat {
     }
     
     function isBoolean(obj: any): boolean {
-        return obj === true || obj === false || isObject(obj) && _objToString.call(obj) === _boolClass;
+        return obj === true || obj === false || isObject(obj) && __objToString.call(obj) === __boolClass;
     }
     
     function isNumber(obj: any): boolean {
-        return (typeof obj === 'number' || isObject(obj) && _objToString.call(obj) === _numberClass) && !isNaN(obj);
+        return (typeof obj === 'number' || isObject(obj) && __objToString.call(obj) === __numberClass) && !isNaN(obj);
     }
     
     function isFunction(obj: any): boolean {
@@ -478,11 +495,11 @@ module plat {
     }
     
     function isArray(obj: any): boolean {
-        if (_nativeIsArray) {
+        if (__nativeIsArray) {
             return Array.isArray(obj);
         }
     
-        return _objToString.call(obj) === _arrayClass;
+        return __objToString.call(obj) === __arrayClass;
     }
     
     function isArrayLike(obj: any): boolean {
@@ -494,7 +511,7 @@ module plat {
     }
     
     function isDate(obj: any): boolean {
-        return typeof obj === 'object' && _objToString.call(obj) === _dateClass;
+        return typeof obj === 'object' && __objToString.call(obj) === __dateClass;
     }
     
     function filter<T>(iterator: (value: T, key: any, obj: any) => boolean, obj: any, context?: any): Array<T> {
@@ -507,7 +524,7 @@ module plat {
             return obj.filter(iterator, context);
         }
     
-        forEach<T>((value: T, key: any, obj: any) => {
+        forEach<T>((value: T, key: any, obj: any): void => {
             if (iterator(value, key, obj)) {
                 arr.push(value);
             }
@@ -517,8 +534,8 @@ module plat {
     }
     
     function where(properties: any, obj: any): Array<any> {
-        return filter((value)
-            => !some((property, key)
+        return filter((value): boolean
+            => !some((property, key): boolean
                 => (<any>value)[key] !== property, properties), obj);
     }
     
@@ -562,7 +579,7 @@ module plat {
             return obj.map(iterator, context);
         }
     
-        forEach((value, key) => {
+        forEach((value, key): void => {
             arr.push(iterator.call(context, value, key, obj));
         }, obj);
     
@@ -571,15 +588,15 @@ module plat {
     
     function mapAsync<T, R>(iterator: (value: T, key: any, obj: any) => plat.async.IThenable<R>, obj: any,
         context?: any): plat.async.IThenable<Array<R>> {
-        _Promise = _Promise || plat.acquire(__Promise);
+        ___Promise = ___Promise || plat.acquire(__Promise);
     
-        return _Promise.all(map(iterator, obj, context));
+        return ___Promise.all(map(iterator, obj, context));
     }
     
     function mapAsyncWithOrder<T, R>(iterator: (value: T, index: number, list: Array<T>) => plat.async.IThenable<R>,
         array: Array<T>, context: any, descending?: boolean): plat.async.IThenable<Array<R>> {
-        _Promise = _Promise || plat.acquire(__Promise);
-        var initialValue = _Promise.resolve<Array<R>>([]);
+        ___Promise = ___Promise || plat.acquire(__Promise);
+        var initialValue = ___Promise.resolve<Array<R>>([]);
     
         if (!isArray(array)) {
             return initialValue;
@@ -590,8 +607,8 @@ module plat {
         var promise: plat.async.IThenable<Array<R>>,
             inOrder = (previousValue: plat.async.IThenable<Array<R>>, nextValue: T, nextIndex: number,
                 array: Array<T>): plat.async.IThenable<Array<R>> => {
-                return previousValue.then((items) => {
-                    return iterator(nextValue, nextIndex, array).then((moreItems) => {
+                return previousValue.then((items): plat.async.IThenable<Array<R>> => {
+                    return iterator(nextValue, nextIndex, array).then((moreItems): Array<R> => {
                         return items.concat(moreItems);
                     });
                 });
@@ -615,7 +632,7 @@ module plat {
     }
     
     function pluck<T, U>(key: string, obj: any): Array<U> {
-        return map<T, U>((value) => (<any>value)[key], obj);
+        return map<T, U>((value): any => (<any>value)[key], obj);
     }
     
     function some<T>(iterator: (value: T, key: any, obj: any) => boolean, obj: any, context?: any): boolean {
@@ -657,30 +674,30 @@ module plat {
     }
     
     function defer(method: (...args: any[]) => void, timeout: number, args?: Array<any>, context?: any): plat.IRemoveListener {
-        function defer() {
+        function defer(): void {
             method.apply(context, args);
         }
     
         var timeoutId = setTimeout(defer, timeout);
-        return () => {
+        return (): void => {
             clearTimeout(timeoutId);
         };
     }
     
     function requestAnimationFrameGlobal(method: FrameRequestCallback, context?: any): plat.IRemoveListener {
-        _compat = _compat || (plat.acquire(__Compat));
+        ___compat = ___compat || (plat.acquire(__Compat));
     
-        var requestAnimFrame = _compat.requestAnimationFrame;
+        var requestAnimFrame = ___compat.requestAnimationFrame;
         if (isUndefined(requestAnimFrame)) {
-            return postpone(() => {
+            return postpone((): void => {
                 method.call(context, Date.now());
             });
         }
     
         var animationId = requestAnimFrame(method.bind(context)),
-            cancelAnimFrame = _compat.cancelAnimationFrame || noop;
+            cancelAnimFrame = ___compat.cancelAnimationFrame || noop;
     
-        return () => {
+        return (): void => {
             cancelAnimFrame(animationId);
         };
     }
@@ -690,10 +707,10 @@ module plat {
             prefix = '';
         }
     
-        var puid = _uids[prefix];
+        var puid = __uids[prefix];
     
         if (isNull(puid)) {
-            puid = _uids[prefix] = ['0', '/'];
+            puid = __uids[prefix] = ['0', '/'];
         }
     
         var index = puid.length,
@@ -737,10 +754,10 @@ module plat {
         }
     
         str = str.charAt(0).toLowerCase() + str.slice(1);
-        _camelCaseRegex = _camelCaseRegex || (<plat.expressions.Regex>plat.acquire(__Regex)).camelCaseRegex;
+        __camelCaseRegex = __camelCaseRegex || (<plat.expressions.Regex>plat.acquire(__Regex)).camelCaseRegex;
     
-        return str.replace(_camelCaseRegex,
-            (match: string, delimiter?: string, char?: string, index?: number)
+        return str.replace(__camelCaseRegex,
+            (match: string, delimiter?: string, char?: string, index?: number): string
                 => index ? char.toUpperCase() : char);
     }
     
@@ -765,7 +782,7 @@ module plat {
         return obj[property];
     }
     
-    function deserializeQuery(search: string) {
+    function deserializeQuery(search: string): plat.IObject<string> {
         if (isEmpty(search)) {
             return;
         }
@@ -785,7 +802,7 @@ module plat {
     }
     
     function serializeQuery(query: plat.IObject<string>): string {
-        return (isArray(query) || isObject(query)) && !isEmpty(query) ? '?' + map((value, key) => {
+        return (isArray(query) || isObject(query)) && !isEmpty(query) ? '?' + map((value, key): string => {
             return key + '=' + value;
         }, query).join('&') : '';
     }
@@ -795,7 +812,7 @@ module plat {
             return isBoolean(values) ? <any>values : true;
         }
     
-        return values.reduce((prev: boolean, current: boolean) => {
+        return values.reduce((prev: boolean, current: boolean): boolean => {
             return prev && current !== false;
         }, true);
     }
@@ -803,7 +820,11 @@ module plat {
     /* tslint:enable:no-unused-variable */
     
     /* tslint:disable:no-unused-variable */
-    var __nodeNameRegex = /<([\w:]+)/,
+    var ___document: Document,
+        ___templateCache: plat.storage.TemplateCache,
+        ___http: plat.async.Http,
+        ___Exception: plat.IExceptionStatic,
+        __nodeNameRegex = /<([\w:]+)/,
         __whiteSpaceRegex = /\s+/g,
         __option = [1, '<select multiple="multiple">', '</select>'],
         __table = [1, '<table>', '</table>'],
@@ -837,27 +858,31 @@ module plat {
             _default: [0, '', '']
         });
     
-    function appendChildren(nodeList: any, root?: Node): Node {
+    function appendChildren(nodeList: any, root?: Node, clone?: boolean): Node {
         var isFragment = isDocumentFragment(root),
-            nullRoot = isNull(root),
+            nullRoot = !isNode(root),
             fragment: DocumentFragment = isFragment ?
             <DocumentFragment>root :
-            (plat.acquire(__Document)).createDocumentFragment();
+            (___document || (___document = plat.acquire(__Document))).createDocumentFragment();
     
         if (nullRoot) {
             root = fragment;
         }
     
-        var list: Array<Node>;
+        var list: Array<Node> = isArray(nodeList) ? nodeList : Array.prototype.slice.call(nodeList),
+            length = list.length,
+            i: number;
     
-        if (isFunction(nodeList.push)) {
-            list = nodeList;
+        if (clone === true) {
+            var item: Node;
+            for (i = 0; i < length; ++i) {
+                item = list[i].cloneNode(true);
+                fragment.insertBefore(item, null);
+            }
         } else {
-            list = Array.prototype.slice.call(nodeList);
-        }
-    
-        while (list.length > 0) {
-            fragment.insertBefore(list.shift(), null);
+            for (i = 0; i < length; ++i) {
+                fragment.insertBefore(list[i], null);
+            }
         }
     
         if (!(isFragment || nullRoot)) {
@@ -906,10 +931,11 @@ module plat {
     }
     
     function stringToNode(html: string): Node {
-        var _compat: plat.Compat = plat.acquire(__Compat),
-            _document: Document = plat.acquire(__Document),
-            nodeName = __nodeNameRegex.exec(html),
-            element = <HTMLElement>_document.createElement('div');
+        // ___compat is a global variable in utilsglobal
+        ___compat = ___compat || (___compat = plat.acquire(__Compat));
+        ___document = ___document || (___document = plat.acquire(__Document));
+        var nodeName = __nodeNameRegex.exec(html),
+            element = <HTMLElement>___document.createElement('div');
     
         if (isNull(nodeName)) {
             element = innerHtml(element, html);
@@ -921,10 +947,10 @@ module plat {
     
         var mapTag = nodeName[1];
     
-        if (_compat.pushState && isUndefined(__innerTableWrappers[mapTag])) {
+        if (___compat.pushState && isUndefined(__innerTableWrappers[mapTag])) {
             return innerHtml(element, html);
         } else if (mapTag === 'body') {
-            element = innerHtml(_document.createElement('html'), html);
+            element = innerHtml(___document.createElement('html'), html);
             return element.removeChild(element.lastChild);
         }
     
@@ -982,10 +1008,10 @@ module plat {
             nodes = Array.prototype.slice.call(nodes);
         }
     
-        var _document = plat.acquire(__Document),
-            length = nodes.length;
+        ___document = ___document || (___document = plat.acquire(__Document));
+        var length = nodes.length;
     
-        fragment = _document.createDocumentFragment();
+        fragment = ___document.createDocumentFragment();
     
         for (var i = 0; i < length; ++i) {
             fragment.insertBefore(nodes[i], null);
@@ -1033,8 +1059,8 @@ module plat {
     }
     
     function serializeHtml(html?: string): DocumentFragment {
-        var _document = plat.acquire(__Document),
-            templateElement = _document.createDocumentFragment();
+        ___document = ___document || (___document = plat.acquire(__Document));
+        var templateElement = ___document.createDocumentFragment();
     
         if (!isEmpty(html)) {
             setInnerHtml(templateElement, html);
@@ -1083,10 +1109,10 @@ module plat {
      * available.
      */
     function innerHtml(element: HTMLElement, html: string): HTMLElement {
-        var _compat: plat.Compat = plat.acquire(__Compat);
+        ___compat = ___compat || (___compat = plat.acquire(__Compat));
     
-        if (_compat.msApp) {
-            MSApp.execUnsafeLocalFunction(() => {
+        if (___compat.msApp) {
+            MSApp.execUnsafeLocalFunction((): void => {
                 element.innerHTML = html;
             });
         } else {
@@ -1220,7 +1246,7 @@ module plat {
         if (!isString(cName) || !isString(newClass) || newClass === '') {
             return;
         }
-        
+    
         if (isUndefined(element.classList)) {
             var startRegex = new RegExp('^' + oldClass + '\\s+', 'g'),
                 midRegex = new RegExp('\\s+' + oldClass + '\\s+', 'g'),
@@ -1269,27 +1295,20 @@ module plat {
         return true;
     }
     
-    var ___templateCache: plat.storage.TemplateCache,
-        ___http: plat.async.Http,
-        ___Exception: plat.IExceptionStatic;
-    
-    function getTemplate(templateUrl: string) {
-        ___templateCache = ___templateCache || plat.acquire(__TemplateCache);
-        ___http = ___http || plat.acquire(__Http);
-    
-        var _Exception: plat.IExceptionStatic,
-            ajax = ___http.ajax;
+    function getTemplate(templateUrl: string): plat.async.IThenable<DocumentFragment> {
+        ___templateCache = ___templateCache || (___templateCache = plat.acquire(__TemplateCache));
+        ___http = ___http || (___http = plat.acquire(__Http));
     
         return ___templateCache.put(templateUrl, ___templateCache.read(templateUrl)
-            .catch((error) => {
+            .catch((error: any): plat.async.AjaxPromise<string> => {
                 if (isNull(error)) {
-                    return ajax<string>({ url: templateUrl });
+                    return ___http.ajax<string>({ url: templateUrl });
                 }
-            }).then<DocumentFragment>((success) => {
+            }).then<DocumentFragment>((success): plat.async.IThenable<DocumentFragment> => {
                 if (isDocumentFragment(success)) {
                     return ___templateCache.put(templateUrl, <any>success);
                 } else if (!isObject(success) || !isString(success.response)) {
-                    ___Exception = ___Exception || plat.acquire(__ExceptionStatic);
+                    ___Exception = ___Exception || (___Exception = plat.acquire(__ExceptionStatic));
                     ___Exception.warn('No template found at ' + templateUrl, ___Exception.AJAX);
                     return ___templateCache.put(templateUrl, serializeHtml());
                 }
@@ -1301,9 +1320,9 @@ module plat {
                 }
     
                 return ___templateCache.put(templateUrl, serializeHtml(templateString));
-            }).catch((error) => {
-                postpone(() => {
-                    ___Exception = ___Exception || plat.acquire(__ExceptionStatic);
+            }).catch((error: any): any => {
+                postpone((): void => {
+                    ___Exception = ___Exception || (___Exception = plat.acquire(__ExceptionStatic));
                     ___Exception.fatal('Failure to get template from ' + templateUrl + '.',
                         ___Exception.TEMPLATE);
                 });
@@ -1312,6 +1331,15 @@ module plat {
     }
     
     /* tslint:enable:no-unused-variable */
+    
+    var controlInjectors: plat.dependency.InjectorObject<plat.Control> = {},
+        viewControlInjectors: plat.dependency.InjectorObject<plat.ui.ViewControl> = {},
+        instanceInjectorDependencies: plat.IObject<plat.IObject<string>> = {},
+        injectableInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {},
+        unregisteredInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {},
+        staticInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {},
+        animationInjectors: plat.dependency.InjectorObject<plat.ui.animations.BaseAnimation> = {},
+        jsAnimationInjectors: plat.dependency.InjectorObject<plat.ui.animations.BaseAnimation> = {};
     
     /**
      * Holds all the classes and interfaces related to registering components for platypus.
@@ -1375,18 +1403,22 @@ module plat {
                 throw new Error('A Control must be registered with a string name');
             }
 
+            if (name === 'head') {
+                isStatic = true;
+            }
+
             return add(controlInjectors, name, Type, dependencies, isStatic ? __STATIC : undefined);
         }
 
         /**
-         * Registers an IViewControl with the framework. The framework will 
+         * Registers an ViewControl with the framework. The framework will 
          * instantiate the control when needed. The dependencies array corresponds to injectables that will be 
          * passed into the Constructor of the control.
          * @param {string} name The control type, corresponding to the HTML notation for creating a new 
-         * IViewControl. Used for navigation to the specified IViewControl.
-         * @param {new (...args: any[]) => plat.ui.IViewControl} Type The constructor for the IViewControl.
+         * ViewControl. Used for navigation to the specified ViewControl.
+         * @param {new (...args: any[]) => plat.ui.ViewControl} Type The constructor for the ViewControl.
          * @param {Array<any>} dependencies? An optional array of strings representing the dependencies needed for the 
-         * IViewControl injector.
+         * ViewControl injector.
          */
         export function viewControl<T extends ui.ViewControl>(name: string, Type: new (...args: any[]) => T,
             dependencies?: Array<any>): typeof register {
@@ -1518,7 +1550,7 @@ module plat {
                 animationType = __CSS;
             } else {
                 animationType = animationType.toLowerCase();
-                if (!(animationType === animation.CSS || animationType === animation.JS)) {
+                if (!(animationType === __CSS || animationType === __JS)) {
                     throw new Error('Invalid animationType "' + animationType + '" during animation registration.');
                 }
             }
@@ -1543,15 +1575,6 @@ module plat {
                 export var JS = __JS;
         }
     }
-    var controlInjectors: plat.dependency.InjectorObject<plat.Control> = {};
-    var viewControlInjectors: plat.dependency.InjectorObject<plat.ui.ViewControl> = {};
-    var instanceInjectorDependencies: plat.IObject<plat.IObject<string>> = {};
-    var injectableInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {};
-    var unregisteredInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {};
-    var staticInjectors: plat.dependency.InjectorObject<plat.dependency.Injector<any>> = {};
-    var animationInjectors: plat.dependency.InjectorObject<plat.ui.animations.BaseAnimation> = {};
-    var jsAnimationInjectors: plat.dependency.InjectorObject<plat.ui.animations.BaseAnimation> = {};
-    
     /**
      * Holds classes and interfaces related to dependency injection components in platypus.
      */
@@ -1565,6 +1588,11 @@ module plat {
          * to the constructor.
          */
         export class Injector<T> {
+            /**
+             * The dependencies for this injector
+             */
+            private __dependencies: Array<string>;
+
             /**
              * Initializes all static injectors.
              */
@@ -1732,7 +1760,7 @@ module plat {
                     }
                 }
 
-                var dependencies = acquire(map((value) => value, toInject)),
+                var dependencies = acquire(map((value: any): any => value, toInject)),
                     keys = Object.keys(toInject),
                     length = keys.length;
 
@@ -1758,7 +1786,7 @@ module plat {
             private static __walk(obj: any, proto: any, extendWith: any): any {
                 var Constructor = proto.constructor,
                     parentInject = {};
-                
+
                 if (isObject(Constructor._inject) && Constructor !== Object) {
                     parentInject = Injector.__walk(obj, Object.getPrototypeOf(proto), extendWith);
                 }
@@ -1813,11 +1841,11 @@ module plat {
              * Finds an injector object with the associated constructor in the given InjectorObject.
              * @param {Function} Constructor The Function
              */
-            private static __findInjector(Constructor: any, injectors: InjectorObject<any>) {
+            private static __findInjector(Constructor: any, injectors: InjectorObject<any>): Injector<any> {
                 if (isNull(Constructor)) {
                     return;
                 } else if (Constructor === Injector || Constructor === __InjectorStatic) {
-                    var ret = Injector.__wrap(Injector);
+                    var ret: Injector<any> = Injector.__wrap(Injector);
                     ret.name = __InjectorStatic;
                     return ret;
                 } else if (isString(Constructor)) {
@@ -1831,7 +1859,7 @@ module plat {
              */
             private static __wrap(value: any): Injector<any> {
                 return <any>{
-                    inject: () => value,
+                    inject: (): any => value,
                     name: __WRAPPED_INJECTOR,
                     __dependencies: [],
                     Constructor: value
@@ -1900,11 +1928,6 @@ module plat {
                     }
                 }
             }
-
-            /**
-             * The dependencies for this injector
-             */
-            private __dependencies: Array<string>;
 
             /**
              * The constructor for an injector. Converts any non-string dependencies to strings to support mocking Injectors during runtime.
@@ -1999,8 +2022,8 @@ module plat {
              * @param {any} value The value to wrap
              */
             protected _wrapInjector(value: any): Injector<any> {
-                this.inject = () => {
-                    return <T>value;
+                this.inject = (): T => {
+                    return value;
                 };
 
                 return this;
@@ -2052,6 +2075,8 @@ module plat {
                 export var jsAnimation = jsAnimationInjectors;
         }
     }
+
+
     if (!isUndefined(window)) {
         if (isUndefined((<any>window).plat)) {
             (<any>window).plat = plat;
@@ -2092,7 +2117,7 @@ module plat {
      * @param {Array<any>} dependencies An array of strings or Functions specifying the injectable dependencies.
      */
     export function acquire(dependencies: Array<any>): Array<any>;
-    export function acquire(dependencies: any) {
+    export function acquire(dependencies: any): Array<any> {
         var deps: Array<dependency.Injector<any>>,
             array = isArray(dependencies);
 
@@ -2116,37 +2141,12 @@ module plat {
         return output;
     }
 
+
+
     /**
      * Manages the throwing and consuming of errors and warnings.
      */
     export class Exception {
-        /**
-         * Method for sending a warning to all listeners. Will 
-         * not throw an error.
-         * @param {string} message The message to be sent to the listeners.
-         * @param {number} type? Denotes the type of fatal exception.
-         */
-        static warn(message: string, type?: number): void {
-            raise(message, type, false);
-        }
-
-        /**
-         * Method for sending a fatal error to all listeners. Will
-         * throw an error.
-         * @param {Error} error The Error to be sent to all the listeners.
-         * @param {number} type? Denotes the type of fatal exception. 
-         */
-        static fatal(error: Error, type?: number): void;
-        /**
-         * Method for sending a fatal message to all listeners. Will
-         * throw an error.
-         * @param {string} message The message to be sent to all the listeners.
-         * @param {number} type? Denotes the type of fatal exception. 
-         */
-        static fatal(message: string, type?: number): void;
-        static fatal(message: any, type?: number) {
-            raise(message, type, true);
-        }
 
         /**
          * Exception Type for parsing exceptions
@@ -2218,6 +2218,34 @@ module plat {
          * (e.g. using a particular control incorrectly).
          */
         static CONTROL = 13;
+
+        /**
+         * Method for sending a warning to all listeners. Will 
+         * not throw an error.
+         * @param {string} message The message to be sent to the listeners.
+         * @param {number} type? Denotes the type of fatal exception.
+         */
+        static warn(message: string, type?: number): void {
+            raise(message, type, false);
+        }
+
+        /**
+         * Method for sending a fatal error to all listeners. Will
+         * throw an error.
+         * @param {Error} error The Error to be sent to all the listeners.
+         * @param {number} type? Denotes the type of fatal exception. 
+         */
+        static fatal(error: Error, type?: number): void;
+        /**
+         * Method for sending a fatal message to all listeners. Will
+         * throw an error.
+         * @param {string} message The message to be sent to all the listeners.
+         * @param {number} type? Denotes the type of fatal exception. 
+         */
+        static fatal(message: string, type?: number): void;
+        static fatal(message: any, type?: number): void {
+            raise(message, type, true);
+        }
     }
 
     /**
@@ -2444,6 +2472,8 @@ module plat {
             throw error;
         }
     }
+
+
 
     /**
      * A class containing boolean values signifying browser 
@@ -2902,6 +2932,8 @@ module plat {
         upperCase: string;
     }
 
+
+
     /**
      * An extensible class defining common utilities and helper functions.
      */
@@ -3216,7 +3248,7 @@ module plat {
          * @param {Array<T>} array The array to pluck the key from
          */
         pluck<T extends {}>(key: string, array: Array<T>): Array<any> {
-            return map<T, any>((value) => (<any>value)[key], array);
+            return map<T, any>((value): any => (<any>value)[key], array);
         }
 
         /**
@@ -3246,7 +3278,7 @@ module plat {
          * @param {Array<any>} args? The arguments to apply to the method.
          * @param {any} context? An optional context to bind to the method.
          */
-        postpone(method: (...args: any[]) => void, args?: Array<any>, context?: any) {
+        postpone(method: (...args: any[]) => void, args?: Array<any>, context?: any): IRemoveListener {
             return defer(method, 0, args, context);
         }
 
@@ -3258,7 +3290,7 @@ module plat {
          * @param {Array<any>} args? The arguments to apply to the method.
          * @param {any} context? An optional context to bind to the method.
          */
-        defer(method: (...args: any[]) => void, timeout: number, args?: Array<any>, context?: any) {
+        defer(method: (...args: any[]) => void, timeout: number, args?: Array<any>, context?: any): IRemoveListener {
             return defer(method, timeout, args, context);
         }
 
@@ -3276,7 +3308,7 @@ module plat {
          * is specified, none will be prepended.
          * @param {string} prefix? A string prefix to prepend tothe unique ID.
          */
-        uniqueId(prefix?: string) {
+        uniqueId(prefix?: string): string {
             return uniqueId(prefix);
         }
 
@@ -3286,7 +3318,7 @@ module plat {
          * as a delimeter.
          * @param {string} str The spinal-case, dot.case, or snake_case string.
          */
-        camelCase(str: string) {
+        camelCase(str: string): string {
             return camelCase(str);
         }
     }
@@ -3318,6 +3350,8 @@ module plat {
         (value: T, key: string, obj: IObject<T>): R;
     }
 
+
+
     /**
      * The Type for referencing the '_window' injectable as a dependency. 
      * Used so that the Window can be mocked.
@@ -3327,6 +3361,8 @@ module plat {
     }
 
     register.injectable(__Window, Window);
+
+
 
     /**
      * The Type for referencing the '_document' injectable as a dependency. 
@@ -3342,6 +3378,8 @@ module plat {
      * Holds classes and interfaces related to expression handling in platypus.
      */
     export module expressions {
+
+
         /**
          * A class for keeping track of commonly used regular expressions.
          */
@@ -3349,7 +3387,7 @@ module plat {
             /**
              * A regular expression for finding markup in a string.
              */
-            markupRegex: RegExp;
+            markupRegex: RegExp = new RegExp(__startSymbol + '[\\S\\s]*' + __endSymbol);
 
             /**
              * Finds the arguments in a method expression.
@@ -3364,7 +3402,7 @@ module plat {
              *   // outputs ['context']
              *   exec('@context.foo');
              * // outputs null
-             * exec('@context');
+             * exec(`@context`);
              */
             aliasRegex = /[^@\.\[\(]+(?=[\.\[\(])/;
 
@@ -3502,16 +3540,11 @@ module plat {
             get quotationRegex(): RegExp {
                 return /'|"/g;
             }
-
-            /**
-             * The constructor for a Regex. Creates the markup regular expression.
-             */
-            constructor() {
-                this.markupRegex = new RegExp(__startSymbol + '[\\S\\s]*' + __endSymbol);
-            }
         }
 
         register.injectable(__Regex, Regex);
+
+
 
         /**
          * A class that is responsible for taking in a JavaScript expression string and
@@ -3567,7 +3600,7 @@ module plat {
              * Needs to be an array due to the possibility of nested comma operations.
              */
             private __lastCommaChar: Array<string> = [];
-        
+
             /**
              * Takes in an expression string and outputs a tokenized collection of 
              * ITokens.
@@ -3676,7 +3709,7 @@ module plat {
 
                 return this._isAlphaNumeric(char);
             }
-        
+
             /**
              * Looks ahead in the expression to group similar character types.
              * @param {string} char The current character in the expression string.
@@ -3699,7 +3732,7 @@ module plat {
 
                 return char;
             }
-        
+
             /**
              * Looks ahead in the expression to try and complete the 
              * current operator.
@@ -3725,7 +3758,7 @@ module plat {
 
                 return char;
             }
-        
+
             /**
              * Looks ahead in the expression until it comes to the ending 
              * character to try and complete a particular sequence 
@@ -3747,7 +3780,7 @@ module plat {
 
                 return char;
             }
-        
+
             /**
              * Pops the operator stack onto the output queue until a particular 
              * operator value is reached.
@@ -3768,7 +3801,7 @@ module plat {
                     }
                 }
             }
-        
+
             /**
              * Check if the "val" property on an IToken 
              * is present in a particular character string.
@@ -3784,7 +3817,7 @@ module plat {
                 }
                 return char.indexOf(obj.val) !== -1;
             }
-        
+
             /**
              * Check if the "val" property on an IToken 
              * is not present in a particular character string.
@@ -3800,7 +3833,7 @@ module plat {
                 }
                 return char.indexOf(obj.val) === -1;
             }
-        
+
             /**
              * Resets all the tokenizer's properties.
              */
@@ -3814,7 +3847,7 @@ module plat {
                 this.__lastColonChar = [];
                 this.__lastCommaChar = [];
             }
-        
+
             /**
              * Throws a fatal exception in the case of an error.
              * @param {string} error The error message to throw.
@@ -3823,7 +3856,7 @@ module plat {
                 var _Exception: IExceptionStatic = this._Exception;
                 _Exception.fatal(error + ' in ' + this._input, _Exception.PARSE);
             }
-        
+
             /**
              * Checks if a single character is numeric.
              * @param {string} char The character to check.
@@ -3831,7 +3864,7 @@ module plat {
             protected _isNumeric(char: string): boolean {
                 return ('0' <= char && char <= '9');
             }
-        
+
             /**
              * Checks if a single character is a space.
              * @param {string} char The character to check.
@@ -3844,7 +3877,7 @@ module plat {
                     char === '\v' ||
                     char === '\u00A0');
             }
-        
+
             /**
              * Checks if a single character is alphanumeric.
              * @param {string} char The character to check.
@@ -3857,7 +3890,7 @@ module plat {
                     '_' === char ||
                     '$' === char);
             }
-        
+
             /**
              * Checks if a string has proper JavaScript variable syntax.
              * @param {string} input The string to check.
@@ -4292,7 +4325,7 @@ module plat {
         }
 
         register.injectable(__Tokenizer, Tokenizer);
-    
+
         /**
          * Describes a single token in a string expression.
          */
@@ -4301,7 +4334,7 @@ module plat {
              * The string or number value of the token.
              */
             val: any;
-        
+
             /**
              * Denotes the type of token, as well as the number
              * of arguments for a function if it is the token.
@@ -4316,7 +4349,7 @@ module plat {
              */
             args: number;
         }
-    
+
         /**
          * Provides all the necessary details on how to evaluate a token.
          */
@@ -4326,18 +4359,20 @@ module plat {
              * evaluation order.
              */
             precedence: number;
-        
+
             /**
              * Whether or not the token associates with the expression on
              * their left or right.
              */
             associativity: string;
-        
+
             /**
              * A function used to evaluate an operator expression.
              */
             fn: Function;
         }
+
+
 
         /**
          * A class for parsing JavaScript expression strings and creating 
@@ -4404,7 +4439,7 @@ module plat {
                 var identifiers = parsedObject.identifiers;
                 if (identifiers.length === 0) {
                     var noModel = parsedObject.evaluate(null);
-                    parsedObject.evaluate = () => noModel;
+                    parsedObject.evaluate = (): any => noModel;
                 }
 
                 this.__cache[expression] = parsedObject;
@@ -4510,7 +4545,6 @@ module plat {
                 this._popRemainingIdentifiers();
                 // make the identifiers array unqiue entries only
                 this._makeIdentifiersUnique();
-
                 var parsedExpression: IParsedExpression = {
                     evaluate: <(context: any, aliases?: IObject<any>) => any>new Function(__CONTEXT, __ALIASES,
                         'var initialContext;' +
@@ -4524,6 +4558,114 @@ module plat {
                 this._resetParser();
 
                 return parsedExpression;
+            }
+
+            /**
+             * Peek at the next IToken.
+             * @param {number} index The index before the desired IToken 
+             * in the array.
+             * in the IToken array.
+             */
+            protected _peek(index: number): IToken {
+                return this._tokens[index + 1];
+            }
+
+            /**
+             * Look back at the previous IToken.
+             * @param {number} index The index after the desired IToken 
+             * in the array.
+             * in the IToken array.
+             */
+            protected _lookBack(index: number): IToken {
+                return this._tokens[index - 1];
+            }
+
+            /**
+             * Evaluate and remove the leftover identifiers.
+             */
+            protected _popRemainingIdentifiers(): void {
+                var identifiers = this.__identifiers,
+                    tempIdentifiers = this.__tempIdentifiers,
+                    last: string;
+
+                while (tempIdentifiers.length > 0) {
+                    last = tempIdentifiers.pop();
+                    if (last !== '.') {
+                        identifiers.push(last);
+                    }
+                }
+            }
+
+            /**
+             * Remove duplicate identifiers.
+             */
+            protected _makeIdentifiersUnique(): void {
+                var identifiers = this.__identifiers,
+                    uniqueIdentifiers: Array<string> = [],
+                    uniqueIdentifierObject: IObject<boolean> = {},
+                    identifier: string;
+
+                while (identifiers.length > 0) {
+                    identifier = identifiers.pop();
+                    if (!uniqueIdentifierObject[identifier]) {
+                        uniqueIdentifierObject[identifier] = true;
+                        uniqueIdentifiers.push(identifier);
+                    }
+                }
+
+                this.__identifiers = uniqueIdentifiers;
+            }
+
+            /**
+             * Check if the "val" property on an IToken 
+             * is present in a particular character string.
+             * @param {plat.expressions.IToken} obj The IToken 
+             * with the "val" property to compare.
+             * @param {string} char The char to compare with.
+             */
+            protected _isValEqual(obj: IToken, char: string): boolean {
+                if (isNull(obj) || isNull(obj.val)) {
+                    return isNull(char);
+                } else if (obj.val === '') {
+                    return char === '';
+                }
+                return char.indexOf(obj.val) !== -1;
+            }
+
+            /**
+             * Check if the "val" property on an IToken 
+             * is not present in a particular character string.
+             * @param {plat.expressions.IToken} obj The IToken 
+             * with the "val" property to compare.
+             * @param {string} char The char to compare with.
+             */
+            protected _isValUnequal(obj: any, char: string): boolean {
+                if (isNull(obj) || isNull(obj.val)) {
+                    return !isNull(char);
+                } else if (obj.val === '') {
+                    return char !== '';
+                }
+                return char.indexOf(obj.val) === -1;
+            }
+
+            /**
+             * Resets all the parser's properties.
+             */
+            protected _resetParser(): void {
+                this._tokens = [];
+                this.__codeArray = [];
+                this.__identifiers = [];
+                this.__tempIdentifiers = [];
+                this.__aliases = {};
+            }
+
+            /**
+             * Throws a fatal exception in the case of an error.
+             * @param {string} error The error message to throw.
+             */
+            protected _throwError(error: string): void {
+                var _Exception: IExceptionStatic = this._Exception;
+                _Exception.fatal(error, _Exception.PARSE);
             }
 
             /**
@@ -4904,114 +5046,6 @@ module plat {
                     return context[token];
                 }
             }
-
-            /**
-             * Peek at the next IToken.
-             * @param {number} index The index before the desired IToken 
-             * in the array.
-             * in the IToken array.
-             */
-            protected _peek(index: number): IToken {
-                return this._tokens[index + 1];
-            }
-
-            /**
-             * Look back at the previous IToken.
-             * @param {number} index The index after the desired IToken 
-             * in the array.
-             * in the IToken array.
-             */
-            protected _lookBack(index: number): IToken {
-                return this._tokens[index - 1];
-            }
-
-            /**
-             * Evaluate and remove the leftover identifiers.
-             */
-            protected _popRemainingIdentifiers(): void {
-                var identifiers = this.__identifiers,
-                    tempIdentifiers = this.__tempIdentifiers,
-                    last: string;
-
-                while (tempIdentifiers.length > 0) {
-                    last = tempIdentifiers.pop();
-                    if (last !== '.') {
-                        identifiers.push(last);
-                    }
-                }
-            }
-
-            /**
-             * Remove duplicate identifiers.
-             */
-            protected _makeIdentifiersUnique(): void {
-                var identifiers = this.__identifiers,
-                    uniqueIdentifiers: Array<string> = [],
-                    uniqueIdentifierObject: IObject<boolean> = {},
-                    identifier: string;
-
-                while (identifiers.length > 0) {
-                    identifier = identifiers.pop();
-                    if (!uniqueIdentifierObject[identifier]) {
-                        uniqueIdentifierObject[identifier] = true;
-                        uniqueIdentifiers.push(identifier);
-                    }
-                }
-
-                this.__identifiers = uniqueIdentifiers;
-            }
-
-            /**
-             * Check if the "val" property on an IToken 
-             * is present in a particular character string.
-             * @param {plat.expressions.IToken} obj The IToken 
-             * with the "val" property to compare.
-             * @param {string} char The char to compare with.
-             */
-            protected _isValEqual(obj: IToken, char: string): boolean {
-                if (isNull(obj) || isNull(obj.val)) {
-                    return isNull(char);
-                } else if (obj.val === '') {
-                    return char === '';
-                }
-                return char.indexOf(obj.val) !== -1;
-            }
-
-            /**
-             * Check if the "val" property on an IToken 
-             * is not present in a particular character string.
-             * @param {plat.expressions.IToken} obj The IToken 
-             * with the "val" property to compare.
-             * @param {string} char The char to compare with.
-             */
-            protected _isValUnequal(obj: any, char: string): boolean {
-                if (isNull(obj) || isNull(obj.val)) {
-                    return !isNull(char);
-                } else if (obj.val === '') {
-                    return char !== '';
-                }
-                return char.indexOf(obj.val) === -1;
-            }
-
-            /**
-             * Resets all the parser's properties.
-             */
-            protected _resetParser(): void {
-                this._tokens = [];
-                this.__codeArray = [];
-                this.__identifiers = [];
-                this.__tempIdentifiers = [];
-                this.__aliases = {};
-            }
-
-            /**
-             * Throws a fatal exception in the case of an error.
-             * @param {string} error The error message to throw.
-             */
-            protected _throwError(error: string): void {
-                var _Exception: IExceptionStatic = this._Exception;
-                _Exception.fatal(error, _Exception.PARSE);
-            }
         }
 
         register.injectable(__Parser, Parser);
@@ -5025,7 +5059,7 @@ module plat {
              * A method for evaluating an expression with a context.
              * @param {any} context? The primary context for evaluation.
              * @param {IObject<any>} aliases? An object containing resource alias values. 
-             * All property keys must never begin with '@'.
+             * All property keys must never begin with `@`.
              */
             evaluate(context?: any, aliases?: IObject<any>): any;
 
@@ -5041,7 +5075,7 @@ module plat {
             identifiers: Array<string>;
 
             /**
-             * Contains all the aliases (denoted without '@' as the first character) for this 
+             * Contains all the aliases (denoted without `@` as the first character) for this 
              * IParsedExpression.
              */
             aliases: Array<string>;
@@ -5058,6 +5092,8 @@ module plat {
      * Holds classes and interfaces related to web components in platypus.
      */
     export module web {
+
+
         /**
          * The Type for referencing the '_history' injectable as a dependency. 
          * Used so that the window.history can be mocked.
@@ -5067,6 +5103,8 @@ module plat {
         }
 
         register.injectable(__Location, Location, [__Window]);
+
+
 
         /**
          * The class that handles all interaction with the browser.
@@ -5479,6 +5517,8 @@ module plat {
             baseUrl: string;
         }
 
+
+
         /**
          * Deals with obtaining detailed information about an 
          * associated URL.
@@ -5497,36 +5537,6 @@ module plat {
              * Helps with URL initialization through it's href attribute.
              */
             private static __urlUtilsElement: HTMLAnchorElement;
-            /**
-             * Creates a query object out of the URL's query search string.
-             * @param {string} search The URL's query search string.
-             * representing the query string.
-             */
-            private static __getQuery(search: string): IObject<string> {
-                return deserializeQuery(search);
-            }
-
-            /**
-             * Obtains the base URL for the app/site for doing STATE type routing.
-             * @param {string} url The initial URL passed into the Browser.
-             */
-            private static __getBaseUrl(url: string): string {
-                var _regex: expressions.Regex = acquire(__Regex),
-                    _location: Location = acquire(__Location),
-                    origin = (<any>_location).origin,
-                    protocol = _location.protocol,
-                    host = _location.host;
-
-                if (protocol === 'file:' || protocol.indexOf('wmapp') > -1 || protocol.indexOf('ms-appx') > -1) {
-                    origin = _location.href;
-                } else if(isUndefined(origin)) {
-                    origin = _location.protocol + '//' + _location.host;
-                }
-
-                origin = origin.replace(_regex.initialUrlRegex, '');
-
-                return origin.split('?')[0].split('#')[0] + '/';
-            }
 
             /**
              * Reference to the Document injectable.
@@ -5612,6 +5622,37 @@ module plat {
              * An object containing keyed query arguments from the associated URL.
              */
             query: any;
+
+            /**
+             * Creates a query object out of the URL's query search string.
+             * @param {string} search The URL's query search string.
+             * representing the query string.
+             */
+            private static __getQuery(search: string): IObject<string> {
+                return deserializeQuery(search);
+            }
+
+            /**
+             * Obtains the base URL for the app/site for doing STATE type routing.
+             * @param {string} url The initial URL passed into the Browser.
+             */
+            private static __getBaseUrl(url: string): string {
+                var _regex: expressions.Regex = acquire(__Regex),
+                    _location: Location = acquire(__Location),
+                    origin = (<any>_location).origin,
+                    protocol = _location.protocol,
+                    host = _location.host;
+
+                if (protocol === 'file:' || protocol.indexOf('wmapp') > -1 || protocol.indexOf('ms-appx') > -1) {
+                    origin = _location.href;
+                } else if(isUndefined(origin)) {
+                    origin = _location.protocol + '//' + _location.host;
+                }
+
+                origin = origin.replace(_regex.initialUrlRegex, '');
+
+                return origin.split('?')[0].split('#')[0] + '/';
+            }
 
             /**
              * The constructor for a UrlUtils instance. 
@@ -5710,10 +5751,43 @@ module plat {
      * Holds all classes and interfaces related to async components in platypus.
      */
     export module async {
+
+        var __promiseQueue: Array<any> = [],
+            browserGlobal: any = (typeof window !== 'undefined') ? window : {},
+            BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver,
+            process: any = process,
+            scheduleFlush: () => void;
+
+        // decide what async method to use to triggering processing of queued callbacks:
+        if (typeof process !== 'undefined' && {}.toString.call(process) === '[object process]') {
+            scheduleFlush = useNextTick();
+        } else if (BrowserMutationObserver) {
+            scheduleFlush = useMutationObserver();
+        } else {
+            scheduleFlush = useSetTimeout();
+        }
+
         /**
          * Takes in a generic type corresponding to the fullfilled success type. 
          */
         export class Promise<R> implements IThenable<R> {
+            /**
+             * The configuration for creating asynchronous promise flushing.
+             */
+            static config = {
+                /**
+                 * Handles asynchronous flushing of callbacks. If the callback queue is of 
+                 * length 1, then we need to schedule a flush. Afterward, any additional 
+                 * callbacks added to the queue will be flushed accordingly.
+                 */
+                async: (callback: (arg?: IThenable<any>) => void, arg?: IThenable<any>): void => {
+                    var length = __promiseQueue.push([callback, arg]);
+                    if (length === 1) {
+                        scheduleFlush();
+                    }
+                }
+            };
+
             /**
              * Holds all the subscriber promises
              */
@@ -5728,23 +5802,6 @@ module plat {
              * The return detail of a promise.
              */
             private __detail: any;
-
-            /**
-             * The configuration for creating asynchronous promise flushing.
-             */
-            static config = {
-                /**
-                 * Handles asynchronous flushing of callbacks. If the callback queue is of 
-                 * length 1, then we need to schedule a flush. Afterward, any additional 
-                 * callbacks added to the queue will be flushed accordingly.
-                 */
-                async: (callback: (arg?: IThenable<any>) => void, arg?: IThenable<any>) => {
-                    var length = queue.push([callback, arg]);
-                    if (length === 1) {
-                        scheduleFlush();
-                    }
-                }
-            };
 
             /**
              * Returns a promise that fulfills when every item in the array is fulfilled.
@@ -5770,7 +5827,7 @@ module plat {
                     return Promise.all([promises]);
                 }
 
-                return new Promise<Array<any>>((resolve: (value?: Array<any>) => void, reject: (reason?: any) => void) => {
+                return new Promise<Array<any>>((resolve: (value?: Array<any>) => void, reject: (reason?: any) => void): void => {
                     var results: Array<any> = [],
                         remaining = promises.length,
                         promise: Promise<any>;
@@ -5779,11 +5836,11 @@ module plat {
                         resolve(<any>[]);
                     }
 
-                    function resolver(index: number) {
-                        return (value: any) => resolveAll(index, value);
+                    function resolver(index: number): (value: any) => void {
+                        return (value: any): void => resolveAll(index, value);
                     }
 
-                    function resolveAll(index: number, value: any) {
+                    function resolveAll(index: number, value: any): void {
                         results[index] = value;
                         if (--remaining === 0) {
                             resolve(<any>results);
@@ -5822,7 +5879,7 @@ module plat {
                     return Promise.race([promises]);
                 }
 
-                return new Promise<any>((resolve: (value: any) => any, reject: (error: any) => any) => {
+                return new Promise<any>((resolve: (value: any) => any, reject: (error: any) => any): void => {
                     var promise: Promise<any>;
 
                     for (var i = 0; i < promises.length; i++) {
@@ -5847,7 +5904,7 @@ module plat {
              */
             static resolve<R>(value: R): IThenable<R>;
             static resolve<R>(value?: R): IThenable<R> {
-                return new Promise<R>((resolve: (value: R) => any, reject: (reason: any) => any) => {
+                return new Promise<R>((resolve: (value: R) => any, reject: (reason: any) => any): void => {
                     resolve(value);
                 });
             }
@@ -5857,7 +5914,7 @@ module plat {
              * @param {any} error The value to reject.
              */
             static reject(error?: any): IThenable<any> {
-                return new Promise<any>((resolve: (value: any) => any, reject: (error: any) => any) => {
+                return new Promise<any>((resolve: (value: any) => any, reject: (error: any) => any): void => {
                     reject(error);
                 });
             }
@@ -5869,11 +5926,11 @@ module plat {
              */
             private static __invokeResolveFunction<R>(resolveFunction: IResolveFunction<R>,
                 promise: Promise<R>): void {
-                function resolvePromise(value?: any) {
+                function resolvePromise(value?: any): void {
                     Promise.__resolve<R>(promise, value);
                 }
 
-                function rejectPromise(reason?: any) {
+                function rejectPromise(reason?: any): void {
                     Promise.__reject(promise, reason);
                 }
 
@@ -6019,7 +6076,7 @@ module plat {
 
                 if (isPromise(value)) {
                     try {
-                        value.then.call(value,(val: any) => {
+                        value.then.call(value, (val: any): boolean => {
                             if (resolved) {
                                 return true;
                             }
@@ -6030,7 +6087,7 @@ module plat {
                             } else {
                                 Promise.__fulfill<R>(promise, val);
                             }
-                        },(val: any) => {
+                        }, (val: any): boolean => {
                             if (resolved) {
                                 return true;
                             }
@@ -6126,11 +6183,11 @@ module plat {
             then<U>(onFulfilled: (success: R) => any, onRejected?: (error: any) => any): IThenable<U> {
                 var promise = this;
 
-                var thenPromise = <IThenable<U>>new (<any>this).constructor(() => { }, this);
+                var thenPromise = <IThenable<U>>new (<any>this).constructor((): void => { }, this);
 
                 if (this.__state) {
                     var callbacks = arguments;
-                    Promise.config.async(() => {
+                    Promise.config.async((): void => {
                         Promise.__invokeCallback(promise.__state, thenPromise, callbacks[promise.__state - 1], promise.__detail);
                     });
                 } else {
@@ -6223,12 +6280,9 @@ module plat {
             REJECTED = 2
         };
 
-        var browserGlobal: any = (typeof window !== 'undefined') ? window : {},
-            BrowserMutationObserver = browserGlobal.MutationObserver || browserGlobal.WebKitMutationObserver;
-
         // node
         function useNextTick(): () => void {
-            return () => {
+            return (): void => {
                 process.nextTick(flush);
             };
         }
@@ -6241,12 +6295,12 @@ module plat {
 
             observer.observe(element, { attributes: true });
 
-            _window.addEventListener('unload', () => {
+            _window.addEventListener('unload', (): void => {
                 observer.disconnect();
                 observer = null;
             }, false);
 
-            return () => {
+            return (): void => {
                 element.setAttribute('drainQueue', 'drainQueue');
             };
         }
@@ -6255,36 +6309,23 @@ module plat {
             var global: any = global,
                 local = (typeof global !== 'undefined') ? global : this;
 
-            return () => {
+            return (): void => {
                 local.setTimeout(flush, 1);
             };
         }
 
-        var queue: Array<any> = [];
         function flush(): void {
             var tuple: Array<(response: any) => void>,
                 callback: (response: any) => void,
                 arg: any;
 
-            for (var i = 0; i < queue.length; i++) {
-                tuple = queue[i];
+            for (var i = 0; i < __promiseQueue.length; i++) {
+                tuple = __promiseQueue[i];
                 callback = tuple[0];
                 arg = tuple[1];
                 callback(arg);
             }
-            queue = [];
-        }
-
-        var process: any = process,
-            scheduleFlush: () => void;
-
-        // decide what async method to use to triggering processing of queued callbacks:
-        if (typeof process !== 'undefined' && {}.toString.call(process) === '[object process]') {
-            scheduleFlush = useNextTick();
-        } else if (BrowserMutationObserver) {
-            scheduleFlush = useMutationObserver();
-        } else {
-            scheduleFlush = useSetTimeout();
+            __promiseQueue = [];
         }
 
         /**
@@ -6385,12 +6426,23 @@ module plat {
             reject(error?: any): IThenable<any>;
         }
 
+
+
         /**
          * HttpRequest provides a wrapper for the XMLHttpRequest object. Allows for
          * sending AJAX requests to a server. This class does not support 
          * synchronous requests.
          */
         export class HttpRequest {
+            protected static _inject: any = {
+                _Exception: __ExceptionStatic,
+                _browser: __Browser,
+                _window: __Window,
+                _document: __Document,
+                _config: __HttpConfig,
+                _compat: __Compat
+            };
+
             /**
              * The timeout ID associated with the specified timeout
              */
@@ -6405,15 +6457,6 @@ module plat {
              * The JSONP callback name
              */
             jsonpCallback: string;
-
-            protected static _inject: any = {
-                _Exception: __ExceptionStatic,
-                _browser: __Browser,
-                _window: __Window,
-                _document: __Document,
-                _config: __HttpConfig,
-                _compat: __Compat
-            };
 
             /**
              * The plat.IExceptionStatic injectable instance
@@ -6459,14 +6502,14 @@ module plat {
              * The constructor for a HttpRequest.
              */
             constructor() {
-                this.__fileSupported = this._compat.fileSupported
+                this.__fileSupported = this._compat.fileSupported;
             }
 
             /**
              * Initializes the HttpRequest with options.
              * @param {plat.async.IHttpConfig} options The IHttpConfigStatic used to customize this HttpRequest.
              */
-            initialize(options: IHttpConfig) {
+            initialize(options: IHttpConfig): void {
                 this.__options = extend({}, this._config, options);
             }
 
@@ -6521,7 +6564,7 @@ module plat {
                     this.jsonpCallback = options.jsonpCallback || uniqueId(__Callback);
                 }
 
-                var promise = new AjaxPromise((resolve, reject) => {
+                var promise = new AjaxPromise((resolve, reject): void => {
                     var _window = <any>this._window,
                         _document = this._document,
                         scriptTag = _document.createElement('script'),
@@ -6531,7 +6574,7 @@ module plat {
                     scriptTag.src = url + ((url.indexOf('?') > -1) ? '&' : '?') + jsonpIdentifier + '=' + jsonpCallback;
 
                     var oldValue = _window[jsonpCallback];
-                    _window[jsonpCallback] = (response: any) => {
+                    _window[jsonpCallback] = (response: any): void => {
                         // clean up
                         if (isFunction(this.clearTimeout)) {
                             this.clearTimeout();
@@ -6558,8 +6601,8 @@ module plat {
                     if (isNumber(timeout) && timeout > 0) {
                         // we first postpone to avoid always timing out when debugging, though this is not
                         // a foolproof method.
-                        this.clearTimeout = postpone(() => {
-                            this.clearTimeout = defer(() => {
+                        this.clearTimeout = postpone((): void => {
+                            this.clearTimeout = defer((): void => {
                                 reject(new AjaxError({
                                     response: 'Request timed out in ' + timeout + 'ms for ' + url,
                                     // request timeout
@@ -6623,8 +6666,8 @@ module plat {
                     options = this.__options,
                     method = options.method,
                     url = options.url,
-                    promise = new AjaxPromise((resolve, reject) => {
-                        xhr.onreadystatechange = () => {
+                    promise = new AjaxPromise((resolve, reject): void => {
+                        xhr.onreadystatechange = (): void => {
                             var success = this._xhrOnReadyStateChange();
 
                             if (isNull(success)) {
@@ -6721,9 +6764,9 @@ module plat {
                                         } else {
                                             // use iframe trick for older browsers (do not send a request)
                                             // this case is the reason for this giant, terrible, nested if-else statement
-                                            this.__submitFramedFormData().then((response) => {
+                                            this.__submitFramedFormData().then((response): void => {
                                                 resolve(response);
-                                            }, () => {
+                                            }, (): void => {
                                                     this.xhr = null;
                                                 });
                                         }
@@ -6757,12 +6800,12 @@ module plat {
                         if (isNumber(timeout) && timeout > 0) {
                             // we first postpone to avoid always timing out when debugging, though this is not
                             // a foolproof method.
-                            this.clearTimeout = postpone(() => {
-                                this.clearTimeout = defer(() => {
+                            this.clearTimeout = postpone((): void => {
+                                this.clearTimeout = defer((): void => {
                                     reject(new AjaxError({
                                         response: 'Request timed out in ' + timeout + 'ms for ' + options.url,
                                         status: xhr.status,
-                                        getAllResponseHeaders: () => { return xhr.getAllResponseHeaders(); },
+                                        getAllResponseHeaders: (): string => { return xhr.getAllResponseHeaders(); },
                                         xhr: xhr
                                     }));
 
@@ -6784,7 +6827,7 @@ module plat {
              * with an IAjaxError
              */
             protected _invalidOptions(): AjaxPromise<any> {
-                return new AjaxPromise((resolve, reject) => {
+                return new AjaxPromise((resolve, reject): void => {
                     var _Exception: IExceptionStatic = this._Exception;
                     _Exception.warn('Attempting a request without specifying a url', _Exception.AJAX);
                     reject(new AjaxError({
@@ -6836,7 +6879,7 @@ module plat {
                 return {
                     response: response,
                     status: status,
-                    getAllResponseHeaders: () => { return xhr.getAllResponseHeaders(); },
+                    getAllResponseHeaders: (): string => { return xhr.getAllResponseHeaders(); },
                     xhr: xhr
                 };
             }
@@ -6946,15 +6989,15 @@ module plat {
                     form.insertBefore(this.__createInput(key, data[key]), null);
                 }
 
-                return new Promise<IAjaxResponse<any>>((resolve, reject) => {
-                    this.xhr.abort = () => {
+                return new Promise<IAjaxResponse<any>>((resolve, reject): void => {
+                    this.xhr.abort = (): void => {
                         iframe.onload = null;
                         $body.removeChild(form);
                         $body.removeChild(iframe);
                         reject();
                     };
 
-                    iframe.onload = () => {
+                    iframe.onload = (): void => {
                         var content = iframe.contentDocument.body.innerHTML;
 
                         $body.removeChild(form);
@@ -6963,7 +7006,7 @@ module plat {
                         resolve({
                             response: content,
                             status: 200,
-                            getAllResponseHeaders: () => ''
+                            getAllResponseHeaders: (): string => ''
                         });
 
                         this.xhr = iframe.onload = null;
@@ -7304,7 +7347,7 @@ module plat {
              * associated IHttpRequest.
              * @param {plat.async.HttpRequest} http The http request for this promise.
              */
-            initialize(http: HttpRequest) {
+            initialize(http: HttpRequest): void {
                 if (isObject(http) && isNull(this.__http)) {
                     this.__http = http;
                 }
@@ -7633,21 +7676,38 @@ module plat {
      * Holds classes and interfaces related to storage in platypus.
      */
     export module storage {
+
+
         /**
          * The keyed collection of all created Caches in the 
          * ICacheFactory.
          */
-        var caches: IObject<Cache<any>> = {};
-        /**
-         * Internal storage for all the items stored in each Cache.
-         */
-        var internalCaches: any = {};
+        var caches: IObject<Cache<any>> = {},
+            /**
+             * Internal storage for all the items stored in each Cache.
+             */
+            internalCaches: any = {};
 
         /**
          * A Cache class, for use with the ICacheFactory injectable. 
          * Used for storing objects. Takes in a generic type corresponding to the type of objects it contains.
          */
         export class Cache<T> {
+            /**
+             * The size of this cache specified by its ID.
+             */
+            private __size: number;
+
+            /**
+             * The ID of this cache.
+             */
+            private __id: string;
+
+            /**
+             * The options for this cache.
+             */
+            private __options: ICacheOptions;
+
             /**
              * Method for creating a new cache object. Takes a generic type to denote the
              * type of objects stored in the new cache.  If a cache with the same ID already exists
@@ -7689,19 +7749,6 @@ module plat {
             }
 
             /**
-             * The size of this cache specified by its ID.
-             */
-            private __size: number;
-            /**
-             * The ID of this cache.
-             */
-            private __id: string;
-            /**
-             * The options for this cache.
-             */
-            private __options: ICacheOptions;
-
-            /**
              * The constructor for a Cache.
              * @param {string} id The id to use to retrieve the cache from the ICacheFactory.
              * @param {plat.storage.ICacheOptions} options The ICacheOptions for customizing the cache.
@@ -7731,7 +7778,7 @@ module plat {
                     options: this.__options
                 };
             }
-        
+
             /**
              * Method for inserting an object into an Cache.
              * @param {string} key The key to use for storage/retrieval of the object.
@@ -7753,7 +7800,7 @@ module plat {
 
                 return value;
             }
-        
+
             /**
              * Method for retrieving an object from an Cache.
              * @param key The key to search for in an Cache.
@@ -7761,7 +7808,7 @@ module plat {
             read(key: string): T {
                 return internalCaches[this.__id][key];
             }
-        
+
             /**
              * Method for removing an object from an Cache.
              * @param {string} key The key to remove from the Cache.
@@ -7770,7 +7817,7 @@ module plat {
                 deleteProperty(internalCaches[this.__id], key);
                 this.__size--;
             }
-        
+
             /**
              * Method for clearing an Cache, removing all of its keys.
              */
@@ -7778,7 +7825,7 @@ module plat {
                 internalCaches[this.__id] = {};
                 this.__size = 0;
             }
-        
+
             /**
              * Method for removing an ICache from the ICacheFactory.
              */
@@ -7796,7 +7843,7 @@ module plat {
         }
 
         register.injectable(__CacheFactory, ICacheFactory, null, __FACTORY);
-    
+
         /**
          * Used to manage all the defined caches for the current application session.
          */
@@ -7822,7 +7869,7 @@ module plat {
              */
             clear(): void;
         }
-    
+
         /**
          * A cache for persisting NodeManager trees.
          */
@@ -7836,7 +7883,7 @@ module plat {
         }
 
         register.injectable(__ManagerCache, IManagerCache);
-    
+
         /**
          * Options for a cache.
          */
@@ -7850,7 +7897,7 @@ module plat {
              */
             timeout?: number;
         }
-    
+
         /**
          * Contains information about an Cache.
          */
@@ -7860,18 +7907,20 @@ module plat {
              * retrieve the ICache out of the CacheFactory.
              */
             id: string;
-        
+
             /**
              * Represents the number of items in the Cache.
              */
             size: number;
-        
+
             /**
              * Represents the ICacheOptions that the 
              * Cache is using.
              */
             options: ICacheOptions;
         }
+
+
 
         /**
          * Used for caching compiled nodes. This class will
@@ -7901,7 +7950,7 @@ module plat {
             constructor() {
                 super('__templateCache');
             }
-        
+
             /**
              * Stores a Node in the cache as a DocumentFragment.
              * @param {string} key The key to use for storage/retrieval of the object.
@@ -7931,7 +7980,7 @@ module plat {
 
                 return Promise.resolve<DocumentFragment>(value);
             }
-        
+
             /**
              * Method for retrieving a Node from this cache. The DocumentFragment that resolves from the returned 
              * Promise will be cloned to avoid manipulating the cached template.
@@ -7945,9 +7994,9 @@ module plat {
                     return <any>this._Promise.reject(null);
                 }
 
-                return promise.then((node) => {
+                return promise.then((node): async.IThenable<DocumentFragment> => {
                     return this.put(key, node);
-                }, (error: Error) => {
+                },(error: Error): DocumentFragment => {
                     var _Exception: IExceptionStatic = this._Exception;
                     _Exception.warn('Error retrieving template from promise.', _Exception.TEMPLATE);
                     return <DocumentFragment>null;
@@ -7956,6 +8005,8 @@ module plat {
         }
 
         register.injectable(__TemplateCache, TemplateCache);
+
+
 
         /**
          * A base class for storing data with a designated storage type.
@@ -7974,7 +8025,7 @@ module plat {
             constructor(storage: Storage) {
                 this._storage = storage;
 
-                forEach((value, key) => {
+                forEach((value, key): void => {
                     this[key] = value;
                 }, storage);
             }
@@ -7985,14 +8036,14 @@ module plat {
             get length(): number {
                 return this._storage.length;
             }
-        
+
             /**
              * Clears storage, deleting all of its keys.
              */
             clear(): void {
                 this._storage.clear();
             }
-        
+
             /**
              * Gets an item out of storage with the assigned key.
              * @param {string} key The key of the item to retrieve from storage.
@@ -8000,7 +8051,7 @@ module plat {
             getItem<T>(key: string): T {
                 return this._storage.getItem(key);
             }
-        
+
             /**
              * Allows for iterating over storage keys with an index. When
              * called with an index, it will return the key at that index in 
@@ -8010,7 +8061,7 @@ module plat {
             key(index: number): string {
                 return this._storage.key(index);
             }
-        
+
             /**
              * Searches in storage for an item and removes it if it 
              * exists.
@@ -8019,7 +8070,7 @@ module plat {
             removeItem(key: string): void {
                 this._storage.removeItem(key);
             }
-        
+
             /**
              * Adds data to storage with the designated key.
              * @param {string} key The key of the item to store in storage.
@@ -8031,6 +8082,8 @@ module plat {
             }
         }
 
+
+
         /**
          * A class used to wrap HTML5 localStorage into an injectable.
          */
@@ -8041,6 +8094,8 @@ module plat {
         }
 
         register.injectable(__LocalStorage, LocalStorage);
+
+
 
         /**
          * A class for wrapping SessionStorage as an injectable.
@@ -8355,6 +8410,8 @@ module plat {
      * Holds all classes and interfaces related to observable components in platypus.
      */
     export module observable {
+
+
         /**
          * The array methods to be overwritten if it is to be observed.
          */
@@ -8378,6 +8435,59 @@ module plat {
              * A set of functions to be fired when a particular observed array is mutated.
              */
             static postArrayListeners: IObject<IObject<Array<(ev: IPostArrayChangeInfo<any>) => void>>> = {};
+
+            /**
+             * An object for quickly accessing a previously created ContextManager.
+             */
+            private static __managers: IObject<ContextManager> = {};
+
+            /**
+             * An object for storing functions to remove listeners for observed identifiers.
+             */
+            private static __controls: IObject<IObject<Array<IRemoveListener>>> = {};
+
+            /**
+             * Reference to the Compat injectable.
+             */
+            protected _compat: Compat = acquire(__Compat);
+
+            /**
+             * The root context associated with and to be managed by this 
+             * ContextManager.
+             */
+            context: any;
+
+            /**
+             * An object for quickly accessing callbacks associated with a given identifier.
+             */
+            private __identifiers: IObject<Array<IListener>> = {};
+
+            /**
+             * An object for quickly accessing child context associations (helps with 
+             * notifying child properties).
+             */
+            private __identifierHash: IObject<IObject<boolean>> = {};
+
+            /**
+             * An object for storing listeners for Array length changes.
+             */
+            private __lengthListeners: IObject<IListener> = {};
+
+            /**
+             * An object for quickly accessing previously accessed or observed objects and properties.
+             */
+            private __contextObjects: IObject<any> = {};
+
+            /**
+             * Whether or not the property currently being modified is due to an observed array function.
+             */
+            private __isArrayFunction = false;
+
+            /**
+             * If attempting to observe a property that is already being observed, this will be set to the 
+             * already observed identifier.
+             */
+            private __observedIdentifier: string;
 
             /**
              * Gets the ContextManager associated to the given control. If no 
@@ -8509,7 +8619,7 @@ module plat {
              */
             static defineGetter(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void {
                 Object.defineProperty(obj, key, {
-                    get: () => value,
+                    get: (): any => value,
                     enumerable: enumerable === true,
                     configurable: configurable === true
                 });
@@ -8638,64 +8748,23 @@ module plat {
             }
 
             /**
-             * An object for quickly accessing a previously created ContextManager.
-             */
-            private static __managers: IObject<ContextManager> = {};
-            /**
-             * An object for storing functions to remove listeners for observed identifiers.
-             */
-            private static __controls: IObject<IObject<Array<IRemoveListener>>> = {};
-
-            /**
-             * Reference to the Compat injectable.
-             */
-            protected _compat: Compat = acquire(__Compat);
-
-            /**
-             * The root context associated with and to be managed by this 
-             * ContextManager.
-             */
-            context: any;
-
-            /**
-             * An object for quickly accessing callbacks associated with a given identifier.
-             */
-            private __identifiers: IObject<Array<IListener>> = {};
-            /**
-             * An object for quickly accessing child context associations (helps with 
-             * notifying child properties).
-             */
-            private __identifierHash: IObject<IObject<boolean>> = {};
-            /**
-             * An object for storing listeners for Array length changes.
-             */
-            private __lengthListeners: IObject<IListener> = {};
-            /**
-             * An object for quickly accessing previously accessed or observed objects and properties.
-             */
-            private __contextObjects: IObject<any> = {};
-            /**
-             * Whether or not the property currently being modified is due to an observed array function.
-             */
-            private __isArrayFunction = false;
-            /**
-             * If attempting to observe a property that is already being observed, this will be set to the 
-             * already observed identifier.
-             */
-            private __observedIdentifier: string;
-
-            /**
              * Safely retrieves the local context for this manager given an Array of
              * property strings and observes it if not found.
              * @param {Array<string>} split The string array containing properties used to index into
              * the context.
+             * @param {boolean} observe? Whether or not to observe the identifier indicated by the 
+             * split Array.
              */
-            getContext(split: Array<string>): any {
+            getContext(split: Array<string>, observe?: boolean): any {
                 var join = split.join('.'),
                     context = this.__contextObjects[join];
 
                 if (isNull(context)) {
-                    context = this.__contextObjects[join] = this._observeImmediateContext(split, join);
+                    if (observe === true) {
+                        context = this.__contextObjects[join] = this._observeImmediateContext(split, join);
+                    } else {
+                        context = this._getImmediateContext(split);
+                    }
                 }
 
                 return context;
@@ -8722,10 +8791,7 @@ module plat {
 
                 if (split.length > 0) {
                     join = split.join('.');
-                    context = this.__contextObjects[join];
-                    if (isNull(context)) {
-                        context = this.__contextObjects[join] = this._observeImmediateContext(split, join);
-                    }
+                    context = this.getContext(split, true);
                 } else {
                     join = key;
                     context = this.context;
@@ -8735,7 +8801,7 @@ module plat {
                     if (hasObservableListener) {
                         if (key === 'length') {
                             this.__lengthListeners[absoluteIdentifier] = observableListener;
-                            ContextManager.pushRemoveListener(absoluteIdentifier, observableListener.uid, () => {
+                            ContextManager.pushRemoveListener(absoluteIdentifier, observableListener.uid, (): void => {
                                 deleteProperty(this.__lengthListeners, absoluteIdentifier);
                             });
                         }
@@ -8766,17 +8832,40 @@ module plat {
                         removeObservedCallback = this._addObservableListener(observedIdentifier, observableListener);
                     }
 
-                    removeCallback = () => {
+                    removeCallback = (): void => {
                         removeAbsoluteCallback();
                         removeObservedCallback();
                     };
                 }
 
-                // check if value is defined and context manager hasn't seen this identifier
-                if (!hasIdentifier) {
-                    if (key === 'length' && isArray(context)) {
+                var parentIsArray = isArray(context),
+                    removeObservableListener = removeCallback,
+                    removeListener = noop,
+                    removeArrayObserve = noop,
+                    numKey = Number(key);
+
+                if (parentIsArray && numKey >= context.length) {
+                    removeListener = this.observe(join + '.length', {
+                        uid: observableListener.uid,
+                        listener: (newValue: number, oldValue: number): void => {
+                            if (numKey >= newValue) {
+                                return;
+                            }
+
+                            removeListener();
+                            this._define(absoluteIdentifier, context, key);
+                        }
+                    });
+
+                    removeCallback = (): void => {
+                        removeObservableListener();
+                        removeListener();
+                    };
+                } else if (!hasIdentifier) {
+                    // check if value is defined and context manager hasn't seen this identifier
+                    if (parentIsArray && key === 'length') {
                         var property = split.pop(),
-                            parentContext = this.getContext(split);
+                            parentContext = this.getContext(split, false);
 
                         this.__observedIdentifier = null;
                         access(parentContext, property);
@@ -8785,23 +8874,19 @@ module plat {
                             join = this.__observedIdentifier;
                         }
 
-                        var removeObservableListener = removeCallback,
-                            removeListener = noop,
-                            removeArrayObserve = noop;
-
                         if (hasObservableListener) {
                             var uid = observableListener.uid;
-                            removeListener = this.observeArray(uid, null, noop, join, context, null);
+                            removeListener = this.observeArrayMutation(uid, null, noop, join, context, null);
                             removeArrayObserve = this.observe(join, {
                                 uid: uid,
-                                listener: (newValue: Array<any>, oldValue: Array<any>) => {
+                                listener: (newValue: Array<any>, oldValue: Array<any>): void => {
                                     removeListener();
-                                    removeListener = this.observeArray(uid, null, noop, join, newValue, oldValue);
+                                    removeListener = this.observeArrayMutation(uid, null, noop, join, newValue, oldValue);
                                 }
                             });
                         }
 
-                        removeCallback = () => {
+                        removeCallback = (): void => {
                             removeObservableListener();
                             removeArrayObserve();
                             removeListener();
@@ -8827,7 +8912,7 @@ module plat {
              * @param {Array<any>} array The array to be observed.
              * @param {Array<any>} oldArray The old array to stop observing.
              */
-            observeArray(uid: string, preListener: (ev: IPreArrayChangeInfo) => void,
+            observeArrayMutation(uid: string, preListener: (ev: IPreArrayChangeInfo) => void,
                 postListener: (ev: IPostArrayChangeInfo<any>) => void, absoluteIdentifier: string, array: Array<any>,
                 oldArray: Array<any>): IRemoveListener {
                 var length = arrayMethods.length,
@@ -8847,7 +8932,7 @@ module plat {
 
                 var split = absoluteIdentifier.split('.'),
                     property = split.pop(),
-                    context = this.getContext(split);
+                    context = this.getContext(split, false);
 
                 this.__observedIdentifier = null;
                 access(context, property);
@@ -8866,7 +8951,7 @@ module plat {
 
                 this._overwriteArray(absoluteIdentifier, array);
 
-                return () => {
+                return (): void => {
                     while (removeListeners.length > 0) {
                         removeListeners.pop()();
                     }
@@ -8905,7 +8990,7 @@ module plat {
                 }
 
                 var listenerRemoved = false,
-                    removeListener = () => {
+                    removeListener = (): void => {
                         if (listenerRemoved) {
                             return;
                         }
@@ -8937,7 +9022,7 @@ module plat {
              * Restores an array to use Array.prototype instead of listener functions. 
              * @param {Array<any>} array The array to restore.
              */
-            protected _restoreArray(array: Array<any>) {
+            protected _restoreArray(array: Array<any>): void {
                 var _compat = this._compat;
 
                 if (_compat.setProto) {
@@ -8960,7 +9045,7 @@ module plat {
              * @param {string} absoluteIdentifier The identifier for the Array off context.
              * @param {Array<any>} array The array to overwrite.
              */
-            protected _overwriteArray(absoluteIdentifier: string, array: Array<any>) {
+            protected _overwriteArray(absoluteIdentifier: string, array: Array<any>): void {
                 var _compat = this._compat,
                     length = arrayMethods.length,
                     method: string,
@@ -9083,13 +9168,9 @@ module plat {
              * @param {any} oldValue The old value of the property.
              */
             protected _notifyChildProperties(identifier: string, newValue: any, oldValue: any): void {
-                var mappings = Object.keys(this.__identifierHash[identifier]);
-
-                if (isNull(mappings)) {
-                    return;
-                }
-
-                var length = mappings.length,
+                var props = this.__identifierHash[identifier] || {},
+                    mappings = Object.keys(props),
+                    length = mappings.length,
                     binding: string,
                     property: string,
                     parentProperty: string,
@@ -9127,19 +9208,19 @@ module plat {
                                 var uid = lengthListener.uid,
                                     arraySplit = identifier.split('.'),
                                     arrayKey = arraySplit.pop(),
-                                    arrayParent = this.getContext(arraySplit),
+                                    arrayParent = this.getContext(arraySplit, false),
                                     join: string;
 
                                 this.__observedIdentifier = null;
                                 access(arrayParent, arrayKey);
 
                                 join = isString(this.__observedIdentifier) ? this.__observedIdentifier : arraySplit.join('.');
-                                var removeListener = this.observeArray(uid, null, noop, join, newParent, null);
+                                var removeListener = this.observeArrayMutation(uid, null, noop, join, newParent, null);
                                 this.observe(join, {
                                     uid: uid,
-                                    listener: (nValue: Array<any>, oValue: Array<any>) => {
+                                    listener: (nValue: Array<any>, oValue: Array<any>): void => {
                                         removeListener();
-                                        removeListener = this.observeArray(uid, null, noop, join, nValue, oValue);
+                                        removeListener = this.observeArrayMutation(uid, null, noop, join, nValue, oValue);
                                     }
                                 });
 
@@ -9193,7 +9274,7 @@ module plat {
 
                 if (isLength) {
                     property = split.pop();
-                    context = this.getContext(split);
+                    context = this.getContext(split, false);
                 }
 
                 if (isObject(context)) {
@@ -9208,7 +9289,7 @@ module plat {
                 this.__add(absoluteIdentifier, observableListener);
 
                 var uid = observableListener.uid,
-                    remove = () => {
+                    remove = (): void => {
                         ContextManager.spliceRemoveListener(absoluteIdentifier, uid, remove);
                         this._removeCallback(absoluteIdentifier, observableListener);
                     };
@@ -9244,7 +9325,7 @@ module plat {
                     _this = this;
 
                 // we can't use a fat-arrow function here because we need the array context.
-                return function observedArrayFn(...args: any[]) {
+                return function observedArrayFn(...args: any[]): any {
                     var oldArray = this.slice(0),
                         returnValue: any,
                         isShift = method.indexOf('shift') !== -1,
@@ -9383,11 +9464,11 @@ module plat {
                 Object.defineProperty(immediateContext, key, {
                     configurable: true,
                     enumerable: true,
-                    get: () => {
+                    get: (): any => {
                         this.__observedIdentifier = identifier;
                         return value;
                     },
-                    set: (newValue) => {
+                    set: (newValue): void => {
                         if (value === newValue) {
                             return;
                         }
@@ -9399,7 +9480,8 @@ module plat {
                             return;
                         }
 
-                        var childPropertiesExist = Object.keys(this.__identifierHash[identifier]).length > 0;
+                        var props = this.__identifierHash[identifier],
+                            childPropertiesExist = isObject(props) && Object.keys(props).length > 0;
                         this._execute(identifier, value, oldValue);
 
                         if (childPropertiesExist) {
@@ -9432,11 +9514,11 @@ module plat {
                 Object.defineProperty(immediateContext, key, {
                     configurable: true,
                     enumerable: true,
-                    get: () => {
+                    get: (): any => {
                         this.__observedIdentifier = identifier;
                         return value;
                     },
-                    set: (newValue) => {
+                    set: (newValue): void => {
                         if (value === newValue) {
                             return;
                         }
@@ -9447,7 +9529,8 @@ module plat {
                             return;
                         }
 
-                        var childPropertiesExist = Object.keys(this.__identifierHash[identifier]).length > 0;
+                        var props = this.__identifierHash[identifier],
+                            childPropertiesExist = isObject(props) && Object.keys(props).length > 0;
                         this._execute(identifier, newValue, oldValue);
 
                         if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
@@ -9718,6 +9801,8 @@ module plat {
      * Holds classes and interfaces related to event management components in platypus.
      */
     export module events {
+
+
         /**
          * An event class that propagates through a control tree. 
          * Propagation of the event always starts at the sender, allowing a control to both 
@@ -9796,7 +9881,7 @@ module plat {
              * @param {string} direction The direction of propagation
              */
             initialize(name: string, sender: any, direction?: string): void;
-            initialize(name: string, sender: any, direction?: string) {
+            initialize(name: string, sender: any, direction?: string): void {
                 this.name = name;
                 this.direction = direction || this._EventManager.UP;
                 this.sender = sender;
@@ -9824,6 +9909,8 @@ module plat {
         }
 
         register.injectable(__DispatchEventInstance, DispatchEvent, null, __INSTANCE);
+
+
 
         /**
          * Represents a Lifecycle Event. Lifecycle Events are always direct events.
@@ -9874,6 +9961,8 @@ module plat {
              */
             dispatch(name: string, sender: any): LifecycleEvent;
         }
+
+
 
         /**
          * Manages dispatching events, handling all propagating events as well as any error handling.
@@ -9976,7 +10065,7 @@ module plat {
                         event = eventNames[i];
                         lifecycleListeners.push({
                             name: event,
-                            value: ((ev: string) => () => {
+                            value: ((ev: string): () => void => (): void => {
                                 dispatch(ev, EventManager);
                             })(event)
                         });
@@ -9986,7 +10075,7 @@ module plat {
 
                     lifecycleListeners.push({
                         name: __pause,
-                        value: () => {
+                        value: (): void => {
                             dispatch(__suspend, EventManager);
                         }
                     });
@@ -9995,7 +10084,7 @@ module plat {
 
                     lifecycleListeners.push({
                         name: __deviceReady,
-                        value: () => {
+                        value: (): void => {
                             dispatch(__ready, EventManager);
                         }
                     });
@@ -10004,7 +10093,7 @@ module plat {
 
                     lifecycleListeners.push({
                         name: __backButton,
-                        value: () => {
+                        value: (): boolean => {
                             if (!winJs) {
                                 dispatch(__backButton, EventManager);
                             }
@@ -10018,7 +10107,7 @@ module plat {
                     if (winJs) {
                         lifecycleListeners.push({
                             name: __backClick,
-                            value: () => {
+                            value: (): boolean => {
                                 dispatch(__backButton, EventManager);
                                 return true;
                             }
@@ -10029,7 +10118,7 @@ module plat {
                 } else if (_compat.amd) {
                     return;
                 } else {
-                    _dom.addEventListener(_window, 'load',() => {
+                    _dom.addEventListener(_window, 'load',(): void => {
                         dispatch(__ready, EventManager);
                     });
                 }
@@ -10071,7 +10160,7 @@ module plat {
 
                 eventListeners.push(listener);
 
-                return () => {
+                return (): void => {
                     var index = eventListeners.indexOf(listener);
                     if (index === -1) {
                         return;
@@ -10117,7 +10206,7 @@ module plat {
              * @param {Array<any>} args? The arguments to send to the listeners.
              */
             static dispatch(name: string, sender: any, direction: string, args?: Array<any>): DispatchEvent;
-            static dispatch(name: string, sender: any, direction: string, args?: Array<any>) {
+            static dispatch(name: string, sender: any, direction: string, args?: Array<any>): DispatchEvent {
                 var _dispatchEvent: DispatchEvent = acquire(__DispatchEventInstance);
                 _dispatchEvent.initialize(name, sender, direction);
                 EventManager.sendEvent(_dispatchEvent, args);
@@ -10489,12 +10578,14 @@ module plat {
              * An IObject of listener arrays, keyed by event name.
              */
             listeners: IObject<Array<(ev: DispatchEvent, ...args: any[]) => void>>;
-        
+
             /**
              * The context with which to call each event listener.
              */
             context: any;
         }
+
+
 
         /**
          * Represents an internal Error Event. This is used for any 
@@ -10506,6 +10597,11 @@ module plat {
              * Reference to the IEventManagerStatic injectable.
              */
             protected static _EventManager: IEventManagerStatic;
+
+            /**
+             * The error being dispatched.
+             */
+            error: E;
 
             /**
              * Creates a new ErrorEvent and fires it.
@@ -10523,11 +10619,6 @@ module plat {
             }
 
             /**
-             * The error being dispatched.
-             */
-            error: E;
-
-            /**
              * Initializes the event, populating its public properties.
              * @param {string} name The name of the event.
              * @param {any} sender The sender of the event.
@@ -10543,7 +10634,7 @@ module plat {
              * @param {E} error The error that occurred, resulting in the event.
              */
             initialize(name: string, sender: any, direction?: string, error?: E): void;
-            initialize(name: string, sender: any, direction?: string, error?: E) {
+            initialize(name: string, sender: any, direction?: string, error?: E): void {
                 super.initialize(name, sender, this._EventManager.DIRECT);
 
                 this.error = error;
@@ -10573,6 +10664,8 @@ module plat {
             dispatch<E extends Error>(name: string, sender: any, error: E): ErrorEvent<E>;
         }
     }
+
+
     /**
      * Used for facilitating data and DOM manipulation. Contains lifecycle events 
      * as well as properties for communicating with other controls. This is the base
@@ -10615,6 +10708,59 @@ module plat {
         private static __eventListeners: IObject<Array<IRemoveListener>> = {};
 
         /**
+         * The plat.IExceptionStatic injectable instance
+         */
+        protected _Exception: IExceptionStatic = Control._Exception;
+
+        /**
+         * A unique id, created during instantiation and found on every Control.
+         */
+        uid: string = uniqueId(__Plat);
+
+        /**
+         * The type of a Control.
+         */
+        type: string;
+
+        /**
+         * Specifies the priority of the control. The purpose of 
+         * this is so that controls like plat-bind can have a higher 
+         * priority than plat-tap. The plat-bind will be initialized 
+         * and loaded before plat-tap, meaning it has the first chance 
+         * to respond to events.
+         */
+        priority = 0;
+
+        /**
+         * The parent control that created this control.
+         */
+        parent: ui.TemplateControl;
+
+        /**
+         * The HTMLElement that represents this Control. Should only be modified by controls that implement 
+         * TemplateControl. During initialize the control should populate this element with what it wishes
+         * to render to the user. 
+         * When there is innerHTML in the element prior to instantiating the control:
+         *     The element will include the innerHTML
+         * When the control implements templateString or templateUrl:
+         *     The serialized DOM will be auto-generated and included in the element. Any
+         *     innerHTML will be stored in the innerTemplate property on the control.
+         * After an Control is initialized its element will be compiled.
+         */
+        element: HTMLElement;
+
+        /**
+         * The attributes object representing all the attributes for a Control's element. All attributes are 
+         * converted from dash notation to camelCase.
+         */
+        attributes: ui.Attributes;
+
+        /**
+         * Contains DOM helper methods for manipulating this control's element.
+         */
+        dom: ui.Dom = Control._dom;
+
+        /**
          * Finds the ancestor control for the given control that contains the root 
          * context.
          * @param {plat.Control} control The control with which to find the root.
@@ -10642,8 +10788,10 @@ module plat {
          * @param {plat.Control} control The control to load.
          */
         static load(control: Control): async.IThenable<void> {
+            var _Promise = Control._Promise;
+
             if (isNull(control)) {
-                return;
+                return _Promise.resolve();
             }
 
             var ctrl = <ui.TemplateControl>control;
@@ -10652,7 +10800,7 @@ module plat {
 
                 contextManager.observe(ctrl.absoluteContextPath, {
                     uid: control.uid,
-                    listener: (newValue, oldValue) => {
+                    listener: (newValue, oldValue): void => {
                         ui.TemplateControl.contextChanged(<ui.TemplateControl>control, newValue, oldValue);
                     }
                 });
@@ -10664,10 +10812,10 @@ module plat {
             }
 
             if (isFunction(control.loaded)) {
-                return Control._Promise.resolve(control.loaded());
+                return _Promise.resolve(control.loaded());
             }
 
-            return Control._Promise.resolve(null);
+            return _Promise.resolve();
         }
 
         /**
@@ -10833,59 +10981,6 @@ module plat {
         }
 
         /**
-         * The plat.IExceptionStatic injectable instance
-         */
-        protected _Exception: IExceptionStatic = Control._Exception;
-
-        /**
-         * A unique id, created during instantiation and found on every Control.
-         */
-        uid: string = uniqueId(__Plat);
-
-        /**
-         * The type of a Control.
-         */
-        type: string;
-
-        /**
-         * Specifies the priority of the control. The purpose of 
-         * this is so that controls like plat-bind can have a higher 
-         * priority than plat-tap. The plat-bind will be initialized 
-         * and loaded before plat-tap, meaning it has the first chance 
-         * to respond to events.
-         */
-        priority = 0;
-
-        /**
-         * The parent control that created this control.
-         */
-        parent: ui.TemplateControl;
-
-        /**
-         * The HTMLElement that represents this Control. Should only be modified by controls that implement 
-         * TemplateControl. During initialize the control should populate this element with what it wishes
-         * to render to the user. 
-         * When there is innerHTML in the element prior to instantiating the control:
-         *     The element will include the innerHTML
-         * When the control implements templateString or templateUrl:
-         *     The serialized DOM will be auto-generated and included in the element. Any
-         *     innerHTML will be stored in the innerTemplate property on the control.
-         * After an Control is initialized its element will be compiled.
-         */
-        element: HTMLElement;
-
-        /**
-         * The attributes object representing all the attributes for a Control's element. All attributes are 
-         * converted from dash notation to camelCase.
-         */
-        attributes: ui.Attributes;
-
-        /**
-         * Contains DOM helper methods for manipulating this control's element.
-         */
-        dom: ui.Dom = Control._dom;
-
-        /**
          * The constructor for a control. Any injectables specified during control registration will be
          * passed into the constructor as arguments as long as the control is instantiated with its associated
          * injector.
@@ -10900,14 +10995,14 @@ module plat {
          * the context property in this method. A view control should call services/set context in this method in 
          * order to fire the loaded event. No control will be loaded until the view control has specified a context.
          */
-        initialize() { }
+        initialize(): void { }
 
         /**
          * The loaded event method for a control. This event is fired after a control has been loaded,
          * meaning all of its children have also been loaded and initial DOM has been created and populated. It is now 
          * safe for all controls to access, observe, and modify the context property.
          */
-        loaded() { }
+        loaded(): void { }
 
         /**
          * Retrieves all the controls with the specified name.
@@ -10927,7 +11022,7 @@ module plat {
          * @param {new () => T} Constructor The constructor used to find controls.
          */
         getControlsByType<T extends Control>(Constructor: new () => T): Array<T>;
-        getControlsByType(type: any) {
+        getControlsByType(type: any): Array<any> {
             if (isString(type)) {
                 return Control.__getControls(this, 'type', type);
             }
@@ -10967,7 +11062,7 @@ module plat {
 
             Control.__addRemoveListener(uid, removeListener);
 
-            return () => {
+            return (): void => {
                 removeListener();
                 Control.__spliceRemoveListener(uid, removeListener);
             };
@@ -11081,17 +11176,17 @@ module plat {
                 preCallback = preIsFunction ? preListener.bind(this) : null,
                 postCallback = postIsFunction ? postListener.bind(this) : null,
                 uid = this.uid,
-                removeListener = contextManager.observeArray(uid, preCallback, postCallback, absoluteIdentifier, array, null),
+                removeListener = contextManager.observeArrayMutation(uid, preCallback, postCallback, absoluteIdentifier, array, null),
                 removeCallback = contextManager.observe(absoluteIdentifier, {
-                    listener: (newValue: Array<any>, oldValue: Array<any>) => {
+                    listener: (newValue: Array<any>, oldValue: Array<any>): void => {
                         removeListener();
                         removeListener = contextManager
-                            .observeArray(uid, preCallback, postCallback, absoluteIdentifier, newValue, oldValue);
+                            .observeArrayMutation(uid, preCallback, postCallback, absoluteIdentifier, newValue, oldValue);
                     },
                     uid: uid
                 });
 
-            return () => {
+            return (): void => {
                 removeListener();
                 removeCallback();
             };
@@ -11196,7 +11291,7 @@ module plat {
 
                 listeners.push(managers[identifier].observe(identifier, {
                     uid: uid,
-                    listener: () => {
+                    listener: (): void => {
                         var value = evaluateExpression(expression, control);
                         listener(value, oldValue);
                         oldValue = value;
@@ -11204,7 +11299,7 @@ module plat {
                 }));
             }
 
-            return () => {
+            return (): void => {
                 var length = listeners.length;
 
                 for (var i = 0; i < length; ++i) {
@@ -11303,7 +11398,7 @@ module plat {
          * @param {Array<any>} ...args Any number of arguments to send to all the listeners.
          */
         dispatchEvent(name: string, direction?: string, ...args: any[]): void;
-        dispatchEvent(name: string, direction?: string, ...args: any[]) {
+        dispatchEvent(name: string, direction?: string, ...args: any[]): void {
             var manager: events.IEventManagerStatic = Control._EventManager || acquire(__EventManagerStatic);
 
             if (!manager.hasDirection(direction)) {
@@ -11432,11 +11527,20 @@ module plat {
         control: Control;
     }
 
+
+
     /**
      * A type of control that can be used as an attribute but will 
      * not be used to add, remove, or modify DOM.
      */
     export class AttributeControl extends Control {
+        /**
+         * Specifies the TemplateControl associated with this
+         * control's element. Can be null if no TemplateControl
+         * exists.
+         */
+        templateControl: ui.TemplateControl = null;
+
         /**
          * Method for disposing an attribute control. Removes any 
          * necessary objects from the control.
@@ -11454,13 +11558,6 @@ module plat {
         static getInstance(): AttributeControl {
             return new AttributeControl();
         }
-
-        /**
-         * Specifies the TemplateControl associated with this
-         * control's element. Can be null if no TemplateControl
-         * exists.
-         */
-        templateControl: ui.TemplateControl = null;
     }
 
     /**
@@ -11493,6 +11590,8 @@ module plat {
      * Holds all the classes and interfaces related to UI components for platypus.
      */
     export module ui {
+
+
         /**
          * The base control for any control that affects the UI. They provide properties for the control to use
          * to manage its body HTML.
@@ -11524,7 +11623,7 @@ module plat {
             protected static _parser: expressions.Parser;
 
             /**
-             * Reference to the IHttp injectable.
+             * Reference to the Http injectable.
              */
             protected static _http: async.Http;
 
@@ -11539,11 +11638,153 @@ module plat {
             protected static _Exception: IExceptionStatic;
 
             /**
+             * An object for quickly retrieving previously accessed resources.
+             */
+            private static __resourceCache: IObject<any> = {};
+
+            /**
+             * By default TemplateControls have a priority of 100.
+             */
+            priority = 100;
+
+            /**
+             * The context of an TemplateControl, used for inheritance and data-binding.
+             */
+            context: any = null;
+
+            /**
+             * The name of a TemplateControl if a Name 
+             * control is involved.
+             */
+            name: string;
+
+            /**
+             * Specifies the absolute path from where the context was created to this Control's context.
+             * Used by the ContextManager for maintaining context parity 
+             * (e.g. 'context.childContextProperty.grandChildContextProperty').
+             */
+            absoluteContextPath: string = null;
+
+            /**
+             * Resources are used for providing aliases to use in markup expressions. They 
+             * are particularly useful when trying to access properties outside of the 
+             * current context, as well as reassigning context at any point in an app.
+             * By default, every control has a resource for `@control` and `@context`.
+             * ViewControl objects also have a resource for `@root` and `@rootContext`, 
+             * which is a reference to their root control and root context.
+             * Resources can be created in HTML, or through the exposed control.resources 
+             * object. If specified in HTML, they must be the first element child of the 
+             * control upon which the resources will be placed. ViewControls that use a 
+             * templateUrl can have resources as their first element in the templateUrl.
+             * In the provided example, the resources can be accessed by using `@Cache` and `@testObj`.
+             * The type of resource is denoted by the element name.
+             * Only resources of type `observable` will have data binding. The types of resources are:
+             * function, injectable, observable, and object. Resources of type `function` will have their
+             * associated function context bound to the control that contains the resource.
+             * When an alias is found in a markup expression, the framework will search up the control chain 
+             * to find the alias on a control's resources. This first matching alias will be used.
+             * <custom-control>
+             *     <plat-resources>
+             *         <injectable alias="Cache">_CacheFactory</injectable>
+             *         <observable alias="testObj">
+             *              { 
+             *                  foo: 'foo', 
+             *                  bar: 'bar', 
+             *                  baz: 2 
+             *              }
+             *         </observable>
+             *     </plat-resources>
+             * </custom-control>
+             */
+            resources: Resources;
+
+            /**
+             * Flag indicating whether or not the TemplateControl defines the context property.
+             */
+            hasOwnContext: boolean = false;
+
+            /**
+             * A string representing the DOM template for this control. If this property is
+             * defined on a TemplateControl then DOM will be created and put in the 
+             * control's element prior to calling the 'setTemplate' method.
+             */
+            templateString: string;
+
+            /**
+             * A url containing a string representing the DOM template for this control. If this property is
+             * defined on a TemplateControl then DOM will be created and put in the 
+             * control's element prior to calling the `setTemplate` method. This property takes 
+             * precedence over templateString. In the event that both are defined, templateString
+             * will be ignored.
+             */
+            templateUrl: string;
+
+            /**
+             * A DocumentFragment representing the innerHTML that existed when this control was instantiated.
+             * This property will only contain the innerHTML when either a templateString or templateUrl is
+             * defined. Its important to clone this property when injecting it somewhere, else its childNodes
+             * will disappear.
+             */
+            innerTemplate: DocumentFragment;
+
+            /**
+             * An BindableTemplates object used for binding a data context to a template. 
+             * This is an advanced function of a TemplateControl.
+             */
+            bindableTemplates: BindableTemplates;
+
+            /**
+             * An array of child controls. Any controls created by this control can be found in this array. The controls in
+             * this array will have reference to this control in their parent property.
+             */
+            controls: Array<Control>;
+
+            /**
+             * A Node array for managing the TemplateControl's childNodes in the event that this control 
+             * replaces its element. This property will only exist/be of use for a TemplateControl that 
+             * implements the replaceWith property.
+             */
+            elementNodes: Array<Node>;
+
+            /**
+             * The first node in the TemplateControl's body. This property will be a Comment node when the 
+             * control implements `replaceWith = null`, otherwise it will be null. This property allows an 
+             * TemplateControl to add nodes to its body in the event that it replaces its element.
+             */
+            startNode: Node;
+
+            /**
+             * The last node in the TemplateControl's body. This property will be a Comment node when the 
+             * control implements the replaceWith property, otherwise it will be null. This property allows a 
+             * TemplateControl to add nodes to its body in the event that it replaces its element.
+             */
+            endNode: Node;
+
+            /**
+             * Allows a TemplateControl to either swap its element with another element (e.g. plat-select), 
+             * or replace its element altogether. If null or empty string, the element will be removed from the DOM, and the 
+             * childNodes of the element will be in its place. In addition, when the element is placed startNode and endNode Comments 
+             * are created, and the childNodes are added to the elementNodes property on the control. The replaceWith 
+             * property can be any property that works with document.createElement(). If the control's element had 
+             * attributes (as well as attribute Controls), those attributes will be carried to the swapped element. The default 
+             * replaceWith is 'any,' meaning it will default to a 'div' in the case that the control type is used as the 
+             * element's nodename (e.g. `<plat-foreach plat-context="..."></plat-foreach>`), but will maintain whatever element type 
+             * is used otherwise (e.g. `<tr plat-control="plat-foreach" plat-context="..."></tr>`).
+             */
+            replaceWith = 'any';
+
+            /**
+             * Set to the root ancestor control from which this control inherits its context. This value
+             * can be equal to this control.
+             */
+            root: TemplateControl;
+
+            /**
              * Evaluates an expression string with a given control and optional control's context and aliases.
-             * @param {string} expression The expression string (e.g. 'foo + foo').
+             * @param {string} expression The expression string (e.g. `foo + foo`).
              * @param {plat.ui.TemplateControl} control? The control used for evaluation context.
              * @param {IObject<any>} aliases? An optional alias object containing resource alias values (property keys should 
-             * not include the '@' character).
+             * not include the `@` character).
              */
             static evaluateExpression(expression: string, control?: TemplateControl, aliases?: IObject<any>): any;
             /**
@@ -11552,7 +11793,7 @@ module plat {
              * plat.expressions.Parser injectable.
              * @param {plat.ui.TemplateControl} control? The control used for evaluation context.
              * @param {IObject<any>} aliases? An optional alias object containing resource alias values (property keys should 
-             * not include the '@' character).
+             * not include the `@` character).
              */
             static evaluateExpression(expression: expressions.IParsedExpression, control?: TemplateControl, aliases?: IObject<any>): any;
             static evaluateExpression(expression: any, control?: TemplateControl, aliases?: IObject<any>): any {
@@ -11572,6 +11813,10 @@ module plat {
 
                 if (expression.aliases.length > 0) {
                     aliases = TemplateControl.getResources(control, expression.aliases, aliases);
+
+                    if (isEmpty(aliases)) {
+                        return;
+                    }
                 }
 
                 return expression.evaluate(control.context, aliases);
@@ -11632,7 +11877,7 @@ module plat {
 
                     if (isNull(resourceObj)) {
                         var _Exception: IExceptionStatic = TemplateControl._Exception;
-                        _Exception.warn('Attempting to use a resource that is not defined.', _Exception.CONTEXT);
+                        _Exception.warn('Resource alias: ' + alias + ' is not defined.', _Exception.CONTEXT);
                         continue;
                     }
 
@@ -11761,7 +12006,7 @@ module plat {
 
             /**
              * Notifies a control that its context has been changed by 
-             * calling the "control.contextChanged" method if it exists.
+             * calling the `control.contextChanged` method if it exists.
              * @param {plat.ui.TemplateControl} control The control whose context changed.
              * @param {any} newValue The new value of the control's context.
              * @param {any} oldValue The old value of the control's context.
@@ -11777,8 +12022,8 @@ module plat {
             }
 
             /**
-             * Sets the 'context' resource value on a TemplateControl. If the control specifies 
-             * hasOwnContext as true, the 'rootContext' resource value will be set.
+             * Sets the `context` resource value on a TemplateControl. If the control specifies 
+             * hasOwnContext as true, the `rootContext` resource value will be set.
              * @param {plat.ui.TemplateControl} control The control whose context resources will be set.
              */
             static setContextResources(control: TemplateControl): void {
@@ -11818,7 +12063,7 @@ module plat {
 
             /**
              * Completely removes a control's element from its parentNode. If the 
-             * control implements replaceWith=null, All of its nodes between its 
+             * control implements `replaceWith=null`, All of its nodes between its 
              * startNode and endNode (inclusive) will be removed.
              * @param {plat.ui.TemplateControl} control The control whose element should be removed.
              */
@@ -11878,7 +12123,7 @@ module plat {
                 } else if (!isNull(control.templateString)) {
                     var type = control.type;
 
-                    return templateCache.read(type).catch((template: any) => {
+                    return templateCache.read(type).catch((template: any): async.IThenable<DocumentFragment> => {
                         if (isNull(template)) {
                             template = dom.serializeHtml(control.templateString);
                     }
@@ -11934,148 +12179,6 @@ module plat {
             }
 
             /**
-             * An object for quickly retrieving previously accessed resources.
-             */
-            private static __resourceCache: IObject<any> = {};
-
-            /**
-             * By default TemplateControls have a priority of 100.
-             */
-            priority = 100;
-
-            /**
-             * The context of an TemplateControl, used for inheritance and data-binding.
-             */
-            context: any = null;
-
-            /**
-             * The name of a TemplateControl if a Name 
-             * control is involved.
-             */
-            name: string;
-
-            /**
-             * Specifies the absolute path from where the context was created to this Control's context.
-             * Used by the ContextManager for maintaining context parity 
-             * (e.g. 'context.childContextProperty.grandChildContextProperty').
-             */
-            absoluteContextPath: string = null;
-
-            /**
-             * Resources are used for providing aliases to use in markup expressions. They 
-             * are particularly useful when trying to access properties outside of the 
-             * current context, as well as reassigning context at any point in an app.
-             * By default, every control has a resource for '@control' and '@context'.
-             * IViewControl objects also have a resource for '@root' and '@rootContext', 
-             * which is a reference to their root control and root context.
-             * Resources can be created in HTML, or through the exposed control.resources 
-             * object. If specified in HTML, they must be the first element child of the 
-             * control upon which the resources will be placed. IViewControls that use a 
-             * templateUrl can have resources as their first element in the templateUrl.
-             * In the provided example, the resources can be accessed by using '@Cache' and '@testObj'.
-             * The type of resource is denoted by the element name.
-             * Only resources of type 'observable' will have data binding. The types of resources are:
-             * function, injectable, observable, and object. Resources of type 'function' will have their
-             * associated function context bound to the control that contains the resource.
-             * When an alias is found in a markup expression, the framework will search up the control chain 
-             * to find the alias on a control's resources. This first matching alias will be used.
-             * <custom-control>
-             *     <plat-resources>
-             *         <injectable alias="Cache">_CacheFactory</injectable>
-             *         <observable alias="testObj">
-             *              { 
-             *                  foo: 'foo', 
-             *                  bar: 'bar', 
-             *                  baz: 2 
-             *              }
-             *         </observable>
-             *     </plat-resources>
-             * </custom-control>
-             */
-            resources: Resources;
-
-            /**
-             * Flag indicating whether or not the TemplateControl defines the context property.
-             */
-            hasOwnContext: boolean = false;
-
-            /**
-             * A string representing the DOM template for this control. If this property is
-             * defined on a TemplateControl then DOM will be created and put in the 
-             * control's element prior to calling the 'setTemplate' method.
-             */
-            templateString: string;
-
-            /**
-             * A url containing a string representing the DOM template for this control. If this property is
-             * defined on a TemplateControl then DOM will be created and put in the 
-             * control's element prior to calling the 'setTemplate' method. This property takes 
-             * precedence over templateString. In the event that both are defined, templateString
-             * will be ignored.
-             */
-            templateUrl: string;
-
-            /**
-             * A DocumentFragment representing the innerHTML that existed when this control was instantiated.
-             * This property will only contain the innerHTML when either a templateString or templateUrl is
-             * defined. Its important to clone this property when injecting it somewhere, else its childNodes
-             * will disappear.
-             */
-            innerTemplate: DocumentFragment;
-
-            /**
-             * An BindableTemplates object used for binding a data context to a template. 
-             * This is an advanced function of a TemplateControl.
-             */
-            bindableTemplates: BindableTemplates;
-
-            /**
-             * An array of child controls. Any controls created by this control can be found in this array. The controls in
-             * this array will have reference to this control in their parent property.
-             */
-            controls: Array<Control>;
-
-            /**
-             * A Node array for managing the TemplateControl's childNodes in the event that this control 
-             * replaces its element. This property will only exist/be of use for a TemplateControl that 
-             * implements the replaceWith property.
-             */
-            elementNodes: Array<Node>;
-
-            /**
-             * The first node in the TemplateControl's body. This property will be a Comment node when the 
-             * control implements replaceWith = null, otherwise it will be null. This property allows an 
-             * TemplateControl to add nodes to its body in the event that it replaces its element.
-             */
-            startNode: Node;
-
-            /**
-             * The last node in the TemplateControl's body. This property will be a Comment node when the 
-             * control implements the replaceWith property, otherwise it will be null. This property allows a 
-             * TemplateControl to add nodes to its body in the event that it replaces its element.
-             */
-            endNode: Node;
-
-            /**
-             * Allows a TemplateControl to either swap its element with another element (e.g. plat-select), 
-             * or replace its element altogether. If null or empty string, the element will be removed from the DOM, and the 
-             * childNodes of the element will be in its place. In addition, when the element is placed startNode and endNode Comments 
-             * are created, and the childNodes are added to the elementNodes property on the control. The replaceWith 
-             * property can be any property that works with document.createElement(). If the control's element had 
-             * attributes (as well as attribute Controls), those attributes will be carried to the swapped element. The default 
-             * replaceWith is 'any,' meaning it will default to a 'div' in the case that the control type is used as the 
-             * element's nodename (e.g. <plat-foreach plat-context="..."></plat-foreach>), but will maintain whatever element type 
-             * is used otherwise (e.g. <tr plat-control="plat-foreach" plat-context="..."></tr>).
-             */
-            replaceWith = 'any';
-
-            /**
-             * Set to the root ancestor control from which this control inherits its context. This value
-             * can be equal to this control.
-             */
-            root: TemplateControl;
-
-            /**
              * This event is fired when an TemplateControl's context property 
              * is changed by an ancestor control.
              * @param {any} newValue? The new value of the context.
@@ -12106,7 +12209,6 @@ module plat {
                         context: dataContext,
                         identifier: ''
                     },
-                    context: any,
                     length: number,
                     keys: Array<string>,
                     key: string,
@@ -12251,7 +12353,7 @@ module plat {
         export interface ITemplateControlFactory {
             /**
              * Evaluates an expression string with a given control and optional control's context and aliases.
-             * @param {string} expression The expression string (e.g. 'foo + foo').
+             * @param {string} expression The expression string (e.g. `foo + foo`).
              * @param {plat.ui.TemplateControl} control? The control used for evaluation context.
              * @param {IObject<any>} aliases? An optional alias object containing resource alias values
              */
@@ -12299,7 +12401,7 @@ module plat {
 
             /**
              * Notifies a control that its context has been changed by 
-             * calling the "control.contextChanged" method if it exists.
+             * calling the `control.contextChanged` method if it exists.
              * @param {plat.ui.TemplateControl} control The control whose context changed.
              * @param {any} newValue The new value of the control's context.
              * @param {any} oldValue The old value of the control's context.
@@ -12307,15 +12409,15 @@ module plat {
             contextChanged(control: TemplateControl, newValue: any, oldValue: any): void;
 
             /**
-             * Sets the 'context' resource value on a TemplateControl. If the control specifies 
-             * hasOwnContext as true, the 'rootContext' resource value will be set.
+             * Sets the `context` resource value on a TemplateControl. If the control specifies 
+             * hasOwnContext as true, the `rootContext` resource value will be set.
              * @param {plat.ui.TemplateControl} control The control whose context resources will be set.
              */
             setContextResources(control: TemplateControl): void;
 
             /**
              * Completely removes a control's element from its parentNode. If the 
-             * control implements replaceWith=null, All of its nodes between its 
+             * control implements `replaceWith=null`, All of its nodes between its 
              * startNode and endNode (inclusive) will be removed.
              * @param {plat.ui.TemplateControl} control The control whose element should be removed.
              */
@@ -12349,6 +12451,8 @@ module plat {
             getInstance(): TemplateControl;
         }
 
+
+
         /**
          * An extended TemplateControl that allows for the binding of a value to 
          * another listening control (e.g. plat-bind control).
@@ -12369,7 +12473,7 @@ module plat {
 
                 listeners.push(listener);
 
-                return () => {
+                return (): void => {
                     var index = listeners.indexOf(listener);
                     if (index === -1) {
                         return;
@@ -12387,7 +12491,7 @@ module plat {
              * @param {boolean} firstTime? A boolean signifying whether this is the first set of the property.
              */
             setProperty(newValue: any, oldValue?: any, firstTime?: boolean): void { }
-        
+
             /**
              * A function that signifies when this control's bindable property has changed.
              * @param {any} newValue The new value of the property after the change.
@@ -12405,7 +12509,7 @@ module plat {
                     listeners[i](newValue, oldValue);
                 }
             }
-        
+
             /**
              * Removes references to the listeners 
              * defined externally.
@@ -12418,10 +12522,24 @@ module plat {
 
 
         /**
-         * A control used in a Viewport for simulated page navigation. The 
-         * control has navigation events that are called when navigating to and from the control.
+         * A control used in a Viewport for page navigation. The 
+         * control has navigation events that are called when navigating to and from the control. A ViewControl 
+         * represents a routing component on a page (i.e. a piece of a page that is associated with a particular route). 
+         * It has the ability to initiate, approve, and reject navigation to/from itself. A ViewControl also has the 
+         * ability to inject a Router and configure sub-navigation.
          */
         export class ViewControl extends TemplateControl implements ISupportNavigation {
+            /**
+             * Specifies that this control will have its own context, and it should not inherit a context.
+             */
+            hasOwnContext: boolean = true;
+
+            /**
+             * Every ViewControl inside a Viewport will have a navigator. The navigator is linked to 
+             * the router for the Viewport containing the ViewControl.
+             */
+            navigator: routing.Navigator;
+
             /**
              * Recursively disposes a ViewControl and its children.
              * @param {plat.ui.ViewControl} control A control to dispose.
@@ -12438,38 +12556,72 @@ module plat {
             }
 
             /**
-             * Specifies that this control will have its own context, and it should not inherit a context.
+             * Allows a ViewControl to asynchronously decide if the app is able to navigate away from the 
+             * current view. A possible use of this method might be to popup a confirmation modal. You can 
+             * return a boolean or IThenable<boolean> to accept/reject navigation.
+             * A word of caution, this is a navigation-blocking function. It is best to avoid long-running functions.
              */
-            hasOwnContext: boolean = true;
-
-            /**
-             * Initializes any events that you might use in the ViewControl. Automatically subscribes to 'backButtonPressed' when 
-             * you implement a backButtonPressed function.
-             */
-            constructor() {
-                super();
-            }
-
-            navigator: routing.Navigator;
-
             canNavigateFrom(): any { }
 
+            /**
+             * Allows a ViewControl to asynchronously decide if it can be navigated to with the given parameters/query. 
+             * You can return a boolean or IThenable<boolean> to accept/reject navigation. 
+             * A word of caution, this is a navigation-blocking function. It is best to avoid long-running functions.
+             */
             canNavigateTo(parameters: any, query: any): any { }
 
+            /**
+             * This method is called when the ViewControl is going out of scope as a result of a navigation.
+             */
             navigatingFrom(): any { }
 
+            /**
+             * This method is called when the ViewControl has come into scope as a result of navigation. It can 
+             * receive the route parameters and query in order to set its context.
+             */
             navigatedTo(parameters: any, query: any): any { }
         }
 
+        /**
+         * A control can implement this interface in order to support app navigation. This means the control can be linked to an 
+         * object that implements the ISupportRouteNavigation interface (e.g. a 
+         * Viewport).
+         */
         export interface ISupportNavigation {
+            /**
+             * When a control is linked to a Viewport, it will have a navigator for facilitating 
+             * navigation.
+             */
             navigator?: routing.Navigator;
 
+            /**
+             * Allows a control to asynchronously decide if the app is able to navigate away from the 
+             * current view. A possible use of this method might be to popup a confirmation modal. You can 
+             * return a boolean or IThenable<boolean> to accept/reject navigation.
+             * A word of caution, this is a navigation-blocking function. It is best to avoid long-running functions.
+             */
             canNavigateFrom(): any;
+
+            /**
+             * Allows a control to asynchronously decide if it can be navigated to with the given parameters/query. 
+             * You can return a boolean or IThenable<boolean> to accept/reject navigation. 
+             * A word of caution, this is a navigation-blocking function. It is best to avoid long-running functions.
+             */
             canNavigateTo (parameters: any, query: any): any;
 
-            navigatingFrom (): any;
+            /**
+             * This method is called when the control is going out of scope as a result of a navigation.
+             */
+            navigatingFrom(): any;
+
+            /**
+             * This method is called when the control has come into scope as a result of navigation. It can 
+             * receive the route parameters and query in order to set its context.
+             */
             navigatedTo (parameters: any, query: any): any;
         }
+
+
 
         /**
          * An extensible class dealing with the creation, deletion, and modification 
@@ -12553,6 +12705,36 @@ module plat {
             appendChildren(nodeList: NodeList, root?: Node): Node;
             appendChildren(nodeList: any, root?: Node): any {
                 return appendChildren(nodeList, root);
+            }
+
+            /**
+             * Takes a Node Array, clones them, and creates a DocumentFragment and adds the nodes to the Fragment.
+             * @param {Array<Node>} nodeList A Node Array to be appended to the DocumentFragment
+             */
+            cloneChildren(nodeList: Array<Node>): DocumentFragment;
+            /**
+             * Takes a NodeList, clones it, and creates a DocumentFragment and adds the NodeList to the Fragment.
+             * @param {NodeList} nodeList A NodeList to be appended to the DocumentFragment
+             */
+            cloneChildren(nodeList: NodeList): DocumentFragment;
+            /**
+             * Takes a Node Array, clones the nodes, and either adds it to the passed in Node,
+             * or creates a DocumentFragment and adds the nodes to the
+             * Fragment.
+             * @param {NodeList} nodeList A NodeList to be appended to the root/DocumentFragment.
+             * @param {Node} root? An optional Node to append the nodeList.
+             */
+            cloneChildren(nodeList: Array<Node>, root?: Node): Node;
+            /**
+             * Takes a NodeList, clones the nodes, and either adds it to the passed in Node,
+             * or creates a DocumentFragment and adds the NodeList to the
+             * Fragment.
+             * @param {NodeList} nodeList A NodeList to be appended to the root/DocumentFragment.
+             * @param {Node} root? An optional Node to append the nodeList.
+             */
+            cloneChildren(nodeList: NodeList, root?: Node): Node;
+            cloneChildren(nodeList: any, root?: Node): any {
+                return appendChildren(nodeList, root, true);
             }
 
             /**
@@ -12779,6 +12961,8 @@ module plat {
             __plat: ICustomElementProperty;
         }
 
+
+
         /**
          * The class which provides a way for TemplateControls to bind a template 
          * to a context. Useful for narrowing context without needing another 
@@ -12788,6 +12972,64 @@ module plat {
          * separate those templates and reuse them accordingly.
          */
         export class BindableTemplates {
+
+            /**
+             * Reference to the IResourcesFactory injectable.
+             */
+            protected _ResourcesFactory: IResourcesFactory = acquire(__ResourcesFactory);
+
+            /**
+             * Reference to the ITemplateControlFactory injectable.
+             */
+            protected _TemplateControlFactory: ITemplateControlFactory = acquire(__TemplateControlFactory);
+
+            /**
+             * Reference to the IPromise injectable.
+             */
+            protected _Promise: async.IPromise = acquire(__Promise);
+
+            /**
+             * Reference to a cache injectable that stores ElementManagers.
+             */
+            protected _managerCache: storage.Cache<processing.ElementManager> = acquire(__ManagerCache);
+
+            /**
+             * Reference to the Document injectable.
+             */
+            protected _document: Document = acquire(__Document);
+
+            /**
+             * Reference to the IElementManagerFactory injectable.
+             */
+            protected _ElementManagerFactory: processing.IElementManagerFactory = acquire(__ElementManagerFactory);
+
+            /**
+             * Reference to the IExceptionStatic injectable.
+             */
+            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
+
+            /**
+             * The control containing this BindableTemplates object.
+             */
+            control: TemplateControl;
+            /**
+             * Stores promises that resolve to all the compiled templates for this object, ready to be bound to a data context. 
+             * All created templates are DocumentFragments, allowing an TemplateControl to
+             * easily insert the template into the DOM (without iterating over childNodes).
+             */
+            templates: IObject<async.IThenable<DocumentFragment>> = {};
+
+            /**
+             * A keyed cache of ElementManagers that represent the roots of compiled templates 
+             * created by this instance.
+             */
+            cache: IObject<processing.ElementManager> = {};
+
+            /**
+             * A collection of all the controls created while compiling an added template. Useful during disposal.
+             */
+            private __compiledControls: Array<TemplateControl> = [];
+
             /**
              * Creates a new instance of BindableTemplates and returns it. If a BindableTemplates is 
              * passed in, it will use the properties on the original BindableTemplates.
@@ -12852,63 +13094,6 @@ module plat {
 
                 return control.type.indexOf(parent.type + __BOUND_PREFIX) === 0;
             }
-
-            /**
-             * Reference to the IResourcesFactory injectable.
-             */
-            protected _ResourcesFactory: IResourcesFactory = acquire(__ResourcesFactory);
-
-            /**
-             * Reference to the ITemplateControlFactory injectable.
-             */
-            protected _TemplateControlFactory: ITemplateControlFactory = acquire(__TemplateControlFactory);
-
-            /**
-             * Reference to the IPromise injectable.
-             */
-            protected _Promise: async.IPromise = acquire(__Promise);
-
-            /**
-             * Reference to a cache injectable that stores ElementManagers.
-             */
-            protected _managerCache: storage.Cache<processing.ElementManager> = acquire(__ManagerCache);
-
-            /**
-             * Reference to the Document injectable.
-             */
-            protected _document: Document = acquire(__Document);
-
-            /**
-             * Reference to the IElementManagerFactory injectable.
-             */
-            protected _ElementManagerFactory: processing.IElementManagerFactory = acquire(__ElementManagerFactory);
-
-            /**
-             * Reference to the IExceptionStatic injectable.
-             */
-            protected _Exception: IExceptionStatic = acquire(__ExceptionStatic);
-
-            /**
-             * The control containing this BindableTemplates object.
-             */
-            control: TemplateControl;
-            /**
-             * Stores promises that resolve to all the compiled templates for this object, ready to be bound to a data context. 
-             * All created templates are DocumentFragments, allowing an TemplateControl to
-             * easily insert the template into the DOM (without iterating over childNodes).
-             */
-            templates: IObject<async.IThenable<DocumentFragment>> = {};
-
-            /**
-             * A keyed cache of ElementManagers that represent the roots of compiled templates 
-             * created by this instance.
-             */
-            cache: IObject<processing.ElementManager> = {};
-
-            /**
-             * A collection of all the controls created while compiling an added template. Useful during disposal.
-             */
-            private __compiledControls: Array<TemplateControl> = [];
 
             /**
              * Method for linking a compiled template to a data context and returning a clone of the template, 
@@ -13097,7 +13282,7 @@ module plat {
                     return;
                 }
 
-                templatePromise = templatePromise.then((result: DocumentFragment) => {
+                templatePromise = templatePromise.then((result: DocumentFragment): async.IThenable<any> => {
                     var template = <DocumentFragment>result.cloneNode(true),
                         control = this._createBoundControl(key, template, resources),
                         nodeMap = this._createNodeMap(control, template, relativeIdentifier);
@@ -13110,7 +13295,7 @@ module plat {
                 });
 
                 if (!noIndex) {
-                    return templatePromise.then((fragment) => {
+                    return templatePromise.then((fragment): async.IThenable<any> => {
                         var childNodes = Array.prototype.slice.call(fragment.childNodes),
                             oldControl = <TemplateControl>this.control.controls[index],
                             endNode = oldControl.endNode,
@@ -13121,21 +13306,21 @@ module plat {
                         parentNode.insertBefore(fragment, nextSibling);
 
                         return childNodes;
-                    }).then(null,(error: any) => {
-                        postpone(() => {
+                    }).then(null,(error: any): DocumentFragment => {
+                        postpone((): void => {
                             _Exception.fatal(error, _Exception.BIND);
                         });
 
-                        return <DocumentFragment>null;
+                        return this._document.createDocumentFragment();
                     });
                 }
 
-                return templatePromise.then(null,(error: any) => {
-                    postpone(() => {
+                return templatePromise.then(null,(error: any): DocumentFragment => {
+                    postpone((): void => {
                         _Exception.fatal(error, _Exception.BIND);
                     });
 
-                    return <DocumentFragment>null;
+                    return this._document.createDocumentFragment();
                 });
 
             }
@@ -13151,13 +13336,13 @@ module plat {
                     disposed = false,
                     dispose = isFunction(control.dispose) ? control.dispose.bind(control) : noop;
 
-                control.dispose = () => {
+                control.dispose = (): void => {
                     disposed = true;
                     dispose();
                     control.dispose = dispose;
                 };
 
-                return this._bindNodeMap(key, nodeMap).then(() => {
+                return this._bindNodeMap(key, nodeMap).then((): DocumentFragment => {
                     var _document = this._document,
                         template = nodeMap.element;
 
@@ -13171,8 +13356,8 @@ module plat {
                         null);
 
                     return template;
-                }, (error: any) => {
-                        postpone(() => {
+                },(error: any): DocumentFragment => {
+                        postpone((): void => {
                             var _Exception: IExceptionStatic = this._Exception;
                             _Exception.fatal(error, _Exception.COMPILE);
                         });
@@ -13233,7 +13418,7 @@ module plat {
 
                 promises.push(manager.fulfillTemplate());
 
-                this.templates[key] = this._Promise.all(promises).then(() => {
+                this.templates[key] = this._Promise.all(promises).then((): DocumentFragment => {
                     var element = nodeMap.element,
                         startNode: Comment,
                         endNode: Comment;
@@ -13355,16 +13540,14 @@ module plat {
             isBoundControl(control: TemplateControl): boolean
         }
 
+
+
         /**
          * The class that stores the information about an Element's attributes (NamedNodeMap).
          * Methods are implemented to allow you to observe for changes on an attribute.
          * Attributes for this object are converted from dash-notation to camelCase notation.
          */
         export class Attributes {
-            static getInstance() {
-                return new Attributes();
-            }
-
             [property: string]: any;
 
             /**
@@ -13376,6 +13559,10 @@ module plat {
              * The control tied to this instance.
              */
             private __control: Control;
+
+            static getInstance(): Attributes {
+                return new Attributes();
+            }
 
             /**
              * Initializes this instance with a Control and the camelCased 
@@ -13413,7 +13600,7 @@ module plat {
                 listener = listener.bind(this.__control);
                 listeners.push(listener);
 
-                return () => {
+                return (): void => {
                     var index = listeners.indexOf(listener);
                     if (index === -1) {
                         return;
@@ -13422,7 +13609,7 @@ module plat {
                     listeners.splice(index, 1);
                 };
             }
-        
+
             /**
              * Used to show an attribute has been changed and forces listeners to be fired.
              * @param {string} key The attribute being observed for changes (e.g. 'src').
@@ -13446,21 +13633,23 @@ module plat {
         register.injectable(__AttributesInstance, Attributes, null, __INSTANCE);
         register.injectable(__AttributesFactory, IAttributesFactory, null, __FACTORY);
 
+
+
         /**
          * Resources are used for providing aliases to use in markup expressions. They 
          * are particularly useful when trying to access properties outside of the 
          * current context, as well as reassigning context at any point in an app.
-         * By default, every control has a resource for '@control' and '@context'.
-         * IViewControl objects also have a resource for '@root' and '@rootContext', 
+         * By default, every control has a resource for `@control` and `@context`.
+         * ViewControl objects also have a resource for `@root` and `@rootContext`, 
          * which is a reference to the control and its context.
          * Resources can be created in HTML, or through the exposed control.resources 
          * object. If specified in HTML, they must be the first element child of the 
-         * control upon which the resources will be placed. IViewControls that use a 
+         * control upon which the resources will be placed. ViewControls that use a 
          * templateUrl can have resources as their first element in the templateUrl.
-         * In the provided example, the resources can be accessed by using '@Cache' and '@testObj'.
+         * In the provided example, the resources can be accessed by using `@Cache` and `@testObj`.
          * The type of resource is denoted by the element name.
-         * Only resources of type 'observable' will have data binding. The types of resources are:
-         * function, injectable, observable, and object. Resources of type 'function' will have their
+         * Only resources of type `observable` will have data binding. The types of resources are:
+         * function, injectable, observable, and object. Resources of type `function` will have their
          * associated function context bound to the control that contains the resource.
          * When an alias is found in a markup expression, the framework will search up the control chain 
          * to find the alias on a control's resources. This first matching alias will be used.
@@ -13478,23 +13667,28 @@ module plat {
          * </custom-control>
          */
         export class Resources {
+            [property: string]: any;
+
             /**
              * The injectable resource type token.
              */
             static INJECTABLE: string = __INJECTABLE_RESOURCE;
 
             /**
-             * The object resource type token.
+             * The object resource type token. Objects should be literal objects and won't be observed.
              */
             static OBJECT: string = __OBJECT_RESOURCE;
 
             /**
-             * The observable resource type token.
+             * The observable resource type token. Observable resources are expected to be 
+             * string identifiers and will be observed.
              */
             static OBSERVABLE: string = __OBSERVABLE_RESOURCE;
 
             /**
-             * The literal resource type token.
+             * The literal resource type token. Literals will be observed on the resource object, 
+             * so if you change `resources.<alias>.value` it will be reflected everywhere it is 
+             * observed.
              */
             static LITERAL: string = __LITERAL_RESOURCE;
 
@@ -13517,6 +13711,36 @@ module plat {
              * Reference to the IExceptionStatic injectable.
              */
             protected static _Exception: IExceptionStatic;
+
+            /**
+             * A list of resources to place on a control.
+             */
+            private static __controlResources: IObject<boolean>;
+
+            /**
+             * A list of all resource types.
+             */
+            private static __resourceTypes: IObject<boolean>;
+
+            /**
+             * An object consisting of keyed arrays containing functions for removing observation listeners.
+             */
+            private static __observableResourceRemoveListeners: IObject<Array<IRemoveListener>> = {};
+
+            /**
+             * An object representing all of the currently available resources.
+             */
+            private __resources: IObject<IResource> = {};
+
+            /**
+             * Whether this Resources instance has been bound yet.
+             */
+            private __bound: boolean = false;
+
+            /**
+             * The control that these resources are for.
+             */
+            private __controlInstance: TemplateControl;
 
             /**
              * Populates an IResource value if necessary, and adds it to the given 
@@ -13570,7 +13794,7 @@ module plat {
             }
 
             /**
-             * Adds resource aliases for '@control' and '@context'. The resources are 
+             * Adds resource aliases for `@control` and `@context`. The resources are 
              * aliases for the control instance and the control.context.
              * @param {plat.ui.TemplateControl} control The control on which to add the resources.
              */
@@ -13659,7 +13883,7 @@ module plat {
             }
 
             /**
-             * Parses a resources Element (<plat-resources>) and creates 
+             * Parses a resources Element (`<plat-resources>`) and creates 
              * an IObject<IResource> with its element children.
              * @param {Element} element The resources element to parse.
              */
@@ -13716,7 +13940,7 @@ module plat {
             }
 
             /**
-             * Observes the resource if the type is 'observable'.
+             * Observes the resource if the type is `observable`.
              * @param {plat.ui.TemplateControl} control The control in charge of the observable resource.
              * @param {plat.ui.IResource} resource The resource to observe.
              */
@@ -13735,7 +13959,7 @@ module plat {
                     } else {
                         resource.initialValue = value;
                     }
-                    var listener = control.observeExpression(value, (newValue) => {
+                    var listener = control.observeExpression(value, (newValue): void => {
                         resource.value = newValue;
                     });
                     resource.value = control.evaluateExpression(value);
@@ -13767,23 +13991,8 @@ module plat {
             }
 
             /**
-             * A list of resources to place on a control.
-             */
-            private static __controlResources: IObject<boolean>;
-
-            /**
-             * A list of all resource types.
-             */
-            private static __resourceTypes: IObject<boolean>;
-
-            /**
-             * An object consisting of keyed arrays containing functions for removing observation listeners.
-             */
-            private static __observableResourceRemoveListeners: IObject<Array<IRemoveListener>> = {};
-
-            /**
-             * Adds a '@root' alias and '@rootContext' to a control, specifying that it contains the root 
-             * and root context. Root controls are generally the root IViewControl.
+             * Adds a `@root` alias and `@rootContext` to a control, specifying that it contains the root 
+             * and root context. Root controls are generally the root ViewControl.
              * @param {plat.ui.TemplateControl} control The root control.
              */
             private static __addRoot(control: TemplateControl): void {
@@ -13800,19 +14009,6 @@ module plat {
                     }
                 });
             }
-
-            /**
-             * An object representing all of the currently available resources.
-             */
-            private __resources: IObject<IResource> = {};
-            /**
-             * Whether this Resources instance has been bound yet.
-             */
-            private __bound: boolean = false;
-            /**
-             * The control that these resources are for.
-             */
-            private __controlInstance: TemplateControl;
 
             /**
              * Initializes this Resources instance.
@@ -13947,14 +14143,17 @@ module plat {
              * The object resource type token.
              */
             OBJECT: string;
-
+        
             /**
-             * The observable resource type token.
+             * The observable resource type token. Observable resources are expected to be 
+             * string identifiers and will be observed.
              */
             OBSERVABLE: string;
 
             /**
-             * The literal resource type token.
+             * The literal resource type token. Literals will be observed on the resource object, 
+             * so if you change `resources.<alias>.value` it will be reflected everywhere it is 
+             * observed.
              */
             LITERAL: string;
 
@@ -13972,7 +14171,7 @@ module plat {
             create(control: TemplateControl, resource: IResource): IResource;
 
             /**
-             * Adds resource aliases for '@control' and '@context'. The resources are 
+             * Adds resource aliases for `@control` and `@context`. The resources are 
              * aliases for the control instance and the control.context.
              * @param {plat.ui.TemplateControl} control The control on which to add the resources.
              */
@@ -13997,7 +14196,7 @@ module plat {
             dispose(control: TemplateControl, persist?: boolean): void;
 
             /**
-             * Parses a resources Element (<plat-resources>) and creates 
+             * Parses a resources Element (`<plat-resources>`) and creates 
              * an IObject<IResource> with its element children.
              * @param {Element} element The resources element to parse.
              */
@@ -14037,6 +14236,8 @@ module plat {
              */
             initialValue?: any;
         }
+
+
 
         /**
          * A class for managing DOM event registration and handling.
@@ -14426,7 +14627,7 @@ module plat {
                 element.addEventListener(type, listener, useCapture);
 
                 if (!isUndefined(element['on' + type]) || isUndefined((<any>gestures)[type]) || mappingExists) {
-                    return () => {
+                    return (): void => {
                         if (listenerRemoved) {
                             return;
                         } else if (mappingExists) {
@@ -14463,7 +14664,7 @@ module plat {
                 (<any>this._gestureCount)[countType]++;
                 this.__registerElement(element, type);
 
-                return () => {
+                return (): void => {
                     if (listenerRemoved) {
                         return;
                     }
@@ -14564,14 +14765,14 @@ module plat {
 
                 if (noHolds) {
                     this.__hasRelease = false;
-                    this.__cancelDeferredHold = defer(() => {
+                    this.__cancelDeferredHold = defer((): void => {
                         this.__hasRelease = true;
                     }, holdInterval);
                     return true;
                 } else if (noRelease) {
                     domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this._gestures.$hold);
                     if ((domEventFound = !isNull(domEvent))) {
-                        subscribeFn = () => {
+                        subscribeFn = (): void => {
                             domEvent.trigger(ev);
                             this.__cancelDeferredHold = noop;
                         };
@@ -14581,7 +14782,7 @@ module plat {
                     // has both hold and release events registered
                     domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this._gestures.$hold);
                     if ((domEventFound = !isNull(domEvent))) {
-                        subscribeFn = () => {
+                        subscribeFn = (): void => {
                             domEvent.trigger(ev);
                             this.__hasRelease = true;
                             this.__cancelDeferredHold = noop;
@@ -14840,7 +15041,7 @@ module plat {
 
                 // defer for tap delay in case of something like desired 
                 // dbltap zoom
-                this.__cancelDeferredTap = defer(() => {
+                this.__cancelDeferredTap = defer((): void => {
                     ev._buttons = this.__lastTouchDown._buttons;
                     domEvent.trigger(ev);
                     this.__tapCount = 0;
@@ -15308,7 +15509,7 @@ module plat {
                     _document.addEventListener(mappedEvent, this.__mappedEventListener, useCapture);
                 }
 
-                return () => {
+                return (): void => {
                     _document.removeEventListener(mappedEvent, this.__mappedEventListener, useCapture);
                 };
             }
@@ -15400,7 +15601,10 @@ module plat {
 
                 ev.touches = touches;
                 ev.offset = this.__getOffset(ev);
-                ev.timeStamp = timeStamp;
+
+                if (isUndefined(ev.timeStamp)) {
+                    ev.timeStamp = timeStamp;
+                }
 
                 return ev;
             }
@@ -15409,7 +15613,7 @@ module plat {
              * Normalizes the 'buttons' property on an IExetendedEvent. 
              * @param {plat.ui.IExtendedEvent} ev The event.
              */
-            private __normalizeButtons(ev: IExtendedEvent) {
+            private __normalizeButtons(ev: IExtendedEvent): void {
                 var buttons: number;
                 if (isNumber(ev.buttons)) {
                     if (ev.buttons === 0) {
@@ -15705,7 +15909,7 @@ module plat {
                                 if (isFunction(focusedElement.blur)) {
                                     focusedElement.blur();
                                 }
-                                postpone(() => {
+                                postpone((): void => {
                                     if (this._document.body.contains(target)) {
                                         target.click();
                                     }
@@ -15714,7 +15918,7 @@ module plat {
                             default:
                                 this.__focusedElement = target;
                                 target.focus();
-                                remover = this.addEventListener(target, 'blur', () => {
+                                remover = this.addEventListener(target, 'blur', (): void => {
                                     if (this.__isFocused(target)) {
                                         this.__focusedElement = null;
                                     }
@@ -15729,7 +15933,7 @@ module plat {
                         if (isFunction(focusedElement.blur)) {
                             focusedElement.blur();
                         }
-                        postpone(() => {
+                        postpone((): void => {
                             if (this._document.body.contains(target)) {
                                 target.click();
                             }
@@ -15738,7 +15942,7 @@ module plat {
                     case 'textarea':
                         this.__focusedElement = target;
                         target.focus();
-                        remover = this.addEventListener(target, 'blur', () => {
+                        remover = this.addEventListener(target, 'blur', (): void => {
                             if (this.__isFocused(target)) {
                                 this.__focusedElement = null;
                             }
@@ -15749,7 +15953,7 @@ module plat {
                         if (isFunction(focusedElement.blur)) {
                             focusedElement.blur();
                         }
-                        postpone(() => {
+                        postpone((): void => {
                             var _document = this._document;
                             if (_document.body.contains(target)) {
                                 var event = <MouseEvent>_document.createEvent('MouseEvents');
@@ -15763,7 +15967,7 @@ module plat {
                         if (isFunction(focusedElement.blur)) {
                             focusedElement.blur();
                         }
-                        postpone(() => {
+                        postpone((): void => {
                             if (this._document.body.contains(target) && isFunction(target.click)) {
                                 target.click();
                             }
@@ -15779,30 +15983,32 @@ module plat {
              */
             private __preventClickFromTouch(): void {
                 var _document = this._document,
-                    delayedClickRemover = defer(() => {
+                    preventDefault: (ev: Event) => boolean,
+                    delayedClickRemover = defer((): void => {
                         _document.removeEventListener('click', preventDefault, true);
                         _document.removeEventListener('mousedown', preventDefault, true);
                         _document.removeEventListener('mouseup', preventDefault, true);
-                    }, 400),
-                    preventDefault = (ev: Event) => {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        _document.removeEventListener(ev.type, preventDefault, true);
-                        if (delayedClickRemover === noop) {
-                            return false;
-                        }
-                        delayedClickRemover();
-                        delayedClickRemover = noop;
+                    }, 400);
 
-                        var touchDown = this.__lastTouchDown;
-                        if (isNull(touchDown) || this.__isFocused(touchDown.target)) {
-                            return false;
-                        }
-                        this.__handleInput(<HTMLInputElement>touchDown.target);
+                preventDefault = (ev: Event): boolean => {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    _document.removeEventListener(ev.type, preventDefault, true);
+                    if (delayedClickRemover === noop) {
                         return false;
-                    };
+                    }
+                    delayedClickRemover();
+                    delayedClickRemover = noop;
 
-                postpone(() => {
+                    var touchDown = this.__lastTouchDown;
+                    if (isNull(touchDown) || this.__isFocused(touchDown.target)) {
+                        return false;
+                    }
+                    this.__handleInput(<HTMLInputElement>touchDown.target);
+                    return false;
+                };
+
+                postpone((): void => {
                     _document.addEventListener('click', preventDefault, true);
                     _document.addEventListener('mousedown', preventDefault, true);
                     _document.addEventListener('mouseup', preventDefault, true);
@@ -16566,18 +16772,26 @@ module plat {
      * Holds all the classes and interfaces related to UI animation components for platypus.
      */
         export module animations {
+
+
             /**
              * A class used for animating elements.
              */
             export class Animator {
                 protected static _inject: any = {
-                    _compat: __Compat
+                    _compat: __Compat,
+                    _Promise: __Promise
                 };
 
                 /**
                  * Reference to the Compat injectable.
                  */
                 protected _compat: Compat;
+
+                /**
+                 * Reference to the IPromise injectable.
+                 */
+                protected _Promise: async.IPromise;
 
                 /**
                  * All elements currently being animated.
@@ -16590,65 +16804,285 @@ module plat {
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
                  */
-                animate(element: Element, key: string, options?: any): IAnimatingThenable {
-                    if (!isNode(element) || element.nodeType !== Node.ELEMENT_NODE) {
-                        return this.resolve();
-                    }
-
-                    var animation = animationInjectors[key],
-                        jsAnimation = jsAnimationInjectors[key],
-                        animationInstance: BaseAnimation;
-
-                    if (!this._compat.animationSupported || isUndefined(animation)) {
-                        if (isUndefined(jsAnimation)) {
-                            return this.resolve();
-                        }
-
-                        animationInstance = jsAnimation.inject();
-                    } else {
-                        animationInstance = animation.inject();
-                    }
-
-                    var animatingParentId = this.__parentIsAnimating(element),
-                        id = this.__setAnimationId(element, animationInstance),
-                        // instantiate needs to be called after __setAnimationId in the case that 
-                        // the same element is animating while in an animation
-                        animationPromise: IAnimationThenable<any> = animationInstance.instantiate(element, options),
-                        animatedElement = this._elements[id];
-
-                    if (!isNull(animatingParentId)) {
-                        animatedElement.animationEnd(true);
-
-                        var parent = this._elements[animatingParentId];
-                        if (isPromise(parent.promise)) {
-                            return animationPromise.then(() => {
-                                return () => {
-                                    return parent.promise;
-                                };
-                            });
-                        }
-
-                        return this.resolve();
-                    }
-
-                    this.__stopChildAnimations(element);
-                    animationPromise = animationPromise.then(() => {
-                        animatedElement.promise = null;
-                        animatedElement.animationEnd();
-                        return () => {
-                            return animationPromise;
-                        };
+                animate(element: Element, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the element with the defined animation denoted by the key.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                animate(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the element with the defined animation denoted by the key.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                animate(elements: NodeList, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the element with the defined animation denoted by the key.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                animate(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
+                animate(elements: any, key: string, options?: any): IAnimatingThenable {
+                    return this._animate(elements, key, options, {
+                        key: 'animate'
                     });
+                }
 
-                    if (isPromise(animatedElement.promise)) {
-                        return animatedElement.promise.then(() => {
-                            animationInstance.start();
-                            return (animatedElement.promise = animationPromise);
+                /**
+                 * Adds the element to the DOM and animates it with the defined animation denoted by the key.
+                 * @param {Element} element The Element to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for adding the element to the DOM.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored.
+                 * @param {any} options? Specified options for the animation.
+                 * added to the DOM and the animation is finished.
+                 */
+                enter(element: Element, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                /**
+                 * Adds the elements to the DOM and animates them with the defined animation denoted by the key.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for adding the elements to the DOM.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored.
+                 * @param {any} options? Specified options for the animation.
+                 * added to the DOM and the animation is finished.
+                 */
+                enter(element: DocumentFragment, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                /**
+                 * Adds the elements to the DOM and animates them with the defined animation denoted by the key.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for adding the elements to the DOM.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored.
+                 * @param {any} options? Specified options for the animation.
+                 * added to the DOM and the animation is finished.
+                 */
+                enter(elements: NodeList, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                /**
+                 * Adds the elements to the DOM and animates them with the defined animation denoted by the key.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for adding the elements to the DOM.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored.
+                 * @param {any} options? Specified options for the animation.
+                 * added to the DOM and the animation is finished.
+                 */
+                enter(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                enter(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
+                    return this._animate(elements, key, options, {
+                        key: 'enter',
+                        parent: parent,
+                        refChild: refChild
+                    });
+                }
+
+                /**
+                 * Animates the element with the defined animation denoted by the key and removes it from the DOM when 
+                 * the animation is finished.
+                 * @param {Element} element The Element to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the element from the DOM.
+                 * @param {any} options? Specified options for the animation.
+                 * and the element is removed from the DOM.
+                 */
+                leave(element: Element, key: string, parent: Element, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
+                 * the animation is finished.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the elements from the DOM.
+                 * @param {any} options? Specified options for the animation.
+                 * and the elements are removed from the DOM.
+                 */
+                leave(element: DocumentFragment, key: string, parent: Element, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
+                 * the animation is finished.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the elements from the DOM.
+                 * @param {any} options? Specified options for the animation.
+                 * and the elements are removed from the DOM.
+                 */
+                leave(elements: NodeList, key: string, parent: Element, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
+                 * the animation is finished.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the elements from the DOM.
+                 * @param {any} options? Specified options for the animation.
+                 * and the elements are removed from the DOM.
+                 */
+                leave(elements: Array<Node>, key: string, parent: Element, options?: any): IAnimatingThenable;
+                leave(elements: any, key: string, parent: Element, options?: any): IAnimatingThenable {
+                    return this._animate(elements, key, options, {
+                        key: 'leave',
+                        parent: parent
+                    });
+                }
+
+                /**
+                 * Removes the element from the DOM based on the parent argument, initializes it, adds it back to the 
+                 * DOM using either the refChild or the parent, and animates it with the defined animation denoted by the key.
+                 * @param {Element} element The Element to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored during DOM insertion.
+                 * @param {any} options? Specified options for the animation.
+                 * animation is finished.
+                 */
+                move(element: Element, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                /**
+                 * Removes the elements from the DOM based on the parent argument, initializes them, adds them back to the 
+                 * DOM using either the refChild or the parent, and animates them with the defined animation denoted by the key.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored during DOM insertion.
+                 * @param {any} options? Specified options for the animation.
+                 * animation is finished.
+                 */
+                move(element: DocumentFragment, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                /**
+                 * Removes the elements from the DOM based on the parent argument, initializes them, adds them back to the 
+                 * DOM using either the refChild or the parent, and animates them with the defined animation denoted by the key.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored during DOM insertion.
+                 * @param {any} options? Specified options for the animation.
+                 * animation is finished.
+                 */
+                move(elements: NodeList, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                /**
+                 * Removes the elements from the DOM based on the parent argument, initializes them, adds them back to the 
+                 * DOM using either the refChild or the parent, and animates them with the defined animation denoted by the key.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
+                 * just before itself using the insertBefore function. If this argument is specified, the parent argument 
+                 * is ignored during DOM insertion.
+                 * @param {any} options? Specified options for the animation.
+                 * animation is finished.
+                 */
+                move(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
+                move(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
+                    return this._animate(elements, key, options, {
+                        key: 'move',
+                        parent: parent,
+                        refChild: refChild
+                    });
+                }
+
+                /**
+                 * Shows the element just after initialization by removing the `plat-hide` attribute and animates them 
+                 * with the defined animation denoted by the key.
+                 * @param {Element} element The Element to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                show(element: Element, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Shows the elements just after initialization by removing the `plat-hide` attribute and animates them 
+                 * with the defined animation denoted by the key.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                show(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Shows the elements just after initialization by removing the `plat-hide` attribute and animates them 
+                 * with the defined animation denoted by the key.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                show(elements: NodeList, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Shows the elements just after initialization by removing the `plat-hide` attribute and animates them 
+                 * with the defined animation denoted by the key.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                show(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
+                show(elements: any, key: string, options?: any): IAnimatingThenable {
+                    return this._animate(elements, key, options, {
+                        key: 'show'
+                    });
+                }
+
+                /**
+                 * Animates the element with the defined animation denoted by the key and hides them by adding the 
+                 * `plat-hide` attribute after the animation is finished.
+                 * @param {Element} element The Element to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                hide(element: Element, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the elements with the defined animation denoted by the key and hides them by adding the 
+                 * `plat-hide` attribute after the animation is finished.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                hide(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the elements with the defined animation denoted by the key and hides them by adding the 
+                 * `plat-hide` attribute after the animation is finished.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                hide(elements: NodeList, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Animates the elements with the defined animation denoted by the key and hides them by adding the 
+                 * `plat-hide` attribute after the animation is finished.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 */
+                hide(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
+                hide(elements: any, key: string, options?: any): IAnimatingThenable {
+                    return this._animate(elements, key, options, {
+                        key: 'hide'
+                    });
+                }
+
+                all(promises: Array<IAnimationThenable<any>>): IAnimationThenable<void> {
+                    return new AnimationPromise((resolve) => {
+                        this._Promise.all(promises).then(() => {
+                            resolve();
                         });
-                    }
-
-                    animationInstance.start();
-                    return (animatedElement.promise = animationPromise);
+                    }).then(noop);
                 }
 
                 /**
@@ -16656,8 +17090,8 @@ module plat {
                  * AnimationPromise.
                  */
                 resolve(): IAnimatingThenable {
-                    var animationPromise = new AnimationPromise((resolve) => {
-                        resolve(<IGetAnimatingThenable>() => {
+                    var animationPromise = new AnimationPromise((resolve): void => {
+                        resolve(<IGetAnimatingThenable>(): IAnimationThenable<void> => {
                             return <IAnimationThenable<void>><any>animationPromise;
                         });
                     });
@@ -16666,11 +17100,197 @@ module plat {
                 }
 
                 /**
-                 * Checks whether or not any parent elements are animating.
-                 * @param {Node} element The element whose parents we need to check.
+                 * Animates the passed in elements with the given key and handles special animation functionality.
+                 * @param {any} elements The Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * @param {plat.ui.animations.IAnimationFunction} functionality An object containing detailed information about 
+                 * special animation functionality.
                  */
-                private __parentIsAnimating(element: Node): string {
-                    var animationId: string;
+                protected _animate(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimatingThenable {
+                    var animationInjector = animationInjectors[key],
+                        animationInstances: Array<BaseAnimation> = [],
+                        elementNodes: Array<Element> = [];
+
+                    if (!this._compat.animationSupported || isUndefined(animationInjector)) {
+                        animationInjector = jsAnimationInjectors[key];
+                        if (isUndefined(animationInjector)) {
+                            elements = this.__constructAnimatableElements(elements, <any>{ inject: noop }, elementNodes, animationInstances);
+                            this._handlePreInitFunctionality(elements, elementNodes, functionality);
+                            this._handlePostInitFunctionality(elements, elementNodes, functionality);
+                            this._handleEndFunctionality(elements, elementNodes, functionality);
+                            return this.resolve();
+                        }
+                    }
+
+                    elements = this.__constructAnimatableElements(elements, animationInjector, elementNodes, animationInstances);
+
+                    var length = elementNodes.length;
+                    if (length === 0) {
+                        this._handlePreInitFunctionality(elements, elementNodes, functionality);
+                        this._handlePostInitFunctionality(elements, elementNodes, functionality);
+                        this._handleEndFunctionality(elements, elementNodes, functionality);
+                        return this.resolve();
+                    }
+
+                    this._handlePreInitFunctionality(elements, elementNodes, functionality);
+
+                    var animationPromises: Array<IAnimationThenable<any>> = [],
+                        id = this.__setAnimationId(elementNodes, animationInstances),
+                        animatedElement = this._elements[id],
+                        i: number;
+
+                    // instantiate needs to be called after __setAnimationId in the case that 
+                    // the same element is animating while in an animation
+                    for (i = 0; i < length; ++i) {
+                        animationPromises.push(animationInstances[i].instantiate(elementNodes[i], options));
+                    }
+
+                    this._handlePostInitFunctionality(elements, elementNodes, functionality);
+
+                    var animationPromise = new AnimationPromise((resolve: any) => {
+                        this._Promise.all(animationPromises).then(resolve);
+                    });
+
+                    animationPromise.initialize(animationInstances);
+
+                    var animatingParentId = this.__isParentAnimating(elementNodes);
+                    if (!isNull(animatingParentId)) {
+                        animatedElement.animationEnd(true);
+
+                        var parent = this._elements[animatingParentId];
+                        if (isPromise(parent.promise)) {
+                            return animationPromise.then((): () => IAnimationThenable<any> => {
+                                this._handleEndFunctionality(elements, elementNodes, functionality);
+                                return (): IAnimationThenable<any> => {
+                                    return parent.promise;
+                                };
+                            });
+                        }
+
+                        return animationPromise.then(() => {
+                            this._handleEndFunctionality(elements, elementNodes, functionality);
+                            return (): IAnimationThenable<any> => {
+                                return animationPromise;
+                            };
+                        });
+                    }
+
+                    this.__stopChildAnimations(elementNodes);
+
+                    animatedElement.promise = animationPromise.then((): () => IAnimationThenable<any> => {
+                        this._handleEndFunctionality(elements, elementNodes, functionality);
+                        animatedElement.animationEnd();
+                        return (): IAnimationThenable<any> => {
+                            return animationPromise;
+                        };
+                    });
+
+                    for (i = 0; i < length; ++i) {
+                        animationInstances[i].start();
+                    }
+
+                    return animatedElement.promise;
+                }
+
+                /**
+                 * Handles different specialized functionalities immediately before the init portion of the animation cycle.
+                 * @param {Array<Node>} nodes All the nodes being animated.
+                 * @param {Array<Element>} elementNodes The animatable nodes being animated (only of type Node.ELEMENT_NODE).
+                 * @param {plat.ui.animations.IAnimationFunction} functionality The specialized animation function attributes.
+                 */
+                protected _handlePreInitFunctionality(nodes: Array<Node>, elementNodes: Array<Element>, functionality: IAnimationFunction): void {
+                    var length: number,
+                        i: number;
+                    switch (functionality.key) {
+                        case 'move':
+                            var parent = functionality.parent;
+                            if (!isNode(parent)) {
+                                break;
+                            }
+                            length = nodes.length;
+                            for (i = 0; i < length; ++i) {
+                                parent.removeChild(nodes[i]);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                /**
+                 * Handles different specialized functionalities immediately after the init portion of the animation cycle.
+                 * @param {Array<Node>} nodes All the nodes being animated.
+                 * @param {Array<Element>} elementNodes The animatable nodes being animated (only of type Node.ELEMENT_NODE).
+                 * @param {plat.ui.animations.IAnimationFunction} functionality The specialized animation function attributes.
+                 */
+                protected _handlePostInitFunctionality(nodes: Array<Node>, elementNodes: Array<Element>, functionality: IAnimationFunction): void {
+                    var length: number,
+                        i: number;
+                    switch (functionality.key) {
+                        case 'enter':
+                        case 'move':
+                            var refChild = functionality.refChild,
+                                parent = isNode(refChild) ? <Element>refChild.parentNode : functionality.parent;
+                            if (!isNode(parent)) {
+                                break;
+                            }
+                            length = nodes.length;
+                            for (i = 0; i < length; ++i) {
+                                parent.insertBefore(nodes[i], refChild);
+                            }
+                            break;
+                        case 'show':
+                            length = elementNodes.length;
+                            for (i = 0; i < length; ++i) {
+                                elementNodes[i].removeAttribute(__Hide);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                /**
+                 * Handles different specialized functionalities at the end portion of the animation cycle.
+                 * @param {Array<Node>} nodes All the nodes being animated.
+                 * @param {Array<Element>} elementNodes The animatable nodes being animated (only of type Node.ELEMENT_NODE).
+                 * @param {plat.ui.animations.IAnimationFunction} functionality The specialized animation function attributes.
+                 */
+                protected _handleEndFunctionality(nodes: Array<Node>, elementNodes: Array<Element>, functionality: IAnimationFunction): void {
+                    var length: number,
+                        i: number;
+                    switch (functionality.key) {
+                        case 'leave':
+                            var parent = functionality.parent;
+                            if (!isNode(parent)) {
+                                break;
+                            }
+                            length = nodes.length;
+                            for (i = 0; i < length; ++i) {
+                                parent.removeChild(nodes[i]);
+                            }
+                            break;
+                        case 'hide':
+                            length = elementNodes.length;
+                            for (i = 0; i < length; ++i) {
+                                elementNodes[i].setAttribute(__Hide, '');
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                /**
+                 * Checks whether or not any parent elements are animating.
+                 * @param {Array<Element>} elements The Elements whose parents we need to check.
+                 */
+                private __isParentAnimating(elements: Array<Element>): string {
+                    var animationId: string,
+                        element: Node = elements[0];
+
                     while (!isDocument(element = element.parentNode) && element.nodeType === Node.ELEMENT_NODE) {
                         if (hasClass(<HTMLElement>element, __Animating)) {
                             animationId = ((<ICustomElement>element).__plat || <ICustomElementProperty>{}).animation;
@@ -16690,52 +17310,67 @@ module plat {
                 }
 
                 /**
-                 * Sets an new, unique animation ID and denotes the element as currently being animated.
-                 * @param {Node} element The element being animated.
-                 * @param {plat.ui.animations.BaseAnimation} animationInstance The animation instance doing the animating.
+                 * Sets an new, unique animation ID and denotes the elements as currently being animated.
+                 * @param {Array<Element>} elements The Array of Elements being animated.
+                 * @param {Array<plat.ui.animations.BaseAnimation>} animationInstances The animation instances doing the animating.
                  */
-                private __setAnimationId(element: Node, animationInstance: BaseAnimation): string {
-                    var elements = this._elements,
-                        plat = (<ICustomElement>element).__plat,
-                        id: string;
+                private __setAnimationId(elements: Array<Element>, animationInstances: Array<BaseAnimation>): string {
+                    var animatedElements = this._elements,
+                        animatedElement: IAnimatedElement,
+                        plat: ICustomElementProperty,
+                        length = elements.length,
+                        id = uniqueId('animation_'),
+                        element: Element,
+                        otherId: string,
+                        i: number,
+                        removeListener = (cancel?: boolean, reanimating?: boolean): void => {
+                            var animationInstance: BaseAnimation;
+                            for (i = 0; i < length; ++i) {
+                                if (cancel === true) {
+                                    animationInstance = animationInstances[i];
+                                    animationInstance.cancel();
+                                    animationInstance.end();
+                                    if (reanimating === true) {
+                                        continue;
+                                    }
+                                }
 
-                    if (isUndefined(plat)) {
-                        (<ICustomElement>element).__plat = plat = {};
-                    }
-
-                    if (isUndefined(plat.animation)) {
-                        plat.animation = id = uniqueId('animation_');
-                    } else {
-                        id = plat.animation;
-                    }
-
-                    var animatedElement = elements[id],
-                        removeListener = (cancel?: boolean, reanimating?: boolean) => {
-                            if (cancel === true) {
-                                animationInstance.cancel();
-                                animationInstance.end();
-                                if (reanimating === true) {
-                                    return;
+                                element = elements[i];
+                                removeClass(<HTMLElement>element, __Animating);
+                                deleteProperty(animatedElements, id);
+                                deleteProperty(plat, 'animation');
+                                if (isEmpty(plat)) {
+                                    deleteProperty(element, '__plat');
                                 }
                             }
+                        };
 
-                            removeClass(<HTMLElement>element, __Animating);
-                            deleteProperty(elements, id);
-                            deleteProperty(plat, 'animation');
-                            if (isEmpty(plat)) {
-                                deleteProperty(element, '__plat');
+                    for (i = 0; i < length; ++i) {
+                        element = elements[i];
+                        plat = (<ICustomElement>element).__plat;
+
+                        if (isUndefined(plat)) {
+                            (<ICustomElement>element).__plat = plat = {};
+                        }
+
+                        if (isUndefined(plat.animation)) {
+                            plat.animation = id;
+                            addClass(<HTMLElement>element, __Animating);
+                        } else {
+                            otherId = plat.animation;
+                            plat.animation = id;
+
+                            animatedElement = animatedElements[otherId];
+                            if (!isUndefined(animatedElement)) {
+                                animatedElement.animationEnd(true, true);
+                                deleteProperty(animatedElements, otherId);
                             }
-                        };
-
-                    if (isUndefined(animatedElement)) {
-                        addClass(<HTMLElement>element, __Animating);
-                        elements[id] = {
-                            animationEnd: removeListener
-                        };
-                    } else {
-                        animatedElement.animationEnd(true, true);
-                        animatedElement.animationEnd = removeListener;
+                        }
                     }
+
+                    animatedElements[id] = {
+                        animationEnd: removeListener
+                    };
 
                     return id;
                 }
@@ -16744,30 +17379,92 @@ module plat {
                  * Forces child nodes of an animating element to stop animating.
                  * @param {Element} element The element being animated.
                  */
-                private __stopChildAnimations(element: Element): void {
-                    var elements = this._elements,
-                        customAnimationElements = Array.prototype.slice.call(element.querySelectorAll('.' + __Animating)),
-                        customAnimationElement: ICustomElement,
+                private __stopChildAnimations(elements: Array<Element>): void {
+                    var animatingElements = this._elements,
+                        slice = Array.prototype.slice,
+                        customAnimationElements: Array<ICustomElement>,
                         animatedElement: IAnimatedElement,
                         plat: ICustomElementProperty,
                         id: string;
 
-                    while (customAnimationElements.length > 0) {
-                        customAnimationElement = customAnimationElements.pop();
-                        plat = customAnimationElement.__plat || <ICustomElementProperty>{};
-                        id = plat.animation;
-                        if (isNull(id)) {
-                            continue;
-                        }
+                    for (var i = 0; i < elements.length; ++i) {
+                        customAnimationElements = slice.call(elements[i].querySelectorAll('.' + __Animating));
 
-                        animatedElement = elements[id] || <IAnimatedElement>{};
-                        if (isFunction(animatedElement.animationEnd)) {
-                            animatedElement.animationEnd(true);
+                        while (customAnimationElements.length > 0) {
+                            plat = customAnimationElements.pop().__plat || <ICustomElementProperty>{};
+                            id = plat.animation;
+                            if (isNull(id)) {
+                                continue;
+                            }
+
+                            animatedElement = animatingElements[id] || <IAnimatedElement>{};
+                            if (isFunction(animatedElement.animationEnd)) {
+                                animatedElement.animationEnd(true);
+                            }
                         }
                     }
                 }
+
+                /**
+                 * Sifts through an Array of Nodes and finds all animatable Elements and creates 
+                 * BaseAnimations for them.
+                 * @param {any} elements The Array of Nodes, DocumentFragment, or element to sift through.
+                 * @param {plat.dependency.Injector<plat.ui.animations.BaseAnimation>} animationInjector The injector to instantiate 
+                 * BaseAnimations.
+                 * @param {Array<Element>} elementNodes The Array of only animatable elements.
+                 * @param {Array<plat.ui.animations.BaseAnimation>>} animationInstances An empty Array of animation instances to add to.
+                 */
+                private __constructAnimatableElements(elements: any, animationInjector: dependency.Injector<BaseAnimation>,
+                    elementNodes: Array<Element>, animationInstances: Array<BaseAnimation>): Array<Node> {
+                    if (!isArray(elements)) {
+                        if (isDocumentFragment(elements)) {
+                            elements = Array.prototype.slice.call(elements.childNodes);
+                        } else if (isArrayLike(elements)) {
+                            elements = Array.prototype.slice.call(elements);
+                        } else if (!(isNode(elements) && elements.nodeType === Node.ELEMENT_NODE)) {
+                            return [];
+                        } else {
+                            elements = [elements];
+                        }
+                    }
+
+                    var length = elements.length,
+                        element: Node;
+
+                    for (var i = 0; i < length; ++i) {
+                        element = elements[i];
+                        if (isNode(element) && element.nodeType === Node.ELEMENT_NODE) {
+                            elementNodes.push(<Element>element);
+                            animationInstances.push(animationInjector.inject());
+                        }
+                    }
+
+                    return elements;
+                }
             }
+
             register.injectable(__Animator, Animator);
+
+            /**
+             * Describes an object representing a special animation functionality.
+             */
+            export interface IAnimationFunction {
+                /**
+                 * The special functionality key.
+                 */
+                key: string;
+
+                /**
+                 * The parent Element of the Element being animated.
+                 */
+                parent?: Element;
+
+                /**
+                 * The reference child for placing the animated Element just before 
+                 * it in the DOM.
+                 */
+                refChild?: Node;
+            }
 
             /**
              * Describes an object representing a currenlty animated element.
@@ -16798,16 +17495,21 @@ module plat {
             }
 
             /**
-             * Describes a type of Promise that can be optionally cancelled and/or disposed of. 
+             * Describes a type of Promise that can be optionally cancelled. 
              * Further, in the case where it may have a parent that is animating (which will cause it to immediately cancel and fulfill 
              * itself, it resolves with a IGetAnimatingThenable for acccessing 
              * the IAnimationThenable of the animating parent element.
              */
-            export class AnimationPromise extends async.Promise<IGetAnimatingThenable> implements IAnimatingThenable {
+            export class AnimationPromise<> extends async.Promise<IGetAnimatingThenable> implements IAnimationEssentials, IAnimatingThenable {
                 /**
-                 * The animation instance to cancel if needed.
+                 * Reference to the IPromise injectable.
                  */
-                private __animationInstance: BaseAnimation;
+                protected _Promise: async.IPromise = acquire(__Promise);
+
+                /**
+                 * An Array of animation instances linked to this promise.
+                 */
+                private __animationInstances: Array<IAnimationEssentials> = [];
 
                 /**
                  * The constructor method for the {@link plat.async.AjaxPromise}.
@@ -16825,7 +17527,7 @@ module plat {
                 constructor(resolveFunction: (resolve: (value?: IGetAnimatingThenable) => any) => void, promise?: any) {
                     super(resolveFunction);
                     if (!isNull(promise)) {
-                        this.__animationInstance = promise.__animationInstance;
+                        this.__animationInstances = promise.__animationInstances;
                     }
                 }
 
@@ -16833,18 +17535,72 @@ module plat {
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
                  * @param {plat.ui.animations.BaseAnimation} instance The animation instance for this promise.
                  */
-                initialize(instance: BaseAnimation): void {
-                    if (isObject(instance) && isNull(this.__animationInstance)) {
-                        this.__animationInstance = instance;
+                initialize(instance: BaseAnimation): void;
+                /**
+                 * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
+                 * @param {Array<plat.ui.animations.BaseAnimation>} instances The animation instances for this promise.
+                 */
+                initialize(instances: Array<BaseAnimation>): void;
+                initialize(instances: any): void {
+                    if (isEmpty(this.__animationInstances)) {
+                        if (isArray(instances)) {
+                            this.__animationInstances = instances;
+                        } else if (isObject(instances)) {
+                            this.__animationInstances = [instances];
+                        }
                     }
+                }
+
+                /**
+                 * Fires the pause method on the animation instance.
+                 * indicates that the animation has been paused.
+                 */
+                pause(): async.IThenable<void> {
+                    var animationInstances = this.__animationInstances,
+                        pausePromises: Array<async.IThenable<void>> = [],
+                        animationInstance: IAnimationEssentials,
+                        length = animationInstances.length;
+
+                    for (var i = 0; i < length; ++i) {
+                        animationInstance = animationInstances[i];
+                        if (isFunction(animationInstance.pause)) {
+                            pausePromises.push(animationInstance.pause());
+                        }
+                    }
+
+                    return this._Promise.all(pausePromises).then(noop);
+                }
+
+                /**
+                 * Fires the resume method on the animation instance.
+                 * indicates that the animation has resumed.
+                 */
+                resume(): async.IThenable<void> {
+                    var animationInstances = this.__animationInstances,
+                        resumePromises: Array<async.IThenable<void>> = [],
+                        animationInstance: IAnimationEssentials,
+                        length = animationInstances.length;
+
+                    for (var i = 0; i < length; ++i) {
+                        animationInstance = animationInstances[i];
+                        if (isFunction(animationInstance.resume)) {
+                            resumePromises.push(animationInstance.resume());
+                        }
+                    }
+
+                    return this._Promise.all(resumePromises).then(noop);
                 }
 
                 /**
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimatingThenable {
-                    var animationInstance = this.__animationInstance;
-                    if (!isNull(animationInstance)) {
+                    var animationInstances = this.__animationInstances,
+                        animationInstance: IAnimationEssentials,
+                        length = animationInstances.length;
+
+                    for (var i = 0; i < length; ++i) {
+                        animationInstance = animationInstances[i];
                         if (isFunction(animationInstance.cancel)) {
                             animationInstance.cancel();
                         }
@@ -16857,44 +17613,29 @@ module plat {
                 }
 
                 /**
-                 * A method to dispose the associated animation in order to remove any end states 
-                 * as determined by the animation class itself.
-                 */
-                dispose(): IAnimatingThenable {
-                    var animationInstance = this.__animationInstance;
-                    if (!isNull(animationInstance)) {
-                        if (isFunction(animationInstance.dispose)) {
-                            animationInstance.dispose();
-                        }
-                    }
-
-                    return this;
-                }
-
-                /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: plat.ui.animations.IParentAnimationFn) => U} onFulfilled A method called when/if the promise fulfills. 
+                 * @param {(success: plat.ui.animations.IGetAnimatingThenable) => U} onFulfilled A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: IGetAnimatingThenable) => U): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success?: IGetAnimatingThenable) => U): IAnimationThenable<U>;
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.ui.animations.IAnimationThenable<U>} onFulfilled 
+                 * @param {(success: plat.ui.animations.IGetAnimatingThenable) => plat.ui.animations.IAnimationThenable<U>} onFulfilled 
                  * A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: IGetAnimatingThenable) => IAnimationThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success?: IGetAnimatingThenable) => IAnimationThenable<U>): IAnimationThenable<U>;
                 /**
                  * Takes in two methods, called when/if the promise fulfills.
                  * next then method in the promise chain.
-                 * @param {(success: plat.ui.animations.IParentAnimationFn) => plat.async.IThenable<U>} onFulfilled 
+                 * @param {(success: plat.ui.animations.IGetAnimatingThenable) => plat.async.IThenable<U>} onFulfilled 
                  * A method called when/if the promise fulfills. 
                  * If undefined the next onFulfilled method in the promise chain will be called.
                  */
-                then<U>(onFulfilled: (success: IGetAnimatingThenable) => async.IThenable<U>): IAnimationThenable<U>;
-                then<U>(onFulfilled: (success: IGetAnimatingThenable) => any): IAnimationThenable<U> {
+                then<U>(onFulfilled: (success?: IGetAnimatingThenable) => async.IThenable<U>): IAnimationThenable<U>;
+                then<U>(onFulfilled: (success?: IGetAnimatingThenable) => any): IAnimationThenable<U> {
                     return <IAnimationThenable<U>><any>super.then<U>(onFulfilled);
                 }
 
@@ -16919,7 +17660,7 @@ module plat {
              * Describes a chaining function that fulfills when the previous link is complete and is 
              * able to be caught in the case of an error.
              */
-            export interface IAnimationThenable<R> extends async.IThenable<R> {
+            export interface IAnimationThenable<R> extends async.IThenable<R>, IAnimationEssentials {
                 /**
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
                  * @param {plat.ui.animations.BaseAnimation} instance The animation instance for this promise.
@@ -16927,15 +17668,21 @@ module plat {
                 initialize? (instance: BaseAnimation): void;
 
                 /**
+                 * Fires the pause method on the animation instance.
+                 * indicates that the animation has been paused.
+                 */
+                pause(): async.IThenable<void>;
+
+                /**
+                 * Fires the resume method on the animation instance.
+                 * indicates that the animation has resumed.
+                 */
+                resume(): async.IThenable<void>;
+
+                /**
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimationThenable<R>;
-
-                /**
-                 * A method to dispose the associated animation in order to remove any end states 
-                 * as determined by the animation class itself.
-                 */
-                dispose(): IAnimationThenable<R>;
 
                 /**
                  * Takes in two methods, called when/if the promise fulfills/rejects.
@@ -16987,7 +17734,7 @@ module plat {
 
             /**
              * Describes a type of IPromise that resolves when an animation is 
-             * finished. It can be optionally cancelled and/or disposed of. Further, in the case where it may have 
+             * finished. It can be optionally cancelled. Further, in the case where it may have 
              * a parent that is animating (which will cause it to immediately cancel and fulfill itself, it resolves  
              * with a IGetAnimatingThenable for acccessing 
              * the IAnimationThenable of the animating parent element.
@@ -16995,13 +17742,43 @@ module plat {
             export interface IAnimatingThenable extends IAnimationThenable<IGetAnimatingThenable> { }
 
             /**
+             * Describes base functional requirements for externally referenced animations.
+             */
+            export interface IAnimationEssentials {
+                /**
+                 * Fires the pause method on the animation instances.
+                 * indicates that the animation has been paused.
+                 */
+                pause(): async.IThenable<void>;
+
+                /**
+                 * Fires the resume method on the animation instances.
+                 * indicates that the animation has resumed.
+                 */
+                resume(): async.IThenable<void>;
+
+                /**
+                 * A method to cancel the associated animations.
+                 */
+                cancel(): any;
+
+                /**
+                 * A method to denote the end of an animation.
+                 */
+                end?(): void;
+            }
+
+
+
+            /**
              * A class representing a single animation for a single element.
              */
-            export class BaseAnimation {
+            export class BaseAnimation implements IAnimationEssentials {
                 protected static _inject: any = {
                     _compat: __Compat,
-                    dom: __Dom,
-                    _Exception: __ExceptionStatic
+                    _Exception: __ExceptionStatic,
+                    _Promise: __Promise,
+                    dom: __Dom
                 };
 
                 /**
@@ -17015,9 +17792,9 @@ module plat {
                 protected _compat: Compat;
 
                 /**
-                 * An Array of remove functions to dispose of event listeners.
+                 * Reference to the IPromise injectable.
                  */
-                private __eventListeners: Array<IRemoveListener> = [];
+                protected _Promise: async.IPromise;
 
                 /**
                  * The node having the animation performed on it.
@@ -17038,6 +17815,11 @@ module plat {
                  * The resolve function for the end of the animation.
                  */
                 protected _resolve: () => void;
+
+                /**
+                 * An Array of remove functions to dispose of event listeners.
+                 */
+                private __eventListeners: Array<IRemoveListener> = [];
 
                 /**
                  * A function for initializing the animation or any of its properties before start.
@@ -17065,15 +17847,23 @@ module plat {
                 }
 
                 /**
+                 * A function to be called to pause the animation.
+                 */
+                pause(): async.IThenable<void> {
+                    return this._Promise.resolve();
+                }
+
+                /**
+                 * A function to be called to resume a paused animation.
+                 */
+                resume(): async.IThenable<void> {
+                    return this._Promise.resolve();
+                }
+
+                /**
                  * A function to be called to let it be known the animation is being cancelled.
                  */
                 cancel(): void { }
-
-                /**
-                 * A function for reverting any modifications or changes that may have been made as a 
-                 * result of this animation.
-                 */
-                dispose(): void { }
 
                 /**
                  * Adds an event listener of the specified type to this animation's element. Removal of the 
@@ -17095,7 +17885,7 @@ module plat {
                         eventListeners = this.__eventListeners;
 
                     eventListeners.push(removeListener);
-                    return () => {
+                    return (): void => {
                         removeListener();
                         var index = eventListeners.indexOf(removeListener);
                         if (index !== -1) {
@@ -17115,7 +17905,7 @@ module plat {
                     this.element = <HTMLElement>element;
                     this.options = options;
 
-                    var promise = new AnimationPromise((resolve) => {
+                    var promise = new AnimationPromise((resolve): void => {
                         this._resolve = resolve;
                         this.initialize();
                     });
@@ -17126,6 +17916,8 @@ module plat {
                 }
             }
 
+
+
             /**
              * A class representing a single CSS animation for a single element.
              */
@@ -17134,7 +17926,7 @@ module plat {
                  * A set of browser compatible CSS animation events capable of being listened to.
                  */
                 private __animationEvents: IAnimationEvents = this._compat.animationEvents;
-        
+
                 /**
                  * A function to listen to the start of an animation event.
                  * @param {() => void} listener The function to call when the animation begins.
@@ -17147,7 +17939,7 @@ module plat {
 
                     return this.addEventListener(animationEvents.$animationStart, listener, false);
                 }
-        
+
                 /**
                  * A function to listen to the end of an animation event.
                  * @param {(ev?: AnimationEvent) => void} listener The function to call when the animation ends.
@@ -17160,7 +17952,7 @@ module plat {
 
                     return this.addEventListener(animationEvents.$animationEnd, listener, false);
                 }
-        
+
                 /**
                  * A function to listen to the completion of an animation iteration.
                  * @param {(ev?: AnimationEvent) => void} listener The function to call when the animation iteration completes.
@@ -17173,7 +17965,7 @@ module plat {
 
                     return this.addEventListener(animationEvents.$animationIteration, listener, false);
                 }
-        
+
                 /**
                  * A function to listen to the start of a transition event.
                  * @param {(ev?: TransitionEvent) => void} listener The function to call when the transition begins.
@@ -17186,7 +17978,7 @@ module plat {
 
                     return this.addEventListener(animationEvents.$transitionStart, listener, false);
                 }
-        
+
                 /**
                  * A function to listen to the end of a transition event.
                  * @param {(ev?: TransitionEvent) => void} listener The function to call when the transition ends.
@@ -17201,6 +17993,8 @@ module plat {
                 }
             }
 
+
+
             /**
              * A class for creating a single JavaScript animation for a single element.
              */
@@ -17210,6 +18004,8 @@ module plat {
                  */
                 isJs = true;
             }
+
+
 
             /**
              * A simple CSS Animation class that places the 'plat-animation' class on an 
@@ -17239,19 +18035,24 @@ module plat {
                  * Adds the class to start the animation.
                  */
                 initialize(): void {
-                    var className = this.className;
-                    removeClass(this.element, className + ' ' + className + __END_SUFFIX);
+                    addClass(this.element, this.className + __INIT_SUFFIX);
                 }
 
                 /**
                  * A function denoting the start of the animation.
                  */
                 start(): void {
-                    var animationId = this._compat.animationEvents.$animation,
+                    var animationEvents = this._compat.animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        this.end();
+                        return;
+                    }
+
+                    var animationId = animationEvents.$animation,
                         element = this.element,
                         className = this.className;
 
-                    requestAnimationFrameGlobal(() => {
+                    requestAnimationFrameGlobal((): void => {
                         addClass(element, className);
 
                         var computedStyle = this._window.getComputedStyle(element,(this.options || <ISimpleCssAnimationOptions>{}).pseudo),
@@ -17260,14 +18061,14 @@ module plat {
                         if (animationName === '' ||
                             animationName === 'none' ||
                             computedStyle[<any>(animationId + 'PlayState')] === 'paused') {
-                            replaceClass(element, className, className + __END_SUFFIX);
+                            this.cancel();
                             this.end();
                             return;
                         }
 
-                        this.animationEnd(() => {
-                            requestAnimationFrameGlobal(() => {
-                                replaceClass(element, className, className + __END_SUFFIX);
+                        this.animationEnd((): void => {
+                            requestAnimationFrameGlobal((): void => {
+                                this.cancel();
                                 this.end();
                             });
                         });
@@ -17275,22 +18076,46 @@ module plat {
                 }
 
                 /**
-                 * A function to be called to let it be known the animation is being cancelled. 
-                 * Replaces the animation class with the animation class and "-end" appended to it 
-                 * to allow it to jump to final state.
+                 * A function to be called to pause the animation.
                  */
-                cancel(): void {
-                    var className = this.className;
-                    replaceClass(this.element, className, className + __END_SUFFIX);
+                pause(): async.IThenable<void> {
+                    var animationEvents = this._compat.animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return this._Promise.resolve();
+                    }
+
+                    return new this._Promise<void>((resolve): void => {
+                        requestAnimationFrameGlobal((): void => {
+                            this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'paused';
+                            resolve();
+                        });
+                    });
                 }
 
                 /**
-                 * A function to remove the end state from the element. Can be useful when combining 
-                 * multiple types of animations on the same element.
+                 * A function to be called to resume a paused animation.
                  */
-                dispose(): void {
+                resume(): async.IThenable<void> {
+                    var animationEvents = this._compat.animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        return this._Promise.resolve();
+                    }
+
+                    return new this._Promise<void>((resolve): void => {
+                        requestAnimationFrameGlobal((): void => {
+                            this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'running';
+                            resolve();
+                        });
+                    });
+                }
+
+                /**
+                 * A function to be called to let it be known the animation is being cancelled. 
+                 * Removes the animation class and the animation "-init" class.
+                 */
+                cancel(): void {
                     var className = this.className;
-                    removeClass(this.element, className + ' ' + className + __END_SUFFIX);
+                    removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
                 }
             }
 
@@ -17355,6 +18180,20 @@ module plat {
             register.animation(__Leave, Leave);
 
             /**
+             * An animation control that causes an element to move as defined by the included CSS.
+             */
+            export class Move extends SimpleCssAnimation {
+                /**
+                 * The class name added to the leaving element.
+                 */
+                className = __Move;
+            }
+
+            register.animation(__Move, Move);
+
+
+
+            /**
              * A simple CSS Animation class that places the 'plat-transition' class on an 
              * element, checks for transition properties, and waits for the transition to end.
              */
@@ -17410,15 +18249,24 @@ module plat {
                  * Adds the class to enable the transition.
                  */
                 initialize(): void {
-                    addClass(this.element, this.className);
+                    addClass(this.element, this.className + __INIT_SUFFIX);
                 }
 
                 /**
                  * A function denoting the start of the animation.
                  */
                 start(): void {
-                    var transitionId = this._compat.animationEvents.$transition,
-                        computedStyle = this._window.getComputedStyle(this.element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
+                    var animationEvents = this._compat.animationEvents;
+                    if (isUndefined(animationEvents)) {
+                        this.end();
+                        return;
+                    }
+
+                    var element = this.element;
+                    addClass(element, this.className);
+
+                    var transitionId = animationEvents.$transition,
+                        computedStyle = this._window.getComputedStyle(element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
                         transitionProperty = computedStyle[<any>(transitionId + 'Property')],
                         transitionDuration = computedStyle[<any>(transitionId + 'Duration')];
 
@@ -17426,7 +18274,7 @@ module plat {
 
                     if (transitionProperty === '' || transitionProperty === 'none' ||
                         transitionDuration === '' || transitionDuration === '0s') {
-                        requestAnimationFrameGlobal(() => {
+                        requestAnimationFrameGlobal((): void => {
                             this._animate();
                             this._done(null, true);
                         });
@@ -17435,7 +18283,7 @@ module plat {
 
                     this.transitionEnd(this._done);
 
-                    requestAnimationFrameGlobal(() => {
+                    requestAnimationFrameGlobal((): void => {
                         if (this._animate()) {
                             return;
                         }
@@ -17458,21 +18306,6 @@ module plat {
                 }
 
                 /**
-                 * A function to be called to reset the last transition to its previous state.
-                 */
-                dispose(): void {
-                    var style = this.element.style || {},
-                        modifiedProperties = this._modifiedProperties,
-                        keys = Object.keys(modifiedProperties),
-                        key: any;
-
-                    while (keys.length > 0) {
-                        key = keys.pop();
-                        style[key] = modifiedProperties[key];
-                    }
-                }
-
-                /**
                  * A handler for the "transitionend" event. Will clean up the class and resolve the 
                  * promise when necessary based on the options that were input.
                  * @param {TransitionEvent} ev? The transition event object.
@@ -17489,7 +18322,8 @@ module plat {
                             }
                         }
                     }
-                    removeClass(this.element, this.className);
+                    var className = this.className;
+                    removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
                     this.end();
                 }
 
@@ -17532,6 +18366,9 @@ module plat {
 
             register.animation(__SimpleTransition, SimpleCssTransition);
 
+            /**
+             * An interface describing the options for SimpleCssTransition.
+             */
             export interface ISimpleCssTransitionOptions extends ISimpleCssAnimationOptions {
                 /**
                  * A JavaScript object with key value pairs for adjusting transition values. 
@@ -17547,6 +18384,12 @@ module plat {
         export module controls {
 
 
+            /**
+             * A control that facilitates routing between ViewControls. A Viewport is 
+             * the link between a ViewControl, a Navigator, and a Router.
+             * It registers with a router and receives route change events. It then instantiates the proper viewcontrol and appends it 
+             * to the DOM.
+             */
             export class Viewport extends TemplateControl implements routing.ISupportRouteNavigation {
                 protected static _inject: any = {
                     _Router: __RouterStatic,
@@ -17556,13 +18399,37 @@ module plat {
                     _document: __Document,
                     _managerCache: __ManagerCache,
                     _animator: __Animator,
-                    navigator: __NavigatorInstance
+                    _navigator: __NavigatorInstance
                 };
 
-                protected _Router: typeof routing.Router;
+                /**
+                 * Viewports contain ViewControls.
+                 */
+                controls: Array<ViewControl>;
+
+                /**
+                 * Used to grab the current Router instance.
+                 */
+                protected _Router: routing.IRouterStatic;
+
+                /**
+                 * The Promise injectable.
+                 */
                 protected _Promise: async.IPromise;
+
+                /**
+                 * The Injector for getting instances of ViewControls.
+                 */
                 protected _Injector: typeof dependency.Injector;
+
+                /**
+                 * Used for compiling and linking a ViewControl's template.
+                 */
                 protected _ElementManagerFactory: processing.IElementManagerFactory;
+
+                /**
+                 * The document.
+                 */
                 protected _document: Document;
 
                 /**
@@ -17576,36 +18443,64 @@ module plat {
                 protected _animator: animations.Animator;
 
                 /**
-                 * A promise used for disposing the end state of the previous animation prior to starting a new one.
+                 * The navigator associated with this Viewport.
                  */
-                protected _animationPromise: animations.IAnimationThenable<animations.IGetAnimatingThenable>;
+                protected _navigator: routing.Navigator;
 
-                navigator: routing.Navigator;
-                router: routing.Router;
-                parentRouter: routing.Router;
-                controls: Array<ViewControl>;
-                nextInjector: dependency.Injector<ViewControl>;
-                nextView: ViewControl;
+                /**
+                 * The router associated with this Viewport.
+                 */
+                protected _router: routing.Router;
 
-                initialize() {
-                    var router = this.router = this._Router.currentRouter(),
+                /**
+                 * The parent router associated with this Viewport.
+                 */
+                protected _parentRouter: routing.Router;
+
+                /**
+                 * The next injector used to instantiate the next ViewControl during navigation.
+                 */
+                protected _nextInjector: dependency.Injector<ViewControl>;
+
+                /**
+                 * The next ViewControl to which to navigate.
+                 */
+                protected _nextView: ViewControl;
+
+                /**
+                 * Allows the viewport to initialize its navigator with the current 
+                 * router.
+                 */
+                initialize(): void {
+                    var router = this._router = this._Router.currentRouter(),
                         parentViewport = this._getParentViewport(),
                         parentRouter: routing.Router;
 
-                    if (!(isNull(parentViewport) || isNull(parentViewport.router))) {
-                        parentRouter = this.parentRouter = parentViewport.router;
+                    if (!(isNull(parentViewport) || isNull(parentViewport._router))) {
+                        parentRouter = this._parentRouter = parentViewport._router;
                         parentRouter.addChild(router);
                     }
 
-                    this.navigator.initialize(router);
+                    this._navigator.initialize(router);
                 }
 
-                loaded() {
-                    this._Promise.resolve(this.router.finishNavigating).then(() => {
-                        this.router.register(this);
+                /**
+                 * The viewport registers itself with its router, notifying the 
+                 * router that it is ready to receive navigation events.
+                 */
+                loaded(): void {
+                    this._Promise.resolve(this._router.finishNavigating).then((): void => {
+                        this._router.register(this);
                     });
                 }
 
+                /**
+                 * The viewport's router has matched a route and is asking the viewport if it is safe to 
+                 * navigate. Here the viewport can instantiate the new view and ask it if it is safe to 
+                 * navigate to the view.
+                 * @param {plat.routing.IRouteInfo} routeInfo Contains the information necessary to instantiate 
+                 * the view and feed it the route parameters/query.
+                 */
                 canNavigateTo(routeInfo: routing.IRouteInfo): async.IThenable<boolean> {
                     var getRouter = this._Router.currentRouter,
                         currentRouter = getRouter(),
@@ -17613,33 +18508,37 @@ module plat {
                         injector: dependency.Injector<ViewControl> = this._Injector.getDependency(routeInfo.delegate.view),
                         view = injector.inject(),
                         parameters = routeInfo.parameters,
-                        resolve = this._Promise.resolve.bind(this._Promise),
                         nextRouter = getRouter();
 
                     if (!isObject(view)) {
-                        return resolve();
+                        return this._Promise.resolve(null);
                     }
 
                     if (currentRouter !== nextRouter) {
-                        nextRouter.initialize(this.router);
+                        nextRouter.initialize(this._router);
                         var navigator: routing.Navigator = acquire(__NavigatorInstance);
                         view.navigator = navigator;
                         navigator.initialize(nextRouter);
                     } else {
-                        view.navigator = this.navigator;
+                        view.navigator = this._navigator;
                     }
 
                     if (isFunction(view.canNavigateTo)) {
                         response = view.canNavigateTo(parameters, routeInfo.query);
                     }
 
-                    return resolve(response).then((canNavigateTo: boolean) => {
-                        this.nextInjector = injector;
-                        this.nextView = view;
+                    return this._Promise.resolve(response).then((canNavigateTo: boolean): boolean => {
+                        this._nextInjector = injector;
+                        this._nextView = view;
                         return canNavigateTo;
                     });
                 }
 
+                /**
+                 * The viewport's router has matched a route and is asking the viewport if it is safe to 
+                 * navigate from the current state. Here the viewport can query the current ViewControl and 
+                 * ask it if it is safe to navigate from its current state.
+                 */
                 canNavigateFrom(): async.IThenable<boolean> {
                     var view = this.controls[0],
                         response: any = true;
@@ -17651,9 +18550,17 @@ module plat {
                     return this._Promise.resolve(response);
                 }
 
-                navigateTo(routeInfo: routing.IRouteInfo) {
+                /**
+                 * The viewport's router has matched a route and determined that it is safe to navigate to the 
+                 * next view. The viewport will now go through the steps to compile and link the next view then append 
+                 * it to the DOM.
+                 * @param {plat.routing.IRouteInfo} routeInfo Contains the information necessary to instantiate 
+                 * the view and feed it the route parameters/query.
+                 * new ViewControl has finished instantiating.
+                 */
+                navigateTo(routeInfo: routing.IRouteInfo): async.IThenable<void> {
                     var resolve = this._Promise.resolve.bind(this._Promise),
-                        injector = this.nextInjector || this._Injector.getDependency(routeInfo.delegate.view),
+                        injector = this._nextInjector || this._Injector.getDependency(routeInfo.delegate.view),
                         nodeMap = this._createNodeMap(injector),
                         element = this.element,
                         node = nodeMap.element,
@@ -17661,14 +18568,7 @@ module plat {
                         query = routeInfo.query,
                         control = <ViewControl>nodeMap.uiControlNode.control;
 
-                    element.appendChild(node);
-
-                    var animationPromise = this._animationPromise;
-                    if (isPromise(animationPromise)) {
-                        animationPromise.dispose();
-                    }
-
-                    this._animationPromise = this._animator.animate(this.element, __Enter);
+                    this._animator.enter(node, __Enter, this.element);
 
                     var viewportManager = this._managerCache.read(this.uid),
                         manager = this._ElementManagerFactory.getInstance();
@@ -17681,10 +18581,15 @@ module plat {
                     }
 
                     manager.setUiControlTemplate();
-                    return manager.templatePromise;
+                    return manager.observeRootContext(control, manager.fulfillAndLoad);
                 }
 
-                navigateFrom() {
+                /**
+                 * The viewport's router has matched a route and determined that it is safe to navigate to the 
+                 * next view. It is now safe for the viewport to dispose of the current state.
+                 * has finished navigating from the current state.
+                 */
+                navigateFrom(): async.IThenable<void> {
                     var view = this.controls[0],
                         promise: async.IThenable<void>;
 
@@ -17696,18 +18601,26 @@ module plat {
 
                     return promise
                         .catch(noop)
-                        .then(() => {
+                        .then((): void => {
                             Control.dispose(view);
                         });
                 }
 
-                dispose() {
-                    this.router.unregister(this);
-                    this.navigator.dispose();
+                /**
+                 * The viewport is going out of scope, so it needs to unregister from its router in order to stop receiving routing 
+                 * events.
+                 */
+                dispose(): void {
+                    this._router.unregister(this);
+                    this._navigator.dispose();
                 }
 
-                protected _createNodeMap(injector: dependency.Injector<ViewControl>) {
-                    var control = this.nextView || injector.inject(),
+                /**
+                 * Creates an INodeMap for a ViewControl in order to compile it.
+                 * @param {plat.dependency.Injector<plat.ui.ViewControl>} The injector used to instantiate the ViewControl.
+                 */
+                protected _createNodeMap(injector: dependency.Injector<ViewControl>): processing.INodeMap {
+                    var control = this._nextView || injector.inject(),
                         doc = this._document,
                         type = injector.name,
                         replaceWith = control.replaceWith,
@@ -17731,6 +18644,10 @@ module plat {
                     };
                 }
 
+                /**
+                 * Finds the first Viewport in the parent chain. This is useful in order to properly initialize the viewport's 
+                 * router as a child of the parent viewport's router.
+                 */
                 protected _getParentViewport(): Viewport {
                     var viewport = this.parent,
                         type = this.type;
@@ -17744,6 +18661,8 @@ module plat {
             }
 
             register.control(__Viewport, Viewport);
+
+
 
             /**
              * A TemplateControl for easily reusing a 
@@ -17893,14 +18812,14 @@ module plat {
 
                     var controlPromise: async.IThenable<TemplateControl>;
                     if (isPromise(template)) {
-                        controlPromise = template.catch((error: Error) => {
+                        controlPromise = template.catch((error: Error): async.IThenable<DocumentFragment> => {
                             if (isNull(error)) {
                                 return TemplateControl.determineTemplate(this, url);
                             }
-                        }).then((template: DocumentFragment) => {
-                                this.bindableTemplates.add(id, template.cloneNode(true));
-                                return this;
-                            });
+                        }).then((template: DocumentFragment): TemplateControl => {
+                            this.bindableTemplates.add(id, template.cloneNode(true));
+                            return this;
+                        });
                     } else {
                         this.bindableTemplates.add(id, template.cloneNode(true));
 
@@ -17919,7 +18838,7 @@ module plat {
                  */
                 protected _waitForTemplateControl(templatePromise: async.IThenable<Template>): void {
                     var _Exception: IExceptionStatic = this._Exception;
-                    templatePromise.then((templateControl: Template) => {
+                    templatePromise.then((templateControl: Template): async.IThenable<DocumentFragment> => {
                         if (!(isNull(this._url) || (this._url === templateControl._url))) {
                             _Exception.warn('The specified url: ' + this._url +
                                 ' does not match the original ' + this.type + ' with id: ' +
@@ -17929,11 +18848,11 @@ module plat {
 
                         this.__mapBindableTemplates(templateControl);
                         return this.bindableTemplates.bind(this._id);
-                    }).then((clone) => {
+                    }).then((clone: DocumentFragment): void => {
                             var endNode = this.endNode;
                             insertBefore(endNode.parentNode, clone, endNode);
-                        }).catch((error) => {
-                            postpone(() => {
+                        }).catch((error: any): void => {
+                            postpone((): void => {
                                 _Exception.warn('Problem resolving ' + this.type + ' url: ' +
                                     error.response, _Exception.TEMPLATE);
                             });
@@ -17972,6 +18891,8 @@ module plat {
 
             register.control(__Template, Template);
 
+
+
             /**
              * A TemplateControl for inner HTML that contains controls  
              * and/or markup and not having it bind or evaluate.
@@ -17993,6 +18914,8 @@ module plat {
             }
 
             register.control(__Ignore, Ignore);
+
+
 
             /**
              * A TemplateControl for repeating a block of 
@@ -18065,9 +18988,14 @@ module plat {
                 protected _blockLength: any = 0;
 
                 /**
-                 * An array to aggregate all current animation promises.
+                 * An animation promise for delaying disposal prior to an animation finishing.
                  */
-                protected _currentAnimations: Array<animations.IAnimationThenable<any>> = [];
+                protected _animationThenable: async.IThenable<void>;
+
+                /**
+                 * The current animation promise.
+                 */
+                protected _currentAnimation: animations.IAnimationThenable<any>;
 
                 /**
                  * Whether or not the Array listener has been set.
@@ -18083,7 +19011,7 @@ module plat {
                  */
                 constructor() {
                     super();
-                    this.itemsLoaded = new this._Promise<void>((resolve) => {
+                    this.itemsLoaded = new this._Promise<void>((resolve): void => {
                         this.__resolveFn = resolve;
                     });
                 }
@@ -18092,8 +19020,7 @@ module plat {
                  * Creates a bindable template with the control element's childNodes (innerHTML).
                  */
                 setTemplate(): void {
-                    var childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
-                    this.bindableTemplates.add('item', childNodes);
+                    this.bindableTemplates.add('item', this.element.childNodes);
                 }
 
                 /**
@@ -18103,20 +19030,16 @@ module plat {
                  * @param {Array<any>} oldValue? The old Array
                  */
                 contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
-                    if (!isArray(newValue)) {
-                        var _Exception: IExceptionStatic = this._Exception;
+                    if (isEmpty(newValue)) {
+                        this._removeItems(this.controls.length);
+                        return;
+                    } else if (!isArray(newValue)) {
+                        var _Exception = this._Exception;
                         _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
                         return;
                     }
 
                     this._setListener();
-
-                    if (newValue.length === 0) {
-                        this._removeItems(this.controls.length);
-                        return;
-                    }
-
-                    this._setAliases();
                     this._executeEvent({
                         method: 'splice',
                         arguments: null,
@@ -18135,7 +19058,7 @@ module plat {
 
                     if (!isArray(context)) {
                         if (!isNull(context)) {
-                            var _Exception: IExceptionStatic = this._Exception;
+                            var _Exception = this._Exception;
                             _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
                         }
                         return;
@@ -18156,7 +19079,7 @@ module plat {
                 /**
                  * Sets the alias tokens to use for all the items in the ForEach context array.
                  */
-                protected _setAliases() {
+                protected _setAliases(): void {
                     var optionsObj = this.options || <observable.IObservableProperty<IForEachOptions>>{},
                         options = optionsObj.value || <IForEachOptions>{},
                         aliases = options.aliases;
@@ -18187,19 +19110,16 @@ module plat {
                  * @param {boolean} animate? Whether or not to animate the new items
                  */
                 protected _addItems(numberOfItems: number, index: number, animate?: boolean): async.IThenable<void> {
-                    var context = this.context,
-                        max = +(index + numberOfItems);
-                    if (!isArray(context) || !isNumber(max) || (context.length < max)) {
-                        return;
-                    }
+                    var max = +(index + numberOfItems),
+                        promises: Array<async.IThenable<DocumentFragment>> = [],
+                        initialIndex = index;
 
-                    var promises: Array<async.IThenable<DocumentFragment>> = [];
                     while (index < max) {
                         promises.push(this._bindItem(index++));
                     }
 
                     if (promises.length > 0) {
-                        this.itemsLoaded = this._Promise.all(promises).then<void>((templates) => {
+                        this.itemsLoaded = this._Promise.all(promises).then<void>((templates): void => {
                             this._setBlockLength(templates);
 
                             if (animate === true) {
@@ -18211,13 +19131,15 @@ module plat {
                                 this._appendItems(templates);
                             }
 
+                            this._updateResource(initialIndex - 1);
+
                             if (isFunction(this.__resolveFn)) {
                                 this.__resolveFn();
                                 this.__resolveFn = null;
                             }
-                        }).catch((error) => {
-                                postpone(() => {
-                                    var _Exception: IExceptionStatic = this._Exception;
+                        }).catch((error: any): void => {
+                                postpone((): void => {
+                                    var _Exception = this._Exception;
                                     _Exception.warn(error, _Exception.BIND);
                                 });
                             });
@@ -18226,7 +19148,7 @@ module plat {
                             this.__resolveFn();
                             this.__resolveFn = null;
                         }
-                        this.itemsLoaded = new this._Promise<void>((resolve) => {
+                        this.itemsLoaded = new this._Promise<void>((resolve): void => {
                             this.__resolveFn = resolve;
                         });
                     }
@@ -18252,21 +19174,7 @@ module plat {
                         return;
                     }
 
-                    var _animator = this._animator,
-                        childNodes: Array<Element> = Array.prototype.slice.call(item.childNodes),
-                        childNode: Element;
-
-                    insertBefore(this._container, item);
-
-                    var currentAnimations = this._currentAnimations;
-                    while (childNodes.length > 0) {
-                        childNode = childNodes.shift();
-                        if (childNode.nodeType === Node.ELEMENT_NODE) {
-                            currentAnimations.push(_animator.animate(childNode, key).then(() => {
-                                currentAnimations.shift();
-                            }));
-                        }
-                    }
+                    this._animator.enter(item, __Enter, this._container);
                 }
 
                 /**
@@ -18274,23 +19182,14 @@ module plat {
                  * @param {number} numberOfItems The number of items to remove.
                  */
                 protected _removeItems(numberOfItems: number): void {
-                    for (var i = 0; i < numberOfItems; ++i) {
-                        this._removeItem();
+                    var dispose = TemplateControl.dispose,
+                        controls = this.controls;
+
+                    while (numberOfItems-- > 0) {
+                        dispose(controls.pop());
                     }
 
-                    if (this.controls.length > 0) {
-                        this._updateResources();
-                    }
-                }
-
-                /**
-                 * Removes an item from the control's element.
-                 */
-                protected _removeItem(): void {
-                    var controls = this.controls,
-                        length = controls.length - 1;
-
-                    TemplateControl.dispose(controls[length]);
+                    this._updateResource(controls.length - 1);
                 }
 
                 /**
@@ -18313,16 +19212,17 @@ module plat {
                 }
 
                 /**
-                 * Updates the control's children resource objects when 
+                 * Updates a child resource object when 
                  * the array changes.
+                 * @param {number} index The control whose resources we will update.
                  */
-                protected _updateResources(): void {
-                    var controls = this.controls,
-                        length = controls.length;
-
-                    for (var i = 0; i < length; ++i) {
-                        controls[i].resources.add(this._getAliases(i));
+                protected _updateResource(index: number): void {
+                    var controls = this.controls;
+                    if (index <= 0 || index >= controls.length) {
+                        return;
                     }
+
+                    controls[index].resources.add(this._getAliases(index));
                 }
 
                 /**
@@ -18369,7 +19269,7 @@ module plat {
                     var isEven = (index & 1) === 0,
                         aliases: IObject<ui.IResource> = {},
                         _aliases = this._aliases,
-                        type = __OBSERVABLE_RESOURCE;
+                        type = __LITERAL_RESOURCE;
 
                     aliases[_aliases.index] = {
                         value: index,
@@ -18412,9 +19312,8 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
                  */
                 protected _pop(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._animateItems(ev.newArray.length, 1, __Leave).then(() => {
-                        this._removeItems(1);
-                    });
+                    this._animateItems(ev.newArray.length, 1, __Leave, true);
+                    this._removeItems(1);
                 }
 
                 /**
@@ -18422,7 +19321,7 @@ module plat {
                  * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
                  */
                 protected _preshift(ev: observable.IPreArrayChangeInfo): void {
-                    this._animateItems(0, 1, __Leave, true);
+                    this._animationThenable = this._animateItems(0, 1, __Leave, true);
                 }
 
                 /**
@@ -18430,7 +19329,9 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
                  */
                 protected _shift(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._removeItems(1);
+                    this._Promise.resolve(this._animationThenable).then(() => {
+                        this._removeItems(1);
+                    });
                 }
 
                 /**
@@ -18438,17 +19339,19 @@ module plat {
                  * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
                  */
                 protected _presplice(ev: observable.IPreArrayChangeInfo): void {
-                    var arguments = ev.arguments,
-                        addCount = arguments.length - 2,
-                        deleteCount = arguments[1];
+                    var args = ev.arguments,
+                        addCount = args.length - 2;
 
                     // check if adding more items than deleting
-                    if (addCount >= deleteCount) {
-                        this._animateItems(arguments[0], addCount, __Enter);
+                    if (addCount > 0) {
+                        this._animateItems(args[0], addCount, __Enter);
                         return;
                     }
 
-                    this._animateItems(arguments[0], deleteCount, __Leave, true);
+                    var deleteCount = args[1];
+                    if (deleteCount > 0) {
+                        this._animationThenable = this._animateItems(args[0] + addCount, deleteCount - addCount, __Leave, true);
+                    }
                 }
 
                 /**
@@ -18459,11 +19362,13 @@ module plat {
                     var oldLength = this.controls.length,
                         newLength = ev.newArray.length;
 
-                    if (newLength > oldLength) {
-                        this._addItems(newLength - oldLength, oldLength);
-                    } else if (oldLength > newLength) {
-                        this._removeItems(oldLength - newLength);
-                    }
+                    this._Promise.resolve(this._animationThenable).then(() => {
+                        if (newLength > oldLength) {
+                            this._addItems(newLength - oldLength, oldLength);
+                        } else if (oldLength > newLength) {
+                            this._removeItems(oldLength - newLength);
+                        }
+                    });
                 }
 
                 /**
@@ -18525,19 +19430,11 @@ module plat {
                  */
                 protected _initiateAnimation(startNode: number, endNode: number, key: string, clone?: boolean,
                     cancel?: boolean): async.IThenable<void> {
-                    var animationPromises: Array<animations.IAnimatingThenable> = [],
-                        currentAnimations = this._currentAnimations,
-                        length = currentAnimations.length;
-
-                    if (length === 0 || cancel === false) {
+                    if (cancel === false || isNull(this._currentAnimation)) {
                         return this.__handleAnimation(startNode, endNode, key, clone);
                     }
 
-                    while (length-- > 0) {
-                        animationPromises.push(currentAnimations[length].cancel());
-                    }
-
-                    return this._Promise.all(animationPromises).then(() => {
+                    return this._currentAnimation.cancel().then(() => {
                         return this.__handleAnimation(startNode, endNode, key, clone);
                     });
                 }
@@ -18549,40 +19446,29 @@ module plat {
                  * @param {string} key The animation key/type
                  * @param {boolean} clone Whether to clone the items and animate the clones or simply animate the items itself.
                  */
-                private __handleAnimation(startNode: number, endNode: number, key: string, clone: boolean): async.IThenable<void> {
+                private __handleAnimation(startNode: number, endNode: number, key: string, clone: boolean): animations.IAnimationThenable<any> {
                     var container = this._container,
-                        nodes: Array<Node> = Array.prototype.slice.call(container.childNodes, startNode, endNode),
-                        node: Node,
-                        firstNode = nodes[0],
-                        _animator = this._animator,
-                        currentAnimations = this._currentAnimations,
-                        callback: () => void,
-                        animationPromise: animations.IAnimationThenable<void>;
+                        slice = Array.prototype.slice,
+                        nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
 
-                    clone = clone === true;
-                    while (nodes.length > 0) {
-                        node = nodes.shift();
-                        if (node.nodeType === Node.ELEMENT_NODE) {
-                            if (clone) {
-                                node = node.cloneNode(true);
-                                container.insertBefore(node, firstNode);
-                                // bind callback to current cloned node due to loop
-                                callback = function () {
-                                    currentAnimations.shift();
-                                    container.removeChild(this);
-                                }.bind(node);
-                            } else {
-                                callback = () => {
-                                    currentAnimations.shift();
-                                };
+                    if (nodes.length === 0) {
+                        return this._animator.resolve();
+                    } else if (clone === true) {
+                        var referenceNode = nodes[nodes.length - 1].nextSibling,
+                            animatedNodes = <DocumentFragment>appendChildren(nodes),
+                            clonedNodes = animatedNodes.cloneNode(true),
+                            removeNodes = slice.call(clonedNodes.childNodes);
+
+                        container.insertBefore(clonedNodes, referenceNode);
+                        return this._currentAnimation = this._animator.animate(removeNodes, key).then(() => {
+                            while (removeNodes.length > 0) {
+                                container.removeChild(removeNodes.pop());
                             }
-
-                            animationPromise = _animator.animate(<Element>node, key).then(callback);
-                            currentAnimations.push(animationPromise);
-                        }
+                            container.insertBefore(animatedNodes, referenceNode);
+                        });
                     }
 
-                    return animationPromise;
+                    return this._currentAnimation = this._animator.animate(nodes, key);
                 }
             }
 
@@ -18635,6 +19521,430 @@ module plat {
                 last?: string;
             }
 
+
+
+            /**
+             * A special type of TemplateControl for managing meta tags, useful for SEO. This 
+             * control will not exist unless you register it as a control with the name 'head'. It is static, so you can inject 
+             * it into other components and get access to its properties.
+             */
+            export class Head extends plat.ui.TemplateControl {
+                protected static _inject: any = {
+                    _document: __Document,
+                    _browser: __Browser
+                };
+
+                /**
+                 * This control is specifically for use with the <head /> HTML element.
+                 */
+                element: HTMLHeadElement;
+
+                /**
+                 * Rather than be replaced by a 'div', this control wants to be a 'head' element.
+                 */
+                replaceWith = __Head;
+
+                /**
+                 * The Document injectable.
+                 */
+                protected _document: Document;
+
+                /**
+                 * The Browser injectable.
+                 */
+                protected _browser: web.Browser;
+
+                /**
+                 * A reference to the the <title /> element.
+                 */
+                protected _titleElement: HTMLTitleElement;
+
+                /**
+                 * A reference to the the <meta property="og:title" /> element.
+                 */
+                protected _ogTitleElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta name="twitter:title" /> element.
+                 */
+                protected _twitterTitleElement: HTMLMetaElement;
+        
+                /**
+                 * A reference to the the <meta name="description" /> element.
+                 */
+                protected _descriptionElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta property="og:description" /> element.
+                 */
+                protected _ogDescriptionElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta name="twitter:description" /> element.
+                 */
+                protected _twitterDescriptionElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta property="og:url" /> element.
+                 */
+                protected _ogUrlElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta name="twitter:url" /> element.
+                 */
+                protected _twitterUrlElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta name="author" /> element.
+                 */
+                protected _authorElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <link rel="author" /> element.
+                 */
+                protected _googleAuthorElement: HTMLLinkElement;
+
+                /**
+                 * A reference to the the <meta property="article:author" /> element.
+                 */
+                protected _fbAuthorElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta property="twitter:creator" /> element.
+                 */
+                protected _twitterCreatorElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta property="og:image" /> element.
+                 */
+                protected _ogImageElement: HTMLMetaElement;
+
+                /**
+                 * A reference to the the <meta name="twitter:image" /> element.
+                 */
+                protected _twitterImageElement: HTMLMetaElement;
+
+                /**
+                 * Registers for the navigating event to know when to remove all the elements so they 
+                 * don't bleed onto the next page.
+                 */
+                initialize(): void {
+                    this.on(__navigating,(): void => {
+                        this._removeAllElements();
+                    });
+                }
+
+                /**
+                 * Makes sure all the elements exist.
+                 */
+                setTemplate(): void {
+                    var meta = __Meta,
+                        title = __Title,
+                        link = __MetaLink,
+                        author = __Author,
+                        creator = __Creator,
+                        image = __MetaImage,
+                        description = __Description,
+                        url = __Url,
+                        og = __OpenGraph,
+                        article = __Article,
+                        twitter = __Twitter;
+
+                    this._titleElement = this._createElement<HTMLTitleElement>(title);
+                    this._ogTitleElement = this._createElement<HTMLMetaElement>(meta, og + title);
+                    this._twitterTitleElement = this._createElement<HTMLMetaElement>(meta, twitter + title);
+
+                    this._descriptionElement = this._createElement<HTMLMetaElement>(meta, description);
+                    this._ogDescriptionElement = this._createElement<HTMLMetaElement>(meta, og + description);
+                    this._twitterDescriptionElement = this._createElement<HTMLMetaElement>(meta, twitter + description);
+
+                    this._ogUrlElement = this._createElement<HTMLMetaElement>(meta, og + url);
+                    this._twitterUrlElement = this._createElement<HTMLMetaElement>(meta, twitter + url);
+
+                    this._authorElement = this._createElement<HTMLMetaElement>(meta, author);
+                    this._googleAuthorElement = this._createElement<HTMLLinkElement>(link, author);
+                    this._fbAuthorElement = this._createElement<HTMLMetaElement>(meta, article + author);
+                    this._twitterCreatorElement = this._createElement<HTMLMetaElement>(meta, twitter + creator);
+
+                    this._ogImageElement = this._createElement<HTMLMetaElement>(meta, og + image);
+                    this._twitterImageElement = this._createElement<HTMLMetaElement>(meta, twitter + image);
+                }
+
+                /**
+                 * Gets the title or sets the title elements.
+                 * @param {string} title? If supplied, the title elements will be set to this value.
+                 */
+                title(title?: string): string {
+                    if (!isString(title)) {
+                        return this._getContent(this._titleElement);
+                    }
+
+                    this._titleElement.innerText = title;
+                    this._setContent([
+                        this._ogTitleElement,
+                        this._twitterTitleElement
+                    ], title);
+
+                    return title;
+                }
+
+                /**
+                 * Gets the description or sets the description elements.
+                 * @param {string} description? If supplied, the description elements will be set to this value.
+                 */
+                description(description?: string): string {
+                    if (!isString(description)) {
+                        return this._getContent(this._descriptionElement);
+                    }
+
+                    this._setContent([
+                        this._descriptionElement,
+                        this._ogDescriptionElement,
+                        this._twitterDescriptionElement
+                    ], description);
+
+                    return description;
+                }
+
+                /**
+                 * Gets the url or sets the url elements.
+                 * @param {string} url? If supplied, the url elements will be set to this value.
+                 */
+                url(url?: string): string {
+                    if (!isString(url)) {
+                        return this._getContent(this._ogUrlElement);
+                    }
+
+                    this._setContent([
+                        this._ogUrlElement,
+                        this._twitterUrlElement
+                    ], url);
+
+                    return url;
+                }
+
+                /**
+                 * Gets the author or sets the author elements.
+                 * @param {string} author? If supplied, the author elements will be set to this value. The value should be the 
+                 * display name of the content author.
+                 */
+                author(author?: string): string {
+                    if (!isString(author)) {
+                        return this._getContent(this._authorElement);
+                    }
+
+                    this._setContent([
+                        this._authorElement,
+                    ], author);
+
+                    return author;
+                }
+
+                /**
+                 * Gets the author or sets the author elements.
+                 * @param {string} author? If supplied, the author elements will be set to this value. The value should be the 
+                 * Google+ profile url for the author.
+                 */
+                googleAuthor(author?: string): string {
+                    if (!isString(author)) {
+                        return this._getContent(this._googleAuthorElement);
+                    }
+
+                    this._setContent([
+                        this._googleAuthorElement,
+                    ], author);
+
+                    return author;
+                }
+
+                /**
+                 * Gets the author or sets the author elements. This method is for use with the Facebook profile authors.
+                 * @param {string} author? If supplied, the author elements will be set to this value. The value should be 
+                 * the `https://www.facebook.com/username` account, and make sure the user supports followers.
+                 */
+                fbAuthor(author?: string): string {
+                    if (!isString(author)) {
+                        return this._getContent(this._fbAuthorElement);
+                    }
+
+                    this._setContent([
+                        this._fbAuthorElement
+                    ], author);
+
+                    return author;
+                }
+
+                /**
+                 * Gets the creator or sets the creator elements
+                 * @param {string} creator? If supplied, the creator elements will be set to this value. The 
+                 * value should be the twitter `@username` of the creator
+                 */
+                twitterCreator(creator?: string): string {
+                    if (!isString(creator)) {
+                        return this._getContent(this._twitterCreatorElement);
+                    }
+
+                    this._setContent([
+                        this._twitterCreatorElement
+                    ], creator);
+
+                    return creator;
+                }
+
+                /**
+                 * Gets the image or sets the image elements.
+                 * @param {string} image? If supplied, the image elements will be set to this value.
+                 */
+                image(image?: string): string {
+                    if (!isString(image)) {
+                        return this._getContent(this._ogImageElement);
+                    }
+
+                    this._setContent([
+                        this._ogImageElement,
+                        this._twitterImageElement
+                    ], image);
+
+                    return image;
+                }
+
+                /**
+                 * Sets the url elements initially.
+                 */
+                loaded(): void {
+                    this.url(this._browser.url());
+                }
+
+                /**
+                 * Sets the url elements.
+                 */
+                navigated(url: string): void {
+                    this.url(url);
+                }
+
+                /**
+                 * Gets the innerText/content/href of an element.
+                 * @param {HTMLElement} element The element from which to get the content.
+                 */
+                protected _getContent(element: HTMLElement): string {
+                    var nodeName = element.nodeName.toLowerCase();
+
+                    if (nodeName === __Title) {
+                        return element.innerText;
+                    } else if (nodeName === __Meta) {
+                        return element.getAttribute(__Content);
+                    } else if (nodeName === __MetaLink) {
+                        return element.getAttribute(__MetaHref);
+                    }
+                }
+
+                /**
+                 * Sets the innerText/content/href of a list elements. If an element is not in the DOM, it 
+                 * is added to the dom right after the <title /> element.
+                 * @param {Array<HTMLElement>} elements The elements for which to set values.
+                 */
+                protected _setContent(elements: Array<HTMLElement>, value: string): void {
+                    var nodes: Array<HTMLElement> = Array.prototype.slice.call(this.element.children),
+                        length = elements.length,
+                        content = __Content,
+                        href = __MetaHref,
+                        el: HTMLHeadElement = this.element,
+                        sibling = this._titleElement.nextSibling,
+                        dom = this.dom,
+                        nodeName: string,
+                        element: HTMLElement;
+
+                    for (var i = 0; i < elements.length; ++i) {
+                        element = elements[i];
+                        nodeName = element.nodeName.toLowerCase();
+
+                        if (nodeName === __Meta) {
+                            element.setAttribute(content, value);
+                        } else {
+                            element.setAttribute(href, value);
+                        }
+
+                        if (nodes.indexOf(element) === -1) {
+                            dom.insertBefore(el, element, sibling);
+                        }
+                    }
+                }
+
+                /**
+                 * Creates an element with the specified tag and name. The name corresponds to 
+                 * the type of the meta/link tag (i.e. title/description/author etc), and is also the 
+                 * value that will be set for the proper attribute. The attribute is determined based on 
+                 * the tag/name combination.
+                 * @param {string} tag The tag name for the element.
+                 * @param {string} name? The name corresponding to the type of meta/link tag.
+                 */
+                protected _createElement<T extends HTMLElement>(tag: string, name?: string): T {
+                    var el: T,
+                        hasName = isString(name),
+                        attr: string = (hasName && (name.indexOf(__OpenGraph) === 0 || name.indexOf(__Article) === 0)) ? __MetaProperty : __MetaName,
+                        element: HTMLHeadElement = this.element;
+
+                    if (tag === __MetaLink) {
+                        attr = __Rel;
+                    }
+
+                    if (hasName) {
+                        el = <T>element.querySelector(tag + '[' + attr + '="' + name + '"]');
+                    } else {
+                        el = <T>element.querySelector(tag);
+                    }
+
+                    if (!isNode(el)) {
+                        el = <T>this._document.createElement(tag);
+                    }
+
+                    if (hasName) {
+                        el.setAttribute(attr, name);
+                    }
+
+                    return el;
+                }
+
+                /**
+                 * Removes all the unnecessary elements from the <head /> to avoid having 
+                 * incorrect tags on the page.
+                 */
+                protected _removeAllElements(): void {
+                    this._removeElements(
+                        this._ogTitleElement,
+                        this._twitterTitleElement,
+                        this._descriptionElement,
+                        this._ogDescriptionElement,
+                        this._twitterDescriptionElement,
+                        this._authorElement,
+                        this._googleAuthorElement,
+                        this._fbAuthorElement,
+                        this._twitterCreatorElement,
+                        this._ogImageElement,
+                        this._twitterImageElement
+                    );
+                }
+
+                /**
+                 * Removes elements from the <head />
+                 */
+                protected _removeElements(...elements: Array<HTMLElement>): void {
+                    var el = this.element,
+                        nodes: Array<HTMLElement> = Array.prototype.slice.call(el.children),
+                        length = elements.length,
+                        element: HTMLElement;
+
+                    for (var i = 0; i < length; ++i) {
+                        element = elements[i];
+                        if (nodes.indexOf(element) !== -1) {
+                            el.removeChild(element);
+                        }
+                    }
+                }
+            }
+
+
+
             /**
              * A TemplateControl for adding HTML to the 
              * DOM through bound context strings.
@@ -18662,6 +19972,8 @@ module plat {
             }
 
             register.control(__Html, Html);
+
+
 
             /**
              * A TemplateControl for binding an HTML select element 
@@ -18700,6 +20012,11 @@ module plat {
                 context: Array<any>;
 
                 /**
+                 * The child controls of the control. All will be of type TemplateControl.
+                 */
+                controls: Array<TemplateControl>;
+
+                /**
                  * An object that keeps track of unique 
                  * optgroups.
                  */
@@ -18716,27 +20033,26 @@ module plat {
                 itemsLoaded: async.IThenable<void>;
 
                 /**
-                 * Whether or not the Array listener has been set.
-                 */
-                private __listenerSet: boolean;
-                /**
                  * Whether or not the select is grouped.
                  */
-                private __isGrouped = false;
-                /**
-                 * Whether or not the select should be treated as a 
-                 * native (unbound) select element.
-                 */
-                private __isNativeSelect = false;
+                protected _isGrouped: boolean;
+
                 /**
                  * The property used to group the objects.
                  */
-                private __group: string;
+                protected _group: string;
+
                 /**
                  * An optional default option specified in the control element's 
                  * innerHTML.
                  */
-                private __defaultOption: HTMLOptionElement;
+                protected _defaultOption: HTMLOptionElement;
+
+                /**
+                 * Whether or not the Array listener has been set.
+                 */
+                private __listenerSet: boolean;
+
                 /**
                  * The function to resolve the itemsLoaded promise.
                  */
@@ -18747,7 +20063,7 @@ module plat {
                  */
                 constructor() {
                     super();
-                    this.itemsLoaded = new this._Promise<void>((resolve) => {
+                    this.itemsLoaded = new this._Promise<void>((resolve): void => {
                         this.__resolveFn = resolve;
                     });
                 }
@@ -18757,40 +20073,33 @@ module plat {
                  * template if necessary.
                  */
                 setTemplate(): void {
-                    var _document = this._document,
-                        options = this.options || <observable.IObservableProperty<ISelectOptions>>{},
-                        platOptions = options.value || <ISelectOptions>{},
-                        option = _document.createElement('option'),
-                        value = platOptions.value,
-                        textContent = platOptions.textContent;
+                    this.bindableTemplates.add('option', this.element.childNodes);
 
-                    // check if the element should be treated as a normal select.
-                    if (isUndefined(value) && isUndefined(textContent)) {
-                        this.__isNativeSelect = true;
-                        return;
+                    var options = this.options || <observable.IObservableProperty<ISelectOptions>>{},
+                        platOptions = options.value || <ISelectOptions>{},
+                        defaultOptionValues = platOptions.default;
+
+                    if (isObject(defaultOptionValues)) {
+                        var defaultOption: HTMLOptionElement = this._document.createElement('option'),
+                            defaultValue = defaultOptionValues.value,
+                            defaultTextContent = defaultOptionValues.textContent;
+
+                        defaultOption.value = isUndefined(defaultValue) ? defaultTextContent : defaultValue;
+                        defaultOption.textContent = isUndefined(defaultTextContent) ? defaultValue : defaultTextContent;
+                        this.element.insertBefore(defaultOption, null);
                     }
 
                     if (!isNull(platOptions.group)) {
-                        var group = this.__group = platOptions.group,
-                            optionGroup = _document.createElement('optgroup');
+                        var group = this._group = platOptions.group,
+                            optionGroup = this._document.createElement('optgroup');
 
                         optionGroup.label = __startSymbol + group + __endSymbol;
 
                         this.bindableTemplates.add('group', optionGroup);
+                        this._isGrouped = true;
+                    } else {
+                        this._isGrouped = false;
                     }
-
-                    if (!isString(value) || isEmpty(value)) {
-                        value = undefined;
-                    }
-
-                    if (!isString(textContent) || isEmpty(textContent)) {
-                        textContent = undefined;
-                    }
-
-                    option.value = __startSymbol + (value || textContent) + __endSymbol;
-                    option.textContent = __startSymbol + (textContent || value) + __endSymbol;
-
-                    this.bindableTemplates.add('option', option);
                 }
 
                 /**
@@ -18800,7 +20109,8 @@ module plat {
                  * @param {Array<any>} oldValue? The old array context.
                  */
                 contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
-                    if (this.__isNativeSelect || !isArray(newValue)) {
+                    if (!isArray(newValue)) {
+                        this._removeItems(this.controls.length);
                         return;
                     }
 
@@ -18821,26 +20131,16 @@ module plat {
                  * the options accordingly.
                  */
                 loaded(): void {
-                    if (this.__isNativeSelect) {
-                        return;
+                    if (isUndefined(this._isGrouped)) {
+                        var options = this.options || <observable.IObservableProperty<ISelectOptions>>{},
+                            platOptions = options.value || <ISelectOptions>{};
+
+                        this._isGrouped = !isNull((this._group = platOptions.group));
                     }
 
-                    var options = this.options || <observable.IObservableProperty<ISelectOptions>>{},
-                        platOptions = options.value || <ISelectOptions>{};
-                    if (isUndefined(platOptions.value) && isUndefined(platOptions.textContent)) {
-                        this.__isNativeSelect = true;
-                        return;
-                    }
+                    this._defaultOption = <HTMLOptionElement>this.element.firstElementChild;
 
-                    var context = this.context,
-                        element = this.element,
-                        firstElementChild = element.firstElementChild;
-                    if (isNode(firstElementChild) && firstElementChild.nodeName.toLowerCase() === 'option') {
-                        this.__defaultOption = <HTMLOptionElement>firstElementChild.cloneNode(true);
-                    }
-
-                    this.__isGrouped = !isNull((this.__group = platOptions.group));
-
+                    var context = this.context;
                     if (!isArray(context)) {
                         return;
                     }
@@ -18854,7 +20154,7 @@ module plat {
                  */
                 dispose(): void {
                     this.__resolveFn = null;
-                    this.__defaultOption = null;
+                    this._defaultOption = null;
                 }
 
                 /**
@@ -18882,23 +20182,20 @@ module plat {
                 /**
                  * Adds the options to the select element.
                  * @param {number} numberOfItems The number of items to add.
-                 * @param {number} length The current index of the next 
+                 * @param {number} index The starting index of the next 
                  * set of items to add.
                  */
-                protected _addItems(numberOfItems: number, length: number): async.IThenable<void> {
-                    var index = length,
-                        item: any,
-                        bindableTemplates = this.bindableTemplates,
-                        promises: Array<async.IThenable<void>> = [];
+                protected _addItems(numberOfItems: number, index: number): async.IThenable<void> {
+                    var bindableTemplates = this.bindableTemplates,
+                        promises: Array<async.IThenable<void>> = [],
+                        insertOption = this._insertOption;
 
-                    for (var i = 0; i < numberOfItems; ++i, ++index) {
-                        item = this.context[index];
-
-                        promises.push(bindableTemplates.bind('option', index).then<void>(this._insertOptions.bind(this, index, item)));
+                    while (numberOfItems-- > 0) {
+                        promises.push(bindableTemplates.bind('option', index).then<void>(insertOption.bind(this, index++)));
                     }
 
                     if (promises.length > 0) {
-                        this.itemsLoaded = this._Promise.all(promises).then(() => {
+                        this.itemsLoaded = this._Promise.all(promises).then((): void => {
                             if (isFunction(this.__resolveFn)) {
                                 this.__resolveFn();
                                 this.__resolveFn = null;
@@ -18910,7 +20207,7 @@ module plat {
                             this.__resolveFn();
                             this.__resolveFn = null;
                         }
-                        this.itemsLoaded = new this._Promise<void>((resolve) => {
+                        this.itemsLoaded = new this._Promise<void>((resolve): void => {
                             this.__resolveFn = resolve;
                         });
                     }
@@ -18922,52 +20219,38 @@ module plat {
                  * The callback used to add an option after 
                  * its template has been bound.
                  * @param {number} index The current index of the item being added.
-                 * @param {any} item The item being added.
-                 * @param {DocumentFragment} optionClone The bound DocumentFragment to be 
+                 * @param {DocumentFragment} option The bound DocumentFragment to be 
                  * inserted into the DOM.
                  * or optgroup has successfully be inserted.
                  */
-                protected _insertOptions(index: number, item: any, optionClone: DocumentFragment): async.IThenable<any> {
+                protected _insertOption(index: number, option: DocumentFragment): async.IThenable<any> {
                     var element = this.element;
-                    if (this.__isGrouped) {
+                    if (this._isGrouped) {
                         var groups = this.groups,
-                            newGroup = item[this.__group],
+                            newGroup = (this.context[index] || {})[this._group],
                             optgroup: any = groups[newGroup];
 
                         if (isNull(optgroup)) {
                             return (groups[newGroup] = <any>this.bindableTemplates.bind('group', index)
-                                .then((groupClone: DocumentFragment) => {
-                                    optgroup = groups[newGroup] = <Element>groupClone.childNodes[1];
+                                .then((groupFragment: DocumentFragment): Element => {
+                                    optgroup = groups[newGroup] = <Element>groupFragment.childNodes[1];
 
-                                    optgroup.appendChild(optionClone);
-                                    element.appendChild(groupClone);
+                                    optgroup.insertBefore(option, null);
+                                    element.insertBefore(groupFragment, null);
                                     return optgroup;
                                 }));
                         } else if (isPromise(optgroup)) {
                             return optgroup.then((group: Element) => {
-                                group.appendChild(optionClone);
-                                return group;
+                                group.insertBefore(option, null);
                             });
                         }
 
-                        optgroup.appendChild(optionClone);
-                        return this._Promise.resolve(null);
+                        optgroup.insertBefore(option, null);
+                        return this._Promise.resolve();
                     }
 
-                    element.appendChild(optionClone);
-                    return this._Promise.resolve(null);
-                }
-
-                /**
-                 * Removes the specified option item from the DOM.
-                 * @param {number} index The control index to remove.
-                 */
-                protected _removeItem(index: number): void {
-                    if (index < 0) {
-                        return;
-                    }
-
-                    TemplateControl.dispose(<TemplateControl>this.controls[index]);
+                    element.insertBefore(option, null);
+                    return this._Promise.resolve();
                 }
 
                 /**
@@ -18976,23 +20259,23 @@ module plat {
                  * to remove.
                  */
                 protected _removeItems(numberOfItems: number): void {
-                    var controls = this.controls,
-                        length = controls.length - 1;
+                    var dispose = TemplateControl.dispose,
+                        controls = this.controls;
 
                     while (numberOfItems-- > 0) {
-                        this._removeItem(length--);
+                        dispose(controls.pop());
                     }
                 }
 
                 /**
                  * The function called when an item has been removed 
-                 * from the array context.
+                 * from the Array context.
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
-                protected _itemRemoved(ev: observable.IPostArrayChangeInfo<any>): void {
+                protected _removeItem(ev: observable.IPostArrayChangeInfo<any>): void {
                     if (ev.oldArray.length === 0) {
                         return;
-                    } else if (this.__isGrouped) {
+                    } else if (this._isGrouped) {
                         this._resetSelect();
                         return;
                     }
@@ -19005,17 +20288,13 @@ module plat {
                  * items and adding them back.
                  */
                 protected _resetSelect(): void {
-                    var itemLength = this.context.length,
-                        element = this.element,
-                        nodeLength = element.childNodes.length;
-
-                    this._removeItems(nodeLength);
+                    this._removeItems(this.controls.length);
                     this.groups = {};
-                    if (!isNull(this.__defaultOption)) {
-                        element.appendChild(this.__defaultOption.cloneNode(true));
+                    if (!isNull(this._defaultOption)) {
+                        this.element.insertBefore(this._defaultOption.cloneNode(true), null);
                     }
 
-                    this._addItems(itemLength, 0);
+                    this._addItems(this.context.length, 0);
                 }
 
                 /**
@@ -19033,7 +20312,7 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
                 protected _pop(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._itemRemoved(ev);
+                    this._removeItem(ev);
                 }
 
                 /**
@@ -19042,7 +20321,7 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
                 protected _shift(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._itemRemoved(ev);
+                    this._removeItem(ev);
                 }
 
                 /**
@@ -19051,7 +20330,7 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
                 protected _splice(ev: observable.IPostArrayChangeInfo<any>): void {
-                    if (this.__isGrouped) {
+                    if (this._isGrouped) {
                         this._resetSelect();
                         return;
                     }
@@ -19072,7 +20351,7 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
                 protected _unshift(ev: observable.IPostArrayChangeInfo<any>): void {
-                    if (this.__isGrouped) {
+                    if (this._isGrouped) {
                         this._resetSelect();
                         return;
                     }
@@ -19086,7 +20365,7 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
                 protected _sort(ev: observable.IPostArrayChangeInfo<any>): void {
-                    if (this.__isGrouped) {
+                    if (this._isGrouped) {
                         this._resetSelect();
                     }
                 }
@@ -19097,7 +20376,7 @@ module plat {
                  * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
                 protected _reverse(ev: observable.IPostArrayChangeInfo<any>): void {
-                    if (this.__isGrouped) {
+                    if (this._isGrouped) {
                         this._resetSelect();
                     }
                 }
@@ -19119,17 +20398,28 @@ module plat {
                  * objects with which to use to bind to the 
                  * option's value.
                  */
+                default: ISelectDefaultOption;
+
+            }
+
+            /**
+             * Defines the value and textContent for the default option of a Select.
+             */
+            export interface ISelectDefaultOption {
+                /**
+                 * The value of the default option.
+                 */
                 value: string;
 
                 /**
-                 * The property in your context array of 
-                 * objects with which to use to bind to the 
-                 * option's textContent.
+                 * The textContent of the default option.
                  */
                 textContent: string;
             }
 
             register.control(__Select, Select);
+
+
 
             /**
              * A TemplateControl conditionally adding or removing 
@@ -19138,8 +20428,14 @@ module plat {
             export class If extends TemplateControl {
                 protected static _inject: any = {
                     _animator: __Animator,
-                    _Promise: __Promise
+                    _Promise: __Promise,
+                    _document: __Document
                 };
+
+                /**
+                 * The document injectable.
+                 */
+                protected _document: Document;
 
                 /**
                  * Reference to the Animator injectable.
@@ -19159,7 +20455,7 @@ module plat {
                 /**
                  * The Comment used to hold the place of the plat-if element.
                  */
-                commentNode: Comment;
+                commentNode: Comment = this._document.createComment(__If + __BOUND_PREFIX + 'placeholder');
 
                 /**
                  * The DocumentFragment that stores the plat-if element when hidden.
@@ -19171,19 +20467,23 @@ module plat {
                  * control is visible) of the control.
                  */
                 private __condition = true;
+
                 /**
                  * A boolean value stating whether or not the condition has already 
                  * been evaluated.
                  */
                 private __firstTime = true;
+
                 /**
                  * A function to stop listening to changes on the options object.
                  */
                 private __removeListener: IRemoveListener;
+
                 /**
                  * A promise that resolves when the leave animation is finished.
                  */
                 private __leaveAnimation: animations.IAnimationThenable<any>;
+
                 /**
                  * A promise that resolves when the entrance animation is finished.
                  */
@@ -19193,16 +20493,6 @@ module plat {
                  * A promise that resolves when the template has been bound.
                  */
                 private __initialBind: async.IThenable<void>;
-
-                /**
-                 * The constructor for a If. Creates the 
-                 * DocumentFragment for holding the conditional nodes.
-                 */
-                constructor() {
-                    super();
-                    var _document: Document = acquire(__Document);
-                    this.commentNode = _document.createComment('plat-if' + __BOUND_PREFIX + 'placeholder');
-                }
 
                 /**
                  * Checks the options and initializes the 
@@ -19233,7 +20523,7 @@ module plat {
                  */
                 loaded(): async.IThenable<void> {
                     if (isNull(this.options)) {
-                        var _Exception: IExceptionStatic = this._Exception;
+                        var _Exception = this._Exception;
                         _Exception.warn('No condition specified in plat-options for plat-if.', _Exception.BIND);
 
                         this.options = {
@@ -19279,7 +20569,7 @@ module plat {
 
                     if (value) {
                         if (!isNull(this.__leaveAnimation)) {
-                            promise = <any>this.__leaveAnimation.cancel().then(() => {
+                            promise = <any>this.__leaveAnimation.cancel().then((): async.IThenable<void> => {
                                 this.__leaveAnimation = null;
                                 return this._addItem();
                             });
@@ -19288,7 +20578,7 @@ module plat {
                         }
                     } else {
                         if (!isNull(this.__enterAnimation)) {
-                            promise = this.__enterAnimation.cancel().then(() => {
+                            promise = this.__enterAnimation.cancel().then((): void => {
                                 this.__enterAnimation = null;
                                 return <any>this._removeItem();
                             });
@@ -19313,7 +20603,7 @@ module plat {
 
                     if (this.__firstTime) {
                         this.__firstTime = false;
-                        this.__initialBind = this.bindableTemplates.bind('template').then((template) => {
+                        this.__initialBind = this.bindableTemplates.bind('template').then((template): animations.IAnimatingThenable => {
                             var element = this.element;
 
                             element.appendChild(template);
@@ -19324,7 +20614,7 @@ module plat {
                             }
 
                             return this.__enterAnimation = this._animator.animate(element, __Enter);
-                        }).then(() => {
+                        }).then((): void => {
                             this.__enterAnimation = null;
                         });
 
@@ -19332,7 +20622,7 @@ module plat {
                     }
 
                     if (isPromise(this.__initialBind)) {
-                        return this.__initialBind.then(() => {
+                        return this.__initialBind.then((): animations.IAnimationThenable<void> => {
                             return this._animateEntrance();
                         });
                     }
@@ -19348,7 +20638,7 @@ module plat {
                         parentNode = commentNode.parentNode;
 
                     parentNode.replaceChild(this.fragmentStore, commentNode);
-                    return this.__enterAnimation = this._animator.animate(this.element, __Enter).then(() => {
+                    return this.__enterAnimation = this._animator.animate(this.element, __Enter).then((): void => {
                         this.__enterAnimation = null;
                     });
                 }
@@ -19358,7 +20648,7 @@ module plat {
                  */
                 protected _removeItem(): async.IThenable<void> {
                     if (isPromise(this.__initialBind)) {
-                        return this.__initialBind.then(() => {
+                        return this.__initialBind.then((): async.IThenable<void> => {
                             return this._animateLeave();
                         });
                     }
@@ -19372,13 +20662,12 @@ module plat {
                 protected _animateLeave(): animations.IAnimationThenable<void> {
                     var element = this.element;
 
-                    return this.__leaveAnimation = this._animator.animate(element, __Leave).then(() => {
+                    return this.__leaveAnimation = this._animator.animate(element, __Leave).then((): void => {
                         this.__leaveAnimation = null;
                         element.parentNode.insertBefore(this.commentNode, element);
 
                         if (!isDocumentFragment(this.fragmentStore)) {
-                            var _document: Document = plat.acquire(__Document);
-                            this.fragmentStore = _document.createDocumentFragment();
+                            this.fragmentStore = this._document.createDocumentFragment();
                         }
 
                         insertBefore(this.fragmentStore, element);
@@ -19399,6 +20688,8 @@ module plat {
 
             register.control(__If, If);
 
+
+
             /**
              * A TemplateControl for adding additonal 
              * functionality to a native HTML anchor tag.
@@ -19418,12 +20709,7 @@ module plat {
                 /**
                  * The RouterStatic injectable instance
                  */
-                protected _Router: typeof routing.Router;
-
-                /**
-                 * The Injector injectable instance
-                 */
-                protected _Injector: typeof dependency.Injector;
+                protected _Router: routing.IRouterStatic;
 
                 /**
                  * The Browser injectable instance
@@ -19433,7 +20719,7 @@ module plat {
                 /**
                  * The router associated with this link.
                  */
-                router: routing.Router;
+                router: routing.Router = this._Router.currentRouter();
 
                 /**
                  * The options for Link, if ignore is true, anchor will ignore changing the url.
@@ -19450,22 +20736,17 @@ module plat {
                  */
                 removeClickListener: IRemoveListener = noop;
 
-                constructor() {
-                    super();
-                    this.router = this._Router.currentRouter();
-                }
-
                 /**
                  * Prevents default on the anchor tag if the href attribute is left empty, also determines internal links.
                  */
                 initialize(): void {
                     var element = this.element;
 
-                    this.addEventListener(element, 'click', (ev: Event) => {
+                    this.addEventListener(element, 'click', (ev: Event): void => {
                         ev.preventDefault();
                     }, false);
 
-                    this.addEventListener(element, __tap, (ev: IExtendedEvent) => {
+                    this.addEventListener(element, __tap, (ev: IExtendedEvent): void => {
                         if (ev.buttons !== 1) {
                             return;
                         }
@@ -19478,7 +20759,7 @@ module plat {
                         ev.preventDefault();
                         element.href = '#';
 
-                        requestAnimationFrameGlobal(() => {
+                        requestAnimationFrameGlobal((): void => {
                             this._browser.url(href);
                         });
 
@@ -19490,15 +20771,16 @@ module plat {
                 /**
                  * Returns a click event listener. Also handles disposing of the listener.
                  */
-                getListener(element: HTMLAnchorElement) {
-                    var listener = (ev: Event) => {
-                        ev.preventDefault();
-                        this.removeClickListener();
-                        cancel();
-                        element.removeEventListener('click', listener);
-                    };
+                getListener(element: HTMLAnchorElement): (ev: Event) => void {
+                    var cancel: IRemoveListener,
+                        listener = (ev: Event): void => {
+                            ev.preventDefault();
+                            this.removeClickListener();
+                            cancel();
+                            element.removeEventListener('click', listener);
+                        };
 
-                    var cancel = defer(() => {
+                    cancel = defer((): void => {
                         element.removeEventListener('click', listener);
                     }, 3000);
 
@@ -19552,7 +20834,6 @@ module plat {
                             return href;
                         }
 
-                        href = this._Injector.convertDependency(href);
                         href = this.router.generate(href, parameters, query);
                     }
 
@@ -19571,6 +20852,8 @@ module plat {
      * Holds classes and interfaces related to Document processing in platypus.
      */
     export module processing {
+
+
         /**
          * Responsible for iterating through the DOM and collecting controls.
          */
@@ -19662,7 +20945,7 @@ module plat {
                     this._compileNodes(childNodes, manager);
                 }
             }
-        
+
             /**
              * Iterates through the array of nodes creating ElementManagers on Element 
              * nodes, TextManagers on text nodes, and 
@@ -19711,6 +20994,8 @@ module plat {
 
         register.injectable(__Compiler, Compiler);
 
+
+
         /**
          * Responsible for data binding a data context to a Node.
          */
@@ -19734,6 +21019,37 @@ module plat {
              * Reference to the IExceptionStatic injectable.
              */
             protected static _Exception: IExceptionStatic;
+
+            /**
+             * A regular expression for finding markup
+             */
+            protected static _markupRegex: RegExp;
+
+            /**
+             * A regular expression for finding newline characters.
+             */
+            protected static _newLineRegex: RegExp;
+
+            /**
+             * The type of NodeManager.
+             */
+            type: string;
+
+            /**
+             * The INodeMap for this NodeManager. 
+             * Contains the compiled Node.
+             */
+            nodeMap: INodeMap;
+
+            /**
+             * The parent ElementManager.
+             */
+            parent: ElementManager;
+
+            /**
+             * Whether or not this NodeManager is a clone.
+             */
+            isClone = false;
 
             /**
              * Determines if a string has the markup notation.
@@ -19841,9 +21157,9 @@ module plat {
              */
             static observeExpressions(expressions: Array<expressions.IParsedExpression>, control: ui.TemplateControl,
                 listener: (...args: Array<any>) => void): void {
-                var uniqueIdentiifers = NodeManager.__findUniqueIdentifiers(expressions),
-                    identifiers = uniqueIdentiifers.identifiers,
-                    oneTimeIdentifiers = uniqueIdentiifers.oneTimeIdentifiers,
+                var uniqueIdentifiers = NodeManager.__findUniqueIdentifiers(expressions),
+                    identifiers = uniqueIdentifiers.identifiers,
+                    oneTimeIdentifiers = uniqueIdentifiers.oneTimeIdentifiers,
                     oneTimeIdentifier: string,
                     observableCallback = {
                         listener: listener,
@@ -19872,7 +21188,7 @@ module plat {
                         stopObserving = manager.observe(absoluteIdentifier, observableCallback);
                         stopListening = manager.observe(absoluteIdentifier, {
                             uid: control.uid,
-                            listener: () => {
+                            listener: (): void => {
                                 stopObserving();
                                 stopListening();
                             }
@@ -19882,22 +21198,12 @@ module plat {
             }
 
             /**
-             * A regular expression for finding markup
-             */
-            protected static _markupRegex: RegExp;
-
-            /**
-             * A regular expression for finding newline characters.
-             */
-            protected static _newLineRegex: RegExp;
-
-            /**
              * Wraps constant text as a static IParsedExpression.
              * @param text The text to wrap into a static expression.
              */
             protected static _wrapExpression(text: string): expressions.IParsedExpression {
                 return {
-                    evaluate: () => text,
+                    evaluate: (): string => text,
                     identifiers: [],
                     aliases: [],
                     expression: text
@@ -19985,7 +21291,7 @@ module plat {
              * identifier.
              */
             private static __getObservationDetails(identifier: string, control: ui.TemplateControl): IObservationDetails {
-                var $contextManager = NodeManager._ContextManager,
+                var _ContextManager = NodeManager._ContextManager,
                     manager: observable.ContextManager,
                     split = identifier.split('.'),
                     absoluteIdentifier = '',
@@ -20010,16 +21316,19 @@ module plat {
                         resourceObj = resources[alias] = control.findResource(alias);
                     }
 
-                    if (!isNull(resourceObj) && !isNull(resourceObj.resource) && resourceObj.resource.type === __OBSERVABLE_RESOURCE) {
-                        manager = $contextManager.getManager(resources[alias].control);
-                        absoluteIdentifier = 'resources.' + alias + '.value' + absoluteIdentifier;
+                    if (!isNull(resourceObj) && !isNull(resourceObj.resource)) {
+                        var type = resourceObj.resource.type;
+                        if (type === __OBSERVABLE_RESOURCE || type === __LITERAL_RESOURCE) {
+                            manager = _ContextManager.getManager(resources[alias].control);
+                            absoluteIdentifier = 'resources.' + alias + '.value' + absoluteIdentifier;
+                        }
                     }
                 } else {
                     // look on the control.context
-                    isDefined = !isUndefined($contextManager.getContext(control.context, split));
+                    isDefined = !isUndefined(_ContextManager.getContext(control.context, split));
 
-                    if (isDefined || isUndefined($contextManager.getContext(control, split))) {
-                        manager = $contextManager.getManager(Control.getRootControl(control));
+                    if (isDefined || isUndefined(_ContextManager.getContext(control, split))) {
+                        manager = _ContextManager.getManager(Control.getRootControl(control));
                         absoluteIdentifier = control.absoluteContextPath + '.' + identifier;
                     } else {
                         manager = null;
@@ -20032,24 +21341,6 @@ module plat {
                     isDefined: isDefined
                 };
             }
-
-            /**
-             * The type of NodeManager.
-             */
-            type: string;
-            /**
-             * The INodeMap for this NodeManager. 
-             * Contains the compiled Node.
-             */
-            nodeMap: INodeMap;
-            /**
-             * The parent ElementManager.
-             */
-            parent: ElementManager;
-            /**
-             * Whether or not this NodeManager is a clone.
-             */
-            isClone = false;
 
             /**
              * Initializes the manager's properties.
@@ -20285,12 +21576,25 @@ module plat {
             isDefined: boolean;
         }
 
+
+
         /**
          * A class used to manage element nodes. Provides a way for compiling and binding the 
          * element/template. Also provides methods for cloning an 
          * ElementManager.
          */
         export class ElementManager extends NodeManager {
+            protected static _inject: any = {
+                _Promise: __Promise,
+                _ContextManager: __ContextManagerStatic,
+                _compiler: __Compiler,
+                _CommentManagerFactory: __CommentManagerFactory,
+                _ControlFactory: __ControlFactory,
+                _TemplateControlFactory: __TemplateControlFactory,
+                _BindableTemplatesFactory: __BindableTemplatesFactory,
+                _Exception: __ExceptionStatic
+            };
+
             /**
              * Reference to the Document injectable.
              */
@@ -20320,6 +21624,87 @@ module plat {
              * Reference to the IExceptionStatic injectable.
              */
             protected static _Exception: IExceptionStatic;
+
+            /**
+             * Reference to the IPromise injectable.
+             */
+            protected _Promise: async.IPromise;
+
+            /**
+             * Reference to the Compiler injectable.
+             */
+            protected _compiler: Compiler;
+
+            /**
+             * Reference to the ContextManagerStatic injectable.
+             */
+            protected _ContextManager: observable.IContextManagerStatic;
+
+            /**
+             * Reference to the ICommentManagerFactory injectable.
+             */
+            protected _CommentManagerFactory: ICommentManagerFactory;
+
+            /**
+             * Reference to the IControlFactory injectable.
+             */
+            protected _ControlFactory: IControlFactory;
+
+            /**
+             * Reference to the ITemplateControlFactory injectable.
+             */
+            protected _TemplateControlFactory: ui.ITemplateControlFactory;
+
+            /**
+             * Reference to the IBindableTemplatesFactory injectable.
+             */
+            protected _BindableTemplatesFactory: ui.IBindableTemplatesFactory;
+
+            /**
+             * Reference to the IExceptionStatic injectable.
+             */
+            protected _Exception: IExceptionStatic;
+
+            /**
+             * The child managers for this manager.
+             */
+            children: Array<NodeManager> = [];
+
+            /**
+             * Specifies the type for this NodeManager. 
+             * It's value is "element".
+             */
+            type = 'element';
+
+            /**
+             * Specifies whether or not this manager has a TemplateControl which has a 
+             * replaceWith property set to null or empty string.
+             */
+            replace = false;
+
+            /**
+             * Indicates whether the TemplateControl for this manager has its own context 
+             * or inherits it from a parent.
+             */
+            hasOwnContext = false;
+
+            /**
+             * The length of a replaced control, indicates the number of nodes to slice 
+             * out of the parent's childNodes.
+             */
+            replaceNodeLength: number;
+
+            /**
+             * In the event that a control does not have its own context, we need a promise to fullfill 
+             * when the control's context has been set.
+             */
+            contextPromise: async.IThenable<void>;
+
+            /**
+             * A promise that is set when an TemplateControl specifies a templateUrl 
+             * and its HTML needs to be asynchronously obtained.
+             */
+            templatePromise: async.IThenable<void>;
 
             /**
              * Determines if the associated Element has controls that need to be instantiated or Attr nodes
@@ -20393,7 +21778,7 @@ module plat {
                 manager.initialize(elementMap, parent);
 
                 if (!(elementMap.hasControl || hasUiControl)) {
-                    manager.bind = () => { return []; };
+                    manager.bind = (): Array<Control> => { return []; };
                 } else {
                     manager.setUiControlTemplate();
                     return hasUiControl ? null : manager;
@@ -20458,7 +21843,7 @@ module plat {
                 manager.isClone = true;
 
                 if (!(nodeMap.hasControl || hasNewControl)) {
-                    manager.bind = () => { return []; };
+                    manager.bind = (): Array<Control> => { return []; };
                 }
 
                 if (hasNewControl) {
@@ -20593,7 +21978,7 @@ module plat {
                 }
 
                 if (!isClone) {
-                    nodes.sort((a, b) => {
+                    nodes.sort((a, b): number => {
                         var aControl = <AttributeControl>a.control,
                             bControl = <AttributeControl>b.control;
 
@@ -20780,104 +22165,6 @@ module plat {
                 return nodeMap;
             }
 
-            protected static _inject: any = {
-                _Promise: __Promise,
-                _ContextManager: __ContextManagerStatic,
-                _compiler: __Compiler,
-                _CommentManagerFactory: __CommentManagerFactory,
-                _ControlFactory: __ControlFactory,
-                _TemplateControlFactory: __TemplateControlFactory,
-                _BindableTemplatesFactory: __BindableTemplatesFactory,
-                _Exception: __ExceptionStatic
-            };
-
-            /**
-             * Reference to the IPromise injectable.
-             */
-            protected _Promise: async.IPromise;
-
-            /**
-             * Reference to the Compiler injectable.
-             */
-            protected _compiler: Compiler;
-
-            /**
-             * Reference to the ContextManagerStatic injectable.
-             */
-            protected _ContextManager: observable.IContextManagerStatic;
-
-            /**
-             * Reference to the ICommentManagerFactory injectable.
-             */
-            protected _CommentManagerFactory: ICommentManagerFactory;
-
-            /**
-             * Reference to the IControlFactory injectable.
-             */
-            protected _ControlFactory: IControlFactory;
-
-            /**
-             * Reference to the ITemplateControlFactory injectable.
-             */
-            protected _TemplateControlFactory: ui.ITemplateControlFactory;
-
-            /**
-             * Reference to the IBindableTemplatesFactory injectable.
-             */
-            protected _BindableTemplatesFactory: ui.IBindableTemplatesFactory;
-
-            /**
-             * Reference to the IExceptionStatic injectable.
-             */
-            protected _Exception: IExceptionStatic;
-
-            /**
-             * The child managers for this manager.
-             */
-            children: Array<NodeManager> = [];
-
-            /**
-             * Specifies the type for this NodeManager. 
-             * It's value is "element".
-             */
-            type = 'element';
-
-            /**
-             * Specifies whether or not this manager has a TemplateControl which has a 
-             * replaceWith property set to null or empty string.
-             */
-            replace = false;
-
-            /**
-             * Indicates whether the TemplateControl for this manager has its own context 
-             * or inherits it from a parent.
-             */
-            hasOwnContext = false;
-
-            /**
-             * The length of a replaced control, indicates the number of nodes to slice 
-             * out of the parent's childNodes.
-             */
-            replaceNodeLength: number;
-
-            /**
-             * In the event that a control has its own context, we need a promise to fullfill 
-             * when the control is loaded to avoid loading its parent control first.
-             */
-            loadedPromise: async.IThenable<void>;
-
-            /**
-             * In the event that a control does not have its own context, we need a promise to fullfill 
-             * when the control's context has been set.
-             */
-            contextPromise: async.IThenable<void>;
-
-            /**
-             * A promise that is set when an TemplateControl specifies a templateUrl 
-             * and its HTML needs to be asynchronously obtained.
-             */
-            templatePromise: async.IThenable<void>;
-
             /**
              * Clones the ElementManager with a new node.
              * @param {Node} newNode The new element used to clone the ElementManager.
@@ -20937,7 +22224,7 @@ module plat {
                 }
 
                 if (clonedManager.hasOwnContext) {
-                    postpone(() => {
+                    postpone((): void => {
                         clonedManager.observeRootContext(newControl, clonedManager.bindAndLoad);
                     });
                 }
@@ -21048,17 +22335,17 @@ module plat {
                     var awaitContext = false;
 
                     if (inheritsContext) {
-                        uiControl.context = contextManager.getContext(absoluteContextPath.split('.'));
-                        awaitContext = isUndefined(uiControl.context);
+                        uiControl.context = contextManager.getContext(absoluteContextPath.split('.'), false);
+                        awaitContext = isUndefined(uiControl.context) && !this._BindableTemplatesFactory.isBoundControl(uiControl);
                     } else {
                         absoluteContextPath = __CONTEXT;
                     }
 
                     if (awaitContext) {
-                        this.contextPromise = new this._Promise<void>((resolve, reject) => {
+                        this.contextPromise = new this._Promise<void>((resolve, reject): void => {
                             var removeListener = contextManager.observe(absoluteContextPath, {
                                 uid: uiControl.uid,
-                                listener: (newValue, oldValue) => {
+                                listener: (newValue, oldValue): void => {
                                     if (isUndefined(newValue)) {
                                         return;
                                     }
@@ -21092,10 +22379,10 @@ module plat {
                 if (!isNull(controlNode)) {
                     var control = controlNode.control;
 
-                    this.templatePromise = this._TemplateControlFactory.determineTemplate(control, templateUrl).then((template) => {
+                    this.templatePromise = this._TemplateControlFactory.determineTemplate(control, templateUrl).then((template): void => {
                         this.templatePromise = null;
                         this._initializeControl(control, <DocumentFragment>template.cloneNode(true));
-                    }, (error) => {
+                    }, (error: any): void => {
                             this.templatePromise = null;
                             if (isNull(error)) {
                                 var template: DocumentFragment = error;
@@ -21106,7 +22393,7 @@ module plat {
 
                                 this._initializeControl(control, template);
                             } else {
-                                postpone(() => {
+                                postpone((): void => {
                                     var _Exception: IExceptionStatic = this._Exception;
                                     _Exception.fatal(error, _Exception.COMPILE);
                                 });
@@ -21144,7 +22431,7 @@ module plat {
              */
             fulfillTemplate(): async.IThenable<void> {
                 if (!isNull(this.templatePromise)) {
-                    return this.templatePromise.then(() => {
+                    return this.templatePromise.then((): async.IThenable<void> => {
                         return this._fulfillChildTemplates();
                     });
                 }
@@ -21153,25 +22440,40 @@ module plat {
             }
 
             /**
+             * Fulfills the template promise prior to binding and loading the control.
+             * its associated controls are bound and loaded.
+             */
+            fulfillAndLoad(): async.IThenable<void> {
+                return this.fulfillTemplate().then((): async.IThenable<void> => {
+                    return this.bindAndLoad();
+                }).catch((error: any): void => {
+                    postpone((): void => {
+                        var _Exception: IExceptionStatic = this._Exception;
+                        _Exception.fatal(error, _Exception.BIND);
+                    });
+                });
+            }
+
+            /**
              * Binds context to the DOM and loads controls.
              * child manager's controls have been bound and loaded.
              */
             bindAndLoad(): async.IThenable<void> {
                 var controls = this.bind(),
-                    promise: async.IThenable<void[]>;
+                    promise: async.IThenable<Array<void>>;
 
                 if (isPromise(this.contextPromise)) {
-                    promise = this.contextPromise.then(() => {
+                    promise = this.contextPromise.then((): async.IThenable<Array<void>> => {
                         return this._bindChildren();
                     });
                 } else {
                     promise = this._bindChildren();
                 }
 
-                return promise.then(() => {
+                return promise.then((): async.IThenable<void> => {
                     return this._loadControls(<Array<AttributeControl>>controls, this.getUiControl());
-                }).catch((error: any) => {
-                        postpone(() => {
+                }).catch((error: any): void => {
+                        postpone((): void => {
                             var _Exception: IExceptionStatic = this._Exception;
                             _Exception.fatal(error, _Exception.BIND);
                         });
@@ -21185,23 +22487,22 @@ module plat {
              * @param {() => async.IThenable<void>} loadMethod The function to initiate the loading of the root control and its 
              * children.
              */
-            observeRootContext(root: ui.TemplateControl, loadMethod: () => async.IThenable<void>): void {
+            observeRootContext(root: ui.TemplateControl, loadMethod: () => async.IThenable<void>): async.IThenable<void> {
                 loadMethod = loadMethod.bind(this);
                 if (!isNull(root.context)) {
-                    this.loadedPromise = loadMethod();
-                    return;
+                    return loadMethod();
                 }
 
-                this.loadedPromise = new this._Promise<void>((resolve) => {
+                return new this._Promise<void>((resolve): void => {
                     var removeListener = this._ContextManager.getManager(root).observe(__CONTEXT, {
-                        listener: () => {
+                        listener: (): void => {
                             removeListener();
                             loadMethod().then(resolve);
                         },
                         uid: root.uid
                     });
-                }).catch((error) => {
-                        postpone(() => {
+                }).catch((error): void => {
+                        postpone((): void => {
                             var _Exception: IExceptionStatic = this._Exception;
                             _Exception.fatal(error, _Exception.BIND);
                         });
@@ -21220,7 +22521,7 @@ module plat {
 
                 (<any>uiControl).zCC__plat = contextManager.observe(absoluteContextPath, {
                     uid: uiControl.uid,
-                    listener: (newValue, oldValue) => {
+                    listener: (newValue, oldValue): void => {
                         uiControl.context = newValue;
                     }
                 });
@@ -21251,7 +22552,11 @@ module plat {
                     child = <ElementManager>children[i];
 
                     if (child.hasOwnContext) {
-                        promises.push(child.loadedPromise);
+                        if (this.isClone) {
+                            promises.push(child.observeRootContext(child.getUiControl(), child.bindAndLoad));
+                        } else {
+                            promises.push(child.observeRootContext(child.getUiControl(), child.fulfillAndLoad));
+                        }
                     } else if (!isUndefined(child.children)) {
                         promises.push(child.bindAndLoad());
                     } else {
@@ -21260,43 +22565,6 @@ module plat {
                 }
 
                 return this._Promise.all(promises);
-            }
-
-            /**
-             * Observes the identifiers associated with this manager's INodes.
-             * @param {Array<plat.processing.INode>} nodes The array of INodes to iterate through.
-             * @param {plat.ui.TemplateControl} parent The parent TemplateControl for context.
-             * @param {Array<plat.Control>} controls The array of controls whose attributes will need to be updated 
-             * upon the context changing.
-             */
-            protected _observeControlIdentifiers(nodes: Array<INode>, parent: ui.TemplateControl, controls: Array<Control>): void {
-                var length = nodes.length,
-                    bindings: Array<INode> = [],
-                    attributeChanged = this._attributeChanged,
-                    hasParent = !isNull(parent),
-                    node: INode,
-                    control: Control,
-                    i = 0;
-
-                for (; i < length; ++i) {
-                    node = nodes[i];
-                    control = node.control;
-
-                    if (hasParent && node.expressions.length > 0) {
-                        NodeManager.observeExpressions(node.expressions, parent,
-                            attributeChanged.bind(this, node, parent, controls));
-                        bindings.push(node);
-                    }
-
-                    if (!isNull(control)) {
-                        controls.push(control);
-                    }
-                }
-
-                length = bindings.length;
-                for (i = 0; i < length; ++i) {
-                    this._attributeChanged(bindings[i], parent, controls);
-                }
             }
 
             /**
@@ -21342,21 +22610,6 @@ module plat {
                 }
 
                 return promise;
-            }
-
-            /**
-             * Fulfills the template promise prior to binding and loading the control.
-             * its associated controls are bound and loaded.
-             */
-            protected _fulfillAndLoad(): async.IThenable<void> {
-                return this.fulfillTemplate().then(() => {
-                    return this.bindAndLoad();
-                }).catch((error) => {
-                        postpone(() => {
-                            var _Exception: IExceptionStatic = this._Exception;
-                            _Exception.fatal(error, _Exception.BIND);
-                        });
-                    });
             }
 
             /**
@@ -21492,10 +22745,45 @@ module plat {
                     this._compiler.compile(element, uiControl);
                 }
 
-                if (uiControl.hasOwnContext && !this.isClone) {
-                    this.observeRootContext(uiControl, this._fulfillAndLoad);
-                } else if (isNull(uiControl.parent)) {
-                    this._fulfillAndLoad();
+                if (isNull(uiControl.parent)) {
+                    this.fulfillAndLoad();
+                }
+            }
+
+            /**
+             * Observes the identifiers associated with this manager's INodes.
+             * @param {Array<plat.processing.INode>} nodes The array of INodes to iterate through.
+             * @param {plat.ui.TemplateControl} parent The parent TemplateControl for context.
+             * @param {Array<plat.Control>} controls The array of controls whose attributes will need to be updated 
+             * upon the context changing.
+             */
+            protected _observeControlIdentifiers(nodes: Array<INode>, parent: ui.TemplateControl, controls: Array<Control>): void {
+                var length = nodes.length,
+                    bindings: Array<INode> = [],
+                    attributeChanged = this._attributeChanged,
+                    hasParent = !isNull(parent),
+                    node: INode,
+                    control: Control,
+                    i = 0;
+
+                for (; i < length; ++i) {
+                    node = nodes[i];
+                    control = node.control;
+
+                    if (hasParent && node.expressions.length > 0) {
+                        NodeManager.observeExpressions(node.expressions, parent,
+                            attributeChanged.bind(this, node, parent, controls));
+                        bindings.push(node);
+                    }
+
+                    if (!isNull(control)) {
+                        controls.push(control);
+                    }
+                }
+
+                length = bindings.length;
+                for (i = 0; i < length; ++i) {
+                    this._attributeChanged(bindings[i], parent, controls);
                 }
             }
 
@@ -21543,8 +22831,8 @@ module plat {
                     }
                 }
 
-                return this._Promise.all(promises).catch((error) => {
-                    postpone(() => {
+                return this._Promise.all(promises).catch((error: any): void => {
+                    postpone((): void => {
                         var _Exception: IExceptionStatic = this._Exception;
                         _Exception.fatal(error, _Exception.COMPILE);
                     });
@@ -21564,13 +22852,13 @@ module plat {
             _Exception?: IExceptionStatic): IElementManagerFactory {
             (<any>ElementManager)._document = _document;
             (<any>ElementManager)._managerCache = _managerCache;
-            (<any>ElementManager)._ResourcesFactory = _ResourcesFactory; 
+            (<any>ElementManager)._ResourcesFactory = _ResourcesFactory;
             (<any>ElementManager)._AttributesFactory = _AttributesFactory;
             (<any>ElementManager)._BindableTemplatesFactory = _BindableTemplatesFactory;
             (<any>ElementManager)._Exception = _Exception;
             return ElementManager;
         }
-    
+
         register.injectable(__ElementManagerFactory, IElementManagerFactory, [
             __Document,
             __ManagerCache,
@@ -21647,10 +22935,18 @@ module plat {
             getInstance(): ElementManager;
         }
 
+
+
         /**
          * The class responsible for initializing and data-binding values to text nodes.
          */
         export class TextManager extends NodeManager {
+            /**
+             * Specifies the type for this NodeManager. 
+             * It's value is "text".
+             */
+            type = 'text';
+
             /**
              * Determines if a text node has markup, and creates a TextManager if it does. 
              * An TextManager responsible for markup in the passed in node or an empty 
@@ -21683,7 +22979,7 @@ module plat {
 
                 return manager;
             }
-        
+
             /**
              * Clones an INodeMap with a new text node.
              * @param {plat.processing.INodeMap} sourceMap The original INodeMap.
@@ -21700,7 +22996,7 @@ module plat {
                     };
                 return nodeMap;
             }
-        
+
             /**
              * Clones a TextManager with a new text node.
              * @param {plat.processing.NodeManager} sourceManager The original NodeManager.
@@ -21721,13 +23017,7 @@ module plat {
 
                 return manager;
             }
-        
-            /**
-             * Specifies the type for this NodeManager. 
-             * It's value is "text".
-             */
-            type = 'text';
-        
+
             /**
              * Clones this TextManager with a new node.
              * @param {Node} newNode The new node attached to the cloned TextManager.
@@ -21738,7 +23028,7 @@ module plat {
                 TextManager._clone(this, newNode, parentManager);
                 return 1;
             }
-        
+
             /**
              * The function used for data-binding a data context to the DOM.
              */
@@ -21753,7 +23043,7 @@ module plat {
 
                 this._setText(textNode, parent, expressions);
             }
-        
+
             /**
              * Builds the node expression and sets the value.
              * @param {Node} Node The associated node whose value will be set.
@@ -21776,7 +23066,7 @@ module plat {
 
         register.injectable(__TextManagerFactory, ITextManagerFactory, null, __FACTORY);
         register.injectable(__TextManagerInstance, TextManager, null, __INSTANCE);
-    
+
         /**
          * Creates and manages a class for dealing with DOM Text Nodes.
          */
@@ -21793,11 +23083,19 @@ module plat {
             create(node: Node, parent?: ElementManager): TextManager;
         }
 
+
+
         /**
          * A class used to manage Comment nodes. Provides a way to 
          * clone a Comment node.
          */
         export class CommentManager extends NodeManager {
+            /**
+             * Specifies the type for this NodeManager. 
+             * It's value is "comment".
+             */
+            type: string = 'comment';
+
             /**
              * Creates a new CommentManager for the given Comment node.
              * @param {Node} node The Comment to associate with the new manager.
@@ -21816,13 +23114,7 @@ module plat {
 
                 return manager;
             }
-        
-            /**
-             * Specifies the type for this NodeManager. 
-             * It's value is "comment".
-             */
-            type: string = 'comment';
-        
+
             /**
              * A method for cloning this manager with a new Comment.
              * @param {Node} newNode The new Comment node to associate with the cloned
@@ -21845,7 +23137,7 @@ module plat {
 
         register.injectable(__CommentManagerFactory, ICommentManagerFactory, null, __FACTORY);
         register.injectable(__CommentManagerInstance, CommentManager, null, __INSTANCE);
-    
+
         /**
          * Creates and manages a class for dealing with Comment nodes.
          */
@@ -21884,6 +23176,16 @@ module plat {
             };
 
             /**
+             * A unique id, created during instantiation and found on every Navigator.
+             */
+            uid = uniqueId(__Plat);
+
+            /**
+             * States whether or not the Navigator is the root Navigator.
+             */
+            isRoot: boolean = false;
+
+            /**
              * The navigator associated with the root router.
              */
             protected static _root: Navigator;
@@ -21892,11 +23194,6 @@ module plat {
              * The IPromise injectable instance
              */
             protected _Promise: async.IPromise;
-
-            /**
-             * The Injector injectable instance
-             */
-            protected _Injector: typeof dependency.Injector;
 
             /**
              * The IBrowserConfig injectable instance
@@ -21931,17 +23228,7 @@ module plat {
             /**
              * The router associated with this navigator.
              */
-            router: Router;
-
-            /**
-             * A unique id, created during instantiation and found on every Navigator.
-             */
-            uid = uniqueId(__Plat);
-
-            /**
-             * States whether or not the Navigator is the root Navigator.
-             */
-            isRoot: boolean = false;
+            protected _router: Router;
 
             /**
              * A method to call to stop listening for url changes, only works on the root navigator.
@@ -21978,7 +23265,7 @@ module plat {
              * @param {plat.routing.Router} router The router that the navigator should use to match/generate routes.
              */
             initialize(router: Router): void {
-                this.router = router;
+                this._router = router;
 
                 if (isObject(router) && router.isRoot && !isObject(Navigator._root)) {
                     this.isRoot = true;
@@ -21995,8 +23282,8 @@ module plat {
             navigate(view: any, options?: INavigateOptions): async.IThenable<void> {
                 options = isObject(options) ? options : {};
                 var url: string;
-            
-                return this.finishNavigating().then(() => {
+
+                return this.finishNavigating().then((): async.IThenable<void> => {
                     if (options.isUrl) {
                         url = view;
                     } else {
@@ -22011,28 +23298,13 @@ module plat {
              * Returns a promise that resolves when all navigation has finished.
              */
             finishNavigating(): async.IThenable<void> {
-                var router = Navigator._root.router;
+                var router = Navigator._root._router;
 
                 if (router.navigating) {
                     return router.finishNavigating.catch(noop);
                 }
 
                 return this._Promise.resolve();
-            }
-
-            /**
-             * Internal method for navigating to the specified url.
-             */
-            protected _navigate(url: string, replace?: boolean): async.IThenable<void> {
-                if (!this.isRoot) {
-                    return Navigator._root._navigate(url, replace);
-                }
-
-                return new this._Promise<void>((resolve, reject) => {
-                    this._resolveNavigate = resolve;
-                    this._rejectNavigate = reject;
-                    this._browser.url(url, replace);
-                });
             }
 
             /**
@@ -22056,16 +23328,39 @@ module plat {
 
                 this._backNavigate = true;
                 return this.finishNavigating()
-                    .then(() => {
+                    .then((): async.IThenable<void> => {
                         return this._goBack(length);
                     });
             }
 
             /**
+             * Lets the router dispose of all of the necessary properties.
+             */
+            dispose(): void {
+                this._removeUrlListener();
+                deleteProperty(this, 'router');
+            }
+
+            /**
+             * Internal method for navigating to the specified url.
+             */
+            protected _navigate(url: string, replace?: boolean): async.IThenable<void> {
+                if (!this.isRoot) {
+                    return Navigator._root._navigate(url, replace);
+                }
+
+                return new this._Promise<void>((resolve, reject): void => {
+                    this._resolveNavigate = resolve;
+                    this._rejectNavigate = reject;
+                    this._browser.url(url, replace);
+                });
+            }
+
+            /**
              * Internal method for going back a certain length in history
              */
-            protected _goBack(length: number) {
-                return new this._Promise<void>((resolve, reject) => {
+            protected _goBack(length: number): async.IThenable<void> {
+                return new this._Promise<void>((resolve, reject): void => {
                     this._resolveNavigate = resolve;
                     this._rejectNavigate = reject;
                     this._browser.back(length);
@@ -22073,19 +23368,11 @@ module plat {
             }
 
             /**
-             * Lets the router dispose of all of the necessary properties.
-             */
-            dispose() {
-                this._removeUrlListener();
-                deleteProperty(this, 'router');
-            }
-
-            /**
              * The root navigator will always observe for url changes and handle them accordingly. This means instructing the 
              * router to navigate, and determining what to do in the event that navigation is prevented.
              */
-            protected _observeUrl() {
-                if (!isObject(this.router)) {
+            protected _observeUrl(): void {
+                if (!isObject(this._router)) {
                     return;
                 }
 
@@ -22095,42 +23382,11 @@ module plat {
                     previousUrl: string,
                     previousQuery: string,
                     backNavigate: boolean,
-                    _Exception = this._Exception;
-
-                this._previousUrl = this._browser.url();
-
-                // Protect against accidentally calling this method twice.
-                EventManager.dispose(this.uid);
-                EventManager.on(this.uid, __backButton,() => {
-                    var ev = EventManager.dispatch('backButtonPressed', this, EventManager.DIRECT);;
-
-                    if (ev.defaultPrevented) {
-                        return;
-                    }
-
-                    this.goBack();
-                });
-
-                EventManager.on(this.uid, __urlChanged, (ev: events.DispatchEvent, utils?: web.UrlUtils) => {
-                    if (this._ignoreOnce) {
-                        this._ignoreOnce = false;
-                        this._resolveNavigate();
-                        return;
-                    }
-
-                    backNavigate = this._backNavigate;
-                    this._backNavigate = false;
-                    previousUrl = this._previousUrl;
-
-                    this.finishNavigating()
-                    .then(() => {
-                        return this.router.navigate(utils.pathname, utils.query);
-                    }).then(() => {
-                        this._previousUrl = utils.pathname;
-                        if (isFunction(this._resolveNavigate)) {
-                            this._resolveNavigate();
-                        }
-                    }, (e: any) => {
+                    _Exception = this._Exception,
+                    ev: events.DispatchEvent,
+                    headControl: ui.controls.Head = acquire(__Head),
+                    headExists = isObject(headControl) && isFunction(headControl.navigated),
+                    onFailedNavigaton: (e: any) => void = (e: any): void => {
                         this._ignoreOnce = true;
                         this._previousUrl = previousUrl;
                         this._browser.url(previousUrl, !backNavigate);
@@ -22143,7 +23399,57 @@ module plat {
                         if (!isEmpty(e)) {
                             _Exception.warn(e, _Exception.NAVIGATION);
                         }
-                    });
+                    };
+
+                this._previousUrl = this._browser.url();
+
+                // Protect against accidentally calling this method twice.
+                EventManager.dispose(this.uid);
+                EventManager.on(this.uid, __backButton,(): void => {
+                    var ev = EventManager.dispatch('backButtonPressed', this, EventManager.DIRECT);;
+
+                    if (ev.defaultPrevented) {
+                        return;
+                    }
+
+                    this.goBack();
+                });
+
+                EventManager.on(this.uid, __urlChanged, (ev: events.DispatchEvent, utils?: web.UrlUtils): void => {
+                    if (this._ignoreOnce) {
+                        this._ignoreOnce = false;
+                        this._resolveNavigate();
+                        return;
+                    }
+
+                    backNavigate = this._backNavigate;
+                    this._backNavigate = false;
+                    previousUrl = this._previousUrl;
+
+                    ev = EventManager.dispatch(__beforeNavigate, this, EventManager.DIRECT, [utils]);
+
+                    if (ev.defaultPrevented) {
+                        onFailedNavigaton(new Error('Navigation prevented during ' + __beforeNavigate + ' event'));
+                        return;
+                    }
+
+                    this.finishNavigating()
+                        .then((): async.IThenable<void> => {
+
+                        EventManager.dispatch(__navigating, this, EventManager.DIRECT, [utils]);
+                        return this._router.navigate(utils.pathname, utils.query);
+                    }).then((): void => {
+                        this._previousUrl = utils.pathname;
+                        if (isFunction(this._resolveNavigate)) {
+                            this._resolveNavigate();
+                        }
+
+                        if (headExists) {
+                            headControl.navigated(utils.href);
+                        }
+
+                        EventManager.dispatch(__navigated, this, EventManager.DIRECT, [utils]);
+                    }, onFailedNavigaton);
                 });
             }
 
@@ -22151,7 +23457,7 @@ module plat {
              * Generates a url with the given view, parameters, and query.
              */
             protected _generate(view: any, parameters: any, query: any): string {
-                if (isNull(this.router)) {
+                if (isNull(this._router)) {
                     return;
                 }
 
@@ -22159,8 +23465,7 @@ module plat {
                     return view;
                 }
 
-                view = this._Injector.convertDependency(view);
-                return this.router.generate(view, parameters, query);
+                return this._router.generate(view, parameters, query);
             }
         }
 
@@ -22202,6 +23507,8 @@ module plat {
             length?: number;
         }
 
+
+
         /**
          * The Type for referencing the 'History' injectable as a dependency. 
          * Used so that the window.history can be mocked.
@@ -22211,6 +23518,8 @@ module plat {
         }
 
         register.injectable(__History, History, [__Window]);
+
+
 
         var specialCharacters = [
             '/', '.', '*', '+', '?', '|',
@@ -22231,6 +23540,26 @@ module plat {
              * Reference to the Regex injectable.
              */
             protected static _regex: expressions.Regex;
+
+            /**
+             * Denotes the type of segment for this instance.
+             */
+            type: string = __BASE_SEGMENT_TYPE;
+
+            /**
+             * The name of the segment.
+             */
+            name: string = '';
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            regex: string = '';
+
+            /**
+             * A regular expression string which can be used to match the segment.
+             */
+            protected _specification: ICharacterSpecification;
 
             /**
              * Parses a route into segments, populating an array of names (for dynamic and splat segments) as well as 
@@ -22305,26 +23634,6 @@ module plat {
             }
 
             /**
-             * Denotes the type of segment for this instance.
-             */
-            type: string = __BASE_SEGMENT_TYPE;
-
-            /**
-             * The name of the segment.
-             */
-            name: string = '';
-
-            /**
-             * A regular expression string which can be used to match the segment.
-             */
-            regex: string = '';
-
-            /**
-             * A regular expression string which can be used to match the segment.
-             */
-            protected _specification: ICharacterSpecification;
-
-            /**
              * Initializes the segment.
              * @param {string} name? The name for the new segment.
              */
@@ -22381,7 +23690,7 @@ module plat {
              * Initializes the segment.
              * @param {string} name? The name for the new segment.
              */
-            initialize(name?: string) {
+            initialize(name?: string): void {
                 super.initialize(name);
 
                 this.regex = this.name.replace(escapeRegex, '\\$1');
@@ -22422,7 +23731,7 @@ module plat {
              * Generates a new segment, using the input parameters.
              * @param {plat.IObject<string>} parameters? The input parameters for the segment.
              */
-            generate(parameters?: IObject<string>) {
+            generate(parameters?: IObject<string>): string {
                 if (isObject(parameters)) {
                     return parameters[this.name];
                 }
@@ -22525,6 +23834,8 @@ module plat {
             splats: number;
         }
 
+
+
         /**
          * Route segment matching is done using a state machine. Each state contains 
          * a specification indicating valid and invalid characters. Each State has a 
@@ -22534,12 +23845,40 @@ module plat {
          */
         export class State {
             /**
+             * The possible next states for the current state.
+             */
+            nextStates: Array<State>;
+
+            /**
+             * The specification for the 
+             * assigned route segment for this state.
+             */
+            specification: ICharacterSpecification;
+
+            /**
+             * The associated delegate objects for this 
+             * state, with their parameter names.
+             */
+            delegates: Array<IDelegateParameterNames>;
+
+            /**
+             * A regular expression to match this state to a path.
+             */
+            regex: RegExp;
+
+            /**
+             * The totals for the different segment types 
+             * for this state.
+             */
+            types: ISegmentTypeCount;
+
+            /**
              * Compiles a segment into a state tree.
              * @param {plat.routing.BaseSegment} segment The segment to compile.
              * @param {plat.routing.State} state The initial state with which to start compilation.
              */
             static compile(segment: BaseSegment, state: State): State {
-                return segment.reduceCharacters((s, char) => {
+                return segment.reduceCharacters((s, char): State => {
                     return s.add(char);
                 }, state);
             }
@@ -22621,7 +23960,7 @@ module plat {
                     bStatics: number,
                     bDynamics: number;
 
-                return states.sort((a, b) => {
+                return states.sort((a, b): number => {
                     aTypes = a.types;
                     bTypes = b.types;
                     aSplats = aTypes.splats;
@@ -22659,34 +23998,6 @@ module plat {
             }
 
             /**
-             * The possible next states for the current state.
-             */
-            nextStates: Array<State>;
-
-            /**
-             * The specification for the 
-             * assigned route segment for this state.
-             */
-            specification: ICharacterSpecification;
-
-            /**
-             * The associated delegate objects for this 
-             * state, with their parameter names.
-             */
-            delegates: Array<IDelegateParameterNames>;
-
-            /**
-             * A regular expression to match this state to a path.
-             */
-            regex: RegExp;
-
-            /**
-             * The totals for the different segment types 
-             * for this state.
-             */
-            types: ISegmentTypeCount;
-
-            /**
              * The constructor for a State.
              */
             constructor() {
@@ -22697,7 +24008,7 @@ module plat {
              * Initializes the state with the given specification.
              * @param {plat.routing.ICharacterSpecification} specification? The character specification for the state.
              */
-            initialize(specification?: ICharacterSpecification) {
+            initialize(specification?: ICharacterSpecification): void {
                 this.specification = specification;
                 this.nextStates = [];
             }
@@ -22734,12 +24045,12 @@ module plat {
              * a match.
              * @param {string} char The character with which to match next states.
              */
-            match(char: string) {
+            match(char: string): Array<State> {
                 var matches: Array<State> = [],
                     spec: ICharacterSpecification,
                     chars: string;
 
-                this._someChildren((child) => {
+                this._someChildren((child): boolean => {
                     spec = child.specification;
 
                     // Check for valid characters first
@@ -22771,7 +24082,7 @@ module plat {
                     s: ICharacterSpecification,
                     found: State;
 
-                this._someChildren((child) => {
+                this._someChildren((child): boolean => {
                     s = child.specification;
 
                     if (s.validCharacters === validChars &&
@@ -22796,8 +24107,8 @@ module plat {
              * @param {(child: plat.routing.State) => void} iterator The function with which to call for each 
              * State.
              */
-            protected _someChildren(iterator: (child: State) => void): void;
-            protected _someChildren(iterator: (child: State) => any) {
+            protected _someChildren(iterator: (child: State) => void): boolean;
+            protected _someChildren(iterator: (child: State) => any): boolean {
                 var nextStates = this.nextStates,
                     length = nextStates.length;
 
@@ -22806,6 +24117,8 @@ module plat {
                         return true;
                     }
                 }
+
+                return false;
             }
         }
 
@@ -22817,7 +24130,6 @@ module plat {
         }
 
         plat.register.injectable(__StateStatic, IStateStatic, null, __STATIC);
-
         plat.register.injectable(__StateInstance, State, null, __INSTANCE);
 
         /**
@@ -22907,7 +24219,7 @@ module plat {
                 finalState.types = types;
 
                 if (isObject(options) && isString(options.name)) {
-                    this._namedRoutes[options.name] = {
+                    this._namedRoutes[this._toLowerCase(options.name)] = {
                         segments: allSegments,
                         delegates: delegates
                     };
@@ -22920,7 +24232,7 @@ module plat {
              * @param {string} path The path to recognize.
              * returned.
              */
-            recognize(path: string) {
+            recognize(path: string): IRecognizeResult {
                 var isTrailingSlashDropped: boolean = false,
                     solutions: Array<State> = [];
 
@@ -22943,6 +24255,7 @@ module plat {
              * named route is dynamic.
              */
             generate(name: string, parameters?: IObject<string>): string {
+                name = this._toLowerCase(name);
                 var route = this._namedRoutes[name],
                     output = '',
                     segments: Array<BaseSegment>,
@@ -22976,6 +24289,7 @@ module plat {
              * @param {string} name The named route from which to get the delegates.
              */
             delegatesFor(name: string): Array<IDelegateParameterNames> {
+                name = this._toLowerCase(name);
                 var namedRoute = this._namedRoutes[name],
                     delegates: Array<IDelegateParameterNames>;
 
@@ -22997,7 +24311,19 @@ module plat {
              * @param {string} name The named route to search for.
              */
             exists(name: string): boolean {
-                return isObject(this._namedRoutes[name]);
+                return isObject(this._namedRoutes[this._toLowerCase(name)]);
+            }
+
+            /**
+             * Safely converts a string to lower case.
+             * @param {string} str The string to convert to lower case.
+             */
+            protected _toLowerCase(str: string): string {
+                if (!isString(str)) {
+                    return str;
+                }
+
+                return str.toLowerCase();
             }
 
             /**
@@ -23008,7 +24334,7 @@ module plat {
              * @param {string} regex The regular expression string built for the compiled routes. Used to recognize 
              * routes and associate them with the compiled routes.
              */
-            protected _finalize(state: State, regex: Array<string>) {
+            protected _finalize(state: State, regex: Array<string>): State {
                 if (state === this._rootState) {
                     state = state.add({
                         validCharacters: '/'
@@ -23252,11 +24578,137 @@ module plat {
                 _EventManager: __EventManagerStatic,
                 _browser: __Browser,
                 _browserConfig: __BrowserConfig,
-                recognizer: __RouteRecognizerInstance,
-                childRecognizer: __RouteRecognizerInstance
+                _recognizer: __RouteRecognizerInstance,
+                _childRecognizer: __RouteRecognizerInstance
             };
 
-            static currentRouter(router?: Router) {
+            /**
+             * The last instantiated router, useful for components wanting to find the most recently 
+             * created router in order to generate routes.
+             */
+            private static __currentRouter: Router;
+
+            /**
+             * Whether or not the router is currently navigating.
+             */
+            navigating: boolean = false;
+
+            /**
+             * A Promise That resolves when the router is done navigating.
+             */
+            finishNavigating: async.IThenable<void>;
+
+            /**
+             * The route information for the active route state.
+             */
+            currentRouteInfo: IRouteInfo;
+
+            /**
+             * The parent router to this router. Useful for generating and matching routes.
+             */
+            parent: Router;
+
+            /**
+             * All the registered children for this router. Useful for generating and matching routes.
+             */
+            children: Array<Router> = [];
+
+            /**
+             * A unique id for the router.
+             */
+            uid: string;
+
+            /**
+             * Whether or not this router is the root router (has no parent).
+             */
+            isRoot: boolean = false;
+
+            /**
+             * The route information for the next route state.
+             */
+            protected _nextRouteInfo: IRouteInfo;
+
+            /**
+             * The previous url matched for this router.
+             */
+            protected _previousUrl: string;
+
+            /**
+             * The previous query matched for this router.
+             */
+            protected _previousQuery: string;
+
+            /**
+             * The previous route segment matched for this router.
+             */
+            protected _previousSegment: string;
+
+            /**
+             * The previous registered route pattern matched for this router.
+             */
+            protected _previousPattern: string;
+
+            /**
+             * Used for registering, generating, and recognizing routes.
+             */
+            protected _recognizer: RouteRecognizer;
+
+            /**
+             * Used for registering, generating, and recognizing child routes.
+             */
+            protected _childRecognizer: RouteRecognizer;
+
+            /**
+             * An object containing transform methods for route parameters.
+             */
+            protected _paramTransforms: IObject<IRouteTransforms> = {};
+
+            /**
+             * An object containing transform methods for query parameters.
+             */
+            protected _queryTransforms: IObject<IRouteTransforms> = {};
+
+            /**
+             * An object containing interceptor methods for particular routes.
+             */
+            protected _interceptors: IObject<Array<(routeInfo: IRouteInfo) => any>> = {};
+
+            /**
+             * All the registered Viewports for the router.
+             */
+            protected _ports: Array<ISupportRouteNavigation> = [];
+
+            /**
+             * The Promise injectable
+             */
+            protected _Promise: async.IPromise;
+
+            /**
+             * The Injector class, used to match ViewControls to their registered tokens.
+             */
+            protected _Injector: typeof dependency.Injector;
+
+            /**
+             * Used to grab the initial url for the router if necessary.
+             */
+            protected _browser: web.Browser;
+
+            /**
+             * A shortcut to the Promise.resolve function.
+             */
+            protected _resolve: typeof async.Promise.resolve = this._Promise.resolve.bind(this._Promise);
+
+            /**
+             * A shortcut to the Promise.reject function.
+             */
+            protected _reject: typeof async.Promise.reject = this._Promise.reject.bind(this._Promise);
+
+            /**
+             * Exposes the current router property. Also provides the 
+             * ability to set the current router.
+             * @param {plat.routing.Router} router Will set the current router.
+             */
+            static currentRouter(router?: Router): Router {
                 if (!isNull(router)) {
                     Router.__currentRouter = router;
                 }
@@ -23264,40 +24716,9 @@ module plat {
                 return Router.__currentRouter;
             }
 
-            private static __currentRouter: Router;
-
-            protected _Promise: async.IPromise;
-            protected _Injector: typeof dependency.Injector;
-            protected _EventManager: events.IEventManagerStatic;
-            protected _browser: web.Browser;
-            protected _browserConfig: web.IBrowserConfig;
-            protected _resolve: typeof async.Promise.resolve = this._Promise.resolve.bind(this._Promise);
-            protected _reject: typeof async.Promise.reject = this._Promise.reject.bind(this._Promise);
-
-            recognizer: RouteRecognizer;
-            childRecognizer: RouteRecognizer;
-
-            paramTransforms: IObject<IRouteTransforms> = {};
-            queryTransforms: IObject<IRouteTransforms> = {};
-            interceptors: IObject<Array<(routeInfo: IRouteInfo) => any>> = {};
-
-            navigating: boolean = false;
-            finishNavigating: async.IThenable<void>;
-
-            previousUrl: string;
-            previousQuery: string;
-            previousSegment: string;
-            previousPattern: string;
-
-            currentRouteInfo: IRouteInfo;
-
-            ports: Array<ISupportRouteNavigation> = [];
-            parent: Router;
-            children: Array<Router> = [];
-            uid: string;
-            isRoot: boolean = false;
-            ignoreOnce = false;
-
+            /**
+             * Instantiates a new router and sets it as the current router.
+             */
             constructor() {
                 this.uid = uniqueId(__Plat);
                 this.isRoot = isNull(Router.currentRouter());
@@ -23305,11 +24726,19 @@ module plat {
                 this.initialize();
             }
 
-            initialize(parent?: Router) {
+            /**
+             * Initializes a router, giving it a parent router to link to if necessary.
+             * @param {plat.routing.Router} parent? The parent router to link.
+             */
+            initialize(parent?: Router): void {
                 this.parent = parent;
             }
 
-            addChild(child: Router) {
+            /**
+             * Registers a child router with the current router.
+             * @param {plat.routing.Router} child A child router.
+             */
+            addChild(child: Router): Router {
                 if (isNull(child) || this.children.indexOf(child) > -1) {
                     return child;
                 }
@@ -23320,7 +24749,11 @@ module plat {
                 return child;
             }
 
-            removeChild(child: Router) {
+            /**
+             * Removes a child from the router's children, if it exists.
+             * @param {plat.routing.Router} child The child router to remove.
+             */
+            removeChild(child: Router): void {
                 var children = this.children,
                     index = this.children.indexOf(child);
 
@@ -23331,8 +24764,14 @@ module plat {
                 children.splice(index, 1);
             }
 
-            register(port: ISupportRouteNavigation) {
-                var ports = this.ports;
+            /**
+             * Registers a Viewport (or similar object) with the 
+             * router, and triggers a navigation if possible.
+             * @param {plat.routing.ISupportRouteNavigation} port An object that supports all the navigation events.
+             * triggered navigation has finished.
+             */
+            register(port: ISupportRouteNavigation): async.IThenable<void> {
+                var ports = this._ports;
 
                 if (isNull(port) || ports.indexOf(port) > -1) {
                     return this._resolve();
@@ -23340,33 +24779,38 @@ module plat {
 
                 ports.push(port);
 
-                if (isObject(this.currentRouteInfo)) {
-                    this.navigating = true;
-                    return this._resolve(this.finishNavigating)
-                        .catch(() => { })
-                        .then(() => {
-                            var routeInfo = _clone(this.currentRouteInfo, true);
-                            return this.finishNavigating = this.canNavigateTo(routeInfo)
-                                .then((canNavigateTo) => {
-                                if (!canNavigateTo) {
-                                    return;
-                                }
-                                this.currentRouteInfo = undefined;
-                                return this.performNavigation(routeInfo);
-                            }).then(() => {
-                                this.navigating = false;
-                                this.currentRouteInfo = routeInfo;
-                            },() => {
-                                this.navigating = false;
-                            });
-                        });
+                if (!isObject(this.currentRouteInfo)) {
+                    return this._resolve();
                 }
 
-                return this._Promise.resolve();
+                this.navigating = true;
+                return this._resolve(this.finishNavigating)
+                    .catch((): void => { })
+                    .then((): async.IThenable<void> => {
+                    var routeInfo = _clone(this.currentRouteInfo, true);
+                    return this.finishNavigating = this._canNavigateTo(routeInfo)
+                        .then((canNavigateTo): async.IThenable<void> => {
+                        if (!canNavigateTo) {
+                            return;
+                        }
+                        this.currentRouteInfo = undefined;
+                        return this._performNavigation(routeInfo);
+                    }).then((): void => {
+                        this.navigating = false;
+                        this.currentRouteInfo = routeInfo;
+                    },(): void => {
+                            this.navigating = false;
+                        });
+                });
             }
 
-            unregister(port: ISupportRouteNavigation) {
-                var ports = this.ports,
+            /**
+             * Unregisters a Viewport (or similar object) with the 
+             * router in order to stop receiving navigation events.
+             * @param {plat.routing.ISupportRouteNavigation} port An object that supports all the navigation events.
+             */
+            unregister(port: ISupportRouteNavigation): void {
+                var ports = this._ports,
                     index = ports.indexOf(port);
 
                 if (index < 0) {
@@ -23380,21 +24824,267 @@ module plat {
                 }
             }
 
-            configure(routes: IRouteMapping): async.IThenable<void>;
+            /**
+             * Configures routes for the router to match. Routes contain the information necessary to map a 
+             * route to a particular ViewControl. Also forces a navigation.
+             * @param {plat.routing.IRouteMapping} route A route mapping to register.
+             * forced navigation is complete.
+             */
+            configure(route: IRouteMapping): async.IThenable<void>;
+            /**
+             * Configures routes for the router to match. Routes contain the information necessary to map a 
+             * route to a particular ViewControl. Also forces a navigation.
+             * @param {Array<plat.routing.IRouteMapping>} routes Route mappings to register.
+             * forced navigation is complete.
+             */
             configure(routes: Array<IRouteMapping>): async.IThenable<void>;
-            configure(routes: any) {
+            configure(routes: any): async.IThenable<void> {
                 if (isArray(routes)) {
-                    forEach((route: IRouteMapping) => {
+                    forEach((route: IRouteMapping): void => {
                         this._configureRoute(route);
                     }, routes);
                 } else {
                     this._configureRoute(routes);
                 }
 
-                return this.forceNavigate();
+                return this._forceNavigate();
             }
 
-            protected _configureRoute(route: IRouteMapping) {
+            /**
+             * Registers a handler for a route parameter. When a route is a variable route (e.g. /posts/:id), all the param handlers 
+             * registered for the particular view and parameter "id" will be called. The call to the handler is blocking, so the handler 
+             * can return a promise while it processes the parameter. All the handlers for a parameter will be called in the order in which 
+             * they were registered, with the catch-all (i.e. '*') handlers being called first. Param handlers will be called after all the 
+             * query param handlers have been processed. Param handlers are called prior to calling the "canNavigateTo" pipeline.
+             * @param {(value: any, parameters: any, query: any) => any} handler A method that will manipulate the registered parameter.
+             * @param {string} parameter The parameter that the registered handler will modify.
+             * @param {new (...args: any[]) => any} view The view used to match the route. If left out, all routes will be matched.
+             */
+            param(handler: (value: any, parameters: any, query: any) => any, parameter: string, view?: new (...args: any[]) => any): Router;
+            /**
+             * Registers a handler for a route parameter. When a route is a variable route (e.g. /posts/:id), all the param handlers 
+             * registered for the particular view and parameter "id" will be called. The call to the handler is blocking, so the handler 
+             * can return a promise while it processes the parameter. All the handlers for a parameter will be called in the order in which 
+             * they were registered, with the catch-all (i.e. '*') handlers being called first. Param handlers will be called after all the 
+             * query param handlers have been processed. Param handlers are called prior to calling the "canNavigateTo" pipeline.
+             * @param {(value: any, parameters: any, query: any) => any} handler A method that will manipulate the registered parameter.
+             * @param {string} parameter The parameter that the registered handler will modify.
+             * @param {string} view The view's registered token used to match the route. If left out, all routes will be matched.
+             */
+            param(handler: (value: any, parameters: any, query: any) => any, parameter: string, view?: string): Router;
+            param(handler: (value: any, parameters: any, query: any) => any, parameter: string, view?: any): Router {
+                return this._addHandler(handler, parameter, view, this._paramTransforms);
+            }
+
+            /**
+             * Registers a handler for a query parameter. When a route contains a query string (e.g. '?start=0'), it will be serialized into an object.
+             * Then, all the queryParam handlers registered for the particular view and query parameter "start" will be called. The call to the handler 
+             * is blocking, so the handler can return a promise while it processes the parameter. All the handlers for a parameter will be called in the 
+             * order in which they were registered, with the catch-all (i.e. '*') handlers being called first. Query param handlers are called prior to 
+             * calling the "canNavigateTo" pipeline.
+             * @param {(value: any, query: any) => any} handler A method that will manipulate the registered parameter.
+             * @param {string} parameter The parameter that the registered handler will modify.
+             * @param {new (...args: any[]) => any} view The view used to match the route. If left out, all routes will be matched.
+             */
+            queryParam(handler: (value: any, query: any) => any, parameter: string, view?: new (...args: any[]) => any): Router;
+            /**
+             * Registers a handler for a query parameter. When a route contains a query string (e.g. '?start=0'), it will be serialized into an object.
+             * Then, all the queryParam handlers registered for the particular view and query parameter "start" will be called. The call to the handler 
+             * is blocking, so the handler can return a promise while it processes the parameter. All the handlers for a parameter will be called in the 
+             * order in which they were registered, with the catch-all (i.e. '*') handlers being called first. Query param handlers are called prior to 
+             * calling the "canNavigateTo" pipeline.
+             * @param {(value: any, query: any) => any} handler A method that will manipulate the registered parameter.
+             * @param {string} parameter The parameter that the registered handler will modify.
+             * @param {string} view The view's registered token used to match the route. If left out, all routes will be matched.
+             */
+            queryParam(handler: (value: any, query: any) => any, parameter: string, view?: string): Router;
+            queryParam(handler: (value: string, query: any) => any, parameter: string, view?: any): Router {
+                return this._addHandler(handler, parameter, view, this._queryTransforms);
+            }
+
+            /**
+             * Registers a handler for a particular route, or all routes. When the route changes, the interceptors registered for the route will be 
+             * called in-order (starting with the catch-all interceptors), and they have the opportunity to modify the route information, as well as 
+             * prevent navigation from occuring. Interceptors are called prior to calling the "canNavigateTo" pipeline.
+             * @param {(routeInfo: plat.routing.IRouteInfo) => any} interceptor A method that will process the current route.
+             * @param {new (...args: any[]) => any} view The view used to match the route. If left out, all routes will be matched.
+             */
+            intercept(handler: (routeInfo: IRouteInfo) => any, view?: new (...args: any[]) => any): Router;
+            /**
+             * Registers a handler for a particular route, or all routes. When the route changes, the interceptors registered for the route will be 
+             * called in-order (starting with the catch-all interceptors), and they have the opportunity to modify the route information, as well as 
+             * prevent navigation from occuring. Interceptors are called prior to calling the "canNavigateTo" pipeline.
+             * @param {(routeInfo: plat.routing.IRouteInfo) => any} interceptor A method that will process the current route.
+             * @param {string} view The view's registered token used to match the route. If left out, all routes will be matched.
+             */
+            intercept(interceptor: (routeInfo: IRouteInfo) => any, view?: string): Router;
+            intercept(interceptor: (routeInfo: IRouteInfo) => any, view?: any): Router {
+                if (isUndefined(view)) {
+                    view = '*';
+                }
+
+                if (view !== '*') {
+                    view = this._Injector.convertDependency(view);
+                }
+
+                var interceptors = this._interceptors[view];
+
+                if (!isArray(interceptors)) {
+                    interceptors = this._interceptors[view] = [];
+                }
+
+                interceptors.push(interceptor);
+
+                return this;
+            }
+
+            /**
+             * Tells the router to match a new route. The router will attempt to find the route and if it succeeds it will 
+             * attempt to navigate to it. If it fails, it will return a Promise that rejects.
+             * @param {string} url The new route to match.
+             * @param {plat.IObject<any>} query The query parameters for the route.
+             * @param {boolean} force Whether or not to force navigation, even if the same url has already been matched.
+             * the navigation.
+             */
+            navigate(url: string, query?: IObject<any>, force?: boolean): async.IThenable<void> {
+                if (!isObject(query)) {
+                    query = {};
+                }
+
+                var resolve = this._resolve,
+                    reject = this._reject,
+                    queryString = serializeQuery(query);
+
+                if (url === '/') {
+                    url = '';
+                }
+
+                force = force === true;
+
+                if (!isString(url) || this.navigating || (!force && url === this._previousUrl && queryString === this._previousQuery)) {
+                    if (this.navigating) {
+                        return this.finishNavigating.then((): async.IThenable<void> => {
+                            return this.navigate(url, query, force);
+                        });
+                    }
+
+                    return resolve();
+                }
+
+                var result: IRouteResult = this._recognizer.recognize(url),
+                    routeInfo: IRouteInfo,
+                    pattern: string,
+                    segment: string;
+
+                if (isEmpty(result)) {
+                    result = this._childRecognizer.recognize(url);
+
+                    if (isEmpty(result)) {
+                        // route has not been matched
+                        this._previousUrl = url;
+                        this._previousQuery = queryString;
+                        return resolve();
+                    }
+
+                    routeInfo = result[0];
+                    routeInfo.query = query;
+                    pattern = routeInfo.delegate.pattern;
+                    pattern = pattern.substr(0, pattern.length - __CHILD_ROUTE_LENGTH);
+                    if (this._previousPattern === pattern) {
+                        // the pattern for this router is the same as the last pattern so 
+                        // only navigate child routers.
+                        this.navigating = true;
+                        return this.finishNavigating = this._navigateChildren(routeInfo)
+                            .then((): void => {
+                            this._previousUrl = url;
+                            this._previousQuery = queryString;
+                            this.navigating = false;
+                        },(e: any): void => {
+                                this.navigating = false;
+                                throw e;
+                            });
+                    }
+                } else {
+                    routeInfo = result[0];
+                    routeInfo.query = query;
+                    pattern = routeInfo.delegate.pattern;
+                }
+
+                segment = this._recognizer.generate(routeInfo.delegate.view, routeInfo.parameters);
+
+                this.navigating = true;
+
+                var routeInfoCopy = this._nextRouteInfo = _clone(routeInfo, true);
+                return this.finishNavigating = this._canNavigate(routeInfo)
+                    .then((canNavigate: boolean): async.IThenable<void> => {
+                    if (!canNavigate) {
+                        this.navigating = false;
+                        throw new Error('Not cleared to navigate');
+                    }
+
+                    this._previousUrl = url;
+                    this._previousQuery = queryString;
+
+                    return this._performNavigation(routeInfo);
+                }).then((): void => {
+                    this._previousPattern = pattern;
+                    this._previousSegment = segment;
+                    this.currentRouteInfo = routeInfoCopy;
+                    this.navigating = false;
+                },(e: any): void => {
+                        this.navigating = false;
+                        throw e;
+                    });
+            }
+
+            /**
+             * Attempts to generate a route with the specified route name. Will generate the full-path from the root 
+             * router.
+             * @param {new (...args: any[]) => any} name The Constructor of the named-route to generate.
+             * @param {plat.IObject<string>} parameters? Any parameters used to generate the route.
+             * @param {plat.IObject<string>} query? Any query parameters to append to the generated route.
+             */
+            generate(name: new (...args: any[]) => any, parameters?: IObject<string>, query?: IObject<string>): string;
+            /**
+             * Attempts to generate a route with the specified route name. Will generate the full-path from the root 
+             * router.
+             * @param {string} name The name of the route to generate.
+             * @param {plat.IObject<string>} parameters? Any parameters used to generate the route.
+             * @param {plat.IObject<string>} query? Any query parameters to append to the generated route.
+             */
+            generate(name: string, parameters?: IObject<string>, query?: IObject<string>): string;
+            generate(name: any, parameters?: IObject<string>, query?: IObject<string>): string {
+                name = this._Injector.convertDependency(name);
+
+                var router = this,
+                    prefix = '';
+
+                while (!isNull(router) && !router._recognizer.exists(name)) {
+                    router = router.parent;
+                }
+
+                if (isNull(router)) {
+                    throw new Error('Route for ' + name + ' does not exist.');
+                }
+
+                var path = router._recognizer.generate(name, parameters),
+                    previous: string;
+
+                while (!isNull(router = router.parent)) {
+                    previous = router._previousSegment;
+                    previous = (!isNull(previous) && previous !== '/') ? previous : '';
+                    prefix = previous + prefix;
+                }
+
+                return prefix + path + serializeQuery(query);
+            }
+
+            /**
+             * Configures a route mapping and registers it with the RouteRecognizer and the child 
+             * RouteRecognizer.
+             * @param {plat.routing.IRouteMapping} route The mapping used to configure the route.
+             */
+            protected _configureRoute(route: IRouteMapping): void {
                 var resolve = this._resolve,
                     view: string = this._Injector.convertDependency(route.view);
 
@@ -23417,23 +25107,18 @@ module plat {
                         }
                     };
 
-                this.recognizer.register([routeDelegate], { name: view });
-                this.childRecognizer.register([childDelegate]);
+                this._recognizer.register([routeDelegate], { name: view });
+                this._childRecognizer.register([childDelegate]);
             }
 
-            param(handler: (value: any, parameters: any, query: any) => any, parameter: string, view: string): Router;
-            param(handler: (value: any, parameters: any, query: any) => any, parameter: string, view: new (...args: any[]) => any): Router;
-            param(handler: (value: any, parameters: any, query: any) => any, parameter: string, view: any) {
-                return this._addHandler(handler, parameter, view, this.paramTransforms);
-            }
-
-            queryParam(handler: (value: any, query: any) => any, parameter: string, view: string): Router;
-            queryParam(handler: (value: any, query: any) => any, parameter: string, view: new (...args: any[]) => any): Router;
-            queryParam(handler: (value: string, query: any) => any, parameter: string, view: any) {
-                return this._addHandler(handler, parameter, view, this.queryTransforms);
-            }
-
-            protected _addHandler(handler: (value: string, values: any, query?: any) => any, parameter: string, view: any, handlers: IObject<IRouteTransforms>) {
+            /**
+             * Generic method for adding a param/queryParam handler to the registered handlers object.
+             * @param {(value: any, query: any) => any} handler A method that will manipulate the registered parameter.
+             * @param {string} parameter The parameter that the registered handler will modify.
+             * @param {any} view The view used to match the route. If undefined, all routes will be matched.
+             * @param {plat.IObject<plat.routing.IRouteTransforms>} handlers The object to which to add the handler.
+             */
+            protected _addHandler(handler: (value: string, values: any, query?: any) => any, parameter: string, view: any, handlers: IObject<IRouteTransforms>): Router {
                 if (isUndefined(view)) {
                     view = '*';
                 }
@@ -23463,186 +25148,57 @@ module plat {
                 return this;
             }
 
-            intercept(handler: (routeInfo: IRouteInfo) => any, view?: string): Router;
-            intercept(handler: (routeInfo: IRouteInfo) => any, view?: new (...args: any[]) => any): Router;
-            intercept(handler: (routeInfo: IRouteInfo) => any, view?: any) {
-                if (isUndefined(view)) {
-                    view = '*';
-                }
-
-                if (view !== '*') {
-                    view = this._Injector.convertDependency(view);
-                }
-
-                var interceptors = this.interceptors[view];
-
-                if (!isArray(interceptors)) {
-                    interceptors = this.interceptors[view] = [];
-                }
-
-                interceptors.push(handler);
-
-                return this;
-            }
-
-            navigate(url: string, query?: IObject<any>, force?: boolean): async.IThenable<void> {
-                if (!isObject(query)) {
-                    query = {};
-                }
-
-                var resolve = this._resolve,
-                    reject = this._reject,
-                    queryString = serializeQuery(query);
-
-                if (url === '/') {
-                    url = '';
-                }
-
-                force = force === true;
-
-                if (!isString(url) || this.navigating || (!force && url === this.previousUrl && queryString === this.previousQuery)) {
-                    if (this.navigating) {
-                        return this.finishNavigating.then(() => {
-                            return this.navigate(url, query, force);
-                        });
-                    }
-
-                    return resolve();
-                }
-
-                var result: IRouteResult = this.recognizer.recognize(url),
-                    routeInfo: IRouteInfo,
-                    pattern: string,
-                    segment: string;
-
-                if (isEmpty(result)) {
-                    result = this.childRecognizer.recognize(url);
-
-                    if (isEmpty(result)) {
-                        // route has not been matched
-                        this.previousUrl = url;
-                        this.previousQuery = queryString;
-                        return resolve();
-                    }
-
-                    routeInfo = result[0];
-                    routeInfo.query = query;
-                    pattern = routeInfo.delegate.pattern;
-                    pattern = pattern.substr(0, pattern.length - __CHILD_ROUTE_LENGTH);
-                    if (this.previousPattern === pattern) {
-                        // the pattern for this router is the same as the last pattern so 
-                        // only navigate child routers.
-                        this.navigating = true;
-                        return this.finishNavigating = this.navigateChildren(routeInfo)
-                            .then(() => {
-                            this.previousUrl = url;
-                            this.previousQuery = queryString;
-                            this.navigating = false;
-                            },(e) => {
-                                this.navigating = false;
-                                throw e;
-                            });
-                    }
-                } else {
-                    routeInfo = result[0];
-                    routeInfo.query = query;
-                    pattern = routeInfo.delegate.pattern;
-                }
-            
-                segment = this.recognizer.generate(routeInfo.delegate.view, routeInfo.parameters);
-
-                this.navigating = true;
-
-                var routeInfoCopy = _clone(routeInfo, true);
-                return this.finishNavigating = this.canNavigate(routeInfo)
-                .then((canNavigate: boolean) => {
-                    if (!canNavigate) {
-                        this.navigating = false;
-                        throw new Error('Not cleared to navigate');
-                    }
-
-                    this.previousUrl = url;
-                    this.previousQuery = queryString;
-
-                    return this.performNavigation(routeInfo);
-                }).then(() => {
-                    if (!isEmpty(this.ports)) {
-                        this.previousPattern = pattern;
-                    }
-
-                    this.previousSegment = segment;
-                    this.currentRouteInfo = routeInfoCopy;
-                    this.navigating = false;
-                },(e) => {
-                    this.navigating = false;
-                    throw e;
-                });
-            }
-
-            forceNavigate(): async.IThenable<void> {
+            /**
+             * Forces a navigation if possible.
+             */
+            protected _forceNavigate(): async.IThenable<void> {
                 var resolve = this._resolve,
                     query: IObject<any>;
 
                 if (this.navigating) {
-                    return this.finishNavigating.then(() => {
-                        return this.forceNavigate();
+                    return this.finishNavigating.then((): async.IThenable<void> => {
+                        return this._forceNavigate();
                     });
                 }
 
-                if (this.isRoot && isEmpty(this.previousUrl)) {
+                if (this.isRoot && isEmpty(this._previousUrl)) {
                     var utils = this._browser.urlUtils();
-                    this.previousUrl = utils.pathname;
+                    this._previousUrl = utils.pathname;
                     query = utils.query;
                 }
 
-                if (!isEmpty(this.previousQuery)) {
-                    query = deserializeQuery(this.previousQuery);
+                if (!isEmpty(this._previousQuery)) {
+                    query = deserializeQuery(this._previousQuery);
                 }
 
-                if (!isEmpty(this.previousUrl)) {
-                    return this.navigate(this.previousUrl, query, true);
+                if (!isEmpty(this._previousUrl)) {
+                    return this.navigate(this._previousUrl, query, true);
                 }
 
                 return resolve();
             }
 
-            generate(name: string, parameters?: IObject<any>, query?: IObject<string>) {
-                var router = this,
-                    prefix = '';
-
-                while (!isNull(router) && !router.recognizer.exists(name)) {
-                    router = router.parent;
-                }
-
-                if (isNull(router)) {
-                    throw new Error('Route: ' + name + ' does not exist');
-                }
-
-                var path = router.recognizer.generate(name, parameters),
-                    previous: string;
-
-                while (!isNull(router = router.parent)) {
-                    previous = router.previousSegment;
-                    previous = (!isNull(previous) && previous !== '/') ? previous : '';
-                    prefix = previous + prefix;
-                }
-
-                return prefix + path + serializeQuery(query);
-            }
-
-            navigateChildren(info: IRouteInfo) {
-                var childRoute = this.getChildRoute(info);
+            /**
+             * Navigates the child routers.
+             * @param {plat.routing.IRouteInfo} info The information necessary to build the childRoute for the child routers.
+             */
+            protected _navigateChildren(info: IRouteInfo): async.IThenable<void> {
+                var childRoute = this._getChildRoute(info);
 
                 if (isNull(childRoute)) {
                     return this._resolve();
                 }
 
-                return mapAsync((child: Router) => {
+                return mapAsync((child: Router): async.IThenable<void> => {
                     return child.navigate(childRoute, info.query);
                 }, this.children).then(noop);
             }
 
-            getChildRoute(info: IRouteInfo) {
+            /**
+             * Parses out the child route from route information.
+             * @param {plat.routing.IRouteInfo} info The information necessary to get the child route.
+             */
+            protected _getChildRoute(info: IRouteInfo): string {
                 if (isNull(info)) {
                     return;
                 }
@@ -23656,159 +25212,171 @@ module plat {
                 return '/' + childRoute;
             }
 
-            performNavigation(info: IRouteInfo): async.IThenable<void> {
-                var sameRoute = this._isSameRoute(info);
+            /**
+             * It is safe to navigate, so perform the navigation.
+             * @param {plat.routing.IRouteInfo} info The route information.
+             */
+            protected _performNavigation(info: IRouteInfo): async.IThenable<void> {
+                var sameRoute = this._isSameRoute(this._nextRouteInfo);
 
-                return this.performNavigateFrom(sameRoute).then(() => {
+                return this._performNavigateFrom(sameRoute).then((): async.IThenable<Array<void>> => {
                     if (sameRoute) {
                         return;
                     }
 
-                    return mapAsync((port: ISupportRouteNavigation) => {
+                    return mapAsync((port: ISupportRouteNavigation): async.IThenable<void> => {
                         return port.navigateTo(info);
-                    }, this.ports);
+                    }, this._ports);
                 })
-                    .then(() => {
-                    return this.navigateChildren(info);
+                    .then((): async.IThenable<void> => {
+                    return this._navigateChildren(info);
                 });
             }
 
-            performNavigateFrom(ignorePorts?: boolean): async.IThenable<void> {
-                return mapAsync((child: Router) => {
-                    return child.performNavigateFrom();
+            /**
+             * It is safe to navigate, so fire the navigateFrom events.
+             * @param {boolean} ignorePorts? Ignores the ports if necessary.
+             */
+            protected _performNavigateFrom(ignorePorts?: boolean): async.IThenable<void> {
+                return mapAsync((child: Router): async.IThenable<void> => {
+                    return child._performNavigateFrom();
                 }, this.children)
-                    .then(() => {
+                    .then((): async.IThenable<Array<void>> => {
                     if (ignorePorts) {
                         return;
                     }
 
-                    return mapAsync((port: ISupportRouteNavigation) => {
+                    return mapAsync((port: ISupportRouteNavigation): async.IThenable<void> => {
                         return port.navigateFrom();
-                    }, this.ports);
+                    }, this._ports);
                 }).then(noop);
             }
 
-            canNavigate(info: IRouteInfo) {
+            /**
+             * Determines if we can navigate from the current state and navigate to the next state.
+             * @param {plat.routing.IRouteInfo} info The route information.
+             */
+            protected _canNavigate(info: IRouteInfo): async.IThenable<boolean> {
                 var currentRouteInfo = this.currentRouteInfo,
-                    sameRoute = this._isSameRoute(info);
+                    sameRoute = this._isSameRoute(this._nextRouteInfo);
 
-                return this.canNavigateFrom(sameRoute)
-                    .then((canNavigateFrom: boolean) => {
-                    return canNavigateFrom && this.canNavigateTo(info, sameRoute);
+                return this._canNavigateFrom(sameRoute)
+                    .then((canNavigateFrom: boolean): async.IThenable<boolean> => {
+                    return canNavigateFrom && this._canNavigateTo(info, sameRoute);
                 });
             }
 
-            callAllHandlers(view: string, parameters: any, query?: any): async.IThenable<void> {
+            /**
+             * Determines if we can navigate from the current state and navigate to the next state.
+             * @param {boolean} ignorePorts Ignores the ports if necessary.
+             */
+            protected _canNavigateFrom(ignorePorts?: boolean): async.IThenable<boolean> {
+                return this._Promise.all(this.children.reduce((promises: Array<async.IThenable<boolean>>, child: Router): Array<async.IThenable<boolean>> => {
+                    return promises.concat(child._canNavigateFrom());
+                }, <Array<async.IThenable<boolean>>>[]))
+                    .then(booleanReduce)
+                    .then((canNavigateFrom: boolean): async.IThenable<Array<boolean>> => {
+                    if (!canNavigateFrom || ignorePorts) {
+                        return <any>[canNavigateFrom];
+                    }
+
+                    return mapAsync((port: ISupportRouteNavigation): async.IThenable<boolean> => {
+                        return port.canNavigateFrom();
+                    }, this._ports);
+                }).then(booleanReduce);
+            }
+
+            /**
+             * Determines if we can navigate to the next state.
+             * @param {plat.routing.IRouteInfo} info The route information.
+             * @param {boolean} ignorePorts Ignores the ports if necessary.
+             */
+            protected _canNavigateTo(info: IRouteInfo, ignorePorts?: boolean): async.IThenable<boolean> {
+                var promises: Array<any> = [];
+                if (isEmpty(this._ports)) {
+                    return this._resolve(true);
+                }
+                return this._callAllHandlers(info.delegate.view, info.parameters, info.query).then((): async.IThenable<boolean> => {
+                    return this._callInterceptors(info);
+                }).then((canNavigateTo): async.IThenable<Array<boolean>> => {
+                    if (canNavigateTo === false || ignorePorts) {
+                        return <any>[canNavigateTo];
+                    }
+
+                    return mapAsync((port: ISupportRouteNavigation): async.IThenable<boolean> => {
+                        return port.canNavigateTo(info);
+                    }, this._ports);
+                }).then(booleanReduce);
+            }
+
+            /**
+             * Calls all the registered query and param transforms for a route.
+             * @param {string} view The associated view for the route.
+             * @param {any} parameters The route parameters.
+             * @param {any} query? The query parameters.
+             */
+            protected _callAllHandlers(view: string, parameters: any, query?: any): async.IThenable<void> {
                 var Promise = this._Promise,
                     resolve = Promise.resolve.bind(Promise);
 
-                return this.callHandlers(this.queryTransforms['*'], query)
-                    .then(() => this.callHandlers(this.queryTransforms[view], query))
-                    .then(() => this.callHandlers(this.paramTransforms['*'], parameters, query))
-                    .then(() => this.callHandlers(this.paramTransforms[view], parameters, query))
+                return this._callHandlers(this._queryTransforms['*'], query)
+                    .then((): async.IThenable<void> => this._callHandlers(this._queryTransforms[view], query))
+                    .then((): async.IThenable<void> => this._callHandlers(this._paramTransforms['*'], parameters, query))
+                    .then((): async.IThenable<void> => this._callHandlers(this._paramTransforms[view], parameters, query))
                     .then(noop);
             }
 
-            callHandlers(allHandlers: IRouteTransforms, obj: any, query?: any) {
+            /**
+             * Calls the associated transform functions.
+             * @param {plat.routing.IRouteTransforms} allHandlers The transform functions
+             * @param {any} obj The parameters.
+             * @param {any} query? The query parameters.
+             */
+            protected _callHandlers(allHandlers: IRouteTransforms, obj: any, query?: any): async.IThenable<void> {
                 var resolve = this._resolve;
                 if (!isObject(obj)) {
                     obj = {};
                 }
 
-                return mapAsync((handlers: Array<(value: string, values: any, query?: any) => any>, key: string) => {
-                    return mapAsyncInOrder((handler) => {
+                return mapAsync((handlers: Array<(value: string, values: any, query?: any) => any>, key: string): async.IThenable<Array<any>> => {
+                    return mapAsyncInOrder((handler): async.IThenable<any> => {
                         return resolve(handler(obj[key], obj, query));
                     }, handlers);
-                }, allHandlers);
+                }, allHandlers)
+                    .then(noop);
             }
 
-            callInterceptors(info: IRouteInfo): async.IThenable<boolean> {
+            /**
+             * Calls the interceptors for a particular route.
+             * @param {plat.routing.IRouteInfo} info The route information.
+             */
+            protected _callInterceptors(info: IRouteInfo): async.IThenable<boolean> {
                 var resolve = this._resolve;
 
-                return mapAsyncInOrder((handler: (routeInfo: IRouteInfo) => any) => {
+                return mapAsyncInOrder((handler: (routeInfo: IRouteInfo) => any): async.IThenable<boolean> => {
                     return resolve(handler(info));
-                }, this.interceptors['*'])
+                }, this._interceptors['*'])
                     .then(booleanReduce)
-                    .then((canNavigate: boolean) => {
+                    .then((canNavigate: boolean): async.IThenable<Array<boolean>> => {
                     if (!canNavigate) {
                         return <any>[canNavigate];
                     }
 
-                    return mapAsync((handler: (routeInfo: IRouteInfo) => any) => {
+                    return mapAsync((handler: (routeInfo: IRouteInfo) => any): async.IThenable<boolean> => {
                         return resolve(handler(info));
-                    }, this.interceptors[info.delegate.view]);
+                    }, this._interceptors[info.delegate.view]);
                 })
                     .then(booleanReduce);
             }
 
-            canNavigateFrom(ignorePorts?: boolean): async.IThenable<boolean> {
-                return this._Promise.all(this.children.reduce((promises: Array<async.IThenable<boolean>>, child: Router) => {
-                    return promises.concat(child.canNavigateFrom());
-                }, <Array<async.IThenable<boolean>>>[]))
-                    .then(booleanReduce)
-                    .then((canNavigateFrom: boolean) => {
-                    if (!canNavigateFrom || ignorePorts) {
-                        return <any>[canNavigateFrom];
-                    }
-
-                    return mapAsync((port: ISupportRouteNavigation) => {
-                        return port.canNavigateFrom();
-                    }, this.ports);
-                }).then(booleanReduce);
-            }
-
-            canNavigateTo(info: IRouteInfo, ignorePorts?: boolean): async.IThenable<boolean> {
-                var promises: Array<any> = [];
-                if (isEmpty(this.ports)) {
-                    return this._resolve(true);
-                }
-                return this.callAllHandlers(info.delegate.view, info.parameters, info.query)
-                    .then(() => {
-                    return this.callInterceptors(info);
-                })
-                    .then((canNavigateTo) => {
-                    if (canNavigateTo === false || ignorePorts) {
-                        return <any>[canNavigateTo];
-                    }
-
-                    return mapAsync((port: ISupportRouteNavigation) => {
-                        return port.canNavigateTo(info);
-                    }, this.ports);
-                })
-                    .then(booleanReduce)
-                    .then((canNavigateTo: boolean) => {
-                    if (!canNavigateTo) {
-                        promises = [canNavigateTo];
-                    } else {
-                        var childRoute = this.getChildRoute(info),
-                            childResult: IRouteResult,
-                            childInfo: IRouteInfo;
-
-                        promises = [];
-
-                        this.children.reduce((promises: Array<async.IThenable<boolean>>, child: Router) => {
-                            childResult = child.recognizer.recognize(childRoute);
-
-                            if (isEmpty(childResult)) {
-                                child._clearInfo();
-                                return;
-                            }
-
-                            childInfo = childResult[0];
-                            childInfo.query = info.query;
-                            return promises.concat(child.canNavigateTo(childInfo));
-                        }, promises);
-                    }
-
-                    return this._Promise.all(promises);
-                })
-                    .then(booleanReduce);
-            }
-
-            protected _isSameRoute(info: IRouteInfo) {
+            /**
+             * Checks a passed-in route against the current route to determine if it is the same.
+             * @param {plat.routing.IRouteInfo} info The route information.
+             */
+            protected _isSameRoute(info: IRouteInfo): boolean {
                 var currentRouteInfo = this.currentRouteInfo;
 
-                if (!isObject(currentRouteInfo)) {
+                if (!isObject(currentRouteInfo) || !isObject(info)) {
                     return false;
                 }
 
@@ -23825,14 +25393,17 @@ module plat {
                     currentQuery === query;
             }
 
-            protected _clearInfo() {
-                this.previousSegment = undefined;
-                this.previousPattern = undefined;
-                this.previousUrl = undefined;
-                this.previousQuery = undefined;
+            /**
+             * Clears all the router information, essentially setting the router back to its initialized state.
+             */
+            protected _clearInfo(): void {
+                this._previousSegment = undefined;
+                this._previousPattern = undefined;
+                this._previousUrl = undefined;
+                this._previousQuery = undefined;
                 this.currentRouteInfo = undefined;
                 this.navigating = false;
-                forEach((child) => {
+                forEach((child: Router): void => {
                     child._clearInfo();
                 }, this.children);
             }
@@ -23840,31 +25411,102 @@ module plat {
 
         plat.register.injectable(__Router, Router, null, __INSTANCE);
 
-        export function IRouterStatic() {
+        /**
+         * The injectable function for IRouterStatic
+         */
+        export function IRouterStatic(): IRouterStatic {
             return Router;
         }
 
         plat.register.injectable(__RouterStatic, IRouterStatic);
 
+        /**
+         * The static methods and properties on router
+         */
+        export interface IRouterStatic {
+            /**
+             * Exposes the current router property. Also provides the 
+             * ability to set the current router.
+             * @param {plat.routing.Router} router Will set the current router.
+             */
+            currentRouter(router?: Router): Router;
+        }
+
+        /**
+         * A route mapping, used for registering and matching routes.
+         */
         export interface IRouteMapping {
+            /**
+             * A pattern for the route (e.g. "/posts/:id")
+             */
             pattern: string;
+
+            /**
+             * Either a Constructor for a registered ViewControl, or the registered token for 
+             * that ViewControl.
+             */
             view: any;
         }
 
+        /**
+         * The result of a recognized route.
+         */
         export interface IRouteResult extends Array<IRouteInfo> { }
 
+        /**
+         * The information for a recognized route. Contains the delegate, which 
+         * maps directly to a ViewControl.
+         */
         export interface IRouteInfo extends IDelegateInfo {
+            /**
+             * Maps to a registered ViewControl.
+             */
             delegate: IRouteMapping;
+
+            /**
+             * Query parameters for the route.
+             */
             query?: IObject<any>;
         }
 
+        /**
+         * An object that contains an Array of route transform functions.
+         */
         export interface IRouteTransforms extends IObject<Array<(value: string, values: any, query?: any) => any>> { }
 
+        /**
+         * Describes an object that supports all the routing events (e.g. a Viewport).
+         */
         export interface ISupportRouteNavigation {
+            /**
+             * The router has matched a route and is asking if it is safe to navigate from the current state. 
+             * Here you cancan query the current ViewControl and ask it if it is safe to navigate from its current state.
+             */
             canNavigateFrom(): async.IThenable<boolean>;
+
+            /**
+             * The router has matched a route and is asking if it is safe to navigate. Here 
+             * you can instantiate the new view and ask it if it is safe to navigate to the view.
+             * @param {plat.routing.IRouteInfo} routeInfo Contains the information necessary to instantiate 
+             * the view and feed it the route parameters/query.
+             */
             canNavigateTo(routeInfo: IRouteInfo): async.IThenable<boolean>;
 
+            /**
+             * The router has matched a route and determined that it is safe to navigate to the 
+             * next view. It is now safe for to dispose of the current state.
+             * has finished navigating from the current state.
+             */
             navigateFrom(): async.IThenable<any>;
+
+            /**
+             * The router has matched a route and determined that it is safe to navigate to the 
+             * next view. You can now go through the steps to compile and link the next view then append 
+             * it to the DOM.
+             * @param {plat.routing.IRouteInfo} routeInfo Contains the information necessary to instantiate 
+             * the view and feed it the route parameters/query.
+             * new ViewControl has finished instantiating.
+             */
             navigateTo(routeInfo: IRouteInfo): async.IThenable<any>;
         }
     }
@@ -23872,6 +25514,8 @@ module plat {
      * Holds all classes and interfaces related to attribute control components in platypus.
      */
     export module controls {
+
+
         /**
          * Allows for assigning a name to an Element or TemplateControl and referencing it 
          * from parent controls.
@@ -23984,6 +25628,8 @@ module plat {
              */
             control?: C;
         }
+
+
 
         /**
          * An AttributeControl that binds to a specified DOM event handler.
@@ -24199,7 +25845,7 @@ module plat {
         /**
          * An AttributeControl that binds to a specified DOM event handler.
          */
-        export interface ISendEvents extends AttributeControl {
+        export interface ISendEvents {
             /**
              * The event name.
              */
@@ -24513,27 +26159,27 @@ module plat {
                     composing = false,
                     input = 'input',
                     timeout: IRemoveListener,
-                    eventListener = (ev: Event) => {
+                    eventListener = (ev: Event): void => {
                         if (composing) {
                             return;
                         }
 
                         this._onEvent(ev);
                     },
-                    postponedEventListener = (ev: Event) => {
+                    postponedEventListener = (ev: Event): void => {
                         if (isFunction(timeout)) {
                             return;
                         }
 
-                        timeout = postpone(() => {
+                        timeout = postpone((): void => {
                             eventListener(ev);
                             timeout = null;
                         });
                     };
 
                 if (isUndefined(_compat.ANDROID)) {
-                    this.addEventListener(element, 'compositionstart', () => (composing = true), false);
-                    this.addEventListener(element, 'compositionend', (ev: Event) => {
+                    this.addEventListener(element, 'compositionstart',(): void => { composing = true; }, false);
+                    this.addEventListener(element, 'compositionend',(ev: Event): void => {
                         composing = false;
                         eventListener(ev);
                     }, false);
@@ -24546,7 +26192,7 @@ module plat {
                     return;
                 }
 
-                this.addEventListener(element, 'keydown', (ev: KeyboardEvent) => {
+                this.addEventListener(element, 'keydown',(ev: KeyboardEvent): void => {
                     var key = ev.keyCode,
                         codes = KeyCodes;
 
@@ -24591,6 +26237,8 @@ module plat {
         register.control(__TrackDown, TrackDown);
         register.control(__TrackEnd, TrackEnd);
         register.control(__React, React);
+
+
 
         /**
          * A mapping of all keys to their equivalent keyCode.
@@ -24854,7 +26502,7 @@ module plat {
                 if ((keyCode >= 48 && keyCode <= 90) ||
                     (keyCode >= 186) ||
                     (keyCode >= 96 && keyCode <= 111)) {
-                    this.cancelEvent = postpone(() => {
+                    this.cancelEvent = postpone((): void => {
                         super._onEvent(ev);
                     });
                 }
@@ -24863,7 +26511,7 @@ module plat {
             /**
              * Calls to cancel an event if it is in progress.
              */
-            dispose() {
+            dispose(): void {
                 this.cancelEvent();
 
                 this.cancelEvent = null;
@@ -24894,7 +26542,7 @@ module plat {
                 if ((keyCode >= 48 && keyCode <= 90) ||
                     (keyCode >= 186) ||
                     (keyCode >= 96 && keyCode <= 111)) {
-                    this.cancelEvent = postpone(() => {
+                    this.cancelEvent = postpone((): void => {
                         super._onEvent(ev);
                     });
                 }
@@ -24903,7 +26551,7 @@ module plat {
             /**
              * Calls to cancel an event if it is in progress.
              */
-            dispose() {
+            dispose(): void {
                 this.cancelEvent();
 
                 this.cancelEvent = null;
@@ -24923,6 +26571,8 @@ module plat {
         register.control(__KeyDown, KeyDown);
         register.control(__KeyPress, KeyPress);
         register.control(__KeyUp, KeyUp);
+
+
 
         /**
          * An AttributeControl that deals with binding to a specified property on its element.
@@ -24984,7 +26634,7 @@ module plat {
              * attribute property value.
              */
             setter(): void {
-                postpone(() => {
+                postpone((): void => {
                     var element = this.element,
                         property = this.property;
 
@@ -25012,7 +26662,7 @@ module plat {
         /**
          * An AttributeControl that deals with binding to a specified property on its element.
          */
-        export interface ISetAttributeControl extends AttributeControl {
+        export interface ISetAttributeControl {
             /**
              * The property to set on the associated template control.
              */
@@ -25114,7 +26764,7 @@ module plat {
              * Hides or shows the element depending upon the attribute value
              */
             setter(): void {
-                postpone(() => {
+                postpone((): void => {
                     if (!isNode(this.element)) {
                         return;
                     }
@@ -25208,6 +26858,8 @@ module plat {
         register.control(__Visible, Visible);
         register.control(__Style, Style);
 
+
+
         /**
          * Base class used for setting the property of an element (e.g. href for anchor elements).
          */
@@ -25249,7 +26901,7 @@ module plat {
              * Sets the href property, then calls the Link control to 
              * normalize the href.
              */
-            setter() {
+            setter(): void {
                 super.setter();
 
                 var templateControl: ui.controls.Link = this.templateControl;
@@ -25282,7 +26934,7 @@ module plat {
              * The function for setting the corresponding 
              * attribute property value to the evaluated expression.
              */
-            setter() {
+            setter(): void {
                 var element = this.element,
                     elementProperty = this.property,
                     expression = this.attributes[this.attribute];
@@ -25299,6 +26951,8 @@ module plat {
 
         register.control(__Href, Href);
         register.control(__Src, Src);
+
+
 
         /**
          * Facilitates two-way databinding for HTMLInputElements, HTMLSelectElements, and HTMLTextAreaElements.
@@ -25431,7 +27085,7 @@ module plat {
                     this._property = 'value';
 
                     this._contextExpression = {
-                        evaluate: () => {
+                        evaluate: (): ui.IResource => {
                             return resourceObj.resource;
                         },
                         aliases: [],
@@ -25440,7 +27094,7 @@ module plat {
                     };
                 } else {
                     this._contextExpression = {
-                        evaluate: () => {
+                        evaluate: (): any => {
                             return parent.context;
                         },
                         aliases: [],
@@ -25482,27 +27136,27 @@ module plat {
                     composing = false,
                     input = 'input',
                     timeout: IRemoveListener,
-                    eventListener = () => {
+                    eventListener = (): void => {
                         if (composing) {
                             return;
                         }
 
                         this._propertyChanged();
                     },
-                    postponedEventListener = () => {
+                    postponedEventListener = (): void => {
                         if (isFunction(timeout)) {
                             return;
                         }
 
-                        timeout = postpone(() => {
+                        timeout = postpone((): void => {
                             eventListener();
                             timeout = null;
                         });
                     };
 
                 if (isUndefined(_compat.ANDROID)) {
-                    this.addEventListener(element, 'compositionstart', () => (composing = true), false);
-                    this.addEventListener(element, 'compositionend', () => {
+                    this.addEventListener(element, 'compositionstart',(): void => { composing = true; }, false);
+                    this.addEventListener(element, 'compositionend', (): void => {
                         composing = false;
                         eventListener();
                     }, false);
@@ -25511,7 +27165,7 @@ module plat {
                 if (_compat.hasEvent(input)) {
                     this.addEventListener(element, input, eventListener, false);
                 } else {
-                    this.addEventListener(element, 'keydown', (ev: KeyboardEvent) => {
+                    this.addEventListener(element, 'keydown', (ev: KeyboardEvent): void => {
                         var key = ev.keyCode,
                             codes = KeyCodes;
 
@@ -25589,7 +27243,7 @@ module plat {
                     size: undefined,
                     msDetachStream: noop,
                     msClose: noop,
-                    slice: () => <Blob>{ }
+                    slice: (): Blob => <Blob>{ }
                 };
             }
 
@@ -25620,7 +27274,7 @@ module plat {
                         size: undefined,
                         msDetachStream: noop,
                         msClose: noop,
-                        slice: () => <Blob>{}
+                        slice: (): Blob => <Blob>{}
                     });
                 }
 
@@ -25940,7 +27594,7 @@ module plat {
                     if (isNull(context[property])) {
                         context[property] = [];
                     }
-                    this.observeArray(context, property, null, (arrayInfo: observable.IPostArrayChangeInfo<string>) => {
+                    this.observeArray(context, property, null, (arrayInfo: observable.IPostArrayChangeInfo<string>): void => {
                         this._setter(arrayInfo.newArray, arrayInfo.oldArray, true);
                     });
                 }
@@ -26036,13 +27690,13 @@ module plat {
                         key = split.pop();
 
                     this.observeArray(this._ContextManager.getContext(this.parent, split), key, null,
-                        (ev: observable.IPostArrayChangeInfo<any>) => {
-                            select.itemsLoaded.then(() => {
+                        (ev: observable.IPostArrayChangeInfo<any>): void => {
+                            select.itemsLoaded.then((): void => {
                                 this._setter(this.evaluateExpression(this._expression));
                             });
                         });
 
-                    select.itemsLoaded.then(() => {
+                    select.itemsLoaded.then((): void => {
                         this._setter(this.evaluateExpression(this._expression));
                     });
 
@@ -26063,8 +27717,8 @@ module plat {
 
                 if (isFunction(templateControl.observeProperty) &&
                     isFunction(templateControl.setProperty)) {
-                    templateControl.observeProperty((newValue: any) => {
-                        this._getter = () => newValue;
+                    templateControl.observeProperty((newValue: any): void => {
+                        this._getter = (): any => newValue;
                         this._propertyChanged();
                     });
 
@@ -26117,6 +27771,8 @@ module plat {
              */
             path?: string;
         }
+
+
 
         /**
          * An AttributeControl that deals with observing changes for a specified property.
@@ -26236,7 +27892,7 @@ module plat {
                 listener = listener.bind(this.templateControl);
                 listeners.push(listener);
 
-                return () => {
+                return (): void => {
                     var index = listeners.indexOf(listener);
                     if (index === -1) {
                         return;
@@ -26272,7 +27928,7 @@ module plat {
         /**
          * An AttributeControl that deals with observing changes for a specified property.
          */
-        export interface IObservableAttributeControl extends AttributeControl {
+        export interface IObservableAttributeControl {
             /**
              * The property to set on the associated template control.
              */
@@ -26297,11 +27953,18 @@ module plat {
 
         register.control(__Options, Options);
     }
+
+
     /**
      * Class for every app. This class contains hooks for Application Lifecycle Events 
      * as well as error handling.
      */
     export class App {
+        /**
+         * The instance of the registered IApp.
+         */
+        static app: App = null;
+
         /**
          * Reference to the Compat injectable.
          */
@@ -26331,6 +27994,21 @@ module plat {
          * Reference to the IExceptionStatic injectable.
          */
         protected static _Exception: IExceptionStatic;
+
+        /**
+         * The injector for injecting the instance of the currently registered IApp.
+         */
+        private static __injector: dependency.Injector<App>;
+
+        /**
+         * A unique id, created during instantiation.
+         */
+        uid: string = uniqueId(__Plat);
+
+        /**
+         * A Navigator instance, exists when a router is injected into the app.
+         */
+        navigator: routing.Navigator;
 
         /**
          * A static method for initiating the app startup.
@@ -26370,7 +28048,7 @@ module plat {
                 var _LifecycleEvent = App._LifecycleEvent,
                     dispatch = _LifecycleEvent.dispatch;
 
-                postpone(() => {
+                postpone((): void => {
                     dispatch(__ready, _LifecycleEvent);
                 });
             }
@@ -26391,9 +28069,9 @@ module plat {
 
             if (isNull(node)) {
                 body.setAttribute(__Hide, '');
-                postpone(() => {
-                    _compiler.compile(head);
-                    _compiler.compile(body);
+                postpone((): void => {
+                    _compiler.compile([head]);
+                    _compiler.compile([body]);
                     body.removeAttribute(__Hide);
                 });
                 return;
@@ -26401,27 +28079,17 @@ module plat {
 
             if (isFunction((<Element>node).setAttribute)) {
                 (<Element>node).setAttribute(__Hide, '');
-                postpone(() => {
-                    _compiler.compile(node);
+                postpone((): void => {
+                    _compiler.compile([node]);
                     (<Element>node).removeAttribute(__Hide);
                 });
                 return;
             }
 
-            postpone(() => {
-                _compiler.compile(node);
+            postpone((): void => {
+                _compiler.compile([node]);
             });
         }
-
-        /**
-         * The instance of the registered IApp.
-         */
-        static app: App = null;
-        
-        /**
-         * The injector for injecting the instance of the currently registered IApp.
-         */
-        private static __injector: dependency.Injector<App>;
 
         /**
          * A static method called when the application is ready. It calls the app instance's 
@@ -26501,22 +28169,12 @@ module plat {
         }
 
         /**
-         * A unique id, created during instantiation.
-         */
-        uid: string = uniqueId(__Plat);
-
-        /**
-         * A Navigator instance, exists when a router is injected into the app.
-         */
-        navigator: routing.Navigator;
-
-        /**
          * Class for every app. This class contains hooks for Application Lifecycle Management (ALM)
          * as well as error handling and navigation events.
          */
         constructor() {
             var navigator: routing.Navigator = this.navigator = acquire(__NavigatorInstance);
-            navigator.initialize((<typeof routing.Router>acquire(__RouterStatic)).currentRouter());
+            navigator.initialize((<routing.IRouterStatic>acquire(__RouterStatic)).currentRouter());
         }
 
         /**
