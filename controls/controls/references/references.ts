@@ -89,7 +89,6 @@ var __prefix = '$',
      * Misc
      */
     __Reversed = '-reversed',
-    __OBSERVABLE_RESOURCE = 'observable',
     __LITERAL_RESOURCE = 'literal',
     __transitionNegate: plat.IObject<string> = {
         right: 'left',
