@@ -77,9 +77,16 @@
             <button plat-tap="addListItem">add</button>
             <button plat-tap="popListItem">pop</button>
             <div class="demo-item">
-                <plat-listview style="height: 150px;" plat-context="listview" plat-options="{ itemTemplate: 'listview-template', groupHeaderTemplate: 'listview-header' }">
+                <plat-listview style="height: 150px;" plat-context="groupedlistview" 
+                               plat-options="{ 
+                                   itemTemplate: 'listview-template', 
+                                   groupHeaderTemplate: 'listview-header', 
+                                   onRefresh: 'refresh', 
+                                   loading: 'incremental', 
+                                   onItemsRequested: 'refresh' 
+                               }">
                     <listview-header>
-                        <div>{{@group}}</div>
+                        <div>{{group}}</div>
                     </listview-header>
                     <listview-template>
                         <div style="color: red;">{{@context}}</div>

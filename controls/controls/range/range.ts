@@ -357,6 +357,19 @@
         protected _touchState = 0;
 
         /**
+         * @name _contextObserved
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Denotes whether the context is currently being observed.
+         */
+        protected _contextObserved = false;
+
+        /**
          * @name _cloneAttempts
          * @memberof platui.Range
          * @kind property
@@ -431,6 +444,7 @@
 
             this.setLower(isNumber(lower) ? lower : 0);
             this.setUpper(isNumber(upper) ? upper : this.max);
+            this._watchContext();
         }
 
         /**
@@ -616,6 +630,10 @@
          * @returns {void}
          */
         protected _watchContext(): void {
+            if (this._contextObserved) {
+                return;
+            }
+
             var context = this.context;
             this.observe(context, 'lower', (newValue: number, oldValue: number) => {
                 if (this._isSelf || newValue === oldValue) {
@@ -642,6 +660,8 @@
 
                 this.setUpper(newValue);
             });
+
+            this._contextObserved = true;
         }
 
         /**

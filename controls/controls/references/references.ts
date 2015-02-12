@@ -42,7 +42,6 @@ var __prefix = '$',
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
-    __Options = __Plat + 'options',
     __Checked = __Plat + 'checked',
     __ForEach = __Plat + 'foreach',
     __CamelChecked = 'platChecked',
@@ -51,9 +50,23 @@ var __prefix = '$',
     __Bind = __Plat + 'bind',
 
     /**
+     * Listview aliases
+     */
+    __listviewAliasOptions = {
+        index: 'index',
+        even: 'even',
+        odd: 'odd',
+        first: 'first',
+        last: 'last',
+        group: 'group'
+    },
+
+    /**
      * Animations
      */
     __Transition = __Plat + 'transition',
+    __Enter = __Plat + 'enter',
+    __Leave = __Plat + 'leave',
 
     /**
      * Events
@@ -75,9 +88,8 @@ var __prefix = '$',
     /**
      * Misc
      */
-    __CONTEXT = 'context',
     __Reversed = '-reversed',
-    __OBSERVABLE_RESOURCE = 'observable',
+    __LITERAL_RESOURCE = 'literal',
     __transitionNegate: plat.IObject<string> = {
         right: 'left',
         left: 'right',
