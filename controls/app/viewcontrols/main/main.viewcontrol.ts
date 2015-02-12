@@ -34,8 +34,9 @@ module app {
                 modal3: false,
             },
             carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }],
-            //listview: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
-            listview: <Array<platui.IListviewGroup>>[
+            //listview: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
+            listview: [10, 9, 8],
+            groupedlistview: <Array<platui.IListviewGroup>>[
                 { group: 'A', items: ['apple', 'apricot', 'ardvark'] },
                 { group: 'B', items: ['ballin', 'bark', 'basket'] }
             ]
@@ -48,6 +49,18 @@ module app {
 
         loaded() {
             var context = this.context;
+            //setTimeout(() => {
+                //this.context.groupedlistview.push({ group: 'B', items: ['ballin', 'bark', 'basket'] });
+                //this.context.groupedlistview.push({ group: 'C', items: ['callin', 'cork', 'casket'] });
+                //this.context.groupedlistview[1].items.shift();
+                //this.context.groupedlistview.pop();
+                //setTimeout(() => {
+                //    this.context.groupedlistview = [
+                //        { group: 'C', items: ['callin', 'cork', 'casket'] },
+                //        { group: 'B', items: ['ballin', 'bark', 'basket'] }
+                //    ];
+                //}, 2000);
+            //}, 2000);
         }
 
         addListItem() {
@@ -91,14 +104,14 @@ module app {
         }
 
         refresh() {
-            var promise: plat.async.IPromise = plat.acquire('$Promise');
+            //var promise: plat.async.IPromise = plat.acquire('$Promise');
 
-            return new promise((resolve, reject) => {
-                setTimeout(() => {
-                    //this.context.listview = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                    resolve();
-                }, 5000);
-            });
+            //return new promise((resolve, reject) => {
+            //    setTimeout(() => {
+            //        //this.context.listview = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            //        resolve();
+            //    }, 5000);
+            //});
         }
     }
 

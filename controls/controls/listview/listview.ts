@@ -43,19 +43,6 @@
         options: plat.observable.IObservableProperty<IListviewOptions>;
 
         /**
-         * @name count
-         * @memberof platui.Listview
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The number of items currently loaded.
-         */
-        count = 0;
-
-        /**
          * @name context
          * @memberof platui.Listview
          * @kind property
@@ -330,12 +317,25 @@
          * @kind property
          * @access protected
          * 
-         * @type {plat.IObject<string>}
+         * @type {plat.IObject<plat.IObject<string>>}
          * 
          * @description
-         * An object containing template keys associated with an index.
+         * An object containing template keys of groups associated with an index.
          */
-        protected _templateSelectorKeys: plat.IObject<string>;
+        protected _templateSelectorKeys: plat.IObject<plat.IObject<string>>;
+
+        /**
+         * @name _isLoading
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the user is currently performing a load operation.
+         */
+        protected _isLoading = false;
 
         /**
          * @name _loading
@@ -409,6 +409,19 @@
          * A function that removes the scroll event listener.
          */
         protected _removeScroll: plat.IRemoveListener;
+
+        /**
+         * @name _isRefreshing
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the user is currently performing a refresh operation.
+         */
+        protected _isRefreshing = false;
 
         /**
          * @name _refresh
@@ -561,12 +574,12 @@
          * @kind property
          * @access public
          * 
-         * @type {plat.IObject<{ index: number; element: HTMLElement; }>}
+         * @type {plat.IObject<platui.IGroupHash>}
          * 
          * @description
          * An object that keeps track of unique groups.
          */
-        protected _groups: plat.IObject<{ index: number; element: HTMLElement; }>;
+        protected _groups: plat.IObject<IGroupHash>;
 
         /**
          * @name _groupHeaderTemplate
@@ -739,12 +752,17 @@
             }
 
             this._setListener();
+            this._executeEvent({
+                method: 'splice',
+                arguments: null,
+                returnValue: null,
+                oldArray: oldValue || [],
+                newArray: newValue || []
+            });
+
             if (this._isGrouped) {
                 this._handleGroupedContextChange(newValue, oldValue);
-                return;
             }
-
-            this._handleUngroupedContextChange(newValue, oldValue);
         }
 
         /**
@@ -842,20 +860,24 @@
          * @param {number} index? The starting index to render. If not specified, it will start at currentCount.
          * @param {number} count? The number of items to render. If not specified, the whole context 
          * from the specified index will be rendered.
+         * @param {platui.IGroupHash} group? The group we're rendering.
          * 
          * @returns {void}
          */
-        render(index?: number, count?: number): void {
-            var isNumber = this._utils.isNumber;
+        render(index?: number, count?: number, group?: IGroupHash): void {
+            var isNumber = this._utils.isNumber,
+                details = this._getGroupDetails(group),
+                control = details.control,
+                context = this === control ? this.context : control.context.items;
 
             if (!isNumber(index)) {
-                index = this.count;
+                index = 0;
             }
 
-            var maxCount = this.context.length - index,
+            var maxCount = context.length - index,
                 itemCount = isNumber(count) && maxCount >= count ? count : maxCount;
 
-            this._createItems(index, itemCount, this, this._container);
+            this._createItems(index, itemCount, group, false);
         }
 
         /**
@@ -867,10 +889,12 @@
          * @description
          * Blow out all the DOM, determine how to render, and render accordingly.
          * 
+         * @param {platui.IGroupHash} group? The group we're rerendering.
+         * 
          * @returns {void}
          */
-        rerender(): void {
-            this.render(0);
+        rerender(group?: IGroupHash): void {
+            this.render(0, null, group);
         }
 
         /**
@@ -890,7 +914,7 @@
          * @returns {void}
          */
         protected _childContextChanged(groupName: string, newValue?: Array<any>, oldValue?: Array<any>): void {
-            this._executeEvent({
+            this._executeChildEvent(groupName, {
                 method: 'splice',
                 arguments: null,
                 returnValue: null,
@@ -915,30 +939,19 @@
          * @returns {void}
          */
         protected _handleGroupedContextChange(newValue?: any, oldValue?: any): void {
-        }
+            this._Promise.resolve(this._animationThenable).then(() => {
+                var groups = this._groups,
+                    keys = Object.keys(groups),
+                    length = keys.length,
+                    key: string,
+                    group: IGroupHash,
+                    control: plat.ui.TemplateControl;
 
-        /**
-         * @name _handleUngroupedContextChange
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Re-syncs the {@link platui.Listview|Listview} child controls and DOM with the new 
-         * context array.
-         * 
-         * @param {any} newValue? The new context
-         * @param {any} oldValue? The old context
-         * 
-         * @returns {void}
-         */
-        protected _handleUngroupedContextChange(newValue?: Array<any>, oldValue?: Array<any>): void {
-            this._executeEvent({
-                method: 'splice',
-                arguments: null,
-                returnValue: null,
-                oldArray: oldValue || [],
-                newArray: newValue || []
+                for (var i = 0; i < length; ++i) {
+                    key = keys[i];
+                    control = groups[key].control;
+                    this._childContextChanged(key, control.context.items);
+                }
             });
         }
 
@@ -1100,13 +1113,14 @@
          * 
          * @param {number} numberOfGroups The number of groups to add.
          * @param {number} index The point in the array to start adding groups.
-         * @param {boolean} animate? Whether or not to animate the new groups
+         * @param {boolean} animate? Whether or not to animate the new groups.
          * 
          * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
          */
         protected _addGroups(numberOfGroups: number, index: number, animate?: boolean): plat.async.IThenable<void> {
             var _utils = this._utils,
                 context = this.context,
+                initialIndex = index,
                 max = +(index + numberOfGroups);
 
             var promises = <Array<plat.async.IThenable<DocumentFragment>>>[],
@@ -1120,7 +1134,7 @@
             return this._Promise.all(promises).then((fragments) => {
                 var length = fragments.length;
                 for (i = 0; i < length; ++i) {
-                    this._addGroup(i, fragments[i]);
+                    this._addGroup(i + initialIndex, fragments[i]);
                 }
             });
         }
@@ -1141,23 +1155,47 @@
          */
         protected _addGroup(index: number, fragment: DocumentFragment): void {
             var context = this.context,
-                groups = this._groups || (this._groups = <plat.IObject<{ index: number; element: HTMLElement; }>>{}),
-                group = context[index],
+                groups = this._groups || (this._groups = <plat.IObject<IGroupHash>>{}),
+                group: IListviewGroup = context[index],
                 name = group.group,
-                groupContainer = <HTMLElement>fragment.childNodes[1];
+                groupContainer = <HTMLElement>fragment.childNodes[1],
+                control = this.controls[index],
+                groupHash = groups[name] = {
+                    name: name,
+                    index: index,
+                    element: groupContainer,
+                    control: control
+                },
+                removeArrayListener: plat.IRemoveListener,
+                removeMutationListener: plat.IRemoveListener;
 
-            groups[name] = {
-                index: index,
-                element: groupContainer,
+            control.dispose = () => {
+                super.dispose();
+                delete groups[name];
             };
 
-            this.observeArray(group, 'items', this._preprocessChildEvent.bind(this, name), this._executeChildEvent.bind(this, name));
+            control.observe(group, null, (newValue?: IListviewGroup, oldValue?: IListviewGroup) => {
+                var newName = newValue.group;
+                if (newName === name || !this._utils.isObject(newValue)) {
+                    return;
+                }
 
-            var childContextChanged = this._childContextChanged.bind(this, name);
-            this.observe(group, 'items', childContextChanged);
-            this.observe(context, index, childContextChanged);
+                var temp = groups[name];
+                delete groups[name];
+                temp.name = newName;
+                groups[newName] = temp;
 
-            this._createItems(0,(group.items || []).length, this.controls[index], <Element>groupContainer.lastChild);
+                removeArrayListener();
+                removeMutationListener();
+                removeArrayListener = control.observe(group, 'items', this._childContextChanged.bind(this, newName));
+                removeMutationListener = control.observeArray(group, 'items', this._preprocessChildEvent.bind(this, newName),
+                    this._executeChildEvent.bind(this, newName));
+            });
+            removeArrayListener = control.observe(group, 'items', this._childContextChanged.bind(this, name));
+            removeMutationListener = control.observeArray(group, 'items', this._preprocessChildEvent.bind(this, name),
+                this._executeChildEvent.bind(this, name));
+
+            this._createItems(0, (group.items || []).length, groupHash, false);
             this._container.insertBefore(fragment, null);
         }
 
@@ -1175,7 +1213,7 @@
          * @returns {plat.async.IThenable<DocumentFragment>}
          */
         protected _bindGroup(index: number): plat.async.IThenable<DocumentFragment> {
-            return this.bindableTemplates.bind(__Listview + '-group', index, this._getGroupAliases(index));
+            return this.bindableTemplates.bind(__Listview + '-group', index, this._getAliases(this.context, index));
         }
 
         /**
@@ -1189,15 +1227,17 @@
          * 
          * @param {number} index The index to start creating items.
          * @param {number} count The number of items to create.
-         * @param {plat.ui.TemplateControl} control The control who we're adding items to.
-         * @param {Element} container The container to place the items.
+         * @param {platui.IGroupHash} group? The group for which we're creating items.
+         * @param {boolean} animate? Whether or not to animate the new items.
          * 
          * @returns {void}
          */
-        protected _createItems(index: number, count: number, control: plat.ui.TemplateControl, container: Element): void {
-            control = control || this;
+        protected _createItems(index: number, count: number, group?: IGroupHash, animate?: boolean): void {
+            var _utils = this._utils,
+                details = this._getGroupDetails(group),
+                control = details.control;
 
-            if (this._isGrouped && container === this._container) {
+            if (this._isGrouped && this === control) {
                 this._groupHeaderTemplatePromise.then(() => {
                     this._addGroups(count, index);
                 }).then(null,(error) => {
@@ -1208,12 +1248,10 @@
                 return;
             }
 
-            var _utils = this._utils;
             if (_utils.isFunction(this._templateSelector)) {
-                var promises: Array<plat.async.IThenable<void>> = [],
-                    context = control.context;
+                var promises: Array<plat.async.IThenable<void>> = [];
                 while (count-- > 0) {
-                    promises.push(this._renderUsingFunction(context, index++, container));
+                    promises.push(this._renderUsingFunction(index++, group, animate));
                 }
                 this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises);
                 return;
@@ -1224,8 +1262,8 @@
                 return;
             }
 
-            this._disposeFromIndex(index, control);
-            this._addItems(count, index, control, container);
+            this._disposeFromIndex(index, group);
+            this._addItems(count, index, group, animate);
         }
 
         /**
@@ -1240,21 +1278,33 @@
          * 
          * @param {number} numberOfItems The number of items to add.
          * @param {number} index The point in the array to start adding items.
-         * @param {plat.ui.TemplateControl} control The control who we're adding items to.
-         * @param {Element} container THe container to add the items to.
-         * @param {boolean} animate? Whether or not to animate the new items
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * @param {boolean} animate? Whether or not to animate the new items.
          * 
          * @returns {plat.async.IThenable<void>} The itemsLoaded promise.
          */
-        protected _addItems(numberOfItems: number, index: number, control: plat.ui.TemplateControl,
-            container: Element, animate?: boolean): plat.async.IThenable<void> {
-            var max = +(index + numberOfItems),
+        protected _addItems(numberOfItems: number, index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void> {
+            var details = this._getGroupDetails(group),
+                control = details.control,
+                container = details.itemContainer,
+                max = +(index + numberOfItems),
                 promises: Array<plat.async.IThenable<DocumentFragment>> = [],
+                itemTemplate = this._itemTemplate,
+                bindableTemplates = control.bindableTemplates,
                 initialIndex = index,
-                context = control.context;
+                identifier: string,
+                context: any;
+
+            if (this === control) {
+                identifier = '';
+                context = this.context;
+            } else {
+                identifier = 'items.';
+                context = control.context.items;
+            }
 
             while (index < max) {
-                promises.push(this._bindItem(index, index++, context));
+                promises.push(bindableTemplates.bind(itemTemplate, identifier + index, this._getAliases(context, index++)));
             }
 
             if (promises.length > 0) {
@@ -1294,63 +1344,6 @@
         }
 
         /**
-         * @name _removeItems
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Removes items from the control's element.
-         * 
-         * @param {number} numberOfItems The number of items to remove.
-         * 
-         * @returns {void}
-         */
-        protected _removeItems(numberOfItems: number, control: plat.ui.TemplateControl): void {
-            var dispose = this._TemplateControlFactory.dispose,
-                controls = this.controls;
-
-            while (numberOfItems-- > 0) {
-                dispose(controls.pop());
-            }
-
-            this._updateResource(controls.length - 1, control);
-        }
-
-        /**
-         * @name _disposeFromIndex
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Dispose of the controls and DOM starting at a given index.
-         * 
-         * @param {number} index The starting index to dispose.
-         * @param {plat.ui.TemplateControl} control The control whose controls we are to dispose.
-         * 
-         * @returns {void}
-         */
-        protected _disposeFromIndex(index: number, control: plat.ui.TemplateControl): void {
-            var controls = <Array<plat.ui.TemplateControl>>control.controls;
-            if (controls.length === 0) {
-                return;
-            }
-
-            var dispose = this._TemplateControlFactory.dispose,
-                disposingGroups = control === this && this._isGrouped;
-
-            for (var i = control.context.length - 1; i >= index; --i) {
-                if (controls.length > i) {
-                    dispose(controls[i]);
-                    if (!disposingGroups) {
-                        this.count--;
-                    }
-                }
-            }
-        }
-
-        /**
          * @name _renderUsingFunction
          * @memberof platui.Listview
          * @kind function
@@ -1361,72 +1354,71 @@
          * through for a set number of items. If undefined or null is returned from the function, 
          * rendering will stop.
          * 
-         * @param {any} context The parent of the item being rendered.
          * @param {number} index The starting index to render.
-         * @param {Element} container The element to place the rendered item into.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * @param {boolean} animate? Whether or not to animate the new items.
          * 
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
-        protected _renderUsingFunction(context: any, index: number, container: Element): plat.async.IThenable<void> {
+        protected _renderUsingFunction(index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void> {
             var _Promise = this._Promise,
-                _utils = this._utils;
+                _utils = this._utils,
+                details = this._getGroupDetails(group),
+                control = details.control,
+                identifier: any,
+                context: any;
+
+            if (this === control) {
+                identifier = index;
+                context = this.context;
+            } else {
+                identifier = 'items.' + index;
+                context = control.context.items;
+            }
 
             return _Promise.resolve(this._templateSelectorPromise).then(() => {
                 return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(context[index], index));
             }).then((selectedTemplate) => {
-                var bindableTemplates = this.bindableTemplates,
+                var bindableTemplates = control.bindableTemplates,
                     templates = bindableTemplates.templates,
-                    controls = this.controls,
+                    controls = <Array<plat.ui.TemplateControl>>control.controls,
                     key = this._normalizeTemplateName(selectedTemplate),
+                    name = details.name,
+                    templateKeys = this._templateSelectorKeys[name],
                     controlExists = index < controls.length;
+
+                if (_utils.isUndefined(templateKeys)) {
+                    templateKeys = this._templateSelectorKeys[name] = <plat.IObject<string>>{};
+                }
 
                 if (!_utils.isUndefined(templates[key])) {
                     if (controlExists) {
-                        if (key === this._templateSelectorKeys[index]) {
+                        if (key === templateKeys[index]) {
                             return;
                         }
 
-                        this._templateSelectorKeys[index] = key;
-                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, index, this._getAliases(context, index));
+                        templateKeys[index] = key;
+                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, identifier, this._getAliases(context, index));
                     }
 
-                    this._templateSelectorKeys[index] = key;
-                    return bindableTemplates.bind(key, index, this._getAliases(context, index));
+                    templateKeys[index] = key;
+                    return bindableTemplates.bind(key, identifier, this._getAliases(context, index));
                 } else if (controlExists) {
                     this._TemplateControlFactory.dispose(controls[index]);
-                    this.count--;
                 }
             }).then((node) => {
                 if (_utils.isNull(node) || _utils.isArray(node)) {
                     return;
+                } else if (animate === true) {
+                    this._animator.enter(node, __Enter, details.itemContainer);
+                    return;
                 }
 
-                container.insertBefore(node, null);
-                this.count++;
+                details.itemContainer.insertBefore(node, null);
             }).then(null,(error) => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
             });
-        }
-
-        /**
-         * @name _bindItem
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Binds the item to a template using the identifier.
-         * 
-         * @param {string} identifier The identifier to use to bind the context.
-         * @param {number} index The index of the context to get aliases for.
-         * @param {any} context The context to grab aliases for.
-         * 
-         * @returns {plat.async.IThenable<DocumentFragment>} A promise that resolves with 
-         * the a DocumentFragment that represents an item.
-         */
-        protected _bindItem(identifier: number, index: number, context: any): plat.async.IThenable<DocumentFragment> {
-            return this.bindableTemplates.bind(this._itemTemplate, identifier, this._getAliases(context, index));
         }
 
         /**
@@ -1449,12 +1441,9 @@
             var controls = <Array<plat.ui.TemplateControl>>control.controls;
             if (index < 0 || index >= controls.length) {
                 return;
-            } else if (control === this && this._isGrouped) {
-                controls[index].resources.add(this._getGroupAliases(index));
-                return;
             }
 
-            controls[index].resources.add(this._getAliases(control.context, index));
+            controls[index].resources.add(this._getAliases(this === control ? this.context : control.context.items, index));
         }
 
         /**
@@ -1500,7 +1489,7 @@
             };
 
             aliases[_aliases.last] = {
-                value: index === (this.context.length - 1),
+                value: index === (context.length - 1),
                 type: type
             };
 
@@ -1522,37 +1511,17 @@
          * 
          * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
          */
-        protected _getGroupAliases(index: number): plat.IObject<plat.ui.IResource> {
-            var aliases: plat.IObject<plat.ui.IResource> = this._getAliases(this.context, index),
-                _aliases = this._aliases;
+        //protected _getGroupAliases(index: number): plat.IObject<plat.ui.IResource> {
+        //    var aliases: plat.IObject<plat.ui.IResource> = this._getAliases(this.context, index),
+        //        _aliases = this._aliases;
 
-            aliases[_aliases.group] = {
-                value: this.context[index].group,
-                type: __LITERAL_RESOURCE
-            };
+        //    aliases[_aliases.group] = {
+        //        value: this.context[index].group,
+        //        type: __LITERAL_RESOURCE
+        //    };
 
-            return aliases;
-        }
-
-        /**
-         * @name _appendItem
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Adds an item to the container without animating.
-         * 
-         * @param {Node} item The new Node to add.
-         * 
-         * @returns {HTMLElement} The plat-listview-item container element.
-         */
-        protected _appendItem(item: Node): HTMLElement {
-            var platItem = <HTMLElement>item.firstChild;
-            this._container.insertBefore(item, null);
-            this.count++;
-            return platItem;
-        }
+        //    return aliases;
+        //}
 
         /**
          * @name _appendItems
@@ -1593,6 +1562,54 @@
             }
 
             this._animator.enter(item, key, container);
+        }
+
+        /**
+         * @name _removeItems
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Removes items from the control's element.
+         * 
+         * @param {number} numberOfItems The number of items to remove.
+         * @param {plat.ui.TemplateControl} control The control whose child controls we are to remove.
+         * 
+         * @returns {void}
+         */
+        protected _removeItems(numberOfItems: number, control: plat.ui.TemplateControl): void {
+            var dispose = this._TemplateControlFactory.dispose,
+                controls = <Array<plat.ui.TemplateControl>>control.controls;
+
+            while (numberOfItems-- > 0) {
+                dispose(controls.pop());
+            }
+
+            this._updateResource(controls.length - 1, control);
+        }
+
+        /**
+         * @name _disposeFromIndex
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Dispose of the controls and DOM starting at a given index.
+         * 
+         * @param {number} index The starting index to dispose.
+         * @param {platui.IGroupHash} group? The group for which we're disposing items.
+         * 
+         * @returns {void}
+         */
+        protected _disposeFromIndex(index: number, group?: IGroupHash): void {
+            var controls = <Array<plat.ui.TemplateControl>>this._getGroupDetails(group).control.controls,
+                dispose = this._TemplateControlFactory.dispose;
+
+            for (var i = controls.length - 1; i >= index; --i) {
+                dispose(controls[i]);
+            }
         }
 
         /**
@@ -1866,6 +1883,12 @@
          * @returns {void}
          */
         protected _touchEndLoad(ev: plat.ui.IGestureEvent): void {
+            var isLoading = this._isLoading;
+            this._isLoading = false;
+            if (!isLoading) {
+                return;
+            }
+
             var scrollContainer = this._scrollContainer,
                 scrollLength: number,
                 threshold: number;
@@ -1899,7 +1922,10 @@
          * @returns {void}
          */
         protected _touchEndRefresh(ev: plat.ui.IGestureEvent): void {
-            if ((this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
+            var isRefreshing = this._isRefreshing;
+            this._isRefreshing = false;
+
+            if (!isRefreshing || (this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
                 return;
             }
 
@@ -1999,20 +2025,30 @@
          * @returns {void}
          */
         protected _trackLoad(ev: plat.ui.IGestureEvent): void {
-            var scrollContainer = this._scrollContainer,
-                scrollLength: number,
-                threshold: number;
+            if (!this._isLoading) {
+                var scrollContainer = this._scrollContainer,
+                    scrollLength: number,
+                    threshold: number;
 
-            if (this._isVertical) {
-                scrollLength = scrollContainer.scrollTop + scrollContainer.offsetHeight;
-                threshold = scrollContainer.scrollHeight;
-            } else {
-                scrollLength = scrollContainer.scrollLeft + scrollContainer.offsetWidth;
-                threshold = scrollContainer.scrollWidth;
-            }
+                if (this._isVertical) {
+                    if (ev.direction.y !== 'up') {
+                        return;
+                    }
+                    scrollLength = scrollContainer.scrollTop + scrollContainer.offsetHeight;
+                    threshold = scrollContainer.scrollHeight;
+                } else {
+                    if (ev.direction.x !== 'left') {
+                        return;
+                    }
+                    scrollLength = scrollContainer.scrollLeft + scrollContainer.offsetWidth;
+                    threshold = scrollContainer.scrollWidth;
+                }
 
-            if (scrollLength < threshold) {
-                return;
+                if (scrollLength < threshold) {
+                    return;
+                }
+
+                this._isLoading = true;
             }
 
             this._track(ev, false);
@@ -2032,8 +2068,16 @@
          * @returns {void}
          */
         protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
-            if ((this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
-                return;
+            if (!this._isRefreshing) {
+                if (this._isVertical) {
+                    if (ev.direction.y !== 'down' || this._scrollContainer.scrollTop > 0) {
+                        return;
+                    }
+                } else  if (ev.direction.x !== 'right' || this._scrollContainer.scrollLeft > 0) {
+                    return;
+                }
+
+                this._isRefreshing = true;
             }
 
             this._track(ev, true);
@@ -2177,6 +2221,36 @@
         }
 
         /**
+         * @name _getGroupDetails
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Takes in a group and returns its associated control and its item container. If the group is 
+         * null or undefined, it will return this control's details.
+         * 
+         * @param {platui.IGroupHash} group? The group from which we're trying to get details.
+         * 
+         * @returns {{ name: string; control: plat.ui.TemplateControl; itemContainer: Element; }} Important details concerning the group.
+         */
+        protected _getGroupDetails(group?: IGroupHash): { name: string; control: plat.ui.TemplateControl; itemContainer: Element; } {
+            if (this._utils.isNull(group)) {
+                return {
+                    name: 'this',
+                    control: this,
+                    itemContainer: this._container
+                };
+            }
+
+            return {
+                name: group.name,
+                control: group.control,
+                itemContainer: group.element.lastElementChild
+            };
+        }
+
+        /**
          * @name _preprocessEvent
          * @memberof platui.Listview
          * @kind function
@@ -2233,7 +2307,10 @@
          * @returns {void}
          */
         protected _preprocessChildEvent(groupName: string, ev: plat.observable.IPreArrayChangeInfo): void {
-
+            var method = '_pre' + ev.method;
+            if (this._utils.isFunction((<any>this)[method])) {
+                (<any>this)[method](ev, this._groups[groupName]);
+            }
         }
 
         /**
@@ -2251,7 +2328,10 @@
          * @returns {void}
          */
         protected _executeChildEvent(groupName: string, ev: plat.observable.IPostArrayChangeInfo<any>): void {
-
+            var method = '_' + ev.method;
+            if (this._utils.isFunction((<any>this)[method])) {
+                (<any>this)[method](ev, this._groups[groupName]);
+            }
         }
 
         /**
@@ -2264,19 +2344,12 @@
          * First checks if the push will do anything, then handles items being pushed into the array.
          * 
          * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _push(ev: plat.observable.IPostArrayChangeInfo<any>, control: plat.ui.TemplateControl, container: Element): void {
-            if (this._utils.isFunction(this._templateSelector)) {
-                var context = control.context;
-                this._renderUsingFunction(context, context.length - 1, container);
-                return;
-            }
-
-            this._addItems(ev.arguments.length, ev.oldArray.length, control, container, true);
+        protected _push(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
+            this._createItems(ev.oldArray.length, ev.arguments.length, group, true);
         }
 
         /**
@@ -2289,15 +2362,14 @@
          * Handles items being popped off the array.
          * 
          * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _pop(ev: plat.observable.IPostArrayChangeInfo<any>, control: plat.ui.TemplateControl, container: Element): void {
-            this._animateItems(ev.newArray.length, 1, __Leave, container, true);
-            this._removeItems(1, control);
-            this.count--;
+        protected _pop(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
+            var details = this._getGroupDetails(group);
+            this._animateItems(ev.newArray.length, 1, __Leave, details.itemContainer, true);
+            this._removeItems(1, details.control);
         }
 
         /**
@@ -2310,12 +2382,12 @@
          * Handles items being shifted off the array.
          * 
          * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _preshift(ev: plat.observable.IPreArrayChangeInfo, control: plat.ui.TemplateControl, container: Element): void {
+        protected _preshift(ev: plat.observable.IPreArrayChangeInfo, group?: IGroupHash): void {
+            var container = this._utils.isNull(group) ? this._container : group.element.lastElementChild;
             this._animationThenable = this._animateItems(0, 1, __Leave, container, true);
         }
 
@@ -2329,16 +2401,14 @@
          * Handles items being shifted off the array.
          * 
          * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _shift(ev: plat.observable.IPostArrayChangeInfo<any>, control: plat.ui.TemplateControl, container: Element): void {
+        protected _shift(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
             this._Promise.resolve(this._animationThenable).then(() => {
-                this._removeItems(1, control);
+                this._removeItems(1, this._getGroupDetails(group).control);
             });
-            this.count--;
         }
 
         /**
@@ -2351,13 +2421,13 @@
          * Handles adding/removing items when an array is spliced.
          * 
          * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _presplice(ev: plat.observable.IPreArrayChangeInfo, control: plat.ui.TemplateControl, container: Element): void {
-            var args = ev.arguments,
+        protected _presplice(ev: plat.observable.IPreArrayChangeInfo, group?: IGroupHash): void {
+            var container = this._utils.isNull(group) ? this._container : group.element.lastElementChild,
+                args = ev.arguments,
                 addCount = args.length - 2;
 
             // check if adding more items than deleting
@@ -2382,33 +2452,32 @@
          * Handles adding/removing items when an array is spliced.
          * 
          * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _splice(ev: plat.observable.IPostArrayChangeInfo<any>, control: plat.ui.TemplateControl, container: Element): void {
-            var additions = ev.newArray.length - ev.oldArray.length;
-            if (additions > 0 && this._utils.isFunction(this._templateSelector)) {
-                if (this._utils.isNull(ev.arguments)) {
-                    this.rerender();
-                } else {
-                    this.render(ev.arguments[0], additions);
-                }
-                return;
-            }
-
-            var oldLength = this.controls.length,
-                newLength = ev.newArray.length;
-
+        protected _splice(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
             this._Promise.resolve(this._animationThenable).then(() => {
+                var additions = ev.newArray.length - ev.oldArray.length;
+                if (additions > 0 && this._utils.isFunction(this._templateSelector)) {
+                    if (this._utils.isNull(ev.arguments)) {
+                        this.rerender(group);
+                    } else {
+                        this.render(ev.arguments[0], additions, group);
+                    }
+                    return;
+                }
+
+                var control = this._getGroupDetails(group).control,
+                    oldLength = control.controls.length,
+                    newLength = ev.newArray.length;
+
                 if (newLength > oldLength) {
-                    this._addItems(newLength - oldLength, oldLength, control, container);
+                    this._createItems(oldLength, newLength - oldLength, group, true);
                 } else if (oldLength > newLength) {
                     this._removeItems(oldLength - newLength, control);
                 }
             });
-            this.count += additions;
         }
 
         /**
@@ -2421,12 +2490,12 @@
          * Handles animating items being unshifted into the array.
          * 
          * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _preunshift(ev: plat.observable.IPreArrayChangeInfo, control: plat.ui.TemplateControl, container: Element): void {
+        protected _preunshift(ev: plat.observable.IPreArrayChangeInfo, group?: IGroupHash): void {
+            var container = this._utils.isNull(group) ? this._container : group.element.lastElementChild;
             this._animateItems(0, 1, __Enter, container);
         }
 
@@ -2440,19 +2509,17 @@
          * Handles items being unshifted into the array.
          * 
          * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * @param {plat.ui.TemplateControl} control The control whose context we're modifying.
-         * @param {Element} container The container to add/remove items from.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _unshift(ev: plat.observable.IPostArrayChangeInfo<any>, control: plat.ui.TemplateControl, container: Element): void {
+        protected _unshift(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
             if (this._utils.isFunction(this._templateSelector)) {
-                this.rerender();
+                this.rerender(group);
                 return;
             }
 
-            this._addItems(ev.arguments.length, ev.oldArray.length, control, container);
-            this.count++;
+            this._createItems(ev.oldArray.length, ev.arguments.length, group, false);
         }
 
         /**
@@ -2833,6 +2900,68 @@
          * will be to pull right when the list is scrolled all the way to the left.
          */
         onRefresh?: string;
+    }
+
+    /**
+     * @name IGroupHash
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * Defines the properties for the {@link platui.Listview|Listview's} grouping hash.
+     */
+    export interface IGroupHash {
+        /**
+         * @name name
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The name of the group.
+         */
+        name: string;
+
+        /**
+         * @name index
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The index of the group.
+         */
+        index: number;
+
+        /**
+         * @name element
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The primary group element.
+         */
+        element: HTMLElement;
+
+        /**
+         * @name control
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {plat.ui.TemplateControl}
+         * 
+         * @description
+         * The control associated with this group.
+         */
+        control: plat.ui.TemplateControl;
     }
 
     /**

@@ -3936,14 +3936,14 @@ module plat {
                     lookAhead = this._lookAhead(char, index, true);
                     index += lookAhead.length - 1;
                     outputQueue.push({ val: parseFloat(lookAhead), args: 0 });
+                } else if (this._isValEqual(operatorStack[0], char)) {
+                    outputQueue.push({ val: char, args: 0 });
                 } else if (!(isNull(outputQueue[topOutputLength]) ||
                     !isNumber(Number(outputQueue[topOutputLength].val)) ||
                     this._isValEqual(outputQueue[topOutputLength - 1], char))) {
                     lookAhead = this._lookAhead(char, index, true);
                     index += lookAhead.length - 1;
                     outputQueue[topOutputLength].val += parseFloat(lookAhead);
-                } else if (this._isValEqual(operatorStack[0], char)) {
-                    outputQueue.push({ val: char, args: 0 });
                 } else {
                     operatorStack.unshift({ val: char, args: 0 });
                 }
@@ -11071,8 +11071,8 @@ module plat {
         /**
          * Allows a Control to observe any property on its context and receive updates when
          * the property is changed.
-         * @param {any} context The immediate parent object containing the property.
-         * @param {string} property The property identifier to watch for changes.
+         * @param {any} context A parent object of the item we're trying to observe.
+         * @param {string} property The property string that denotes the item in the context.
          * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method 
          * will have its 'this' context set to the control instance.
          */
@@ -11080,14 +11080,14 @@ module plat {
         /**
          * Allows a Control to observe any property on its context and receive updates when
          * the property is changed.
-         * @param {any} context The immediate parent object containing the property.
-         * @param {number} property The property identifier to watch for changes.
+         * @param {any} context The parent object of the item we're trying to observe.
+         * @param {number} index The index that denotes the item in the context.
          * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method 
          * will have its 'this' context set to the control instance.
          */
-        observe<T>(context: any, property: number, listener: (value: T, oldValue: T) => void): IRemoveListener;
+        observe<T>(context: any, index: number, listener: (value: T, oldValue: T) => void): IRemoveListener;
         observe(context: any, property: any, listener: (value: any, oldValue: any) => void): IRemoveListener {
-            if (isNull(context) || !context.hasOwnProperty(property)) {
+            if (isNull(context)) {
                 return noop;
             }
 
@@ -11097,14 +11097,18 @@ module plat {
             }
 
             var absoluteIdentifier = (<ui.TemplateControl>(<any>control)).getAbsoluteIdentifier(context);
-            if (isNull(absoluteIdentifier)) {
+            if (!isEmpty(absoluteIdentifier)) {
+                absoluteIdentifier += isEmpty(property) ? '' : '.' + property;
+            } else if (absoluteIdentifier === '' && isString(property) && property.indexOf(__CONTEXT) === 0) {
+                absoluteIdentifier = property;
+            } else {
                 return noop;
             }
 
             var _ContextManager: observable.IContextManagerStatic = Control._ContextManager || acquire(__ContextManagerStatic),
                 contextManager = _ContextManager.getManager(Control.getRootControl(this));
 
-            return contextManager.observe(absoluteIdentifier + '.' + property, {
+            return contextManager.observe(absoluteIdentifier, {
                 listener: listener.bind(this),
                 uid: this.uid
             });
@@ -11114,8 +11118,8 @@ module plat {
          * Allows a Control to observe an array and receive updates when certain array-changing methods are called.
          * The methods watched are push, pop, shift, sort, splice, reverse, and unshift. This method does not watch
          * every item in the array.
-         * @param {any} context The immediate parent object containing the array as a property.
-         * @param {string} property The array property identifier to watch for changes.
+         * @param {any} context A parent object of the array we're trying to observe.
+         * @param {string} property The property string that denotes the array in the context.
          * @param {(ev: plat.observable.IPreArrayChangeInfo) => void} preListener The method called prior to an array-changing 
          * method is called. This method will have its 'this' context set to the control instance.
          * @param {(ev: plat.observable.IPostArrayChangeInfo<T>) => void} postListener The method called after an array-changing 
@@ -11127,22 +11131,25 @@ module plat {
          * Allows a Control to observe an array and receive updates when certain array-changing methods are called.
          * The methods watched are push, pop, shift, sort, splice, reverse, and unshift. This method does not watch
          * every item in the array.
-         * @param {any} context The immediate parent object containing the array as a property.
-         * @param {number} property The array property identifier to watch for changes.
+         * @param {any} context The parent object of the array we're trying to observe.
+         * @param {number} index The index that denotes the array in the context.
          * @param {(ev: plat.observable.IPreArrayChangeInfo) => void} preListener The method called prior to an array-changing 
          * method is called. This method will have its 'this' context set to the control instance.
          * @param {(ev: plat.observable.IPostArrayChangeInfo<T>) => void} postListener The method called after an array-changing 
          * method is called. This method will have its 'this' context set to the control instance.
          */
-        observeArray<T>(context: any, property: number, preListener: (ev: observable.IPreArrayChangeInfo) => void,
+        observeArray<T>(context: any, index: number, preListener: (ev: observable.IPreArrayChangeInfo) => void,
             postListener: (ev: observable.IPostArrayChangeInfo<T>) => void): IRemoveListener;
         observeArray(context: any, property: any, preListener: (ev: observable.IPreArrayChangeInfo) => void,
             postListener: (ev: observable.IPostArrayChangeInfo<any>) => void): IRemoveListener {
-            if (isNull(context) || !context.hasOwnProperty(property)) {
+            if (isNull(context)) {
                 return noop;
             }
 
-            var array = context[property];
+            var propertyIsString = isString(property),
+                array: Array<any> = propertyIsString ? property === '' ? context :
+                    (Control._parser || <expressions.Parser>acquire(__Parser)).parse(property).evaluate(context) :
+                    context[property];
             if (!isArray(array)) {
                 return noop;
             }
@@ -11162,14 +11169,12 @@ module plat {
             var absoluteIdentifier = (<ui.TemplateControl>control).getAbsoluteIdentifier(context),
                 ContextManager: observable.IContextManagerStatic = Control._ContextManager || acquire(__ContextManagerStatic);
 
-            if (isNull(absoluteIdentifier)) {
-                if (property === __CONTEXT) {
-                    absoluteIdentifier = (<ui.TemplateControl>control).absoluteContextPath;
-                } else {
-                    return noop;
-                }
+            if (!isEmpty(absoluteIdentifier)) {
+                absoluteIdentifier += isEmpty(property) ? '' : '.' + property;
+            } else if (absoluteIdentifier === '' && propertyIsString && property.indexOf(__CONTEXT) === 0) {
+                absoluteIdentifier = property;
             } else {
-                absoluteIdentifier += '.' + property;
+                return noop;
             }
 
             var contextManager = ContextManager.getManager(Control.getRootControl(this)),
@@ -11212,7 +11217,7 @@ module plat {
             }
 
             if (isString(expression)) {
-                expression = Control._parser.parse(expression);
+                expression = (Control._parser || <expressions.Parser>acquire(__Parser)).parse(expression);
             } else if (!isFunction(expression.evaluate)) {
                 return noop;
             }
@@ -11332,7 +11337,7 @@ module plat {
          */
         findProperty(property: string): IControlProperty {
             var control = <Control>this,
-                expression = Control._parser.parse(property),
+                expression = (Control._parser || <expressions.Parser>acquire(__Parser)).parse(property),
                 value: any;
 
             while (!isNull(control)) {
@@ -11974,7 +11979,6 @@ module plat {
                 TemplateControl._managerCache.remove(uid);
                 Control.removeParent(control);
 
-                define(control, __CONTEXT, null, true, true, true);
                 define(control, __RESOURCES, null, true, true, true);
                 control.attributes = null;
                 control.bindableTemplates = null;
@@ -12204,7 +12208,6 @@ module plat {
             getIdentifier(context: any): string {
                 var queue: Array<{ context: any; identifier: string; }> = [],
                     dataContext = this.context,
-                    found = false,
                     obj = {
                         context: dataContext,
                         identifier: ''
@@ -12215,41 +12218,36 @@ module plat {
                     newObj: any;
 
                 if (dataContext === context) {
-                    found = true;
-                } else {
-                    queue.push(obj);
+                    return '';
                 }
+
+                queue.push(obj);
 
                 while (queue.length > 0) {
                     obj = queue.pop();
-                    context = obj.context;
+                    dataContext = obj.context;
 
-                    if (!isObject(context) || isEmpty(context)) {
+                    if (!isObject(dataContext) || isEmpty(dataContext)) {
                         continue;
                     }
 
-                    keys = Object.keys(context);
+                    keys = Object.keys(dataContext);
                     length = keys.length;
 
                     for (var i = 0; i < length; ++i) {
                         key = keys[i];
-                        newObj = context[key];
+                        newObj = dataContext[key];
 
                         if (newObj === context) {
-                            return (obj.identifier !== '') ? (obj.identifier + '.' + key) : key;
+                            return (obj.identifier + '.' + key).slice(1);
                         }
 
                         queue.push({
                             context: newObj,
-                            identifier: (obj.identifier !== '') ? (obj.identifier + '.' + key) : key
+                            identifier: obj.identifier + '.' + key
                         });
                     }
                 }
-                if (!found) {
-                    return;
-                }
-
-                return obj.identifier;
             }
 
             /**
@@ -12258,7 +12256,9 @@ module plat {
              * @param {any} context The object/primitive to locate on the root control's context.
              */
             getAbsoluteIdentifier(context: any): string {
-                if (context === this.context) {
+                if (context === this) {
+                    return '';
+                } else if (context === this.context) {
                     return this.absoluteContextPath;
                 }
 
@@ -12972,7 +12972,6 @@ module plat {
          * separate those templates and reuse them accordingly.
          */
         export class BindableTemplates {
-
             /**
              * Reference to the IResourcesFactory injectable.
              */
@@ -13002,6 +13001,11 @@ module plat {
              * Reference to the IElementManagerFactory injectable.
              */
             protected _ElementManagerFactory: processing.IElementManagerFactory = acquire(__ElementManagerFactory);
+
+            /**
+             * Reference to the BindableTemplatesFactory injectable.
+             */
+            protected _BindableTemplatesFactory: IBindableTemplatesFactory = acquire(__BindableTemplatesFactory);
 
             /**
              * Reference to the IExceptionStatic injectable.
@@ -13423,10 +13427,11 @@ module plat {
                         startNode: Comment,
                         endNode: Comment;
 
-                    var clone = <DocumentFragment>nodeMap.element.cloneNode(true);
+                    var clone = <DocumentFragment>element.cloneNode(true),
+                        _document = this._document;
 
-                    startNode = control.startNode = this._document.createComment(control.type + __START_NODE);
-                    endNode = control.endNode = this._document.createComment(control.type + __END_NODE);
+                    startNode = control.startNode = _document.createComment(control.type + __START_NODE);
+                    endNode = control.endNode = _document.createComment(control.type + __END_NODE);
                     element.insertBefore(startNode, element.firstChild);
                     element.insertBefore(endNode, null);
 
@@ -13483,6 +13488,8 @@ module plat {
 
                 control.resources = _resources;
                 _ResourcesFactory.addControlResources(control);
+
+                control.bindableTemplates = this._BindableTemplatesFactory.create(control, parent.bindableTemplates);
 
                 control.parent = parent;
                 control.controls = [];
@@ -19218,7 +19225,7 @@ module plat {
                  */
                 protected _updateResource(index: number): void {
                     var controls = this.controls;
-                    if (index <= 0 || index >= controls.length) {
+                    if (index < 0 || index >= controls.length) {
                         return;
                     }
 
