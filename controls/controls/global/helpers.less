@@ -1,0 +1,25 @@
+@import '../global/variables.less';
+@import '../global/mixins.less';
+
+/// ========== PlatypusUI Helper Classes =========== ///
+
+
+/// =========== Hide Content for Width ============= ///
+
+@media (max-width: @phone-end) {
+	.hide-on-@{phone-alias} {
+		display: none;
+	}
+}
+
+@media (max-width: @phablet-end) {
+	.hide-on-@{phablet-alias} {
+		display: none;
+	}
+}
+
+@media (max-width: @tablet-end) {
+	.hide-on-@{tablet-alias} {
+		display: none;
+	}
+}
