@@ -968,7 +968,7 @@
          */
         protected _setListener(): void {
             if (!this.__listenerSet) {
-                this.observeArray(this, __CONTEXT, this._preprocessEvent, this._executeEvent);
+                this.observeArray(this._preprocessEvent, this._executeEvent);
                 this.__listenerSet = true;
             }
         }
@@ -1166,6 +1166,7 @@
                     element: groupContainer,
                     control: control
                 },
+                items = 'items',
                 removeArrayListener: plat.IRemoveListener,
                 removeMutationListener: plat.IRemoveListener;
 
@@ -1174,7 +1175,7 @@
                 delete groups[name];
             };
 
-            control.observe(group, null, (newValue?: IListviewGroup, oldValue?: IListviewGroup) => {
+            control.observe((newValue?: IListviewGroup, oldValue?: IListviewGroup) => {
                 var newName = newValue.group;
                 if (newName === name || !this._utils.isObject(newValue)) {
                     return;
@@ -1187,13 +1188,13 @@
 
                 removeArrayListener();
                 removeMutationListener();
-                removeArrayListener = control.observe(group, 'items', this._childContextChanged.bind(this, newName));
-                removeMutationListener = control.observeArray(group, 'items', this._preprocessChildEvent.bind(this, newName),
-                    this._executeChildEvent.bind(this, newName));
+                removeArrayListener = control.observe(this._childContextChanged.bind(this, newName), items);
+                removeMutationListener = control.observeArray(this._preprocessChildEvent.bind(this, newName),
+                    this._executeChildEvent.bind(this, newName), items);
             });
-            removeArrayListener = control.observe(group, 'items', this._childContextChanged.bind(this, name));
-            removeMutationListener = control.observeArray(group, 'items', this._preprocessChildEvent.bind(this, name),
-                this._executeChildEvent.bind(this, name));
+            removeArrayListener = control.observe(this._childContextChanged.bind(this, name), items);
+            removeMutationListener = control.observeArray(this._preprocessChildEvent.bind(this, name),
+                this._executeChildEvent.bind(this, name), items);
 
             this._createItems(0, (group.items || []).length, groupHash, false);
             this._container.insertBefore(fragment, null);

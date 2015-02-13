@@ -14,13 +14,13 @@ module platui {
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes an HTML5 button.
+     * An {@link plat.ui.BindControl|BindControl} that standardizes an HTML5 button.
      */
-    export class Button extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Button extends plat.ui.BindControl implements IUIControl {
         /**
          * @name replaceWith
          * @memberof platui.Button
@@ -237,7 +237,7 @@ module platui {
             this.dom.addClass(element, 'plat-selected');
             this.dispatchEvent(__ButtonPrefix + this.groupName, plat.events.EventManager.DIRECT);
             this._isSelected = true;
-            this.propertyChanged(element.textContent);
+            this.inputChanged(element.textContent);
         }
     }
 

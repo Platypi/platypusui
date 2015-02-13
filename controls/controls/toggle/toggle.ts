@@ -4,13 +4,13 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.IBindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that simulates a toggle switch.
+     * An {@link plat.ui.BindControl|BindControl} that simulates a toggle switch.
      */
-    export class Toggle extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Toggle extends plat.ui.BindControl implements IUIControl {
         /**
          * @name templateString
          * @memberof platui.Toggle
@@ -132,22 +132,45 @@
         }
 
         /**
-         * @name setProperty
+         * @name observeProperties
          * @memberof platui.Toggle
          * @kind function
          * @access public
+         * @virtual
          * 
          * @description
-         * The function called when the bindable property is set externally.
+         * A function that allows this control to observe both the bound property itself as well as 
+         * potential child properties if being bound to an object.
          * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
-         * @param {boolean} setProperty? A boolean value indicating whether we should set 
-         * the property if we need to toggle the activated state.
+         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
+         * A function that allows bound properties to be observed with defined listeners.
+         * @param {string} identifier The identifier off of the bound object to listen to for changes.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
+        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
+            identifier?: string) => void): void {
+            observe(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Toggle
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         *
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue The old value of the bindable property.
+         * @param {string} identifier The identifier of the property being observed.
+         * @param {boolean} setProperty? A boolean value indicating whether we should set
+         * the property if we need to toggle the state.
+         *
+         * @returns {void}
+         */
+        protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
             if (newValue === oldValue) {
                 return;
             }
@@ -218,7 +241,7 @@
             this._activate(this._targetElement || (this._targetElement = this.element.firstElementChild));
             this.isActive = (<HTMLInputElement>this.element).checked = isActive;
             if (setProperty === true) {
-                this.propertyChanged(isActive, wasActive);
+                this.inputChanged(isActive, wasActive);
             }
         }
 

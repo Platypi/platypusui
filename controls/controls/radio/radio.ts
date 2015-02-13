@@ -126,38 +126,7 @@
         }
 
         /**
-         * @name setProperty
-         * @memberof platui.Radio
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * The function called when the bindable property is set externally.
-         * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
-         * @param {boolean} setProperty? A boolean value indicating whether we should set 
-         * the property if we need to toggle the check mark value.
-         * 
-         * @returns {void}
-         */
-        setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
-            if (newValue === oldValue) {
-                return;
-            }
-
-            var isChecked = newValue === this._getValue(),
-                wasChecked = this.isActive;
-
-            if (isChecked === wasChecked) {
-                return;
-            }
-
-            this._toggle(setProperty);
-        }
-
-        /**
-         * @name propertyChanged
+         * @name inputChanged
          * @memberof platui.Radio
          * @kind function
          * @access public
@@ -171,10 +140,42 @@
          * 
          * @returns {void}
          */
-        propertyChanged(newValue: any, oldValue?: any): void {
+        inputChanged(newValue: any, oldValue?: any): void {
             if (this.isActive) {
-                super.propertyChanged(this._getValue());
+                super.inputChanged(this._getValue());
             }
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Radio
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue The old value of the bindable property.
+         * @param {string} identifier The identifier of the property being observed.
+         * @param {boolean} setProperty? A boolean value indicating whether we should set 
+         * the property if we need to toggle the mark.
+         * 
+         * @returns {void}
+         */
+        protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
+            if (newValue === oldValue) {
+                return;
+            }
+
+            var isChecked = newValue === this._getValue(),
+                wasChecked = this.isActive;
+
+            if (isChecked === wasChecked) {
+                return;
+            }
+
+            this._toggle(setProperty);
         }
 
         /**
@@ -249,7 +250,7 @@
             var _utils = this._utils;
             if (_utils.isBoolean(newValue)) {
                 if (newValue) {
-                    this.setProperty(this._getValue(), null, true);
+                    this._setBoundProperty(this._getValue(), null, null, true);
                 }
                 return;
             } else if (!_utils.isString(newValue)) {
@@ -257,7 +258,7 @@
             }
 
             if (newValue === 'true') {
-                this.setProperty(this._getValue(), null, true);
+                this._setBoundProperty(this._getValue(), null, null, true);
             }
         }
 

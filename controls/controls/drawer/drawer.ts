@@ -4,13 +4,13 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that acts as a global drawer.
+     * An {@link plat.ui.BindControl|BindControl} that acts as a global drawer.
      */
-    export class Drawer extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Drawer extends plat.ui.BindControl implements IUIControl {
         /**
          * @name options
          * @memberof platui.Drawer
@@ -359,41 +359,25 @@
         }
 
         /**
-         * @name setProperty
+         * @name observeProperties
          * @memberof platui.Drawer
          * @kind function
          * @access public
+         * @virtual
          * 
          * @description
-         * The function called when the bindable property is set externally.
+         * A function that allows this control to observe both the bound property itself as well as 
+         * potential child properties if being bound to an object.
          * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
+         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
+         * A function that allows bound properties to be observed with defined listeners.
+         * @param {string} identifier The identifier off of the bound object to listen to for changes.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any): void {
-            if (!this.loaded) {
-                this._preloadedValue = newValue;
-                return;
-            }
-
-            var _utils = this._utils,
-                controller = this._controllers[0];
-
-            if (_utils.isBoolean(newValue) && !_utils.isNull(controller)) {
-                if (newValue) {
-                    if (controller.isOpen()) {
-                        return;
-                    }
-                    controller.open();
-                    return;
-                }
-
-                if (controller.isOpen()) {
-                    controller.close();
-                }
-            }
+        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
+            identifier?: string) => void): void {
+            observe(this._setBoundProperty);
         }
 
         /**
@@ -435,6 +419,43 @@
             }
 
             controllers.splice(index, 1);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Drawer
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {boolean} drawerState The new value of the control state.
+         * 
+         * @returns {void}
+         */
+        protected _setBoundProperty(drawerState: boolean): void {
+            if (!this.loaded) {
+                this._preloadedValue = drawerState;
+                return;
+            }
+
+            var _utils = this._utils,
+                controller = this._controllers[0];
+
+            if (_utils.isBoolean(drawerState) && !_utils.isNull(controller)) {
+                if (drawerState) {
+                    if (controller.isOpen()) {
+                        return;
+                    }
+                    controller.open();
+                    return;
+                }
+
+                if (controller.isOpen()) {
+                    controller.close();
+                }
+            }
         }
 
         /**
@@ -555,13 +576,13 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that manipulates and controls a global drawer.
+     * An {@link plat.ui.BindControl|BindControl} that manipulates and controls a global drawer.
      */
-    export class DrawerController extends plat.ui.BindablePropertyControl {
+    export class DrawerController extends plat.ui.BindControl {
         /**
          * @name options
          * @memberof platui.DrawerController
@@ -1220,9 +1241,9 @@
 
             if (wasClosed) {
                 if (this._useContext) {
-                    this.propertyChanged(true);
+                    this.inputChanged(true);
                 } else if (!_utils.isNull(this._drawer)) {
-                    this._drawer.propertyChanged(true);
+                    this._drawer.inputChanged(true);
                 }
             }
 
@@ -1259,9 +1280,9 @@
 
             if (wasOpen) {
                 if (this._useContext) {
-                    this.propertyChanged(false);
+                    this.inputChanged(false);
                 } else if (!_utils.isNull(this._drawer)) {
-                    this._drawer.propertyChanged(false);
+                    this._drawer.inputChanged(false);
                 }
             }
 
@@ -1352,28 +1373,49 @@
         }
 
         /**
-         * @name setProperty
-         * @memberof platui.Input
+         * @name observeProperties
+         * @memberof platui.DrawerController
          * @kind function
          * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as 
+         * potential child properties if being bound to an object.
+         * 
+         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
+         * A function that allows bound properties to be observed with defined listeners.
+         * @param {string} identifier The identifier off of the bound object to listen to for changes.
+         * 
+         * @returns {void}
+         */
+        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
+            identifier?: string) => void): void {
+            observe(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
          * 
          * @description
          * The function called when the bindable property is set externally.
          * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
+         * @param {boolean} drawerState The new value of the control's state.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any): void {
+        protected _setBoundProperty(drawerState: boolean): void {
             if (!this.loaded) {
-                this._preloadedValue = newValue;
+                this._preloadedValue = drawerState;
                 return;
             }
 
             var _utils = this._utils;
-            if (_utils.isBoolean(newValue)) {
-                if (newValue) {
+            if (_utils.isBoolean(drawerState)) {
+                if (drawerState) {
                     if (this._isOpen) {
                         return;
                     }

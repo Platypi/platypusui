@@ -4,14 +4,14 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl, platui.IFormControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes and styles 
+     * An {@link plat.ui.BindControl|BindControl} that standardizes and styles 
      * an HTML input element of various types.
      */
-    export class Input extends plat.ui.BindablePropertyControl implements IUIControl, IFormControl {
+    export class Input extends plat.ui.BindControl implements IUIControl, IFormControl {
         /**
          * @name templateString
          * @memberof platui.Input
@@ -426,7 +426,7 @@
             }
 
             var actionElement = this._actionElement;
-            this.propertyChanged((inputElement.value = ''), value);
+            this.inputChanged((inputElement.value = ''), value);
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
         }
@@ -477,20 +477,41 @@
         }
 
         /**
-         * @name setProperty
+         * @name observeProperties
          * @memberof platui.Input
          * @kind function
          * @access public
+         * @virtual
          * 
          * @description
-         * The function called when the bindable property is set externally.
+         * A function that allows this control to observe both the bound property itself as well as 
+         * potential child properties if being bound to an object.
          * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
+         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
+         * A function that allows bound properties to be observed with defined listeners.
+         * @param {string} identifier The identifier off of the bound object to listen to for changes.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any): void {
+        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
+            identifier?: string) => void): void {
+            observe(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Input
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable text is set externally.
+         * 
+         * @param {string} newValue The new value of the bindable text.
+         * 
+         * @returns {void}
+         */
+        protected _setBoundProperty(newValue: string): void {
             if (!this._loaded) {
                 this._preloadedValue = newValue;
                 return;
@@ -734,7 +755,7 @@
                 value = inputElement.value,
                 char = this._typeChar;
 
-            this.propertyChanged((inputElement.value = (char === 'x' ? '' : value + char)), value);
+            this.inputChanged((inputElement.value = (char === 'x' ? '' : value + char)), value);
             this._checkEmail();
             inputElement.focus();
         }
@@ -895,7 +916,7 @@
                         value = inputElement.value = value.slice(0, -1);
                     }
                 default:
-                    this.propertyChanged(value);
+                    this.inputChanged(value);
                     break;
             }
 
@@ -928,7 +949,7 @@
                     if (last >= 0 && (!this._pattern.test(newValue[last]) ||
                         !(last === 0 || this._type !== 'tel' || newValue[last] !== '+'))) {
                         newValue = inputElement.value = newValue.slice(0, -1);
-                        this.propertyChanged(newValue);
+                        this.inputChanged(newValue);
                         break;
                     }
                 default:
@@ -964,7 +985,7 @@
                             _Exception.warn(this.type + ' control is bound to a value that does not satisfy ' +
                                 'the given pattern and/or type. The bound value will be reset to "".', _Exception.CONTROL);
                         }
-                        this.propertyChanged((this._inputElement.value = ''), value);
+                        this.inputChanged((this._inputElement.value = ''), value);
                     }
                     break;
                 default:

@@ -4,27 +4,14 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.TemplateControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that allows for a lower and upper value, 
-     * thus creating a variable range of values.
+     * A {@link plat.ui.BindControl|BindControl} that allows for a lower and upper value, 
+     * thus creating a variable range of included values.
      */
-    export class Range extends plat.ui.TemplateControl implements IUIControl {
-        /**
-         * @name context
-         * @memberof platui.Range
-         * @kind property
-         * @access public
-         * 
-         * @type {platui.IRangeContext}
-         * 
-         * @description
-         * The specifically defined context for this control.
-         */
-        context: IRangeContext;
-
+    export class Range extends plat.ui.BindControl implements IUIControl {
         /**
          * @name templateString
          * @memberof platui.Range
@@ -56,6 +43,19 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IRangeOptions>;
+
+        /**
+         * @name priority
+         * @memberof platui.Range
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
 
         /**
          * @name lower
@@ -305,6 +305,32 @@
         protected _upperKnobOffset: number;
 
         /**
+         * @name _lowerIdentifier
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The lower identifier for setting the value of the bound object.
+         */
+        protected _lowerIdentifier: string;
+
+        /**
+         * @name _upperIdentifier
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The upper identifier for setting the value of the bound object.
+         */
+        protected _upperIdentifier: string;
+
+        /**
          * @name _lengthProperty
          * @memberof platui.Range
          * @kind property
@@ -331,19 +357,6 @@
         protected _positionProperty: string;
 
         /**
-         * @name _isSelf
-         * @memberof platui.Range
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * A boolean value specifying that this control is the one modifying the observed context values.
-         */
-        protected _isSelf = false;
-
-        /**
          * @name _touchState
          * @memberof platui.Range
          * @kind property
@@ -355,19 +368,6 @@
          * An enum denoting the current touch state of the user.
          */
         protected _touchState = 0;
-
-        /**
-         * @name _contextObserved
-         * @memberof platui.Range
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Denotes whether the context is currently being observed.
-         */
-        protected _contextObserved = false;
 
         /**
          * @name _cloneAttempts
@@ -418,36 +418,6 @@
         }
 
         /**
-         * @name contextChanged
-         * @memberof platui.Range
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Handles the context object being externally changed.
-         * 
-         * @returns {void}
-         */
-        contextChanged(): void {
-            var context = this.context,
-                _utils = this._utils;
-            if (!_utils.isObject(context)) {
-                var _Exception = this._Exception;
-                _Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.',
-                    _Exception.CONTEXT);
-                return;
-            }
-
-            var lower = context.lower,
-                upper = context.upper,
-                isNumber = _utils.isNumber;
-
-            this.setLower(isNumber(lower) ? lower : 0);
-            this.setUpper(isNumber(upper) ? upper : this.max);
-            this._watchContext();
-        }
-
-        /**
          * @name initialize
          * @memberof platui.Range
          * @kind function
@@ -474,8 +444,7 @@
          * @returns {void}
          */
         loaded(): void {
-            var context = this.context || <IRangeContext>{},
-                element = this.element,
+            var element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
                 _utils = this._utils,
                 isNumber = _utils.isNumber,
@@ -483,21 +452,22 @@
                 options = optionObj.value || <IRangeOptions>{},
                 optionLower = Number(options.lower),
                 optionUpper = Number(options.upper),
+                identifiers = options.identifiers || <{ lower: string; upper: string; }>{},
                 optionMin = options.min,
                 optionMax = options.max,
                 step = options.step,
                 reversed = this._reversed = (options.reverse === true),
-                contextLower = context.lower,
-                contextUpper = context.upper,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
                 max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
-                lower = isNumber(contextLower) ? contextLower : isNumber(optionLower) ? optionLower : min,
-                upper = isNumber(contextUpper) ? contextUpper : isNumber(optionUpper) ? optionUpper : max,
+                lower = isNumber(optionLower) ? Math.round(optionLower) : min,
+                upper = isNumber(optionUpper) ? Math.round(optionUpper) : max,
                 className = __Plat + this._validateOrientation(options.orientation),
                 _Exception: plat.IExceptionStatic;
 
             this._lowerKnob = <HTMLElement>slider.firstElementChild;
             this._upperKnob = <HTMLElement>slider.lastElementChild;
+            this._lowerIdentifier = identifiers.lower || 'lower';
+            this._upperIdentifier = identifiers.upper || 'upper';
 
             // if it's a reversed direction, swap knobs.
             if (reversed) {
@@ -512,7 +482,7 @@
             // reset value to minimum in case context is already set to a value
             this.lower = min;
             this.upper = max;
-            this._step = isNumber(step) ? (step > 0 ? step : 1) : 1;
+            this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
 
             if (min >= max) {
                 _Exception = this._Exception;
@@ -523,19 +493,10 @@
 
             this._setPositionAndLength();
             this._setIncrement();
-            this._setLowerKnob(min);
+            this._setLowerKnobPosition(min);
             this._initializeEvents();
-
-            if (!_utils.isObject(this.context)) {
-                _Exception = this._Exception;
-                _Exception.warn('"' + this.type + '\'s" context should be an object that implements the platui.IRangeContext interface.',
-                    _Exception.CONTROL);
-                return;
-            }
-
             this.setLower(lower);
             this.setUpper(upper);
-            this._watchContext();
         }
 
         /**
@@ -545,7 +506,7 @@
          * @access public
          * 
          * @description
-         * Set the lower value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * Sets the lower value of the {@link platui.Range|Range}. If an invalid value is passed in 
          * nothing will happen.
          * 
          * @param {number} value The value to set the {@link platui.Range|Range} to.
@@ -553,28 +514,6 @@
          * @returns {void}
          */
         setLower(value: number): void {
-            var _utils = this._utils,
-                isNumber = _utils.isNumber;
-
-            if (!_utils.isObject(this.context)) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set the lower value of a "' + this.type + '" whose context has ' +
-                    'not yet been set to an object.', _Exception.CONTROL);
-                return;
-            } else if (!isNumber(value)) {
-                var numberVal = Number(value);
-                if (isNumber(numberVal)) {
-                    value = numberVal;
-                } else {
-                    return;
-                }
-            } else if (this._touchState === 2) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set value of ' + this.type +
-                    '\'s lower knob while the user is modifying the value.', _Exception.CONTROL);
-                return;
-            }
-
             this._setLower(value, true);
         }
 
@@ -585,7 +524,7 @@
          * @access public
          * 
          * @description
-         * Set the upper value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * Sets the upper value of the {@link platui.Range|Range}. If an invalid value is passed in 
          * nothing will happen.
          * 
          * @param {number} value The value to set the {@link platui.Range|Range} to.
@@ -593,75 +532,134 @@
          * @returns {void}
          */
         setUpper(value: number): void {
-            var _utils = this._utils,
-                isNumber = _utils.isNumber;
-
-            if (!_utils.isObject(this.context)) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set the upper value of a "' + this.type + '" whose context has ' +
-                    'not yet been set to an object.', _Exception.CONTROL);
-                return;
-            } else if (!isNumber(value)) {
-                var numberVal = Number(value);
-                if (isNumber(numberVal)) {
-                    value = numberVal;
-                } else {
-                    return;
-                }
-            } else if (this._touchState === 3) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set value of ' + this.type +
-                    '\'s upper knob while the user is modifying the value.', _Exception.CONTROL);
-                return;
-            }
-
             this._setUpper(value, true);
         }
 
         /**
-         * @name _watchContext
+         * @name observeProperties
+         * @memberof platui.Range
+         * @kind function
+         * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as 
+         * potential child properties if being bound to an object.
+         * 
+         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
+         * A function that allows bound properties to be observed with defined listeners.
+         * @param {string} identifier The identifier off of the bound object to listen to for changes.
+         * 
+         * @returns {void}
+         */
+        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
+            identifier?: string) => void): void {
+            observe(this._setLowerBoundProperty, this._lowerIdentifier);
+            observe(this._setUpperBoundProperty, this._upperIdentifier);
+        }
+
+        /**
+         * @name _setLowerBoundProperty
          * @memberof platui.Range
          * @kind function
          * @access protected
          * 
          * @description
-         * Observe the necessary context values.
+         * The function called when the bindable lower value is set externally.
+         * 
+         * @param {number} newValue The new lower value.
          * 
          * @returns {void}
          */
-        protected _watchContext(): void {
-            if (this._contextObserved) {
+        protected _setLowerBoundProperty(newValue: number): void {
+            this._setLower(newValue, false);
+        }
+
+        /**
+         * @name _setUpperBoundProperty
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable upper value is set externally.
+         * 
+         * @param {number} newValue The new upper value.
+         * 
+         * @returns {void}
+         */
+        protected _setUpperBoundProperty(newValue: number): void {
+            this._setUpper(newValue, false);
+        }
+
+        /**
+         * @name _setLower
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the lower value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * nothing will happen.
+         * 
+         * @param {number} value The value to set the {@link platui.Range|Range} to.
+         * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * 
+         * @returns {void}
+         */
+        protected _setLower(value: number, propertyChanged: boolean): void {
+            if (this._touchState === 2) {
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set the value of the ' + this.type +
+                    '\'s lower knob while the user is manipulating it.', _Exception.CONTROL);
                 return;
             }
 
-            var context = this.context;
-            this.observe(context, 'lower', (newValue: number, oldValue: number) => {
-                if (this._isSelf || newValue === oldValue) {
-                    return;
-                } else if (this._touchState === 2) {
-                    var _Exception = this._Exception;
-                    _Exception.warn('Cannot set value of ' + this.type +
-                        ' while the user is modifying the value.', _Exception.CONTROL);
+            if (!this._utils.isNumber(value)) {
+                var numberVal = Number(value);
+                if (this._utils.isNumber(numberVal)) {
+                    value = numberVal;
+                } else {
                     return;
                 }
+            }
 
-                this.setLower(newValue);
-            });
+            this._setLowerValue(value, true, propertyChanged, true);
+        }
 
-            this.observe(context, 'upper', (newValue: number, oldValue: number) => {
-                if (this._isSelf || newValue === oldValue) {
-                    return;
-                } else if (this._touchState === 3) {
-                    var _Exception = this._Exception;
-                    _Exception.warn('Cannot set value of ' + this.type +
-                        ' while the user is modifying the value.', _Exception.CONTROL);
+        /**
+         * @name _setUpper
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the uppper value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * nothing will happen.
+         * 
+         * @param {number} value The value to set the {@link platui.Range|Range} to.
+         * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * 
+         * @returns {void}
+         */
+        protected _setUpper(value: number, propertyChanged: boolean): void {
+            if (this._touchState === 3) {
+                var _Exception = this._Exception;
+                _Exception.warn('Cannot set the upper value of the ' + this.type +
+                    '\'s upper knob while the user is manipulating it.', _Exception.CONTROL);
+                return;
+            }
+
+            if (!this._utils.isNumber(value)) {
+                var numberVal = Number(value);
+                if (this._utils.isNumber(numberVal)) {
+                    value = numberVal;
+                } else {
                     return;
                 }
+            }
 
-                this.setUpper(newValue);
-            });
-
-            this._contextObserved = true;
+            this._setUpperValue(value, true, propertyChanged, true);
         }
 
         /**
@@ -706,8 +704,8 @@
             this.addEventListener(this._window, 'resize', () => {
                 this._setPositionAndLength();
                 this._setIncrement();
-                this._setLowerKnob();
-                this._setUpperKnob();
+                this._setLowerKnobPosition();
+                this._setUpperKnobPosition();
             }, false);
         }
 
@@ -962,7 +960,7 @@
                     return;
                 }
 
-                this._setLower(value, false);
+                this._setLowerValue(value, false, true, true);
             });
         }
 
@@ -989,7 +987,7 @@
                     return;
                 }
 
-                this._setUpper(value, false);
+                this._setUpperValue(value, false, true, true);
             });
         }
 
@@ -1018,8 +1016,8 @@
                     return;
                 }
 
-                this._setLower(value, false, false);
-                this._setUpper(value, false);
+                this._setLowerValue(value, false, false, false);
+                this._setUpperValue(value, false, true, true);
             });
         }
 
@@ -1086,7 +1084,7 @@
         }
 
         /**
-         * @name _setLower
+         * @name _setLowerValue
          * @memberof platui.Range
          * @kind function
          * @access protected
@@ -1096,20 +1094,14 @@
          * 
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
-         * @param {boolean} trigger Whether or not to trigger the 'input' event. Defaults to true.
+         * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * @param {boolean} trigger Whether or not to trigger the 'input' event.
          * 
          * @returns {void}
          */
-        protected _setLower(newValue: number, setKnob: boolean, trigger?: boolean): void {
-            var lower = this.lower,
-                context = this.context || <IRangeContext>{};
-
+        protected _setLowerValue(newValue: number, setKnob: boolean, propertyChanged: boolean, trigger: boolean): void {
+            var lower = this.lower;
             if (newValue === lower) {
-                if (context.lower !== lower) {
-                    this._isSelf = true;
-                    context.lower = lower;
-                    this._isSelf = false;
-                }
                 return;
             } else if (newValue >= this.max) {
                 newValue = this.max;
@@ -1119,22 +1111,26 @@
                 return;
             }
 
-            this._isSelf = true;
-            this.lower = context.lower = newValue;
-            this._isSelf = false;
+            this.lower = newValue;
+
             if (setKnob) {
-                this._setLowerKnob();
+                this._setLowerKnobPosition();
             }
 
-            if (trigger === false) {
-                return;
+            if (propertyChanged) {
+                var newProperty = <plat.IObject<number>>{};
+                newProperty[this._lowerIdentifier] = this.lower;
+                newProperty[this._upperIdentifier] = this.upper;
+                this.inputChanged(newProperty);
             }
 
-            this._trigger('input');
+            if (trigger) {
+                this._trigger('input');
+            }
         }
 
         /**
-         * @name _setUpper
+         * @name _setUpperValue
          * @memberof platui.Range
          * @kind function
          * @access protected
@@ -1144,20 +1140,14 @@
          * 
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
-         * @param {boolean} trigger? Whether or not to trigger the 'input' event. Defaults to true.
+         * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * @param {boolean} trigger Whether or not to trigger the 'input' event.
          * 
          * @returns {void}
          */
-        protected _setUpper(newValue: number, setKnob: boolean, trigger?: boolean): void {
-            var upper = this.upper,
-                context = this.context || <IRangeContext>{};
-
+        protected _setUpperValue(newValue: number, setKnob: boolean, propertyChanged: boolean, trigger: boolean): void {
+            var upper = this.upper;
             if (newValue === upper) {
-                if (context.upper !== upper) {
-                    this._isSelf = true;
-                    context.upper = upper;
-                    this._isSelf = false;
-                }
                 return;
             } else if (newValue >= this.max) {
                 newValue = this.max;
@@ -1167,18 +1157,22 @@
                 return;
             }
 
-            this._isSelf = true;
-            this.upper = context.upper = newValue;
-            this._isSelf = false;
+            this.upper = newValue;
+
             if (setKnob) {
-                this._setUpperKnob();
+                this._setUpperKnobPosition();
             }
 
-            if (trigger === false) {
-                return;
+            if (propertyChanged) {
+                var newProperty = <plat.IObject<number>>{};
+                newProperty[this._lowerIdentifier] = this.lower;
+                newProperty[this._upperIdentifier] = this.upper;
+                this.inputChanged(newProperty);
             }
 
-            this._trigger('input');
+            if (trigger) {
+                this._trigger('input');
+            }
         }
 
         /**
@@ -1229,7 +1223,7 @@
         }
 
         /**
-         * @name _setLowerKnob
+         * @name _setLowerKnobPosition
          * @memberof platui.Range
          * @kind function
          * @access protected
@@ -1242,7 +1236,7 @@
          * 
          * @returns {void}
          */
-        protected _setLowerKnob(value?: number): void {
+        protected _setLowerKnobPosition(value?: number): void {
             var animationOptions: plat.IObject<string> = {},
                 upperKnobOffset = this._upperKnobOffset,
                 upperOffset = this._utils.isNumber(upperKnobOffset) ? upperKnobOffset :
@@ -1262,7 +1256,7 @@
         }
 
         /**
-         * @name _setUpperKnob
+         * @name _setUpperKnobPosition
          * @memberof platui.Range
          * @kind function
          * @access protected
@@ -1275,7 +1269,7 @@
          * 
          * @returns {void}
          */
-        protected _setUpperKnob(value?: number): void {
+        protected _setUpperKnobPosition(value?: number): void {
             var animationOptions: plat.IObject<string> = {},
                 length = this._calculateKnobPosition((value || this.upper));
 
@@ -1528,6 +1522,21 @@
          * The incremental step value of the {@link platui.Range|Range}.
          */
         step?: number;
+
+        /**
+         * @name identifiers
+         * @memberof platui.IRangeOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {{ lower: string; upper: string; }}
+         * 
+         * @description
+         * The identifiers that will label the lower and upper values set 
+         * on the bound object (e.g. if bound to an object `foo: { low: number; high: number; }` 
+         * this identifiers object should be `{ lower: 'low', upper: 'high' }`).
+         */
+        identifiers?: { lower: string; upper: string; };
     }
 
     /**
@@ -1556,17 +1565,18 @@
     }
 
     /**
-     * @name IRangeContext
+     * @name IRangeBinding
      * @memberof platui
      * @kind interface
      * 
      * @description
-     * Defines the expected context of the {@link platui.Range|Range} control.
+     * Defines the expected bound object of the {@link platui.Range|Range} control 
+     * (e.g. using {@link plat.controls.Bind|Bind}.
      */
-    export interface IRangeContext {
+    export interface IRangeBinding {
         /**
          * @name lower
-         * @memberof platui.IRangeContext
+         * @memberof platui.IRangeBinding
          * @kind property
          * @access public
          * 
@@ -1579,7 +1589,7 @@
 
         /**
          * @name lower
-         * @memberof platui.IRangeContext
+         * @memberof platui.IRangeBinding
          * @kind property
          * @access public
          * 
