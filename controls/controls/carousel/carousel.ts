@@ -572,17 +572,17 @@
          * @description
          * Advances the position of the {@link platui.Carousel|Carousel} to the next state.
          * 
-         * @returns {void}
+         * @returns {boolean} Whether or not next was a valid state.
          */
-        goToNext(): void {
+        goToNext(): boolean {
             var index = this._index;
             if (this._isInfinite) {
                 if (index === this.context.length - 1) {
                     this._infiniteNext();
-                    return;
+                    return true;
                 }
             } else if (index >= this.context.length - 1) {
-                return;
+                return false;
             }
 
             var animationOptions: plat.IObject<string> = {};
@@ -590,6 +590,7 @@
             this._initiateAnimation({ properties: animationOptions });
 
             this.inputChanged(++this._index, index);
+            return true;
         }
 
         /**
@@ -601,17 +602,17 @@
          * @description
          * Changes the position of the {@link platui.Carousel|Carousel} to the previous state.
          * 
-         * @returns {void}
+         * @returns {boolean} Whether or not the previous state is valid.
          */
-        goToPrevious(): void {
+        goToPrevious(): boolean {
             var index = this._index;
             if (this._isInfinite) {
                 if (index === 0) {
                     this._infinitePrevious();
-                    return;
+                    return true;
                 }
             } else if (index <= 0) {
-                return;
+                return false;
             }
 
             var animationOptions: plat.IObject<string> = {};
@@ -619,6 +620,7 @@
             this._initiateAnimation({ properties: animationOptions });
 
             this.inputChanged(--this._index, index);
+            return true;
         }
 
         /**
@@ -633,12 +635,12 @@
          * 
          * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
          * 
-         * @returns {void}
+         * @returns {boolean} Whether or not the state specified by the index is valid.
          */
-        goToIndex(index: number): void {
+        goToIndex(index: number): boolean {
             var oldIndex = this._index;
             if (index === oldIndex || index < 0 || index >= this.context.length) {
-                return;
+                return false;
             }
 
             var animationOptions: plat.IObject<string> = {},
@@ -648,6 +650,7 @@
             this._initiateAnimation({ properties: animationOptions });
 
             this.inputChanged((this._index = index), oldIndex);
+            return true;
         }
 
         /**
@@ -827,8 +830,6 @@
                         this._animationThenable = null;
                     });
                 });
-
-                return;
             }
 
             return this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
@@ -891,7 +892,7 @@
         protected _addEventListeners(type: string): void {
             var types = type.split(' ');
 
-            this.addEventListener(this._window, 'resize',() => {
+            this.addEventListener(this._window, 'resize', () => {
                 this._setPosition();
             }, false);
 
@@ -1211,10 +1212,10 @@
             var distanceMoved = this._isVertical ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
-                    this.goToNext();
-                    return;
-                } else {
-                    this.goToPrevious();
+                    if (this.goToNext()) {
+                        return;
+                    }
+                } else if (this.goToPrevious()) {
                     return;
                 }
             }
