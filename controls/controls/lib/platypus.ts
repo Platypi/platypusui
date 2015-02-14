@@ -1310,16 +1310,16 @@ module plat {
                 } else if (!isObject(success) || !isString(success.response)) {
                     ___Exception = ___Exception || (___Exception = plat.acquire(__ExceptionStatic));
                     ___Exception.warn('No template found at ' + templateUrl, ___Exception.AJAX);
-                    return ___templateCache.put(templateUrl, serializeHtml());
+                    return ___templateCache.put(templateUrl);
                 }
     
                 var templateString = success.response;
     
                 if (isEmpty(templateString.trim())) {
-                    return ___templateCache.put(templateUrl, serializeHtml());
+                    return ___templateCache.put(templateUrl);
                 }
     
-                return ___templateCache.put(templateUrl, serializeHtml(templateString));
+                return ___templateCache.put(templateUrl, templateString);
             }).catch((error: any): any => {
                 postpone((): void => {
                     ___Exception = ___Exception || (___Exception = plat.acquire(__ExceptionStatic));
@@ -7952,12 +7952,19 @@ module plat {
             }
 
             /**
+             * Serializes a string into a DocumentFragment and stores it in the cache.
+             * @param {string} key The key to use for storage/retrieval of the object.
+             * @param {string} value The string html.
+             * DocumentFragment containing the input Node.
+             */
+            put(key: string, value?: string): async.IThenable<DocumentFragment>;
+            /**
              * Stores a Node in the cache as a DocumentFragment.
              * @param {string} key The key to use for storage/retrieval of the object.
              * @param {Node} value The Node.
              * DocumentFragment containing the input Node.
              */
-            put(key: string, value: Node): async.IThenable<DocumentFragment>;
+            put(key: string, value?: Node): async.IThenable<DocumentFragment>;
             /**
              * Stores a IPromise in the cache.
              * @param {string} key The key to use for storage/retrieval of the object.
@@ -7965,8 +7972,8 @@ module plat {
              * should resolve with a Node.
              * the input Promise resolves.
              */
-            put(key: string, value: async.IThenable<Node>): async.IThenable<DocumentFragment>;
-            put(key: string, value: any): async.IThenable<DocumentFragment> {
+            put(key: string, value?: async.IThenable<Node>): async.IThenable<DocumentFragment>;
+            put(key: string, value?: any): async.IThenable<DocumentFragment> {
                 var Promise = this._Promise;
                 super.put(key, Promise.resolve<DocumentFragment>(value));
 
@@ -7976,6 +7983,8 @@ module plat {
                     var fragment = document.createDocumentFragment();
                     fragment.appendChild(value.cloneNode(true));
                     value = fragment;
+                } else if (isString(value) || isNull(value)) {
+                    value = serializeHtml(value);
                 }
 
                 return Promise.resolve<DocumentFragment>(value);
@@ -9796,6 +9805,88 @@ module plat {
                  */
                 observe(listener: (newValue: T, oldValue: T) => void): IRemoveListener;
             }
+
+            /**
+             * Defines methods that interact with a control that implements IImplementTwoWayBinding 
+             * (e.g. Bind.
+             */
+            export interface ISupportTwoWayBinding {
+                /**
+                 * Adds a listener to be called when the bindable property changes.
+                 * @param {plat.IPropertyChangedListener<any>} listener The function that acts as a listener.
+                 */
+                onInput(listener: (newValue: any, oldValue: any) => void): IRemoveListener;
+
+                /**
+                 * A function that allows this control to observe both the bound property itself as well as 
+                 * potential child properties if being bound to an object.
+                 * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the 
+                 * databinding.
+                 */
+                observeProperties(implementer: observable.IImplementTwoWayBinding): void;
+            }
+
+            /**
+             * Defines methods that interact with a control that implements ISupportTwoWayBinding 
+             * (e.g. any control that extends BindControl.
+             */
+            export interface IImplementTwoWayBinding {
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener function.
+                 * @param {string} identifier? The identifier off of the bound object to listen to for changes. If undefined or empty  
+                 * the listener will listen for changes to the bound item itself.
+                 */
+                observeProperty<T>(listener: IBoundPropertyChangedListener<T>, identifier?: string): IRemoveListener;
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener function.
+                 * @param {number} index? The index off of the bound object to listen to for changes if the bound object is an Array. 
+                 * If undefined or empty the listener will listen for changes to the bound Array itself.
+                 */
+                observeProperty<T>(listener: IBoundPropertyChangedListener<T>, index?: number): IRemoveListener;
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {(ev: plat.observable.IPostArrayChangeInfo<T>, identifier: string) => void} listener The listener function.
+                 * @param {string} identifier? The identifier off of the bound object to listen to for changes. If undefined or empty  
+                 * the listener will listen for changes to the bound item itself.
+                 * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes.
+                 */
+                observeProperty<T>(listener: (ev: observable.IPostArrayChangeInfo<T>, identifier: string) => void,
+                    identifier?: string, arrayMutationsOnly?: boolean): IRemoveListener;
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {(ev: plat.observable.IPostArrayChangeInfo<T>, identifier: string) => void} listener The listener function.
+                 * @param {number} index? The index off of the bound object to listen to for changes if the bound object is an Array. 
+                 * If undefined or empty the listener will listen for changes to the bound Array itself.
+                 * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes.
+                 */
+                observeProperty<T>(listener: (ev: observable.IPostArrayChangeInfo<T>, identifier: string) => void,
+                    index?: number, arrayMutationsOnly?: boolean): IRemoveListener;
+
+                /**
+                 * Gets the current value of the bound property.
+                 */
+                evaluate(): any;
+            }
+
+            /**
+             * Defines a function that will be called whenever a bound property specified by a given identifier has changed.
+             */
+            export interface IBoundPropertyChangedListener<T> {
+                /**
+                 * The method signature for IBoundPropertyChangedListener.
+                 * @param {T} newValue The new value of the observed property.
+                 * @param {T} oldValue The previous value of the observed property.
+                 * @param {any} identifier The string or number identifier that specifies the changed property.
+                 * @param {boolean} firstTime? True if this is the first case where the bound property is being set.
+                 */
+                (newValue: T, oldValue: T, identifier: any, firstTime?: boolean): void;
+            }
     }
     /**
      * Holds classes and interfaces related to event management components in platypus.
@@ -11070,7 +11161,7 @@ module plat {
         /**
          * Allows a Control to observe any property on its context and receive updates when
          * the property is changed.
-         * @param {(value: T, oldValue: T, identifier: string) => void} listener The method called when the property is changed. 
+         * @param {plat.IIdentifierChangedListener<T>} listener The method called when the property is changed. 
          * This method will have its 'this' context set to the control instance.
          * @param {string} identifier? The property string that denotes the item in the context (e.g. "foo.bar.baz" is observing the 
          * property `baz` in the object `bar` in the object `foo` in the control's context.
@@ -11079,7 +11170,7 @@ module plat {
         /**
          * Allows a Control to observe any property on its context and receive updates when
          * the property is changed.
-         * @param {(value: T, oldValue: T, index: number) => void} listener The method called when the property is changed. This method 
+         * @param {plat.IIdentifierChangedListener<T>} listener The method called when the property is changed. This method 
          * will have its 'this' context set to the control instance.
          * @param {number} index? The index that denotes the item in the context if the context is an Array.
          */
@@ -11197,14 +11288,14 @@ module plat {
         /**
          * Parses an expression string and observes any associated identifiers. When an identifier
          * value changes, the listener will be called.
-         * @param {(value: T, oldValue: T, expression: string) => void} listener The listener to call when the expression identifer values change.
+         * @param {plat.IIdentifierChangedListener<T>} listener The listener to call when the expression identifer values change.
          * @param {string} expression The expression string to watch for changes.
          */
         observeExpression<T>(listener: (value: T, oldValue: T, expression: string) => void, expression: string): IRemoveListener;
         /**
          * Using a IParsedExpression observes any associated identifiers. When an identifier
          * value changes, the listener will be called.
-         * @param {(value: T, oldValue: T, expression: string) => void} listener The listener to call when the expression identifer values change.
+         * @param {plat.IIdentifierChangedListener<T>} listener The listener to call when the expression identifer values change.
          * @param {plat.expressions.IParsedExpression} expression The expression string to watch for changes.
          */
         observeExpression<T>(listener: (value: T, oldValue: T, expression: string) => void, expression: expressions.IParsedExpression): IRemoveListener;
@@ -12124,10 +12215,10 @@ module plat {
 
                     return templateCache.read(type).catch((template: any): async.IThenable<DocumentFragment> => {
                         if (isNull(template)) {
-                            template = dom.serializeHtml(control.templateString);
-                    }
+                            template = control.templateString;
+                        }
 
-                    return templateCache.put(type, template);
+                        return templateCache.put(type, template);
                     });
                 } else {
                     return <any>Promise.reject(null);
@@ -12380,16 +12471,16 @@ module plat {
          * An extended TemplateControl that allows for the binding of a value to 
          * another listening control (e.g. plat-bind control).
          */
-        export class BindControl extends TemplateControl implements ISupportTwoWayBinding {
+        export class BindControl extends TemplateControl implements observable.ISupportTwoWayBinding {
             /**
              * The set of functions added externally that listens 
              * for property changes.
              */
-            protected _listeners: Array<IPropertyChangedListener> = [];
+            protected _listeners: Array<IPropertyChangedListener<any>> = [];
 
             /**
              * Adds a listener to be called when the bindable property changes.
-             * @param {plat.IPropertyChangedListener} listener The function that acts as a listener.
+             * @param {plat.IPropertyChangedListener<any>} listener The function that acts as a listener.
              */
             onInput(listener: (newValue: any, oldValue: any) => void): IRemoveListener {
                 var listeners = this._listeners;
@@ -12409,12 +12500,10 @@ module plat {
             /**
              * A function that allows this control to observe both the bound property itself as well as 
              * potential child properties if being bound to an object.
-             * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
-             * A function that allows bound properties to be observed with defined listeners.
-             * @param {string} identifier? The identifier off of the bound object to listen to for changes.
+             * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the 
+             * databinding.
              */
-            observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-                identifier?: string) => void): void { }
+            observeProperties(implementer: observable.IImplementTwoWayBinding): void { }
 
             /**
              * A function that signifies when this control's bindable property has changed.
@@ -12441,42 +12530,6 @@ module plat {
             dispose(): void {
                 this._listeners = [];
             }
-        }
-
-        /**
-         * Defines methods that interface with a control that handles two way databinding (e.g. plat-bind control).
-         */
-        export interface ISupportTwoWayBinding {
-            /**
-             * Adds a listener to be called when the bindable property changes.
-             * @param {plat.IPropertyChangedListener} listener The function that acts as a listener.
-             */
-            onInput(listener: (newValue: any, oldValue: any) => void): IRemoveListener;
-
-            /**
-             * A function that allows this control to observe both the bound property itself as well as 
-             * potential child properties if being bound to an object.
-             * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} 
-             * observe A function that allows bound properties to be observed with defined listeners.
-             * @param {string} identifier? The identifier off of the bound object to listen to for changes. If not defined 
-             * the listener will listen for changes to the bound item itself.
-             */
-            observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-                identifier?: string) => void): void;
-        }
-
-        /**
-         * Defines a function that will be called whenever a bound property specified by a given identifier has changed.
-         */
-        export interface IBoundPropertyChangedListener {
-            /**
-             * The method signature for IBoundPropertyChangedListener.
-             * @param {any} newValue The new value of the observed property.
-             * @param {any} oldValue The previous value of the observed property.
-             * @param {any} identifier The string or number identifier that specifies the changed property.
-             * @param {boolean} firstTime? True if this is the first case where the bound property is being set.
-             */
-            (newValue: any, oldValue: any, identifier: any, firstTime?: boolean): void;
         }
 
 
@@ -19923,24 +19976,14 @@ module plat {
 
 
             /**
-             * A TemplateControl for binding an HTML select element 
+             * A BindControl for binding an HTML select element 
              * to an Array context.
              */
-            export class Select extends TemplateControl {
+            export class Select extends BindControl {
                 protected static _inject: any = {
                     _Promise: __Promise,
                     _document: __Document
                 };
-
-                /**
-                 * Reference to the IPromise injectable.
-                 */
-                protected _Promise: async.IPromise;
-
-                /**
-                 * Reference to the Document injectable.
-                 */
-                protected _document: Document;
 
                 /**
                  * Replaces the <plat-select> node with 
@@ -19978,6 +20021,16 @@ module plat {
                  * A Promise that will fulfill whenever all items are loaded.
                  */
                 itemsLoaded: async.IThenable<void>;
+
+                /**
+                 * Reference to the IPromise injectable.
+                 */
+                protected _Promise: async.IPromise;
+
+                /**
+                 * Reference to the Document injectable.
+                 */
+                protected _document: Document;
 
                 /**
                  * Whether or not the select is grouped.
@@ -20100,8 +20153,166 @@ module plat {
                  * Removes any potentially held memory.
                  */
                 dispose(): void {
+                    super.dispose();
                     this.__resolveFn = null;
                     this._defaultOption = null;
+                }
+
+                /**
+                 * A function that allows this control to observe both the bound property itself as well as
+                 * potential child properties if being bound to an object.
+                 * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+                 * databinding.
+                 */
+                observeProperties(implementer: observable.IImplementTwoWayBinding): void {
+                    var element = <HTMLSelectElement>this.element,
+                        setter: observable.IBoundPropertyChangedListener<any>;
+
+                    if (element.multiple) {
+                        setter = this._setSelectedIndices.bind(this);
+                        if (isNull(implementer.evaluate())) {
+                            this.inputChanged([]);
+                        }
+
+                        implementer.observeProperty(() => {
+                            setter(implementer.evaluate(), null, null);
+                        }, null, true);
+                    } else {
+                        setter = this._setSelectedIndex.bind(this);
+                    }
+
+                    implementer.observeProperty(setter);
+                    this.addEventListener(element, 'change', this._observeChange, false);
+                }
+
+                /**
+                 * Updates the selected index if bound to a property.
+                 * @param {string} newValue The new value of the bound property.
+                 * @param {string} oldValue The old value of the bound property.
+                 * @param {string} identifier The child identifier of the bound property.
+                 * @param {boolean} firstTime? Whether or not this is the first time being called as a setter.
+                 */
+                protected _setSelectedIndex(newValue: string, oldValue: string, identifier: string, firstTime?: boolean): void {
+                    var element = <HTMLSelectElement>this.element,
+                        value = element.value;
+                    if (isNull(newValue)) {
+                        if (firstTime === true || !this._document.body.contains(element)) {
+                            this.itemsLoaded.then((): void => {
+                                this.inputChanged(element.value);
+                            });
+                            return;
+                        }
+                        element.selectedIndex = -1;
+                        return;
+                    } else if (!isString(newValue)) {
+                        var _Exception = this._Exception,
+                            message: string;
+                        if (isNumber(newValue)) {
+                            newValue = newValue.toString();
+                            message = 'Trying to bind a value of type number to a ' + this.type + '\'s element. ' +
+                            'The value will implicitly be converted to type string.';
+                        } else {
+                            message = 'Trying to bind a value that is not a string to a ' + this.type + '\'s element. ' +
+                            'The element\'s selected index will be set to -1.';
+                        }
+
+                        _Exception.warn(message, _Exception.BIND);
+                    } else if (value === newValue) {
+                        return;
+                    } else if (!this._document.body.contains(element)) {
+                        element.value = newValue;
+                        if (element.value !== newValue) {
+                            element.value = value;
+                            this.inputChanged(element.value);
+                        }
+                        return;
+                    }
+
+                    this.itemsLoaded.then((): void => {
+                        element.value = newValue;
+                        // check to make sure the user changed to a valid value
+                        // second boolean argument is an ie fix for inconsistency
+                        if (element.value !== newValue || element.selectedIndex === -1) {
+                            element.selectedIndex = -1;
+                        }
+                    });
+                }
+
+                /**
+                 * Updates the selected index if bound to a property.
+                 * @param {Array<any>} newValue The new value Array of the bound property.
+                 * @param {Array<any>} oldValue The old value Array of the bound property.
+                 * @param {string} identifier The child identifier of the bound property.
+                 * @param {boolean} firstTime? Whether or not this is the first time being called as a setter.
+                 */
+                protected _setSelectedIndices(newValue: Array<any>, oldValue: Array<any>, identifier: string, firstTime?: boolean): void {
+                    var element = <HTMLSelectElement>this.element,
+                        options = element.options,
+                        length = isNull(options) ? 0 : options.length,
+                        option: HTMLOptionElement,
+                        nullValue = isNull(newValue);
+
+                    this.itemsLoaded.then(() => {
+                        if (nullValue || !isArray(newValue)) {
+                            if (firstTime === true) {
+                                this.inputChanged(this._getSelectedValues());
+                            }
+                            // unselects the options unless a match is found
+                            while (length-- > 0) {
+                                option = options[length];
+                                if (!nullValue && option.value === '' + newValue) {
+                                    option.selected = true;
+                                    return;
+                                }
+
+                                option.selected = false;
+                            }
+                            return;
+                        }
+
+                        var value: any,
+                            numberValue: number;
+
+                        while (length-- > 0) {
+                            option = options[length];
+                            value = option.value;
+                            numberValue = Number(value);
+
+                            if (newValue.indexOf(value) !== -1 || (isNumber(numberValue) && newValue.indexOf(numberValue) !== -1)) {
+                                option.selected = true;
+                                continue;
+                            }
+
+                            option.selected = false;
+                        }
+                    });
+                }
+
+                /**
+                 * Fires the inputChanged event when the select's value changes.
+                 */
+                protected _observeChange(): void {
+                    var element = <HTMLSelectElement>this.element;
+                    this.inputChanged(element.multiple ? this._getSelectedValues() : element.value);
+                }
+
+                /**
+                 * Getter for select-multiple.
+                 */
+                protected _getSelectedValues(): Array<string> {
+                    var options = (<HTMLSelectElement>this.element).options,
+                        length = options.length,
+                        option: HTMLOptionElement,
+                        selectedValues: Array<string> = [];
+
+                    for (var i = 0; i < length; ++i) {
+                        option = options[i];
+                        if (option.selected) {
+                            selectedValues.push(option.value);
+                        }
+                    }
+
+                    return selectedValues;
                 }
 
                 /**
@@ -27060,13 +27271,20 @@ module plat {
         /**
          * Facilitates two-way databinding for HTMLInputElements, HTMLSelectElements, and HTMLTextAreaElements.
          */
-        export class Bind extends AttributeControl {
+        export class Bind extends AttributeControl implements observable.IImplementTwoWayBinding {
             protected static _inject: any = {
                 _parser: __Parser,
                 _ContextManager: __ContextManagerStatic,
                 _compat: __Compat,
                 _document: __Document
             };
+
+            /**
+             * The priority of Bind is set high to precede 
+             * other controls that may be listening to the same 
+             * event.
+             */
+            priority: number = 100;
 
             /**
              * Reference to the Parser injectable.
@@ -27087,13 +27305,6 @@ module plat {
              * Reference to the Document injectable.
              */
             protected _document: Document;
-
-            /**
-             * The priority of Bind is set high to precede 
-             * other controls that may be listening to the same 
-             * event.
-             */
-            priority: number = 100;
 
             /**
              * The function used to add the proper event based on the input type.
@@ -27179,7 +27390,6 @@ module plat {
                 }
 
                 var split = identifiers[0].split('.');
-
                 this._property = split.pop();
 
                 if (split.length > 0) {
@@ -27214,7 +27424,7 @@ module plat {
                 }
 
                 if (this._supportsTwoWayBinding) {
-                    (<ui.BindControl>this.templateControl).observeProperties(this._observeProperties.bind(this));
+                    (<ui.BindControl>this.templateControl).observeProperties(this);
                 }
 
                 this._watchExpression();
@@ -27241,8 +27451,113 @@ module plat {
             }
 
             /**
+             * Gets the current value of the bound property.
+             */
+            evaluate(): any {
+                var expression = this._expression;
+                if (isUndefined(expression)) {
+                    return;
+                }
+
+                return this.evaluateExpression(expression);
+            }
+
+            /**
+             * The function that allows a control implementing ISupportTwoWayBinding to observe 
+             * changes to the bound property and/or its child properties.
+             * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener to fire when the bound property or its 
+             * specified child changes.
+             * @param {string} identifier? The identifier of the child property of the bound item.
+             */
+            observeProperty<T>(listener: observable.IBoundPropertyChangedListener<T>, identifier?: string): IRemoveListener;
+            /**
+             * The function that allows a control implementing ISupportTwoWayBinding to observe 
+             * changes to the bound property and/or its child properties.
+             * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener to fire when the bound property or its 
+             * specified child changes.
+             * @param {number} index? The index of the child property of the bound item if the bound item is an Array.
+             */
+            observeProperty<T>(listener: observable.IBoundPropertyChangedListener<T>, index?: number): IRemoveListener;
+            /**
+             * A function that allows a ISupportTwoWayBinding to observe both the 
+             * bound property itself as well as potential child properties if being bound to an object.
+             * @param {(ev: plat.observable.IPostArrayChangeInfo<T>, identifier: string) => void} listener The listener function.
+             * @param {string} identifier? The identifier off of the bound object to listen to for changes. If undefined or empty  
+             * the listener will listen for changes to the bound item itself.
+             * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes.
+             */
+            observeProperty<T>(listener: (ev: observable.IPostArrayChangeInfo<T>, identifier: string) => void,
+                identifier?: string, arrayMutationsOnly?: boolean): IRemoveListener;
+            /**
+             * A function that allows a ISupportTwoWayBinding to observe both the 
+             * bound property itself as well as potential child properties if being bound to an object.
+             * @param {(ev: plat.observable.IPostArrayChangeInfo<T>, identifier: string) => void} listener The listener function.
+             * @param {number} index? The index off of the bound object to listen to for changes if the bound object is an Array. 
+             * If undefined or empty the listener will listen for changes to the bound Array itself.
+             * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes.
+             */
+            observeProperty<T>(listener: (ev: observable.IPostArrayChangeInfo<T>, identifier: string) => void,
+                index?: number, arrayMutationsOnly?: boolean): IRemoveListener;
+            observeProperty(listener: any, identifier?: any, arrayMutationsOnly?: boolean): IRemoveListener {
+                var parsedIdentifier: string;
+                if (isEmpty(identifier)) {
+                    parsedIdentifier = this._expression.expression;
+                } else {
+                    var _parser = this._parser,
+                        identifierExpression = _parser.parse(identifier),
+                        identifiers = identifierExpression.identifiers,
+                        _Exception: IExceptionStatic;
+
+                    if (identifiers.length !== 1) {
+                        _Exception = this._Exception;
+                        _Exception.warn('Only 1 identifier path allowed when observing changes to a bound property\'s child with a control ' +
+                            'implementing ISupportTwoWayBinding and working with ' + this.type, _Exception.BIND);
+                        return;
+                    }
+
+                    var expression = _parser.parse(this._expression.expression + '.' + identifiers[0]);
+
+                    parsedIdentifier = expression.identifiers[0];
+
+                    var split = parsedIdentifier.split('.'),
+                        key = split.pop(),
+                        contextExpression = split.join('.'),
+                        context = this.evaluateExpression(contextExpression);
+
+                    if (!isObject(context)) {
+                        if (isNull(context)) {
+                            context = this._ContextManager.createContext(this.parent, contextExpression);
+                        } else {
+                            _Exception = this._Exception;
+                            _Exception.warn('A control implementing ISupportTwoWayBinding is trying to index into a primitive type ' +
+                                'when trying to evaluate ' + this.type + '="' + this._expression.expression + '"', _Exception.BIND);
+                            return;
+                        }
+                    }
+                }
+
+                listener = listener.bind(this.templateControl);
+
+                var removeListener: IRemoveListener;
+                if (arrayMutationsOnly === true) {
+                    removeListener = this.observeArray(null, listener, parsedIdentifier);
+                } else {
+                    removeListener = this.observe((newValue: any, oldValue: any): void => {
+                        if (this.__isSelf || newValue === oldValue) {
+                            return;
+                        }
+
+                        listener(newValue, oldValue, identifier);
+                    }, parsedIdentifier);
+                }
+
+                listener(this.evaluateExpression(parsedIdentifier), undefined, identifier, true);
+                return removeListener;
+            }
+
+            /**
              * Adds a text event as the event listener. 
-             * Used for textarea and input[type=text].
+             * Used for textarea and input[type="text"].
              */
             protected _addTextEventListener(): void {
                 var element = this.element,
@@ -27301,7 +27616,7 @@ module plat {
 
             /**
              * Adds a change event as the event listener. 
-             * Used for select, input[type=radio], and input[type=range].
+             * Used for select, input[type="radio"], and input[type="range"].
              */
             protected _addChangeEventListener(): void {
                 this.addEventListener(this.element, 'change', this._propertyChanged, false);
@@ -27309,21 +27624,21 @@ module plat {
 
             /**
              * Adds a $tap event as the event listener. 
-             * Used for input[type=button] and button.
+             * Used for input[type="button"] and button.
              */
             protected _addButtonEventListener(): void {
                 this.addEventListener(this.element, __tap, this._propertyChanged, false);
             }
 
             /**
-             * Getter for input[type=checkbox] and input[type=radio]
+             * Getter for input[type="checkbox"] and input[type="radio"].
              */
             protected _getChecked(): boolean {
                 return (<HTMLInputElement>this.element).checked;
             }
 
             /**
-             * Getter for input[type=text], input[type=range], 
+             * Getter for input[type="text"], input[type="range"], 
              * textarea, and select.
              */
             protected _getValue(): string {
@@ -27362,7 +27677,7 @@ module plat {
             }
 
             /**
-             * Getter for input[type="file"]-multiple
+             * Getter for input[type="file"]-multiple.
              */
             protected _getFiles(): Array<IFile> {
                 var element = <HTMLInputElement>this.element;
@@ -27396,7 +27711,7 @@ module plat {
             }
 
             /**
-             * Getter for select-multiple
+             * Getter for select-multiple.
              */
             protected _getSelectedValues(): Array<string> {
                 var options = (<HTMLSelectElement>this.element).options,
@@ -27415,8 +27730,8 @@ module plat {
             }
 
             /**
-             * Setter for textarea, input[type=text], 
-             * and input[type=button], and select
+             * Setter for textarea, input[type="text"], 
+             * and input[type="button"], and select.
              * @param {any} newValue The new value to set
              * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
@@ -27443,7 +27758,7 @@ module plat {
             }
 
             /**
-             * Setter for input[type=range]
+             * Setter for input[type="range"].
              * @param {any} newValue The new value to set
              * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
@@ -27456,6 +27771,33 @@ module plat {
 
                 if (isEmpty(newValue)) {
                     newValue = 0;
+
+                    if (firstTime === true) {
+                        if (isEmpty((<HTMLInputElement>this.element).value)) {
+                            this._setValue(newValue);
+                        }
+                        this._propertyChanged();
+                        return;
+                    }
+                }
+
+                this._setValue(newValue);
+            }
+
+            /**
+             * Setter for input[type="hidden"].
+             * @param {any} newValue The new value to set
+             * @param {any} oldValue The previously bound value
+             * @param {boolean} firstTime? The context is being evaluated for the first time and 
+             * should thus change the property if null
+             */
+            protected _setHidden(newValue: any, oldValue: any, firstTime?: boolean): void {
+                if (this.__isSelf) {
+                    return;
+                }
+
+                if (isEmpty(newValue)) {
+                    newValue = '';
 
                     if (firstTime === true) {
                         if (isEmpty((<HTMLInputElement>this.element).value)) {
@@ -27483,7 +27825,7 @@ module plat {
             }
 
             /**
-             * Setter for input[type=checkbox]
+             * Setter for input[type="checkbox"]
              * @param {any} newValue The new value to set
              * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
@@ -27504,7 +27846,7 @@ module plat {
             }
 
             /**
-             * Setter for input[type=radio]
+             * Setter for input[type="radio"]
              * @param {any} newValue The new value to set
              */
             protected _setRadio(newValue: any): void {
@@ -27529,11 +27871,6 @@ module plat {
             protected _setSelectedIndex(newValue: any, oldValue: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
-                } else if (firstTime === true && this._checkAsynchronousSelect()) {
-                    if (isNull(newValue)) {
-                        this._propertyChanged();
-                    }
-                    return;
                 }
 
                 var element = <HTMLSelectElement>this.element,
@@ -27546,14 +27883,14 @@ module plat {
                     element.selectedIndex = -1;
                     return;
                 } else if (!isString(newValue)) {
-                    var _Exception: IExceptionStatic = this._Exception,
+                    var _Exception = this._Exception,
                         message: string;
                     if (isNumber(newValue)) {
                         newValue = newValue.toString();
-                        message = 'Trying to bind a value of type number to a select element. ' +
+                        message = 'Trying to bind a value of type number to a <select> element. ' +
                             'The value will implicitly be converted to type string.';
                     } else {
-                        message = 'Trying to bind a value that is not a string to a select element. ' +
+                        message = 'Trying to bind a value that is not a string to a <select> element. ' +
                             'The element\'s selected index will be set to -1.';
                     }
 
@@ -27586,8 +27923,6 @@ module plat {
              */
             protected _setSelectedIndices(newValue: any, oldValue: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
-                    return;
-                } else if (firstTime === true && this._checkAsynchronousSelect()) {
                     return;
                 }
 
@@ -27635,7 +27970,7 @@ module plat {
              * and sets the necessary handlers.
              */
             protected _determineType(): void {
-                if (!isNull(this.templateControl) && this._observingBindableProperty()) {
+                if (this._observingBindableProperty()) {
                     return;
                 }
 
@@ -27645,16 +27980,12 @@ module plat {
                 }
 
                 switch (element.nodeName.toLowerCase()) {
-                    case 'textarea':
-                        this._addEventType = this._addTextEventListener;
-                        this._getter = this._getValue;
-                        this._setter = this._setText;
-                        break;
                     case 'input':
                         switch ((<HTMLInputElement>element).type) {
                             case 'button':
                             case 'submit':
                             case 'reset':
+                            case 'image':
                                 this._addEventType = this._addButtonEventListener;
                                 this._getter = this._getValue;
                                 break;
@@ -27676,12 +28007,21 @@ module plat {
                                 this._addEventType = this._addChangeEventListener;
                                 this._getter = multi ? this._getFiles : this._getFile;
                                 break;
+                            case 'hidden':
+                                this._getter = this._getValue;
+                                this._setter = this._setHidden;
+                                break;
                             default:
                                 this._addEventType = this._addTextEventListener;
                                 this._getter = this._getValue;
                                 this._setter = this._setText;
                                 break;
                         }
+                        break;
+                    case 'textarea':
+                        this._addEventType = this._addTextEventListener;
+                        this._getter = this._getValue;
+                        this._setter = this._setText;
                         break;
                     case 'select':
                         this._initializeSelect();
@@ -27810,28 +28150,6 @@ module plat {
             }
 
             /**
-             * Checks to see if a Select or ForEach is loading items.
-             */
-            protected _checkAsynchronousSelect(): boolean {
-                var select = <ui.controls.Select>this.templateControl;
-                if (!isNull(select) && isPromise(select.itemsLoaded)) {
-                    this.observeArray(null,(ev: observable.IPostArrayChangeInfo<any>): void => {
-                        select.itemsLoaded.then((): void => {
-                            this._setter(this.evaluateExpression(this._expression));
-                        });
-                    }, select.absoluteContextPath);
-
-                    select.itemsLoaded.then((): void => {
-                        this._setter(this.evaluateExpression(this._expression));
-                    });
-
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
              * Checks if the associated TemplateControl is implementing 
              * ISupportTwoWayBinding and initializes all listeners accordingly.
              * is implementing ISupportTwoWayBinding.
@@ -27839,8 +28157,7 @@ module plat {
             protected _observingBindableProperty(): boolean {
                 var templateControl = <ui.BindControl>this.templateControl;
 
-                if (isFunction(templateControl.onInput) &&
-                    isFunction(templateControl.observeProperties)) {
+                if (!isNull(templateControl) && isFunction(templateControl.onInput) && isFunction(templateControl.observeProperties)) {
                     templateControl.onInput((newValue: any): void => {
                         this._getter = (): any => newValue;
                         this._propertyChanged();
@@ -27850,64 +28167,6 @@ module plat {
                 }
 
                 return false;
-            }
-
-            /**
-             * The function that allows a control implementing ISupportTwoWayBinding to observe 
-             * changes to the bound property and/or its child properties.
-             * @param {plat.ui.IBoundPropertyChangedListener} listener The listener to fire when the bound property or its 
-             * specified child changes.
-             * @param {string} identifier? The identifier of the child property of the bound item.
-             */
-            protected _observeProperties(listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-                identifier?: string): void;
-            /**
-             * The function that allows a control implementing ISupportTwoWayBinding to observe 
-             * changes to the bound property and/or its child properties.
-             * @param {plat.ui.IBoundPropertyChangedListener} listener The listener to fire when the bound property or its 
-             * specified child changes.
-             * @param {number} index? The index of the child property of the bound item if the bound item is an Array.
-             */
-            protected _observeProperties(listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-                index?: number): void;
-            protected _observeProperties(listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-                identifier?: any): void {
-                var parsedIdentifier: string;
-                if (isEmpty(identifier)) {
-                    parsedIdentifier = this._expression.expression;
-                } else {
-                    var _parser = this._parser,
-                        identifierExpression = _parser.parse(identifier),
-                        expression = _parser.parse(this._expression.expression + '.' + identifierExpression.identifiers[0]);
-
-                    parsedIdentifier = expression.identifiers[0];
-
-                    var split = parsedIdentifier.split('.'),
-                        key = split.pop(),
-                        contextExpression = split.join('.'),
-                        context = this.evaluateExpression(contextExpression);
-
-                    if (!isObject(context)) {
-                        if (isNull(context)) {
-                            context = this._ContextManager.createContext(this.parent, contextExpression);
-                        } else {
-                            var Exception = this._Exception;
-                            Exception.warn('A control implementing ISupportTwoWayBinding is trying to index into a primitive type ' +
-                                'when trying to evaluate ' + this.type + '="' + this._expression.expression + '"', Exception.BIND);
-                            return;
-                        }
-                    }
-            }
-
-                listener = listener.bind(this.templateControl);
-                this.observe((newValue: any, oldValue: any): void => {
-                if (this.__isSelf || newValue === oldValue) {
-                    return;
-                }
-
-                    listener(newValue, oldValue, identifier);
-                }, parsedIdentifier);
-                listener(this.evaluateExpression(parsedIdentifier), undefined, identifier, true);
             }
         }
 
@@ -28500,26 +28759,26 @@ module plat {
     /**
      * Defines a function that will be called whenever a property has changed.
      */
-    export interface IPropertyChangedListener {
+    export interface IPropertyChangedListener<T> {
         /**
          * The method signature for IPropertyChangedListener.
-         * @param {any} newValue The new value of the observed property.
-         * @param {any} oldValue The previous value of the observed property.
+         * @param {T} newValue The new value of the observed property.
+         * @param {T} oldValue The previous value of the observed property.
          */
-        (newValue: any, oldValue: any): void;
+        (newValue: T, oldValue: T): void;
     }
 
     /**
      * Defines a function that will be called whenever a property specified by a given identifier has changed.
      */
-    export interface IIdentifierChangedListener {
+    export interface IIdentifierChangedListener<T> {
         /**
          * The method signature for IIdentifierChangedListener.
-         * @param {any} newValue The new value of the observed property.
-         * @param {any} oldValue The previous value of the observed property.
+         * @param {T} newValue The new value of the observed property.
+         * @param {T} oldValue The previous value of the observed property.
          * @param {any} identifier The string or number identifier that specifies the changed property.
          */
-        (newValue: any, oldValue: any, identifier: any): void;
+        (newValue: T, oldValue: T, identifier: any): void;
     }
 }
 /* tslint:enable */

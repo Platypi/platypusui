@@ -25,8 +25,21 @@
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         /**
+         * @name priority
+         * @memberof platui.Drawer
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
+
+        /**
          * @name storedProperties
-         * @memberof platui.DrawerController
+         * @memberof platui.Drawer
          * @kind property
          * @access protected
          * 
@@ -366,18 +379,16 @@
          * @virtual
          * 
          * @description
-         * A function that allows this control to observe both the bound property itself as well as 
+         * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
-         * 
-         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
-         * A function that allows bound properties to be observed with defined listeners.
-         * @param {string} identifier The identifier off of the bound object to listen to for changes.
-         * 
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
          * @returns {void}
          */
-        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-            identifier?: string) => void): void {
-            observe(this._setBoundProperty);
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
         }
 
         /**
@@ -595,6 +606,19 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
+
+        /**
+         * @name priority
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
 
         /**
          * @name _utils
@@ -1165,6 +1189,8 @@
          * @returns {void}
          */
         dispose(): void {
+            super.dispose();
+
             var _utils = this._utils,
                 drawer = this._drawer;
             if (_utils.isNull(drawer)) {
@@ -1380,18 +1406,16 @@
          * @virtual
          * 
          * @description
-         * A function that allows this control to observe both the bound property itself as well as 
+         * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
-         * 
-         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
-         * A function that allows bound properties to be observed with defined listeners.
-         * @param {string} identifier The identifier off of the bound object to listen to for changes.
-         * 
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
          * @returns {void}
          */
-        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-            identifier?: string) => void): void {
-            observe(this._setBoundProperty);
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
         }
 
         /**

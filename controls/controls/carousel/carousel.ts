@@ -55,6 +55,19 @@
         options: plat.observable.IObservableProperty<ICarouselOptions>;
 
         /**
+         * @name priority
+         * @memberof platui.Carousel
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
+
+        /**
          * @name itemsLoaded
          * @memberof platui.Carousel
          * @kind property
@@ -475,28 +488,6 @@
         }
 
         /**
-         * @name observeProperties
-         * @memberof platui.Carousel
-         * @kind function
-         * @access public
-         * @virtual
-         * 
-         * @description
-         * A function that allows this control to observe both the bound property itself as well as 
-         * potential child properties if being bound to an object.
-         * 
-         * @param {(listener: plat.ui.IBoundPropertyChangedListener, identifier: string) => void} observe 
-         * A function that allows bound properties to be observed with defined listeners.
-         * @param {string} identifier The identifier off of the bound object to listen to for changes.
-         * 
-         * @returns {void}
-         */
-        observeProperties(observe: (listener: (newValue: any, oldValue: any, identifier: string, firstTime?: boolean) => void,
-            identifier?: string) => void): void {
-            observe(this._setBoundProperty);
-        }
-
-        /**
          * @name goToNext
          * @memberof platui.Carousel
          * @kind function
@@ -574,6 +565,55 @@
         }
 
         /**
+         * @name observeProperties
+         * @memberof platui.Carousel
+         * @kind function
+         * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
+         * @returns {void}
+         */
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable index is set externally.
+         * 
+         * @param {number} index The new value of the bindable index.
+         * 
+         * @returns {void}
+         */
+        protected _setBoundProperty(index: number): void {
+            if (!this._utils.isNumber(index)) {
+                index = Number(index);
+                if (!this._utils.isNumber(index)) {
+                    return;
+                }
+            }
+
+            if (this._loaded) {
+                this.goToIndex(index);
+                return;
+            }
+
+            this._index = index;
+        }
+
+        /**
          * @name _reset
          * @memberof platui.Carousel
          * @kind function
@@ -608,35 +648,6 @@
             if (-this._currentOffset > maxOffset) {
                 this.goToIndex(maxIndex);
             }
-        }
-
-        /**
-         * @name _setBoundProperty
-         * @memberof platui.Carousel
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * The function called when the bindable index is set externally.
-         * 
-         * @param {number} index The new value of the bindable index.
-         * 
-         * @returns {void}
-         */
-        protected _setBoundProperty(index: number): void {
-            if (!this._utils.isNumber(index)) {
-                index = Number(index);
-                if (!this._utils.isNumber(index)) {
-                    return;
-                }
-            }
-
-            if (this._loaded) {
-                this.goToIndex(index);
-                return;
-            }
-
-            this._index = index;
         }
 
         /**
