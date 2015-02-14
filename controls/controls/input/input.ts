@@ -12,6 +12,12 @@
      * an HTML input element of various types.
      */
     export class Input extends plat.ui.BindControl implements IUIControl, IFormControl {
+        protected static _inject: any = {
+            _utils: __Utils,
+            _compat: __Compat,
+            _regex: __Regex
+        };
+
         /**
          * @name templateString
          * @memberof platui.Input
@@ -67,7 +73,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -80,7 +86,7 @@
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _regex
@@ -93,7 +99,7 @@
          * @description
          * Reference to the {@link plat.expressions.Regex|Regex} injectable.
          */
-        protected _regex: plat.expressions.Regex = plat.acquire(__Regex);
+        protected _regex: plat.expressions.Regex;
 
         /**
          * @name _imageElement

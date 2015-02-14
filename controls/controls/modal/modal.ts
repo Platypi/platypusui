@@ -11,6 +11,11 @@
      * An {@link plat.ui.BindControl|BindControl} for showing a templated and animated overlay.
      */
     export class Modal extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _utils: __Utils,
+            _compat: __Compat
+        };
+
         /**
          * @name templateString
          * @memberof platui.Modal
@@ -61,7 +66,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -74,7 +79,7 @@
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _modalElement

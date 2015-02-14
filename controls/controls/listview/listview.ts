@@ -11,6 +11,16 @@
      * extensive functionality.
      */
     export class Listview extends plat.ui.TemplateControl implements IUIControl {
+        protected static _inject: any = {
+            _document: __Document,
+            _window: __Window,
+            _utils: __Utils,
+            _compat: __Compat,
+            _animator: __Animator,
+            _Promise: __Promise,
+            _TemplateControlFactory: __TemplateControlFactory
+        };
+
         /**
          * @name templateString
          * @memberof platui.Listview
@@ -105,7 +115,7 @@
          * @description
          * Reference to the Window injectable.
          */
-        protected _window: Window = plat.acquire(__Window);
+        protected _window: Window;
 
         /**
          * @name _document
@@ -118,7 +128,7 @@
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
 
         /**
          * @name _animator
@@ -131,7 +141,7 @@
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator;
 
         /**
          * @name _Promise
@@ -144,7 +154,7 @@
          * @description
          * Reference to the {@link plat.async.IPromise|IPromise} injectable.
          */
-        protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
+        protected _Promise: plat.async.IPromise;
 
         /**
          * @name _utils
@@ -157,7 +167,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -170,7 +180,7 @@
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _TemplateControlFactory
@@ -183,7 +193,7 @@
          * @description
          * Reference to the {@link plat.ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
          */
-        protected _TemplateControlFactory: plat.ui.ITemplateControlFactory = plat.acquire(__TemplateControlFactory);
+        protected _TemplateControlFactory: plat.ui.ITemplateControlFactory;
 
         /**
          * @name _aliases
@@ -1095,7 +1105,7 @@
             return this._Promise.resolve(headerPromise).then(() => {
                 group.insertBefore(itemContainer, null);
                 bindableTemplates.add(listviewGroup, group);
-            }).then(null,(error) => {
+            }).then(null, (error) => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' error: ' + error, _Exception.COMPILE);
             });
@@ -1241,7 +1251,7 @@
             if (this._isGrouped && this === control) {
                 this._groupHeaderTemplatePromise.then(() => {
                     this._addGroups(count, index);
-                }).then(null,(error) => {
+                }).then(null, (error) => {
                     var _Exception = this._Exception;
                     _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
                 });
@@ -1399,7 +1409,8 @@
                         }
 
                         templateKeys[index] = key;
-                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, identifier, this._getAliases(context, index));
+                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, identifier,
+                            this._getAliases(context, index));
                     }
 
                     templateKeys[index] = key;
@@ -1416,7 +1427,7 @@
                 }
 
                 details.itemContainer.insertBefore(node, null);
-            }).then(null,(error) => {
+            }).then(null, (error) => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
             });
@@ -2006,7 +2017,7 @@
                     dom.removeClass(viewport, 'plat-manipulation-prep');
                     progressRing.setAttribute(__Hide, '');
                 });
-            }).then(null,(error) => {
+            }).then(null, (error) => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
             });
@@ -2648,7 +2659,7 @@
          * 
          * @returns {plat.animations.IAnimationThenable<any>} The last element node's animation promise.
          */
-        private __handleAnimation(startNode: number, endNode: number, key: string, container: Element, 
+        private __handleAnimation(startNode: number, endNode: number, key: string, container: Element,
             clone: boolean): plat.ui.animations.IAnimationThenable<any> {
             var slice = Array.prototype.slice,
                 nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);

@@ -11,6 +11,11 @@
      * An {@link plat.ui.BindControl|BindControl} that acts as a global drawer.
      */
     export class Drawer extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _utils: __Utils,
+            _Promise: __Promise
+        };
+
         /**
          * @name options
          * @memberof platui.Drawer
@@ -62,7 +67,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _Promise
@@ -75,7 +80,7 @@
          * @description
          * Reference to the {@link plat.async.IPromise|IPromise} injectable.
          */
-        protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
+        protected _Promise: plat.async.IPromise;
 
         /**
          * @name _currentPosition
@@ -89,6 +94,7 @@
          * The current position of the {@link platui.Drawer|Drawer}.
          */
         protected _currentPosition: string;
+
         /**
          * @name _useContext
          * @memberof platui.Drawer
@@ -594,6 +600,15 @@
      * An {@link plat.ui.BindControl|BindControl} that manipulates and controls a global drawer.
      */
     export class DrawerController extends plat.ui.BindControl {
+        protected static _inject: any = {
+            _document: __Document,
+            _window: __Window,
+            _utils: __Utils,
+            _compat: __Compat,
+            _animator: __Animator,
+            _Promise: __Promise
+        };
+
         /**
          * @name options
          * @memberof platui.DrawerController
@@ -631,7 +646,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -644,7 +659,7 @@
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _window
@@ -657,7 +672,7 @@
          * @description
          * Reference to the Window injectable.
          */
-        protected _window: Window = plat.acquire(__Window);
+        protected _window: Window;
 
         /**
          * @name _document
@@ -670,7 +685,7 @@
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
 
         /**
          * @name _animator
@@ -683,7 +698,7 @@
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator;
 
         /**
          * @name _Promise
@@ -696,7 +711,7 @@
          * @description
          * Reference to the {@link plat.async.IPromise|IPromise} injectable.
          */
-        protected _Promise: plat.async.IPromise = plat.acquire(__Promise);
+        protected _Promise: plat.async.IPromise;
 
         /**
          * @name _position

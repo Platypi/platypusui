@@ -12,6 +12,14 @@
      * and can bind the selected index to a value.
      */
     export class Carousel extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _document: __Document,
+            _window: __Window,
+            _utils: __Utils,
+            _compat: __Compat,
+            _animator: __Animator
+        };
+
         /**
          * @name templateString
          * @memberof platui.Carousel
@@ -107,7 +115,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -120,7 +128,7 @@
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _document
@@ -133,7 +141,7 @@
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
 
         /**
          * @name _window
@@ -146,7 +154,7 @@
          * @description
          * Reference to the Window injectable.
          */
-        protected _window: Window = plat.acquire(__Window);
+        protected _window: Window;
 
         /**
          * @name _animator
@@ -159,7 +167,7 @@
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator;
 
         /**
          * @name _isVertical

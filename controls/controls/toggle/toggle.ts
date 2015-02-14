@@ -11,6 +11,10 @@
      * An {@link plat.ui.BindControl|BindControl} that simulates a toggle switch.
      */
     export class Toggle extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _utils: __Utils
+        };
+
         /**
          * @name templateString
          * @memberof platui.Toggle
@@ -64,7 +68,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _targetType

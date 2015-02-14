@@ -21,6 +21,10 @@ module platui {
      * An {@link plat.ui.BindControl|BindControl} that standardizes an HTML5 button.
      */
     export class Button extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _document: __Document
+        };
+
         /**
          * @name replaceWith
          * @memberof platui.Button
@@ -85,7 +89,7 @@ module platui {
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
 
         /**
          * @name _isSelected

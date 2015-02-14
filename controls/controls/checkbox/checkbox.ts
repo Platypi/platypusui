@@ -10,6 +10,10 @@
      * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes the HTML5 checkbox.
      */
     export class Checkbox extends Toggle {
+        protected static _inject: any = {
+            _document: __Document
+        };
+
         /**
          * @name templateString
          * @memberof platui.Checkbox
@@ -50,7 +54,7 @@
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
 
         /**
          * @name _targetTypeSet
