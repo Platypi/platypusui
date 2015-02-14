@@ -779,7 +779,9 @@
 
             animationOptions[this._transform] = this._calculateStaticTranslation(offset);
             this._initiateAnimation({ properties: animationOptions }).then(() => {
-                this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-maxOffset);
+                this._utils.requestAnimationFrame(() => {
+                    this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-maxOffset);
+                });
             });
 
             this.inputChanged((this._index = maxLength - 1), index);
@@ -934,8 +936,10 @@
         protected _initializeInfinite(): void {
             this.observeArray(null, this._cloneForInfinite);
             this._cloneForInfinite();
-            // offset preClone
-            this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
+            // offset the newly added clone
+            this._utils.requestAnimationFrame(() => {
+                this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
+            });
         }
 
         /**
