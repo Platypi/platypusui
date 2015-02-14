@@ -33,7 +33,7 @@
         '<div class="plat-input-container">\n' +
         '    <span class="plat-input-image"></span>\n' +
         '    <input type="text" />\n' +
-        '    <div class="plat-input-action"></div>\n' +
+        '    <span class="plat-input-action"></span>\n' +
         '</div>\n';
 
         /**

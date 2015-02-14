@@ -773,6 +773,14 @@
                 backArrow = _document.createElement('span'),
                 forwardArrow = _document.createElement('span');
 
+            if (this._isVertical) {
+                backArrow.className = 'icon-arrow-up';
+                forwardArrow.className = 'icon-arrow-down';
+            } else {
+                backArrow.className = 'icon-arrow-left';
+                forwardArrow.className = 'icon-arrow-right';
+            }
+
             backArrowContainer.className = __Plat + 'back-arrow';
             forwardArrowContainer.className = __Plat + 'forward-arrow';
             backArrowContainer.appendChild(backArrow);
