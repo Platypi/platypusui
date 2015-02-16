@@ -2365,7 +2365,7 @@
 
             var change = changes[0],
                 addedCount = change.addedCount;
-            this._createItems(change.object.length - addedCount - 1, addedCount, group, false);
+            this._createItems(change.object.length - addedCount, addedCount, group, false);
         }
 
         /**
@@ -2441,7 +2441,7 @@
                     return;
                 }
 
-                this._createItems(change.object.length - addCount - 1, addCount - removeCount, group, true);
+                this._createItems(change.object.length - addCount, addCount - removeCount, group, true);
             } else if (removeCount > addCount) {
                 this.itemsLoaded.then((): void => {
                     this._removeItems(removeCount - addCount, this._getGroupDetails(group).control);
