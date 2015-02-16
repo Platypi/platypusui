@@ -479,7 +479,7 @@
         contextChanged(): void {
             this._verifyLength();
 
-            if (this._loaded) {
+            if (this._utils.isFunction(this._onLoad)) {
                 return;
             }
 
@@ -542,25 +542,26 @@
 
             var optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
                 options = optionObj.value || <ICarouselOptions>{},
-                type = options.type || 'track',
+                controlType = options.type || 'track swipe',
                 index = options.index,
                 orientation = this._validateOrientation(options.orientation);
 
+            this._container = this._container || <HTMLElement>this.element.firstElementChild
             this._interval = options.interval || 3000;
             this._isInfinite = options.infinite === true;
 
             this.dom.addClass(this.element, __Plat + orientation);
-            index = _utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
+            index = _utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : null;
 
-            // reset index in case Bind is setting the value
-            this._index = 0;
-            this._onLoad = () => {
-                this.goToIndex(index);
-                this._addEventListeners(type);
+            this._onLoad = (): void => {
+                var setIndex = this._index;
+                this._index = 0;
+                this.goToIndex(_utils.isNull(index) ? setIndex : index);
+                this._addEventListeners(controlType);
+                this._loaded = true;
             };
 
             this._init();
-            this._loaded = true;
         }
 
         /**
@@ -638,19 +639,14 @@
          * @returns {boolean} Whether or not the state specified by the index is valid.
          */
         goToIndex(index: number): boolean {
-            var oldIndex = this._index;
-            if (index === oldIndex || index < 0 || index >= this.context.length) {
-                return false;
+            var oldIndex = this._index,
+                success = this._goToIndex(index);
+
+            if (success) {
+                this.inputChanged((this._index = index), oldIndex);
             }
 
-            var animationOptions: plat.IObject<string> = {},
-                interval = (this._index - index) * this._intervalOffset;
-
-            animationOptions[this._transform] = this._calculateStaticTranslation(interval);
-            this._initiateAnimation({ properties: animationOptions });
-
-            this.inputChanged((this._index = index), oldIndex);
-            return true;
+            return success;
         }
 
         /**
@@ -703,23 +699,37 @@
          * The function called when the bindable index is set externally.
          * 
          * @param {number} index The new value of the bindable index.
+         * @param {number} oldValue The old value of the bindable index.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setBoundProperty(index: number): void {
-            if (!this._utils.isNumber(index)) {
+        protected _setBoundProperty(index: number, oldValue: number, identifier: void, firstTime?: boolean): void {
+            var _utils = this._utils;
+            if (_utils.isNull(index)) {
+                if (firstTime === true) {
+                    this.inputChanged(0);
+                    return;
+                }
+            } else if (!_utils.isNumber(index)) {
                 index = Number(index);
-                if (!this._utils.isNumber(index)) {
+                if (!_utils.isNumber(index)) {
+                    var _Exception = this._Exception;
+                    _Exception.warn(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.',
+                        _Exception.BIND);
                     return;
                 }
             }
 
-            if (this._loaded) {
-                this.goToIndex(index);
+            if (!this._loaded) {
+                this._index = index;
                 return;
             }
 
-            this._index = index;
+            if (this._goToIndex(index)) {
+                this._index = index;
+            }
         }
 
         /**
@@ -760,6 +770,34 @@
         }
 
         /**
+         * @name _goToIndex
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Changes the position of the {@link platui.Carousel|Carousel} to the state 
+         * specified by the input index.
+         * 
+         * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
+         * 
+         * @returns {boolean} Whether or not the state specified by the index is valid.
+         */
+        protected _goToIndex(index: number): boolean {
+            var oldIndex = this._index;
+            if (index === oldIndex || index < 0 || index >= this.context.length) {
+                return false;
+            }
+
+            var animationOptions: plat.IObject<string> = {},
+                interval = (oldIndex - index) * this._intervalOffset;
+
+            animationOptions[this._transform] = this._calculateStaticTranslation(interval);
+            this._initiateAnimation({ properties: animationOptions });
+            return true;
+        }
+
+        /**
          * @name _infinitePrevious
          * @memberof platui.Carousel
          * @kind function
@@ -778,8 +816,8 @@
                 maxOffset = maxLength * this._intervalOffset;
 
             animationOptions[this._transform] = this._calculateStaticTranslation(offset);
-            this._initiateAnimation({ properties: animationOptions }).then(() => {
-                this._utils.requestAnimationFrame(() => {
+            this._initiateAnimation({ properties: animationOptions }).then((): void => {
+                this._utils.requestAnimationFrame((): void => {
                     this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-maxOffset);
                 });
             });
@@ -804,7 +842,7 @@
                 offset = -this._intervalOffset;
 
             animationOptions[this._transform] = this._calculateStaticTranslation(offset);
-            this._initiateAnimation({ properties: animationOptions }).then(() => {
+            this._initiateAnimation({ properties: animationOptions }).then((): void => {
                 this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset + offset);
             });
 
@@ -827,14 +865,15 @@
          */
         protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): plat.async.IThenable<void> {
             if (!this._utils.isNull(this._animationThenable)) {
-                return this._animationThenable = this._animationThenable.cancel().then(() => {
-                    return this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
+                return this._animationThenable = this._animationThenable.cancel().then((): plat.ui.animations.IAnimationThenable<void> => {
+                    return this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions)
+                        .then((): void => {
                         this._animationThenable = null;
                     });
                 });
             }
 
-            return this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
+            return this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then((): void => {
                 this._animationThenable = null;
             });
         }
@@ -852,13 +891,13 @@
          */
         protected _init(): void {
             var foreach = <plat.ui.controls.ForEach>this.controls[0],
-                container = this._container || <HTMLElement>this.element.firstElementChild,
-                postLoad = () => {
+                container = this._container,
+                postLoad = (): void => {
                     if (this._setPosition()) {
                         this._onLoad();
                     }
                 },
-                itemsLoaded = () => {
+                itemsLoaded = (): void => {
                     if (this.context.length === 0) {
                         foreach.itemsLoaded.then(itemsLoaded);
                         return;
@@ -869,7 +908,7 @@
             this._slider = <HTMLElement>container.firstElementChild;
             this._setTransform();
 
-            this.itemsLoaded = foreach.itemsLoaded.then(itemsLoaded).catch(() => {
+            this.itemsLoaded = foreach.itemsLoaded.then(itemsLoaded).catch((): void => {
                 var _Exception = this._Exception;
                 _Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.',
                     _Exception.CONTROL);
@@ -894,7 +933,7 @@
         protected _addEventListeners(type: string): void {
             var types = type.split(' ');
 
-            this.addEventListener(this._window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', (): void => {
                 this._setPosition();
             }, false);
 
@@ -919,7 +958,7 @@
                 this._initializeInfinite();
             }
 
-            this.observeArray(null, this._verifyLength);
+            this.observeArray(this._verifyLength);
         }
 
         /**
@@ -934,10 +973,10 @@
          * @returns {void}
          */
         protected _initializeInfinite(): void {
-            this.observeArray(null, this._cloneForInfinite);
+            this.observeArray(this._cloneForInfinite);
             this._cloneForInfinite();
             // offset the newly added clone
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
             });
         }
@@ -988,7 +1027,7 @@
         protected _initializeAuto(): void {
             this._isInfinite = true;
             this._initializeInfinite();
-            this._intervalId = setInterval(() => {
+            this._intervalId = setInterval((): void => {
                 this.goToNext();
             }, this._interval);
         }
@@ -1159,7 +1198,7 @@
             }
 
             if (!this._utils.isNull(this._animationThenable)) {
-                this._animationThenable = this._animationThenable.cancel().then(() => {
+                this._animationThenable = this._animationThenable.cancel().then((): void => {
                     this._animationThenable = null;
                     this._initTouch(ev);
                 });
@@ -1242,7 +1281,7 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
             });
         }
@@ -1487,14 +1526,14 @@
          * 
          * @description
          * Specifies how the {@link platui.Carousel|Carousel} should change. Multiple types can be combined by making it space delimited. 
-         * It's default behavior is "track".
+         * It's default behavior is "track swipe".
          * 
          * @remarks
          * "tap": The carousel changes when the markers are tapped.
          * "track": The carousel changes when it is dragged.
          * "swipe": The carousel changes when it is swiped.
          * "auto": The carousel auto scrolls. All other types are ignored.
-         * default: The carousel changes when it is dragged.
+         * default: The carousel changes when it is dragged or swiped.
          */
         type?: string;
 

@@ -472,10 +472,18 @@
          * The function called when the bindable value is set externally.
          * 
          * @param {number} newValue The new value of the bindable value.
+         * @param {number} oldValue The old value of the bindable index.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setBoundProperty(newValue: number): void {
+        protected _setBoundProperty(newValue: number, oldValue: number, identifier: void, firstTime?: boolean): void {
+            if (firstTime === true && this._utils.isNull(newValue)) {
+                this.inputChanged(this.value);
+                return;
+            }
+
             this._setValue(newValue, false);
         }
 
@@ -537,7 +545,7 @@
             this.addEventListener(element, reverseTrack, trackFn, false);
             this.addEventListener(element, __$touchend, touchEnd, false);
             this.addEventListener(element, __$trackend, touchEnd, false);
-            this.addEventListener(this._window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', (): void => {
                 this._setLength();
                 this._setIncrement();
                 this._setKnob();
@@ -594,7 +602,7 @@
                 }
             }
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._knobOffset = this._setSliderProperties(offset);
             });
         }
@@ -623,7 +631,7 @@
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._touchState = 0;
 
                 if (this._lastTouch.value !== this.value) {
@@ -660,7 +668,7 @@
                 return;
             }
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._setSliderProperties(this._calculateOffset(ev));
             });
         }

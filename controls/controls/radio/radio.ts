@@ -135,12 +135,12 @@
          * Checks if the radio has been selected and only notifies of a bindable 
          * property changed if it has.
          * 
-         * @param {any} newValue The new value of the property after the change.
+         * @param {any} newValue? The new value of the property after the change.
          * @param {any} oldValue? The old value of the property prior to the change.
          * 
          * @returns {void}
          */
-        inputChanged(newValue: any, oldValue?: any): void {
+        inputChanged(newValue?: any, oldValue?: any): void {
             if (this.isActive) {
                 super.inputChanged(this._getValue());
             }
@@ -165,6 +165,9 @@
          */
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
             if (newValue === oldValue) {
+                return;
+            } else if (setProperty === true && this._utils.isNull(newValue)) {
+                this.inputChanged();
                 return;
             }
 
@@ -224,7 +227,7 @@
             if (this.isActive) {
                 var name = this.groupName;
                 this.dispatchEvent(__RadioPrefix + name, plat.events.EventManager.DIRECT);
-                var remover = this._removeListener = this.on(__RadioPrefix + name, () => {
+                var remover = this._removeListener = this.on(__RadioPrefix + name, (): void => {
                     this._toggle();
                     remover();
                 });

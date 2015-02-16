@@ -762,13 +762,10 @@
             }
 
             this._setListener();
-            this._executeEvent({
-                method: 'splice',
-                arguments: null,
-                returnValue: null,
-                oldArray: oldValue || [],
-                newArray: newValue || []
-            });
+            this._executeEvent([{
+                object: newValue || [],
+                type: 'splice'
+            }]);
 
             if (this._isGrouped) {
                 this._handleGroupedContextChange(newValue, oldValue);
@@ -924,13 +921,10 @@
          * @returns {void}
          */
         protected _childContextChanged(groupName: string, newValue?: Array<any>, oldValue?: Array<any>): void {
-            this._executeChildEvent(groupName, {
-                method: 'splice',
-                arguments: null,
-                returnValue: null,
-                oldArray: oldValue || [],
-                newArray: newValue || []
-            });
+            this._executeChildEvent(groupName, [{
+                object: newValue || [],
+                type: 'splice'
+            }]);
         }
 
         /**
@@ -949,7 +943,7 @@
          * @returns {void}
          */
         protected _handleGroupedContextChange(newValue?: any, oldValue?: any): void {
-            this._Promise.resolve(this._animationThenable).then(() => {
+            this._Promise.resolve(this._animationThenable).then((): void => {
                 var groups = this._groups,
                     keys = Object.keys(groups),
                     length = keys.length,
@@ -978,7 +972,7 @@
          */
         protected _setListener(): void {
             if (!this.__listenerSet) {
-                this.observeArray(this._preprocessEvent, this._executeEvent);
+                this.observeArray(this._executeEvent);
                 this.__listenerSet = true;
             }
         }
@@ -1097,15 +1091,15 @@
             group.className = listviewGroup;
             itemContainer.className = __Listview + '-items';
             if (_utils.isString(groupHeaderTemplate)) {
-                headerPromise = bindableTemplates.templates[groupHeaderTemplate].then((headerTemplate) => {
+                headerPromise = bindableTemplates.templates[groupHeaderTemplate].then((headerTemplate): void => {
                     group.insertBefore(headerTemplate.cloneNode(true), null);
                 });
             }
 
-            return this._Promise.resolve(headerPromise).then(() => {
+            return this._Promise.resolve(headerPromise).then((): void => {
                 group.insertBefore(itemContainer, null);
                 bindableTemplates.add(listviewGroup, group);
-            }).then(null, (error) => {
+            }).then(null, (error): void => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' error: ' + error, _Exception.COMPILE);
             });
@@ -1141,7 +1135,7 @@
                 promises.push(this._bindGroup(index++));
             }
 
-            return this._Promise.all(promises).then((fragments) => {
+            return this._Promise.all(promises).then((fragments): void => {
                 var length = fragments.length;
                 for (i = 0; i < length; ++i) {
                     this._addGroup(i + initialIndex, fragments[i]);
@@ -1180,12 +1174,12 @@
                 removeArrayListener: plat.IRemoveListener,
                 removeMutationListener: plat.IRemoveListener;
 
-            control.dispose = () => {
+            control.dispose = (): void => {
                 super.dispose();
                 delete groups[name];
             };
 
-            control.observe((newValue?: IListviewGroup, oldValue?: IListviewGroup) => {
+            control.observe((newValue?: IListviewGroup, oldValue?: IListviewGroup): void => {
                 var newName = newValue.group;
                 if (newName === name || !this._utils.isObject(newValue)) {
                     return;
@@ -1199,12 +1193,10 @@
                 removeArrayListener();
                 removeMutationListener();
                 removeArrayListener = control.observe(this._childContextChanged.bind(this, newName), items);
-                removeMutationListener = control.observeArray(this._preprocessChildEvent.bind(this, newName),
-                    this._executeChildEvent.bind(this, newName), items);
+                removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, newName), items);
             });
             removeArrayListener = control.observe(this._childContextChanged.bind(this, name), items);
-            removeMutationListener = control.observeArray(this._preprocessChildEvent.bind(this, name),
-                this._executeChildEvent.bind(this, name), items);
+            removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
 
             this._createItems(0, (group.items || []).length, groupHash, false);
             this._container.insertBefore(fragment, null);
@@ -1249,9 +1241,9 @@
                 control = details.control;
 
             if (this._isGrouped && this === control) {
-                this._groupHeaderTemplatePromise.then(() => {
+                this._groupHeaderTemplatePromise.then((): void => {
                     this._addGroups(count, index);
-                }).then(null, (error) => {
+                }).then(null, (error): void => {
                     var _Exception = this._Exception;
                     _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
                 });
@@ -1387,9 +1379,9 @@
                 context = control.context.items;
             }
 
-            return _Promise.resolve(this._templateSelectorPromise).then(() => {
+            return _Promise.resolve(this._templateSelectorPromise).then((): plat.async.IThenable<any> => {
                 return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(context[index], index));
-            }).then((selectedTemplate) => {
+            }).then((selectedTemplate): plat.async.IThenable<any> => {
                 var bindableTemplates = control.bindableTemplates,
                     templates = bindableTemplates.templates,
                     controls = <Array<plat.ui.TemplateControl>>control.controls,
@@ -1418,7 +1410,7 @@
                 } else if (controlExists) {
                     this._TemplateControlFactory.dispose(controls[index]);
                 }
-            }).then((node) => {
+            }).then((node): void => {
                 if (_utils.isNull(node) || _utils.isArray(node)) {
                     return;
                 } else if (animate === true) {
@@ -1427,7 +1419,7 @@
                 }
 
                 details.itemContainer.insertBefore(node, null);
-            }).then(null, (error) => {
+            }).then(null, (error): void => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
             });
@@ -1660,7 +1652,7 @@
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
 
-                    this.itemsLoaded.then(() => {
+                    this.itemsLoaded.then((): void => {
                         this._handleScroll();
                     });
                     break;
@@ -1738,14 +1730,14 @@
 
                     this._removeScroll();
                     if (showProgress) {
-                        _utils.requestAnimationFrame(() => {
+                        _utils.requestAnimationFrame((): void => {
                             container.insertBefore(progressRing, null);
                         });
                     }
 
-                    itemsRemain.then((moreItemsRemain: boolean) => {
+                    itemsRemain.then((moreItemsRemain: boolean): void => {
                         if (showProgress) {
-                            _utils.requestAnimationFrame(() => {
+                            _utils.requestAnimationFrame((): void => {
                                 container.removeChild(progressRing);
                             });
                         }
@@ -1871,7 +1863,7 @@
             };
 
             if (!this._utils.isNull(this._touchAnimationThenable)) {
-                this._touchAnimationThenable.cancel().then(() => {
+                this._touchAnimationThenable.cancel().then((): void => {
                     this._touchAnimationThenable = null;
                     this._touchState = 2;
                 });
@@ -1990,7 +1982,7 @@
             animationOptions[this._transform] = nextTranslation;
             this._touchAnimationThenable = this._animator.animate(viewport, __Transition, {
                 properties: animationOptions
-            }).then(() => {
+            }).then((): plat.async.IThenable<void> => {
                 this._touchState = 4;
                 this._hasMoved = false;
                 this._touchAnimationThenable = null;
@@ -2001,7 +1993,7 @@
                 dom.removeClass(viewport, 'plat-manipulation-prep');
                 progressRing.setAttribute(__Hide, '');
                 return this._Promise.resolve();
-            }).then(() => {
+            }).then((): plat.ui.animations.IAnimationThenable<void> => {
                 if (!isActionState) {
                     this._touchState = 0;
                     return;
@@ -2011,13 +2003,13 @@
                 animationOptions[this._transform] = this._preTransform;
                 return this._touchAnimationThenable = this._animator.animate(viewport, __Transition, {
                     properties: animationOptions
-                }).then(() => {
+                }).then((): void => {
                     this._touchState = 0;
                     this._touchAnimationThenable = null;
                     dom.removeClass(viewport, 'plat-manipulation-prep');
                     progressRing.setAttribute(__Hide, '');
                 });
-            }).then(null, (error) => {
+            }).then(null, (error): void => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
             });
@@ -2115,7 +2107,7 @@
                 return;
             }
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._viewport.style[<any>this._transform] = this._calculateTranslation(ev, refreshing);
             });
         }
@@ -2263,27 +2255,6 @@
         }
 
         /**
-         * @name _preprocessEvent
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Receives an event prior to a method being called on an array and maps the array 
-         * method to its associated pre-method handler.
-         * 
-         * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * 
-         * @returns {void}
-         */
-        protected _preprocessEvent(ev: plat.observable.IPreArrayChangeInfo): void {
-            var method = '_pre' + ev.method;
-            if (this._utils.isFunction((<any>this)[method])) {
-                (<any>this)[method](ev);
-            }
-        }
-
-        /**
          * @name _executeEvent
          * @memberof platui.Listview
          * @kind function
@@ -2293,35 +2264,14 @@
          * Receives an event when a method has been called on an array and maps the array 
          * method to its associated method handler.
          * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
          * 
          * @returns {void}
          */
-        protected _executeEvent(ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            var method = '_' + ev.method;
+        protected _executeEvent(changes: Array<plat.observable.IArrayChanges<any>>): void {
+            var method = '_' + changes[0].type;
             if (this._utils.isFunction((<any>this)[method])) {
-                (<any>this)[method](ev);
-            }
-        }
-
-        /**
-         * @name _preprocessChildEvent
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Adds new group to the control's element.
-         * 
-         * @param {string} groupName The group name of the currently changing Array.
-         * @param {plat.observable.IPreArrayChangeInfo} ev The pre Array change information.
-         * 
-         * @returns {void}
-         */
-        protected _preprocessChildEvent(groupName: string, ev: plat.observable.IPreArrayChangeInfo): void {
-            var method = '_pre' + ev.method;
-            if (this._utils.isFunction((<any>this)[method])) {
-                (<any>this)[method](ev, this._groups[groupName]);
+                (<any>this)[method](changes);
             }
         }
 
@@ -2335,14 +2285,14 @@
          * Adds new group to the control's element.
          * 
          * @param {string} groupName The group name of the currently changing Array.
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The post Array change information.
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * 
          * @returns {void}
          */
-        protected _executeChildEvent(groupName: string, ev: plat.observable.IPostArrayChangeInfo<any>): void {
-            var method = '_' + ev.method;
+        protected _executeChildEvent(groupName: string, changes: Array<plat.observable.IArrayChanges<any>>): void {
+            var method = '_' + changes[0].type;
             if (this._utils.isFunction((<any>this)[method])) {
-                (<any>this)[method](ev, this._groups[groupName]);
+                (<any>this)[method](changes, this._groups[groupName]);
             }
         }
 
@@ -2355,13 +2305,14 @@
          * @description
          * First checks if the push will do anything, then handles items being pushed into the array.
          * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _push(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
-            this._createItems(ev.oldArray.length, ev.arguments.length, group, true);
+        protected _push(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
+            var change = changes[0];
+            this._createItems(change.index, change.addedCount, group, true);
         }
 
         /**
@@ -2373,142 +2324,23 @@
          * @description
          * Handles items being popped off the array.
          * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _pop(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
-            var details = this._getGroupDetails(group);
-            this._animateItems(ev.newArray.length, 1, __Leave, details.itemContainer, true);
-            this._removeItems(1, details.control);
-        }
-
-        /**
-         * @name _preshift
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Handles items being shifted off the array.
-         * 
-         * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
-         * @returns {void}
-         */
-        protected _preshift(ev: plat.observable.IPreArrayChangeInfo, group?: IGroupHash): void {
-            var container = this._utils.isNull(group) ? this._container : group.element.lastElementChild;
-            this._animationThenable = this._animateItems(0, 1, __Leave, container, true);
-        }
-
-        /**
-         * @name _shift
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Handles items being shifted off the array.
-         * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
-         * @returns {void}
-         */
-        protected _shift(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
-            this._Promise.resolve(this._animationThenable).then(() => {
-                this._removeItems(1, this._getGroupDetails(group).control);
-            });
-        }
-
-        /**
-         * @name _presplice
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Handles adding/removing items when an array is spliced.
-         * 
-         * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
-         * @returns {void}
-         */
-        protected _presplice(ev: plat.observable.IPreArrayChangeInfo, group?: IGroupHash): void {
-            var container = this._utils.isNull(group) ? this._container : group.element.lastElementChild,
-                args = ev.arguments,
-                addCount = args.length - 2;
-
-            // check if adding more items than deleting
-            if (addCount > 0) {
-                this._animateItems(args[0], addCount, __Enter, container);
+        protected _pop(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
+            var change = changes[0];
+            if (change.removed.length === 0) {
                 return;
             }
 
-            var deleteCount = args[1];
-            if (deleteCount > 0) {
-                this._animationThenable = this._animateItems(args[0] + addCount, deleteCount - addCount, __Leave, container, true);
-            }
-        }
-
-        /**
-         * @name _splice
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Handles adding/removing items when an array is spliced.
-         * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
-         * @returns {void}
-         */
-        protected _splice(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
-            this._Promise.resolve(this._animationThenable).then(() => {
-                var additions = ev.newArray.length - ev.oldArray.length;
-                if (additions > 0 && this._utils.isFunction(this._templateSelector)) {
-                    if (this._utils.isNull(ev.arguments)) {
-                        this.rerender(group);
-                    } else {
-                        this.render(ev.arguments[0], additions, group);
-                    }
-                    return;
-                }
-
-                var control = this._getGroupDetails(group).control,
-                    oldLength = control.controls.length,
-                    newLength = ev.newArray.length;
-
-                if (newLength > oldLength) {
-                    this._createItems(oldLength, newLength - oldLength, group, true);
-                } else if (oldLength > newLength) {
-                    this._removeItems(oldLength - newLength, control);
-                }
+            var details = this._getGroupDetails(group),
+                start = change.object.length;
+            this.itemsLoaded.then((): void => {
+                this._animateItems(start, 1, __Leave, details.itemContainer, true);
+                this._removeItems(1, details.control);
             });
-        }
-
-        /**
-         * @name _preunshift
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Handles animating items being unshifted into the array.
-         * 
-         * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
-         * @returns {void}
-         */
-        protected _preunshift(ev: plat.observable.IPreArrayChangeInfo, group?: IGroupHash): void {
-            var container = this._utils.isNull(group) ? this._container : group.element.lastElementChild;
-            this._animateItems(0, 1, __Enter, container);
         }
 
         /**
@@ -2520,18 +2352,101 @@
          * @description
          * Handles items being unshifted into the array.
          * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * 
          * @returns {void}
          */
-        protected _unshift(ev: plat.observable.IPostArrayChangeInfo<any>, group?: IGroupHash): void {
+        protected _unshift(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
             if (this._utils.isFunction(this._templateSelector)) {
                 this.rerender(group);
                 return;
             }
 
-            this._createItems(ev.oldArray.length, ev.arguments.length, group, false);
+            var change = changes[0],
+                addedCount = change.addedCount;
+            this._createItems(change.object.length - addedCount - 1, addedCount, group, false);
+        }
+
+        /**
+         * @name _shift
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles items being shifted off the array.
+         * 
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * 
+         * @returns {void}
+         */
+        protected _shift(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
+            this.itemsLoaded.then((): void => {
+                this._removeItems(1, this._getGroupDetails(group).control);
+            });
+        }
+
+        /**
+         * @name _splice
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles adding/removing items when an array is spliced.
+         * 
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * 
+         * @returns {void}
+         */
+        protected _splice(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
+            var _utils = this._utils,
+                change = changes[0],
+                addCount = change.addedCount;
+
+            if (_utils.isNull(addCount)) {
+                var control: plat.ui.TemplateControl = this._getGroupDetails(group).control,
+                    newLength = change.object.length;
+                this.itemsLoaded.then((): void => {
+                    var currentLength = control.controls.length;
+                    if (newLength > currentLength) {
+                        if (_utils.isFunction(this._templateSelector)) {
+                            if (_utils.isNull(change.index)) {
+                                this.rerender(group);
+                            } else {
+                                this.render(change.index, newLength - currentLength, group);
+                            }
+                            return;
+                        }
+
+                        this._createItems(currentLength, newLength - currentLength, group);
+                    } else if (currentLength > newLength) {
+                        this._removeItems(currentLength - newLength, control);
+                    }
+                });
+                return;
+            }
+
+            var removeCount = change.removed.length;
+            if (addCount > removeCount) {
+                if (_utils.isFunction(this._templateSelector)) {
+                    if (_utils.isNull(change.index)) {
+                        this.rerender(group);
+                    } else {
+                        this.render(change.index, addCount, group);
+                    }
+                    return;
+                }
+
+                this._createItems(change.object.length - addCount - 1, addCount - removeCount, group, true);
+            } else if (removeCount > addCount) {
+                this.itemsLoaded.then((): void => {
+                    this._removeItems(removeCount - addCount, this._getGroupDetails(group).control);
+                });
+            }
         }
 
         /**
@@ -2543,11 +2458,11 @@
          * @description
          * Handles when the array is sorted.
          * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * 
          * @returns {void}
          */
-        //protected _sort(ev: plat.observable.IPostArrayChangeInfo<any>): void { }
+        //protected _sort(changes: Array<plat.observable.IArrayChanges<any>>): void { }
 
         /**
          * @name _reverse
@@ -2558,11 +2473,11 @@
          * @description
          * Handles when the array is reversed.
          * 
-         * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * 
          * @returns {void}
          */
-        //protected _reverse(ev: plat.observable.IPostArrayChangeInfo<any>): void { }
+        //protected _reverse(changes: Array<plat.observable.IArrayChanges<any>>): void { }
 
         /**
          * @name _calculateBlockLength
@@ -2637,7 +2552,7 @@
                 return this.__handleAnimation(startNode, endNode, key, container, clone);
             }
 
-            return this._currentAnimation.cancel().then(() => {
+            return this._currentAnimation.cancel().then((): plat.ui.animations.IAnimationThenable<any> => {
                 return this.__handleAnimation(startNode, endNode, key, container, clone);
             });
         }
@@ -2673,7 +2588,7 @@
                     removeNodes = slice.call(clonedNodes.childNodes);
 
                 container.insertBefore(clonedNodes, referenceNode);
-                return this._currentAnimation = this._animator.animate(removeNodes, key).then(() => {
+                return this._currentAnimation = this._animator.animate(removeNodes, key).then((): void => {
                     while (removeNodes.length > 0) {
                         container.removeChild(removeNodes.pop());
                     }

@@ -573,10 +573,17 @@
          * The function called when the bindable lower value is set externally.
          * 
          * @param {number} newValue The new lower value.
+         * @param {number} oldValue The old value of the bindable index.
+         * @param {string} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setLowerBoundProperty(newValue: number): void {
+        protected _setLowerBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
+            if (firstTime === true && this._utils.isNull(newValue)) {
+                this._fireChange();
+            }
+
             this._setLower(newValue, false);
         }
 
@@ -590,10 +597,17 @@
          * The function called when the bindable upper value is set externally.
          * 
          * @param {number} newValue The new upper value.
+         * @param {number} oldValue The old value of the bindable index.
+         * @param {string} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setUpperBoundProperty(newValue: number): void {
+        protected _setUpperBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
+            if (firstTime === true && this._utils.isNull(newValue)) {
+                this._fireChange();
+            }
+
             this._setUpper(newValue, false);
         }
 
@@ -706,7 +720,7 @@
             this.addEventListener(upperKnob, __$touchend, touchEnd, false);
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
-            this.addEventListener(this._window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', (): void => {
                 this._setPositionAndLength();
                 this._setIncrement();
                 this._setLowerKnobPosition();
@@ -783,7 +797,7 @@
                 return;
             }
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._touchState = 0;
 
                 var isLower = target === this._lowerKnob,
@@ -956,7 +970,7 @@
          * @returns {void}
          */
         protected _positionLower(position: number, value?: number): void {
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 var style = this._slider.style;
                 style[<any>this._positionProperty] = position + 'px';
                 style[<any>this._lengthProperty] = (this._upperKnobOffset - position) + 'px';
@@ -985,7 +999,7 @@
          * @returns {void}
          */
         protected _positionUpper(position: number, value?: number): void {
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._slider.style[<any>this._lengthProperty] = (position - this._lowerKnobOffset) + 'px';
 
                 if (value === null) {
@@ -1012,7 +1026,7 @@
          * @returns {void}
          */
         protected _positionTogether(position: number, value?: number): void {
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 var style = this._slider.style;
                 style[<any>this._positionProperty] = position + 'px';
                 style[<any>this._lengthProperty] = '0px';
@@ -1123,10 +1137,7 @@
             }
 
             if (propertyChanged) {
-                var newProperty = <plat.IObject<number>>{};
-                newProperty[this._lowerIdentifier] = this.lower;
-                newProperty[this._upperIdentifier] = this.upper;
-                this.inputChanged(newProperty);
+                this._fireChange();
             }
 
             if (trigger) {
@@ -1169,10 +1180,7 @@
             }
 
             if (propertyChanged) {
-                var newProperty = <plat.IObject<number>>{};
-                newProperty[this._lowerIdentifier] = this.lower;
-                newProperty[this._upperIdentifier] = this.upper;
-                this.inputChanged(newProperty);
+                this._fireChange();
             }
 
             if (trigger) {
@@ -1287,6 +1295,24 @@
                 properties: animationOptions
             });
             this._upperKnobOffset = length;
+        }
+
+        /**
+         * @name _fireChange
+         * @memberof platui.Range
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Fires an inputChanged event with the new bound value.
+         * 
+         * @returns {void}
+         */
+        protected _fireChange(): void {
+            var newProperty = <plat.IObject<number>>{};
+            newProperty[this._lowerIdentifier] = this.lower;
+            newProperty[this._upperIdentifier] = this.upper;
+            this.inputChanged(newProperty);
         }
 
         /**

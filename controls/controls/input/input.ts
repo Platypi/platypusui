@@ -233,45 +233,6 @@
         protected _inAction = false;
 
         /**
-         * @name _usingBind
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the {@link plat.controls.Bind|Bind} control is being used.
-         */
-        protected _usingBind = false;
-
-        /**
-         * @name _loaded
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
-         */
-        protected _loaded = false;
-
-        /**
-         * @name _preloadedValue
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         * 
-         * @type {string}
-         * 
-         * @description
-         * A value specified prior to the control being loaded.
-         */
-        protected _preloadedValue = '';
-
-        /**
          * @name setClasses
          * @memberof platui.Input
          * @kind function
@@ -321,28 +282,31 @@
             var element = this.element,
                 image = this._imageElement = <HTMLElement>element.firstElementChild.firstElementChild,
                 input = this._inputElement = <HTMLInputElement>image.nextElementSibling,
-                attributes = element.attributes,
-                length = attributes.length,
+                attributes = this.attributes,
+                keys = Object.keys(attributes),
+                length = keys.length,
+                controlInjectors = plat.dependency.injectors.control,
                 hasPlaceholder = false,
-                attrRegex = /plat-(?!control|hide|options)/,
-                attribute: Attr,
+                attrRegex = /plat-(?:control|hide|context)|class|style/,
                 _utils = this._utils,
-                name: string;
+                isNull = _utils.isNull,
+                delimit = _utils.delimit,
+                isString = _utils.isString,
+                key: string,
+                name: string,
+                value: string;
 
             for (var i = 0; i < length; ++i) {
-                attribute = attributes[i];
-                name = attribute.name;
-                if (attrRegex.test(name)) {
-                    if (name === __Bind || name === 'data-' + __Bind) {
-                        this._usingBind = true;
-                    } else {
-                        input.setAttribute(name, attribute.value);
-                    }
-                } else if (name === 'type') {
-                    this._type = attribute.value;
+                key = keys[i];
+                name = delimit(key, '-');
+                value = attributes[key];
+                if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
+                    continue;
                 } else if (name === 'placeholder') {
-                    input.placeholder = attribute.value;
                     hasPlaceholder = true;
+                    input.placeholder = value;
+                } else {
+                    input.setAttribute(name, value);
                 }
             }
 
@@ -371,17 +335,17 @@
             var optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
                 options = optionObj.value || <IInputOptions>{},
                 element = this.element,
-                type = this._type = this._type || options.type || 'text',
+                inputType = this._type = this.attributes['type'] || options.type || 'text',
                 pattern = options.pattern;
 
             // in case of cloning
             this._imageElement = this._imageElement || <HTMLElement>element.firstElementChild.firstElementChild;
             this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
 
-            this.dom.addClass(element, __Plat + type);
+            this.dom.addClass(element, __Plat + inputType);
             this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
 
-            if (this._utils.isString(pattern)) {
+            if (!this._utils.isEmpty(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
                 }
@@ -390,23 +354,6 @@
             }
 
             this._initializeType();
-            this._loaded = true;
-        }
-
-        /**
-         * @name dispose
-         * @memberof platui.Input
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Sets loaded back to false to avoid acting on input.
-         * 
-         * @returns {void}
-         */
-        dispose(): void {
-            super.dispose();
-            this._loaded = false;
         }
 
         /**
@@ -526,12 +473,24 @@
          * The function called when the bindable text is set externally.
          * 
          * @param {string} newValue The new value of the bindable text.
+         * @param {string} oldValue The old value of the bindable text.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setBoundProperty(newValue: string): void {
-            if (!this._loaded) {
-                this._preloadedValue = newValue;
+        protected _setBoundProperty(newValue: string, oldValue: string, identifier: void, firstTime?: boolean): void {
+            var value = this._inputElement.value;
+            if (this._utils.isNull(newValue)) {
+                newValue = '';
+
+                if (firstTime === true) {
+                    if (this._utils.isNull(value)) {
+                        this._onInputChanged(newValue);
+                    }
+                    return;
+                }
+            } else if (newValue === value) {
                 return;
             }
 
@@ -610,29 +569,24 @@
         protected _addEventListeners(event: string): void {
             var actionElement = this._actionElement,
                 input = this._inputElement,
-                actionEnd = () => (this._inAction = false);
+                actionEnd = (): boolean => (this._inAction = false);
 
             this.addEventListener(actionElement, event, this._typeHandler, false);
-            this.addEventListener(actionElement, __$touchstart, () => (this._inAction = true), false);
+            this.addEventListener(actionElement, __$touchstart, (): boolean => (this._inAction = true), false);
             this.addEventListener(actionElement, __$touchend, actionEnd, false);
             this.addEventListener(actionElement, __$trackend, actionEnd, false);
-            this.addEventListener(input, 'focus', () => {
+            this.addEventListener(input, 'focus', (): void => {
                 if (input.value === '') {
                     return;
                 }
                 actionElement.removeAttribute(__Hide);
             }, false);
-            this.addEventListener(input, 'blur', (ev: Event) => {
+            this.addEventListener(input, 'blur', (ev: Event): void => {
                 if (this._inAction) {
                     return;
                 }
                 actionElement.setAttribute(__Hide, '');
             }, false);
-
-            if (this._usingBind) {
-                this._checkInput(this._preloadedValue);
-            }
-
             this._addTextEventListener();
         }
 
@@ -653,27 +607,27 @@
                 _utils = this._utils,
                 composing = false,
                 timeout: plat.IRemoveListener,
-                eventListener = () => {
+                eventListener = (): void => {
                     if (composing) {
                         return;
                     }
 
                     this._onInput();
                 },
-                postponedEventListener = () => {
+                postponedEventListener = (): void => {
                     if (_utils.isFunction(timeout)) {
                         return;
                     }
 
-                    timeout = _utils.postpone(() => {
+                    timeout = _utils.postpone((): void => {
                         eventListener();
                         timeout = null;
                     });
                 };
 
             if (_utils.isUndefined(_compat.ANDROID)) {
-                this.addEventListener(input, 'compositionstart', () => (composing = true), false);
-                this.addEventListener(input, 'compositionend', () => {
+                this.addEventListener(input, 'compositionstart', (): boolean => (composing = true), false);
+                this.addEventListener(input, 'compositionend', (): void => {
                     composing = false;
                     eventListener();
                 }, false);
@@ -682,7 +636,7 @@
             if (_compat.hasEvent('input')) {
                 this.addEventListener(input, 'input', eventListener, false);
             } else {
-                this.addEventListener(input, 'keydown', (ev: KeyboardEvent) => {
+                this.addEventListener(input, 'keydown', (ev: KeyboardEvent): void => {
                     var key = ev.keyCode;
 
                     if (key === 91 ||
@@ -956,10 +910,6 @@
          */
         protected _onInputChanged(newValue: string): void {
             var inputElement = this._inputElement;
-            if (newValue === inputElement.value) {
-                return;
-            }
-
             switch (this._type) {
                 case 'tel':
                 case 'number':
@@ -998,11 +948,9 @@
                     if (this._pattern.test(value)) {
                         this._inputElement.value = value;
                     } else {
-                        if (this._usingBind) {
-                            var _Exception = this._Exception;
-                            _Exception.warn(this.type + ' control is bound to a value that does not satisfy ' +
-                                'the given pattern and/or type. The bound value will be reset to "".', _Exception.CONTROL);
-                        }
+                        var _Exception = this._Exception;
+                        _Exception.warn(this.type + '\'s value does not satisfy either ' +
+                            'the given pattern or type. The value will be reset to "".', _Exception.CONTROL);
                         this.inputChanged((this._inputElement.value = ''), value);
                     }
                     break;

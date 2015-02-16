@@ -174,7 +174,7 @@
                 return;
             }
 
-            this.addEventListener(this._window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', (): void => {
                 var offset = this._barMax = barElement.parentElement.offsetWidth;
                 if (!offset) {
                     this._setOffsetWithClone('width');

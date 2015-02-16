@@ -109,43 +109,43 @@
         protected _useContext: boolean;
 
         /**
-         * @name controller
+         * @name _controllers
          * @memberof platui.Drawer
          * @kind property
          * @access public
          * 
-         * @type {platui.DrawerController}
+         * @type {Array<platui.DrawerController>}
          * 
          * @description
-         * A reference to all the {@link platui.DrawerController|DrawerController} used to control this {@link platui.Drawer|Drawer}.
+         * References to all the {@link platui.DrawerController|DrawerControllers} used to control this {@link platui.Drawer|Drawer}.
          */
         protected _controllers: Array<DrawerController> = [];
 
         /**
-         * @name _loaded
-         * @memberof platui.Drawer
+         * @name _isInitialized
+         * @memberof platui.DrawerController
          * @kind property
          * @access protected
          * 
          * @type {boolean}
          * 
          * @description
-         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
+         * Whether or not the this control has been paired with a corresponding {@link platui.Drawer|Drawer}.
          */
-        protected _loaded = false;
+        protected _isInitialized = false;
 
         /**
-         * @name _preloadedValue
-         * @memberof platui.Drawer
+         * @name _preInitializedValue
+         * @memberof platui.DrawerController
          * @kind property
          * @access protected
          * 
          * @type {boolean}
          * 
          * @description
-         * A value specified prior to the control being loaded.
+         * A bound value that may have come through prior to initialization.
          */
-        protected _preloadedValue = false;
+        protected _preInitializedValue = false;
 
         /**
          * @name setClasses
@@ -180,11 +180,22 @@
          * @returns {void}
          */
         initialize(): void {
-            var childNodes = Array.prototype.slice.call(this.element.childNodes);
-            if (childNodes.length > 0) {
-                this.innerTemplate = this.dom.appendChildren(childNodes);
-            }
             this.setClasses();
+        }
+
+        /**
+         * @name setTemplate
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Removes the innerHTML from the DOM and saves it.
+         * 
+         * @returns {void}
+         */
+        setTemplate(): void {
+            this.innerTemplate = this.dom.appendChildren(this.element.childNodes);
         }
 
         /**
@@ -213,19 +224,21 @@
             this.dom.addClass(element, __Plat + position);
 
             if (_utils.isString(templateUrl)) {
-                plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template) => {
+                plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template): any => {
                     this.innerTemplate = template;
                     if (this._useContext) {
-                        this.bindTemplate('drawer', template.cloneNode(true));
-                        this._checkPreload();
+                        this.bindTemplate('drawer', template.cloneNode(true)).then((): void => {
+                            this._checkPreInit();
+                        });
                     }
 
                     this._initializeEvents(id, position, isElastic);
                 });
                 return;
             } else if (useContext && _utils.isNode(this.innerTemplate)) {
-                this.bindTemplate('drawer', this.innerTemplate.cloneNode(true));
-                this._checkPreload();
+                this.bindTemplate('drawer', this.innerTemplate.cloneNode(true)).then((): void => {
+                    this._checkPreInit();
+                });
             }
 
             this._initializeEvents(id, position, isElastic);
@@ -362,39 +375,19 @@
          * @param {string} name The template name to both add and bind.
          * @param {Node} node The node to add as a bindable template.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been bound and inserted.
          */
-        bindTemplate(name: string, node: Node): void {
+        bindTemplate(name: string, node: Node): plat.async.IThenable<void> {
             var bindableTemplates = this.bindableTemplates;
             bindableTemplates.add(name, node);
-            bindableTemplates.bind(name).then((template) => {
+            return bindableTemplates.bind(name).then((template): void => {
                 var element = this.element;
                 this.dom.clearNode(element);
                 element.appendChild(template);
-            }).catch((error) => {
+            }).catch((error): void => {
                 var _Exception = this._Exception;
                 _Exception.warn('Error binding template for ' + this.type + ': ' + error, _Exception.BIND);
             });
-        }
-
-        /**
-         * @name observeProperties
-         * @memberof platui.Drawer
-         * @kind function
-         * @access public
-         * @virtual
-         * 
-         * @description
-         * A function that allows this control to observe both the bound property itself as well as
-         * potential child properties if being bound to an object.
-         *
-         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
-         * databinding.
-         *
-         * @returns {void}
-         */
-        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
-            implementer.observeProperty(this._setBoundProperty);
         }
 
         /**
@@ -439,6 +432,26 @@
         }
 
         /**
+         * @name observeProperties
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
+         * @returns {void}
+         */
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
+        }
+
+        /**
          * @name _setBoundProperty
          * @memberof platui.Drawer
          * @kind function
@@ -448,19 +461,31 @@
          * The function called when the bindable property is set externally.
          * 
          * @param {boolean} drawerState The new value of the control state.
+         * @param {boolean} oldValue The old value of the bindable control state.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setBoundProperty(drawerState: boolean): void {
-            if (!this.loaded) {
-                this._preloadedValue = drawerState;
+        protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
+            var _utils = this._utils,
+                controller = this._controllers[0];
+            if (firstTime === true && _utils.isNull(drawerState)) {
+                this.inputChanged(_utils.isNull(controller) ? false : controller.isOpen());
                 return;
             }
 
-            var _utils = this._utils,
-                controller = this._controllers[0];
+            if (_utils.isBoolean(drawerState)) {
+                if (!this._isInitialized) {
+                    this._preInitializedValue = drawerState;
+                    return;
+                }
+                this._preInitializedValue = false;
 
-            if (_utils.isBoolean(drawerState) && !_utils.isNull(controller)) {
+                if (_utils.isNull(controller)) {
+                    return;
+                }
+
                 if (drawerState) {
                     if (controller.isOpen()) {
                         return;
@@ -472,7 +497,13 @@
                 if (controller.isOpen()) {
                     controller.close();
                 }
+
+                return;
             }
+
+            var _Exception = this._Exception;
+            _Exception.warn('Attempting to open or close ' + this.type +
+                ' with a bound value that is something other than a boolean.', _Exception.BIND);
         }
 
         /**
@@ -527,7 +558,7 @@
                 DIRECT = plat.events.EventManager.DIRECT;
 
             this.on(__DrawerControllerFetchEvent + '_' + id,
-                (event: plat.events.DispatchEvent, controllerArg: IDrawerHandshakeEvent) => {
+                (event: plat.events.DispatchEvent, controllerArg: IDrawerHandshakeEvent): void => {
                     var control = controllerArg.control;
                     if (isNull(control)) {
                         return;
@@ -550,6 +581,8 @@
                             elastic: isElastic
                         });
                     }
+
+                    this._isInitialized = true;
                 });
 
             this.dispatchEvent(__DrawerFoundEvent + '_' + id, DIRECT, {
@@ -563,18 +596,18 @@
         }
 
         /**
-         * @name _checkPreload
+         * @name _checkPreInit
          * @memberof platui.Drawer
          * @kind function
          * @access protected
          * 
          * @description
-         * Checks the preloaded value and handles accordingly.
+         * Checks the pre-initialized value and handles accordingly.
          * 
          * @returns {void}
          */
-        protected _checkPreload(): void {
-            if (this._preloadedValue) {
+        protected _checkPreInit(): void {
+            if (this._preInitializedValue) {
                 var _utils = this._utils;
                 _utils.postpone(() => {
                     var controller = this._controllers[0];
@@ -988,7 +1021,7 @@
          * A function for removing the listener for responding to other {@link platui.DrawerController|DrawerControllers} 
          * being disposed.
          */
-        protected _disposeRemover: plat.IRemoveListener = () => { };
+        protected _disposeRemover: plat.IRemoveListener = (): void => { };
 
         /**
          * @name _rootElement
@@ -1055,32 +1088,6 @@
          * A class name that is used to set styling based on the transition direction.
          */
         protected _directionalTransitionPrep: string;
-
-        /**
-         * @name _loaded
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
-         */
-        protected _loaded = false;
-
-        /**
-         * @name _preloadedValue
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * A value specified prior to the control being loaded.
-         */
-        protected _preloadedValue = false;
 
         /**
          * @name _isTap
@@ -1150,6 +1157,32 @@
          * to begin.
          */
         protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
+
+        /**
+         * @name _isInitialized
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not the this control has been paired with a corresponding {@link platui.Drawer|Drawer}.
+         */
+        protected _isInitialized = false;
+
+        /**
+         * @name _preInitializedValue
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * A bound value that may have come through prior to initialization.
+         */
+        protected _preInitializedValue = false;
 
         /**
          * @name initialize
@@ -1222,7 +1255,7 @@
                 disposeRootElement = true;
 
             this._disposeRemover();
-            this.on(__DrawerControllerDisposingFound, (ev: plat.events.DispatchEvent, otherRoot: HTMLElement) => {
+            this.on(__DrawerControllerDisposingFound, (ev: plat.events.DispatchEvent, otherRoot: HTMLElement): void => {
                 if (!disposeRootElement) {
                     return;
                 }
@@ -1230,7 +1263,7 @@
                 disposeRootElement = rootElement !== otherRoot;
             });
 
-            _utils.defer(() => {
+            _utils.defer((): void => {
                 if (!disposeRootElement) {
                     return;
                 }
@@ -1272,8 +1305,8 @@
                 this._toggleDelay();
             }
 
-            var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = _utils.requestAnimationFrame(() => {
+            var promise = new this._Promise<void>((resolve): void => {
+                this._toggleDelay = _utils.requestAnimationFrame((): void => {
                     this._touchState = 0;
                     this._toggleDelay = null;
                     this._open().then(resolve);
@@ -1311,8 +1344,8 @@
                 this._toggleDelay();
             }
 
-            var promise = new this._Promise<void>((resolve) => {
-                this._toggleDelay = _utils.requestAnimationFrame(() => {
+            var promise = new this._Promise<void>((resolve): void => {
+                this._toggleDelay = _utils.requestAnimationFrame((): void => {
                     this._touchState = 0;
                     this._toggleDelay = null;
                     this._close().then(resolve);
@@ -1398,16 +1431,16 @@
          * @param {string} name The template name to bind.
          * @param {Node} node The node to add as a bindable template.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been bound and inserted.
          */
-        bindTemplate(name: string, node: Node): void {
+        bindTemplate(name: string, node: Node): plat.async.IThenable<void> {
             var bindableTemplates = this.bindableTemplates;
             bindableTemplates.add(name, node);
-            bindableTemplates.bind(name).then((template) => {
+            return bindableTemplates.bind(name).then((template): void => {
                 var element = this._drawerElement;
                 this.dom.clearNode(element);
                 element.appendChild(template);
-            }).catch((error) => {
+            }).catch((error): void => {
                 var _Exception = this._Exception;
                 _Exception.warn('Error binding template for ' + this.type + ': ' + error, _Exception.BIND);
             });
@@ -1443,22 +1476,30 @@
          * The function called when the bindable property is set externally.
          * 
          * @param {boolean} drawerState The new value of the control's state.
+         * @param {boolean} oldValue The old value of the bindable control state.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setBoundProperty(drawerState: boolean): void {
-            if (!this.loaded) {
-                this._preloadedValue = drawerState;
+        protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
+            var _utils = this._utils;
+            if (firstTime === true && _utils.isNull(drawerState)) {
+                this.inputChanged(this._isOpen);
                 return;
             }
 
-            var _utils = this._utils;
             if (_utils.isBoolean(drawerState)) {
+                if (!this._isInitialized) {
+                    this._preInitializedValue = drawerState;
+                    return;
+                }
+
                 if (drawerState) {
                     if (this._isOpen) {
                         return;
                     }
-                    this._toggleDelay = _utils.requestAnimationFrame(() => {
+                    this._toggleDelay = _utils.requestAnimationFrame((): void => {
                         this._touchState = 0;
                         this._toggleDelay = null;
                         this._open();
@@ -1467,13 +1508,19 @@
                 }
 
                 if (this._isOpen) {
-                    this._toggleDelay = _utils.requestAnimationFrame(() => {
+                    this._toggleDelay = _utils.requestAnimationFrame((): void => {
                         this._touchState = 0;
                         this._toggleDelay = null;
                         this._close();
                     });
                 }
+
+                return;
             }
+
+            var _Exception = this._Exception;
+            _Exception.warn('Attempting to bind ' + this.type +
+                ' with a value that is something other than a boolean.', _Exception.BIND);
         }
 
         /**
@@ -1532,7 +1579,7 @@
             animationOptions[this._transform] = translation;
             return this._animationThenable = this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
-            }).then(() => {
+            }).then((): void => {
                 this._animationThenable = null;
             });
         }
@@ -1573,7 +1620,7 @@
             animationOptions[transform] = this._preTransform;
             return this._animationThenable = this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
-            }).then(() => {
+            }).then((): void => {
                 this._animationThenable = null;
                 if (this._isOpen) {
                     return;
@@ -1621,7 +1668,7 @@
                     trackEndRemover = this.addEventListener(clickEater, __$trackend, touchEnd, false),
                     touchEndRemover = this.addEventListener(clickEater, __$touchend, touchEnd, false);
 
-                this._openTrackRemover = () => {
+                this._openTrackRemover = (): void => {
                     touchStartRemover();
                     trackRemover();
                     trackEndRemover();
@@ -1673,7 +1720,7 @@
          * @returns {void}
          */
         protected _addSwipeOpen(): void {
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], () => {
+            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], (): void => {
                 this._hasSwiped = true;
                 this.open();
             }, false);
@@ -1691,7 +1738,7 @@
          * @returns {void}
          */
         protected _addSwipeClose(): void {
-            this._openSwipeRemover = this.addEventListener(this._clickEater, __$swipe + this._position, () => {
+            this._openSwipeRemover = this.addEventListener(this._clickEater, __$swipe + this._position, (): void => {
                 this._hasSwiped = true;
                 this.close();
             }, false);
@@ -1709,7 +1756,7 @@
          * @returns {void}
          */
         protected _addTapOpen(): void {
-            this._removeTap = this.addEventListener(this.element, __$tap, () => {
+            this._removeTap = this.addEventListener(this.element, __$tap, (): void => {
                 this._hasTapped = true;
                 this.open();
             }, false);
@@ -1727,7 +1774,7 @@
          * @returns {void}
          */
         protected _addTapClose(): void {
-            this._openTapRemover = this.addEventListener(this._clickEater, __$tap, () => {
+            this._openTapRemover = this.addEventListener(this._clickEater, __$tap, (): void => {
                 this._hasTapped = true;
                 this.close();
             }, false);
@@ -1859,7 +1906,7 @@
             }
 
             if (!this._utils.isNull(this._animationThenable)) {
-                this._animationThenable.cancel().then(() => {
+                this._animationThenable.cancel().then((): void => {
                     this._animationThenable = null;
                     this._initTouch(ev);
                 });
@@ -1974,7 +2021,7 @@
                 return;
             }
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
             });
         }
@@ -2091,7 +2138,7 @@
          */
         protected _initializeEvents(id: string, position: string): void {
             var eventRemover = this.on(__DrawerFoundEvent + '_' + id,
-                (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent) => {
+                (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent): void => {
                     eventRemover();
 
                     var _utils = this._utils,
@@ -2134,19 +2181,21 @@
                     }
 
                     if (useContext === false || (isUndefined(useContext) && drawerArg.useContext === true)) {
+                        this._isInitialized = true;
                         return;
                     }
 
                     this._useContext = true;
-                    this._determineTemplate(drawerArg.template);
-
-                    if (this._preloadedValue) {
-                        this._toggleDelay = _utils.requestAnimationFrame(() => {
-                            this._touchState = 0;
-                            this._toggleDelay = null;
-                            this._open();
-                        });
-                    }
+                    this._determineTemplate(drawerArg.template).then((): void => {
+                        this._isInitialized = true;
+                        if (this._preInitializedValue) {
+                            this._toggleDelay = _utils.requestAnimationFrame((): void => {
+                                this._touchState = 0;
+                                this._toggleDelay = null;
+                                this._open();
+                            });
+                        }
+                    });
                 });
 
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
@@ -2168,18 +2217,20 @@
          * @param {Node} fragment? A Node to insert as the {@link platui.Drawer|Drawer's} HTML template 
          * if no templateUrl is present on this {@link platui.DrawerController|DrawerController}.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been determined.
          */
-        protected _determineTemplate(fragment?: Node): void {
+        protected _determineTemplate(fragment?: Node): plat.async.IThenable<void> {
             var _utils = this._utils;
 
             if (_utils.isString(this._templateUrl)) {
-                plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template) => {
-                    this.bindTemplate('drawer', template);
+                return plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template): plat.async.IThenable<void> => {
+                    return this.bindTemplate('drawer', template);
                 });
             } else if (_utils.isNode(fragment)) {
-                this.bindTemplate('drawer', fragment);
+                return this.bindTemplate('drawer', fragment);
             }
+
+            return this._Promise.resolve();
         }
 
         /**
@@ -2247,7 +2298,7 @@
             this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
 
-            this._disposeRemover = this.on(__DrawerControllerDisposing, () => {
+            this._disposeRemover = this.on(__DrawerControllerDisposing, (): void => {
                 this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
             });
 

@@ -188,6 +188,9 @@
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
             if (newValue === oldValue) {
                 return;
+            } else if (setProperty === true && this._utils.isNull(newValue)) {
+                this.inputChanged(this.isActive);
+                return;
             }
 
             var isActive = !!newValue;

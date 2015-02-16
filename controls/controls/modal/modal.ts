@@ -359,11 +359,20 @@
          * The function called when the bindable property is set externally.
          * 
          * @param {boolean} modalState The new value of the control state.
+         * @param {boolean} oldValue The old value of the control state.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setBoundProperty(modalState: boolean): void {
-            if (this._utils.isBoolean(modalState)) {
+        protected _setBoundProperty(modalState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
+            var _utils = this._utils;
+            if (firstTime === true && _utils.isNull(modalState)) {
+                this.inputChanged(this._isVisible);
+                return;
+            }
+
+            if (_utils.isBoolean(modalState)) {
                 if (modalState) {
                     if (this._isVisible) {
                         return;
@@ -375,7 +384,13 @@
                 if (this._isVisible) {
                     this._hide();
                 }
+
+                return;
             }
+
+            var _Exception = this._Exception;
+            _Exception.warn('Attempting to show or hide a ' + this.type +
+                ' with a bound value that is something other than a boolean.', _Exception.BIND);
         }
 
         /**
@@ -392,7 +407,7 @@
         protected _show(): void {
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
-            this._utils.defer(() => {
+            this._utils.defer((): void => {
                 dom.addClass(this._modalElement, __Plat + 'activate');
             }, 25);
 
@@ -435,7 +450,7 @@
          */
         protected _addHideOnTransitionEnd(): void {
             var element = this.element,
-                remove = this.addEventListener(element, this._transitionEnd, () => {
+                remove = this.addEventListener(element, this._transitionEnd, (): void => {
                     remove();
                     this.dom.addClass(element, __Hide);
                 }, false);
