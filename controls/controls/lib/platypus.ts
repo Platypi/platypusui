@@ -19045,9 +19045,15 @@ module plat {
                 protected _currentAnimation: animations.IAnimationThenable<any>;
 
                 /**
+                 * Whether or not the initial context value was null or empty.
+                 */
+                protected _emptyInit: boolean = false;
+
+                /**
                  * Whether or not the Array listener has been set.
                  */
                 private __listenerSet = false;
+
                 /**
                  * The resolve function for the itemsLoaded promise.
                  */
@@ -19077,10 +19083,14 @@ module plat {
                  * @param {Array<any>} oldValue The old Array
                  */
                 contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
+                    var emptyInit = this._emptyInit = isEmpty(oldValue);
+
                     if (isEmpty(newValue)) {
-                        this.itemsLoaded.then((): void => {
-                            this._removeItems(this.controls.length);
-                        });
+                        if (!emptyInit) {
+                            this.itemsLoaded.then((): void => {
+                                this._removeItems(this.controls.length);
+                            });
+                        }
                         return;
                     } else if (!isArray(newValue)) {
                         var _Exception = this._Exception;
@@ -19189,14 +19199,6 @@ module plat {
                                     _Exception.warn(error, _Exception.BIND);
                                 });
                             });
-                    } else {
-                        if (isFunction(this.__resolveFn)) {
-                            this.__resolveFn();
-                            this.__resolveFn = null;
-                        }
-                        this.itemsLoaded = new this._Promise<void>((resolve): void => {
-                            this.__resolveFn = resolve;
-                        });
                     }
 
                     return this.itemsLoaded;
@@ -19391,8 +19393,14 @@ module plat {
                         addCount = change.addedCount;
 
                     if (isNull(addCount)) {
-                        var newLength = change.object.length;
-                        this.itemsLoaded.then((): void => {
+                        var newLength = change.object.length,
+                            promise = this.itemsLoaded;
+
+                        if (this._emptyInit) {
+                            promise = null;
+                        }
+
+                        this._Promise.resolve(promise).then((): void => {
                             var currentLength = this.controls.length;
                             if (newLength > currentLength) {
                                 this._addItems(newLength - currentLength, currentLength);
