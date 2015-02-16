@@ -139,7 +139,13 @@ module.exports = exports = function load(grunt) {
                 },
                 src: 'dist/platypus.d.ts',
                 dest: 'dist/platypus.d.ts'
-            }
+            },
+			fonts: {
+				expand: true,
+				cwd: 'controls/icons/fonts/',
+                src: ['*'],
+                dest: 'dist/fonts/'
+			}
         },
         connect: {
             server: {
@@ -253,7 +259,7 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'clean:after']);
+    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'copy:fonts', 'clean:after']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
     grunt.registerTask('compile', ['lessCompile', 'ts:base', 'ts:app']);
 };
