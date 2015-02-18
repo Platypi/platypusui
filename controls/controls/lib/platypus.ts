@@ -1,7 +1,7 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.5 (http://getplatypi.com) 
- * Copyright 2014 Platypi, LLC. All rights reserved. 
+ * PlatypusTS v0.10.11 (http://getplatypi.com) 
+ * Copyright 2015 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
  */
@@ -1136,14 +1136,14 @@ module plat {
     }
     
     function removeNode(node: Node): void {
-        if (isNull(node)) {
+        if (!isNode(node)) {
             return;
         }
     
         var parentNode = node.parentNode;
     
         if (!isNull(parentNode)) {
-            node.parentNode.removeChild(node);
+            parentNode.removeChild(node);
         }
     }
     
@@ -7719,7 +7719,7 @@ module plat {
             /**
              * The ID of this cache.
              */
-            private __id: string;
+            private __uid: string;
 
             /**
              * The options for this cache.
@@ -7730,15 +7730,15 @@ module plat {
              * Method for creating a new cache object. Takes a generic type to denote the
              * type of objects stored in the new cache.  If a cache with the same ID already exists
              * in the ICacheFactory, a new cache will not be created.
-             * @param {string} id The ID of the new Cache.
+             * @param {string} uid The ID of the new Cache.
              * @param {plat.storage.ICacheOptions} options ICacheOptions 
              * for customizing the Cache.
              */
-            static create<T>(id: string, options?: ICacheOptions): Cache<T> {
-                var cache: Cache<T> = caches[id];
+            static create<T>(uid: string, options?: ICacheOptions): Cache<T> {
+                var cache: Cache<T> = caches[uid];
 
                 if (isNull(cache)) {
-                    cache = caches[id] = new Cache<T>(id, options);
+                    cache = caches[uid] = new Cache<T>(uid, options);
                 }
 
                 return cache;
@@ -7746,10 +7746,10 @@ module plat {
 
             /**
              * Gets a cache out of the ICacheFactory if it exists.
-             * @param {string} id The identifier used to search for the cache.
+             * @param {string} uid The identifier used to search for the cache.
              */
-            static fetch<T>(id: string): Cache<T> {
-                return caches[id];
+            static fetch<T>(uid: string): Cache<T> {
+                return caches[uid];
             }
 
             /**
@@ -7771,8 +7771,8 @@ module plat {
              * @param {string} id The id to use to retrieve the cache from the ICacheFactory.
              * @param {plat.storage.ICacheOptions} options The ICacheOptions for customizing the cache.
              */
-            constructor(id: string, options?: ICacheOptions) {
-                this.__id = id;
+            constructor(uid: string, options?: ICacheOptions) {
+                this.__uid = uid;
                 this.__options = options;
                 this.__size = 0;
 
@@ -7782,7 +7782,7 @@ module plat {
                     };
                 }
 
-                internalCaches[id] = {};
+                internalCaches[uid] = {};
             }
 
             /**
@@ -7791,7 +7791,7 @@ module plat {
              */
             info(): ICacheInfo {
                 return {
-                    id: this.__id,
+                    uid: this.__uid,
                     size: this.__size,
                     options: this.__options
                 };
@@ -7803,8 +7803,8 @@ module plat {
              * @param {T} value The value to store with the associated key.
              */
             put(key: string, value: T): T {
-                var val = internalCaches[this.__id][key];
-                internalCaches[this.__id][key] = value;
+                var val = internalCaches[this.__uid][key];
+                internalCaches[this.__uid][key] = value;
 
                 if (isUndefined(val)) {
                     this.__size++;
@@ -7824,7 +7824,7 @@ module plat {
              * @param key The key to search for in an Cache.
              */
             read(key: string): T {
-                return internalCaches[this.__id][key];
+                return internalCaches[this.__uid][key];
             }
 
             /**
@@ -7832,7 +7832,7 @@ module plat {
              * @param {string} key The key to remove from the Cache.
              */
             remove(key: string): void {
-                deleteProperty(internalCaches[this.__id], key);
+                deleteProperty(internalCaches[this.__uid], key);
                 this.__size--;
             }
 
@@ -7840,7 +7840,7 @@ module plat {
              * Method for clearing an Cache, removing all of its keys.
              */
             clear(): void {
-                internalCaches[this.__id] = {};
+                internalCaches[this.__uid] = {};
                 this.__size = 0;
             }
 
@@ -7849,7 +7849,7 @@ module plat {
              */
             dispose(): void {
                 this.clear();
-                deleteProperty(caches, this.__id);
+                deleteProperty(caches, this.__uid);
             }
         }
 
@@ -7870,17 +7870,17 @@ module plat {
              * Method for creating a new cache object. Takes a generic type to denote the
              * type of objects stored in the new cache.  If a cache with the same ID already exists
              * in the ICacheFactory, a new cache will not be created.
-             * @param {string} id The ID of the new Cache.
+             * @param {string} uid The ID of the new Cache.
              * @param {plat.storage.ICacheOptions} options ICacheOptions 
              * for customizing the Cache.
              */
-            create<T>(id: string, options?: ICacheOptions): Cache<T>;
+            create<T>(uid: string, options?: ICacheOptions): Cache<T>;
 
             /**
              * Gets a cache out of the ICacheFactory if it exists.
-             * @param {string} id The identifier used to search for the cache.
+             * @param {string} uid The identifier used to search for the cache.
              */
-            fetch<T>(id: string): Cache<T>;
+            fetch<T>(uid: string): Cache<T>;
 
             /**
              * Clears the ICacheFactory and all of its caches.
@@ -7924,7 +7924,7 @@ module plat {
              * A unique id for the Cache object, used to 
              * retrieve the ICache out of the CacheFactory.
              */
-            id: string;
+            uid: string;
 
             /**
              * Represents the number of items in the Cache.
@@ -9182,11 +9182,11 @@ module plat {
              * @param {string} identifier The identifier for the property that changed.
              * @param {any} newValue The new value of the property.
              * @param {any} oldValue The old value of the property.
+             * @param {Array<string>} mappings? An array of mapped child identifier keys to notify.
              */
-            protected _notifyChildProperties(identifier: string, newValue: any, oldValue: any): void {
-                var props = this.__identifierHash[identifier] || {},
-                    mappings = Object.keys(props),
-                    length = mappings.length,
+            protected _notifyChildProperties(identifier: string, newValue: any, oldValue: any, mappings?: Array<string>): void {
+                mappings = mappings || Object.keys(this.__identifierHash[identifier] || {});
+                var length = mappings.length,
                     binding: string,
                     property: string,
                     parentProperty: string,
@@ -9194,6 +9194,7 @@ module plat {
                     values: IObject<any> = {},
                     value: any,
                     key: string,
+                    keyIsLength: boolean,
                     start = identifier.length + 1,
                     newParent: any,
                     oldParent: any,
@@ -9210,6 +9211,7 @@ module plat {
                     property = binding.slice(start);
                     split = property.split('.');
                     key = split.pop();
+                    keyIsLength = key === 'length',
                     parentProperty = split.join('.');
 
                     if (isEmpty(parentProperty)) {
@@ -9218,7 +9220,7 @@ module plat {
                         newChild = isNull(newParent) ? undefined : newParent[key];
                         oldChild = isNull(oldParent) ? undefined : oldParent[key];
 
-                        if (key === 'length' && !isArray(oldParent) && isArray(newParent)) {
+                        if (keyIsLength && !isArray(oldParent) && isArray(newParent)) {
                             var lengthListener = this.__lengthListeners[binding];
                             if (!isNull(lengthListener)) {
                                 var uid = lengthListener.uid,
@@ -9268,6 +9270,10 @@ module plat {
 
                     if (isObject(newParent) && (!isArray(newParent) || newParent.length > key)) {
                         this._define(binding, newParent, key);
+                    }
+
+                    if (!(isNull(oldChild) || (isArray(oldParent) && keyIsLength))) {
+                        ContextManager.defineProperty(oldParent, key, oldChild, true, true, true);
                     }
 
                     this._execute(binding, newChild, oldChild);
@@ -9346,7 +9352,8 @@ module plat {
                         returnValue: any,
                         isUnshift = method === 'unshift',
                         isShift = method === 'shift',
-                        isShiftOperation = isShift || isUnshift,
+                        isSplice = method === 'splice',
+                        selfNotify = isShift || isUnshift || isSplice,
                         isUpdate = method === 'sort' || method === 'reverse',
                         oldArray: Array<any>,
                         addedCount: number,
@@ -9354,7 +9361,7 @@ module plat {
                         newLength: number,
                         removed: Array<any>;
 
-                    if (isShiftOperation) {
+                    if (selfNotify) {
                         _this.__isArrayFunction = true;
                         returnValue = (<any>Array.prototype)[method].apply(this, args);
                         _this.__isArrayFunction = false;
@@ -9364,9 +9371,13 @@ module plat {
                         if (isShift) {
                             addedCount = 0;
                             removed = oldLength > 0 ? [returnValue] : [];
-                        } else {
+                        } else if (isUnshift) {
                             addedCount = args.length;
                             removed = [];
+                        } else {
+                            addedCount = args.length - 2;
+                            index = args[0];
+                            removed = returnValue;
                         }
                     } else {
                         returnValue = (<any>Array.prototype)[method].apply(this, args);
@@ -9382,10 +9393,6 @@ module plat {
                             addedCount = 0;
                             index = newLength;
                             removed = oldLength > 0 ? [returnValue] : [];
-                        } else if (method === 'splice') {
-                            addedCount = args.length - 2;
-                            index = args[0];
-                            removed = returnValue;
                         }
                     }
 
@@ -9412,7 +9419,7 @@ module plat {
                         }
                     }
 
-                    if (isShiftOperation) {
+                    if (selfNotify) {
                         _this._notifyChildProperties(absoluteIdentifier, this, originalArray);
                     } else if (newLength !== oldLength) {
                         _this._execute(absoluteIdentifier + '.length', newLength, oldLength);
@@ -9519,14 +9526,26 @@ module plat {
                         }
 
                         var props = this.__identifierHash[identifier],
-                            childPropertiesExist = isObject(props) && Object.keys(props).length > 0;
+                            childPropertiesExist = false,
+                            mappings: Array<string>;
+
+                        if (isObject(props)) {
+                            mappings = Object.keys(props);
+                            if (mappings.length > 0) {
+                                childPropertiesExist = true;
+                            } else {
+                                deleteProperty(this.__identifierHash, identifier);
+                            }
+                        }
+
                         this._execute(identifier, value, oldValue);
 
                         if (childPropertiesExist) {
-                            this._notifyChildProperties(identifier, value, oldValue);
-                        }
-
-                        if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
+                            this._notifyChildProperties(identifier, value, oldValue, mappings);
+                            if (!isObject(value)) {
+                                this.__definePrimitive(identifier, immediateContext, key);
+                            }
+                        } else if (isEmpty(this.__identifiers[identifier])) {
                             ContextManager.defineProperty(immediateContext, key, value, true, true, true);
                         } else if (!isObject(value)) {
                             this.__definePrimitive(identifier, immediateContext, key);
@@ -9568,7 +9587,18 @@ module plat {
                         }
 
                         var props = this.__identifierHash[identifier],
-                            childPropertiesExist = isObject(props) && Object.keys(props).length > 0;
+                            childPropertiesExist = false,
+                            mappings: Array<string>;
+
+                        if (isObject(props)) {
+                            var mappings = Object.keys(props);
+                            if (mappings.length > 0) {
+                                childPropertiesExist = true;
+                            } else {
+                                deleteProperty(this.__identifierHash, identifier);
+                            }
+                        }
+
                         this._execute(identifier, newValue, oldValue);
 
                         if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
@@ -9576,7 +9606,7 @@ module plat {
                         } else if (isObject(value)) {
                             this.__defineObject(identifier, immediateContext, key);
                             if (childPropertiesExist) {
-                                this._notifyChildProperties(identifier, newValue, oldValue);
+                                this._notifyChildProperties(identifier, newValue, oldValue, mappings);
                             }
                         } else if (!isDefined) {
                             this.__definePrimitive(identifier, immediateContext, key);
@@ -10913,19 +10943,26 @@ module plat {
             }
 
             var ctrl = <ui.TemplateControl>control;
-            if (isString(ctrl.absoluteContextPath) && isFunction(ctrl.contextChanged)) {
-                var contextManager = Control._ContextManager.getManager(ctrl.root);
+            if (isString(ctrl.absoluteContextPath)) {
+                if (isFunction(ctrl.contextChanged)) {
+                    var contextManager = Control._ContextManager.getManager(ctrl.root);
 
-                contextManager.observe(ctrl.absoluteContextPath, {
-                    uid: control.uid,
-                    listener: (newValue, oldValue): void => {
-                        ui.TemplateControl.contextChanged(<ui.TemplateControl>control, newValue, oldValue);
+                    contextManager.observe(ctrl.absoluteContextPath, {
+                        uid: control.uid,
+                        listener: (newValue, oldValue): void => {
+                            ui.TemplateControl.contextChanged(<ui.TemplateControl>control, newValue, oldValue);
+                        }
+                    });
+
+                    if (isFunction((<any>ctrl).zCC__plat)) {
+                        (<any>ctrl).zCC__plat();
+                        deleteProperty(ctrl, 'zCC__plat');
                     }
-                });
+                }
 
-                if (isFunction((<any>ctrl).zCC__plat)) {
-                    (<any>ctrl).zCC__plat();
-                    deleteProperty(ctrl, 'zCC__plat');
+                var element = ctrl.element;
+                if (isNode(element) && isFunction(element.removeAttribute)) {
+                    element.removeAttribute(__Hide);
                 }
             }
 
@@ -12182,14 +12219,13 @@ module plat {
                     return;
                 }
 
-                var dom = control.dom,
-                    element = control.element,
+                var element = control.element,
                     parentNode: Node;
 
                 if (control.replaceWith === null ||
                 control.replaceWith === '' ||
                 isDocumentFragment(element)) {
-                    dom.removeAll(control.startNode, control.endNode);
+                    removeAll(control.startNode, control.endNode);
                     control.elementNodes = control.startNode = control.endNode = null;
                     return;
                 } else if (isNull(element)) {
@@ -14320,12 +14356,12 @@ module plat {
                  * An object containing the different time intervals that govern the behavior of certain 
                  * custom DOM events.
                  */
-                intervals: {
+                intervals: <IIntervals>{
                     /**
                      * The max time in milliseconds a user can hold down on the screen 
                      * for a tap event to be fired.
                      */
-                    tapInterval: 200,
+                    tapInterval: 250,
                     /**
                      * The max time in milliseconds a user can wait between consecutive 
                      * taps for a dbltap event to be fired.
@@ -14348,7 +14384,7 @@ module plat {
                  * An object containing the different minimum/maximum distances that govern the behavior of certain 
                  * custom DOM events.
                  */
-                distances: {
+                distances: <IDistances>{
                     /**
                      * The minimum distance in pixels a user must move after touch down to register 
                      * it as a scroll instead of a tap.
@@ -14365,7 +14401,7 @@ module plat {
                  * An object containing the different minimum/maximum velocities that govern the behavior of certain 
                  * custom DOM events.
                  */
-                velocities: {
+                velocities: <IVelocities>{
                     /**
                      * The minimum velocity in pixels/ms a user must move after touch down to register 
                      * a swipe event.
@@ -14378,7 +14414,7 @@ module plat {
                  * platypus.css, you must overwrite the styles in platypus.css or create your own and 
                  * change the classNames in the config.
                  */
-                styleConfig: [{
+                styleConfig: <Array<IDefaultStyle>>[{
                     /**
                      * The className that will be used to define the custom style for 
                      * allowing the best touch experience. This class is added to every 
@@ -16731,7 +16767,7 @@ module plat {
         export interface IIntervals {
             /**
              * The max time in milliseconds a user can hold down on the screen 
-             * for a tap event to be fired. Defaults to 200 ms.
+             * for a tap event to be fired. Defaults to 250 ms.
              */
             tapInterval: number;
 
@@ -16763,7 +16799,7 @@ module plat {
         export interface IDistances {
             /**
              * The minimum distance a user must move after touch down to register 
-             * it as a scroll instead of a tap. Defaults to 5.
+             * it as a scroll instead of a tap. Defaults to 3.
              */
             minScrollDistance: number;
 
@@ -16844,7 +16880,8 @@ module plat {
             export class Animator {
                 protected static _inject: any = {
                     _compat: __Compat,
-                    _Promise: __Promise
+                    _Promise: __Promise,
+                    _document: __Document
                 };
 
                 /**
@@ -16858,33 +16895,81 @@ module plat {
                 protected _Promise: async.IPromise;
 
                 /**
-                 * All elements currently being animated.
+                 * Reference to the Document injectable.
                  */
-                protected _elements: IObject<IAnimatedElement> = {};
+                protected _document: Document;
 
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Objects representing collections of all currently animated elements.
+                 */
+                protected _animatedElements: IObject<IAnimatedElement> = {};
+
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {Element} element The Element to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(element: Element, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(elements: NodeList, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
+                create(elements: any, key: string, options?: any): IAnimatingThenable {
+                    return this._create(elements, key, options, {
+                        key: null
+                    });
+                }
+
+                /**
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
                  */
                 animate(element: Element, key: string, options?: any): IAnimatingThenable;
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
                  */
                 animate(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {NodeList} elements The list of Nodes to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
                  */
                 animate(elements: NodeList, key: string, options?: any): IAnimatingThenable;
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
                  * the same parent, otherwise the animation will not function correctly.
                  * @param {string} key The identifier specifying the type of animation.
@@ -16892,9 +16977,15 @@ module plat {
                  */
                 animate(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 animate(elements: any, key: string, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
-                        key: 'animate'
+                    var animation = this._create(elements, key, options, {
+                        key: null
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -16947,11 +17038,17 @@ module plat {
                  */
                 enter(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
                 enter(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'enter',
                         parent: parent,
                         refChild: refChild
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -16959,47 +17056,48 @@ module plat {
                  * the animation is finished.
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the element is removed from the DOM.
                  */
-                leave(element: Element, key: string, parent: Element, options?: any): IAnimatingThenable;
+                leave(element: Element, key: string, options?: any): IAnimatingThenable;
                 /**
                  * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
                  * the animation is finished.
                  * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the elements from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the elements are removed from the DOM.
                  */
-                leave(element: DocumentFragment, key: string, parent: Element, options?: any): IAnimatingThenable;
+                leave(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
                 /**
                  * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
                  * the animation is finished.
                  * @param {NodeList} elements The list of Nodes to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the elements from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the elements are removed from the DOM.
                  */
-                leave(elements: NodeList, key: string, parent: Element, options?: any): IAnimatingThenable;
+                leave(elements: NodeList, key: string, options?: any): IAnimatingThenable;
                 /**
                  * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
                  * the animation is finished.
                  * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
                  * the same parent, otherwise the animation will not function correctly.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the elements from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the elements are removed from the DOM.
                  */
-                leave(elements: Array<Node>, key: string, parent: Element, options?: any): IAnimatingThenable;
-                leave(elements: any, key: string, parent: Element, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
-                        key: 'leave',
-                        parent: parent
+                leave(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
+                leave(elements: any, key: string, options?: any): IAnimatingThenable {
+                    var animation = this._create(elements, key, options, {
+                        key: 'leave'
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -17007,7 +17105,8 @@ module plat {
                  * DOM using either the refChild or the parent, and animates it with the defined animation denoted by the key.
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -17020,7 +17119,8 @@ module plat {
                  * DOM using either the refChild or the parent, and animates them with the defined animation denoted by the key.
                  * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -17033,7 +17133,8 @@ module plat {
                  * DOM using either the refChild or the parent, and animates them with the defined animation denoted by the key.
                  * @param {NodeList} elements The list of Nodes to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -17047,7 +17148,8 @@ module plat {
                  * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
                  * the same parent, otherwise the animation will not function correctly.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -17056,11 +17158,17 @@ module plat {
                  */
                 move(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
                 move(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'move',
                         parent: parent,
                         refChild: refChild
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -17097,9 +17205,15 @@ module plat {
                  */
                 show(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 show(elements: any, key: string, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'show'
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -17136,20 +17250,35 @@ module plat {
                  */
                 hide(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 hide(elements: any, key: string, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'hide'
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
                  * Returns a promise that fulfills when every animation promise in the input array is fulfilled.
                  */
                 all(promises: Array<IAnimationThenable<any>>): IAnimationThenable<void> {
-                    return new AnimationPromise((resolve) => {
-                        this._Promise.all(promises).then(() => {
-                            resolve();
+                    var length = promises.length,
+                        args = <Array<IAnimationEssentials>>[],
+                        animationPromise = new AnimationPromise((resolve) => {
+                            this._Promise.all(promises).then(() => {
+                                resolve();
+                            });
                         });
-                    }).then(noop);
+
+                    for (var i = 0; i < length; ++i) {
+                        args = args.concat(promises[i].getInstances());
+                    }
+
+                    animationPromise.initialize(args);
+                    return animationPromise.then(noop);
                 }
 
                 /**
@@ -17175,7 +17304,7 @@ module plat {
                  * @param {plat.ui.animations.IAnimationFunction} functionality An object containing detailed information about 
                  * special animation functionality.
                  */
-                protected _animate(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimatingThenable {
+                protected _create(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimatingThenable {
                     var animationInjector = animationInjectors[key],
                         animationInstances: Array<BaseAnimation> = [],
                         elementNodes: Array<Element> = [];
@@ -17204,40 +17333,39 @@ module plat {
                     this._handlePreInitFunctionality(elements, elementNodes, functionality);
 
                     var animationPromises: Array<IAnimationThenable<any>> = [],
-                        id = this.__setAnimationId(elementNodes, animationInstances),
-                        animatedElement = this._elements[id],
-                        i: number;
+                        id = uniqueId('animation_'),
+                        previousAnimations = this.__setAnimationId(id, elementNodes);
 
                     // instantiate needs to be called after __setAnimationId in the case that 
                     // the same element is animating while in an animation
-                    for (i = 0; i < length; ++i) {
+                    for (var i = 0; i < length; ++i) {
                         animationPromises.push(animationInstances[i].instantiate(elementNodes[i], options));
                     }
 
                     this._handlePostInitFunctionality(elements, elementNodes, functionality);
 
-                    var animationPromise = new AnimationPromise((resolve: any) => {
-                        this._Promise.all(animationPromises).then(resolve);
-                    });
+                    var animationPromise = new AnimationPromise((resolve: any): void => {
+                        this._Promise.all(animationPromises.concat(previousAnimations)).then(resolve);
+                    })
 
                     animationPromise.initialize(animationInstances);
 
-                    var animatingParentId = this.__isParentAnimating(elementNodes);
+                    var animatingParentId = this.__isParentAnimating(elementNodes),
+                        animatedElement = this.__generateAnimatedElement(id, elementNodes, animationPromise);
                     if (!isNull(animatingParentId)) {
+                        this._handleEndFunctionality(elements, elementNodes, functionality);
                         animatedElement.animationEnd(true);
 
-                        var parent = this._elements[animatingParentId];
+                        var parent = this._animatedElements[animatingParentId];
                         if (isPromise(parent.promise)) {
                             return animationPromise.then((): () => IAnimationThenable<any> => {
-                                this._handleEndFunctionality(elements, elementNodes, functionality);
                                 return (): IAnimationThenable<any> => {
                                     return parent.promise;
                                 };
                             });
                         }
 
-                        return animationPromise.then(() => {
-                            this._handleEndFunctionality(elements, elementNodes, functionality);
+                        return animationPromise.then((): () => IAnimationThenable<any> => {
                             return (): IAnimationThenable<any> => {
                                 return animationPromise;
                             };
@@ -17246,19 +17374,13 @@ module plat {
 
                     this.__stopChildAnimations(elementNodes);
 
-                    animatedElement.promise = animationPromise.then((): () => IAnimationThenable<any> => {
+                    return animatedElement.promise = animationPromise.then((): () => IAnimationThenable<any> => {
                         this._handleEndFunctionality(elements, elementNodes, functionality);
                         animatedElement.animationEnd();
                         return (): IAnimationThenable<any> => {
                             return animationPromise;
                         };
                     });
-
-                    for (i = 0; i < length; ++i) {
-                        animationInstances[i].start();
-                    }
-
-                    return animatedElement.promise;
                 }
 
                 /**
@@ -17268,17 +17390,10 @@ module plat {
                  * @param {plat.ui.animations.IAnimationFunction} functionality The specialized animation function attributes.
                  */
                 protected _handlePreInitFunctionality(nodes: Array<Node>, elementNodes: Array<Element>, functionality: IAnimationFunction): void {
-                    var length: number,
-                        i: number;
                     switch (functionality.key) {
                         case 'move':
-                            var parent = functionality.parent;
-                            if (!isNode(parent)) {
-                                break;
-                            }
-                            length = nodes.length;
-                            for (i = 0; i < length; ++i) {
-                                parent.removeChild(nodes[i]);
+                            for (var i = 0; i < length; ++i) {
+                                removeNode(nodes[i]);
                             }
                             break;
                         default:
@@ -17299,10 +17414,18 @@ module plat {
                         case 'enter':
                         case 'move':
                             var refChild = functionality.refChild,
-                                parent = isNode(refChild) ? <Element>refChild.parentNode : functionality.parent;
+                                parent: Element;
+                            if (isNode(refChild)) {
+                                parent = <Element>refChild.parentNode;
+                            } else {
+                                parent = functionality.parent;
+                                refChild = null;
+                            }
+
                             if (!isNode(parent)) {
                                 break;
                             }
+
                             length = nodes.length;
                             for (i = 0; i < length; ++i) {
                                 parent.insertBefore(nodes[i], refChild);
@@ -17330,13 +17453,9 @@ module plat {
                         i: number;
                     switch (functionality.key) {
                         case 'leave':
-                            var parent = functionality.parent;
-                            if (!isNode(parent)) {
-                                break;
-                            }
                             length = nodes.length;
                             for (i = 0; i < length; ++i) {
-                                parent.removeChild(nodes[i]);
+                                removeNode(nodes[i]);
                             }
                             break;
                         case 'hide':
@@ -17351,6 +17470,86 @@ module plat {
                 }
 
                 /**
+                 * Sets a new, unique animation ID and denotes the elements as currently being animated.
+                 * @param {string} id The animation ID.
+                 * @param {Array<Element>} elements The Array of Elements being animated.
+                 * the elements trying to be animated.
+                 */
+                private __setAnimationId(id: string, elements: Array<Element>): Array<IAnimationThenable<any>> {
+                    var animatedElements = this._animatedElements,
+                        animatedElement: IAnimatedElement,
+                        plat: ICustomElementProperty,
+                        promises = <Array<IAnimationThenable<any>>>[],
+                        length = elements.length,
+                        element: Element;
+
+                    for (var i = 0; i < length; ++i) {
+                        element = elements[i];
+                        plat = (<ICustomElement>element).__plat;
+
+                        if (isUndefined(plat)) {
+                            (<ICustomElement>element).__plat = { animation: id };
+                            addClass(<HTMLElement>element, __Animating);
+                        } else if (isUndefined(plat.animation)) {
+                            plat.animation = id;
+                            addClass(<HTMLElement>element, __Animating);
+                        } else {
+                            animatedElement = animatedElements[plat.animation];
+                            if (!isUndefined(animatedElement)) {
+                                promises.push(animatedElement.promise);
+                                animatedElement.animationEnd(true);
+                            }
+                            plat.animation = id;
+                        }
+                    }
+
+                    return promises
+                }
+        
+                /**
+                 * Generates a new animated element for the Animator to easily reference and be able 
+                 * to end later on.
+                 * @param {string} id The animation ID.
+                 * @param {Array<Element>} elements The Array of Elements being animated.
+                 * @param {plat.ui.animations.AnimationPromise} animationPromise The animation's associated promise.
+                 */
+                private __generateAnimatedElement(id: string, elements: Array<Element>, animationPromise: AnimationPromise): IAnimatedElement {
+                    var animatedElements = this._animatedElements,
+                        removeListener = (cancel?: boolean): void => {
+                            var plat: ICustomElementProperty,
+                                element: ICustomElement,
+                                length = elements.length,
+                                animationId: string;
+
+                            if (cancel === true) {
+                                animationPromise.cancel();
+                                deleteProperty(animatedElements, id);
+                                return;
+                            }
+
+                            for (var i = 0; i < length; ++i) {
+                                element = <ICustomElement>elements[i];
+                                plat = element.__plat || {};
+                                animationId = plat.animation;
+                                if (isUndefined(animationId) || animationId !== id) {
+                                    continue;
+                                }
+                                removeClass(<HTMLElement>element, __Animating);
+                                deleteProperty(plat, 'animation');
+                                if (isEmpty(plat)) {
+                                    deleteProperty(element, '__plat');
+                                }
+                            }
+
+                            deleteProperty(animatedElements, id);
+                        };
+
+                    return animatedElements[id] = {
+                        animationEnd: removeListener
+                    };
+                }
+
+                /**
                  * Checks whether or not any parent elements are animating.
                  * @param {Array<Element>} elements The Elements whose parents we need to check.
                  */
@@ -17358,11 +17557,11 @@ module plat {
                     var animationId: string,
                         element: Node = elements[0];
 
-                    while (!isDocument(element = element.parentNode) && element.nodeType === Node.ELEMENT_NODE) {
+                    while (!(isDocument(element = element.parentNode) || isNull(element) || element.nodeType !== Node.ELEMENT_NODE)) {
                         if (hasClass(<HTMLElement>element, __Animating)) {
                             animationId = ((<ICustomElement>element).__plat || <ICustomElementProperty>{}).animation;
                             if (isString(animationId)) {
-                                if (!isNull(this._elements[animationId])) {
+                                if (!isNull(this._animatedElements[animationId])) {
                                     return animationId;
                                 }
 
@@ -17377,77 +17576,11 @@ module plat {
                 }
 
                 /**
-                 * Sets an new, unique animation ID and denotes the elements as currently being animated.
-                 * @param {Array<Element>} elements The Array of Elements being animated.
-                 * @param {Array<plat.ui.animations.BaseAnimation>} animationInstances The animation instances doing the animating.
-                 */
-                private __setAnimationId(elements: Array<Element>, animationInstances: Array<BaseAnimation>): string {
-                    var animatedElements = this._elements,
-                        animatedElement: IAnimatedElement,
-                        plat: ICustomElementProperty,
-                        length = elements.length,
-                        id = uniqueId('animation_'),
-                        element: Element,
-                        otherId: string,
-                        i: number,
-                        removeListener = (cancel?: boolean, reanimating?: boolean): void => {
-                            var animationInstance: BaseAnimation;
-                            for (i = 0; i < length; ++i) {
-                                if (cancel === true) {
-                                    animationInstance = animationInstances[i];
-                                    animationInstance.cancel();
-                                    animationInstance.end();
-                                    if (reanimating === true) {
-                                        continue;
-                                    }
-                                }
-
-                                element = elements[i];
-                                removeClass(<HTMLElement>element, __Animating);
-                                deleteProperty(animatedElements, id);
-                                deleteProperty(plat, 'animation');
-                                if (isEmpty(plat)) {
-                                    deleteProperty(element, '__plat');
-                                }
-                            }
-                        };
-
-                    for (i = 0; i < length; ++i) {
-                        element = elements[i];
-                        plat = (<ICustomElement>element).__plat;
-
-                        if (isUndefined(plat)) {
-                            (<ICustomElement>element).__plat = plat = {};
-                        }
-
-                        if (isUndefined(plat.animation)) {
-                            plat.animation = id;
-                            addClass(<HTMLElement>element, __Animating);
-                        } else {
-                            otherId = plat.animation;
-                            plat.animation = id;
-
-                            animatedElement = animatedElements[otherId];
-                            if (!isUndefined(animatedElement)) {
-                                animatedElement.animationEnd(true, true);
-                                deleteProperty(animatedElements, otherId);
-                            }
-                        }
-                    }
-
-                    animatedElements[id] = {
-                        animationEnd: removeListener
-                    };
-
-                    return id;
-                }
-
-                /**
                  * Forces child nodes of an animating element to stop animating.
                  * @param {Element} element The element being animated.
                  */
                 private __stopChildAnimations(elements: Array<Element>): void {
-                    var animatingElements = this._elements,
+                    var animatingElements = this._animatedElements,
                         slice = Array.prototype.slice,
                         customAnimationElements: Array<ICustomElement>,
                         animatedElement: IAnimatedElement,
@@ -17540,10 +17673,8 @@ module plat {
                 /**
                  * The function called at the conclusion of the animation.
                  * @param {boolean} cancel? Specifies whether the animation is being cancelled.
-                 * @param {boolean} reanimating? Specifies whether the element is being reanimated while 
-                 * in a current animation. Cancel must be set to true for reanimation to take effect.
                  */
-                animationEnd: (cancel?: boolean, reanimating?: boolean) => void;
+                animationEnd: (cancel?: boolean) => void;
 
                 /**
                  * A promise representing an element's current state of animation.
@@ -17574,6 +17705,12 @@ module plat {
                 protected _Promise: async.IPromise = acquire(__Promise);
 
                 /**
+                 * The state of the animation. 0 prior to start, 1 if started, and 
+                 * 2 if canceled.
+                 */
+                private __animationState = 0;
+
+                /**
                  * An Array of animation instances linked to this promise.
                  */
                 private __animationInstances: Array<IAnimationEssentials> = [];
@@ -17595,19 +17732,22 @@ module plat {
                     super(resolveFunction);
                     if (!isNull(promise)) {
                         this.__animationInstances = promise.__animationInstances;
+                        this.__animationState = promise.__animationState;
                     }
                 }
 
                 /**
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
-                 * @param {plat.ui.animations.BaseAnimation} instance The animation instance for this promise.
+                 * @param {plat.ui.animations.IAnimationEssentials} instance The animation instance or animation 
+                 * promises for this promise.
                  */
-                initialize(instance: BaseAnimation): void;
+                initialize(instance: IAnimationEssentials): void;
                 /**
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
-                 * @param {Array<plat.ui.animations.BaseAnimation>} instances The animation instances for this promise.
+                 * @param {Array<plat.ui.animations.IAnimationEssentials>} instances The animation instances or 
+                 * animation promises for this promise.
                  */
-                initialize(instances: Array<BaseAnimation>): void;
+                initialize(instances: Array<IAnimationEssentials>): void;
                 initialize(instances: any): void {
                     if (isEmpty(this.__animationInstances)) {
                         if (isArray(instances)) {
@@ -17619,10 +17759,44 @@ module plat {
                 }
 
                 /**
+                 * Gets the associated animation instances or animated promises.
+                 * animation promises for this promise.
+                 */
+                getInstances(): Array<IAnimationEssentials> {
+                    return this.__animationInstances;
+                }
+
+                /**
+                 * Fires the start method on the animation instances to kickoff the animations.
+                 */
+                start(): void {
+                    if (this.__animationState > 0) {
+                        return;
+                    }
+
+                    var animationInstances = this.__animationInstances,
+                        animationInstance: IAnimationEssentials,
+                        length = animationInstances.length;
+
+                    for (var i = 0; i < length; ++i) {
+                        animationInstance = animationInstances[i];
+                        if (isFunction(animationInstance.start)) {
+                            animationInstance.start();
+                        }
+                    }
+
+                    this.__animationState = 1;
+                }
+
+                /**
                  * Fires the pause method on the animation instance.
                  * indicates that the animation has been paused.
                  */
                 pause(): async.IThenable<void> {
+                    if (this.__animationState !== 1) {
+                        return;
+                    }
+
                     var animationInstances = this.__animationInstances,
                         pausePromises: Array<async.IThenable<void>> = [],
                         animationInstance: IAnimationEssentials,
@@ -17643,6 +17817,10 @@ module plat {
                  * indicates that the animation has resumed.
                  */
                 resume(): async.IThenable<void> {
+                    if (this.__animationState !== 1) {
+                        return;
+                    }
+
                     var animationInstances = this.__animationInstances,
                         resumePromises: Array<async.IThenable<void>> = [],
                         animationInstance: IAnimationEssentials,
@@ -17662,6 +17840,10 @@ module plat {
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimatingThenable {
+                    if (this.__animationState === 2) {
+                        return;
+                    }
+
                     var animationInstances = this.__animationInstances,
                         animationInstance: IAnimationEssentials,
                         length = animationInstances.length;
@@ -17676,7 +17858,16 @@ module plat {
                         }
                     }
 
+                    this.__animationState = 2;
+
                     return this;
+                }
+
+                /**
+                 * A method to determine whether or not this promise has been canceled.
+                 */
+                isCanceled(): boolean {
+                    return this.__animationState === 2;
                 }
 
                 /**
@@ -17732,7 +17923,18 @@ module plat {
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
                  * @param {plat.ui.animations.BaseAnimation} instance The animation instance for this promise.
                  */
-                initialize? (instance: BaseAnimation): void;
+                initialize(instance: BaseAnimation): void;
+
+                /**
+                 * Gets the associated animation instances or animated promises.
+                 * animation promises for this promise.
+                 */
+                getInstances(): Array<IAnimationEssentials>;
+
+                /**
+                 * Fires the start method on the animation instances to kickoff the animations.
+                 */
+                start(): void;
 
                 /**
                  * Fires the pause method on the animation instance.
@@ -17750,6 +17952,11 @@ module plat {
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimationThenable<R>;
+
+                /**
+                 * A method to determine whether or not this promise has been canceled.
+                 */
+                isCanceled(): boolean;
 
                 /**
                  * Takes in two methods, called when/if the promise fulfills/rejects.
@@ -17813,6 +18020,11 @@ module plat {
              */
             export interface IAnimationEssentials {
                 /**
+                 * Fires the start method on the animation instances to kickoff the animations.
+                 */
+                start(): void;
+
+                /**
                  * Fires the pause method on the animation instances.
                  * indicates that the animation has been paused.
                  */
@@ -17842,6 +18054,7 @@ module plat {
              */
             export class BaseAnimation implements IAnimationEssentials {
                 protected static _inject: any = {
+                    _window: __Window,
                     _compat: __Compat,
                     _Exception: __ExceptionStatic,
                     _Promise: __Promise,
@@ -17869,6 +18082,11 @@ module plat {
                 protected _Exception: IExceptionStatic;
 
                 /**
+                 * Reference to the Window injectable.
+                 */
+                protected _window: Window;
+
+                /**
                  * Reference to the Compat injectable.
                  */
                 protected _compat: Compat;
@@ -17877,6 +18095,11 @@ module plat {
                  * Reference to the IPromise injectable.
                  */
                 protected _Promise: async.IPromise;
+
+                /**
+                 * Whether or not the animation has been canceled.
+                 */
+                protected _canceled = false;
 
                 /**
                  * The resolve function for the end of the animation.
@@ -17931,6 +18154,7 @@ module plat {
                  * A function to be called to let it be known the animation is being cancelled.
                  */
                 cancel(): void {
+                    this._canceled = true;
                     this.end();
                 }
 
@@ -18059,15 +18283,6 @@ module plat {
              * element, checks for animation properties, and waits for the animation to end.
              */
             export class SimpleCssAnimation extends CssAnimation {
-                protected static _inject: any = {
-                    _window: __Window
-                };
-
-                /**
-                 * Reference to the Window injectable.
-                 */
-                protected _window: Window;
-
                 /**
                  * The class name added to the animated element.
                  */
@@ -18092,8 +18307,10 @@ module plat {
                     requestAnimationFrameGlobal((): void => {
                         var element = this.element;
 
-                        if (element.offsetParent === null) {
-                            this.cancel();
+                        if (this._canceled) {
+                            return;
+                        } else if (element.offsetParent === null) {
+                            this._dispose();
                             this.end();
                             return;
                         }
@@ -18106,17 +18323,12 @@ module plat {
 
                         if (animationName === '' || animationName === 'none' ||
                             computedStyle[<any>(animationId + 'PlayState')] === 'paused') {
-                            this.cancel();
+                            this._dispose();
                             this.end();
                             return;
                         }
 
-                        this.animationEnd((): void => {
-                            requestAnimationFrameGlobal((): void => {
-                                this.cancel();
-                                this.end();
-                            });
-                        });
+                        this.animationEnd(this.cancel);
                     });
                 }
 
@@ -18124,11 +18336,11 @@ module plat {
                  * A function to be called to pause the animation.
                  */
                 pause(): async.IThenable<void> {
-                    var animationEvents = this._compat.animationEvents;
-                    if (isUndefined(animationEvents)) {
+                    if (this._canceled) {
                         return this._Promise.resolve();
                     }
 
+                    var animationEvents = this._compat.animationEvents;
                     return new this._Promise<void>((resolve): void => {
                         requestAnimationFrameGlobal((): void => {
                             this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'paused';
@@ -18141,11 +18353,11 @@ module plat {
                  * A function to be called to resume a paused animation.
                  */
                 resume(): async.IThenable<void> {
-                    var animationEvents = this._compat.animationEvents;
-                    if (isUndefined(animationEvents)) {
+                    if (this._canceled) {
                         return this._Promise.resolve();
                     }
 
+                    var animationEvents = this._compat.animationEvents;
                     return new this._Promise<void>((resolve): void => {
                         requestAnimationFrameGlobal((): void => {
                             this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'running';
@@ -18159,6 +18371,17 @@ module plat {
                  * Removes the animation class and the animation "-init" class.
                  */
                 cancel(): void {
+                    super.cancel();
+
+                    requestAnimationFrameGlobal((): void => {
+                        this._dispose();
+                    });
+                }
+
+                /**
+                 * Removes the animation class and the animation "-init" class.
+                 */
+                protected _dispose(): void {
                     var className = this.className;
                     removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
                 }
@@ -18243,15 +18466,6 @@ module plat {
              * element, checks for transition properties, and waits for the transition to end.
              */
             export class SimpleCssTransition extends CssAnimation {
-                protected static _inject: any = {
-                    _window: __Window
-                };
-
-                /**
-                 * Reference to the Window injectable.
-                 */
-                protected _window: Window;
-
                 /**
                  * An optional options object that can denote a pseudo element animation and specify 
                  * properties to modify during the transition.
@@ -18304,11 +18518,12 @@ module plat {
                     requestAnimationFrameGlobal((): void => {
                         var element = this.element;
 
-                        if (element.offsetParent === null) {
-                            requestAnimationFrameGlobal((): void => {
-                                this._animate();
-                                this._done(null, true);
-                            });
+                        if (this._canceled) {
+                            return;
+                        } else if (element.offsetParent === null) {
+                            this._animate();
+                            this._dispose();
+                            this.end();
                         }
 
                         addClass(element, this.className);
@@ -18324,7 +18539,8 @@ module plat {
                             transitionDuration === '' || transitionDuration === '0s') {
                             requestAnimationFrameGlobal((): void => {
                                 this._animate();
-                                this._done(null, true);
+                                this._dispose();
+                                this.end();
                             });
                             return;
                         }
@@ -18335,7 +18551,8 @@ module plat {
                             return;
                         }
 
-                        this._done(null, true);
+                        this._dispose();
+                        this.end();
                     });
                 }
 
@@ -18343,13 +18560,23 @@ module plat {
                  * A function to be called to let it be known the animation is being cancelled.
                  */
                 cancel(): void {
-                    if (!this._started) {
-                        requestAnimationFrameGlobal((): void => {
-                            this._animate();
-                        });
-                    }
+                    super.cancel();
 
-                    this._done(null, true);
+                    requestAnimationFrameGlobal((): void => {
+                        if (!this._started) {
+                            this._animate();
+                        }
+
+                        this._dispose();
+                    });
+                }
+
+                /**
+                 * Removes the animation class and the animation "-init" class.
+                 */
+                protected _dispose(): void {
+                    var className = this.className;
+                    removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
                 }
 
                 /**
@@ -18358,20 +18585,20 @@ module plat {
                  * @param {TransitionEvent} ev? The transition event object.
                  * @param {boolean} immediate? Whether clean up should be immediate or conditional.
                  */
-                protected _done(ev?: TransitionEvent, immediate?: boolean): void {
-                    if (!immediate) {
-                        var keys = Object.keys(this._modifiedProperties),
-                            propertyName = ev.propertyName;
-                        if (isString(propertyName)) {
-                            propertyName = propertyName.replace(this._normalizeRegex, '').toLowerCase();
-                            if (this._normalizedKeys.indexOf(propertyName) !== -1 && ++this._transitionCount < keys.length) {
-                                return;
-                            }
+                protected _done(ev: TransitionEvent): void {
+                    var keys = Object.keys(this._modifiedProperties),
+                        propertyName = ev.propertyName;
+                    if (isString(propertyName)) {
+                        propertyName = propertyName.replace(this._normalizeRegex, '').toLowerCase();
+                        if (this._normalizedKeys.indexOf(propertyName) !== -1 && ++this._transitionCount < keys.length) {
+                            return;
                         }
                     }
-                    var className = this.className;
-                    removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
+
                     this.end();
+                    requestAnimationFrameGlobal((): void => {
+                        this._dispose();
+                    });
                 }
 
                 /**
@@ -18628,7 +18855,12 @@ module plat {
                     }
 
                     manager.setUiControlTemplate();
-                    return manager.observeRootContext(control, manager.fulfillAndLoad);
+
+                    if (control.hasOwnContext) {
+                        return manager.observeRootContext(control, manager.fulfillAndLoad);
+                    }
+
+                    return manager.fulfillAndLoad();
                 }
 
                 /**
@@ -18738,7 +18970,7 @@ module plat {
                 protected _document: Document;
 
                 /**
-                 * Removes the <plat-template> node from the DOM
+                 * Removes the `<plat-template>` node from the DOM
                  */
                 replaceWith: string = null;
 
@@ -18885,6 +19117,11 @@ module plat {
                  */
                 protected _waitForTemplateControl(templatePromise: async.IThenable<Template>): void {
                     var _Exception: IExceptionStatic = this._Exception;
+
+                    if (!isPromise(templatePromise)) {
+                        return;
+                    }
+
                     templatePromise.then((templateControl: Template): async.IThenable<DocumentFragment> => {
                         if (!(isNull(this._url) || (this._url === templateControl._url))) {
                             _Exception.warn('The specified url: ' + this._url +
@@ -19035,19 +19272,24 @@ module plat {
                 protected _blockLength: any = 0;
 
                 /**
-                 * An animation promise for delaying disposal prior to an animation finishing.
+                 * Whether or not to animate Array mutations.
                  */
-                protected _animationThenable: async.IThenable<void>;
+                protected _animate: boolean;
 
                 /**
-                 * The current animation promise.
+                 * A collection of all the current animations and their animation type.
                  */
-                protected _currentAnimation: animations.IAnimationThenable<any>;
+                protected _animationQueue: Array<{ animation: animations.IAnimationThenable<any>; op: boolean; }>;
+
+                 /**
+                 * A queue representing all current add operations.
+                 */
+                protected _addQueue: Array<async.IThenable<void>> = [];
 
                 /**
-                 * Whether or not the initial context value was null or empty.
+                 * The number of items currently being added.
                  */
-                protected _emptyInit: boolean = false;
+                protected _addCount = 0;
 
                 /**
                  * Whether or not the Array listener has been set.
@@ -19083,12 +19325,10 @@ module plat {
                  * @param {Array<any>} oldValue The old Array
                  */
                 contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
-                    var emptyInit = this._emptyInit = isEmpty(oldValue);
-
                     if (isEmpty(newValue)) {
-                        if (!emptyInit) {
-                            this.itemsLoaded.then((): void => {
-                                this._removeItems(this.controls.length);
+                        if (!isEmpty(oldValue)) {
+                            this._Promise.all(this._addQueue).then((): void => {
+                                this._removeItems(0, this.controls.length);
                             });
                         }
                         return;
@@ -19109,8 +19349,15 @@ module plat {
                  * Observes the Array context for changes and adds initial items to the DOM.
                  */
                 loaded(): void {
-                    var context = this.context;
+                    var optionsObj = this.options || (this.options = <observable.IObservableProperty<IForEachOptions>>{}),
+                        options = optionsObj.value || (optionsObj.value = <IForEachOptions>{}),
+                        animating = this._animate = options.animate === true,
+                        context = this.context;
+
                     this._container = this.element;
+                    if (animating) {
+                        this._animationQueue = [];
+                    }
 
                     if (!isArray(context)) {
                         if (!isNull(context)) {
@@ -19121,7 +19368,16 @@ module plat {
                     }
 
                     this._setAliases();
-                    this._addItems(context.length, 0);
+
+                    var addQueue = this._addQueue,
+                        itemCount = context.length;
+
+                    this._addCount += itemCount;
+                    addQueue.push(this._addItems(0, itemCount, 0).then((): void => {
+                        this._addCount -= itemCount;
+                        addQueue.shift();
+                    }));
+
                     this._setListener();
                 }
 
@@ -19129,17 +19385,14 @@ module plat {
                  * Removes any potentially held memory.
                  */
                 dispose(): void {
-                    this.__resolveFn = null;
+                    this.__resolveFn = this._animationQueue = this._addQueue = null;
                 }
 
                 /**
-                 * Sets the alias tokens to use for all the items in the ForEach context array.
+                 * Sets the alias tokens to use for all the items in the ForEach context Array.
                  */
                 protected _setAliases(): void {
-                    var optionsObj = this.options || <observable.IObservableProperty<IForEachOptions>>{},
-                        options = optionsObj.value || <IForEachOptions>{},
-                        aliases = options.aliases;
-
+                    var aliases = this.options.value.aliases;
                     if (!isObject(aliases)) {
                         return;
                     }
@@ -19157,15 +19410,15 @@ module plat {
                         }
                     }
                 }
-
+        
                 /**
                  * Adds new items to the control's element when items are added to 
                  * the array.
-                 * @param {number} numberOfItems The number of items to add.
                  * @param {number} index The point in the array to start adding items.
-                 * @param {boolean} animate? Whether or not to animate the new items
+                 * @param {number} numberOfItems The number of items to add.
+                 * @param {number} animateItems? The number of items to animate.
                  */
-                protected _addItems(numberOfItems: number, index: number, animate?: boolean): async.IThenable<void> {
+                protected _addItems(index: number, numberOfItems: number, animateItems: number): async.IThenable<void>  {
                     var max = +(index + numberOfItems),
                         promises: Array<async.IThenable<DocumentFragment>> = [],
                         initialIndex = index;
@@ -19178,10 +19431,15 @@ module plat {
                         this.itemsLoaded = this._Promise.all(promises).then<void>((templates): void => {
                             this._setBlockLength(templates);
 
-                            if (animate === true) {
-                                var length = templates.length;
+                            if (animateItems > 0) {
+                                var length = templates.length,
+                                    container = this._container;
                                 for (var i = 0; i < length; ++i) {
-                                    this._appendAnimatedItem(templates[i], __Enter);
+                                    if (i < animateItems) {
+                                        this._appendAnimatedItem(templates[i], __Enter);
+                                    } else {
+                                        container.insertBefore(templates[i], null);
+                                    }
                                 }
                             } else {
                                 this._appendItems(templates);
@@ -19222,19 +19480,27 @@ module plat {
                         return;
                     }
 
-                    this._currentAnimation = this._animator.enter(item, __Enter, this._container);
+                    var animationQueue = this._animationQueue;
+                    animationQueue.push({
+                        animation: this._animator.enter(item, __Enter, this._container).then((): void => {
+                            animationQueue.shift();
+                        }),
+                        op: null
+                    });
                 }
 
                 /**
                  * Removes items from the control's element.
+                 * @param {number} index The index to start disposing from.
                  * @param {number} numberOfItems The number of items to remove.
                  */
-                protected _removeItems(numberOfItems: number): void {
+                protected _removeItems(index: number, numberOfItems: number): void {
                     var dispose = TemplateControl.dispose,
-                        controls = this.controls;
+                        controls = this.controls,
+                        max = index + numberOfItems;
 
-                    while (numberOfItems-- > 0) {
-                        dispose(controls.pop());
+                    while (index < max) {
+                        dispose(controls[index++]);
                     }
 
                     this._updateResource(controls.length - 1);
@@ -19340,8 +19606,15 @@ module plat {
                  * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
                 protected _push(changes: Array<observable.IArrayChanges<any>>): void {
-                    var change = changes[0];
-                    this._addItems(change.addedCount, change.index, true);
+                    var change = changes[0],
+                        addQueue = this._addQueue,
+                        itemCount = change.addedCount;
+
+                    this._addCount += itemCount;
+                    addQueue.push(this._addItems(change.index, itemCount, this._animate ? itemCount : 0).then((): void => {
+                        this._addCount -= itemCount;
+                        addQueue.shift();
+                    }));
                 }
 
                 /**
@@ -19349,15 +19622,23 @@ module plat {
                  * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
                 protected _pop(changes: Array<observable.IArrayChanges<any>>): void {
-                    var change = changes[0];
+                    var addQueue = this._addQueue,
+                        change = changes[0],
+                        start = change.object.length;
                     if (change.removed.length === 0) {
                         return;
                     }
 
-                    var start = change.object.length;
-                    this.itemsLoaded.then((): void => {
-                        this._animateItems(start, 1, __Leave, true);
-                        this._removeItems(1);
+                    var removeIndex = change.object.length;
+                    this._addCount -= 1;
+                    this._Promise.all(addQueue).then((): async.IThenable<void> => {
+                        if (this._animate) {
+                            this._animateItems(start, 1, __Leave, 'leave', false).then((): void => {
+                                this._removeItems(removeIndex, 1);
+                            });
+                            return;
+                        }
+                        this._removeItems(removeIndex, 1);
                     });
                 }
 
@@ -19367,8 +19648,21 @@ module plat {
                  */
                 protected _unshift(changes: Array<observable.IArrayChanges<any>>): void {
                     var change = changes[0],
-                        addedCount = change.addedCount;
-                    this._addItems(addedCount, change.object.length - addedCount - 1);
+                        addedCount = change.addedCount,
+                        _Promise = this._Promise,
+                        addQueue = this._addQueue;
+
+                    if (this._animate) {
+                        var animationQueue = this._animationQueue,
+                            animationLength = animationQueue.length;
+                        this._animateItems(0, addedCount, __Enter, null, animationLength > 0 && animationQueue[animationLength - 1].op === true);
+                    }
+
+                    this._addCount += addedCount;
+                    addQueue.push(this._addItems(change.object.length - addedCount, addedCount, 0).then((): void => {
+                        this._addCount -= addedCount;
+                        addQueue.shift();
+                    }));
                 }
 
                 /**
@@ -19376,11 +19670,21 @@ module plat {
                  * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
                 protected _shift(changes: Array<observable.IArrayChanges<any>>): void {
-                    if (changes[0].removed.length === 0) {
+                    var addQueue = this._addQueue,
+                        change = changes[0];
+                    if (change.removed.length === 0) {
                         return;
+                    } else if (this._animate) {
+                        if (addQueue.length === 0) {
+                            var animationQueue = this._animationQueue;
+                            addQueue = addQueue.concat([this._animateItems(0, 1, __Leave, 'clone', true)]);
+                        }
                     }
-                    this.itemsLoaded.then((): void => {
-                        this._removeItems(1);
+
+                    var removeIndex = change.object.length;
+                    this._addCount -= 1;
+                    this._Promise.all(addQueue).then((): void => {
+                        this._removeItems(removeIndex, 1);
                     });
                 }
 
@@ -19390,35 +19694,93 @@ module plat {
                  */
                 protected _splice(changes: Array<observable.IArrayChanges<any>>): void {
                     var change = changes[0],
-                        addCount = change.addedCount;
+                        addCount = change.addedCount,
+                        addQueue = this._addQueue,
+                        animating = this._animate;
 
                     if (isNull(addCount)) {
-                        var newLength = change.object.length,
-                            promise = this.itemsLoaded;
-
-                        if (this._emptyInit) {
-                            promise = null;
+                        if (animating) {
+                            this._cancelCurrentAnimations();
                         }
 
-                        this._Promise.resolve(promise).then((): void => {
-                            var currentLength = this.controls.length;
-                            if (newLength > currentLength) {
-                                this._addItems(newLength - currentLength, currentLength);
-                            } else if (currentLength > newLength) {
-                                this._removeItems(currentLength - newLength);
-                            }
-                        });
+                        var newLength = change.object.length,
+                            currentLength = this.controls.length + this._addCount,
+                            itemCount = currentLength - newLength;
+
+                        if (newLength > currentLength) {
+                            // itemCount will be negative
+                            this._addCount -= itemCount;
+                            addQueue.push(this._addItems(currentLength, -itemCount, 0).then((): void => {
+                                this._addCount += itemCount;
+                                addQueue.shift();
+                            }));
+                        } else if (currentLength > newLength) {
+                            this._addCount -= itemCount;
+                            this._Promise.all(addQueue).then((): void => {
+                                this._removeItems(currentLength - itemCount, itemCount);
+                            });
+                        }
                         return;
                     }
 
-                    var removeCount = change.removed.length;
+                    var removeCount = change.removed.length,
+                        animationQueue = this._animationQueue;
                     if (addCount > removeCount) {
-                        this._addItems(addCount - removeCount, change.object.length - addCount - 1);
+                        var _Promise = this._Promise,
+                            itemAddCount = addCount - removeCount,
+                            animationCount: number;
+                    
+                        if (animating) {
+                            animationCount = addCount;
+
+                            var animationLength = animationQueue.length,
+                                startIndex = change.index,
+                                currlength = this.controls.length + this._addCount;
+
+                            if (currlength < addCount - startIndex) {
+                                animationCount = currlength - startIndex;
+                            }
+
+                            this._animateItems(startIndex, animationCount, __Enter, null,
+                                animationLength > 0 && animationQueue[animationLength - 1].op === true);
+
+                            animationCount = addCount - animationCount;
+                        } else {
+                            animationCount = 0;
+                        }
+
+                        this._addCount += itemAddCount;
+                        addQueue.push(this._addItems(change.object.length - itemAddCount, itemAddCount, animationCount).then((): void => {
+                            this._addCount -= itemAddCount;
+                            addQueue.shift();
+                        }));
                     } else if (removeCount > addCount) {
-                        this.itemsLoaded.then((): void => {
-                            this._removeItems(removeCount - addCount);
+                        var adding = addCount > 0;
+                        if (animating && !adding && addQueue.length === 0) {
+                            addQueue = addQueue.concat([this._animateItems(change.index, removeCount, __Leave, 'clone', true)]);
+                        }
+
+                        var removeLength = this.controls.length + this._addCount,
+                            deleteCount = removeCount - addCount;
+                        this._addCount -= deleteCount;
+                        this._Promise.all(addQueue).then((): void => {
+                            if (animating && adding) {
+                                var animLength = animationQueue.length;
+                                this._animateItems(change.index, addCount, __Enter, null,
+                                    animLength > 0 && animationQueue[animLength - 1].op === true);
+                            }
+                            this._removeItems(removeLength - deleteCount, deleteCount);
                         });
                     }
+                }
+        
+                /**
+                 * Grabs the total blocklength of the specified items.
+                 * @param {number} startIndex The starting index of items.
+                 * @param {number} numberOfItems The number of consecutive items.
+                 */
+                protected _calculateBlockLength(startIndex?: number, numberOfItems?: number): number {
+                    return this._blockLength;
                 }
 
                 /**
@@ -19426,71 +19788,156 @@ module plat {
                  * @param {number} startIndex The starting index of items to animate.
                  * @param {number} numberOfItems The number of consecutive items to animate.
                  * @param {string} key The animation key/type.
-                 * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
-                 * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
-                 * Defaults to true.
+                 * @param {string} animationOp Denotes animation operation.
+                 * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
                  */
-                protected _animateItems(startIndex: number, numberOfItems: number, key: string, clone?: boolean,
-                    cancel?: boolean): async.IThenable<void> {
-                    var blockLength = this._blockLength;
+                protected _animateItems(startIndex: number, numberOfItems: number, key: string, animationOp: string,
+                    cancel: boolean): async.IThenable<void> {
+                    var blockLength = this._calculateBlockLength();
                     if (blockLength === 0) {
                         return this._Promise.resolve();
                     }
 
                     var start = startIndex * blockLength;
-                    return this._initiateAnimation(start, numberOfItems * blockLength + start, key, clone, cancel);
+                    switch (animationOp) {
+                        case 'clone':
+                            return this._handleClonedContainerAnimation(start, numberOfItems * blockLength + start, key, cancel === true);
+                        case 'leave':
+                            return this._handleLeave(start, numberOfItems * blockLength + start, key);
+                        default:
+                            return this._handleSimpleAnimation(start, numberOfItems * blockLength + start, key, cancel === true);
+                    }
                 }
 
                 /**
-                 * Animates a block of elements.
+                 * Handles a simple animation of a block of elements.
                  * @param {number} startNode The starting childNode of the ForEach to animate.
                  * @param {number} endNode The ending childNode of the ForEach to animate.
                  * @param {string} key The animation key/type.
-                 * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
-                 * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
-                 * Defaults to true.
+                 * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
                  */
-                protected _initiateAnimation(startNode: number, endNode: number, key: string, clone?: boolean,
-                    cancel?: boolean): async.IThenable<void> {
-                    if (cancel === false || isNull(this._currentAnimation)) {
-                        return this.__handleAnimation(startNode, endNode, key, clone);
-                    }
-
-                    return this._currentAnimation.cancel().then((): animations.IAnimationThenable<any> => {
-                        return this.__handleAnimation(startNode, endNode, key, clone);
-                    });
-                }
-
-                /**
-                 * Handles the animation of a block of elements.
-                 * @param {number} startNode The starting childNode of the ForEach to animate
-                 * @param {number} endNode The ending childNode of the ForEach to animate
-                 * @param {string} key The animation key/type
-                 * @param {boolean} clone Whether to clone the items and animate the clones or simply animate the items itself.
-                 */
-                private __handleAnimation(startNode: number, endNode: number, key: string, clone: boolean): animations.IAnimationThenable<any> {
+                protected _handleSimpleAnimation(startNode: number, endNode: number, key: string, cancel: boolean): async.IThenable<void> {
                     var container = this._container,
                         slice = Array.prototype.slice,
                         nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
 
                     if (nodes.length === 0) {
-                        return this._animator.resolve();
-                    } else if (clone === true) {
-                        var referenceNode = nodes[nodes.length - 1].nextSibling,
-                            animatedNodes = <DocumentFragment>appendChildren(nodes),
-                            clonedNodes = animatedNodes.cloneNode(true),
-                            removeNodes = slice.call(clonedNodes.childNodes);
-
-                        container.insertBefore(clonedNodes, referenceNode);
-                        return this._currentAnimation = this._animator.animate(removeNodes, key).then((): void => {
-                            while (removeNodes.length > 0) {
-                                container.removeChild(removeNodes.pop());
-                            }
-                            container.insertBefore(animatedNodes, referenceNode);
-                        });
+                        return this._Promise.resolve();
                     }
 
-                    return this._currentAnimation = this._animator.animate(nodes, key);
+                    var animationQueue = this._animationQueue,
+                        animationPromise = this._animator.create(nodes, key).then((): void => {
+                            animationQueue.shift();
+                        }),
+                        callback = (): animations.IAnimationThenable<any> => {
+                            animationPromise.start();
+                            return animationPromise;
+                        };
+
+                    if (cancel && animationQueue.length > 0) {
+                        var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                        animationQueue.push({ animation: animationPromise, op: null });
+                        return cancelPromise;
+                    }
+
+                    animationQueue.push({ animation: animationPromise, op: null });
+                    return callback();
+                }
+
+                /**
+                 * Handles a simple animation of a block of elements.
+                 * @param {number} startNode The starting childNode of the ForEach to animate.
+                 * @param {number} endNode The ending childNode of the ForEach to animate.
+                 * @param {string} key The animation key/type.
+                 * the cloned item has been removed and the original item has been put back.
+                 */
+                protected _handleLeave(startNode: number, endNode: number, key: string): async.IThenable<void> {
+                    var container = this._container,
+                        slice = Array.prototype.slice,
+                        nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
+
+                    if (nodes.length === 0) {
+                        return this._Promise.resolve();
+                    }
+
+                    var animationQueue = this._animationQueue,
+                        animation = this._animator.leave(nodes, key).then((): void => {
+                            animationQueue.shift();
+                        });
+
+                    animationQueue.push({
+                        animation: animation,
+                        op: false
+                    });
+
+                    return animation;
+                }
+
+                /**
+                 * Handles a simple animation of a block of elements.
+                 * @param {number} startNode The starting childNode of the ForEach to animate.
+                 * @param {number} endNode The ending childNode of the ForEach to animate.
+                 * @param {string} key The animation key/type.
+                 * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
+                 * the cloned container has been removed and the original container has been put back.
+                 */
+                protected _handleClonedContainerAnimation(startNode: number, endNode: number, key: string,
+                    cancel: boolean): async.IThenable<void> {
+                    var container = this._container,
+                        clonedContainer = container.cloneNode(true),
+                        slice = Array.prototype.slice,
+                        nodes: Array<Node> = slice.call(clonedContainer.childNodes, startNode, endNode);
+
+                    if (nodes.length === 0) {
+                        return this._Promise.resolve();
+                    }
+
+                    var parentNode: Node,
+                        animationQueue = this._animationQueue,
+                        animationPromise = this._animator.create(nodes, key).then((): void => {
+                            animationQueue.shift();
+                            if (isNull(parentNode)) {
+                                return;
+                            }
+
+                            parentNode.replaceChild(container, clonedContainer);
+                        }),
+                        callback = (): async.IThenable<void> => {
+                            parentNode = container.parentNode;
+                            if (isNull(parentNode) || animationPromise.isCanceled()) {
+                                animationQueue.shift();
+                                return animationPromise;
+                            }
+
+                            parentNode.replaceChild(clonedContainer, container);
+                            animationPromise.start();
+                            return animationPromise;
+                        };
+
+                    if (cancel && animationQueue.length > 0) {
+                        var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                        animationQueue.push({ animation: animationPromise, op: true });
+                        return cancelPromise;
+                    }
+
+                    animationQueue.push({ animation: animationPromise, op: true });
+                    return callback();
+                }
+
+                /**
+                 * Cancels all current animations.
+                 * all current animations have been canceled.
+                 */
+                protected _cancelCurrentAnimations(): async.IThenable<any> {
+                    var animationQueue = this._animationQueue,
+                        animations = <Array<animations.IAnimationThenable<any>>>[],
+                        length = animationQueue.length;
+
+                    for (var i = 0; i < length; ++i) {
+                        animations.push(animationQueue[i].animation.cancel());
+                    }
+
+                    return this._Promise.all(animations);
                 }
             }
 
@@ -19502,7 +19949,12 @@ module plat {
              */
             export interface IForEachOptions {
                 /**
-                 * Used to specify alternative alias tokens for the built-in foreach aliases.
+                 * Will animate the Array mutations if set to true.
+                 */
+                animate?: boolean;
+
+                /**
+                 * Used to specify alternative alias tokens for the built-in control aliases.
                  */
                 aliases?: IForEachAliasOptions;
             }
@@ -19821,6 +20273,8 @@ module plat {
                     if (!isString(image)) {
                         return this._getContent(this._ogImageElement);
                     }
+
+                    image = this._browser.urlUtils(image).href;
 
                     this._setContent([
                         this._ogImageElement,
@@ -20951,7 +21405,6 @@ module plat {
                         }
 
                         ev.preventDefault();
-                        element.href = '#';
 
                         requestAnimationFrameGlobal((): void => {
                             this._browser.url(href);
@@ -20986,6 +21439,14 @@ module plat {
                  */
                 loaded(): void {
                     this.setHref();
+
+                    if (!isObject(this.options)) {
+                        return;
+                    }
+
+                    this.options.observe(() => {
+                        this.setHref();
+                    });
                 }
 
                 /**
@@ -22717,13 +23178,6 @@ module plat {
                 _TemplateControlFactory.setAbsoluteContextPath(uiControl, absoluteContextPath);
                 _TemplateControlFactory.setContextResources(uiControl);
                 ElementManager._ResourcesFactory.bindResources(uiControl.resources);
-
-                if (!this.replace) {
-                    var element = uiControl.element;
-                    if (!isNull(element) && isFunction(element.removeAttribute)) {
-                        element.removeAttribute(__Hide);
-                    }
-                }
             }
 
             /**
@@ -25357,6 +25811,10 @@ module plat {
 
                 segment = this._recognizer.generate(routeInfo.delegate.view, routeInfo.parameters);
 
+                var previousSegment = this._previousSegment;
+
+                this._previousSegment = segment;
+
                 this.navigating = true;
 
                 var routeInfoCopy = this._nextRouteInfo = _clone(routeInfo, true);
@@ -25377,6 +25835,7 @@ module plat {
                     this.currentRouteInfo = routeInfoCopy;
                     this.navigating = false;
                 },(e: any): void => {
+                        this._previousSegment = previousSegment;
                         this.navigating = false;
                         throw e;
                     });

@@ -231,6 +231,19 @@
         protected _container: HTMLElement;
 
         /**
+         * @name _animate
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not to animate Array mutations.
+         */
+        protected _animate: boolean;
+
+        /**
          * @name _viewport
          * @memberof platui.Listview
          * @kind property
@@ -618,17 +631,30 @@
         protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
 
         /**
-         * @name _currentAnimation
+         * @name _addQueue
          * @memberof platui.Listview
          * @kind property
          * @access protected
          * 
-         * @type {plat.ui.animations.IAnimationThenable<any>}
+         * @type {Array<plat.async.IThenable<void>>}
          * 
          * @description
-         * The current animation in progress.
+         * A queue representing all current add operations.
          */
-        protected _currentAnimation: plat.ui.animations.IAnimationThenable<any>;
+        protected _addQueue: Array<plat.async.IThenable<void>> = [];
+
+        /**
+         * @name _addCount
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The number of items currently being added.
+         */
+        protected _addCount = 0;
 
         /**
          * @name __listenerSet
@@ -1168,7 +1194,9 @@
                     name: name,
                     index: index,
                     element: groupContainer,
-                    control: control
+                    control: control,
+                    addCount: 0,
+                    addQueue: <Array<plat.async.IThenable<void>>>[]
                 },
                 items = 'items',
                 removeArrayListener: plat.IRemoveListener,
@@ -2524,37 +2552,6 @@
             }
 
             var start = startIndex * blockLength;
-            return this._initiateAnimation(start, numberOfItems * blockLength + start, key, container, clone, cancel);
-        }
-
-        /**
-         * @name _initiateAnimation
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Animates a block of elements.
-         * 
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
-         * @param {string} key The animation key/type.
-         * @param {Element} container The container that holds the elements to animate.
-         * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
-         * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
-         * Defaults to true.
-         * 
-         * @returns {plat.ui.async.IThenable<void>} A promise that resolves when all animations are complete.
-         */
-        protected _initiateAnimation(startNode: number, endNode: number, key: string, container: Element, clone?: boolean,
-            cancel?: boolean): plat.async.IThenable<void> {
-            if (cancel === false || this._utils.isNull(this._currentAnimation)) {
-                return this.__handleAnimation(startNode, endNode, key, container, clone);
-            }
-
-            return this._currentAnimation.cancel().then((): plat.ui.animations.IAnimationThenable<any> => {
-                return this.__handleAnimation(startNode, endNode, key, container, clone);
-            });
         }
 
         /**
@@ -2581,22 +2578,7 @@
 
             if (nodes.length === 0) {
                 return this._animator.resolve();
-            } else if (clone === true) {
-                var referenceNode = nodes[nodes.length - 1].nextSibling,
-                    animatedNodes = <DocumentFragment>this.dom.appendChildren(nodes),
-                    clonedNodes = animatedNodes.cloneNode(true),
-                    removeNodes = slice.call(clonedNodes.childNodes);
-
-                container.insertBefore(clonedNodes, referenceNode);
-                return this._currentAnimation = this._animator.animate(removeNodes, key).then((): void => {
-                    while (removeNodes.length > 0) {
-                        container.removeChild(removeNodes.pop());
-                    }
-                    container.insertBefore(animatedNodes, referenceNode);
-                });
             }
-
-            return this._currentAnimation = this._animator.animate(nodes, key);
         }
 
         /**
@@ -2702,6 +2684,18 @@
          * Used to specify alternative alias tokens for the built-in {@link platui.Listview|Listview} aliases.
          */
         aliases?: IListviewAliasOptions;
+
+        /**
+         * @name animate
+         * @memberof plat.ui.controls.IListviewOptions
+         * @kind property
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Will animate the Array mutations if set to true.
+         */
+        animate?: boolean;
 
         /**
          * @name orientation
@@ -2889,6 +2883,32 @@
          * The control associated with this group.
          */
         control: plat.ui.TemplateControl;
+
+        /**
+         * @name addQueue
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {Array<plat.async.IThenable<void>>}
+         * 
+         * @description
+         * An Array of promises denoting items being added to this group.
+         */
+        addQueue: Array<plat.async.IThenable<void>>;
+
+        /**
+         * @name addCount
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current number of items waiting to be added to the group.
+         */
+        addCount: number;
     }
 
     /**
