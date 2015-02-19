@@ -4,14 +4,22 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that acts as a HTML template carousel 
+     * An {@link plat.ui.BindControl|BindControl} that acts as a HTML template carousel 
      * and can bind the selected index to a value.
      */
-    export class Carousel extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Carousel extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _document: __Document,
+            _window: __Window,
+            _utils: __Utils,
+            _compat: __Compat,
+            _animator: __Animator
+        };
+
         /**
          * @name templateString
          * @memberof platui.Carousel
@@ -55,6 +63,19 @@
         options: plat.observable.IObservableProperty<ICarouselOptions>;
 
         /**
+         * @name priority
+         * @memberof platui.Carousel
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
+
+        /**
          * @name itemsLoaded
          * @memberof platui.Carousel
          * @kind property
@@ -94,7 +115,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -107,7 +128,7 @@
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _document
@@ -120,7 +141,7 @@
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
 
         /**
          * @name _window
@@ -133,7 +154,7 @@
          * @description
          * Reference to the Window injectable.
          */
-        protected _window: Window = plat.acquire(__Window);
+        protected _window: Window;
 
         /**
          * @name _animator
@@ -146,7 +167,7 @@
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
-        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
+        protected _animator: plat.ui.animations.Animator;
 
         /**
          * @name _isVertical
@@ -360,6 +381,71 @@
         protected _onLoad: () => void;
 
         /**
+         * @name _interval
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The auto scroll interval.
+         */
+        protected _interval: number;
+
+        /**
+         * @name _intervalId
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The ID used to clear the auto scroll interval.
+         */
+        protected _intervalId: number;
+
+        /**
+         * @name _isInfinite
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not infinite scrolling is turned on.
+         */
+        protected _isInfinite: boolean;
+
+        /**
+         * @name _preClonedNode
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The index `-1` node used for infinite scrolling.
+         */
+        protected _preClonedNode: HTMLElement;
+
+        /**
+         * @name _preClonedNode
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The index `length + 1` node used for infinite scrolling.
+         */
+        protected _postClonedNode: HTMLElement;
+
+        /**
          * @name setClasses
          * @memberof platui.Carousel
          * @kind function
@@ -393,7 +479,7 @@
         contextChanged(): void {
             this._verifyLength();
 
-            if (this._loaded) {
+            if (this._utils.isFunction(this._onLoad)) {
                 return;
             }
 
@@ -456,54 +542,26 @@
 
             var optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
                 options = optionObj.value || <ICarouselOptions>{},
-                type = options.type || 'track',
+                controlType = options.type || 'track swipe',
                 index = options.index,
                 orientation = this._validateOrientation(options.orientation);
 
-            this.dom.addClass(this.element, __Plat + orientation);
-            index = _utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : this._index;
+            this._container = this._container || <HTMLElement>this.element.firstElementChild
+            this._interval = options.interval || 3000;
+            this._isInfinite = options.infinite === true;
 
-            // reset index in case Bind is setting the value
-            this._index = 0;
-            this._onLoad = () => {
-                this.goToIndex(index);
-                this._addEventListeners(type);
+            this.dom.addClass(this.element, __Plat + orientation);
+            index = _utils.isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : null;
+
+            this._onLoad = (): void => {
+                var setIndex = this._index;
+                this._index = 0;
+                this.goToIndex(_utils.isNull(index) ? setIndex : index);
+                this._addEventListeners(controlType);
+                this._loaded = true;
             };
 
             this._init();
-            this._loaded = true;
-        }
-
-        /**
-         * @name setProperty
-         * @memberof platui.Toggle
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * The function called when the bindable property is set externally.
-         * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
-         * @param {boolean} firstSet? A boolean value indicating whether this is the first time 
-         * the value is being set.
-         * 
-         * @returns {void}
-         */
-        setProperty(newValue: any, oldValue?: any, firstSet?: boolean): void {
-            if (!this._utils.isNumber(newValue)) {
-                newValue = Number(newValue);
-                if (!this._utils.isNumber(newValue)) {
-                    return;
-                }
-            }
-
-            if (this._loaded) {
-                this.goToIndex(newValue);
-                return;
-            }
-
-            this._index = newValue;
         }
 
         /**
@@ -515,19 +573,25 @@
          * @description
          * Advances the position of the {@link platui.Carousel|Carousel} to the next state.
          * 
-         * @returns {void}
+         * @returns {boolean} Whether or not next was a valid state.
          */
-        goToNext(): void {
+        goToNext(): boolean {
             var index = this._index;
-            if (index >= this.context.length - 1) {
-                return;
+            if (this._isInfinite) {
+                if (index === this.context.length - 1) {
+                    this._infiniteNext();
+                    return true;
+                }
+            } else if (index >= this.context.length - 1) {
+                return false;
             }
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
             this._initiateAnimation({ properties: animationOptions });
 
-            this.propertyChanged(++this._index, index);
+            this.inputChanged(++this._index, index);
+            return true;
         }
 
         /**
@@ -539,19 +603,25 @@
          * @description
          * Changes the position of the {@link platui.Carousel|Carousel} to the previous state.
          * 
-         * @returns {void}
+         * @returns {boolean} Whether or not the previous state is valid.
          */
-        goToPrevious(): void {
+        goToPrevious(): boolean {
             var index = this._index;
-            if (index <= 0) {
-                return;
+            if (this._isInfinite) {
+                if (index === 0) {
+                    this._infinitePrevious();
+                    return true;
+                }
+            } else if (index <= 0) {
+                return false;
             }
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(this._intervalOffset);
             this._initiateAnimation({ properties: animationOptions });
 
-            this.propertyChanged(--this._index, index);
+            this.inputChanged(--this._index, index);
+            return true;
         }
 
         /**
@@ -566,21 +636,100 @@
          * 
          * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
          * 
+         * @returns {boolean} Whether or not the state specified by the index is valid.
+         */
+        goToIndex(index: number): boolean {
+            var oldIndex = this._index,
+                success = this._goToIndex(index);
+
+            if (success) {
+                this.inputChanged((this._index = index), oldIndex);
+            }
+
+            return success;
+        }
+
+        /**
+         * @name dispose
+         * @memberof platui.Carousel
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Clean up the auto scroll interval if necessary.
+         * 
          * @returns {void}
          */
-        goToIndex(index: number): void {
-            var oldIndex = this._index;
-            if (index === oldIndex || index < 0 || index >= this.context.length) {
+        dispose(): void {
+            super.dispose();
+            if (this._utils.isUndefined(this._intervalId)) {
                 return;
             }
 
-            var animationOptions: plat.IObject<string> = {},
-                interval = (this._index - index) * this._intervalOffset;
+            clearInterval(this._intervalId);
+        }
 
-            animationOptions[this._transform] = this._calculateStaticTranslation(interval);
-            this._initiateAnimation({ properties: animationOptions });
+        /**
+         * @name observeProperties
+         * @memberof platui.Carousel
+         * @kind function
+         * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
+         * @returns {void}
+         */
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
+        }
 
-            this.propertyChanged((this._index = index), oldIndex);
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable index is set externally.
+         * 
+         * @param {number} index The new value of the bindable index.
+         * @param {number} oldValue The old value of the bindable index.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
+         * 
+         * @returns {void}
+         */
+        protected _setBoundProperty(index: number, oldValue: number, identifier: void, firstTime?: boolean): void {
+            var _utils = this._utils;
+            if (_utils.isNull(index)) {
+                if (firstTime === true) {
+                    this.inputChanged(0);
+                    return;
+                }
+            } else if (!_utils.isNumber(index)) {
+                index = Number(index);
+                if (!_utils.isNumber(index)) {
+                    var _Exception = this._Exception;
+                    _Exception.warn(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.',
+                        _Exception.BIND);
+                    return;
+                }
+            }
+
+            if (!this._loaded) {
+                this._index = index;
+                return;
+            }
+
+            if (this._goToIndex(index)) {
+                this._index = index;
+            }
         }
 
         /**
@@ -621,6 +770,86 @@
         }
 
         /**
+         * @name _goToIndex
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Changes the position of the {@link platui.Carousel|Carousel} to the state 
+         * specified by the input index.
+         * 
+         * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
+         * 
+         * @returns {boolean} Whether or not the state specified by the index is valid.
+         */
+        protected _goToIndex(index: number): boolean {
+            var oldIndex = this._index;
+            if (index === oldIndex || index < 0 || index >= this.context.length) {
+                return false;
+            }
+
+            var animationOptions: plat.IObject<string> = {},
+                interval = (oldIndex - index) * this._intervalOffset;
+
+            animationOptions[this._transform] = this._calculateStaticTranslation(interval);
+            this._initiateAnimation({ properties: animationOptions });
+            return true;
+        }
+
+        /**
+         * @name _infinitePrevious
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles a go-to-next operation when infinite scrolling is enabled.
+         * 
+         * @returns {void}
+         */
+        protected _infinitePrevious(): void {
+            var index = this._index,
+                animationOptions: plat.IObject<string> = {},
+                maxLength = this.context.length,
+                offset = this._intervalOffset,
+                maxOffset = maxLength * this._intervalOffset;
+
+            animationOptions[this._transform] = this._calculateStaticTranslation(offset);
+            this._initiateAnimation({ properties: animationOptions }).then((): void => {
+                this._utils.requestAnimationFrame((): void => {
+                    this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-maxOffset);
+                });
+            });
+
+            this.inputChanged((this._index = maxLength - 1), index);
+        }
+
+        /**
+         * @name _infiniteNext
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles a go-to-next operation when infinite scrolling is enabled.
+         * 
+         * @returns {void}
+         */
+        protected _infiniteNext(): void {
+            var index = this._index,
+                animationOptions: plat.IObject<string> = {},
+                offset = -this._intervalOffset;
+
+            animationOptions[this._transform] = this._calculateStaticTranslation(offset);
+            this._initiateAnimation({ properties: animationOptions }).then((): void => {
+                this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset + offset);
+            });
+
+            this.inputChanged((this._index = 0), index);
+        }
+
+        /**
          * @name _initiateAnimation
          * @memberof platui.Carousel
          * @kind function
@@ -632,20 +861,19 @@
          * @param {plat.IObject<string>} animationOptions An object containing key-value pairs 
          * of properties to animate.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the animation is complete.
          */
-        protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): void {
+        protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): plat.async.IThenable<void> {
             if (!this._utils.isNull(this._animationThenable)) {
-                this._animationThenable = this._animationThenable.cancel().then(() => {
-                    this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
+                return this._animationThenable = this._animationThenable.cancel().then((): plat.ui.animations.IAnimationThenable<void> => {
+                    return this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions)
+                        .then((): void => {
                         this._animationThenable = null;
                     });
                 });
-
-                return;
             }
 
-            this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then(() => {
+            return this._animationThenable = this._animator.animate(this._slider, __Transition, animationOptions).then((): void => {
                 this._animationThenable = null;
             });
         }
@@ -663,16 +891,24 @@
          */
         protected _init(): void {
             var foreach = <plat.ui.controls.ForEach>this.controls[0],
-                container = this._container || <HTMLElement>this.element.firstElementChild;
+                container = this._container,
+                postLoad = (): void => {
+                    if (this._setPosition()) {
+                        this._onLoad();
+                    }
+                },
+                itemsLoaded = (): void => {
+                    if (this.context.length === 0) {
+                        foreach.itemsLoaded.then(itemsLoaded);
+                        return;
+                    }
+                    postLoad();
+                };
 
             this._slider = <HTMLElement>container.firstElementChild;
             this._setTransform();
 
-            this.itemsLoaded = foreach.itemsLoaded.then(() => {
-                if (this._setPosition()) {
-                    this._onLoad();
-                }
-            }).catch(() => {
+            this.itemsLoaded = foreach.itemsLoaded.then(itemsLoaded).catch((): void => {
                 var _Exception = this._Exception;
                 _Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.',
                     _Exception.CONTROL);
@@ -697,6 +933,15 @@
         protected _addEventListeners(type: string): void {
             var types = type.split(' ');
 
+            this.addEventListener(this._window, 'resize', (): void => {
+                this._setPosition();
+            }, false);
+
+            if (types.indexOf('auto') !== -1) {
+                this._initializeAuto();
+                return;
+            }
+
             if (types.indexOf('tap') !== -1) {
                 this._initializeTap();
             }
@@ -709,11 +954,82 @@
                 this._initializeTrack();
             }
 
-            this.observeArray(this, __CONTEXT, null, this._verifyLength);
+            if (this._isInfinite) {
+                this._initializeInfinite();
+            }
 
-            this.addEventListener(this._window, 'resize', () => {
-                this._setPosition();
-            }, false);
+            this.observeArray(this._verifyLength);
+        }
+
+        /**
+         * @name _initializeInfinite
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all necessary elements and event listeners to setup auto scroll.
+         * 
+         * @returns {void}
+         */
+        protected _initializeInfinite(): void {
+            this.observeArray(this._cloneForInfinite);
+            this._cloneForInfinite();
+            // offset the newly added clone
+            this._utils.requestAnimationFrame((): void => {
+                this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
+            });
+        }
+
+        /**
+         * @name _cloneForInfinite
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Create the clones for infinite scrolling.
+         * 
+         * @returns {void}
+         */
+        protected _cloneForInfinite(): void {
+            var slider = this._slider,
+                firstElementChild = slider.firstElementChild,
+                preClone = this._preClonedNode,
+                postClone = this._postClonedNode;
+
+            if (slider.contains(preClone)) {
+                slider.removeChild(preClone);
+            }
+
+            if (slider.contains(postClone)) {
+                slider.removeChild(postClone);
+            }
+
+            preClone = this._preClonedNode = <HTMLElement>slider.lastElementChild.cloneNode(true);
+            postClone = this._postClonedNode = <HTMLElement>firstElementChild.cloneNode(true);
+
+            slider.insertBefore(preClone, firstElementChild);
+            slider.insertBefore(postClone, null);
+        }
+
+        /**
+         * @name _initializeAuto
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Adds all necessary elements and event listeners to setup auto scroll.
+         * 
+         * @returns {void}
+         */
+        protected _initializeAuto(): void {
+            this._isInfinite = true;
+            this._initializeInfinite();
+            this._intervalId = setInterval((): void => {
+                this.goToNext();
+            }, this._interval);
         }
 
         /**
@@ -734,6 +1050,14 @@
                 forwardArrowContainer = _document.createElement('div'),
                 backArrow = _document.createElement('span'),
                 forwardArrow = _document.createElement('span');
+
+            if (this._isVertical) {
+                backArrow.className = 'icon-arrow-up';
+                forwardArrow.className = 'icon-arrow-down';
+            } else {
+                backArrow.className = 'icon-arrow-left';
+                forwardArrow.className = 'icon-arrow-right';
+            }
 
             backArrowContainer.className = __Plat + 'back-arrow';
             forwardArrowContainer.className = __Plat + 'forward-arrow';
@@ -874,7 +1198,7 @@
             }
 
             if (!this._utils.isNull(this._animationThenable)) {
-                this._animationThenable = this._animationThenable.cancel().then(() => {
+                this._animationThenable = this._animationThenable.cancel().then((): void => {
                     this._animationThenable = null;
                     this._initTouch(ev);
                 });
@@ -931,12 +1255,10 @@
             var distanceMoved = this._isVertical ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
             if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
                 if (distanceMoved < 0) {
-                    if (this._index < this.context.length - 1) {
-                        this.goToNext();
+                    if (this.goToNext()) {
                         return;
                     }
-                } else if (this._index > 0) {
-                    this.goToPrevious();
+                } else if (this.goToPrevious()) {
                     return;
                 }
             }
@@ -959,7 +1281,7 @@
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
             });
         }
@@ -1204,13 +1526,14 @@
          * 
          * @description
          * Specifies how the {@link platui.Carousel|Carousel} should change. Multiple types can be combined by making it space delimited. 
-         * It's default behavior is "track".
+         * It's default behavior is "track swipe".
          * 
          * @remarks
          * "tap": The carousel changes when the markers are tapped.
          * "track": The carousel changes when it is dragged.
          * "swipe": The carousel changes when it is swiped.
-         * default: The carousel changes when it is dragged.
+         * "auto": The carousel auto scrolls. All other types are ignored.
+         * default: The carousel changes when it is dragged or swiped.
          */
         type?: string;
 
@@ -1244,5 +1567,32 @@
          * The starting index of the {@link platui.Carousel|Carousel}.
          */
         index?: number;
+
+        /**
+         * @name interval
+         * @memberof platui.ICarouselOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The interval automatic scroll time (in ms) for when the {@link platui.Carousel|Carousel} 
+         * is type "auto". Defaults to 3000.
+         */
+        interval?: number;
+
+        /**
+         * @name infinite
+         * @memberof platui.ICarouselOptions
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Enables infinite scrolling.
+         */
+        infinite?: boolean;
     }
 }

@@ -1,6 +1,4 @@
-﻿@import '../../../global/variables.less';
-@import '../../../global/mixins.less';
-@import '../../progress.variables.less';
+﻿@import '../../progress.variables.less';
 
 /// =========== Progress Ring Default Styles =========== ///
 
@@ -34,16 +32,8 @@
 
 /// =========== Progress Ring Animation =========== ///
 
-.spin();
-.spin() {
+& {
     #ProgressRing;
-    #KeyFrames > .keyFrames(@animation);
-    .frames(@prefix) {
-        from {
-            .transform(rotate(0deg), @prefix);
-        }
-        to {
-            .transform(rotate(359deg), @prefix);
-        }
-    }
+    .spin();
 }
+

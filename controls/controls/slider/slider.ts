@@ -4,64 +4,19 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes an HTML5 input[type="range"].
+     * An {@link plat.ui.BindControl|BindControl} that standardizes an HTML5 input[type="range"].
      */
-    export class Slider extends plat.ui.BindablePropertyControl implements IUIControl {
-        /**
-         * @name _window
-         * @memberof platui.Slider
-         * @kind property
-         * @access protected
-         * 
-         * @type {Window}
-         * 
-         * @description
-         * Reference to the Window injectable.
-         */
-        protected _window: Window = plat.acquire(__Window);
-
-        /**
-         * @name _document
-         * @memberof platui.Slider
-         * @kind property
-         * @access protected
-         * 
-         * @type {Document}
-         * 
-         * @description
-         * Reference to the Document injectable.
-         */
-        protected _document: Document = plat.acquire(__Document);
-
-        /**
-         * @name _utils
-         * @memberof platui.Slider
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
-
-        /**
-         * @name _animator
-         * @memberof platui.Slider
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.ui.animations.IAnimator}
-         * 
-         * @description
-         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
-         */
-        protected _animator: plat.ui.animations.Animator = plat.acquire(__Animator);
+    export class Slider extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _document: __Document,
+            _window: __Window,
+            _utils: __Utils,
+            _animator: __Animator
+        };
 
         /**
          * @name templateString
@@ -93,6 +48,19 @@
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<ISliderOptions>;
+
+        /**
+         * @name priority
+         * @memberof platui.Slider
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
 
         /**
          * @name value
@@ -132,6 +100,58 @@
          * The max value of the {@link platui.Slider|Slider}.
          */
         max: number;
+
+        /**
+         * @name _window
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window;
+
+        /**
+         * @name _document
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document;
+
+        /**
+         * @name _utils
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.Utils|Utils} injectable.
+         */
+        protected _utils: plat.Utils;
+
+        /**
+         * @name _animator
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.ui.animations.IAnimator}
+         * 
+         * @description
+         * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
+         */
+        protected _animator: plat.ui.animations.Animator;
 
         /**
          * @name _slider
@@ -264,20 +284,6 @@
         protected _knobOffset = 0;
 
         /**
-         * @name _loaded
-         * @memberof platui.Slider
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the slider has already been loaded. Useful for when 
-         * the {@link plat.controls.Bind|Bind} tries to set a value.
-         */
-        protected _loaded = false;
-
-        /**
          * @name _touchState
          * @memberof platui.Slider
          * @kind property
@@ -388,10 +394,9 @@
                 optionMax = options.max,
                 step = options.step,
                 reversed = this._reversed = (options.reverse === true),
-                bindValue = this.value,
                 min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0,
                 max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100,
-                value = isNumber(optionValue) ? optionValue : isNumber(bindValue) ? bindValue : min,
+                value = isNumber(optionValue) ? Math.round(optionValue) : min,
                 className = __Plat + this._validateOrientation(options.orientation);
 
             this._knob = <HTMLElement>slider.firstElementChild;
@@ -404,7 +409,7 @@
 
             // reset value to minimum in case Bind set it to a value
             this.value = min;
-            this._step = isNumber(step) ? (step > 0 ? step : 1) : 1;
+            this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
 
             if (min >= max) {
                 var _Exception = this._Exception;
@@ -416,43 +421,7 @@
             this._setLength();
             this._setIncrement();
             this._initializeEvents();
-
             this.setValue(value);
-            this._loaded = true;
-        }
-
-        /**
-         * @name setProperty
-         * @memberof platui.Slider
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * The function called when the {@link platui.Slider|Slider's} bindable property is set externally.
-         * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
-         * 
-         * @returns {void}
-         */
-        setProperty(newValue: any, oldValue?: any): void {
-            if (!this._utils.isNumber(newValue)) {
-                newValue = this.min;
-            }
-
-            if (this._loaded) {
-                if (this._touchState === 1) {
-                    var _Exception = this._Exception;
-                    _Exception.warn('Cannot set value of ' + this.type +
-                        ' while the user is modifying the value.', _Exception.CONTROL);
-                    return;
-                }
-
-                this._setValue(newValue, true, false);
-                return;
-            }
-
-            this.value = newValue;
         }
 
         /**
@@ -470,16 +439,79 @@
          * @returns {void}
          */
         setValue(value: number): void {
+            this._setValue(value, true);
+        }
+
+        /**
+         * @name observeProperties
+         * @memberof platui.Slider
+         * @kind function
+         * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
+         * @returns {void}
+         */
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Slider
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable value is set externally.
+         * 
+         * @param {number} newValue The new value of the bindable value.
+         * @param {number} oldValue The old value of the bindable index.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
+         * 
+         * @returns {void}
+         */
+        protected _setBoundProperty(newValue: number, oldValue: number, identifier: void, firstTime?: boolean): void {
+            if (firstTime === true && this._utils.isNull(newValue)) {
+                this.inputChanged(this.value);
+                return;
+            }
+
+            this._setValue(newValue, false);
+        }
+
+        /**
+         * @name _setValue
+         * @memberof platui.Slider
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the value of the {@link platui.Slider|Slider}.
+         * 
+         * @param {number} value The value to set.
+         * @param {boolean} propertyChanged Whether or not we need to fire a propertyChanged event.
+         * 
+         * @returns {void}
+         */
+        protected _setValue(value: number, propertyChanged: boolean): void {
             if (!this._utils.isNumber(value)) {
                 return;
             } else if (this._touchState === 1) {
                 var _Exception = this._Exception;
-                _Exception.warn('Cannot set value of ' + this.type +
-                    ' while the user is modifying the value.', _Exception.CONTROL);
+                _Exception.warn('Cannot set the value of ' + this.type +
+                    ' while the user is manipulating it.', _Exception.CONTROL);
                 return;
             }
 
-            this._setValue(value, true, true);
+            this._setValueProperty(value, true, propertyChanged);
         }
 
         /**
@@ -513,7 +545,7 @@
             this.addEventListener(element, reverseTrack, trackFn, false);
             this.addEventListener(element, __$touchend, touchEnd, false);
             this.addEventListener(element, __$trackend, touchEnd, false);
-            this.addEventListener(this._window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', (): void => {
                 this._setLength();
                 this._setIncrement();
                 this._setKnob();
@@ -570,7 +602,7 @@
                 }
             }
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._knobOffset = this._setSliderProperties(offset);
             });
         }
@@ -599,7 +631,7 @@
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._touchState = 0;
 
                 if (this._lastTouch.value !== this.value) {
@@ -636,7 +668,7 @@
                 return;
             }
 
-            this._utils.requestAnimationFrame(() => {
+            this._utils.requestAnimationFrame((): void => {
                 this._setSliderProperties(this._calculateOffset(ev));
             });
         }
@@ -675,7 +707,7 @@
                 value = this._calculateValue(position);
             }
 
-            this._setValue(value, false, true);
+            this._setValueProperty(value, false, true);
             this._slider.style[<any>this._lengthProperty] = position + 'px';
 
             return position;
@@ -789,7 +821,7 @@
         }
 
         /**
-         * @name _setValue
+         * @name _setValueProperty
          * @memberof platui.Slider
          * @kind function
          * @access protected
@@ -803,7 +835,7 @@
          * 
          * @returns {void}
          */
-        protected _setValue(newValue: number, setKnob: boolean, propertyChanged: boolean): void {
+        protected _setValueProperty(newValue: number, setKnob: boolean, propertyChanged: boolean): void {
             var value = this.value;
             if (newValue === value) {
                 return;
@@ -822,7 +854,7 @@
             }
 
             if (propertyChanged) {
-                this.propertyChanged(newValue, value);
+                this.inputChanged(newValue, value);
             }
 
             this._trigger('input');

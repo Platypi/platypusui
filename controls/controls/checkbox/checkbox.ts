@@ -10,6 +10,10 @@
      * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes the HTML5 checkbox.
      */
     export class Checkbox extends Toggle {
+        protected static _inject: any = {
+            _document: __Document
+        };
+
         /**
          * @name templateString
          * @memberof platui.Checkbox
@@ -50,7 +54,7 @@
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
 
         /**
          * @name _targetTypeSet
@@ -186,10 +190,10 @@
             var element = this.element;
             if (element.hasAttribute(__Checked)) {
                 this._convertAttribute(element.getAttribute(__Checked));
-                this.attributes.observe(__CamelChecked, this._convertAttribute);
+                this.attributes.observe(this._convertAttribute, __CamelChecked);
             } else if (element.hasAttribute('data-' + __Checked)) {
                 this._convertAttribute(element.getAttribute('data-' + __Checked));
-                this.attributes.observe(__CamelChecked, this._convertAttribute);
+                this.attributes.observe(this._convertAttribute, __CamelChecked);
             } else if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
                 this._convertAttribute(true);
             }
@@ -213,12 +217,12 @@
         protected _convertAttribute(newValue: any, oldValue?: any): void {
             var _utils = this._utils;
             if (_utils.isBoolean(newValue)) {
-                return this.setProperty(newValue, oldValue, true);
+                return this._setBoundProperty(newValue, oldValue, null, true);
             } else if (!_utils.isString(newValue)) {
                 return;
             }
 
-            this.setProperty(newValue === 'true', oldValue === 'true', true);
+            this._setBoundProperty(newValue === 'true', oldValue === 'true', null, true);
         }
 
         /**

@@ -8,6 +8,7 @@
     #Carousel;
     position: relative;
     display: inline-block;
+    min-height: 50px;
     .fill();
     .user-select();
     .touch-action(none);
@@ -15,6 +16,7 @@
 
     .plat-carousel-container {
         position: relative;
+        min-height: 50px;
         overflow: hidden;
         .fill();
         .box-sizing(border-box);
@@ -23,6 +25,7 @@
             position: absolute;
             left: 0;
             top: 0;
+            min-height: 50px;
             background-color: @background-color;
             white-space: nowrap;
             .fill();
@@ -38,7 +41,7 @@
                 .box-sizing(border-box);
             }
 
-            &.plat-transition {
+            &.plat-transition-init {
                 .translateZ(0);
                 .transition(@transition);
             }
@@ -57,7 +60,8 @@
             display: table-cell;
             vertical-align: middle;
             cursor: pointer;
-            font-family: "monospace";
+            font-size: 200%;
+            font-weight: bold;
         }
 
         &:active,
@@ -84,18 +88,10 @@
 
         .plat-back-arrow {
             left: 0;
-
-            span::before {
-                content: "<";
-            }
         }
 
         .plat-forward-arrow {
             right: 0;
-
-            span::before {
-                content: ">";
-            }
         }
     }
 
@@ -117,18 +113,10 @@
 
         .plat-back-arrow {
             top: 0;
-            
-            span::before {
-                content: "^";
-            }
         }
 
         .plat-forward-arrow {
             bottom: 0;
-
-            span::before {
-                content: "down";
-            }
         }
     }
 }

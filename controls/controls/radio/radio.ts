@@ -126,23 +126,48 @@
         }
 
         /**
-         * @name setProperty
+         * @name inputChanged
          * @memberof platui.Radio
          * @kind function
          * @access public
          * 
          * @description
-         * The function called when the bindable property is set externally.
+         * Checks if the radio has been selected and only notifies of a bindable 
+         * property changed if it has.
          * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
-         * @param {boolean} setProperty? A boolean value indicating whether we should set 
-         * the property if we need to toggle the check mark value.
+         * @param {any} newValue? The new value of the property after the change.
+         * @param {any} oldValue? The old value of the property prior to the change.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
+        inputChanged(newValue?: any, oldValue?: any): void {
+            if (this.isActive) {
+                super.inputChanged(this._getValue());
+            }
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Radio
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * The function called when the bindable property is set externally.
+         * 
+         * @param {any} newValue The new value of the bindable property.
+         * @param {any} oldValue The old value of the bindable property.
+         * @param {string} identifier The identifier of the property being observed.
+         * @param {boolean} setProperty? A boolean value indicating whether we should set 
+         * the property if we need to toggle the mark.
+         * 
+         * @returns {void}
+         */
+        protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
             if (newValue === oldValue) {
+                return;
+            } else if (setProperty === true && this._utils.isNull(newValue)) {
+                this.inputChanged();
                 return;
             }
 
@@ -154,27 +179,6 @@
             }
 
             this._toggle(setProperty);
-        }
-
-        /**
-         * @name propertyChanged
-         * @memberof platui.Radio
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Checks if the radio has been selected and only notifies of a bindable 
-         * property changed if it has.
-         * 
-         * @param {any} newValue The new value of the property after the change.
-         * @param {any} oldValue? The old value of the property prior to the change.
-         * 
-         * @returns {void}
-         */
-        propertyChanged(newValue: any, oldValue?: any): void {
-            if (this.isActive) {
-                super.propertyChanged(this._getValue());
-            }
         }
 
         /**
@@ -223,7 +227,7 @@
             if (this.isActive) {
                 var name = this.groupName;
                 this.dispatchEvent(__RadioPrefix + name, plat.events.EventManager.DIRECT);
-                var remover = this._removeListener = this.on(__RadioPrefix + name, () => {
+                var remover = this._removeListener = this.on(__RadioPrefix + name, (): void => {
                     this._toggle();
                     remover();
                 });
@@ -249,7 +253,7 @@
             var _utils = this._utils;
             if (_utils.isBoolean(newValue)) {
                 if (newValue) {
-                    this.setProperty(this._getValue(), null, true);
+                    this._setBoundProperty(this._getValue(), null, null, true);
                 }
                 return;
             } else if (!_utils.isString(newValue)) {
@@ -257,7 +261,7 @@
             }
 
             if (newValue === 'true') {
-                this.setProperty(this._getValue(), null, true);
+                this._setBoundProperty(this._getValue(), null, null, true);
             }
         }
 

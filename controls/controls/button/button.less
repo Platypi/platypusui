@@ -3,16 +3,24 @@
 @import 'button.variables.less';
 @import 'button.mixins.less';
 
+/// ============= Button Constants ============= ///
+
+#Button_Local {
+    @default-color: @white;
+    @default-background-color: @neutralColor;
+}
+
 /// ====== Button Default and Outline Style ====== ///
 
 .plat-button, 
 .button {
     #Button;
+    #Button_Local;
     position: relative;
     display: inline-block;
     padding: @padding-vertical @padding-horizontal;
-    background-color: @neutralColor;
-    color: @white;
+    background-color: @default-background-color;
+    color: @default-color;
     outline: none;
     border: @border-size solid @neutralColorDark;
     cursor: pointer;
@@ -34,8 +42,15 @@
         
         &:active,
         &.plat-selected {
-            color: @white;
             background-color: darken(@primaryColor, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled="disabled"],
+        &:disabled {
+            background-color: @primaryColor;
+            opacity: 0.5;
+            cursor: default;
         }
 
         &.button-outline {
@@ -47,6 +62,15 @@
                 color: @white;
                 background-color: @primaryColor;
             }
+        
+            &.button-disabled,
+            &[disabled="disabled"],
+            &:disabled {
+                color: @primaryColor;
+                background-color: @default-background-color;
+                opacity: 0.5;
+                cursor: default;
+            }
         }
     }
 
@@ -56,8 +80,15 @@
 
         &:active,
         &.plat-selected {
-            color: @white;
             background-color: darken(@secondaryColor, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled="disabled"],
+        &:disabled {
+            background-color: @secondaryColor;
+            opacity: 0.5;
+            cursor: default;
         }
 
         &.button-outline {
@@ -69,6 +100,15 @@
                 color: @white;
                 background-color: @secondaryColor;
             }
+        
+            &.button-disabled,
+            &[disabled="disabled"],
+            &:disabled {
+                color: @secondaryColor;
+                background-color: @default-background-color;
+                opacity: 0.5;
+                cursor: default;
+            }
         }
     }
 
@@ -78,8 +118,15 @@
 
         &:active,
         &.plat-selected {
-            color: @white;
             background-color: darken(@neutralColor, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled="disabled"],
+        &:disabled {
+            background-color: @neutralColor;
+            opacity: 0.5;
+            cursor: default;
         }
 
         &.button-outline {
@@ -91,6 +138,15 @@
                 color: @white;
                 background-color: @neutralColor;
             }
+        
+            &.button-disabled,
+            &[disabled="disabled"],
+            &:disabled {
+                color: @neutralColor;
+                background-color: @default-background-color;
+                opacity: 0.5;
+                cursor: default;
+            }
         }
     }
 
@@ -100,8 +156,15 @@
 
         &:active,
         &.plat-selected {
-            color: @white;
             background-color: darken(@successColor, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled="disabled"],
+        &:disabled {
+            background-color: @successColor;
+            opacity: 0.5;
+            cursor: default;
         }
 
         &.button-outline {
@@ -113,6 +176,15 @@
                 color: @white;
                 background-color: @successColor;
             }
+        
+            &.button-disabled,
+            &[disabled="disabled"],
+            &:disabled {
+                color: @successColor;
+                background-color: @default-background-color;
+                opacity: 0.5;
+                cursor: default;
+            }
         }
     }
 
@@ -122,8 +194,15 @@
 
         &:active,
         &.plat-selected {
-            color: @white;
             background-color: darken(@dangerColor, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled="disabled"],
+        &:disabled {
+            background-color: @dangerColor;
+            opacity: 0.5;
+            cursor: default;
         }
 
         &.button-outline {
@@ -135,6 +214,15 @@
                 color: @white;
                 background-color: @dangerColor;
             }
+        
+            &.button-disabled,
+            &[disabled="disabled"],
+            &:disabled {
+                color: @dangerColor;
+                background-color: @default-background-color;
+                opacity: 0.5;
+                cursor: default;
+            }
         }
     }
 
@@ -144,17 +232,34 @@
 
         &:active,
         &.plat-selected {
-            color: @white;
             background-color: darken(@cautionColor, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled="disabled"],
+        &:disabled {
+            background-color: @cautionColor;
+            opacity: 0.5;
+            cursor: default;
         }
 
         &.button-outline {
             border-color: @cautionColor;
             color: @cautionColor;
 
-            &:active {
+            &:active,
+            &.plat-selected {
                 color: @white;
                 background-color: @cautionColor;
+            }
+        
+            &.button-disabled,
+            &[disabled="disabled"],
+            &:disabled {
+                color: @cautionColor;
+                background-color: @default-background-color;
+                opacity: 0.5;
+                cursor: default;
             }
         }
     }
@@ -178,22 +283,12 @@
         font-size: 130%;
     }
 
-/// ============== Button States =============== ///
-
-    &.button-disabled,
-    &[disabled="disabled"],
-    &:disabled {
-        opacity: 0.5;
-        cursor: default;
-    }
-
-}
-
 /// ============== Button Icons =============== ///
 
-[class^="icon-"], [class*=" icon-"] {
-    position: relative;
-    right: -0.3em;
+    [class^="icon-"], [class*=" icon-"] {
+        position: relative;
+        right: -0.3em;
+    }
 }
 
 /// ============== Button Groups =============== /// 
@@ -207,25 +302,35 @@
 .button-group > .button {
     margin: 0;
     border-right-width: 0;
-    border-radius: 0;
+    border-left-width: 0;
     float: left;
+    .border-radius(0);
 }
 
 .button-group > .plat-button:nth-of-type(1),
 .button-group > .button:nth-of-type(1) {
     #Button;
-    border-top-left-radius: @border-radius;
-    border-bottom-left-radius: @border-radius;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    .border-top-left-radius(@border-radius);
+    .border-bottom-left-radius(@border-radius);
+
+    &.button-outline {
+        border-left-width: 2px;
+        border-right-width: 2px;
+    }
 }
 
 .button-group > .plat-button:nth-last-of-type(1),
 .button-group > .button:nth-last-of-type(1) {
     #Button;
+    border-left-width: 1px;
     border-right-width: 1px;
-    border-top-right-radius: @border-radius;
-    border-bottom-right-radius: @border-radius;
+    .border-top-right-radius(@border-radius);
+    .border-bottom-right-radius(@border-radius);
 
     &.button-outline {
+        border-left-width: 2px;
         border-right-width: 2px;
     }
 }

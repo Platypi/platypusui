@@ -14,13 +14,18 @@ module platui {
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes an HTML5 button.
+     * An {@link plat.ui.BindControl|BindControl} that standardizes an HTML5 button.
      */
-    export class Button extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Button extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _document: __Document,
+            _utils: __Utils
+        };
+
         /**
          * @name replaceWith
          * @memberof platui.Button
@@ -49,17 +54,17 @@ module platui {
         options: plat.observable.IObservableProperty<IButtonOptions>;
 
         /**
-         * @name groupName
+         * @name priority
          * @memberof platui.Button
          * @kind property
          * @access public
          * 
-         * @type {string}
+         * @type {number}
          * 
          * @description
-         * The button groups name if a button group is present.
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
          */
-        groupName = '';
+        priority = 120;
 
         /**
          * @name _document
@@ -72,7 +77,33 @@ module platui {
          * @description
          * Reference to the Document injectable.
          */
-        protected _document: Document = plat.acquire(__Document);
+        protected _document: Document;
+
+        /**
+         * @name _utils
+         * @memberof platui.Button
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IUtils}
+         * 
+         * @description
+         * Reference to the {@link plat.Utils|Utils} injectable.
+         */
+        protected _utils: plat.Utils;
+
+        /**
+         * @name _group
+         * @memberof platui.Button
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The button group's name if a button group is present.
+         */
+        protected _group: string;
 
         /**
          * @name _isSelected
@@ -85,7 +116,7 @@ module platui {
          * @description
          * A boolean value showing the selected state of this {@link platui.Button|Button}.
          */
-        protected _isSelected: boolean;
+        protected _isSelected = false;
 
         /**
          * @name setClasses
@@ -138,20 +169,13 @@ module platui {
                 element = this.element,
                 childNodes = Array.prototype.slice.call(element.childNodes),
                 childNode: Node,
-                span: HTMLSpanElement,
-                match: Array<string>;
+                span: HTMLSpanElement;
 
-            if (childNodes.length === 0) {
-                span = _document.createElement('span');
-                element.insertBefore(span, null);
-                return;
-            }
-
+            var isEmpty = this._utils.isEmpty;
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
                 if (childNode.nodeType === Node.TEXT_NODE) {
-                    match = childNode.textContent.trim().match(/[^\r\n]/g);
-                    if (match !== null && match.length > 0) {
+                    if (!isEmpty(childNode.textContent.trim().match(/[^\r\n]/g))) {
                         span = _document.createElement('span');
                         span.insertBefore(childNode, null);
                         element.insertBefore(span, null);
@@ -177,18 +201,26 @@ module platui {
             var element = this.element,
                 optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
                 options = optionObj.value || <IButtonOptions>{},
-                group = options.group;
+                group = options.group,
+                isString = this._utils.isString;
 
-            if (!group) {
-                if (element.hasAttribute(__Bind)) {
-                    this._addEventListeners(element.getAttribute(__Bind));
-                } else if (element.hasAttribute('data-' + __Bind)) {
-                    this._addEventListeners(element.getAttribute('data-' + __Bind));
+            if (!isString(group)) {
+                group = this.attributes[__CamelBind];
+                if (isString(group)) {
+                    this._group = group;
+                    if (this.dom.hasClass(element, __Plat + 'selected')) {
+                        this._onTap();
+                    }
+                    this._addEventListeners();
                 }
                 return;
             }
 
-            this._addEventListeners(group);
+            this._group = group;
+            if (this.dom.hasClass(element, __Plat + 'selected')) {
+                this._onTap();
+            }
+            this._addEventListeners();
         }
 
         /**
@@ -202,16 +234,11 @@ module platui {
          * 
          * @returns {void}
          */
-        protected _addEventListeners(name: string): void {
-            var element = this.element,
-                dom = this.dom;
-
-            this.groupName = name;
-            this._isSelected = false;
-            this.addEventListener(element, __$tap, this._onTap, false);
-            this.on(__ButtonPrefix + name, () => {
+        protected _addEventListeners(): void {
+            this.addEventListener(this.element, __$tap, this._onTap, false);
+            this.on(__ButtonPrefix + this._group, (): void => {
                 if (this._isSelected) {
-                    dom.removeClass(element, 'plat-selected');
+                    this.dom.removeClass(this.element, __Plat + 'selected');
                     this._isSelected = false;
                 }
             });
@@ -234,10 +261,10 @@ module platui {
             }
 
             var element = this.element;
-            this.dom.addClass(element, 'plat-selected');
-            this.dispatchEvent(__ButtonPrefix + this.groupName, plat.events.EventManager.DIRECT);
+            this.dom.addClass(element, __Plat + 'selected');
+            this.dispatchEvent(__ButtonPrefix + this._group, plat.events.EventManager.DIRECT);
             this._isSelected = true;
-            this.propertyChanged(element.textContent);
+            this.inputChanged(element.textContent);
         }
     }
 

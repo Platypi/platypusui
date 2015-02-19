@@ -4,13 +4,17 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.IBindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that simulates a toggle switch.
+     * An {@link plat.ui.BindControl|BindControl} that simulates a toggle switch.
      */
-    export class Toggle extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Toggle extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _utils: __Utils
+        };
+
         /**
          * @name templateString
          * @memberof platui.Toggle
@@ -26,6 +30,19 @@
         '<div class="plat-toggle-container">\n' +
         '    <div class="plat-knob"></div>\n' +
         '</div>\n';
+
+        /**
+         * @name priority
+         * @memberof platui.Toggle
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
 
         /**
          * @name isActive
@@ -51,7 +68,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _targetType
@@ -132,23 +149,47 @@
         }
 
         /**
-         * @name setProperty
+         * @name observeProperties
          * @memberof platui.Toggle
          * @kind function
          * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
+         * @returns {void}
+         */
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Toggle
+         * @kind function
+         * @access protected
          * 
          * @description
          * The function called when the bindable property is set externally.
-         * 
+         *
          * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
-         * @param {boolean} setProperty? A boolean value indicating whether we should set 
-         * the property if we need to toggle the activated state.
-         * 
+         * @param {any} oldValue The old value of the bindable property.
+         * @param {string} identifier The identifier of the property being observed.
+         * @param {boolean} setProperty? A boolean value indicating whether we should set
+         * the property if we need to toggle the state.
+         *
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any, setProperty?: boolean): void {
+        protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
             if (newValue === oldValue) {
+                return;
+            } else if (setProperty === true && this._utils.isNull(newValue)) {
+                this.inputChanged(this.isActive);
                 return;
             }
 
@@ -218,7 +259,7 @@
             this._activate(this._targetElement || (this._targetElement = this.element.firstElementChild));
             this.isActive = (<HTMLInputElement>this.element).checked = isActive;
             if (setProperty === true) {
-                this.propertyChanged(isActive, wasActive);
+                this.inputChanged(isActive, wasActive);
             }
         }
 

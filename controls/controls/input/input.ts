@@ -6,14 +6,20 @@ module platui {
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl, platui.IFormControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes and styles 
+     * An {@link plat.ui.BindControl|BindControl} that standardizes and styles 
      * an HTML input element of various types.
      */
-    export class Input extends plat.ui.BindablePropertyControl implements IUIControl, IFormControl {
+    export class Input extends plat.ui.BindControl implements IUIControl, IFormControl {
+        protected static _inject: any = {
+            _utils: __Utils,
+            _compat: __Compat,
+            _regex: __Regex
+        };
+
         /**
          * @name templateString
          * @memberof platui.Input
@@ -29,7 +35,7 @@ module platui {
         '<div class="plat-input-container">\n' +
         '    <span class="plat-input-image"></span>\n' +
         '    <input type="text" />\n' +
-        '    <div class="plat-input-action"></div>\n' +
+        '    <span class="plat-input-action"></span>\n' +
         '</div>\n';
 
         /**
@@ -46,6 +52,19 @@ module platui {
         options: plat.observable.IObservableProperty<IInputOptions>;
 
         /**
+         * @name priority
+         * @memberof platui.Input
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
+
+        /**
          * @name _utils
          * @memberof platui.Input
          * @kind property
@@ -56,7 +75,7 @@ module platui {
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -69,7 +88,7 @@ module platui {
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _regex
@@ -82,7 +101,7 @@ module platui {
          * @description
          * Reference to the {@link plat.expressions.Regex|Regex} injectable.
          */
-        protected _regex: plat.expressions.Regex = plat.acquire(__Regex);
+        protected _regex: plat.expressions.Regex;
 
         /**
          * @name _imageElement
@@ -216,45 +235,6 @@ module platui {
         protected _inAction = false;
 
         /**
-         * @name _usingBind
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the {@link plat.controls.Bind|Bind} control is being used.
-         */
-        protected _usingBind = false;
-
-        /**
-         * @name _loaded
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
-         */
-        protected _loaded = false;
-
-        /**
-         * @name _preloadedValue
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         * 
-         * @type {string}
-         * 
-         * @description
-         * A value specified prior to the control being loaded.
-         */
-        protected _preloadedValue = '';
-
-        /**
          * @name setClasses
          * @memberof platui.Input
          * @kind function
@@ -304,28 +284,31 @@ module platui {
             var element = this.element,
                 image = this._imageElement = <HTMLElement>element.firstElementChild.firstElementChild,
                 input = this._inputElement = <HTMLInputElement>image.nextElementSibling,
-                attributes = element.attributes,
-                length = attributes.length,
+                attributes = this.attributes,
+                keys = Object.keys(attributes),
+                length = keys.length,
+                controlInjectors = plat.dependency.injectors.control,
                 hasPlaceholder = false,
-                attrRegex = /plat-(?!control|hide|options)/,
-                attribute: Attr,
+                attrRegex = /plat-(?:control|hide|context)|class|style/,
                 _utils = this._utils,
-                name: string;
+                isNull = _utils.isNull,
+                delimit = _utils.delimit,
+                isString = _utils.isString,
+                key: string,
+                name: string,
+                value: string;
 
             for (var i = 0; i < length; ++i) {
-                attribute = attributes[i];
-                name = attribute.name;
-                if (attrRegex.test(name)) {
-                    if (name === __Bind || name === 'data-' + __Bind) {
-                        this._usingBind = true;
-                    } else {
-                        input.setAttribute(name, attribute.value);
-                    }
-                } else if (name === 'type') {
-                    this._type = attribute.value;
+                key = keys[i];
+                name = delimit(key, '-');
+                value = attributes[key];
+                if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
+                    continue;
                 } else if (name === 'placeholder') {
-                    input.placeholder = attribute.value;
                     hasPlaceholder = true;
+                    input.placeholder = value;
+                } else {
+                    input.setAttribute(name, value);
                 }
             }
 
@@ -354,17 +337,17 @@ module platui {
             var optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
                 options = optionObj.value || <IInputOptions>{},
                 element = this.element,
-                type = this._type = this._type || options.type || 'text',
+                inputType = this._type = this.attributes['type'] || options.type || 'text',
                 pattern = options.pattern;
 
             // in case of cloning
             this._imageElement = this._imageElement || <HTMLElement>element.firstElementChild.firstElementChild;
             this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
 
-            this.dom.addClass(element, __Plat + type);
+            this.dom.addClass(element, __Plat + inputType);
             this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
 
-            if (this._utils.isString(pattern)) {
+            if (!this._utils.isEmpty(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
                 }
@@ -373,22 +356,6 @@ module platui {
             }
 
             this._initializeType();
-            this._loaded = true;
-        }
-
-        /**
-         * @name dispose
-         * @memberof platui.Input
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Sets loaded back to false to avoid acting on input.
-         * 
-         * @returns {void}
-         */
-        dispose(): void {
-            this._loaded = false;
         }
 
         /**
@@ -428,7 +395,7 @@ module platui {
             }
 
             var actionElement = this._actionElement;
-            this.propertyChanged((inputElement.value = ''), value);
+            this.inputChanged((inputElement.value = ''), value);
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
         }
@@ -479,22 +446,53 @@ module platui {
         }
 
         /**
-         * @name setProperty
+         * @name observeProperties
          * @memberof platui.Input
          * @kind function
          * @access public
+         * @virtual
          * 
          * @description
-         * The function called when the bindable property is set externally.
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
+         * @returns {void}
+         */
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Input
+         * @kind function
+         * @access protected
          * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
+         * @description
+         * The function called when the bindable text is set externally.
+         * 
+         * @param {string} newValue The new value of the bindable text.
+         * @param {string} oldValue The old value of the bindable text.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any): void {
-            if (!this._loaded) {
-                this._preloadedValue = newValue;
+        protected _setBoundProperty(newValue: string, oldValue: string, identifier: void, firstTime?: boolean): void {
+            var value = this._inputElement.value;
+            if (this._utils.isNull(newValue)) {
+                newValue = '';
+
+                if (firstTime === true) {
+                    if (this._utils.isNull(value)) {
+                        this._onInputChanged(newValue);
+                    }
+                    return;
+                }
+            } else if (newValue === value) {
                 return;
             }
 
@@ -573,29 +571,24 @@ module platui {
         protected _addEventListeners(event: string): void {
             var actionElement = this._actionElement,
                 input = this._inputElement,
-                actionEnd = () => (this._inAction = false);
+                actionEnd = (): boolean => (this._inAction = false);
 
             this.addEventListener(actionElement, event, this._typeHandler, false);
-            this.addEventListener(actionElement, __$touchstart, () => (this._inAction = true), false);
+            this.addEventListener(actionElement, __$touchstart, (): boolean => (this._inAction = true), false);
             this.addEventListener(actionElement, __$touchend, actionEnd, false);
             this.addEventListener(actionElement, __$trackend, actionEnd, false);
-            this.addEventListener(input, 'focus', () => {
+            this.addEventListener(input, 'focus', (): void => {
                 if (input.value === '') {
                     return;
                 }
                 actionElement.removeAttribute(__Hide);
             }, false);
-            this.addEventListener(input, 'blur', (ev: Event) => {
+            this.addEventListener(input, 'blur', (ev: Event): void => {
                 if (this._inAction) {
                     return;
                 }
                 actionElement.setAttribute(__Hide, '');
             }, false);
-
-            if (this._usingBind) {
-                this._checkInput(this._preloadedValue);
-            }
-
             this._addTextEventListener();
         }
 
@@ -616,27 +609,27 @@ module platui {
                 _utils = this._utils,
                 composing = false,
                 timeout: plat.IRemoveListener,
-                eventListener = () => {
+                eventListener = (): void => {
                     if (composing) {
                         return;
                     }
 
                     this._onInput();
                 },
-                postponedEventListener = () => {
+                postponedEventListener = (): void => {
                     if (_utils.isFunction(timeout)) {
                         return;
                     }
 
-                    timeout = _utils.postpone(() => {
+                    timeout = _utils.postpone((): void => {
                         eventListener();
                         timeout = null;
                     });
                 };
 
             if (_utils.isUndefined(_compat.ANDROID)) {
-                this.addEventListener(input, 'compositionstart', () => (composing = true), false);
-                this.addEventListener(input, 'compositionend', () => {
+                this.addEventListener(input, 'compositionstart', (): boolean => (composing = true), false);
+                this.addEventListener(input, 'compositionend', (): void => {
                     composing = false;
                     eventListener();
                 }, false);
@@ -645,7 +638,7 @@ module platui {
             if (_compat.hasEvent('input')) {
                 this.addEventListener(input, 'input', eventListener, false);
             } else {
-                this.addEventListener(input, 'keydown', (ev: KeyboardEvent) => {
+                this.addEventListener(input, 'keydown', (ev: KeyboardEvent): void => {
                     var key = ev.keyCode;
 
                     if (key === 91 ||
@@ -736,7 +729,7 @@ module platui {
                 value = inputElement.value,
                 char = this._typeChar;
 
-            this.propertyChanged((inputElement.value = (char === 'x' ? '' : value + char)), value);
+            this.inputChanged((inputElement.value = (char === 'x' ? '' : value + char)), value);
             this._checkEmail();
             inputElement.focus();
         }
@@ -897,7 +890,7 @@ module platui {
                         value = inputElement.value = value.slice(0, -1);
                     }
                 default:
-                    this.propertyChanged(value);
+                    this.inputChanged(value);
                     break;
             }
 
@@ -919,10 +912,6 @@ module platui {
          */
         protected _onInputChanged(newValue: string): void {
             var inputElement = this._inputElement;
-            if (newValue === inputElement.value) {
-                return;
-            }
-
             switch (this._type) {
                 case 'tel':
                 case 'number':
@@ -930,7 +919,7 @@ module platui {
                     if (last >= 0 && (!this._pattern.test(newValue[last]) ||
                         !(last === 0 || this._type !== 'tel' || newValue[last] !== '+'))) {
                         newValue = inputElement.value = newValue.slice(0, -1);
-                        this.propertyChanged(newValue);
+                        this.inputChanged(newValue);
                         break;
                     }
                 default:
@@ -961,12 +950,10 @@ module platui {
                     if (this._pattern.test(value)) {
                         this._inputElement.value = value;
                     } else {
-                        if (this._usingBind) {
-                            var _Exception = this._Exception;
-                            _Exception.warn(this.type + ' control is bound to a value that does not satisfy ' +
-                                'the given pattern and/or type. The bound value will be reset to "".', _Exception.CONTROL);
-                        }
-                        this.propertyChanged((this._inputElement.value = ''), value);
+                        var _Exception = this._Exception;
+                        _Exception.warn(this.type + '\'s value does not satisfy either ' +
+                            'the given pattern or type. The value will be reset to "".', _Exception.CONTROL);
+                        this.inputChanged((this._inputElement.value = ''), value);
                     }
                     break;
                 default:

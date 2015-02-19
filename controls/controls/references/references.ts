@@ -21,7 +21,8 @@ var __prefix = '$',
     /**
      * Controls
      */
-    __Plat = 'plat-',
+    __PlatPrefix = 'plat',
+    __Plat = __PlatPrefix + '-',
     __Button = __Plat + 'button',
     __Checkbox = __Plat + 'checkbox',
     __Drawer = __Plat + 'drawer',
@@ -42,12 +43,13 @@ var __prefix = '$',
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
+    __Context = __Plat + __CONTEXT,
     __Checked = __Plat + 'checked',
     __ForEach = __Plat + 'foreach',
-    __CamelChecked = 'platChecked',
-    __Context = __Plat + __CONTEXT,
-    __CamelContext = 'platContext',
     __Bind = __Plat + 'bind',
+    __CamelContext = __PlatPrefix + 'Context',
+    __CamelChecked = __PlatPrefix + 'Checked',
+    __CamelBind = __PlatPrefix + 'Bind',
 
     /**
      * Listview aliases

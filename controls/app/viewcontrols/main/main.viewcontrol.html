@@ -89,13 +89,14 @@
             <button plat-tap="addListItem">add</button>
             <button plat-tap="popListItem">pop</button>
             <div class="demo-item">
-                <plat-listview style="height: 150px;" plat-context="groupedlistview" 
+                <plat-listview style="height: 200px;" plat-context="groupedlistview" 
                                plat-options="{ 
-                                   itemTemplate: 'listview-template', 
-                                   groupHeaderTemplate: 'listview-header', 
+                                   itemTemplate: 'listview-template',
+                                   groupHeaderTemplate: 'listview-header',
                                    onRefresh: 'refresh', 
                                    loading: 'incremental', 
-                                   onItemsRequested: 'refresh' 
+                                   onItemsRequested: 'refresh',
+                                   animate: true
                                }">
                     <listview-header>
                         <div>{{group}}</div>
@@ -240,7 +241,7 @@
             <h4>Ranges</h4>
             <p>Slider</p>
             <div class="demo-item">
-                <plat-slider plat-bind="sliders.slider1" style="width: 400px"></plat-slider>
+                <plat-slider plat-bind="sliders.slider1" style="width: 400px;"></plat-slider>
             </div>
             <div class="demo-item">
                 <plat-slider plat-bind="sliders.slider2" style="width: 400px;" class="slider-primary"></plat-slider>
@@ -254,16 +255,16 @@
             <p>Range</p>
             <div class="demo-item">
                 <div class="demo-item">
-                    <plat-range plat-context="ranges.range1" style="width: 400px"></plat-range>
+                    <plat-range plat-bind="ranges.range1" style="width: 400px;"></plat-range>
                 </div>
                 <div class="demo-item">
-                    <plat-range plat-context="ranges.range2" style="width: 400px;" class="range-secondary"></plat-range>
+                    <plat-range plat-bind="ranges.range2" style="width: 400px;" class="range-secondary"></plat-range>
                 </div>
                 <div class="demo-item">
-                    <plat-range plat-context="ranges.range3" style="width: 400px;" class="range-caution"></plat-range>
+                    <plat-range plat-bind="ranges.range3" style="width: 400px;" class="range-caution"></plat-range>
                 </div>
                 <div class="demo-item">
-                    <plat-range plat-context="ranges.range4" style="width: 400px;" class="range-danger"></plat-range>
+                    <plat-range plat-bind="ranges.range4" style="width: 400px;" class="range-danger"></plat-range>
                 </div>
             </div>
 

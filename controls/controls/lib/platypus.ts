@@ -1,7 +1,7 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.5 (http://getplatypi.com) 
- * Copyright 2014 Platypi, LLC. All rights reserved. 
+ * PlatypusTS v0.10.11 (http://getplatypi.com) 
+ * Copyright 2015 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
  */
@@ -316,6 +316,7 @@ module plat {
         __nativeIsArray = !!Array.isArray,
         __uids: plat.IObject<Array<string>> = {},
         __camelCaseRegex: RegExp,
+        __capitalCaseRegex: RegExp,
         __objToString = Object.prototype.toString,
         __toStringClass = '[object ',
         __errorClass = __toStringClass + 'Error]',
@@ -761,6 +762,18 @@ module plat {
                 => index ? char.toUpperCase() : char);
     }
     
+    function delimit(str: string, delimiter: string): string {
+        if (!isString(str) || isEmpty(str)) {
+            return str;
+        } else if (isNull(delimiter)) {
+            delimiter = '';
+        }
+    
+        __capitalCaseRegex = __capitalCaseRegex || (<plat.expressions.Regex>plat.acquire(__Regex)).capitalCaseRegex;
+        return str.replace(__capitalCaseRegex, (match: string, index?: number): string  =>
+            index ? delimiter + match.toLowerCase() : match.toLowerCase());
+    }
+    
     function deleteProperty(obj: any, property: number): any;
     function deleteProperty(obj: any, property: string): any;
     function deleteProperty(obj: any, property: any): any {
@@ -1123,14 +1136,14 @@ module plat {
     }
     
     function removeNode(node: Node): void {
-        if (isNull(node)) {
+        if (!isNode(node)) {
             return;
         }
     
         var parentNode = node.parentNode;
     
         if (!isNull(parentNode)) {
-            node.parentNode.removeChild(node);
+            parentNode.removeChild(node);
         }
     }
     
@@ -1310,16 +1323,16 @@ module plat {
                 } else if (!isObject(success) || !isString(success.response)) {
                     ___Exception = ___Exception || (___Exception = plat.acquire(__ExceptionStatic));
                     ___Exception.warn('No template found at ' + templateUrl, ___Exception.AJAX);
-                    return ___templateCache.put(templateUrl, serializeHtml());
+                    return ___templateCache.put(templateUrl);
                 }
     
                 var templateString = success.response;
     
                 if (isEmpty(templateString.trim())) {
-                    return ___templateCache.put(templateUrl, serializeHtml());
+                    return ___templateCache.put(templateUrl);
                 }
     
-                return ___templateCache.put(templateUrl, serializeHtml(templateString));
+                return ___templateCache.put(templateUrl, templateString);
             }).catch((error: any): any => {
                 postpone((): void => {
                     ___Exception = ___Exception || (___Exception = plat.acquire(__ExceptionStatic));
@@ -3321,6 +3334,15 @@ module plat {
         camelCase(str: string): string {
             return camelCase(str);
         }
+
+        /**
+         * Takes a camelCase string and delimits it using the specified delimiter.
+         * @param {string} str The camelCased string.
+         * @param {string} delimiter The delimiter to add.
+         */
+        delimit(str: string, delimiter: string): string {
+            return delimit(str, delimiter);
+        }
     }
     register.injectable(__Utils, Utils);
 
@@ -3523,6 +3545,13 @@ module plat {
              */
             get camelCaseRegex(): RegExp {
                 return /([\-_\.\s])(\w+?)/g;
+            }
+
+            /**
+             * Finds all capital letters.
+             */
+            get capitalCaseRegex(): RegExp {
+                return /[A-Z]/g;
             }
 
             /**
@@ -5124,7 +5153,6 @@ module plat {
              * The IBrowserConfig injectable object.
              */
             static config: IBrowserConfig = {
-                NONE: 'none',
                 HASH: 'hash',
                 STATE: 'state',
                 routingType: 'hash',
@@ -5212,10 +5240,6 @@ module plat {
                     _compat = this._compat;
 
                 this._EventManager.dispose(this.uid);
-
-                if ($config.routingType === $config.NONE) {
-                    return;
-                }
 
                 this.__initializing = true;
 
@@ -5467,12 +5491,6 @@ module plat {
          * injectable.
          */
         export interface IBrowserConfig {
-            /**
-             * Specifies that the application will not be doing 
-             * url-based routing.
-             */
-            NONE: string;
-
             /**
              * Specifies that the application wants to use hash-based 
              * routing.
@@ -7701,7 +7719,7 @@ module plat {
             /**
              * The ID of this cache.
              */
-            private __id: string;
+            private __uid: string;
 
             /**
              * The options for this cache.
@@ -7712,15 +7730,15 @@ module plat {
              * Method for creating a new cache object. Takes a generic type to denote the
              * type of objects stored in the new cache.  If a cache with the same ID already exists
              * in the ICacheFactory, a new cache will not be created.
-             * @param {string} id The ID of the new Cache.
+             * @param {string} uid The ID of the new Cache.
              * @param {plat.storage.ICacheOptions} options ICacheOptions 
              * for customizing the Cache.
              */
-            static create<T>(id: string, options?: ICacheOptions): Cache<T> {
-                var cache: Cache<T> = caches[id];
+            static create<T>(uid: string, options?: ICacheOptions): Cache<T> {
+                var cache: Cache<T> = caches[uid];
 
                 if (isNull(cache)) {
-                    cache = caches[id] = new Cache<T>(id, options);
+                    cache = caches[uid] = new Cache<T>(uid, options);
                 }
 
                 return cache;
@@ -7728,10 +7746,10 @@ module plat {
 
             /**
              * Gets a cache out of the ICacheFactory if it exists.
-             * @param {string} id The identifier used to search for the cache.
+             * @param {string} uid The identifier used to search for the cache.
              */
-            static fetch<T>(id: string): Cache<T> {
-                return caches[id];
+            static fetch<T>(uid: string): Cache<T> {
+                return caches[uid];
             }
 
             /**
@@ -7753,8 +7771,8 @@ module plat {
              * @param {string} id The id to use to retrieve the cache from the ICacheFactory.
              * @param {plat.storage.ICacheOptions} options The ICacheOptions for customizing the cache.
              */
-            constructor(id: string, options?: ICacheOptions) {
-                this.__id = id;
+            constructor(uid: string, options?: ICacheOptions) {
+                this.__uid = uid;
                 this.__options = options;
                 this.__size = 0;
 
@@ -7764,7 +7782,7 @@ module plat {
                     };
                 }
 
-                internalCaches[id] = {};
+                internalCaches[uid] = {};
             }
 
             /**
@@ -7773,7 +7791,7 @@ module plat {
              */
             info(): ICacheInfo {
                 return {
-                    id: this.__id,
+                    uid: this.__uid,
                     size: this.__size,
                     options: this.__options
                 };
@@ -7785,8 +7803,8 @@ module plat {
              * @param {T} value The value to store with the associated key.
              */
             put(key: string, value: T): T {
-                var val = internalCaches[this.__id][key];
-                internalCaches[this.__id][key] = value;
+                var val = internalCaches[this.__uid][key];
+                internalCaches[this.__uid][key] = value;
 
                 if (isUndefined(val)) {
                     this.__size++;
@@ -7806,7 +7824,7 @@ module plat {
              * @param key The key to search for in an Cache.
              */
             read(key: string): T {
-                return internalCaches[this.__id][key];
+                return internalCaches[this.__uid][key];
             }
 
             /**
@@ -7814,7 +7832,7 @@ module plat {
              * @param {string} key The key to remove from the Cache.
              */
             remove(key: string): void {
-                deleteProperty(internalCaches[this.__id], key);
+                deleteProperty(internalCaches[this.__uid], key);
                 this.__size--;
             }
 
@@ -7822,7 +7840,7 @@ module plat {
              * Method for clearing an Cache, removing all of its keys.
              */
             clear(): void {
-                internalCaches[this.__id] = {};
+                internalCaches[this.__uid] = {};
                 this.__size = 0;
             }
 
@@ -7831,7 +7849,7 @@ module plat {
              */
             dispose(): void {
                 this.clear();
-                deleteProperty(caches, this.__id);
+                deleteProperty(caches, this.__uid);
             }
         }
 
@@ -7852,17 +7870,17 @@ module plat {
              * Method for creating a new cache object. Takes a generic type to denote the
              * type of objects stored in the new cache.  If a cache with the same ID already exists
              * in the ICacheFactory, a new cache will not be created.
-             * @param {string} id The ID of the new Cache.
+             * @param {string} uid The ID of the new Cache.
              * @param {plat.storage.ICacheOptions} options ICacheOptions 
              * for customizing the Cache.
              */
-            create<T>(id: string, options?: ICacheOptions): Cache<T>;
+            create<T>(uid: string, options?: ICacheOptions): Cache<T>;
 
             /**
              * Gets a cache out of the ICacheFactory if it exists.
-             * @param {string} id The identifier used to search for the cache.
+             * @param {string} uid The identifier used to search for the cache.
              */
-            fetch<T>(id: string): Cache<T>;
+            fetch<T>(uid: string): Cache<T>;
 
             /**
              * Clears the ICacheFactory and all of its caches.
@@ -7906,7 +7924,7 @@ module plat {
              * A unique id for the Cache object, used to 
              * retrieve the ICache out of the CacheFactory.
              */
-            id: string;
+            uid: string;
 
             /**
              * Represents the number of items in the Cache.
@@ -7952,12 +7970,19 @@ module plat {
             }
 
             /**
+             * Serializes a string into a DocumentFragment and stores it in the cache.
+             * @param {string} key The key to use for storage/retrieval of the object.
+             * @param {string} value The string html.
+             * DocumentFragment containing the input Node.
+             */
+            put(key: string, value?: string): async.IThenable<DocumentFragment>;
+            /**
              * Stores a Node in the cache as a DocumentFragment.
              * @param {string} key The key to use for storage/retrieval of the object.
              * @param {Node} value The Node.
              * DocumentFragment containing the input Node.
              */
-            put(key: string, value: Node): async.IThenable<DocumentFragment>;
+            put(key: string, value?: Node): async.IThenable<DocumentFragment>;
             /**
              * Stores a IPromise in the cache.
              * @param {string} key The key to use for storage/retrieval of the object.
@@ -7965,8 +7990,8 @@ module plat {
              * should resolve with a Node.
              * the input Promise resolves.
              */
-            put(key: string, value: async.IThenable<Node>): async.IThenable<DocumentFragment>;
-            put(key: string, value: any): async.IThenable<DocumentFragment> {
+            put(key: string, value?: async.IThenable<Node>): async.IThenable<DocumentFragment>;
+            put(key: string, value?: any): async.IThenable<DocumentFragment> {
                 var Promise = this._Promise;
                 super.put(key, Promise.resolve<DocumentFragment>(value));
 
@@ -7976,6 +8001,8 @@ module plat {
                     var fragment = document.createDocumentFragment();
                     fragment.appendChild(value.cloneNode(true));
                     value = fragment;
+                } else if (isString(value) || isNull(value)) {
+                    value = serializeHtml(value);
                 }
 
                 return Promise.resolve<DocumentFragment>(value);
@@ -8428,13 +8455,9 @@ module plat {
             protected static _Exception: IExceptionStatic;
 
             /**
-             * A set of functions to be fired prior to when a particular observed array is mutated.
-             */
-            static preArrayListeners: IObject<IObject<Array<(ev: IPreArrayChangeInfo) => void>>> = {};
-            /**
              * A set of functions to be fired when a particular observed array is mutated.
              */
-            static postArrayListeners: IObject<IObject<Array<(ev: IPostArrayChangeInfo<any>) => void>>> = {};
+            static arrayChangeListeners: IObject<IObject<Array<(changes: Array<IArrayChanges<any>>) => void>>> = {};
 
             /**
              * An object for quickly accessing a previously created ContextManager.
@@ -8559,7 +8582,7 @@ module plat {
              * @param {string} uid The uid used to search for listeners.
              */
             static removeArrayListeners(absoluteIdentifier: string, uid: string): void {
-                var listeners = ContextManager.postArrayListeners[absoluteIdentifier];
+                var listeners = ContextManager.arrayChangeListeners[absoluteIdentifier];
 
                 if (!isNull(listeners)) {
                     deleteProperty(listeners, uid);
@@ -8876,12 +8899,12 @@ module plat {
 
                         if (hasObservableListener) {
                             var uid = observableListener.uid;
-                            removeListener = this.observeArrayMutation(uid, null, noop, join, context, null);
+                            removeListener = this.observeArrayMutation(uid, noop, join, context, null);
                             removeArrayObserve = this.observe(join, {
                                 uid: uid,
                                 listener: (newValue: Array<any>, oldValue: Array<any>): void => {
                                     removeListener();
-                                    removeListener = this.observeArrayMutation(uid, null, noop, join, newValue, oldValue);
+                                    removeListener = this.observeArrayMutation(uid, noop, join, newValue, oldValue);
                                 }
                             });
                         }
@@ -8904,17 +8927,14 @@ module plat {
              * that array. The watched functions are push, pop, shift, splice, unshift, sort, 
              * and reverse.
              * @param {string} uid The unique ID of the object observing the array.
-             * @param {(ev: plat.observable.IPreArrayChangeInfo) => void} preListener The callback for prior to when an observed Array 
-             * function has been called.
-             * @param {(ev: plat.observable.IPostArrayChangeInfo<any>) => void} postListener The callback for after when an observed Array 
-             * function has been called.
+             * @param {(changes: Array<plat.observable.IArrayChanges<any>>) => void} listener The callback for after 
+             * when an observed Array function has been called.
              * @param {string} absoluteIdentifier The identifier from the root context used to find the array.
              * @param {Array<any>} array The array to be observed.
              * @param {Array<any>} oldArray The old array to stop observing.
              */
-            observeArrayMutation(uid: string, preListener: (ev: IPreArrayChangeInfo) => void,
-                postListener: (ev: IPostArrayChangeInfo<any>) => void, absoluteIdentifier: string, array: Array<any>,
-                oldArray: Array<any>): IRemoveListener {
+            observeArrayMutation(uid: string, listener: (changes: Array<IArrayChanges<any>>) => void, absoluteIdentifier: string,
+                array: Array<any>, oldArray: Array<any>): IRemoveListener {
                 var length = arrayMethods.length,
                     method: string,
                     i: number,
@@ -8942,11 +8962,8 @@ module plat {
                 }
 
                 var removeListeners: Array<IRemoveListener> = [];
-                if (isFunction(preListener)) {
-                    removeListeners.push(this._pushArrayListener(uid, absoluteIdentifier, preListener, ContextManager.preArrayListeners));
-                }
-                if (isFunction(postListener)) {
-                    removeListeners.push(this._pushArrayListener(uid, absoluteIdentifier, postListener, ContextManager.postArrayListeners));
+                if (isFunction(listener)) {
+                    removeListeners.push(this._pushArrayListener(uid, absoluteIdentifier, listener));
                 }
 
                 this._overwriteArray(absoluteIdentifier, array);
@@ -8972,13 +8989,12 @@ module plat {
              * Pushes Array mutation listeners and removers.
              * @param {string} uid The unique identifier to store the callback.
              * @param {string} absoluteIdentifier The identifier of the Array being observed.
-             * @param {(ev: plat.observable.IPreArrayChangeInfo) => void} listener The Array mutation listener.
-             * @param {plat.IObject<plat.IObject<Array<(ev: plat.observable.IPreArrayChangeInfo) => void>>>} arrayListeners 
-             * The Array to hold the new listener.
+             * @param {(changes: Array<plat.observable.IArrayChanges<any>>) => void} listener The Array mutation listener.
              */
-            protected _pushArrayListener(uid: string, absoluteIdentifier: string, listener: (ev: IPreArrayChangeInfo) => void,
-                arrayListeners: IObject<IObject<Array<(ev: IPreArrayChangeInfo) => void>>>): IRemoveListener {
-                var arrayCallbacks = arrayListeners[absoluteIdentifier];
+            protected _pushArrayListener(uid: string, absoluteIdentifier: string,
+                listener: (changes: Array<IArrayChanges<any>>) => void): IRemoveListener {
+                var arrayListeners = ContextManager.arrayChangeListeners,
+                    arrayCallbacks = arrayListeners[absoluteIdentifier];
 
                 if (isNull(arrayCallbacks)) {
                     arrayCallbacks = arrayListeners[absoluteIdentifier] = {};
@@ -9166,11 +9182,11 @@ module plat {
              * @param {string} identifier The identifier for the property that changed.
              * @param {any} newValue The new value of the property.
              * @param {any} oldValue The old value of the property.
+             * @param {Array<string>} mappings? An array of mapped child identifier keys to notify.
              */
-            protected _notifyChildProperties(identifier: string, newValue: any, oldValue: any): void {
-                var props = this.__identifierHash[identifier] || {},
-                    mappings = Object.keys(props),
-                    length = mappings.length,
+            protected _notifyChildProperties(identifier: string, newValue: any, oldValue: any, mappings?: Array<string>): void {
+                mappings = mappings || Object.keys(this.__identifierHash[identifier] || {});
+                var length = mappings.length,
                     binding: string,
                     property: string,
                     parentProperty: string,
@@ -9178,6 +9194,7 @@ module plat {
                     values: IObject<any> = {},
                     value: any,
                     key: string,
+                    keyIsLength: boolean,
                     start = identifier.length + 1,
                     newParent: any,
                     oldParent: any,
@@ -9194,6 +9211,7 @@ module plat {
                     property = binding.slice(start);
                     split = property.split('.');
                     key = split.pop();
+                    keyIsLength = key === 'length',
                     parentProperty = split.join('.');
 
                     if (isEmpty(parentProperty)) {
@@ -9202,7 +9220,7 @@ module plat {
                         newChild = isNull(newParent) ? undefined : newParent[key];
                         oldChild = isNull(oldParent) ? undefined : oldParent[key];
 
-                        if (key === 'length' && !isArray(oldParent) && isArray(newParent)) {
+                        if (keyIsLength && !isArray(oldParent) && isArray(newParent)) {
                             var lengthListener = this.__lengthListeners[binding];
                             if (!isNull(lengthListener)) {
                                 var uid = lengthListener.uid,
@@ -9215,12 +9233,12 @@ module plat {
                                 access(arrayParent, arrayKey);
 
                                 join = isString(this.__observedIdentifier) ? this.__observedIdentifier : arraySplit.join('.');
-                                var removeListener = this.observeArrayMutation(uid, null, noop, join, newParent, null);
+                                var removeListener = this.observeArrayMutation(uid, noop, join, newParent, null);
                                 this.observe(join, {
                                     uid: uid,
                                     listener: (nValue: Array<any>, oValue: Array<any>): void => {
                                         removeListener();
-                                        removeListener = this.observeArrayMutation(uid, null, noop, join, nValue, oValue);
+                                        removeListener = this.observeArrayMutation(uid, noop, join, nValue, oValue);
                                     }
                                 });
 
@@ -9252,6 +9270,10 @@ module plat {
 
                     if (isObject(newParent) && (!isArray(newParent) || newParent.length > key)) {
                         this._define(binding, newParent, key);
+                    }
+
+                    if (!(isNull(oldChild) || (isArray(oldParent) && keyIsLength))) {
+                        ContextManager.defineProperty(oldParent, key, oldChild, true, true, true);
                     }
 
                     this._execute(binding, newChild, oldChild);
@@ -9320,64 +9342,87 @@ module plat {
              * array function.
              */
             protected _overwriteArrayFunction(absoluteIdentifier: string, method: string): (...args: any[]) => any {
-                var preCallbackObjects = ContextManager.preArrayListeners[absoluteIdentifier] || {},
-                    postCallbackObjects = ContextManager.postArrayListeners[absoluteIdentifier] || {},
+                var callbackObjects = ContextManager.arrayChangeListeners[absoluteIdentifier] || {},
                     _this = this;
 
                 // we can't use a fat-arrow function here because we need the array context.
                 return function observedArrayFn(...args: any[]): any {
-                    var oldArray = this.slice(0),
+                    var oldLength = this.length,
+                        originalArray = this.slice(0),
                         returnValue: any,
-                        isShift = method.indexOf('shift') !== -1,
-                        keys = Object.keys(preCallbackObjects),
+                        isUnshift = method === 'unshift',
+                        isShift = method === 'shift',
+                        isSplice = method === 'splice',
+                        selfNotify = isShift || isUnshift || isSplice,
+                        isUpdate = method === 'sort' || method === 'reverse',
+                        oldArray: Array<any>,
+                        addedCount: number,
+                        index: number,
+                        newLength: number,
+                        removed: Array<any>;
+
+                    if (selfNotify) {
+                        _this.__isArrayFunction = true;
+                        returnValue = (<any>Array.prototype)[method].apply(this, args);
+                        _this.__isArrayFunction = false;
+                        newLength = this.length;
+
+                        index = 0;
+                        if (isShift) {
+                            addedCount = 0;
+                            removed = oldLength > 0 ? [returnValue] : [];
+                        } else if (isUnshift) {
+                            addedCount = args.length;
+                            removed = [];
+                        } else {
+                            addedCount = args.length - 2;
+                            index = args[0];
+                            removed = returnValue;
+                        }
+                    } else {
+                        returnValue = (<any>Array.prototype)[method].apply(this, args);
+                        newLength = this.length;
+
+                        if (isUpdate) {
+                            oldArray = originalArray;
+                        } else if (method === 'push') {
+                            addedCount = args.length;
+                            index = oldLength;
+                            removed = [];
+                        } else if (method === 'pop') {
+                            addedCount = 0;
+                            index = newLength;
+                            removed = oldLength > 0 ? [returnValue] : [];
+                        }
+                    }
+
+                    var keys = Object.keys(callbackObjects),
                         length = keys.length,
-                        callbacks: Array<(ev: IPreArrayChangeInfo) => void>,
+                        callbacks: Array<(changes: Array<IArrayChanges<any>>) => void>,
                         jLength: number,
                         i: number,
                         j: number;
 
                     for (i = 0; i < length; ++i) {
-                        callbacks = preCallbackObjects[keys[i]];
+                        callbacks = callbackObjects[keys[i]];
                         jLength = callbacks.length;
 
                         for (j = 0; j < jLength; ++j) {
-                            callbacks[j]({
-                                method: method,
-                                arguments: args
-                            });
+                            callbacks[j]([{
+                                object: this,
+                                type: method,
+                                index: index,
+                                removed: removed,
+                                addedCount: addedCount,
+                                oldArray: oldArray
+                            }]);
                         }
                     }
 
-                    if (isShift) {
-                        _this.__isArrayFunction = true;
-                        returnValue = (<any>Array.prototype)[method].apply(this, args);
-                        _this.__isArrayFunction = false;
-                    } else {
-                        returnValue = (<any>Array.prototype)[method].apply(this, args);
-                    }
-
-                    keys = Object.keys(postCallbackObjects);
-                    length = keys.length;
-
-                    for (i = 0; i < length; ++i) {
-                        callbacks = postCallbackObjects[keys[i]];
-                        jLength = callbacks.length;
-
-                        for (j = 0; j < jLength; ++j) {
-                            callbacks[j]({
-                                method: method,
-                                returnValue: returnValue,
-                                oldArray: oldArray,
-                                newArray: this,
-                                arguments: args
-                            });
-                        }
-                    }
-
-                    if (isShift) {
-                        _this._notifyChildProperties(absoluteIdentifier, this, oldArray);
-                    } else if (oldArray.length !== this.length) {
-                        _this._execute(absoluteIdentifier + '.length', this.length, oldArray.length);
+                    if (selfNotify) {
+                        _this._notifyChildProperties(absoluteIdentifier, this, originalArray);
+                    } else if (newLength !== oldLength) {
+                        _this._execute(absoluteIdentifier + '.length', newLength, oldLength);
                     }
 
                     return returnValue;
@@ -9481,14 +9526,26 @@ module plat {
                         }
 
                         var props = this.__identifierHash[identifier],
-                            childPropertiesExist = isObject(props) && Object.keys(props).length > 0;
+                            childPropertiesExist = false,
+                            mappings: Array<string>;
+
+                        if (isObject(props)) {
+                            mappings = Object.keys(props);
+                            if (mappings.length > 0) {
+                                childPropertiesExist = true;
+                            } else {
+                                deleteProperty(this.__identifierHash, identifier);
+                            }
+                        }
+
                         this._execute(identifier, value, oldValue);
 
                         if (childPropertiesExist) {
-                            this._notifyChildProperties(identifier, value, oldValue);
-                        }
-
-                        if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
+                            this._notifyChildProperties(identifier, value, oldValue, mappings);
+                            if (!isObject(value)) {
+                                this.__definePrimitive(identifier, immediateContext, key);
+                            }
+                        } else if (isEmpty(this.__identifiers[identifier])) {
                             ContextManager.defineProperty(immediateContext, key, value, true, true, true);
                         } else if (!isObject(value)) {
                             this.__definePrimitive(identifier, immediateContext, key);
@@ -9530,7 +9587,18 @@ module plat {
                         }
 
                         var props = this.__identifierHash[identifier],
-                            childPropertiesExist = isObject(props) && Object.keys(props).length > 0;
+                            childPropertiesExist = false,
+                            mappings: Array<string>;
+
+                        if (isObject(props)) {
+                            var mappings = Object.keys(props);
+                            if (mappings.length > 0) {
+                                childPropertiesExist = true;
+                            } else {
+                                deleteProperty(this.__identifierHash, identifier);
+                            }
+                        }
+
                         this._execute(identifier, newValue, oldValue);
 
                         if (!childPropertiesExist && isEmpty(this.__identifiers[identifier])) {
@@ -9538,7 +9606,7 @@ module plat {
                         } else if (isObject(value)) {
                             this.__defineObject(identifier, immediateContext, key);
                             if (childPropertiesExist) {
-                                this._notifyChildProperties(identifier, newValue, oldValue);
+                                this._notifyChildProperties(identifier, newValue, oldValue, mappings);
                             }
                         } else if (!isDefined) {
                             this.__definePrimitive(identifier, immediateContext, key);
@@ -9619,14 +9687,9 @@ module plat {
          */
         export interface IContextManagerStatic {
             /**
-             * A set of functions to be fired prior to when a particular observed array is mutated.
-             */
-            preArrayListeners: IObject<IObject<Array<(ev: IPreArrayChangeInfo) => void>>>;
-
-            /**
              * A set of functions to be fired when a particular observed array is mutated.
              */
-            postArrayListeners: IObject<IObject<Array<(ev: IPostArrayChangeInfo<any>) => void>>>;
+            arrayChangeListeners: IObject<IObject<Array<(changes: Array<IArrayChanges<any>>) => void>>>;
 
             /**
              * Gets the ContextManager associated to the given control. If no 
@@ -9736,41 +9799,42 @@ module plat {
         }
 
         /**
-         * An object for Array method mutation info prior to the Array being mutated.
-         */
-        export interface IPreArrayChangeInfo {
-            /**
-             * The method name that was called. Possible values are:
-             * 'push', 'pop', 'reverse', 'shift', 'sort', 'splice', 
-             * and 'unshift'
-             */
-            method: string;
-
-            /**
-             * The arguments passed into the array function.
-             */
-            arguments: Array<any>;
-        }
-
-        /**
-         * An object for Array method mutation info after the Array has been mutated. Takes a 
+         * An object denoting Array changes after the Array has been mutated. Takes a 
          * generic type to denote the type of array it uses.
          */
-        export interface IPostArrayChangeInfo<T> extends IPreArrayChangeInfo {
-            /**
-             * The value returned from the called function.
-             */
-            returnValue: any;
-
-            /**
-             * The previous value of the array.
-             */
-            oldArray: Array<T>;
-
+        export interface IArrayChanges<T> {
             /**
              * The new value of the array.
              */
-            newArray: Array<T>;
+            object: Array<T>;
+
+            /**
+             * The method name that was called. Array mutation methods are:
+             * 'push', 'pop', 'reverse', 'shift', 'sort', 'splice', 
+             * and 'unshift'.
+             */
+            type: string;
+
+            /**
+             * The index at which the change occurred. Only available on Array mutation methods.
+             */
+            index?: number;
+
+            /**
+             * An array of the removed elements. Only available on Array mutation methods.
+             */
+            removed?: Array<T>;
+
+            /**
+             * The number of elements added. Only available on Array mutation methods.
+             */
+            addedCount?: number;
+
+            /**
+             * The old Array prior to a 'reverse' or 'sort' mutation type. 
+             * Only available when the type is either 'reverse' or 'sort'.
+             */
+            oldArray?: Array<T>;
         }
 
             /**
@@ -9795,6 +9859,90 @@ module plat {
                  * template control.
                  */
                 observe(listener: (newValue: T, oldValue: T) => void): IRemoveListener;
+            }
+
+            /**
+             * Defines methods that interact with a control that implements IImplementTwoWayBinding 
+             * (e.g. Bind.
+             */
+            export interface ISupportTwoWayBinding {
+                /**
+                 * Adds a listener to be called when the bindable property changes.
+                 * @param {plat.IPropertyChangedListener<any>} listener The function that acts as a listener.
+                 */
+                onInput(listener: (newValue: any, oldValue: any) => void): IRemoveListener;
+
+                /**
+                 * A function that allows this control to observe both the bound property itself as well as 
+                 * potential child properties if being bound to an object.
+                 * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the 
+                 * databinding.
+                 */
+                observeProperties(implementer: observable.IImplementTwoWayBinding): void;
+            }
+
+            /**
+             * Defines methods that interact with a control that implements ISupportTwoWayBinding 
+             * (e.g. any control that extends BindControl.
+             */
+            export interface IImplementTwoWayBinding {
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener function.
+                 * @param {string} identifier? The identifier off of the bound object to listen to for changes. If undefined or empty  
+                 * the listener will listen for changes to the bound item itself.
+                 */
+                observeProperty<T>(listener: IBoundPropertyChangedListener<T>, identifier?: string): IRemoveListener;
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener function.
+                 * @param {number} index? The index off of the bound object to listen to for changes if the bound object is an Array. 
+                 * If undefined or empty the listener will listen for changes to the bound Array itself.
+                 */
+                observeProperty<T>(listener: IBoundPropertyChangedListener<T>, index?: number): IRemoveListener;
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {(changes: Array<plat.observable.IArrayChanges<T>>, identifier: string) => void} listener The listener function.
+                 * @param {string} identifier? The identifier off of the bound object to listen to for changes. If undefined or empty  
+                 * the listener will listen for changes to the bound item itself.
+                 * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes. Should be set to true with a 
+                 * listener of this type.
+                 */
+                observeProperty<T>(listener: (changes: Array<IArrayChanges<T>>, identifier: string) => void,
+                    identifier?: string, arrayMutationsOnly?: boolean): IRemoveListener;
+                /**
+                 * A function that allows a ISupportTwoWayBinding to observe both the 
+                 * bound property itself as well as potential child properties if being bound to an object.
+                 * @param {(changes: Array<plat.observable.IArrayChanges<T>>, identifier: number) => void} listener The listener function.
+                 * @param {number} index? The index off of the bound object to listen to for changes if the bound object is an Array. 
+                 * If undefined or empty the listener will listen for changes to the bound Array itself.
+                 * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes. Should be set to true with a 
+                 * listener of this type.
+                 */
+                observeProperty<T>(listener: (changes: Array<IArrayChanges<T>>, identifier: number) => void,
+                    index?: number, arrayMutationsOnly?: boolean): IRemoveListener;
+
+                /**
+                 * Gets the current value of the bound property.
+                 */
+                evaluate(): any;
+            }
+
+            /**
+             * Defines a function that will be called whenever a bound property specified by a given identifier has changed.
+             */
+            export interface IBoundPropertyChangedListener<T> {
+                /**
+                 * The method signature for IBoundPropertyChangedListener.
+                 * @param {T} newValue The new value of the observed property.
+                 * @param {T} oldValue The previous value of the observed property.
+                 * @param {any} identifier The string or number identifier that specifies the changed property.
+                 * @param {boolean} firstTime? True if this is the first case where the bound property is being set.
+                 */
+                (newValue: T, oldValue: T, identifier: any, firstTime?: boolean): void;
             }
     }
     /**
@@ -10795,19 +10943,26 @@ module plat {
             }
 
             var ctrl = <ui.TemplateControl>control;
-            if (isString(ctrl.absoluteContextPath) && isFunction(ctrl.contextChanged)) {
-                var contextManager = Control._ContextManager.getManager(ctrl.root);
+            if (isString(ctrl.absoluteContextPath)) {
+                if (isFunction(ctrl.contextChanged)) {
+                    var contextManager = Control._ContextManager.getManager(ctrl.root);
 
-                contextManager.observe(ctrl.absoluteContextPath, {
-                    uid: control.uid,
-                    listener: (newValue, oldValue): void => {
-                        ui.TemplateControl.contextChanged(<ui.TemplateControl>control, newValue, oldValue);
+                    contextManager.observe(ctrl.absoluteContextPath, {
+                        uid: control.uid,
+                        listener: (newValue, oldValue): void => {
+                            ui.TemplateControl.contextChanged(<ui.TemplateControl>control, newValue, oldValue);
+                        }
+                    });
+
+                    if (isFunction((<any>ctrl).zCC__plat)) {
+                        (<any>ctrl).zCC__plat();
+                        deleteProperty(ctrl, 'zCC__plat');
                     }
-                });
+                }
 
-                if (isFunction((<any>ctrl).zCC__plat)) {
-                    (<any>ctrl).zCC__plat();
-                    deleteProperty(ctrl, 'zCC__plat');
+                var element = ctrl.element;
+                if (isNode(element) && isFunction(element.removeAttribute)) {
+                    element.removeAttribute(__Hide);
                 }
             }
 
@@ -10985,8 +11140,7 @@ module plat {
          * passed into the constructor as arguments as long as the control is instantiated with its associated
          * injector.
          */
-        constructor() {
-        }
+        constructor() { }
 
         /**
          * The initialize event method for a control. In this method a control should initialize all the necessary 
@@ -11071,122 +11225,113 @@ module plat {
         /**
          * Allows a Control to observe any property on its context and receive updates when
          * the property is changed.
-         * @param {any} context A parent object of the item we're trying to observe.
-         * @param {string} property The property string that denotes the item in the context.
-         * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method 
-         * will have its 'this' context set to the control instance.
+         * @param {plat.IIdentifierChangedListener<T>} listener The method called when the property is changed. 
+         * This method will have its 'this' context set to the control instance.
+         * @param {string} identifier? The property string that denotes the item in the context (e.g. "foo.bar.baz" is observing the 
+         * property `baz` in the object `bar` in the object `foo` in the control's context.
          */
-        observe<T>(context: any, property: string, listener: (value: T, oldValue: T) => void): IRemoveListener;
+        observe<T>(listener: (value: T, oldValue: T, identifier: string) => void, identifier?: string): IRemoveListener;
         /**
          * Allows a Control to observe any property on its context and receive updates when
          * the property is changed.
-         * @param {any} context The parent object of the item we're trying to observe.
-         * @param {number} index The index that denotes the item in the context.
-         * @param {(value: T, oldValue: T) => void} listener The method called when the property is changed. This method 
+         * @param {plat.IIdentifierChangedListener<T>} listener The method called when the property is changed. This method 
          * will have its 'this' context set to the control instance.
+         * @param {number} index? The index that denotes the item in the context if the context is an Array.
          */
-        observe<T>(context: any, index: number, listener: (value: T, oldValue: T) => void): IRemoveListener;
-        observe(context: any, property: any, listener: (value: any, oldValue: any) => void): IRemoveListener {
-            if (isNull(context)) {
+        observe<T>(listener: (value: T, oldValue: T, index: number) => void, index?: number): IRemoveListener;
+        observe(listener: (value: any, oldValue: any, identifier: any) => void, identifier?: any): IRemoveListener {
+            var control = isObject((<ui.TemplateControl>this).context) ? <ui.TemplateControl>this : this.parent;
+            if (isNull(control)) {
                 return noop;
             }
 
-            var control = isFunction((<ui.TemplateControl>(<any>this)).getAbsoluteIdentifier) ? this : <Control>this.parent;
-            if (isNull(control) || !isFunction((<ui.TemplateControl>(<any>control)).getAbsoluteIdentifier)) {
-                return noop;
-            }
-
-            var absoluteIdentifier = (<ui.TemplateControl>(<any>control)).getAbsoluteIdentifier(context);
-            if (!isEmpty(absoluteIdentifier)) {
-                absoluteIdentifier += isEmpty(property) ? '' : '.' + property;
-            } else if (absoluteIdentifier === '' && isString(property) && property.indexOf(__CONTEXT) === 0) {
-                absoluteIdentifier = property;
+            var absoluteIdentifier: string;
+            if (isEmpty(identifier)) {
+                absoluteIdentifier = control.absoluteContextPath;
+            } else if (isString(identifier)) {
+                var identifierExpression = (Control._parser || <expressions.Parser>acquire(__Parser)).parse(identifier);
+                absoluteIdentifier = control.absoluteContextPath + '.' + identifierExpression.identifiers[0];
             } else {
-                return noop;
+                absoluteIdentifier = control.absoluteContextPath + '.' + identifier;
             }
 
             var _ContextManager: observable.IContextManagerStatic = Control._ContextManager || acquire(__ContextManagerStatic),
-                contextManager = _ContextManager.getManager(Control.getRootControl(this));
+                contextManager = _ContextManager.getManager(Control.getRootControl(control));
 
             return contextManager.observe(absoluteIdentifier, {
-                listener: listener.bind(this),
+                listener: (newValue: any, oldValue: any): void => {
+                    listener.call(this, newValue, oldValue, identifier);
+                },
                 uid: this.uid
             });
         }
 
         /**
          * Allows a Control to observe an array and receive updates when certain array-changing methods are called.
-         * The methods watched are push, pop, shift, sort, splice, reverse, and unshift. This method does not watch
+         * The methods watched are push, pop, shift, sort, splice, reverse, and unshift. This method currently does not watch
          * every item in the array.
-         * @param {any} context A parent object of the array we're trying to observe.
-         * @param {string} property The property string that denotes the array in the context.
-         * @param {(ev: plat.observable.IPreArrayChangeInfo) => void} preListener The method called prior to an array-changing 
-         * method is called. This method will have its 'this' context set to the control instance.
-         * @param {(ev: plat.observable.IPostArrayChangeInfo<T>) => void} postListener The method called after an array-changing 
-         * method is called. This method will have its 'this' context set to the control instance.
+         * @param {(changes: Array<plat.observable.IArrayChanges<any>>, identifier: string) => void} listener The method called 
+         * after an array-changing method is called. This method will have its 'this' context set to the control instance.
+         * @param {string} identifier? The property string that denotes the array in the context.
          */
-        observeArray<T>(context: any, property: string, preListener: (ev: observable.IPreArrayChangeInfo) => void,
-            postListener: (ev: observable.IPostArrayChangeInfo<T>) => void): IRemoveListener;
+        observeArray<T>(listener: (changes: Array<observable.IArrayChanges<T>>, identifier: string) => void,
+            identifier?: string): IRemoveListener;
         /**
          * Allows a Control to observe an array and receive updates when certain array-changing methods are called.
-         * The methods watched are push, pop, shift, sort, splice, reverse, and unshift. This method does not watch
+         * The methods watched are push, pop, shift, sort, splice, reverse, and unshift. This method currently does not watch
          * every item in the array.
-         * @param {any} context The parent object of the array we're trying to observe.
-         * @param {number} index The index that denotes the array in the context.
-         * @param {(ev: plat.observable.IPreArrayChangeInfo) => void} preListener The method called prior to an array-changing 
-         * method is called. This method will have its 'this' context set to the control instance.
-         * @param {(ev: plat.observable.IPostArrayChangeInfo<T>) => void} postListener The method called after an array-changing 
-         * method is called. This method will have its 'this' context set to the control instance.
+         * @param {(changes: Array<plat.observable.IArrayChanges<T>>, identifier: number) => void} listener The method called 
+         * after an array-changing method is called. This method will have its 'this' context set to the control instance.
+         * @param {number} identifier? The index that denotes the array in the context if the context is an Array.
          */
-        observeArray<T>(context: any, index: number, preListener: (ev: observable.IPreArrayChangeInfo) => void,
-            postListener: (ev: observable.IPostArrayChangeInfo<T>) => void): IRemoveListener;
-        observeArray(context: any, property: any, preListener: (ev: observable.IPreArrayChangeInfo) => void,
-            postListener: (ev: observable.IPostArrayChangeInfo<any>) => void): IRemoveListener {
-            if (isNull(context)) {
+        observeArray<T>(listener: (changes: Array<observable.IArrayChanges<T>>, identifier: number) => void,
+            identifier?: number): IRemoveListener;
+        observeArray<T>(listener: (changes: Array<observable.IArrayChanges<T>>, identifier: any) => void,
+            identifier?: any): IRemoveListener {
+            var control = isObject((<ui.TemplateControl>this).context) ? <ui.TemplateControl>this : this.parent,
+                context = control.context;
+            if (isNull(control) || !isObject(context)) {
                 return noop;
             }
 
-            var propertyIsString = isString(property),
-                array: Array<any> = propertyIsString ? property === '' ? context :
-                    (Control._parser || <expressions.Parser>acquire(__Parser)).parse(property).evaluate(context) :
-                    context[property];
+            var array: Array<any>,
+                absoluteIdentifier: string;
+
+            if (isEmpty(identifier)) {
+                array = context;
+                absoluteIdentifier = control.absoluteContextPath;
+            } else if (isString(identifier)) {
+                var identifierExpression = (Control._parser || <expressions.Parser>acquire(__Parser)).parse(identifier);
+                array = identifierExpression.evaluate(context);
+                absoluteIdentifier = control.absoluteContextPath + '.' + identifierExpression.identifiers[0];
+            } else {
+                array = context[identifier];
+                absoluteIdentifier = control.absoluteContextPath + '.' + identifier;
+            }
+
             if (!isArray(array)) {
                 return noop;
             }
 
-            var control = isFunction((<ui.TemplateControl>this).getAbsoluteIdentifier) ? this : <Control>this.parent;
-            if (isNull(control) || !isFunction((<ui.TemplateControl>control).getAbsoluteIdentifier)) {
+            var listenerIsFunction = isFunction(listener);
+            if (!listenerIsFunction) {
                 return noop;
             }
 
-            var preIsFunction = isFunction(preListener),
-                postIsFunction = isFunction(postListener);
+            listener = listener.bind(this);
 
-            if (!(preIsFunction || postIsFunction)) {
-                return noop;
-            }
-
-            var absoluteIdentifier = (<ui.TemplateControl>control).getAbsoluteIdentifier(context),
-                ContextManager: observable.IContextManagerStatic = Control._ContextManager || acquire(__ContextManagerStatic);
-
-            if (!isEmpty(absoluteIdentifier)) {
-                absoluteIdentifier += isEmpty(property) ? '' : '.' + property;
-            } else if (absoluteIdentifier === '' && propertyIsString && property.indexOf(__CONTEXT) === 0) {
-                absoluteIdentifier = property;
-            } else {
-                return noop;
-            }
-
-            var contextManager = ContextManager.getManager(Control.getRootControl(this)),
-                preCallback = preIsFunction ? preListener.bind(this) : null,
-                postCallback = postIsFunction ? postListener.bind(this) : null,
+            var ContextManager: observable.IContextManagerStatic = Control._ContextManager || acquire(__ContextManagerStatic),
+                contextManager = ContextManager.getManager(Control.getRootControl(control)),
                 uid = this.uid,
-                removeListener = contextManager.observeArrayMutation(uid, preCallback, postCallback, absoluteIdentifier, array, null),
+                callback = (changes: Array<observable.IArrayChanges<any>>): void => {
+                    listener(changes, identifier);
+                },
+                removeListener = contextManager.observeArrayMutation(uid, callback, absoluteIdentifier, array, null),
                 removeCallback = contextManager.observe(absoluteIdentifier, {
                     listener: (newValue: Array<any>, oldValue: Array<any>): void => {
                         removeListener();
                         removeListener = contextManager
-                            .observeArrayMutation(uid, preCallback, postCallback, absoluteIdentifier, newValue, oldValue);
+                            .observeArrayMutation(uid, callback, absoluteIdentifier, newValue, oldValue);
                     },
                     uid: uid
                 });
@@ -11200,18 +11345,18 @@ module plat {
         /**
          * Parses an expression string and observes any associated identifiers. When an identifier
          * value changes, the listener will be called.
+         * @param {plat.IIdentifierChangedListener<T>} listener The listener to call when the expression identifer values change.
          * @param {string} expression The expression string to watch for changes.
-         * @param {(value: any, oldValue: any) => void} listener The listener to call when the expression identifer values change.
          */
-        observeExpression(expression: string, listener: (value: any, oldValue: any) => void): IRemoveListener;
+        observeExpression<T>(listener: (value: T, oldValue: T, expression: string) => void, expression: string): IRemoveListener;
         /**
          * Using a IParsedExpression observes any associated identifiers. When an identifier
          * value changes, the listener will be called.
+         * @param {plat.IIdentifierChangedListener<T>} listener The listener to call when the expression identifer values change.
          * @param {plat.expressions.IParsedExpression} expression The expression string to watch for changes.
-         * @param {(value: any, oldValue: any) => void} listener The listener to call when the expression identifer values change.
          */
-        observeExpression(expression: expressions.IParsedExpression, listener: (value: any, oldValue: any) => void): IRemoveListener;
-        observeExpression(expression: any, listener: (value: any, oldValue: any) => void): IRemoveListener {
+        observeExpression<T>(listener: (value: T, oldValue: T, expression: string) => void, expression: expressions.IParsedExpression): IRemoveListener;
+        observeExpression(listener: (value: any, oldValue: any, expression: string) => void, expression: any): IRemoveListener {
             if (isEmpty(expression)) {
                 return noop;
             }
@@ -11229,8 +11374,6 @@ module plat {
             if (isNull(control) || !isString(control.absoluteContextPath)) {
                 return noop;
             }
-
-            listener = listener.bind(this);
 
             var aliases = expression.aliases,
                 alias: string,
@@ -11298,7 +11441,7 @@ module plat {
                     uid: uid,
                     listener: (): void => {
                         var value = evaluateExpression(expression, control);
-                        listener(value, oldValue);
+                        listener.call(this, value, oldValue, (<expressions.IParsedExpression>expression).expression);
                         oldValue = value;
                     }
                 }));
@@ -12076,14 +12219,13 @@ module plat {
                     return;
                 }
 
-                var dom = control.dom,
-                    element = control.element,
+                var element = control.element,
                     parentNode: Node;
 
                 if (control.replaceWith === null ||
                 control.replaceWith === '' ||
                 isDocumentFragment(element)) {
-                    dom.removeAll(control.startNode, control.endNode);
+                    removeAll(control.startNode, control.endNode);
                     control.elementNodes = control.startNode = control.endNode = null;
                     return;
                 } else if (isNull(element)) {
@@ -12129,10 +12271,10 @@ module plat {
 
                     return templateCache.read(type).catch((template: any): async.IThenable<DocumentFragment> => {
                         if (isNull(template)) {
-                            template = dom.serializeHtml(control.templateString);
-                    }
+                            template = control.templateString;
+                        }
 
-                    return templateCache.put(type, template);
+                        return templateCache.put(type, template);
                     });
                 } else {
                     return <any>Promise.reject(null);
@@ -12186,9 +12328,9 @@ module plat {
              * This event is fired when an TemplateControl's context property 
              * is changed by an ancestor control.
              * @param {any} newValue? The new value of the context.
-             * @param {any} oldValue? The old value of the context.
+             * @param {any} oldValue The old value of the context.
              */
-            contextChanged(newValue?: any, oldValue?: any): void { }
+            contextChanged(newValue: any, oldValue: any): void { }
 
             /**
              * A method called for TemplateControls to set their template. 
@@ -12197,78 +12339,6 @@ module plat {
              * and appear on the DOM.
              */
             setTemplate(): void { }
-
-            /**
-             * Finds the identifier string associated with the given context object. The string returned
-             * is the path from a control's context.
-             * @param {any} context The object/primitive to locate on the control's context.
-             *     // returns 'title.font'
-             *     this.getIdentifier(this.context.title.font);
-             */
-            getIdentifier(context: any): string {
-                var queue: Array<{ context: any; identifier: string; }> = [],
-                    dataContext = this.context,
-                    obj = {
-                        context: dataContext,
-                        identifier: ''
-                    },
-                    length: number,
-                    keys: Array<string>,
-                    key: string,
-                    newObj: any;
-
-                if (dataContext === context) {
-                    return '';
-                }
-
-                queue.push(obj);
-
-                while (queue.length > 0) {
-                    obj = queue.pop();
-                    dataContext = obj.context;
-
-                    if (!isObject(dataContext) || isEmpty(dataContext)) {
-                        continue;
-                    }
-
-                    keys = Object.keys(dataContext);
-                    length = keys.length;
-
-                    for (var i = 0; i < length; ++i) {
-                        key = keys[i];
-                        newObj = dataContext[key];
-
-                        if (newObj === context) {
-                            return (obj.identifier + '.' + key).slice(1);
-                        }
-
-                        queue.push({
-                            context: newObj,
-                            identifier: obj.identifier + '.' + key
-                        });
-                    }
-                }
-            }
-
-            /**
-             * Finds the absolute identifier string associated with the given context object. The string returned
-             * is the path from a control's root ancestor's context.
-             * @param {any} context The object/primitive to locate on the root control's context.
-             */
-            getAbsoluteIdentifier(context: any): string {
-                if (context === this) {
-                    return '';
-                } else if (context === this.context) {
-                    return this.absoluteContextPath;
-                }
-
-                var localIdentifier = this.getIdentifier(context);
-                if (isNull(localIdentifier)) {
-                    return localIdentifier;
-                }
-
-                return this.absoluteContextPath + '.' + localIdentifier;
-            }
 
             /**
              * Finds the associated resources and builds a context object containing
@@ -12457,18 +12527,18 @@ module plat {
          * An extended TemplateControl that allows for the binding of a value to 
          * another listening control (e.g. plat-bind control).
          */
-        export class BindablePropertyControl extends TemplateControl {
+        export class BindControl extends TemplateControl implements observable.ISupportTwoWayBinding {
             /**
              * The set of functions added externally that listens 
              * for property changes.
              */
-            protected _listeners: Array<(newValue: any, oldValue?: any) => void> = [];
+            protected _listeners: Array<IPropertyChangedListener<any>> = [];
 
             /**
              * Adds a listener to be called when the bindable property changes.
-             * @param {plat.IPropertyChangedListener} listener The function that acts as a listener.
+             * @param {plat.IPropertyChangedListener<any>} listener The function that acts as a listener.
              */
-            observeProperty(listener: (newValue: any, oldValue?: any) => void): IRemoveListener {
+            onInput(listener: (newValue: any, oldValue: any) => void): IRemoveListener {
                 var listeners = this._listeners;
 
                 listeners.push(listener);
@@ -12484,20 +12554,19 @@ module plat {
             }
 
             /**
-             * A function that lets this control know when the context's value of the bindable 
-             * property has changed.
-             * @param {any} newValue The new value of the bindable property.
-             * @param {any} oldValue? The old value of the bindable property.
-             * @param {boolean} firstTime? A boolean signifying whether this is the first set of the property.
+             * A function that allows this control to observe both the bound property itself as well as 
+             * potential child properties if being bound to an object.
+             * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the 
+             * databinding.
              */
-            setProperty(newValue: any, oldValue?: any, firstTime?: boolean): void { }
+            observeProperties(implementer: observable.IImplementTwoWayBinding): void { }
 
             /**
              * A function that signifies when this control's bindable property has changed.
              * @param {any} newValue The new value of the property after the change.
              * @param {any} oldValue? The old value of the property prior to the change.
              */
-            propertyChanged(newValue: any, oldValue?: any): void {
+            inputChanged(newValue: any, oldValue?: any): void {
                 if (newValue === oldValue) {
                     return;
                 }
@@ -12978,9 +13047,19 @@ module plat {
             protected _ResourcesFactory: IResourcesFactory = acquire(__ResourcesFactory);
 
             /**
+             * Reference to the IControlFactory injectable.
+             */
+            protected _ControlFactory: IControlFactory = acquire(__ControlFactory);
+
+            /**
              * Reference to the ITemplateControlFactory injectable.
              */
             protected _TemplateControlFactory: ITemplateControlFactory = acquire(__TemplateControlFactory);
+
+            /**
+             * Reference to the IContextManagerStatic injectable.
+             */
+            protected _ContextManager: observable.IContextManagerStatic = acquire(__ContextManagerStatic);
 
             /**
              * Reference to the IPromise injectable.
@@ -13288,7 +13367,7 @@ module plat {
 
                 templatePromise = templatePromise.then((result: DocumentFragment): async.IThenable<any> => {
                     var template = <DocumentFragment>result.cloneNode(true),
-                        control = this._createBoundControl(key, template, resources),
+                        control = this._createBoundControl(key, template, relativeIdentifier, resources),
                         nodeMap = this._createNodeMap(control, template, relativeIdentifier);
 
                     if (noIndex) {
@@ -13469,15 +13548,17 @@ module plat {
              * @param {plat.IObject<plat.ui.IResource>} resources? A set of resources to add to the control used to 
              * compile/bind this template.
              */
-            protected _createBoundControl(key: string, template: DocumentFragment, resources?: IObject<IResource>): TemplateControl {
+            protected _createBoundControl(key: string, template: DocumentFragment, childContext?: string, resources?: IObject<IResource>): TemplateControl {
                 var _TemplateControlFactory = this._TemplateControlFactory,
                     control = _TemplateControlFactory.getInstance(),
                     _ResourcesFactory = this._ResourcesFactory,
                     parent = this.control,
                     compiledManager = this.cache[key],
-                    _resources = _ResourcesFactory.getInstance();
+                    isCompiled = isObject(compiledManager),
+                    _resources = _ResourcesFactory.getInstance(),
+                    contextManager: observable.ContextManager;
 
-                if (isObject(compiledManager)) {
+                if (isCompiled) {
                     var compiledControl = compiledManager.getUiControl();
 
                     _resources.initialize(control, compiledControl.resources);
@@ -13495,6 +13576,18 @@ module plat {
                 control.controls = [];
                 control.element = <HTMLElement>template;
                 control.type = parent.type + __BOUND_PREFIX + key;
+                control.root = this._ControlFactory.getRootControl(control);
+                contextManager = this._ContextManager.getManager(control.root);
+
+                if (isCompiled) {
+                    control.absoluteContextPath = parent.absoluteContextPath || __Context;
+
+                    if (!isNull(childContext)) {
+                        control.absoluteContextPath += '.' + childContext;
+                    }
+
+                    control.context = contextManager.getContext(control.absoluteContextPath.split('.'), false);
+                }
 
                 return control;
             }
@@ -13561,7 +13654,7 @@ module plat {
              * The set of functions added externally that listens 
              * for attribute changes.
              */
-            private __listeners: IObject<Array<(newValue: any, oldValue?: any) => void>> = {};
+            private __listeners: IObject<Array<(newValue: any, oldValue: any) => void>> = {};
             /**
              * The control tied to this instance.
              */
@@ -13594,10 +13687,10 @@ module plat {
 
             /**
              * Provides a way to observe an attribute for changes.
-             * @param {string} key The attribute to observe for changes (e.g. 'src').
              * @param {plat.IPropertyChangedListener} listener The listener function to be called when the attribute changes.
+             * @param {string} key The attribute to observe for changes (e.g. 'src').
              */
-            observe(key: string, listener: (newValue: any, oldValue?: any) => void): IRemoveListener {
+            observe(listener: (newValue: any, oldValue: any) => void, key: string): IRemoveListener {
                 var listeners = this.__listeners[camelCase(key)];
 
                 if (isNull(listeners)) {
@@ -13966,9 +14059,9 @@ module plat {
                     } else {
                         resource.initialValue = value;
                     }
-                    var listener = control.observeExpression(value, (newValue): void => {
+                    var listener = control.observeExpression((newValue): void => {
                         resource.value = newValue;
-                    });
+                    }, value);
                     resource.value = control.evaluateExpression(value);
                     removeListeners.push(listener);
                 }
@@ -14263,12 +14356,12 @@ module plat {
                  * An object containing the different time intervals that govern the behavior of certain 
                  * custom DOM events.
                  */
-                intervals: {
+                intervals: <IIntervals>{
                     /**
                      * The max time in milliseconds a user can hold down on the screen 
                      * for a tap event to be fired.
                      */
-                    tapInterval: 200,
+                    tapInterval: 250,
                     /**
                      * The max time in milliseconds a user can wait between consecutive 
                      * taps for a dbltap event to be fired.
@@ -14291,7 +14384,7 @@ module plat {
                  * An object containing the different minimum/maximum distances that govern the behavior of certain 
                  * custom DOM events.
                  */
-                distances: {
+                distances: <IDistances>{
                     /**
                      * The minimum distance in pixels a user must move after touch down to register 
                      * it as a scroll instead of a tap.
@@ -14308,7 +14401,7 @@ module plat {
                  * An object containing the different minimum/maximum velocities that govern the behavior of certain 
                  * custom DOM events.
                  */
-                velocities: {
+                velocities: <IVelocities>{
                     /**
                      * The minimum velocity in pixels/ms a user must move after touch down to register 
                      * a swipe event.
@@ -14321,7 +14414,7 @@ module plat {
                  * platypus.css, you must overwrite the styles in platypus.css or create your own and 
                  * change the classNames in the config.
                  */
-                styleConfig: [{
+                styleConfig: <Array<IDefaultStyle>>[{
                     /**
                      * The className that will be used to define the custom style for 
                      * allowing the best touch experience. This class is added to every 
@@ -16674,7 +16767,7 @@ module plat {
         export interface IIntervals {
             /**
              * The max time in milliseconds a user can hold down on the screen 
-             * for a tap event to be fired. Defaults to 200 ms.
+             * for a tap event to be fired. Defaults to 250 ms.
              */
             tapInterval: number;
 
@@ -16706,7 +16799,7 @@ module plat {
         export interface IDistances {
             /**
              * The minimum distance a user must move after touch down to register 
-             * it as a scroll instead of a tap. Defaults to 5.
+             * it as a scroll instead of a tap. Defaults to 3.
              */
             minScrollDistance: number;
 
@@ -16787,7 +16880,8 @@ module plat {
             export class Animator {
                 protected static _inject: any = {
                     _compat: __Compat,
-                    _Promise: __Promise
+                    _Promise: __Promise,
+                    _document: __Document
                 };
 
                 /**
@@ -16801,33 +16895,81 @@ module plat {
                 protected _Promise: async.IPromise;
 
                 /**
-                 * All elements currently being animated.
+                 * Reference to the Document injectable.
                  */
-                protected _elements: IObject<IAnimatedElement> = {};
+                protected _document: Document;
 
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Objects representing collections of all currently animated elements.
+                 */
+                protected _animatedElements: IObject<IAnimatedElement> = {};
+
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {Element} element The Element to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(element: Element, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {NodeList} elements The list of Nodes to be animated.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(elements: NodeList, key: string, options?: any): IAnimatingThenable;
+                /**
+                 * Creates the defined animation denoted by the key but does not start the animation.
+                 * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * resolves when the animation is complete.
+                 */
+                create(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
+                create(elements: any, key: string, options?: any): IAnimatingThenable {
+                    return this._create(elements, key, options, {
+                        key: null
+                    });
+                }
+
+                /**
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
                  */
                 animate(element: Element, key: string, options?: any): IAnimatingThenable;
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
                  */
                 animate(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {NodeList} elements The list of Nodes to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
                  */
                 animate(elements: NodeList, key: string, options?: any): IAnimatingThenable;
                 /**
-                 * Animates the element with the defined animation denoted by the key.
+                 * Animates the element with the defined animation denoted by the key. Similar to `create` but 
+                 * immediately begins the animation.
                  * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
                  * the same parent, otherwise the animation will not function correctly.
                  * @param {string} key The identifier specifying the type of animation.
@@ -16835,9 +16977,15 @@ module plat {
                  */
                 animate(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 animate(elements: any, key: string, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
-                        key: 'animate'
+                    var animation = this._create(elements, key, options, {
+                        key: null
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -16890,11 +17038,17 @@ module plat {
                  */
                 enter(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
                 enter(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'enter',
                         parent: parent,
                         refChild: refChild
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -16902,47 +17056,48 @@ module plat {
                  * the animation is finished.
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the element is removed from the DOM.
                  */
-                leave(element: Element, key: string, parent: Element, options?: any): IAnimatingThenable;
+                leave(element: Element, key: string, options?: any): IAnimatingThenable;
                 /**
                  * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
                  * the animation is finished.
                  * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the elements from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the elements are removed from the DOM.
                  */
-                leave(element: DocumentFragment, key: string, parent: Element, options?: any): IAnimatingThenable;
+                leave(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
                 /**
                  * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
                  * the animation is finished.
                  * @param {NodeList} elements The list of Nodes to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the elements from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the elements are removed from the DOM.
                  */
-                leave(elements: NodeList, key: string, parent: Element, options?: any): IAnimatingThenable;
+                leave(elements: NodeList, key: string, options?: any): IAnimatingThenable;
                 /**
                  * Animates the elements with the defined animation denoted by the key and removes them from the DOM when 
                  * the animation is finished.
                  * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
                  * the same parent, otherwise the animation will not function correctly.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the elements from the DOM.
                  * @param {any} options? Specified options for the animation.
                  * and the elements are removed from the DOM.
                  */
-                leave(elements: Array<Node>, key: string, parent: Element, options?: any): IAnimatingThenable;
-                leave(elements: any, key: string, parent: Element, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
-                        key: 'leave',
-                        parent: parent
+                leave(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
+                leave(elements: any, key: string, options?: any): IAnimatingThenable {
+                    var animation = this._create(elements, key, options, {
+                        key: 'leave'
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -16950,7 +17105,8 @@ module plat {
                  * DOM using either the refChild or the parent, and animates it with the defined animation denoted by the key.
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -16963,7 +17119,8 @@ module plat {
                  * DOM using either the refChild or the parent, and animates them with the defined animation denoted by the key.
                  * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -16976,7 +17133,8 @@ module plat {
                  * DOM using either the refChild or the parent, and animates them with the defined animation denoted by the key.
                  * @param {NodeList} elements The list of Nodes to be animated.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -16990,7 +17148,8 @@ module plat {
                  * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
                  * the same parent, otherwise the animation will not function correctly.
                  * @param {string} key The identifier specifying the type of animation.
-                 * @param {Element} parent The parent element used for removing the element from the DOM prior to initialization.
+                 * @param {Element} parent The parent element used for placing the element back into the DOM at its end if a 
+                 * refChild is not specified.
                  * @param {Node} refChild? An optional reference node used for placing the element into the DOM 
                  * just before itself using the insertBefore function. If this argument is specified, the parent argument 
                  * is ignored during DOM insertion.
@@ -16999,11 +17158,17 @@ module plat {
                  */
                 move(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
                 move(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'move',
                         parent: parent,
                         refChild: refChild
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -17040,9 +17205,15 @@ module plat {
                  */
                 show(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 show(elements: any, key: string, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'show'
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
                 /**
@@ -17079,17 +17250,35 @@ module plat {
                  */
                 hide(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 hide(elements: any, key: string, options?: any): IAnimatingThenable {
-                    return this._animate(elements, key, options, {
+                    var animation = this._create(elements, key, options, {
                         key: 'hide'
                     });
+
+                    requestAnimationFrameGlobal((): void => {
+                        animation.start();
+                    });
+
+                    return animation;
                 }
 
+                /**
+                 * Returns a promise that fulfills when every animation promise in the input array is fulfilled.
+                 */
                 all(promises: Array<IAnimationThenable<any>>): IAnimationThenable<void> {
-                    return new AnimationPromise((resolve) => {
-                        this._Promise.all(promises).then(() => {
-                            resolve();
+                    var length = promises.length,
+                        args = <Array<IAnimationEssentials>>[],
+                        animationPromise = new AnimationPromise((resolve) => {
+                            this._Promise.all(promises).then(() => {
+                                resolve();
+                            });
                         });
-                    }).then(noop);
+
+                    for (var i = 0; i < length; ++i) {
+                        args = args.concat(promises[i].getInstances());
+                    }
+
+                    animationPromise.initialize(args);
+                    return animationPromise.then(noop);
                 }
 
                 /**
@@ -17115,7 +17304,7 @@ module plat {
                  * @param {plat.ui.animations.IAnimationFunction} functionality An object containing detailed information about 
                  * special animation functionality.
                  */
-                protected _animate(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimatingThenable {
+                protected _create(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimatingThenable {
                     var animationInjector = animationInjectors[key],
                         animationInstances: Array<BaseAnimation> = [],
                         elementNodes: Array<Element> = [];
@@ -17144,40 +17333,39 @@ module plat {
                     this._handlePreInitFunctionality(elements, elementNodes, functionality);
 
                     var animationPromises: Array<IAnimationThenable<any>> = [],
-                        id = this.__setAnimationId(elementNodes, animationInstances),
-                        animatedElement = this._elements[id],
-                        i: number;
+                        id = uniqueId('animation_'),
+                        previousAnimations = this.__setAnimationId(id, elementNodes);
 
                     // instantiate needs to be called after __setAnimationId in the case that 
                     // the same element is animating while in an animation
-                    for (i = 0; i < length; ++i) {
+                    for (var i = 0; i < length; ++i) {
                         animationPromises.push(animationInstances[i].instantiate(elementNodes[i], options));
                     }
 
                     this._handlePostInitFunctionality(elements, elementNodes, functionality);
 
-                    var animationPromise = new AnimationPromise((resolve: any) => {
-                        this._Promise.all(animationPromises).then(resolve);
-                    });
+                    var animationPromise = new AnimationPromise((resolve: any): void => {
+                        this._Promise.all(animationPromises.concat(previousAnimations)).then(resolve);
+                    })
 
                     animationPromise.initialize(animationInstances);
 
-                    var animatingParentId = this.__isParentAnimating(elementNodes);
+                    var animatingParentId = this.__isParentAnimating(elementNodes),
+                        animatedElement = this.__generateAnimatedElement(id, elementNodes, animationPromise);
                     if (!isNull(animatingParentId)) {
+                        this._handleEndFunctionality(elements, elementNodes, functionality);
                         animatedElement.animationEnd(true);
 
-                        var parent = this._elements[animatingParentId];
+                        var parent = this._animatedElements[animatingParentId];
                         if (isPromise(parent.promise)) {
                             return animationPromise.then((): () => IAnimationThenable<any> => {
-                                this._handleEndFunctionality(elements, elementNodes, functionality);
                                 return (): IAnimationThenable<any> => {
                                     return parent.promise;
                                 };
                             });
                         }
 
-                        return animationPromise.then(() => {
-                            this._handleEndFunctionality(elements, elementNodes, functionality);
+                        return animationPromise.then((): () => IAnimationThenable<any> => {
                             return (): IAnimationThenable<any> => {
                                 return animationPromise;
                             };
@@ -17186,19 +17374,13 @@ module plat {
 
                     this.__stopChildAnimations(elementNodes);
 
-                    animatedElement.promise = animationPromise.then((): () => IAnimationThenable<any> => {
+                    return animatedElement.promise = animationPromise.then((): () => IAnimationThenable<any> => {
                         this._handleEndFunctionality(elements, elementNodes, functionality);
                         animatedElement.animationEnd();
                         return (): IAnimationThenable<any> => {
                             return animationPromise;
                         };
                     });
-
-                    for (i = 0; i < length; ++i) {
-                        animationInstances[i].start();
-                    }
-
-                    return animatedElement.promise;
                 }
 
                 /**
@@ -17208,17 +17390,10 @@ module plat {
                  * @param {plat.ui.animations.IAnimationFunction} functionality The specialized animation function attributes.
                  */
                 protected _handlePreInitFunctionality(nodes: Array<Node>, elementNodes: Array<Element>, functionality: IAnimationFunction): void {
-                    var length: number,
-                        i: number;
                     switch (functionality.key) {
                         case 'move':
-                            var parent = functionality.parent;
-                            if (!isNode(parent)) {
-                                break;
-                            }
-                            length = nodes.length;
-                            for (i = 0; i < length; ++i) {
-                                parent.removeChild(nodes[i]);
+                            for (var i = 0; i < length; ++i) {
+                                removeNode(nodes[i]);
                             }
                             break;
                         default:
@@ -17239,10 +17414,18 @@ module plat {
                         case 'enter':
                         case 'move':
                             var refChild = functionality.refChild,
-                                parent = isNode(refChild) ? <Element>refChild.parentNode : functionality.parent;
+                                parent: Element;
+                            if (isNode(refChild)) {
+                                parent = <Element>refChild.parentNode;
+                            } else {
+                                parent = functionality.parent;
+                                refChild = null;
+                            }
+
                             if (!isNode(parent)) {
                                 break;
                             }
+
                             length = nodes.length;
                             for (i = 0; i < length; ++i) {
                                 parent.insertBefore(nodes[i], refChild);
@@ -17270,13 +17453,9 @@ module plat {
                         i: number;
                     switch (functionality.key) {
                         case 'leave':
-                            var parent = functionality.parent;
-                            if (!isNode(parent)) {
-                                break;
-                            }
                             length = nodes.length;
                             for (i = 0; i < length; ++i) {
-                                parent.removeChild(nodes[i]);
+                                removeNode(nodes[i]);
                             }
                             break;
                         case 'hide':
@@ -17291,6 +17470,86 @@ module plat {
                 }
 
                 /**
+                 * Sets a new, unique animation ID and denotes the elements as currently being animated.
+                 * @param {string} id The animation ID.
+                 * @param {Array<Element>} elements The Array of Elements being animated.
+                 * the elements trying to be animated.
+                 */
+                private __setAnimationId(id: string, elements: Array<Element>): Array<IAnimationThenable<any>> {
+                    var animatedElements = this._animatedElements,
+                        animatedElement: IAnimatedElement,
+                        plat: ICustomElementProperty,
+                        promises = <Array<IAnimationThenable<any>>>[],
+                        length = elements.length,
+                        element: Element;
+
+                    for (var i = 0; i < length; ++i) {
+                        element = elements[i];
+                        plat = (<ICustomElement>element).__plat;
+
+                        if (isUndefined(plat)) {
+                            (<ICustomElement>element).__plat = { animation: id };
+                            addClass(<HTMLElement>element, __Animating);
+                        } else if (isUndefined(plat.animation)) {
+                            plat.animation = id;
+                            addClass(<HTMLElement>element, __Animating);
+                        } else {
+                            animatedElement = animatedElements[plat.animation];
+                            if (!isUndefined(animatedElement)) {
+                                promises.push(animatedElement.promise);
+                                animatedElement.animationEnd(true);
+                            }
+                            plat.animation = id;
+                        }
+                    }
+
+                    return promises
+                }
+        
+                /**
+                 * Generates a new animated element for the Animator to easily reference and be able 
+                 * to end later on.
+                 * @param {string} id The animation ID.
+                 * @param {Array<Element>} elements The Array of Elements being animated.
+                 * @param {plat.ui.animations.AnimationPromise} animationPromise The animation's associated promise.
+                 */
+                private __generateAnimatedElement(id: string, elements: Array<Element>, animationPromise: AnimationPromise): IAnimatedElement {
+                    var animatedElements = this._animatedElements,
+                        removeListener = (cancel?: boolean): void => {
+                            var plat: ICustomElementProperty,
+                                element: ICustomElement,
+                                length = elements.length,
+                                animationId: string;
+
+                            if (cancel === true) {
+                                animationPromise.cancel();
+                                deleteProperty(animatedElements, id);
+                                return;
+                            }
+
+                            for (var i = 0; i < length; ++i) {
+                                element = <ICustomElement>elements[i];
+                                plat = element.__plat || {};
+                                animationId = plat.animation;
+                                if (isUndefined(animationId) || animationId !== id) {
+                                    continue;
+                                }
+                                removeClass(<HTMLElement>element, __Animating);
+                                deleteProperty(plat, 'animation');
+                                if (isEmpty(plat)) {
+                                    deleteProperty(element, '__plat');
+                                }
+                            }
+
+                            deleteProperty(animatedElements, id);
+                        };
+
+                    return animatedElements[id] = {
+                        animationEnd: removeListener
+                    };
+                }
+
+                /**
                  * Checks whether or not any parent elements are animating.
                  * @param {Array<Element>} elements The Elements whose parents we need to check.
                  */
@@ -17298,11 +17557,11 @@ module plat {
                     var animationId: string,
                         element: Node = elements[0];
 
-                    while (!isDocument(element = element.parentNode) && element.nodeType === Node.ELEMENT_NODE) {
+                    while (!(isDocument(element = element.parentNode) || isNull(element) || element.nodeType !== Node.ELEMENT_NODE)) {
                         if (hasClass(<HTMLElement>element, __Animating)) {
                             animationId = ((<ICustomElement>element).__plat || <ICustomElementProperty>{}).animation;
                             if (isString(animationId)) {
-                                if (!isNull(this._elements[animationId])) {
+                                if (!isNull(this._animatedElements[animationId])) {
                                     return animationId;
                                 }
 
@@ -17317,77 +17576,11 @@ module plat {
                 }
 
                 /**
-                 * Sets an new, unique animation ID and denotes the elements as currently being animated.
-                 * @param {Array<Element>} elements The Array of Elements being animated.
-                 * @param {Array<plat.ui.animations.BaseAnimation>} animationInstances The animation instances doing the animating.
-                 */
-                private __setAnimationId(elements: Array<Element>, animationInstances: Array<BaseAnimation>): string {
-                    var animatedElements = this._elements,
-                        animatedElement: IAnimatedElement,
-                        plat: ICustomElementProperty,
-                        length = elements.length,
-                        id = uniqueId('animation_'),
-                        element: Element,
-                        otherId: string,
-                        i: number,
-                        removeListener = (cancel?: boolean, reanimating?: boolean): void => {
-                            var animationInstance: BaseAnimation;
-                            for (i = 0; i < length; ++i) {
-                                if (cancel === true) {
-                                    animationInstance = animationInstances[i];
-                                    animationInstance.cancel();
-                                    animationInstance.end();
-                                    if (reanimating === true) {
-                                        continue;
-                                    }
-                                }
-
-                                element = elements[i];
-                                removeClass(<HTMLElement>element, __Animating);
-                                deleteProperty(animatedElements, id);
-                                deleteProperty(plat, 'animation');
-                                if (isEmpty(plat)) {
-                                    deleteProperty(element, '__plat');
-                                }
-                            }
-                        };
-
-                    for (i = 0; i < length; ++i) {
-                        element = elements[i];
-                        plat = (<ICustomElement>element).__plat;
-
-                        if (isUndefined(plat)) {
-                            (<ICustomElement>element).__plat = plat = {};
-                        }
-
-                        if (isUndefined(plat.animation)) {
-                            plat.animation = id;
-                            addClass(<HTMLElement>element, __Animating);
-                        } else {
-                            otherId = plat.animation;
-                            plat.animation = id;
-
-                            animatedElement = animatedElements[otherId];
-                            if (!isUndefined(animatedElement)) {
-                                animatedElement.animationEnd(true, true);
-                                deleteProperty(animatedElements, otherId);
-                            }
-                        }
-                    }
-
-                    animatedElements[id] = {
-                        animationEnd: removeListener
-                    };
-
-                    return id;
-                }
-
-                /**
                  * Forces child nodes of an animating element to stop animating.
                  * @param {Element} element The element being animated.
                  */
                 private __stopChildAnimations(elements: Array<Element>): void {
-                    var animatingElements = this._elements,
+                    var animatingElements = this._animatedElements,
                         slice = Array.prototype.slice,
                         customAnimationElements: Array<ICustomElement>,
                         animatedElement: IAnimatedElement,
@@ -17480,10 +17673,8 @@ module plat {
                 /**
                  * The function called at the conclusion of the animation.
                  * @param {boolean} cancel? Specifies whether the animation is being cancelled.
-                 * @param {boolean} reanimating? Specifies whether the element is being reanimated while 
-                 * in a current animation. Cancel must be set to true for reanimation to take effect.
                  */
-                animationEnd: (cancel?: boolean, reanimating?: boolean) => void;
+                animationEnd: (cancel?: boolean) => void;
 
                 /**
                  * A promise representing an element's current state of animation.
@@ -17507,11 +17698,17 @@ module plat {
              * itself, it resolves with a IGetAnimatingThenable for acccessing 
              * the IAnimationThenable of the animating parent element.
              */
-            export class AnimationPromise<> extends async.Promise<IGetAnimatingThenable> implements IAnimationEssentials, IAnimatingThenable {
+            export class AnimationPromise extends async.Promise<IGetAnimatingThenable> implements IAnimationEssentials, IAnimatingThenable {
                 /**
                  * Reference to the IPromise injectable.
                  */
                 protected _Promise: async.IPromise = acquire(__Promise);
+
+                /**
+                 * The state of the animation. 0 prior to start, 1 if started, and 
+                 * 2 if canceled.
+                 */
+                private __animationState = 0;
 
                 /**
                  * An Array of animation instances linked to this promise.
@@ -17535,19 +17732,22 @@ module plat {
                     super(resolveFunction);
                     if (!isNull(promise)) {
                         this.__animationInstances = promise.__animationInstances;
+                        this.__animationState = promise.__animationState;
                     }
                 }
 
                 /**
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
-                 * @param {plat.ui.animations.BaseAnimation} instance The animation instance for this promise.
+                 * @param {plat.ui.animations.IAnimationEssentials} instance The animation instance or animation 
+                 * promises for this promise.
                  */
-                initialize(instance: BaseAnimation): void;
+                initialize(instance: IAnimationEssentials): void;
                 /**
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
-                 * @param {Array<plat.ui.animations.BaseAnimation>} instances The animation instances for this promise.
+                 * @param {Array<plat.ui.animations.IAnimationEssentials>} instances The animation instances or 
+                 * animation promises for this promise.
                  */
-                initialize(instances: Array<BaseAnimation>): void;
+                initialize(instances: Array<IAnimationEssentials>): void;
                 initialize(instances: any): void {
                     if (isEmpty(this.__animationInstances)) {
                         if (isArray(instances)) {
@@ -17559,10 +17759,44 @@ module plat {
                 }
 
                 /**
+                 * Gets the associated animation instances or animated promises.
+                 * animation promises for this promise.
+                 */
+                getInstances(): Array<IAnimationEssentials> {
+                    return this.__animationInstances;
+                }
+
+                /**
+                 * Fires the start method on the animation instances to kickoff the animations.
+                 */
+                start(): void {
+                    if (this.__animationState > 0) {
+                        return;
+                    }
+
+                    var animationInstances = this.__animationInstances,
+                        animationInstance: IAnimationEssentials,
+                        length = animationInstances.length;
+
+                    for (var i = 0; i < length; ++i) {
+                        animationInstance = animationInstances[i];
+                        if (isFunction(animationInstance.start)) {
+                            animationInstance.start();
+                        }
+                    }
+
+                    this.__animationState = 1;
+                }
+
+                /**
                  * Fires the pause method on the animation instance.
                  * indicates that the animation has been paused.
                  */
                 pause(): async.IThenable<void> {
+                    if (this.__animationState !== 1) {
+                        return;
+                    }
+
                     var animationInstances = this.__animationInstances,
                         pausePromises: Array<async.IThenable<void>> = [],
                         animationInstance: IAnimationEssentials,
@@ -17583,6 +17817,10 @@ module plat {
                  * indicates that the animation has resumed.
                  */
                 resume(): async.IThenable<void> {
+                    if (this.__animationState !== 1) {
+                        return;
+                    }
+
                     var animationInstances = this.__animationInstances,
                         resumePromises: Array<async.IThenable<void>> = [],
                         animationInstance: IAnimationEssentials,
@@ -17602,6 +17840,10 @@ module plat {
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimatingThenable {
+                    if (this.__animationState === 2) {
+                        return;
+                    }
+
                     var animationInstances = this.__animationInstances,
                         animationInstance: IAnimationEssentials,
                         length = animationInstances.length;
@@ -17616,7 +17858,16 @@ module plat {
                         }
                     }
 
+                    this.__animationState = 2;
+
                     return this;
+                }
+
+                /**
+                 * A method to determine whether or not this promise has been canceled.
+                 */
+                isCanceled(): boolean {
+                    return this.__animationState === 2;
                 }
 
                 /**
@@ -17672,7 +17923,18 @@ module plat {
                  * Initializes the promise, providing it with the {@link plat.ui.animations.BaseAnimation} instance.
                  * @param {plat.ui.animations.BaseAnimation} instance The animation instance for this promise.
                  */
-                initialize? (instance: BaseAnimation): void;
+                initialize(instance: BaseAnimation): void;
+
+                /**
+                 * Gets the associated animation instances or animated promises.
+                 * animation promises for this promise.
+                 */
+                getInstances(): Array<IAnimationEssentials>;
+
+                /**
+                 * Fires the start method on the animation instances to kickoff the animations.
+                 */
+                start(): void;
 
                 /**
                  * Fires the pause method on the animation instance.
@@ -17690,6 +17952,11 @@ module plat {
                  * A method to cancel the associated animation.
                  */
                 cancel(): IAnimationThenable<R>;
+
+                /**
+                 * A method to determine whether or not this promise has been canceled.
+                 */
+                isCanceled(): boolean;
 
                 /**
                  * Takes in two methods, called when/if the promise fulfills/rejects.
@@ -17753,6 +18020,11 @@ module plat {
              */
             export interface IAnimationEssentials {
                 /**
+                 * Fires the start method on the animation instances to kickoff the animations.
+                 */
+                start(): void;
+
+                /**
                  * Fires the pause method on the animation instances.
                  * indicates that the animation has been paused.
                  */
@@ -17782,26 +18054,12 @@ module plat {
              */
             export class BaseAnimation implements IAnimationEssentials {
                 protected static _inject: any = {
+                    _window: __Window,
                     _compat: __Compat,
                     _Exception: __ExceptionStatic,
                     _Promise: __Promise,
                     dom: __Dom
                 };
-
-                /**
-                 * Reference to the IExceptionStatic injectable.
-                 */
-                protected _Exception: IExceptionStatic;
-
-                /**
-                 * Reference to the Compat injectable.
-                 */
-                protected _compat: Compat;
-
-                /**
-                 * Reference to the IPromise injectable.
-                 */
-                protected _Promise: async.IPromise;
 
                 /**
                  * The node having the animation performed on it.
@@ -17817,6 +18075,31 @@ module plat {
                  * Specified options for the animation.
                  */
                 options: any;
+
+                /**
+                 * Reference to the IExceptionStatic injectable.
+                 */
+                protected _Exception: IExceptionStatic;
+
+                /**
+                 * Reference to the Window injectable.
+                 */
+                protected _window: Window;
+
+                /**
+                 * Reference to the Compat injectable.
+                 */
+                protected _compat: Compat;
+
+                /**
+                 * Reference to the IPromise injectable.
+                 */
+                protected _Promise: async.IPromise;
+
+                /**
+                 * Whether or not the animation has been canceled.
+                 */
+                protected _canceled = false;
 
                 /**
                  * The resolve function for the end of the animation.
@@ -17842,14 +18125,14 @@ module plat {
                  * A function to be called when the animation is over.
                  */
                 end(): void {
-                    if (isFunction(this._resolve)) {
-                        this._resolve();
-                        this._resolve = null;
-                    }
-
                     var eventListeners = this.__eventListeners;
                     while (eventListeners.length > 0) {
                         eventListeners.pop()();
+                    }
+
+                    if (isFunction(this._resolve)) {
+                        this._resolve();
+                        this._resolve = null;
                     }
                 }
 
@@ -17870,7 +18153,10 @@ module plat {
                 /**
                  * A function to be called to let it be known the animation is being cancelled.
                  */
-                cancel(): void { }
+                cancel(): void {
+                    this._canceled = true;
+                    this.end();
+                }
 
                 /**
                  * Adds an event listener of the specified type to this animation's element. Removal of the 
@@ -17888,7 +18174,10 @@ module plat {
                     }
 
                     listener = listener.bind(this);
-                    var removeListener = this.dom.addEventListener(this.element, type, listener, useCapture),
+                    var removeListener = this.dom.addEventListener(this.element, type, (ev: Event) => {
+                        ev.stopPropagation();
+                        listener(ev);
+                    }, useCapture),
                         eventListeners = this.__eventListeners;
 
                     eventListeners.push(removeListener);
@@ -17932,19 +18221,14 @@ module plat {
                 /**
                  * A set of browser compatible CSS animation events capable of being listened to.
                  */
-                private __animationEvents: IAnimationEvents = this._compat.animationEvents;
+                protected _animationEvents = this._compat.animationEvents;
 
                 /**
                  * A function to listen to the start of an animation event.
                  * @param {() => void} listener The function to call when the animation begins.
                  */
                 animationStart(listener: (ev?: AnimationEvent) => void): IRemoveListener {
-                    var animationEvents = this.__animationEvents;
-                    if (isUndefined(animationEvents)) {
-                        return noop;
-                    }
-
-                    return this.addEventListener(animationEvents.$animationStart, listener, false);
+                    return this.addEventListener(this._animationEvents.$animationStart, listener, false);
                 }
 
                 /**
@@ -17952,12 +18236,7 @@ module plat {
                  * @param {(ev?: AnimationEvent) => void} listener The function to call when the animation ends.
                  */
                 animationEnd(listener: (ev?: AnimationEvent) => void): IRemoveListener {
-                    var animationEvents = this.__animationEvents;
-                    if (isUndefined(animationEvents)) {
-                        return noop;
-                    }
-
-                    return this.addEventListener(animationEvents.$animationEnd, listener, false);
+                    return this.addEventListener(this._animationEvents.$animationEnd, listener, false);
                 }
 
                 /**
@@ -17965,12 +18244,7 @@ module plat {
                  * @param {(ev?: AnimationEvent) => void} listener The function to call when the animation iteration completes.
                  */
                 animationIteration(listener: (ev?: AnimationEvent) => void): IRemoveListener {
-                    var animationEvents = this.__animationEvents;
-                    if (isUndefined(animationEvents)) {
-                        return noop;
-                    }
-
-                    return this.addEventListener(animationEvents.$animationIteration, listener, false);
+                    return this.addEventListener(this._animationEvents.$animationIteration, listener, false);
                 }
 
                 /**
@@ -17978,12 +18252,7 @@ module plat {
                  * @param {(ev?: TransitionEvent) => void} listener The function to call when the transition begins.
                  */
                 transitionStart(listener: (ev?: TransitionEvent) => void): IRemoveListener {
-                    var animationEvents = this.__animationEvents;
-                    if (isUndefined(animationEvents)) {
-                        return noop;
-                    }
-
-                    return this.addEventListener(animationEvents.$transitionStart, listener, false);
+                    return this.addEventListener(this._animationEvents.$transitionStart, listener, false);
                 }
 
                 /**
@@ -17991,12 +18260,7 @@ module plat {
                  * @param {(ev?: TransitionEvent) => void} listener The function to call when the transition ends.
                  */
                 transitionEnd(listener: (ev?: TransitionEvent) => void): IRemoveListener {
-                    var animationEvents = this.__animationEvents;
-                    if (isUndefined(animationEvents)) {
-                        return noop;
-                    }
-
-                    return this.addEventListener(animationEvents.$transitionEnd, listener, false);
+                    return this.addEventListener(this._animationEvents.$transitionEnd, listener, false);
                 }
             }
 
@@ -18019,15 +18283,6 @@ module plat {
              * element, checks for animation properties, and waits for the animation to end.
              */
             export class SimpleCssAnimation extends CssAnimation {
-                protected static _inject: any = {
-                    _window: __Window
-                };
-
-                /**
-                 * Reference to the Window injectable.
-                 */
-                protected _window: Window;
-
                 /**
                  * The class name added to the animated element.
                  */
@@ -18039,7 +18294,7 @@ module plat {
                 options: ISimpleCssAnimationOptions;
 
                 /**
-                 * Adds the class to start the animation.
+                 * Adds the class to initialize the animation.
                  */
                 initialize(): void {
                     addClass(this.element, this.className + __INIT_SUFFIX);
@@ -18049,36 +18304,31 @@ module plat {
                  * A function denoting the start of the animation.
                  */
                 start(): void {
-                    var animationEvents = this._compat.animationEvents;
-                    if (isUndefined(animationEvents)) {
-                        this.end();
-                        return;
-                    }
-
-                    var animationId = animationEvents.$animation,
-                        element = this.element,
-                        className = this.className;
-
                     requestAnimationFrameGlobal((): void => {
-                        addClass(element, className);
+                        var element = this.element;
 
-                        var computedStyle = this._window.getComputedStyle(element,(this.options || <ISimpleCssAnimationOptions>{}).pseudo),
-                            animationName = computedStyle[<any>(animationId + 'Name')];
-
-                        if (animationName === '' ||
-                            animationName === 'none' ||
-                            computedStyle[<any>(animationId + 'PlayState')] === 'paused') {
-                            this.cancel();
+                        if (this._canceled) {
+                            return;
+                        } else if (element.offsetParent === null) {
+                            this._dispose();
                             this.end();
                             return;
                         }
 
-                        this.animationEnd((): void => {
-                            requestAnimationFrameGlobal((): void => {
-                                this.cancel();
-                                this.end();
-                            });
-                        });
+                        addClass(element, this.className);
+
+                        var animationId = this._animationEvents.$animation,
+                            computedStyle = this._window.getComputedStyle(element,(this.options || <ISimpleCssAnimationOptions>{}).pseudo),
+                            animationName = computedStyle[<any>(animationId + 'Name')];
+
+                        if (animationName === '' || animationName === 'none' ||
+                            computedStyle[<any>(animationId + 'PlayState')] === 'paused') {
+                            this._dispose();
+                            this.end();
+                            return;
+                        }
+
+                        this.animationEnd(this.cancel);
                     });
                 }
 
@@ -18086,11 +18336,11 @@ module plat {
                  * A function to be called to pause the animation.
                  */
                 pause(): async.IThenable<void> {
-                    var animationEvents = this._compat.animationEvents;
-                    if (isUndefined(animationEvents)) {
+                    if (this._canceled) {
                         return this._Promise.resolve();
                     }
 
+                    var animationEvents = this._compat.animationEvents;
                     return new this._Promise<void>((resolve): void => {
                         requestAnimationFrameGlobal((): void => {
                             this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'paused';
@@ -18103,11 +18353,11 @@ module plat {
                  * A function to be called to resume a paused animation.
                  */
                 resume(): async.IThenable<void> {
-                    var animationEvents = this._compat.animationEvents;
-                    if (isUndefined(animationEvents)) {
+                    if (this._canceled) {
                         return this._Promise.resolve();
                     }
 
+                    var animationEvents = this._compat.animationEvents;
                     return new this._Promise<void>((resolve): void => {
                         requestAnimationFrameGlobal((): void => {
                             this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'running';
@@ -18121,6 +18371,17 @@ module plat {
                  * Removes the animation class and the animation "-init" class.
                  */
                 cancel(): void {
+                    super.cancel();
+
+                    requestAnimationFrameGlobal((): void => {
+                        this._dispose();
+                    });
+                }
+
+                /**
+                 * Removes the animation class and the animation "-init" class.
+                 */
+                protected _dispose(): void {
                     var className = this.className;
                     removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
                 }
@@ -18205,15 +18466,6 @@ module plat {
              * element, checks for transition properties, and waits for the transition to end.
              */
             export class SimpleCssTransition extends CssAnimation {
-                protected static _inject: any = {
-                    _window: __Window
-                };
-
-                /**
-                 * Reference to the Window injectable.
-                 */
-                protected _window: Window;
-
                 /**
                  * An optional options object that can denote a pseudo element animation and specify 
                  * properties to modify during the transition.
@@ -18263,39 +18515,44 @@ module plat {
                  * A function denoting the start of the animation.
                  */
                 start(): void {
-                    var animationEvents = this._compat.animationEvents;
-                    if (isUndefined(animationEvents)) {
-                        this.end();
-                        return;
-                    }
-
-                    var element = this.element;
-                    addClass(element, this.className);
-
-                    var transitionId = animationEvents.$transition,
-                        computedStyle = this._window.getComputedStyle(element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
-                        transitionProperty = computedStyle[<any>(transitionId + 'Property')],
-                        transitionDuration = computedStyle[<any>(transitionId + 'Duration')];
-
-                    this._started = true;
-
-                    if (transitionProperty === '' || transitionProperty === 'none' ||
-                        transitionDuration === '' || transitionDuration === '0s') {
-                        requestAnimationFrameGlobal((): void => {
-                            this._animate();
-                            this._done(null, true);
-                        });
-                        return;
-                    }
-
-                    this.transitionEnd(this._done);
-
                     requestAnimationFrameGlobal((): void => {
+                        var element = this.element;
+
+                        if (this._canceled) {
+                            return;
+                        } else if (element.offsetParent === null) {
+                            this._animate();
+                            this._dispose();
+                            this.end();
+                        }
+
+                        addClass(element, this.className);
+
+                        var transitionId = this._animationEvents.$transition,
+                            computedStyle = this._window.getComputedStyle(element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
+                            transitionProperty = computedStyle[<any>(transitionId + 'Property')],
+                            transitionDuration = computedStyle[<any>(transitionId + 'Duration')];
+
+                        this._started = true;
+
+                        if (transitionProperty === '' || transitionProperty === 'none' ||
+                            transitionDuration === '' || transitionDuration === '0s') {
+                            requestAnimationFrameGlobal((): void => {
+                                this._animate();
+                                this._dispose();
+                                this.end();
+                            });
+                            return;
+                        }
+
+                        this.transitionEnd(this._done);
+
                         if (this._animate()) {
                             return;
                         }
 
-                        this._done(null, true);
+                        this._dispose();
+                        this.end();
                     });
                 }
 
@@ -18303,13 +18560,23 @@ module plat {
                  * A function to be called to let it be known the animation is being cancelled.
                  */
                 cancel(): void {
-                    removeClass(this.element, this.className);
+                    super.cancel();
 
-                    if (this._started) {
-                        return;
-                    }
+                    requestAnimationFrameGlobal((): void => {
+                        if (!this._started) {
+                            this._animate();
+                        }
 
-                    this._animate();
+                        this._dispose();
+                    });
+                }
+
+                /**
+                 * Removes the animation class and the animation "-init" class.
+                 */
+                protected _dispose(): void {
+                    var className = this.className;
+                    removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
                 }
 
                 /**
@@ -18318,20 +18585,20 @@ module plat {
                  * @param {TransitionEvent} ev? The transition event object.
                  * @param {boolean} immediate? Whether clean up should be immediate or conditional.
                  */
-                protected _done(ev?: TransitionEvent, immediate?: boolean): void {
-                    if (!immediate) {
-                        var keys = Object.keys(this._modifiedProperties),
-                            propertyName = ev.propertyName;
-                        if (isString(propertyName)) {
-                            propertyName = propertyName.replace(this._normalizeRegex, '').toLowerCase();
-                            if (this._normalizedKeys.indexOf(propertyName) !== -1 && ++this._transitionCount < keys.length) {
-                                return;
-                            }
+                protected _done(ev: TransitionEvent): void {
+                    var keys = Object.keys(this._modifiedProperties),
+                        propertyName = ev.propertyName;
+                    if (isString(propertyName)) {
+                        propertyName = propertyName.replace(this._normalizeRegex, '').toLowerCase();
+                        if (this._normalizedKeys.indexOf(propertyName) !== -1 && ++this._transitionCount < keys.length) {
+                            return;
                         }
                     }
-                    var className = this.className;
-                    removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
+
                     this.end();
+                    requestAnimationFrameGlobal((): void => {
+                        this._dispose();
+                    });
                 }
 
                 /**
@@ -18588,7 +18855,12 @@ module plat {
                     }
 
                     manager.setUiControlTemplate();
-                    return manager.observeRootContext(control, manager.fulfillAndLoad);
+
+                    if (control.hasOwnContext) {
+                        return manager.observeRootContext(control, manager.fulfillAndLoad);
+                    }
+
+                    return manager.fulfillAndLoad();
                 }
 
                 /**
@@ -18698,7 +18970,7 @@ module plat {
                 protected _document: Document;
 
                 /**
-                 * Removes the <plat-template> node from the DOM
+                 * Removes the `<plat-template>` node from the DOM
                  */
                 replaceWith: string = null;
 
@@ -18845,6 +19117,11 @@ module plat {
                  */
                 protected _waitForTemplateControl(templatePromise: async.IThenable<Template>): void {
                     var _Exception: IExceptionStatic = this._Exception;
+
+                    if (!isPromise(templatePromise)) {
+                        return;
+                    }
+
                     templatePromise.then((templateControl: Template): async.IThenable<DocumentFragment> => {
                         if (!(isNull(this._url) || (this._url === templateControl._url))) {
                             _Exception.warn('The specified url: ' + this._url +
@@ -18995,19 +19272,30 @@ module plat {
                 protected _blockLength: any = 0;
 
                 /**
-                 * An animation promise for delaying disposal prior to an animation finishing.
+                 * Whether or not to animate Array mutations.
                  */
-                protected _animationThenable: async.IThenable<void>;
+                protected _animate: boolean;
 
                 /**
-                 * The current animation promise.
+                 * A collection of all the current animations and their animation type.
                  */
-                protected _currentAnimation: animations.IAnimationThenable<any>;
+                protected _animationQueue: Array<{ animation: animations.IAnimationThenable<any>; op: boolean; }>;
+
+                 /**
+                 * A queue representing all current add operations.
+                 */
+                protected _addQueue: Array<async.IThenable<void>> = [];
+
+                /**
+                 * The number of items currently being added.
+                 */
+                protected _addCount = 0;
 
                 /**
                  * Whether or not the Array listener has been set.
                  */
                 private __listenerSet = false;
+
                 /**
                  * The resolve function for the itemsLoaded promise.
                  */
@@ -19033,12 +19321,16 @@ module plat {
                 /**
                  * Re-syncs the ForEach child controls and DOM with the new 
                  * array.
-                 * @param {Array<any>} newValue? The new Array
-                 * @param {Array<any>} oldValue? The old Array
+                 * @param {Array<any>} newValue The new Array
+                 * @param {Array<any>} oldValue The old Array
                  */
-                contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
+                contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
                     if (isEmpty(newValue)) {
-                        this._removeItems(this.controls.length);
+                        if (!isEmpty(oldValue)) {
+                            this._Promise.all(this._addQueue).then((): void => {
+                                this._removeItems(0, this.controls.length);
+                            });
+                        }
                         return;
                     } else if (!isArray(newValue)) {
                         var _Exception = this._Exception;
@@ -19047,21 +19339,25 @@ module plat {
                     }
 
                     this._setListener();
-                    this._executeEvent({
-                        method: 'splice',
-                        arguments: null,
-                        returnValue: null,
-                        oldArray: oldValue || [],
-                        newArray: newValue || []
-                    });
+                    this._executeEvent([{
+                        object: newValue || [],
+                        type: 'splice'
+                    }]);
                 }
 
                 /**
                  * Observes the Array context for changes and adds initial items to the DOM.
                  */
                 loaded(): void {
-                    var context = this.context;
+                    var optionsObj = this.options || (this.options = <observable.IObservableProperty<IForEachOptions>>{}),
+                        options = optionsObj.value || (optionsObj.value = <IForEachOptions>{}),
+                        animating = this._animate = options.animate === true,
+                        context = this.context;
+
                     this._container = this.element;
+                    if (animating) {
+                        this._animationQueue = [];
+                    }
 
                     if (!isArray(context)) {
                         if (!isNull(context)) {
@@ -19072,7 +19368,16 @@ module plat {
                     }
 
                     this._setAliases();
-                    this._addItems(context.length, 0);
+
+                    var addQueue = this._addQueue,
+                        itemCount = context.length;
+
+                    this._addCount += itemCount;
+                    addQueue.push(this._addItems(0, itemCount, 0).then((): void => {
+                        this._addCount -= itemCount;
+                        addQueue.shift();
+                    }));
+
                     this._setListener();
                 }
 
@@ -19080,17 +19385,14 @@ module plat {
                  * Removes any potentially held memory.
                  */
                 dispose(): void {
-                    this.__resolveFn = null;
+                    this.__resolveFn = this._animationQueue = this._addQueue = null;
                 }
 
                 /**
-                 * Sets the alias tokens to use for all the items in the ForEach context array.
+                 * Sets the alias tokens to use for all the items in the ForEach context Array.
                  */
                 protected _setAliases(): void {
-                    var optionsObj = this.options || <observable.IObservableProperty<IForEachOptions>>{},
-                        options = optionsObj.value || <IForEachOptions>{},
-                        aliases = options.aliases;
-
+                    var aliases = this.options.value.aliases;
                     if (!isObject(aliases)) {
                         return;
                     }
@@ -19108,15 +19410,15 @@ module plat {
                         }
                     }
                 }
-
+        
                 /**
                  * Adds new items to the control's element when items are added to 
                  * the array.
-                 * @param {number} numberOfItems The number of items to add.
                  * @param {number} index The point in the array to start adding items.
-                 * @param {boolean} animate? Whether or not to animate the new items
+                 * @param {number} numberOfItems The number of items to add.
+                 * @param {number} animateItems? The number of items to animate.
                  */
-                protected _addItems(numberOfItems: number, index: number, animate?: boolean): async.IThenable<void> {
+                protected _addItems(index: number, numberOfItems: number, animateItems: number): async.IThenable<void>  {
                     var max = +(index + numberOfItems),
                         promises: Array<async.IThenable<DocumentFragment>> = [],
                         initialIndex = index;
@@ -19129,10 +19431,15 @@ module plat {
                         this.itemsLoaded = this._Promise.all(promises).then<void>((templates): void => {
                             this._setBlockLength(templates);
 
-                            if (animate === true) {
-                                var length = templates.length;
+                            if (animateItems > 0) {
+                                var length = templates.length,
+                                    container = this._container;
                                 for (var i = 0; i < length; ++i) {
-                                    this._appendAnimatedItem(templates[i], __Enter);
+                                    if (i < animateItems) {
+                                        this._appendAnimatedItem(templates[i], __Enter);
+                                    } else {
+                                        container.insertBefore(templates[i], null);
+                                    }
                                 }
                             } else {
                                 this._appendItems(templates);
@@ -19150,14 +19457,6 @@ module plat {
                                     _Exception.warn(error, _Exception.BIND);
                                 });
                             });
-                    } else {
-                        if (isFunction(this.__resolveFn)) {
-                            this.__resolveFn();
-                            this.__resolveFn = null;
-                        }
-                        this.itemsLoaded = new this._Promise<void>((resolve): void => {
-                            this.__resolveFn = resolve;
-                        });
                     }
 
                     return this.itemsLoaded;
@@ -19181,19 +19480,27 @@ module plat {
                         return;
                     }
 
-                    this._animator.enter(item, __Enter, this._container);
+                    var animationQueue = this._animationQueue;
+                    animationQueue.push({
+                        animation: this._animator.enter(item, __Enter, this._container).then((): void => {
+                            animationQueue.shift();
+                        }),
+                        op: null
+                    });
                 }
 
                 /**
                  * Removes items from the control's element.
+                 * @param {number} index The index to start disposing from.
                  * @param {number} numberOfItems The number of items to remove.
                  */
-                protected _removeItems(numberOfItems: number): void {
+                protected _removeItems(index: number, numberOfItems: number): void {
                     var dispose = TemplateControl.dispose,
-                        controls = this.controls;
+                        controls = this.controls,
+                        max = index + numberOfItems;
 
-                    while (numberOfItems-- > 0) {
-                        dispose(controls.pop());
+                    while (index < max) {
+                        dispose(controls[index++]);
                     }
 
                     this._updateResource(controls.length - 1);
@@ -19237,32 +19544,20 @@ module plat {
                  */
                 protected _setListener(): void {
                     if (!this.__listenerSet) {
-                        this.observeArray(this, __CONTEXT, this._preprocessEvent, this._executeEvent);
+                        this.observeArray(this._executeEvent);
                         this.__listenerSet = true;
-                    }
-                }
-
-                /**
-                 * Receives an event prior to a method being called on an array and maps the array 
-                 * method to its associated pre-method handler.
-                 * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-                 */
-                protected _preprocessEvent(ev: observable.IPreArrayChangeInfo): void {
-                    var method = '_pre' + ev.method;
-                    if (isFunction((<any>this)[method])) {
-                        (<any>this)[method](ev);
                     }
                 }
 
                 /**
                  * Receives an event when a method has been called on an array and maps the array 
                  * method to its associated method handler.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _executeEvent(ev: observable.IPostArrayChangeInfo<any>): void {
-                    var method = '_' + ev.method;
+                protected _executeEvent(changes: Array<observable.IArrayChanges<any>>): void {
+                    var method = '_' + changes[0].type;
                     if (isFunction((<any>this)[method])) {
-                        (<any>this)[method](ev);
+                        (<any>this)[method](changes);
                     }
                 }
 
@@ -19308,174 +19603,341 @@ module plat {
 
                 /**
                  * Handles items being pushed into the array.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _push(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._addItems(ev.arguments.length, ev.oldArray.length, true);
+                protected _push(changes: Array<observable.IArrayChanges<any>>): void {
+                    var change = changes[0],
+                        addQueue = this._addQueue,
+                        itemCount = change.addedCount;
+
+                    this._addCount += itemCount;
+                    addQueue.push(this._addItems(change.index, itemCount, this._animate ? itemCount : 0).then((): void => {
+                        this._addCount -= itemCount;
+                        addQueue.shift();
+                    }));
                 }
 
                 /**
                  * Handles items being popped off the array.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _pop(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._animateItems(ev.newArray.length, 1, __Leave, true);
-                    this._removeItems(1);
-                }
-
-                /**
-                 * Handles items being shifted off the array.
-                 * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-                 */
-                protected _preshift(ev: observable.IPreArrayChangeInfo): void {
-                    this._animationThenable = this._animateItems(0, 1, __Leave, true);
-                }
-
-                /**
-                 * Handles items being shifted off the array.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-                 */
-                protected _shift(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._Promise.resolve(this._animationThenable).then(() => {
-                        this._removeItems(1);
-                    });
-                }
-
-                /**
-                 * Handles adding/removing items when an array is spliced.
-                 * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-                 */
-                protected _presplice(ev: observable.IPreArrayChangeInfo): void {
-                    var args = ev.arguments,
-                        addCount = args.length - 2;
-
-                    // check if adding more items than deleting
-                    if (addCount > 0) {
-                        this._animateItems(args[0], addCount, __Enter);
+                protected _pop(changes: Array<observable.IArrayChanges<any>>): void {
+                    var addQueue = this._addQueue,
+                        change = changes[0],
+                        start = change.object.length;
+                    if (change.removed.length === 0) {
                         return;
                     }
 
-                    var deleteCount = args[1];
-                    if (deleteCount > 0) {
-                        this._animationThenable = this._animateItems(args[0] + addCount, deleteCount - addCount, __Leave, true);
-                    }
-                }
-
-                /**
-                 * Handles adding/removing items when an array is spliced.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
-                 */
-                protected _splice(ev: observable.IPostArrayChangeInfo<any>): void {
-                    var oldLength = this.controls.length,
-                        newLength = ev.newArray.length;
-
-                    this._Promise.resolve(this._animationThenable).then(() => {
-                        if (newLength > oldLength) {
-                            this._addItems(newLength - oldLength, oldLength);
-                        } else if (oldLength > newLength) {
-                            this._removeItems(oldLength - newLength);
+                    var removeIndex = change.object.length;
+                    this._addCount -= 1;
+                    this._Promise.all(addQueue).then((): async.IThenable<void> => {
+                        if (this._animate) {
+                            this._animateItems(start, 1, __Leave, 'leave', false).then((): void => {
+                                this._removeItems(removeIndex, 1);
+                            });
+                            return;
                         }
+                        this._removeItems(removeIndex, 1);
                     });
-                }
-
-                /**
-                 * Handles animating items being unshifted into the array.
-                 * @param {plat.observable.IPreArrayChangeInfo} ev The Array mutation event information.
-                 */
-                protected _preunshift(ev: observable.IPreArrayChangeInfo): void {
-                    this._animateItems(0, 1, __Enter);
                 }
 
                 /**
                  * Handles items being unshifted into the array.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _unshift(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._addItems(ev.arguments.length, ev.oldArray.length);
+                protected _unshift(changes: Array<observable.IArrayChanges<any>>): void {
+                    var change = changes[0],
+                        addedCount = change.addedCount,
+                        _Promise = this._Promise,
+                        addQueue = this._addQueue;
+
+                    if (this._animate) {
+                        var animationQueue = this._animationQueue,
+                            animationLength = animationQueue.length;
+                        this._animateItems(0, addedCount, __Enter, null, animationLength > 0 && animationQueue[animationLength - 1].op === true);
+                    }
+
+                    this._addCount += addedCount;
+                    addQueue.push(this._addItems(change.object.length - addedCount, addedCount, 0).then((): void => {
+                        this._addCount -= addedCount;
+                        addQueue.shift();
+                    }));
                 }
 
                 /**
-                 * Handles when the array is sorted.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+                 * Handles items being shifted off the array.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _sort(ev: observable.IPostArrayChangeInfo<any>): void { }
+                protected _shift(changes: Array<observable.IArrayChanges<any>>): void {
+                    var addQueue = this._addQueue,
+                        change = changes[0];
+                    if (change.removed.length === 0) {
+                        return;
+                    } else if (this._animate) {
+                        if (addQueue.length === 0) {
+                            var animationQueue = this._animationQueue;
+                            addQueue = addQueue.concat([this._animateItems(0, 1, __Leave, 'clone', true)]);
+                        }
+                    }
+
+                    var removeIndex = change.object.length;
+                    this._addCount -= 1;
+                    this._Promise.all(addQueue).then((): void => {
+                        this._removeItems(removeIndex, 1);
+                    });
+                }
 
                 /**
-                 * Handles when the array is reversed.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+                 * Handles adding/removing items when an array is spliced.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _reverse(ev: observable.IPostArrayChangeInfo<any>): void { }
+                protected _splice(changes: Array<observable.IArrayChanges<any>>): void {
+                    var change = changes[0],
+                        addCount = change.addedCount,
+                        addQueue = this._addQueue,
+                        animating = this._animate;
+
+                    if (isNull(addCount)) {
+                        if (animating) {
+                            this._cancelCurrentAnimations();
+                        }
+
+                        var newLength = change.object.length,
+                            currentLength = this.controls.length + this._addCount,
+                            itemCount = currentLength - newLength;
+
+                        if (newLength > currentLength) {
+                            // itemCount will be negative
+                            this._addCount -= itemCount;
+                            addQueue.push(this._addItems(currentLength, -itemCount, 0).then((): void => {
+                                this._addCount += itemCount;
+                                addQueue.shift();
+                            }));
+                        } else if (currentLength > newLength) {
+                            this._addCount -= itemCount;
+                            this._Promise.all(addQueue).then((): void => {
+                                this._removeItems(currentLength - itemCount, itemCount);
+                            });
+                        }
+                        return;
+                    }
+
+                    var removeCount = change.removed.length,
+                        animationQueue = this._animationQueue;
+                    if (addCount > removeCount) {
+                        var _Promise = this._Promise,
+                            itemAddCount = addCount - removeCount,
+                            animationCount: number;
+                    
+                        if (animating) {
+                            animationCount = addCount;
+
+                            var animationLength = animationQueue.length,
+                                startIndex = change.index,
+                                currlength = this.controls.length + this._addCount;
+
+                            if (currlength < addCount - startIndex) {
+                                animationCount = currlength - startIndex;
+                            }
+
+                            this._animateItems(startIndex, animationCount, __Enter, null,
+                                animationLength > 0 && animationQueue[animationLength - 1].op === true);
+
+                            animationCount = addCount - animationCount;
+                        } else {
+                            animationCount = 0;
+                        }
+
+                        this._addCount += itemAddCount;
+                        addQueue.push(this._addItems(change.object.length - itemAddCount, itemAddCount, animationCount).then((): void => {
+                            this._addCount -= itemAddCount;
+                            addQueue.shift();
+                        }));
+                    } else if (removeCount > addCount) {
+                        var adding = addCount > 0;
+                        if (animating && !adding && addQueue.length === 0) {
+                            addQueue = addQueue.concat([this._animateItems(change.index, removeCount, __Leave, 'clone', true)]);
+                        }
+
+                        var removeLength = this.controls.length + this._addCount,
+                            deleteCount = removeCount - addCount;
+                        this._addCount -= deleteCount;
+                        this._Promise.all(addQueue).then((): void => {
+                            if (animating && adding) {
+                                var animLength = animationQueue.length;
+                                this._animateItems(change.index, addCount, __Enter, null,
+                                    animLength > 0 && animationQueue[animLength - 1].op === true);
+                            }
+                            this._removeItems(removeLength - deleteCount, deleteCount);
+                        });
+                    }
+                }
+        
+                /**
+                 * Grabs the total blocklength of the specified items.
+                 * @param {number} startIndex The starting index of items.
+                 * @param {number} numberOfItems The number of consecutive items.
+                 */
+                protected _calculateBlockLength(startIndex?: number, numberOfItems?: number): number {
+                    return this._blockLength;
+                }
 
                 /**
                  * Animates the indicated items.
                  * @param {number} startIndex The starting index of items to animate.
                  * @param {number} numberOfItems The number of consecutive items to animate.
                  * @param {string} key The animation key/type.
-                 * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
-                 * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
-                 * Defaults to true.
+                 * @param {string} animationOp Denotes animation operation.
+                 * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
                  */
-                protected _animateItems(startIndex: number, numberOfItems: number, key: string, clone?: boolean,
-                    cancel?: boolean): async.IThenable<void> {
-                    var blockLength = this._blockLength;
+                protected _animateItems(startIndex: number, numberOfItems: number, key: string, animationOp: string,
+                    cancel: boolean): async.IThenable<void> {
+                    var blockLength = this._calculateBlockLength();
                     if (blockLength === 0) {
                         return this._Promise.resolve();
                     }
 
                     var start = startIndex * blockLength;
-                    return this._initiateAnimation(start, numberOfItems * blockLength + start, key, clone, cancel);
+                    switch (animationOp) {
+                        case 'clone':
+                            return this._handleClonedContainerAnimation(start, numberOfItems * blockLength + start, key, cancel === true);
+                        case 'leave':
+                            return this._handleLeave(start, numberOfItems * blockLength + start, key);
+                        default:
+                            return this._handleSimpleAnimation(start, numberOfItems * blockLength + start, key, cancel === true);
+                    }
                 }
 
                 /**
-                 * Animates a block of elements.
+                 * Handles a simple animation of a block of elements.
                  * @param {number} startNode The starting childNode of the ForEach to animate.
                  * @param {number} endNode The ending childNode of the ForEach to animate.
                  * @param {string} key The animation key/type.
-                 * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
-                 * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
-                 * Defaults to true.
+                 * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
                  */
-                protected _initiateAnimation(startNode: number, endNode: number, key: string, clone?: boolean,
-                    cancel?: boolean): async.IThenable<void> {
-                    if (cancel === false || isNull(this._currentAnimation)) {
-                        return this.__handleAnimation(startNode, endNode, key, clone);
-                    }
-
-                    return this._currentAnimation.cancel().then(() => {
-                        return this.__handleAnimation(startNode, endNode, key, clone);
-                    });
-                }
-
-                /**
-                 * Handles the animation of a block of elements.
-                 * @param {number} startNode The starting childNode of the ForEach to animate
-                 * @param {number} endNode The ending childNode of the ForEach to animate
-                 * @param {string} key The animation key/type
-                 * @param {boolean} clone Whether to clone the items and animate the clones or simply animate the items itself.
-                 */
-                private __handleAnimation(startNode: number, endNode: number, key: string, clone: boolean): animations.IAnimationThenable<any> {
+                protected _handleSimpleAnimation(startNode: number, endNode: number, key: string, cancel: boolean): async.IThenable<void> {
                     var container = this._container,
                         slice = Array.prototype.slice,
                         nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
 
                     if (nodes.length === 0) {
-                        return this._animator.resolve();
-                    } else if (clone === true) {
-                        var referenceNode = nodes[nodes.length - 1].nextSibling,
-                            animatedNodes = <DocumentFragment>appendChildren(nodes),
-                            clonedNodes = animatedNodes.cloneNode(true),
-                            removeNodes = slice.call(clonedNodes.childNodes);
-
-                        container.insertBefore(clonedNodes, referenceNode);
-                        return this._currentAnimation = this._animator.animate(removeNodes, key).then(() => {
-                            while (removeNodes.length > 0) {
-                                container.removeChild(removeNodes.pop());
-                            }
-                            container.insertBefore(animatedNodes, referenceNode);
-                        });
+                        return this._Promise.resolve();
                     }
 
-                    return this._currentAnimation = this._animator.animate(nodes, key);
+                    var animationQueue = this._animationQueue,
+                        animationPromise = this._animator.create(nodes, key).then((): void => {
+                            animationQueue.shift();
+                        }),
+                        callback = (): animations.IAnimationThenable<any> => {
+                            animationPromise.start();
+                            return animationPromise;
+                        };
+
+                    if (cancel && animationQueue.length > 0) {
+                        var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                        animationQueue.push({ animation: animationPromise, op: null });
+                        return cancelPromise;
+                    }
+
+                    animationQueue.push({ animation: animationPromise, op: null });
+                    return callback();
+                }
+
+                /**
+                 * Handles a simple animation of a block of elements.
+                 * @param {number} startNode The starting childNode of the ForEach to animate.
+                 * @param {number} endNode The ending childNode of the ForEach to animate.
+                 * @param {string} key The animation key/type.
+                 * the cloned item has been removed and the original item has been put back.
+                 */
+                protected _handleLeave(startNode: number, endNode: number, key: string): async.IThenable<void> {
+                    var container = this._container,
+                        slice = Array.prototype.slice,
+                        nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
+
+                    if (nodes.length === 0) {
+                        return this._Promise.resolve();
+                    }
+
+                    var animationQueue = this._animationQueue,
+                        animation = this._animator.leave(nodes, key).then((): void => {
+                            animationQueue.shift();
+                        });
+
+                    animationQueue.push({
+                        animation: animation,
+                        op: false
+                    });
+
+                    return animation;
+                }
+
+                /**
+                 * Handles a simple animation of a block of elements.
+                 * @param {number} startNode The starting childNode of the ForEach to animate.
+                 * @param {number} endNode The ending childNode of the ForEach to animate.
+                 * @param {string} key The animation key/type.
+                 * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
+                 * the cloned container has been removed and the original container has been put back.
+                 */
+                protected _handleClonedContainerAnimation(startNode: number, endNode: number, key: string,
+                    cancel: boolean): async.IThenable<void> {
+                    var container = this._container,
+                        clonedContainer = container.cloneNode(true),
+                        slice = Array.prototype.slice,
+                        nodes: Array<Node> = slice.call(clonedContainer.childNodes, startNode, endNode);
+
+                    if (nodes.length === 0) {
+                        return this._Promise.resolve();
+                    }
+
+                    var parentNode: Node,
+                        animationQueue = this._animationQueue,
+                        animationPromise = this._animator.create(nodes, key).then((): void => {
+                            animationQueue.shift();
+                            if (isNull(parentNode)) {
+                                return;
+                            }
+
+                            parentNode.replaceChild(container, clonedContainer);
+                        }),
+                        callback = (): async.IThenable<void> => {
+                            parentNode = container.parentNode;
+                            if (isNull(parentNode) || animationPromise.isCanceled()) {
+                                animationQueue.shift();
+                                return animationPromise;
+                            }
+
+                            parentNode.replaceChild(clonedContainer, container);
+                            animationPromise.start();
+                            return animationPromise;
+                        };
+
+                    if (cancel && animationQueue.length > 0) {
+                        var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                        animationQueue.push({ animation: animationPromise, op: true });
+                        return cancelPromise;
+                    }
+
+                    animationQueue.push({ animation: animationPromise, op: true });
+                    return callback();
+                }
+
+                /**
+                 * Cancels all current animations.
+                 * all current animations have been canceled.
+                 */
+                protected _cancelCurrentAnimations(): async.IThenable<any> {
+                    var animationQueue = this._animationQueue,
+                        animations = <Array<animations.IAnimationThenable<any>>>[],
+                        length = animationQueue.length;
+
+                    for (var i = 0; i < length; ++i) {
+                        animations.push(animationQueue[i].animation.cancel());
+                    }
+
+                    return this._Promise.all(animations);
                 }
             }
 
@@ -19487,7 +19949,12 @@ module plat {
              */
             export interface IForEachOptions {
                 /**
-                 * Used to specify alternative alias tokens for the built-in foreach aliases.
+                 * Will animate the Array mutations if set to true.
+                 */
+                animate?: boolean;
+
+                /**
+                 * Used to specify alternative alias tokens for the built-in control aliases.
                  */
                 aliases?: IForEachAliasOptions;
             }
@@ -19807,6 +20274,8 @@ module plat {
                         return this._getContent(this._ogImageElement);
                     }
 
+                    image = this._browser.urlUtils(image).href;
+
                     this._setContent([
                         this._ogImageElement,
                         this._twitterImageElement
@@ -19983,24 +20452,14 @@ module plat {
 
 
             /**
-             * A TemplateControl for binding an HTML select element 
+             * A BindControl for binding an HTML select element 
              * to an Array context.
              */
-            export class Select extends TemplateControl {
+            export class Select extends BindControl {
                 protected static _inject: any = {
                     _Promise: __Promise,
                     _document: __Document
                 };
-
-                /**
-                 * Reference to the IPromise injectable.
-                 */
-                protected _Promise: async.IPromise;
-
-                /**
-                 * Reference to the Document injectable.
-                 */
-                protected _document: Document;
 
                 /**
                  * Replaces the <plat-select> node with 
@@ -20038,6 +20497,16 @@ module plat {
                  * A Promise that will fulfill whenever all items are loaded.
                  */
                 itemsLoaded: async.IThenable<void>;
+
+                /**
+                 * Reference to the IPromise injectable.
+                 */
+                protected _Promise: async.IPromise;
+
+                /**
+                 * Reference to the Document injectable.
+                 */
+                protected _document: Document;
 
                 /**
                  * Whether or not the select is grouped.
@@ -20112,12 +20581,14 @@ module plat {
                 /**
                  * Re-observes the new array context and modifies 
                  * the options accordingly.
-                 * @param {Array<any>} newValue? The new array context.
-                 * @param {Array<any>} oldValue? The old array context.
+                 * @param {Array<any>} newValue The new array context.
+                 * @param {Array<any>} oldValue The old array context.
                  */
-                contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
+                contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
                     if (!isArray(newValue)) {
-                        this._removeItems(this.controls.length);
+                        this.itemsLoaded.then((): void => {
+                            this._removeItems(this.controls.length);
+                        });
                         return;
                     }
 
@@ -20160,8 +20631,166 @@ module plat {
                  * Removes any potentially held memory.
                  */
                 dispose(): void {
+                    super.dispose();
                     this.__resolveFn = null;
                     this._defaultOption = null;
+                }
+
+                /**
+                 * A function that allows this control to observe both the bound property itself as well as
+                 * potential child properties if being bound to an object.
+                 * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+                 * databinding.
+                 */
+                observeProperties(implementer: observable.IImplementTwoWayBinding): void {
+                    var element = <HTMLSelectElement>this.element,
+                        setter: observable.IBoundPropertyChangedListener<any>;
+
+                    if (element.multiple) {
+                        setter = this._setSelectedIndices.bind(this);
+                        if (isNull(implementer.evaluate())) {
+                            this.inputChanged([]);
+                        }
+
+                        implementer.observeProperty((): void => {
+                            setter(implementer.evaluate(), null, null);
+                        }, null, true);
+                    } else {
+                        setter = this._setSelectedIndex.bind(this);
+                    }
+
+                    implementer.observeProperty(setter);
+                    this.addEventListener(element, 'change', this._observeChange, false);
+                }
+
+                /**
+                 * Updates the selected index if bound to a property.
+                 * @param {string} newValue The new value of the bound property.
+                 * @param {string} oldValue The old value of the bound property.
+                 * @param {string} identifier The child identifier of the bound property.
+                 * @param {boolean} firstTime? Whether or not this is the first time being called as a setter.
+                 */
+                protected _setSelectedIndex(newValue: string, oldValue: string, identifier: string, firstTime?: boolean): void {
+                    var element = <HTMLSelectElement>this.element,
+                        value = element.value;
+                    if (isNull(newValue)) {
+                        if (firstTime === true || !this._document.body.contains(element)) {
+                            this.itemsLoaded.then((): void => {
+                                this.inputChanged(element.value);
+                            });
+                            return;
+                        }
+                        element.selectedIndex = -1;
+                        return;
+                    } else if (!isString(newValue)) {
+                        var _Exception = this._Exception,
+                            message: string;
+                        if (isNumber(newValue)) {
+                            newValue = newValue.toString();
+                            message = 'Trying to bind a value of type number to a ' + this.type + '\'s element. ' +
+                            'The value will implicitly be converted to type string.';
+                        } else {
+                            message = 'Trying to bind a value that is not a string to a ' + this.type + '\'s element. ' +
+                            'The element\'s selected index will be set to -1.';
+                        }
+
+                        _Exception.warn(message, _Exception.BIND);
+                    } else if (value === newValue) {
+                        return;
+                    } else if (!this._document.body.contains(element)) {
+                        element.value = newValue;
+                        if (element.value !== newValue) {
+                            element.value = value;
+                            this.inputChanged(element.value);
+                        }
+                        return;
+                    }
+
+                    this.itemsLoaded.then((): void => {
+                        element.value = newValue;
+                        // check to make sure the user changed to a valid value
+                        // second boolean argument is an ie fix for inconsistency
+                        if (element.value !== newValue || element.selectedIndex === -1) {
+                            element.selectedIndex = -1;
+                        }
+                    });
+                }
+
+                /**
+                 * Updates the selected index if bound to a property.
+                 * @param {Array<any>} newValue The new value Array of the bound property.
+                 * @param {Array<any>} oldValue The old value Array of the bound property.
+                 * @param {string} identifier The child identifier of the bound property.
+                 * @param {boolean} firstTime? Whether or not this is the first time being called as a setter.
+                 */
+                protected _setSelectedIndices(newValue: Array<any>, oldValue: Array<any>, identifier: string, firstTime?: boolean): void {
+                    var element = <HTMLSelectElement>this.element,
+                        options = element.options,
+                        length = isNull(options) ? 0 : options.length,
+                        option: HTMLOptionElement,
+                        nullValue = isNull(newValue);
+
+                    this.itemsLoaded.then((): void => {
+                        if (nullValue || !isArray(newValue)) {
+                            if (firstTime === true) {
+                                this.inputChanged(this._getSelectedValues());
+                            }
+                            // unselects the options unless a match is found
+                            while (length-- > 0) {
+                                option = options[length];
+                                if (!nullValue && option.value === '' + newValue) {
+                                    option.selected = true;
+                                    return;
+                                }
+
+                                option.selected = false;
+                            }
+                            return;
+                        }
+
+                        var value: any,
+                            numberValue: number;
+
+                        while (length-- > 0) {
+                            option = options[length];
+                            value = option.value;
+                            numberValue = Number(value);
+
+                            if (newValue.indexOf(value) !== -1 || (isNumber(numberValue) && newValue.indexOf(numberValue) !== -1)) {
+                                option.selected = true;
+                                continue;
+                            }
+
+                            option.selected = false;
+                        }
+                    });
+                }
+
+                /**
+                 * Fires the inputChanged event when the select's value changes.
+                 */
+                protected _observeChange(): void {
+                    var element = <HTMLSelectElement>this.element;
+                    this.inputChanged(element.multiple ? this._getSelectedValues() : element.value);
+                }
+
+                /**
+                 * Getter for select-multiple.
+                 */
+                protected _getSelectedValues(): Array<string> {
+                    var options = (<HTMLSelectElement>this.element).options,
+                        length = options.length,
+                        option: HTMLOptionElement,
+                        selectedValues: Array<string> = [];
+
+                    for (var i = 0; i < length; ++i) {
+                        option = options[i];
+                        if (option.selected) {
+                            selectedValues.push(option.value);
+                        }
+                    }
+
+                    return selectedValues;
                 }
 
                 /**
@@ -20169,7 +20798,7 @@ module plat {
                  */
                 protected _setListener(): void {
                     if (!this.__listenerSet) {
-                        this.observeArray(this, __CONTEXT, null, this._executeEvent);
+                        this.observeArray(this._executeEvent);
                         this.__listenerSet = true;
                     }
                 }
@@ -20177,12 +20806,12 @@ module plat {
                 /**
                  * Receives an event when a method has been called on an array and maps the array 
                  * method to its associated method handler.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The Array mutation event information.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _executeEvent(ev: observable.IPostArrayChangeInfo<any>): void {
-                    var method = '_' + ev.method;
+                protected _executeEvent(changes: Array<observable.IArrayChanges<any>>): void {
+                    var method = '_' + changes[0].type;
                     if (isFunction((<any>this)[method])) {
-                        (<any>this)[method](ev);
+                        (<any>this)[method](changes);
                     }
                 }
 
@@ -20247,7 +20876,7 @@ module plat {
                                     return optgroup;
                                 }));
                         } else if (isPromise(optgroup)) {
-                            return optgroup.then((group: Element) => {
+                            return optgroup.then((group: Element): void => {
                                 group.insertBefore(option, null);
                             });
                         }
@@ -20277,12 +20906,9 @@ module plat {
                 /**
                  * The function called when an item has been removed 
                  * from the Array context.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
                  */
-                protected _removeItem(ev: observable.IPostArrayChangeInfo<any>): void {
-                    if (ev.oldArray.length === 0) {
-                        return;
-                    } else if (this._isGrouped) {
+                protected _removeItem(): void {
+                    if (this._isGrouped) {
                         this._resetSelect();
                         return;
                     }
@@ -20307,71 +20933,87 @@ module plat {
                 /**
                  * The function called when an element is pushed to 
                  * the array context.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _push(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._addItems(ev.arguments.length, ev.oldArray.length);
+                protected _push(changes: Array<observable.IArrayChanges<any>>): void {
+                    var change = changes[0];
+                    this._addItems(change.addedCount, change.index);
                 }
 
                 /**
                  * The function called when an item is popped 
                  * from the array context.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _pop(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._removeItem(ev);
-                }
-
-                /**
-                 * The function called when an item is shifted 
-                 * from the array context.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
-                 */
-                protected _shift(ev: observable.IPostArrayChangeInfo<any>): void {
-                    this._removeItem(ev);
-                }
-
-                /**
-                 * The function called when items are spliced 
-                 * from the array context.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
-                 */
-                protected _splice(ev: observable.IPostArrayChangeInfo<any>): void {
-                    if (this._isGrouped) {
-                        this._resetSelect();
+                protected _pop(changes: Array<observable.IArrayChanges<any>>): void {
+                    if (changes[0].removed.length === 0) {
                         return;
                     }
-
-                    var oldLength = ev.oldArray.length,
-                        newLength = ev.newArray.length;
-
-                    if (newLength > oldLength) {
-                        this._addItems(newLength - oldLength, oldLength);
-                    } else if (oldLength > newLength) {
-                        this._removeItems(oldLength - newLength);
-                    }
+                    this.itemsLoaded.then((): void => {
+                        this._removeItem();
+                    });
                 }
 
                 /**
                  * The function called when an item is unshifted 
                  * onto the array context.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _unshift(ev: observable.IPostArrayChangeInfo<any>): void {
+                protected _unshift(changes: Array<observable.IArrayChanges<any>>): void {
                     if (this._isGrouped) {
                         this._resetSelect();
                         return;
                     }
 
-                    this._addItems(ev.arguments.length, ev.oldArray.length);
+                    var change = changes[0],
+                        addedCount = change.addedCount;
+                    this._addItems(addedCount, change.object.length - addedCount - 1);
+                }
+
+                /**
+                 * The function called when an item is shifted 
+                 * from the array context.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
+                 */
+                protected _shift(changes: Array<observable.IArrayChanges<any>>): void {
+                    if (changes[0].removed.length === 0) {
+                        return;
+                    }
+                    this.itemsLoaded.then((): void => {
+                        this._removeItem();
+                    });
+                }
+
+                /**
+                 * The function called when items are spliced 
+                 * from the array context.
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
+                 */
+                protected _splice(changes: Array<observable.IArrayChanges<any>>): void {
+                    if (this._isGrouped) {
+                        this._resetSelect();
+                        return;
+                    }
+
+                    var change = changes[0],
+                        addCount = change.addedCount,
+                        removeCount = change.removed.length;
+
+                    if (addCount > removeCount) {
+                        this._addItems(addCount - removeCount, change.object.length - addCount - 1);
+                    } else if (removeCount > addCount) {
+                        this.itemsLoaded.then((): void => {
+                            this._removeItems(removeCount - addCount);
+                        });
+                    }
                 }
 
                 /**
                  * The function called when the array context 
                  * is sorted.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _sort(ev: observable.IPostArrayChangeInfo<any>): void {
+                protected _sort(changes: Array<observable.IArrayChanges<any>>): void {
                     if (this._isGrouped) {
                         this._resetSelect();
                     }
@@ -20380,9 +21022,9 @@ module plat {
                 /**
                  * The function called when the array context 
                  * is reversed.
-                 * @param {plat.observable.IPostArrayChangeInfo<any>} ev The array mutation object
+                 * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
                  */
-                protected _reverse(ev: observable.IPostArrayChangeInfo<any>): void {
+                protected _reverse(changes: Array<observable.IArrayChanges<any>>): void {
                     if (this._isGrouped) {
                         this._resetSelect();
                     }
@@ -20406,7 +21048,6 @@ module plat {
                  * option's value.
                  */
                 default: ISelectDefaultOption;
-
             }
 
             /**
@@ -20764,7 +21405,6 @@ module plat {
                         }
 
                         ev.preventDefault();
-                        element.href = '#';
 
                         requestAnimationFrameGlobal((): void => {
                             this._browser.url(href);
@@ -20799,6 +21439,14 @@ module plat {
                  */
                 loaded(): void {
                     this.setHref();
+
+                    if (!isObject(this.options)) {
+                        return;
+                    }
+
+                    this.options.observe(() => {
+                        this.setHref();
+                    });
                 }
 
                 /**
@@ -22230,12 +22878,6 @@ module plat {
                     }
                 }
 
-                if (clonedManager.hasOwnContext) {
-                    postpone((): void => {
-                        clonedManager.observeRootContext(newControl, clonedManager.bindAndLoad);
-                    });
-                }
-
                 var length = children.length,
                     childNodeOffset = 0;
 
@@ -22368,7 +23010,7 @@ module plat {
                     }
                 }
 
-                this._observeControlIdentifiers(nodeMap.nodes, parent, controls);
+                this._observeControlIdentifiers(nodeMap.nodes, parent, controls, nodeMap.element);
 
                 return controls;
             }
@@ -22536,13 +23178,6 @@ module plat {
                 _TemplateControlFactory.setAbsoluteContextPath(uiControl, absoluteContextPath);
                 _TemplateControlFactory.setContextResources(uiControl);
                 ElementManager._ResourcesFactory.bindResources(uiControl.resources);
-
-                if (!this.replace) {
-                    var element = uiControl.element;
-                    if (!isNull(element) && isFunction(element.removeAttribute)) {
-                        element.removeAttribute(__Hide);
-                    }
-                }
             }
 
             /**
@@ -22764,23 +23399,25 @@ module plat {
              * @param {Array<plat.Control>} controls The array of controls whose attributes will need to be updated 
              * upon the context changing.
              */
-            protected _observeControlIdentifiers(nodes: Array<INode>, parent: ui.TemplateControl, controls: Array<Control>): void {
+            protected _observeControlIdentifiers(nodes: Array<INode>, parent: ui.TemplateControl, controls: Array<Control>, element: Element): void {
                 var length = nodes.length,
-                    bindings: Array<INode> = [],
-                    attributeChanged = this._attributeChanged,
                     hasParent = !isNull(parent),
                     node: INode,
                     control: Control,
-                    i = 0;
+                    i = 0,
+                    replace = this.replace,
+                    managers: Array<AttributeManager> = [],
+                    manager: AttributeManager;
 
                 for (; i < length; ++i) {
                     node = nodes[i];
                     control = node.control;
 
                     if (hasParent && node.expressions.length > 0) {
-                        NodeManager.observeExpressions(node.expressions, parent,
-                            attributeChanged.bind(this, node, parent, controls));
-                        bindings.push(node);
+                        manager = AttributeManager.getInstance();
+                        managers.push(manager);
+                        manager.initialize(element, node, parent, controls, replace);
+                        NodeManager.observeExpressions(node.expressions, parent, manager.attributeChanged.bind(manager));
                     }
 
                     if (!isNull(control)) {
@@ -22788,36 +23425,9 @@ module plat {
                     }
                 }
 
-                length = bindings.length;
+                length = managers.length;
                 for (i = 0; i < length; ++i) {
-                    this._attributeChanged(bindings[i], parent, controls);
-                }
-            }
-
-            /**
-             * A function to handle updating an attribute on all controls that have it 
-             * as a property upon a change in its value.
-             * @param {plat.processing.INode} node The INode where the change occurred.
-             * @param {plat.ui.TemplateControl} parent The parent TemplateControl used for context.
-             * @param {Array<plat.Control>} controls The controls that have the changed attribute as a property.
-             */
-            protected _attributeChanged(node: INode, parent: ui.TemplateControl, controls: Array<Control>): void {
-                var length = controls.length,
-                    key = camelCase(node.nodeName),
-                    value = NodeManager.build(node.expressions, parent),
-                    attributes: ui.Attributes,
-                    oldValue: any;
-
-                for (var i = 0; i < length; ++i) {
-                    attributes = <ui.Attributes>controls[i].attributes;
-                    oldValue = attributes[key];
-                    attributes[key] = value;
-
-                    (<any>attributes)._attributeChanged(key, value, oldValue);
-                }
-
-                if (!this.replace) {
-                    (<Attr>node.node).value = value;
+                    managers[i].attributeChanged();
                 }
             }
 
@@ -23157,6 +23767,188 @@ module plat {
              * responsible for the passed in Comment Node.
              */
             create(node: Node, parent: ElementManager): CommentManager;
+        }
+
+        /**
+         * Used to facilitate observing expressions on attributes. Has the ability to alert Attributes 
+         * with changes. Handles dynamic and static attributes (dynamic meaning "class"-like attributes).
+         */
+        export class AttributeManager {
+            /**
+             * The element that contains the attribute for this manager.
+             */
+            element: HTMLElement;
+
+            /**
+             * The INode that contains the attribute for this manager.
+             */
+            node: INode;
+
+            /**
+             * The parent control for the controls associated with this manager.
+             */
+            parent: ui.TemplateControl;
+
+            /**
+             * Whether or not the element that contains this attribute is replaced in the DOM.
+             */
+            replace: boolean;
+
+            /**
+             * The public interface for sending notifications of changes to this attribute.
+             */
+            attributeChanged: () => void;
+
+            /**
+             * Reference to the INodeManagerStatic injectable.
+             */
+            protected _NodeManager: INodeManagerStatic;
+
+            /**
+             * A regular expression for finding markup in a string.
+             */
+            protected _markupRegex: RegExp;
+
+            /**
+             * The controls which need to be notified of changes to this attribute.
+             */
+            protected _controls: Array<Control>;
+
+            /**
+             * The filtered expressions for a "dynamic" attribute.
+             */
+            protected _bindingExpressions: Array<expressions.IParsedExpression>;
+
+            /**
+             * Keeps track of the previous bound values of a "dynamic" attribute.
+             */
+            protected _lastValues: IObject<boolean> = {};
+
+            /**
+             * Returns a new instance of an AttributeManager.
+             */
+            static getInstance() {
+                var manager = new AttributeManager();
+                manager._NodeManager = <INodeManagerStatic>acquire(__NodeManagerStatic);
+                manager._markupRegex = (<expressions.Regex>acquire(__Regex)).markupRegex;
+                return manager;
+            }
+
+            /**
+             * Initializes the manager and determines what method should be used to handle attribute changes.
+             * @param {HTMLElement} element The element that contains this attribute.
+             * @param {plat.processing.INode} node The INode associated with this attribute.
+             * @param {plat.ui.TemplateControl} parent The parent control for all the controls associated with 
+             * the element.
+             * @param {Array<plat.Control>} controls The controls associated with the element.
+             * @param {boolean} replace? Whether or not the element is replaced.
+             */
+            initialize(element: Element, node: INode, parent: ui.TemplateControl, controls: Array<Control>, replace?: boolean): void {
+                this.element = <HTMLElement>element;
+                this.node = node;
+                this.parent = parent;
+                this._controls = controls;
+                this.replace = replace;
+
+                if (node.nodeName !== 'class') {
+                    this.attributeChanged = this._staticAttributeChanged;
+                } else {
+                    this.attributeChanged = this._dynamicAttributeChanged;
+                    this._bindingExpressions = this._getBindingExpressions(node.expressions);
+                }
+            }
+
+            /**
+             * In the event that the attribute is dynamic (i.e. a "class"-like attribute) this will filter out 
+             * expressions that don't have identifiers/aliases.
+             * @param {Array<plat.expressions.IParsedExpression>} expressions The expressions to filter.
+             */
+            protected _getBindingExpressions(expressions: Array<expressions.IParsedExpression>): Array<expressions.IParsedExpression> {
+                return filter((expression: expressions.IParsedExpression) => {
+                    return expression.identifiers.length > 0 || expression.aliases.length > 0 || expression.expression.trim() === '';
+                }, expressions);
+            }
+
+            /**
+             * Handles changes to dynamic attributes. Takes into account that the attribute may have been changed programmatically, and 
+             * we need to only mutate the piece of the attribute corresponding to expressions with markup.
+             */
+            protected _dynamicAttributeChanged(): void {
+                var node = this.node,
+                    attr: Attr = <Attr>node.node,
+                    value = this._NodeManager.build(this._bindingExpressions, this.parent),
+                    classes = value.split(/\s/),
+                    last = this._lastValues,
+                    element: HTMLElement = this.element,
+                    c: string,
+                    length: number,
+                    i: number;
+
+                if (this._NodeManager.hasMarkup(attr.value)) {
+                    attr.value = attr.value.replace(this._markupRegex, '');
+                }
+
+                length = classes.length;
+
+                for (i = 0; i < length; ++i) {
+                    last[classes[i]] = true;
+                }
+
+                classes = Object.keys(last);
+                length = classes.length;
+
+                for (i = 0; i < length; ++i) {
+                    c = classes[i];
+                    if (last[c]) {
+                        addClass(element, c);
+                        last[c] = false;
+                    } else {
+                        deleteProperty(last, c);
+                        removeClass(element, c);
+                    }
+                }
+
+                value = attr.value;
+
+                this._notifyAttributes(node.nodeName, value);
+            }
+
+            /**
+             * Handles changes to static attributes. Builds a string from the node expressions, then sets the attribute value 
+             * and notifies the associated Attributes.
+             */
+            protected _staticAttributeChanged(): void {
+                var controls = this._controls,
+                    node = this.node,
+                    length = controls.length,
+                    key = camelCase(node.nodeName),
+                    value = this._NodeManager.build(node.expressions, this.parent),
+                    attributes: ui.Attributes;
+
+                this._notifyAttributes(key, value);
+
+                if (!this.replace) {
+                    (<Attr>node.node).value = value;
+                }
+            }
+
+            /**
+             * Notifies the necessary Attributes of changes to an attribute.
+             */
+            protected _notifyAttributes(key: string, value: any): void {
+                var controls = this._controls,
+                    length = controls.length,
+                    attributes: ui.Attributes,
+                    oldValue: any;
+
+                for (var i = 0; i < length; ++i) {
+                    attributes = <ui.Attributes>controls[i].attributes;
+                    oldValue = attributes[key];
+                    attributes[key] = value;
+
+                    (<any>attributes)._attributeChanged(key, value, oldValue);
+                }
+            }
         }
     }
     /**
@@ -25019,6 +25811,10 @@ module plat {
 
                 segment = this._recognizer.generate(routeInfo.delegate.view, routeInfo.parameters);
 
+                var previousSegment = this._previousSegment;
+
+                this._previousSegment = segment;
+
                 this.navigating = true;
 
                 var routeInfoCopy = this._nextRouteInfo = _clone(routeInfo, true);
@@ -25039,6 +25835,7 @@ module plat {
                     this.currentRouteInfo = routeInfoCopy;
                     this.navigating = false;
                 },(e: any): void => {
+                        this._previousSegment = previousSegment;
                         this.navigating = false;
                         throw e;
                     });
@@ -26611,7 +27408,7 @@ module plat {
 
                 this.attribute = camelCase(this.type);
                 this.setter();
-                this.__removeListener = this.attributes.observe(this.attribute, this.setter);
+                this.__removeListener = this.attributes.observe(this.setter, this.attribute);
             }
 
             /**
@@ -26964,13 +27761,20 @@ module plat {
         /**
          * Facilitates two-way databinding for HTMLInputElements, HTMLSelectElements, and HTMLTextAreaElements.
          */
-        export class Bind extends AttributeControl {
+        export class Bind extends AttributeControl implements observable.IImplementTwoWayBinding {
             protected static _inject: any = {
                 _parser: __Parser,
                 _ContextManager: __ContextManagerStatic,
                 _compat: __Compat,
                 _document: __Document
             };
+
+            /**
+             * The priority of Bind is set high to precede 
+             * other controls that may be listening to the same 
+             * event.
+             */
+            priority: number = 100;
 
             /**
              * Reference to the Parser injectable.
@@ -26991,13 +27795,6 @@ module plat {
              * Reference to the Document injectable.
              */
             protected _document: Document;
-
-            /**
-             * The priority of Bind is set high to precede 
-             * other controls that may be listening to the same 
-             * event.
-             */
-            priority: number = 100;
 
             /**
              * The function used to add the proper event based on the input type.
@@ -27029,6 +27826,13 @@ module plat {
              * The bound property name.
              */
             protected _property: string;
+
+            /**
+             * Whether or not Bind is being used in conjunction 
+             * with a TemplateControl that implements the 
+             * interface ISupportTwoWayBinding.
+             */
+            protected _supportsTwoWayBinding = false;
 
             /**
              * Whether or not the File API is supported.
@@ -27070,13 +27874,12 @@ module plat {
 
                 if (identifiers.length !== 1) {
                     var _Exception: IExceptionStatic = this._Exception;
-                    _Exception.warn('Only 1 identifier allowed in a plat-bind expression', _Exception.BIND);
+                    _Exception.warn('Only 1 identifier allowed in a ' + this.type + ' expression', _Exception.BIND);
                     this._contextExpression = null;
                     return;
                 }
 
                 var split = identifiers[0].split('.');
-
                 this._property = split.pop();
 
                 if (split.length > 0) {
@@ -27110,6 +27913,10 @@ module plat {
                     };
                 }
 
+                if (this._supportsTwoWayBinding) {
+                    (<ui.BindControl>this.templateControl).observeProperties(this);
+                }
+
                 this._watchExpression();
 
                 if (isNull(this._addEventType)) {
@@ -27134,8 +27941,117 @@ module plat {
             }
 
             /**
+             * Gets the current value of the bound property.
+             */
+            evaluate(): any {
+                var expression = this._expression;
+                if (isUndefined(expression)) {
+                    return;
+                }
+
+                return this.evaluateExpression(expression);
+            }
+
+            /**
+             * The function that allows a control implementing ISupportTwoWayBinding to observe 
+             * changes to the bound property and/or its child properties.
+             * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener to fire when the bound property or its 
+             * specified child changes.
+             * @param {string} identifier? The identifier of the child property of the bound item.
+             */
+            observeProperty<T>(listener: observable.IBoundPropertyChangedListener<T>, identifier?: string): IRemoveListener;
+            /**
+             * The function that allows a control implementing ISupportTwoWayBinding to observe 
+             * changes to the bound property and/or its child properties.
+             * @param {plat.observable.IBoundPropertyChangedListener<T>} listener The listener to fire when the bound property or its 
+             * specified child changes.
+             * @param {number} index? The index of the child property of the bound item if the bound item is an Array.
+             */
+            observeProperty<T>(listener: observable.IBoundPropertyChangedListener<T>, index?: number): IRemoveListener;
+            /**
+             * A function that allows a ISupportTwoWayBinding to observe both the 
+             * bound property itself as well as potential child properties if being bound to an object.
+             * @param {(changes: Array<plat.observable.IArrayChanges<T>>, identifier: string) => void} listener The listener function.
+             * @param {string} identifier? The identifier off of the bound object to listen to for changes. If undefined or empty  
+             * the listener will listen for changes to the bound item itself.
+             * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes.
+             */
+            observeProperty<T>(listener: (changes: Array<observable.IArrayChanges<T>>, identifier: string) => void,
+                identifier?: string, arrayMutationsOnly?: boolean): IRemoveListener;
+            /**
+             * A function that allows a ISupportTwoWayBinding to observe both the 
+             * bound property itself as well as potential child properties if being bound to an object.
+             * @param {(changes: Array<plat.observable.IArrayChanges<T>>, identifier: number) => void} listener The listener function.
+             * @param {number} index? The index off of the bound object to listen to for changes if the bound object is an Array. 
+             * If undefined or empty the listener will listen for changes to the bound Array itself.
+             * @param {boolean} arrayMutationsOnly? Whether or not to listen only for Array mutation changes.
+             */
+            observeProperty<T>(listener: (changes: Array<observable.IArrayChanges<T>>, identifier: number) => void,
+                index?: number, arrayMutationsOnly?: boolean): IRemoveListener;
+            observeProperty(listener: any, identifier?: any, arrayMutationsOnly?: boolean): IRemoveListener {
+                var parsedIdentifier: string;
+                if (isEmpty(identifier)) {
+                    parsedIdentifier = this._expression.expression;
+                } else if (isNumber(identifier)) {
+                    parsedIdentifier = this._expression.expression + '.' + identifier;
+                } else {
+                    var _parser = this._parser,
+                        identifierExpression = _parser.parse(identifier),
+                        identifiers = identifierExpression.identifiers,
+                        _Exception: IExceptionStatic;
+
+                    if (identifiers.length !== 1) {
+                        _Exception = this._Exception;
+                        _Exception.warn('Only 1 identifier path allowed when observing changes to a bound property\'s child with a control ' +
+                            'implementing ISupportTwoWayBinding and working with ' + this.type, _Exception.BIND);
+                        return;
+                    }
+
+                    var expression = _parser.parse(this._expression.expression + '.' + identifiers[0]);
+
+                    parsedIdentifier = expression.identifiers[0];
+
+                    var split = parsedIdentifier.split('.'),
+                        key = split.pop(),
+                        contextExpression = split.join('.'),
+                        context = this.evaluateExpression(contextExpression);
+
+                    if (!isObject(context)) {
+                        if (isNull(context)) {
+                            context = this._ContextManager.createContext(this.parent, contextExpression);
+                        } else {
+                            _Exception = this._Exception;
+                            _Exception.warn('A control implementing ISupportTwoWayBinding is trying to index into a primitive type ' +
+                                'when trying to evaluate ' + this.type + '="' + this._expression.expression + '"', _Exception.BIND);
+                            return;
+                        }
+                    }
+                }
+
+                listener = listener.bind(this.templateControl);
+
+                var removeListener: IRemoveListener;
+                if (arrayMutationsOnly === true) {
+                    removeListener = this.observeArray((changes: Array<observable.IArrayChanges<any>>): void => {
+                        listener(changes, identifier);
+                    }, parsedIdentifier);
+                } else {
+                    removeListener = this.observe((newValue: any, oldValue: any): void => {
+                        if (this.__isSelf || newValue === oldValue) {
+                            return;
+                        }
+
+                        listener(newValue, oldValue, identifier);
+                    }, parsedIdentifier);
+                }
+
+                listener(this.evaluateExpression(parsedIdentifier), undefined, identifier, true);
+                return removeListener;
+            }
+
+            /**
              * Adds a text event as the event listener. 
-             * Used for textarea and input[type=text].
+             * Used for textarea and input[type="text"].
              */
             protected _addTextEventListener(): void {
                 var element = this.element,
@@ -27194,7 +28110,7 @@ module plat {
 
             /**
              * Adds a change event as the event listener. 
-             * Used for select, input[type=radio], and input[type=range].
+             * Used for select, input[type="radio"], and input[type="range"].
              */
             protected _addChangeEventListener(): void {
                 this.addEventListener(this.element, 'change', this._propertyChanged, false);
@@ -27202,21 +28118,21 @@ module plat {
 
             /**
              * Adds a $tap event as the event listener. 
-             * Used for input[type=button] and button.
+             * Used for input[type="button"] and button.
              */
             protected _addButtonEventListener(): void {
                 this.addEventListener(this.element, __tap, this._propertyChanged, false);
             }
 
             /**
-             * Getter for input[type=checkbox] and input[type=radio]
+             * Getter for input[type="checkbox"] and input[type="radio"].
              */
             protected _getChecked(): boolean {
                 return (<HTMLInputElement>this.element).checked;
             }
 
             /**
-             * Getter for input[type=text], input[type=range], 
+             * Getter for input[type="text"], input[type="range"], 
              * textarea, and select.
              */
             protected _getValue(): string {
@@ -27255,7 +28171,7 @@ module plat {
             }
 
             /**
-             * Getter for input[type="file"]-multiple
+             * Getter for input[type="file"]-multiple.
              */
             protected _getFiles(): Array<IFile> {
                 var element = <HTMLInputElement>this.element;
@@ -27289,7 +28205,7 @@ module plat {
             }
 
             /**
-             * Getter for select-multiple
+             * Getter for select-multiple.
              */
             protected _getSelectedValues(): Array<string> {
                 var options = (<HTMLSelectElement>this.element).options,
@@ -27308,14 +28224,14 @@ module plat {
             }
 
             /**
-             * Setter for textarea, input[type=text], 
-             * and input[type=button], and select
+             * Setter for textarea, input[type="text"], 
+             * and input[type="button"], and select.
              * @param {any} newValue The new value to set
-             * @param {any} oldValue? The previously bound value
+             * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            protected _setText(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setText(newValue: any, oldValue: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 }
@@ -27336,13 +28252,13 @@ module plat {
             }
 
             /**
-             * Setter for input[type=range]
+             * Setter for input[type="range"].
              * @param {any} newValue The new value to set
-             * @param {any} oldValue? The previously bound value
+             * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            protected _setRange(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setRange(newValue: any, oldValue: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 }
@@ -27363,13 +28279,53 @@ module plat {
             }
 
             /**
-             * Setter for input[type=checkbox]
+             * Setter for input[type="hidden"].
              * @param {any} newValue The new value to set
-             * @param {any} oldValue? The previously bound value
+             * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            protected _setChecked(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setHidden(newValue: any, oldValue: any, firstTime?: boolean): void {
+                if (this.__isSelf) {
+                    return;
+                }
+
+                if (isEmpty(newValue)) {
+                    newValue = '';
+
+                    if (firstTime === true) {
+                        if (isEmpty((<HTMLInputElement>this.element).value)) {
+                            this._setValue(newValue);
+                        }
+                        this._propertyChanged();
+                        return;
+                    }
+                }
+
+                this._setValue(newValue);
+            }
+
+            /**
+             * Sets the value on an element.
+             * @param {any} newValue The new value to set
+             */
+            protected _setValue(newValue: any): void {
+                var element = <HTMLInputElement>this.element;
+                if (element.value === newValue) {
+                    return;
+                }
+
+                element.value = newValue;
+            }
+
+            /**
+             * Setter for input[type="checkbox"]
+             * @param {any} newValue The new value to set
+             * @param {any} oldValue The previously bound value
+             * @param {boolean} firstTime? The context is being evaluated for the first time and 
+             * should thus change the property if null
+             */
+            protected _setChecked(newValue: any, oldValue: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
                     return;
                 } else if (!isBoolean(newValue)) {
@@ -27384,7 +28340,7 @@ module plat {
             }
 
             /**
-             * Setter for input[type=radio]
+             * Setter for input[type="radio"]
              * @param {any} newValue The new value to set
              */
             protected _setRadio(newValue: any): void {
@@ -27402,17 +28358,12 @@ module plat {
             /**
              * Setter for select
              * @param {any} newValue The new value to set
-             * @param {any} oldValue? The previously bound value
+             * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            protected _setSelectedIndex(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setSelectedIndex(newValue: any, oldValue: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
-                    return;
-                } else if (firstTime === true && this._checkAsynchronousSelect()) {
-                    if (isNull(newValue)) {
-                        this._propertyChanged();
-                    }
                     return;
                 }
 
@@ -27426,14 +28377,14 @@ module plat {
                     element.selectedIndex = -1;
                     return;
                 } else if (!isString(newValue)) {
-                    var _Exception: IExceptionStatic = this._Exception,
+                    var _Exception = this._Exception,
                         message: string;
                     if (isNumber(newValue)) {
                         newValue = newValue.toString();
-                        message = 'Trying to bind a value of type number to a select element. ' +
+                        message = 'Trying to bind a value of type number to a <select> element. ' +
                             'The value will implicitly be converted to type string.';
                     } else {
-                        message = 'Trying to bind a value that is not a string to a select element. ' +
+                        message = 'Trying to bind a value that is not a string to a <select> element. ' +
                             'The element\'s selected index will be set to -1.';
                     }
 
@@ -27460,14 +28411,12 @@ module plat {
             /**
              * Setter for select-multiple
              * @param {any} newValue The new value to set
-             * @param {any} oldValue? The previously bound value
+             * @param {any} oldValue The previously bound value
              * @param {boolean} firstTime? The context is being evaluated for the first time and 
              * should thus change the property if null
              */
-            protected _setSelectedIndices(newValue: any, oldValue?: any, firstTime?: boolean): void {
+            protected _setSelectedIndices(newValue: any, oldValue: any, firstTime?: boolean): void {
                 if (this.__isSelf) {
-                    return;
-                } else if (firstTime === true && this._checkAsynchronousSelect()) {
                     return;
                 }
 
@@ -27515,7 +28464,7 @@ module plat {
              * and sets the necessary handlers.
              */
             protected _determineType(): void {
-                if (!isNull(this.templateControl) && this._observingBindableProperty()) {
+                if (this._observingBindableProperty()) {
                     return;
                 }
 
@@ -27525,16 +28474,12 @@ module plat {
                 }
 
                 switch (element.nodeName.toLowerCase()) {
-                    case 'textarea':
-                        this._addEventType = this._addTextEventListener;
-                        this._getter = this._getValue;
-                        this._setter = this._setText;
-                        break;
                     case 'input':
                         switch ((<HTMLInputElement>element).type) {
                             case 'button':
                             case 'submit':
                             case 'reset':
+                            case 'image':
                                 this._addEventType = this._addButtonEventListener;
                                 this._getter = this._getValue;
                                 break;
@@ -27556,12 +28501,21 @@ module plat {
                                 this._addEventType = this._addChangeEventListener;
                                 this._getter = multi ? this._getFiles : this._getFile;
                                 break;
+                            case 'hidden':
+                                this._getter = this._getValue;
+                                this._setter = this._setHidden;
+                                break;
                             default:
                                 this._addEventType = this._addTextEventListener;
                                 this._getter = this._getValue;
                                 this._setter = this._setText;
                                 break;
                         }
+                        break;
+                    case 'textarea':
+                        this._addEventType = this._addTextEventListener;
+                        this._getter = this._getValue;
+                        this._setter = this._setText;
                         break;
                     case 'select':
                         this._initializeSelect();
@@ -27585,11 +28539,12 @@ module plat {
                         context = this._ContextManager.createContext(this.parent,
                             contextExpression.identifiers[0]);
                     } else {
-                        var Exception: IExceptionStatic = this._Exception;
-                        Exception.warn('plat-bind is trying to index into a primitive type. ' +
+                        var Exception = this._Exception;
+                        Exception.warn(this.type + ' is trying to index into a primitive type. ' +
                             this._contextExpression.expression + ' is already defined and not ' +
-                            'an object when trying to evaluate plat-bind="' +
+                            'an object when trying to evaluate ' + this.type + '="' +
                             this._expression.expression + '"', Exception.BIND);
+                        return;
                     }
                 }
 
@@ -27601,14 +28556,15 @@ module plat {
                     if (isNull(context[property])) {
                         context[property] = [];
                     }
-                    this.observeArray(context, property, null, (arrayInfo: observable.IPostArrayChangeInfo<string>): void => {
-                        this._setter(arrayInfo.newArray, arrayInfo.oldArray, true);
-                    });
+                    this.observeArray((arrayInfo: Array<observable.IArrayChanges<string>>): void => {
+                        this._setter(arrayInfo[0].object, null, true);
+                    }, contextExpression + '.' + property);
                 }
 
                 var expression = this._expression;
-
-                this.observeExpression(expression, this._setter);
+                this.observeExpression((newValue: any, oldValue: any): void => {
+                    this._setter(newValue, oldValue);
+                }, expression);
                 this._setter(this.evaluateExpression(expression), undefined, true);
             }
 
@@ -27688,80 +28644,23 @@ module plat {
             }
 
             /**
-             * Checks to see if a Select or ForEach is loading items.
-             */
-            protected _checkAsynchronousSelect(): boolean {
-                var select = <ui.controls.Select>this.templateControl;
-                if (!isNull(select) && (select.type === __Select || select.type === __ForEach) && isPromise(select.itemsLoaded)) {
-                    var split = select.absoluteContextPath.split('.'),
-                        key = split.pop();
-
-                    this.observeArray(this._ContextManager.getContext(this.parent, split), key, null,
-                        (ev: observable.IPostArrayChangeInfo<any>): void => {
-                            select.itemsLoaded.then((): void => {
-                                this._setter(this.evaluateExpression(this._expression));
-                            });
-                        });
-
-                    select.itemsLoaded.then((): void => {
-                        this._setter(this.evaluateExpression(this._expression));
-                    });
-
-                    return true;
-                }
-
-                return false;
-            }
-
-            /**
-             * Checks if the associated TemplateControl is a 
-             * BindablePropertyControl and 
-             * initializes all listeners accordingly.
-             * is an BindablePropertyControl
+             * Checks if the associated TemplateControl is implementing 
+             * ISupportTwoWayBinding and initializes all listeners accordingly.
+             * is implementing ISupportTwoWayBinding.
              */
             protected _observingBindableProperty(): boolean {
-                var templateControl = <ui.BindablePropertyControl>this.templateControl;
+                var templateControl = <ui.BindControl>this.templateControl;
 
-                if (isFunction(templateControl.observeProperty) &&
-                    isFunction(templateControl.setProperty)) {
-                    templateControl.observeProperty((newValue: any): void => {
+                if (!isNull(templateControl) && isFunction(templateControl.onInput) && isFunction(templateControl.observeProperties)) {
+                    templateControl.onInput((newValue: any): void => {
                         this._getter = (): any => newValue;
                         this._propertyChanged();
                     });
 
-                    this._setter = this._setBindableProperty;
-                    return true;
+                    return (this._supportsTwoWayBinding = true);
                 }
 
                 return false;
-            }
-
-            /**
-             * Sets the value on a BindablePropertyControl.
-             * @param {any} newValue The new value to set
-             * @param {any} oldValue? The previously bound value
-             * @param {boolean} firstTime? The context is being evaluated for the first time and 
-             * should thus change the property if null
-             */
-            protected _setBindableProperty(newValue: any, oldValue?: any, firstTime?: boolean): void {
-                if (this.__isSelf || newValue === oldValue) {
-                    return;
-                }
-
-                (<ui.BindablePropertyControl>this.templateControl).setProperty(newValue, oldValue, firstTime);
-            }
-
-            /**
-             * Sets the value on an element.
-             * @param {any} newValue The new value to set
-             */
-            protected _setValue(newValue: any): void {
-                var element = <HTMLInputElement>this.element;
-                if (element.value === newValue) {
-                    return;
-                }
-
-                element.value = newValue;
             }
         }
 
@@ -27813,7 +28712,7 @@ module plat {
              * The set of functions added by the Template Control that listens 
              * for property changes.
              */
-            protected _listeners: Array<(newValue: any, oldValue?: any) => void> = [];
+            protected _listeners: Array<(newValue: any, oldValue: any) => void> = [];
 
             /**
              * The function to stop listening for property changes.
@@ -27928,7 +28827,7 @@ module plat {
                     return;
                 }
 
-                this._removeListener = this.observeExpression(this.attributes[this.attribute], this._setProperty);
+                this._removeListener = this.observeExpression(this._setProperty, this.attributes[this.attribute]);
             }
         }
 
@@ -28354,13 +29253,26 @@ module plat {
     /**
      * Defines a function that will be called whenever a property has changed.
      */
-    export interface IPropertyChangedListener {
+    export interface IPropertyChangedListener<T> {
         /**
          * The method signature for IPropertyChangedListener.
-         * @param {any} newValue? The new value of the observed property.
-         * @param {any} oldValue? The previous value of the observed property.
+         * @param {T} newValue The new value of the observed property.
+         * @param {T} oldValue The previous value of the observed property.
          */
-        (newValue?: any, oldValue?: any): void;
+        (newValue: T, oldValue: T): void;
+    }
+
+    /**
+     * Defines a function that will be called whenever a property specified by a given identifier has changed.
+     */
+    export interface IIdentifierChangedListener<T> {
+        /**
+         * The method signature for IIdentifierChangedListener.
+         * @param {T} newValue The new value of the observed property.
+         * @param {T} oldValue The previous value of the observed property.
+         * @param {any} identifier The string or number identifier that specifies the changed property.
+         */
+        (newValue: T, oldValue: T, identifier: any): void;
     }
 }
 /* tslint:enable */

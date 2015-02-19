@@ -27,7 +27,7 @@ function useStrict(data) {
             var trim = line.trim();
             if (trim === '\'use strict\';') {
                 return '';
-            } else if (trim.indexOf('module plat ') > -1) {
+            } else if (trim.indexOf('module platui ') > -1) {
                 plat = index + 1;
             }
 
@@ -56,8 +56,8 @@ function addNodeTypeDefinition(data) {
         .slice(0, -2)
         .concat([
             '',
-            'declare module \'platypus\' {',
-            '    export = plat;',
+            'declare module \'platypusui\' {',
+            '    export = platui;',
             '}',
             ''
         ]);
@@ -65,10 +65,6 @@ function addNodeTypeDefinition(data) {
 
 function getCompileLib() {
 	return '/// <reference path="../node_modules/platypus/platypus.d.ts" />\r\n';
-}
-
-function getReferenceLib() {
-	return '/// <reference path="../platypus/platypus.d.ts" />\r\n\r\n';
 }
 
 function prependLib(data) {
@@ -137,9 +133,15 @@ module.exports = exports = function load(grunt) {
                             .join('\r\n');
                     }
                 },
-                src: 'dist/platypus.d.ts',
-                dest: 'dist/platypus.d.ts'
-            }
+                src: 'dist/platypusui.d.ts',
+                dest: 'dist/platypusui.d.ts'
+            },
+			fonts: {
+				expand: true,
+				cwd: 'controls/icons/fonts/',
+                src: ['*'],
+                dest: 'dist/fonts/'
+			}
         },
         connect: {
             server: {
@@ -253,7 +255,7 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'clean:after']);
+    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'copy:fonts', 'clean:after']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
     grunt.registerTask('compile', ['lessCompile', 'ts:base', 'ts:app']);
 };

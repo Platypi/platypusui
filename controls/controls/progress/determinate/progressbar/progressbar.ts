@@ -11,6 +11,11 @@
      * An {@link plat.ui.ITemplateControl|ITemplateControl} for showing incremental progress.
      */
     export class ProgressBar extends plat.ui.TemplateControl implements IUIControl {
+        protected static _inject: any = {
+            _window: __Window,
+            _utils: __Utils
+        };
+
         /**
          * @name templateString
          * @memberof platui.ProgressBar
@@ -38,7 +43,7 @@
          * @description
          * Reference to the Window injectable.
          */
-        protected _window: Window = plat.acquire(__Window);
+        protected _window: Window;
 
         /**
          * @name _utils
@@ -51,7 +56,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _barElement
@@ -169,7 +174,7 @@
                 return;
             }
 
-            this.addEventListener(this._window, 'resize', () => {
+            this.addEventListener(this._window, 'resize', (): void => {
                 var offset = this._barMax = barElement.parentElement.offsetWidth;
                 if (!offset) {
                     this._setOffsetWithClone('width');

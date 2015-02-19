@@ -1,4 +1,5 @@
 @import '../global/variables.less';
+@import '../global/mixins.less';
 
 #ProgressBar {
     @border-color: @neutralColor;
@@ -16,4 +17,16 @@
     @thickness: @diameter / 10;
     @animation: PLAT-SPIN;
     @spin-frequency: 600ms;
+
+    .spin() {
+        #KeyFrames > .keyFrames(@animation);
+        .frames(@prefix) {
+            from {
+                .transform(rotate(0deg), @prefix);
+            }
+            to {
+                .transform(rotate(359deg), @prefix);
+            }
+        }
+    }
 }

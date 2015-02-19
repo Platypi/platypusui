@@ -4,13 +4,18 @@
      * @memberof platui
      * @kind class
      * 
-     * @extends {plat.ui.BindablePropertyControl}
+     * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} for showing a templated and animated overlay.
+     * An {@link plat.ui.BindControl|BindControl} for showing a templated and animated overlay.
      */
-    export class Modal extends plat.ui.BindablePropertyControl implements IUIControl {
+    export class Modal extends plat.ui.BindControl implements IUIControl {
+        protected static _inject: any = {
+            _utils: __Utils,
+            _compat: __Compat
+        };
+
         /**
          * @name templateString
          * @memberof platui.Modal
@@ -38,6 +43,19 @@
         options: plat.observable.IObservableProperty<IModalOptions>;
 
         /**
+         * @name priority
+         * @memberof platui.Modal
+         * @kind property
+         * @access public
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
+         */
+        priority = 120;
+
+        /**
          * @name _utils
          * @memberof platui.Modal
          * @kind property
@@ -48,7 +66,7 @@
          * @description
          * Reference to the {@link plat.Utils|Utils} injectable.
          */
-        protected _utils: plat.Utils = plat.acquire(__Utils);
+        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -61,7 +79,7 @@
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
-        protected _compat: plat.Compat = plat.acquire(__Compat);
+        protected _compat: plat.Compat;
 
         /**
          * @name _modalElement
@@ -88,32 +106,6 @@
          * Whether or not the modal is currently visible.
          */
         protected _isVisible = false;
-
-        /**
-         * @name _loaded
-         * @memberof platui.Modal
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Whether or not the {@link plat.controls.Bind|Bind} control has been loaded.
-         */
-        protected _loaded = false;
-
-        /**
-         * @name _preloadedValue
-         * @memberof platui.Modal
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * A value specified prior to the control being loaded.
-         */
-        protected _preloadedValue = false;
 
         /**
          * @name _transitionEnd
@@ -236,33 +228,31 @@
          */
         loaded(): void {
             var options = this.options.value,
-                transition = options.transition;
+                transition = options.transition,
+                _Exception: plat.IExceptionStatic;
 
             // in case of cloning
             this._modalElement = this._modalElement || <HTMLElement>this.element.firstElementChild;
-            this._loaded = true;
 
             if (!this._utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._modalElement, __Plat + 'no-transition');
-                if (this._preloadedValue) {
-                    this._utils.postpone(() => {
-                        this._show();
-                    });
-                }
                 return;
             } else if (!this._transitionHash[transition]) {
-                var _Exception = this._Exception;
+                _Exception = this._Exception;
                 _Exception.warn('Custom transition: "' + transition + '" defined for "' + this.type +
                     '." Please ensure the transition is defined to avoid errors.', _Exception.CONTROL);
             }
 
-            this._transitionEnd = this._compat.animationEvents.$transitionEnd;
-            this.dom.addClass(this._modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition');
-            if (this._preloadedValue) {
-                this._utils.postpone(() => {
-                    this._show();
-                });
+            var animationEvents = this._compat.animationEvents;
+            if (this._utils.isNull(animationEvents)) {
+                _Exception = this._Exception;
+                _Exception.warn('This browser does not support CSS3 animations.', _Exception.COMPAT);
+                this.dom.addClass(this._modalElement, __Plat + 'no-transition');
+                return;
             }
+
+            this._transitionEnd = animationEvents.$transitionEnd;
+            this.dom.addClass(this._modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition');
         }
 
         /**
@@ -280,7 +270,7 @@
             var wasHidden = !this._isVisible;
             this._show();
             if (wasHidden) {
-                this.propertyChanged(true);
+                this.inputChanged(true);
             }
         }
 
@@ -299,7 +289,7 @@
             var wasVisible = this.isVisible;
             this._hide();
             if (wasVisible) {
-                this.propertyChanged(false);
+                this.inputChanged(false);
             }
         }
 
@@ -340,27 +330,50 @@
         }
 
         /**
-         * @name setProperty
-         * @memberof platui.Input
+         * @name observeProperties
+         * @memberof platui.Modal
          * @kind function
          * @access public
+         * @virtual
+         * 
+         * @description
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         *
+         * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+         * databinding.
+         *
+         * @returns {void}
+         */
+        observeProperties(implementer: plat.observable.IImplementTwoWayBinding): void {
+            implementer.observeProperty(this._setBoundProperty);
+        }
+
+        /**
+         * @name _setBoundProperty
+         * @memberof platui.Modal
+         * @kind function
+         * @access protected
          * 
          * @description
          * The function called when the bindable property is set externally.
          * 
-         * @param {any} newValue The new value of the bindable property.
-         * @param {any} oldValue? The old value of the bindable property.
+         * @param {boolean} modalState The new value of the control state.
+         * @param {boolean} oldValue The old value of the control state.
+         * @param {void} identifier The child identifier of the property being observed.
+         * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        setProperty(newValue: any, oldValue?: any): void {
-            if (!this._loaded) {
-                this._preloadedValue = newValue;
+        protected _setBoundProperty(modalState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
+            var _utils = this._utils;
+            if (firstTime === true && _utils.isNull(modalState)) {
+                this.inputChanged(this._isVisible);
                 return;
             }
 
-            if (this._utils.isBoolean(newValue)) {
-                if (newValue) {
+            if (_utils.isBoolean(modalState)) {
+                if (modalState) {
                     if (this._isVisible) {
                         return;
                     }
@@ -371,7 +384,13 @@
                 if (this._isVisible) {
                     this._hide();
                 }
+
+                return;
             }
+
+            var _Exception = this._Exception;
+            _Exception.warn('Attempting to show or hide a ' + this.type +
+                ' with a bound value that is something other than a boolean.', _Exception.BIND);
         }
 
         /**
@@ -388,7 +407,7 @@
         protected _show(): void {
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
-            this._utils.defer(() => {
+            this._utils.defer((): void => {
                 dom.addClass(this._modalElement, __Plat + 'activate');
             }, 25);
 
@@ -431,7 +450,7 @@
          */
         protected _addHideOnTransitionEnd(): void {
             var element = this.element,
-                remove = this.addEventListener(element, this._transitionEnd, () => {
+                remove = this.addEventListener(element, this._transitionEnd, (): void => {
                     remove();
                     this.dom.addClass(element, __Hide);
                 }, false);
