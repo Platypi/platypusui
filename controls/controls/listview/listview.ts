@@ -553,19 +553,6 @@
         protected _touchAnimationThenable: plat.ui.animations.IAnimationThenable<void>;
 
         /**
-         * @name _animationThenable
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.ui.animations.IAnimationThenable<void>}
-         * 
-         * @description
-         * The most recent item animation thenable.
-         */
-        protected _animationThenable: plat.async.IThenable<void>;
-
-        /**
          * @name _nodeNormalizeRegex
          * @memberof platui.Listview
          * @kind property
@@ -590,6 +577,19 @@
          * Whether or not the select is grouped.
          */
         protected _isGrouped = false;
+
+        /**
+         * @name _defaultGroup
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {platui.IGroupHash}
+         * 
+         * @description
+         * The default group which refers to this control itself.
+         */
+        protected _defaultGroup: IGroupHash;
 
         /**
          * @name _groups
@@ -629,32 +629,6 @@
          * A promise that resolves when the group template has been created.
          */
         protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
-
-        /**
-         * @name _addQueue
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {Array<plat.async.IThenable<void>>}
-         * 
-         * @description
-         * A queue representing all current add operations.
-         */
-        protected _addQueue: Array<plat.async.IThenable<void>> = [];
-
-        /**
-         * @name _addCount
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The number of items currently being added.
-         */
-        protected _addCount = 0;
 
         /**
          * @name __listenerSet
@@ -780,7 +754,11 @@
         contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
             var _utils = this._utils;
             if (_utils.isEmpty(newValue)) {
-                this._removeItems(this.controls.length, this);
+                if (!this._utils.isEmpty(oldValue)) {
+                    this._Promise.all(this._defaultGroup.addQueue).then((): void => {
+                        this._removeItems(0, this.controls.length, this);
+                    });
+                }
             } else if (!_utils.isArray(newValue)) {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' context must be an Array.', _Exception.CONTEXT);
@@ -816,6 +794,7 @@
                 viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
                 scrollContainer = this._scrollContainer = <HTMLElement>viewport.firstElementChild,
                 loading = this._loading = options.loading,
+                animate = this._animate = options.animate,
                 requestItems = options.onItemsRequested,
                 refresh = options.onRefresh,
                 itemTemplate = options.itemTemplate,
@@ -831,6 +810,16 @@
             }
 
             this._parseInnerTemplate();
+            this._defaultGroup = {
+                name: null,
+                control: this,
+                itemContainer: this._container,
+                element: this.element,
+                index: null,
+                addCount: 0,
+                addQueue: <Array<plat.async.IThenable<void>>>[],
+                animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
+            };
             this._determineTemplates(itemTemplate, options.groupHeaderTemplate);
 
             var isLoading = false,
@@ -899,8 +888,8 @@
          */
         render(index?: number, count?: number, group?: IGroupHash): void {
             var isNumber = this._utils.isNumber,
-                details = this._getGroupDetails(group),
-                control = details.control,
+                opGroup = group || this._defaultGroup,
+                control = opGroup.control,
                 context = this === control ? this.context : control.context.items;
 
             if (!isNumber(index)) {
@@ -910,7 +899,7 @@
             var maxCount = context.length - index,
                 itemCount = isNumber(count) && maxCount >= count ? count : maxCount;
 
-            this._createItems(index, itemCount, group, false);
+            this._createItems(index, itemCount, opGroup, 0);
         }
 
         /**
@@ -969,7 +958,7 @@
          * @returns {void}
          */
         protected _handleGroupedContextChange(newValue?: any, oldValue?: any): void {
-            this._Promise.resolve(this._animationThenable).then((): void => {
+            //this._Promise.resolve(this._animationThenable).then((): void => {
                 var groups = this._groups,
                     keys = Object.keys(groups),
                     length = keys.length,
@@ -982,7 +971,7 @@
                     control = groups[key].control;
                     this._childContextChanged(key, control.context.items);
                 }
-            });
+            //});
         }
 
         /**
@@ -1194,9 +1183,11 @@
                     name: name,
                     index: index,
                     element: groupContainer,
+                    itemContainer: <HTMLElement>groupContainer.lastElementChild,
                     control: control,
                     addCount: 0,
-                    addQueue: <Array<plat.async.IThenable<void>>>[]
+                    addQueue: <Array<plat.async.IThenable<void>>>[],
+                    animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
                 },
                 items = 'items',
                 removeArrayListener: plat.IRemoveListener,
@@ -1226,7 +1217,7 @@
             removeArrayListener = control.observe(this._childContextChanged.bind(this, name), items);
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
 
-            this._createItems(0, (group.items || []).length, groupHash, false);
+            this._createItems(0, (group.items || []).length, groupHash, 0);
             this._container.insertBefore(fragment, null);
         }
 
@@ -1258,15 +1249,15 @@
          * 
          * @param {number} index The index to start creating items.
          * @param {number} count The number of items to create.
-         * @param {platui.IGroupHash} group? The group for which we're creating items.
-         * @param {boolean} animate? Whether or not to animate the new items.
+         * @param {platui.IGroupHash} group The group for which we're creating items.
+         * @param {number} animateItems The number of items to animate.
          * 
          * @returns {void}
          */
-        protected _createItems(index: number, count: number, group?: IGroupHash, animate?: boolean): void {
+        protected _createItems(index: number, count: number, group: IGroupHash, animateItems: number): void {
             var _utils = this._utils,
-                details = this._getGroupDetails(group),
-                control = details.control;
+                opGroup = group || this._defaultGroup,
+                control = opGroup.control;
 
             if (this._isGrouped && this === control) {
                 this._groupHeaderTemplatePromise.then((): void => {
@@ -1279,12 +1270,21 @@
                 return;
             }
 
+            var addQueue = opGroup.addQueue,
+                addCount = count;
+
             if (_utils.isFunction(this._templateSelector)) {
                 var promises: Array<plat.async.IThenable<void>> = [];
+                opGroup.addCount += addCount;
                 while (count-- > 0) {
-                    promises.push(this._renderUsingFunction(index++, group, animate));
+                    promises.push(this._renderUsingFunction(index++, opGroup, false));
                 }
-                this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises);
+                var itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises).then((): void => {
+                    opGroup.addCount -= addCount;
+                    addQueue.shift();
+                });
+                addQueue.push(itemsLoaded);
+                this.itemsLoaded = itemsLoaded;
                 return;
             }
 
@@ -1293,8 +1293,12 @@
                 return;
             }
 
-            this._disposeFromIndex(index, group);
-            this._addItems(count, index, group, animate);
+            this._disposeFromIndex(index, opGroup);
+            opGroup.addCount += addCount;
+            addQueue.push(this._addItems(index, count, opGroup, animateItems).then((): void => {
+                opGroup.addCount -= addCount;
+                addQueue.shift();
+            }));
         }
 
         /**
@@ -1307,17 +1311,17 @@
          * Adds new items to the control's element when items are added to 
          * the array.
          * 
-         * @param {number} numberOfItems The number of items to add.
          * @param {number} index The point in the array to start adding items.
-         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * @param {boolean} animate? Whether or not to animate the new items.
+         * @param {number} numberOfItems The number of items to add.
+         * @param {platui.IGroupHash} group The group that we're performing this operation on.
+         * @param {number} animateItems The number of items to animate.
          * 
          * @returns {plat.async.IThenable<void>} The itemsLoaded promise.
          */
-        protected _addItems(numberOfItems: number, index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void> {
-            var details = this._getGroupDetails(group),
-                control = details.control,
-                container = details.itemContainer,
+        protected _addItems(index: number, numberOfItems: number, group: IGroupHash, animateItems: number): plat.async.IThenable<void> {
+            var opGroup = group || this._defaultGroup,
+                control = opGroup.control,
+                container = opGroup.itemContainer,
                 max = +(index + numberOfItems),
                 promises: Array<plat.async.IThenable<DocumentFragment>> = [],
                 itemTemplate = this._itemTemplate,
@@ -1340,10 +1344,14 @@
 
             if (promises.length > 0) {
                 this.itemsLoaded = this._Promise.all(promises).then<void>((templates): void => {
-                    if (animate === true) {
+                    if (animateItems > 0) {
                         var length = templates.length;
                         for (var i = 0; i < length; ++i) {
-                            this._appendAnimatedItem(templates[i], __Enter, container);
+                            if (i < animateItems) {
+                                this._appendAnimatedItem(templates[i], opGroup);
+                            } else {
+                                container.insertBefore(templates[i], null);
+                            }
                         }
                     } else {
                         this._appendItems(templates, container);
@@ -1360,14 +1368,6 @@
                         var _Exception = this._Exception;
                         _Exception.warn(error, _Exception.BIND);
                     });
-                });
-            } else {
-                if (this._utils.isFunction(this.__resolveFn)) {
-                    this.__resolveFn();
-                    this.__resolveFn = null;
-                }
-                this.itemsLoaded = new this._Promise<void>((resolve): void => {
-                    this.__resolveFn = resolve;
                 });
             }
 
@@ -1394,8 +1394,8 @@
         protected _renderUsingFunction(index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void> {
             var _Promise = this._Promise,
                 _utils = this._utils,
-                details = this._getGroupDetails(group),
-                control = details.control,
+                opGroup = group || this._defaultGroup,
+                control = opGroup.control,
                 identifier: any,
                 context: any;
 
@@ -1414,7 +1414,7 @@
                     templates = bindableTemplates.templates,
                     controls = <Array<plat.ui.TemplateControl>>control.controls,
                     key = this._normalizeTemplateName(selectedTemplate),
-                    name = details.name,
+                    name = opGroup.name,
                     templateKeys = this._templateSelectorKeys[name],
                     controlExists = index < controls.length;
 
@@ -1442,11 +1442,11 @@
                 if (_utils.isNull(node) || _utils.isArray(node)) {
                     return;
                 } else if (animate === true) {
-                    this._animator.enter(node, __Enter, details.itemContainer);
+                    this._animator.enter(node, __Enter, opGroup.itemContainer);
                     return;
                 }
 
-                details.itemContainer.insertBefore(node, null);
+                opGroup.itemContainer.insertBefore(node, null);
             }).then(null, (error): void => {
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
@@ -1529,33 +1529,6 @@
         }
 
         /**
-         * @name _getGroupAliases
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Returns a resource alias object for an item in the array. The 
-         * resource object contains index:number, even:boolean, odd:boolean, 
-         * first:boolean, last:boolean, and group:string.
-         * 
-         * @param {number} index The index used to create the resource aliases.
-         * 
-         * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
-         */
-        //protected _getGroupAliases(index: number): plat.IObject<plat.ui.IResource> {
-        //    var aliases: plat.IObject<plat.ui.IResource> = this._getAliases(this.context, index),
-        //        _aliases = this._aliases;
-
-        //    aliases[_aliases.group] = {
-        //        value: this.context[index].group,
-        //        type: __LITERAL_RESOURCE
-        //    };
-
-        //    return aliases;
-        //}
-
-        /**
          * @name _appendItems
          * @memberof platui.Listview
          * @kind function
@@ -1583,17 +1556,22 @@
          * Adds an item to the control's element animating its elements.
          * 
          * @param {DocumentFragment} item The HTML fragment representing a single item.
-         * @param {string} key The animation key/type.
-         * @param {Element} container THe container to add the items to.
+         * @param {platui.IGroupHash} group The group items are being added to.
          * 
          * @returns {void}
          */
-        protected _appendAnimatedItem(item: DocumentFragment, key: string, container: Element): void {
+        protected _appendAnimatedItem(item: DocumentFragment, group: IGroupHash): void {
             if (!this._utils.isNode(item)) {
                 return;
             }
 
-            this._animator.enter(item, key, container);
+            var animationQueue = group.animationQueue;
+            animationQueue.push({
+                animation: this._animator.enter(item, __Enter, group.itemContainer).then((): void => {
+                    animationQueue.shift();
+                }),
+                op: null
+            });
         }
 
         /**
@@ -1605,17 +1583,19 @@
          * @description
          * Removes items from the control's element.
          * 
+         * @param {number} index The index to start disposing from.
          * @param {number} numberOfItems The number of items to remove.
          * @param {plat.ui.TemplateControl} control The control whose child controls we are to remove.
          * 
          * @returns {void}
          */
-        protected _removeItems(numberOfItems: number, control: plat.ui.TemplateControl): void {
+        protected _removeItems(index: number, numberOfItems: number, control: plat.ui.TemplateControl): void {
             var dispose = this._TemplateControlFactory.dispose,
-                controls = <Array<plat.ui.TemplateControl>>control.controls;
+                controls = <Array<plat.ui.TemplateControl>>control.controls,
+                max = index + numberOfItems;
 
-            while (numberOfItems-- > 0) {
-                dispose(controls.pop());
+            while (index < max) {
+                dispose(controls[index++]);
             }
 
             this._updateResource(controls.length - 1, control);
@@ -1636,7 +1616,7 @@
          * @returns {void}
          */
         protected _disposeFromIndex(index: number, group?: IGroupHash): void {
-            var controls = <Array<plat.ui.TemplateControl>>this._getGroupDetails(group).control.controls,
+            var controls = <Array<plat.ui.TemplateControl>>(group || this._defaultGroup).control.controls,
                 dispose = this._TemplateControlFactory.dispose;
 
             for (var i = controls.length - 1; i >= index; --i) {
@@ -2253,36 +2233,6 @@
         }
 
         /**
-         * @name _getGroupDetails
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Takes in a group and returns its associated control and its item container. If the group is 
-         * null or undefined, it will return this control's details.
-         * 
-         * @param {platui.IGroupHash} group? The group from which we're trying to get details.
-         * 
-         * @returns {{ name: string; control: plat.ui.TemplateControl; itemContainer: Element; }} Important details concerning the group.
-         */
-        protected _getGroupDetails(group?: IGroupHash): { name: string; control: plat.ui.TemplateControl; itemContainer: Element; } {
-            if (this._utils.isNull(group)) {
-                return {
-                    name: 'this',
-                    control: this,
-                    itemContainer: this._container
-                };
-            }
-
-            return {
-                name: group.name,
-                control: group.control,
-                itemContainer: group.element.lastElementChild
-            };
-        }
-
-        /**
          * @name _executeEvent
          * @memberof platui.Listview
          * @kind function
@@ -2318,9 +2268,14 @@
          * @returns {void}
          */
         protected _executeChildEvent(groupName: string, changes: Array<plat.observable.IArrayChanges<any>>): void {
-            var method = '_' + changes[0].type;
-            if (this._utils.isFunction((<any>this)[method])) {
-                (<any>this)[method](changes, this._groups[groupName]);
+            var _utils = this._utils,
+                method = '_' + changes[0].type;
+            if (_utils.isFunction((<any>this)[method])) {
+                var group = this._groups[groupName];
+                if (_utils.isNull(group)) {
+                    return;
+                }
+                (<any>this)[method](changes, group);
             }
         }
 
@@ -2340,7 +2295,7 @@
          */
         protected _push(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
             var change = changes[0];
-            this._createItems(change.index, change.addedCount, group, true);
+            this._createItems(change.index, change.addedCount, group, this._animate ? change.addedCount : 0);
         }
 
         /**
@@ -2358,16 +2313,24 @@
          * @returns {void}
          */
         protected _pop(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            var change = changes[0];
+            var opGroup = group || this._defaultGroup,
+                addQueue = opGroup.addQueue,
+                change = changes[0],
+                start = change.object.length;
             if (change.removed.length === 0) {
                 return;
             }
 
-            var details = this._getGroupDetails(group),
-                start = change.object.length;
-            this.itemsLoaded.then((): void => {
-                this._animateItems(start, 1, __Leave, details.itemContainer, true);
-                this._removeItems(1, details.control);
+            var removeIndex = change.object.length;
+            opGroup.addCount -= 1;
+            this._Promise.all(addQueue).then((): plat.async.IThenable<void> => {
+                if (this._animate) {
+                    this._animateItems(start, 1, __Leave, opGroup, 'leave', false).then((): void => {
+                        this._removeItems(removeIndex, 1, opGroup.control);
+                    });
+                    return;
+                }
+                this._removeItems(removeIndex, 1, opGroup.control);
             });
         }
 
@@ -2391,9 +2354,18 @@
                 return;
             }
 
-            var change = changes[0],
+            var opGroup = group || this._defaultGroup,
+                change = changes[0],
                 addedCount = change.addedCount;
-            this._createItems(change.object.length - addedCount, addedCount, group, false);
+
+            if (this._animate) {
+                var animationQueue = opGroup.animationQueue,
+                    animationLength = animationQueue.length;
+                this._animateItems(0, addedCount, __Enter, opGroup, null,
+                    animationLength > 0 && animationQueue[animationLength - 1].op === 'clone');
+            }
+
+            this._createItems(change.object.length - addedCount, addedCount, opGroup, 0);
         }
 
         /**
@@ -2411,8 +2383,22 @@
          * @returns {void}
          */
         protected _shift(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            this.itemsLoaded.then((): void => {
-                this._removeItems(1, this._getGroupDetails(group).control);
+            var opGroup = group || this._defaultGroup,
+                addQueue = opGroup.addQueue,
+                change = changes[0];
+            if (change.removed.length === 0) {
+                return;
+            } else if (this._animate) {
+                if (addQueue.length === 0) {
+                    var animationQueue = opGroup.animationQueue;
+                    addQueue = addQueue.concat([this._animateItems(0, 1, __Leave, opGroup, 'clone', true)]);
+                }
+            }
+
+            var removeIndex = change.object.length;
+            opGroup.addCount -= 1;
+            this._Promise.all(addQueue).then((): void => {
+                this._removeItems(removeIndex, 1, opGroup.control);
             });
         }
 
@@ -2433,46 +2419,94 @@
         protected _splice(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
             var _utils = this._utils,
                 change = changes[0],
-                addCount = change.addedCount;
+                opGroup = group || this._defaultGroup,
+                addCount = change.addedCount,
+                control = opGroup.control,
+                addQueue = opGroup.addQueue,
+                animating = this._animate;
 
             if (_utils.isNull(addCount)) {
-                var control: plat.ui.TemplateControl = this._getGroupDetails(group).control,
-                    newLength = change.object.length;
-                this.itemsLoaded.then((): void => {
-                    var currentLength = control.controls.length;
-                    if (newLength > currentLength) {
-                        if (_utils.isFunction(this._templateSelector)) {
-                            if (_utils.isNull(change.index)) {
-                                this.rerender(group);
-                            } else {
-                                this.render(change.index, newLength - currentLength, group);
-                            }
-                            return;
-                        }
+                if (animating) {
+                    this._cancelCurrentAnimations();
+                }
 
-                        this._createItems(currentLength, newLength - currentLength, group);
-                    } else if (currentLength > newLength) {
-                        this._removeItems(currentLength - newLength, control);
+                var newLength = change.object.length,
+                    currentLength = control.controls.length + opGroup.addCount,
+                    itemCount = currentLength - newLength;
+
+                if (newLength > currentLength) {
+                    // itemCount will be negative
+                    if (_utils.isFunction(this._templateSelector)) {
+                        if (_utils.isNull(change.index)) {
+                            this.rerender(opGroup);
+                        } else {
+                            this.render(change.index, addCount, opGroup);
+                        }
+                        return;
                     }
-                });
+
+                    this._createItems(currentLength, -itemCount, opGroup, 0);
+                } else if (currentLength > newLength) {
+                    opGroup.addCount -= itemCount;
+                    this._Promise.all(addQueue).then((): void => {
+                        this._removeItems(currentLength - itemCount, itemCount, control);
+                    });
+                }
                 return;
             }
 
-            var removeCount = change.removed.length;
+            var removeCount = change.removed.length,
+                animationQueue = opGroup.animationQueue;
             if (addCount > removeCount) {
+                var _Promise = this._Promise,
+                    itemAddCount = addCount - removeCount,
+                    animationCount: number;
+
                 if (_utils.isFunction(this._templateSelector)) {
                     if (_utils.isNull(change.index)) {
-                        this.rerender(group);
+                        this.rerender(opGroup);
                     } else {
-                        this.render(change.index, addCount, group);
+                        this.render(change.index, addCount, opGroup);
                     }
                     return;
                 }
 
-                this._createItems(change.object.length - addCount, addCount - removeCount, group, true);
+                if (animating) {
+                    animationCount = addCount;
+
+                    var animationLength = animationQueue.length,
+                        startIndex = change.index,
+                        currlength = control.controls.length + opGroup.addCount;
+
+                    if (currlength < addCount - startIndex) {
+                        animationCount = currlength - startIndex;
+                    }
+
+                    this._animateItems(startIndex, animationCount, __Enter, opGroup, null,
+                        animationLength > 0 && animationQueue[animationLength - 1].op === 'clone');
+
+                    animationCount = addCount - animationCount;
+                } else {
+                    animationCount = 0;
+                }
+
+                this._createItems(change.object.length - itemAddCount, itemAddCount, opGroup, animationCount);
             } else if (removeCount > addCount) {
-                this.itemsLoaded.then((): void => {
-                    this._removeItems(removeCount - addCount, this._getGroupDetails(group).control);
+                var adding = addCount > 0;
+                if (animating && !adding && addQueue.length === 0) {
+                    addQueue = addQueue.concat([this._animateItems(change.index, removeCount, __Leave, opGroup, 'clone', true)]);
+                }
+
+                var removeLength = control.controls.length + opGroup.addCount,
+                    deleteCount = removeCount - addCount;
+                opGroup.addCount -= deleteCount;
+                this._Promise.all(addQueue).then((): void => {
+                    if (animating && adding) {
+                        var animLength = animationQueue.length;
+                        this._animateItems(change.index, addCount, __Enter, opGroup, null,
+                            animLength > 0 && animationQueue[animLength - 1].op === 'clone');
+                    }
+                    this._removeItems(removeLength - deleteCount, deleteCount, control);
                 });
             }
         }
@@ -2518,10 +2552,11 @@
          * 
          * @param {number} startIndex The starting index of items to count.
          * @param {number} numberOfItems The number of consecutive items to count.
+         * @param {IGroupHash} group The group performing the animation.
          * 
          * @returns {plat.ui.async.IThenable<void>} A promise that resolves when all animations are complete.
          */
-        protected _calculateBlockLength(startIndex: number, numberOfItems: number): number {
+        protected _calculateBlockLength(startIndex: number, numberOfItems: number, group: IGroupHash): number {
             return 0;
         }
 
@@ -2537,48 +2572,201 @@
          * @param {number} startIndex The starting index of items to animate.
          * @param {number} numberOfItems The number of consecutive items to animate.
          * @param {string} key The animation key/type.
-         * @param {Element} container The container that holds the elements to animate.
-         * @param {boolean} clone? Whether to clone the items and animate the clones or simply animate the items itself.
-         * @param {boolean} cancel? Whether or not the animation should cancel all current animations. 
-         * Defaults to true.
+         * @param {IGroupHash} group The group performing the animation.
+         * @param {string} animationOp Denotes animation operation.
+         * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          * 
          * @returns {plat.ui.async.IThenable<void>} A promise that resolves when all animations are complete.
          */
-        protected _animateItems(startIndex: number, numberOfItems: number, key: string, container: Element, clone?: boolean,
-            cancel?: boolean): plat.async.IThenable<void> {
-            var blockLength = this._calculateBlockLength(startIndex, numberOfItems);
+        protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string,
+            cancel: boolean): plat.async.IThenable<void> {
+            var blockLength = this._calculateBlockLength(startIndex, numberOfItems, group);
             if (blockLength === 0) {
                 return this._Promise.resolve();
             }
 
             var start = startIndex * blockLength;
+            switch (animationOp) {
+                case 'clone':
+                    return this._handleClonedContainerAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+                case 'leave':
+                    return this._handleLeave(start, numberOfItems * blockLength + start, key, group);
+                default:
+                    return this._handleSimpleAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+            }
         }
 
         /**
-         * @name __handleAnimation
+         * @name _handleSimpleAnimation
          * @memberof platui.Listview
          * @kind function
-         * @access private
+         * @access protected
          * 
          * @description
-         * Handles the animation of a block of elements.
+         * Handles a simple animation of a block of elements.
          * 
-         * @param {number} startNode The starting childNode of the ForEach to animate
-         * @param {number} endNode The ending childNode of the ForEach to animate
-         * @param {string} key The animation key/type
-         * @param {Element} container The container that holds the elements to animate.
-         * @param {boolean} clone Whether to clone the items and animate the clones or simply animate the items itself.
+         * @param {number} startNode The starting childNode of the ForEach to animate.
+         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {string} key The animation key/type.
+         * @param {IGroupHash} group The group performing the animation.
+         * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          * 
-         * @returns {plat.animations.IAnimationThenable<any>} The last element node's animation promise.
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete.
          */
-        private __handleAnimation(startNode: number, endNode: number, key: string, container: Element,
-            clone: boolean): plat.ui.animations.IAnimationThenable<any> {
-            var slice = Array.prototype.slice,
+        protected _handleSimpleAnimation(startNode: number, endNode: number, key: string, group: IGroupHash,
+            cancel: boolean): plat.async.IThenable<void> {
+            var container = group.itemContainer,
+                slice = Array.prototype.slice,
                 nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
 
             if (nodes.length === 0) {
-                return this._animator.resolve();
+                return this._Promise.resolve();
             }
+
+            var animationQueue = group.animationQueue,
+                animationPromise = this._animator.create(nodes, key).then((): void => {
+                    animationQueue.shift();
+                }),
+                callback = (): plat.ui.animations.IAnimationThenable<any> => {
+                    animationPromise.start();
+                    return animationPromise;
+                };
+
+            if (cancel && animationQueue.length > 0) {
+                var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                animationQueue.push({ animation: animationPromise, op: null });
+                return cancelPromise;
+            }
+
+            animationQueue.push({ animation: animationPromise, op: null });
+            return callback();
+        }
+
+        /**
+         * @name _handleLeave
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles a simple animation of a block of elements.
+         * 
+         * @param {number} startNode The starting childNode of the ForEach to animate.
+         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {string} key The animation key/type.
+         * @param {IGroupHash} group The group performing the animation.
+         * 
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both  
+         * the cloned item has been removed and the original item has been put back.
+         */
+        protected _handleLeave(startNode: number, endNode: number, key: string, group: IGroupHash): plat.async.IThenable<void> {
+            var container = group.itemContainer,
+                slice = Array.prototype.slice,
+                nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
+
+            if (nodes.length === 0) {
+                return this._Promise.resolve();
+            }
+
+            var animationQueue = group.animationQueue,
+                animation = this._animator.leave(nodes, key).then((): void => {
+                    animationQueue.shift();
+                });
+
+            animationQueue.push({
+                animation: animation,
+                op: 'leave'
+            });
+
+            return animation;
+        }
+
+        /**
+         * @name _handleClonedItemAnimation
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Handles a simple animation of a block of elements.
+         * 
+         * @param {number} startNode The starting childNode of the ForEach to animate.
+         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {string} key The animation key/type.
+         * @param {IGroupHash} group The group performing the animation.
+         * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
+         * 
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both  
+         * the cloned container has been removed and the original container has been put back.
+         */
+        protected _handleClonedContainerAnimation(startNode: number, endNode: number, key: string, group: IGroupHash,
+            cancel: boolean): plat.async.IThenable<void> {
+            var container = group.itemContainer,
+                clonedContainer = container.cloneNode(true),
+                slice = Array.prototype.slice,
+                nodes: Array<Node> = slice.call(clonedContainer.childNodes, startNode, endNode);
+
+            if (nodes.length === 0) {
+                return this._Promise.resolve();
+            }
+
+            var parentNode: Node,
+                animationQueue = group.animationQueue,
+                isNull = this._utils.isNull,
+                animationPromise = this._animator.create(nodes, key).then((): void => {
+                    animationQueue.shift();
+                    if (isNull(parentNode)) {
+                        return;
+                    }
+
+                    parentNode.replaceChild(container, clonedContainer);
+                }),
+                callback = (): plat.async.IThenable<void> => {
+                    parentNode = container.parentNode;
+                    if (isNull(parentNode) || animationPromise.isCanceled()) {
+                        animationQueue.shift();
+                        return animationPromise;
+                    }
+
+                    parentNode.replaceChild(clonedContainer, container);
+                    animationPromise.start();
+                    return animationPromise;
+                };
+
+            if (cancel && animationQueue.length > 0) {
+                var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                animationQueue.push({ animation: animationPromise, op: 'clone' });
+                return cancelPromise;
+            }
+
+            animationQueue.push({ animation: animationPromise, op: 'clone' });
+            return callback();
+        }
+
+        /**
+         * @name _cancelCurrentAnimations
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Cancels all current animations.
+         * 
+         * @param {platui.IGroupHash} The object representing the current group.
+         * 
+         * @returns {plat.async.IThenable<any>} A promise that resolves when 
+         * all current animations have been canceled.
+         */
+        protected _cancelCurrentAnimations(group?: IGroupHash): plat.async.IThenable<any> {
+            var animationQueue = (group || this._defaultGroup).animationQueue,
+                animations = <Array<plat.ui.animations.IAnimationThenable<any>>>[],
+                length = animationQueue.length;
+
+            for (var i = 0; i < length; ++i) {
+                animations.push(animationQueue[i].animation.cancel());
+            }
+
+            return this._Promise.all(animations);
         }
 
         /**
@@ -2872,6 +3060,19 @@
         element: HTMLElement;
 
         /**
+         * @name itemContainer
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * The group's item container.
+         */
+        itemContainer: HTMLElement;
+
+        /**
          * @name control
          * @memberof platui.IGroupHash
          * @kind property
@@ -2909,6 +3110,19 @@
          * The current number of items waiting to be added to the group.
          */
         addCount: number;
+
+        /**
+         * @name animationQueue
+         * @memberof platui.IGroupHash
+         * @kind property
+         * @access public
+         * 
+         * @type {Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>}
+         * 
+         * @description
+         * A queue of objects representing current animations and their operation for this group.
+         */
+        animationQueue: Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>;
     }
 
     /**
