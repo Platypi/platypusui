@@ -275,12 +275,13 @@
          * @kind property
          * @access protected
          * 
-         * @type {plat.IObject<boolean>}
+         * @type {plat.IObject<HTMLElement>}
          * 
          * @description
-         * An object containing the node names of the {@link platui.Listview|Listview's} defined templates.
+         * An object containing the node names of the {@link platui.Listview|Listview's} defined templates and 
+         * their corresponding template node.
          */
-        protected _templates: plat.IObject<boolean> = {};
+        protected _templates: plat.IObject<HTMLElement> = {};
 
         /**
          * @name _isVertical
@@ -770,10 +771,6 @@
                 object: newValue || [],
                 type: 'splice'
             }]);
-
-            if (this._isGrouped) {
-                this._handleGroupedContextChange(newValue, oldValue);
-            }
         }
 
         /**
@@ -791,17 +788,19 @@
             var options = this.options.value,
                 _utils = this._utils,
                 isString = _utils.isString,
-                viewport = this._viewport = <HTMLElement>this.element.firstElementChild,
+                element = this.element,
+                viewport = this._viewport = <HTMLElement>element.firstElementChild,
                 scrollContainer = this._scrollContainer = <HTMLElement>viewport.firstElementChild,
                 loading = this._loading = options.loading,
-                animate = this._animate = options.animate,
+                animate = this._animate = options.animate === true,
                 requestItems = options.onItemsRequested,
                 refresh = options.onRefresh,
                 itemTemplate = options.itemTemplate,
                 _Exception: plat.IExceptionStatic;
 
             this._container = <HTMLElement>scrollContainer.firstElementChild;
-            this.dom.addClass(this.element, __Plat + this._validateOrientation(options.orientation));
+            this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
+                (animate ? (' ' + __Plat + 'animated') : ''));
 
             if (!isString(itemTemplate)) {
                 _Exception = this._Exception;
@@ -809,18 +808,22 @@
                 return;
             }
 
-            this._parseInnerTemplate();
+            var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate),
+                groupHeaderTemplate = options.groupHeaderTemplate,
+                normalizedGroupTemplate = isString(groupHeaderTemplate) ? this._normalizeTemplateName(groupHeaderTemplate) : null;
+
+            this._parseInnerTemplate(normalizedItemTemplate, normalizedGroupTemplate);
+            this._determineTemplates(itemTemplate, normalizedItemTemplate, normalizedGroupTemplate);
             this._defaultGroup = {
                 name: null,
                 control: this,
                 itemContainer: this._container,
-                element: this.element,
+                element: element,
                 index: null,
                 addCount: 0,
                 addQueue: <Array<plat.async.IThenable<void>>>[],
                 animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
             };
-            this._determineTemplates(itemTemplate, options.groupHeaderTemplate);
 
             var isLoading = false,
                 isRefreshing = false;
@@ -943,38 +946,6 @@
         }
 
         /**
-         * @name _handleGroupedContextChange
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Re-syncs the {@link platui.Listview|Listview} child controls and DOM with the new 
-         * context object.
-         * 
-         * @param {any} newValue? The new context
-         * @param {any} oldValue? The old context
-         * 
-         * @returns {void}
-         */
-        protected _handleGroupedContextChange(newValue?: any, oldValue?: any): void {
-            //this._Promise.resolve(this._animationThenable).then((): void => {
-                var groups = this._groups,
-                    keys = Object.keys(groups),
-                    length = keys.length,
-                    key: string,
-                    group: IGroupHash,
-                    control: plat.ui.TemplateControl;
-
-                for (var i = 0; i < length; ++i) {
-                    key = keys[i];
-                    control = groups[key].control;
-                    this._childContextChanged(key, control.context.items);
-                }
-            //});
-        }
-
-        /**
          * @name _setListener
          * @memberof platui.Listview
          * @kind function
@@ -1035,23 +1006,25 @@
          * @description
          * Determine the proper item template or method of item template selection.
          * 
-         * @param {string} itemTemplate The property for indicating either the item template or the 
+         * @param {string} itemTemplate The pre-normalized property for indicating either the item template or the 
          * item template selector.
+         * @param {string} itemTemplateKey The normalized property for indicating the item template.
          * @param {string} groupHeaderTemplate The property for indicating the group header template.
          * 
          * @returns {void}
          */
-        protected _determineTemplates(itemTemplate: string, groupHeaderTemplate: string): void {
+        protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, groupHeaderTemplate: string): void {
             var _Exception: plat.IExceptionStatic,
                 _utils = this._utils,
-                templateKey = this._normalizeTemplateName(itemTemplate);
+                template: HTMLElement;
 
             if (_utils.isString(groupHeaderTemplate)) {
                 this._isGrouped = true;
 
-                var groupTemplateKey = this._normalizeTemplateName(groupHeaderTemplate);
-                if (this._templates[groupTemplateKey] === true) {
-                    this._groupHeaderTemplate = groupTemplateKey;
+                template = this._templates[groupHeaderTemplate];
+                if (_utils.isNode(template)) {
+                    this._groupHeaderTemplate = groupHeaderTemplate;
+                    this.bindableTemplates.add(groupHeaderTemplate, template);
                 } else {
                     _Exception = this._Exception;
                     _Exception.warn(__Listview + ' group header template "' + groupHeaderTemplate +
@@ -1061,8 +1034,10 @@
                 this._groupHeaderTemplatePromise = this._createGroupTemplate();
             }
 
-            if (this._templates[templateKey] === true) {
-                this._itemTemplate = templateKey;
+            template = this._templates[itemTemplateKey];
+            if (_utils.isNode(template)) {
+                this._itemTemplate = itemTemplateKey;
+                this.bindableTemplates.add(itemTemplateKey, template);
                 return;
             }
 
@@ -1072,7 +1047,6 @@
                 _Exception.warn(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.',
                     _Exception.TEMPLATE);
-                return;
             }
 
             this._templateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
@@ -1132,11 +1106,11 @@
          * 
          * @param {number} numberOfGroups The number of groups to add.
          * @param {number} index The point in the array to start adding groups.
-         * @param {boolean} animate? Whether or not to animate the new groups.
+         * @param {number} animateItems The number of groups to animate.
          * 
          * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
          */
-        protected _addGroups(numberOfGroups: number, index: number, animate?: boolean): plat.async.IThenable<void> {
+        protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.IThenable<void> {
             var _utils = this._utils,
                 context = this.context,
                 initialIndex = index,
@@ -1153,7 +1127,7 @@
             return this._Promise.all(promises).then((fragments): void => {
                 var length = fragments.length;
                 for (i = 0; i < length; ++i) {
-                    this._addGroup(i + initialIndex, fragments[i]);
+                    this._addGroup(i + initialIndex, fragments[i], i < animateItems);
                 }
             });
         }
@@ -1169,10 +1143,11 @@
          * 
          * @param {number} index The index of the group.
          * @param {DocumentFragment} fragment The group fragment to add to the DOM.
+         * @param {boolean} animate Whether or not to animate the group.
          * 
          * @returns {void}
          */
-        protected _addGroup(index: number, fragment: DocumentFragment): void {
+        protected _addGroup(index: number, fragment: DocumentFragment, animate: boolean): void {
             var context = this.context,
                 groups = this._groups || (this._groups = <plat.IObject<IGroupHash>>{}),
                 group: IListviewGroup = context[index],
@@ -1217,8 +1192,18 @@
             removeArrayListener = control.observe(this._childContextChanged.bind(this, name), items);
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
 
-            this._createItems(0, (group.items || []).length, groupHash, 0);
-            this._container.insertBefore(fragment, null);
+            this._createItems(0,(group.items || []).length, groupHash, 0);
+            if (animate) {
+                var animationQueue = this._defaultGroup.animationQueue;
+                animationQueue.push({
+                    animation: this._animator.enter(fragment, __Enter, this._container).then((): void => {
+                        animationQueue.shift();
+                    }),
+                    op: null
+                });
+            } else {
+                this._container.insertBefore(fragment, null);
+            }
         }
 
         /**
@@ -1261,7 +1246,7 @@
 
             if (this._isGrouped && this === control) {
                 this._groupHeaderTemplatePromise.then((): void => {
-                    this._addGroups(count, index);
+                    this._addGroups(count, index, animateItems);
                 }).then(null, (error): void => {
                     var _Exception = this._Exception;
                     _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
@@ -1270,17 +1255,15 @@
                 return;
             }
 
-            var addQueue = opGroup.addQueue,
-                addCount = count;
-
+            var addQueue = opGroup.addQueue;
             if (_utils.isFunction(this._templateSelector)) {
                 var promises: Array<plat.async.IThenable<void>> = [];
-                opGroup.addCount += addCount;
-                while (count-- > 0) {
-                    promises.push(this._renderUsingFunction(index++, opGroup, false));
+                opGroup.addCount += count;
+                for (var i = 0; i < count; ++i, ++index) {
+                    promises.push(this._renderUsingFunction(index, opGroup, i < animateItems));
                 }
                 var itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises).then((): void => {
-                    opGroup.addCount -= addCount;
+                    opGroup.addCount -= count;
                     addQueue.shift();
                 });
                 addQueue.push(itemsLoaded);
@@ -1294,9 +1277,9 @@
             }
 
             this._disposeFromIndex(index, opGroup);
-            opGroup.addCount += addCount;
+            opGroup.addCount += count;
             addQueue.push(this._addItems(index, count, opGroup, animateItems).then((): void => {
-                opGroup.addCount -= addCount;
+                opGroup.addCount -= count;
                 addQueue.shift();
             }));
         }
@@ -1442,7 +1425,13 @@
                 if (_utils.isNull(node) || _utils.isArray(node)) {
                     return;
                 } else if (animate === true) {
-                    this._animator.enter(node, __Enter, opGroup.itemContainer);
+                    var animationQueue = opGroup.animationQueue;
+                    animationQueue.push({
+                        animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then((): void => {
+                            animationQueue.shift();
+                        }),
+                        op: null
+                    });
                     return;
                 }
 
@@ -2206,18 +2195,24 @@
          * @description
          * Clones and parses thes innerTemplate and creates the templates object.
          * 
+         * @param {string} itemTemplate The normalized item template name from the options.
+         * @param {string} groupHeaderTemplate? The normalized group header template name from the options.
+         * 
          * @returns {void}
          */
-        protected _parseInnerTemplate(): void {
+        protected _parseInnerTemplate(itemTemplate: string, groupHeaderTemplate?: string): void {
             var templates = this._templates,
-                bindableTemplates = this.bindableTemplates,
                 slice = Array.prototype.slice,
                 appendChildren = this.dom.appendChildren,
+                _document = this._document,
+                validGroupTemplate = !this._utils.isNull(groupHeaderTemplate),
                 childNodes: Array<Node> = slice.call(this.innerTemplate.childNodes),
                 length = childNodes.length,
+                itemClass = __Plat + 'item',
+                groupClass = __Plat + 'header',
                 childNode: Node,
                 templateName: string,
-                fragment: DocumentFragment;
+                container: HTMLElement;
 
             while (childNodes.length > 0) {
                 childNode = childNodes.pop();
@@ -2225,10 +2220,17 @@
                     continue;
                 }
 
-                fragment = appendChildren(childNode.childNodes);
                 templateName = this._normalizeTemplateName(childNode.nodeName);
-                bindableTemplates.add(templateName, fragment);
-                templates[templateName] = true;
+                if (validGroupTemplate && templateName === groupHeaderTemplate) {
+                    container = _document.createElement('div');
+                    container.className = groupClass;
+                } else {
+                    container = _document.createElement('div');
+                    container.className = itemClass;
+                }
+
+                container = <HTMLElement>appendChildren(childNode.childNodes, container);
+                templates[templateName] = container;
             }
         }
 
@@ -2294,8 +2296,9 @@
          * @returns {void}
          */
         protected _push(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            var change = changes[0];
-            this._createItems(change.index, change.addedCount, group, this._animate ? change.addedCount : 0);
+            var change = changes[0],
+                addedCount = change.addedCount;
+            this._createItems(change.index, addedCount, group, this._animate ? addedCount : 0);
         }
 
         /**
@@ -2512,55 +2515,6 @@
         }
 
         /**
-         * @name _sort
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Handles when the array is sorted.
-         * 
-         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
-         * 
-         * @returns {void}
-         */
-        //protected _sort(changes: Array<plat.observable.IArrayChanges<any>>): void { }
-
-        /**
-         * @name _reverse
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Handles when the array is reversed.
-         * 
-         * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
-         * 
-         * @returns {void}
-         */
-        //protected _reverse(changes: Array<plat.observable.IArrayChanges<any>>): void { }
-
-        /**
-         * @name _calculateBlockLength
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Grabs the blocklength of the specified items.
-         * 
-         * @param {number} startIndex The starting index of items to count.
-         * @param {number} numberOfItems The number of consecutive items to count.
-         * @param {IGroupHash} group The group performing the animation.
-         * 
-         * @returns {plat.ui.async.IThenable<void>} A promise that resolves when all animations are complete.
-         */
-        protected _calculateBlockLength(startIndex: number, numberOfItems: number, group: IGroupHash): number {
-            return 0;
-        }
-
-        /**
          * @name _animateItems
          * @memberof platui.Listview
          * @kind function
@@ -2580,12 +2534,9 @@
          */
         protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string,
             cancel: boolean): plat.async.IThenable<void> {
-            var blockLength = this._calculateBlockLength(startIndex, numberOfItems, group);
-            if (blockLength === 0) {
-                return this._Promise.resolve();
-            }
-
-            var start = startIndex * blockLength;
+            // block length === 3 (one element node and two comment nodes)
+            var blockLength = 3,
+                start = startIndex * blockLength;
             switch (animationOp) {
                 case 'clone':
                     return this._handleClonedContainerAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);

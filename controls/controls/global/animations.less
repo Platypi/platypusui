@@ -27,9 +27,12 @@
     .animation-fill-mode(forwards);
 }
 
-#Animations > .fade();
-#Animations > .fade(@fadeIn; in);
-#Animations > .slide();
-#Animations > .slide(@slideOut; out; left);
-#Animations > .slideAndFade();
-#Animations > .slideAndFade(@slideOutFadeOut; out; left);
+& {
+    #Animations;
+    .fade();
+    .fade(@fadeIn; in);
+    .slide();
+    .slide(@slideOut; out; left);
+    .slideAndFade();
+    .slideAndFade(@slideOutFadeOut; out; left);
+}

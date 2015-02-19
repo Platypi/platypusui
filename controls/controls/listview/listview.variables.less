@@ -1,6 +1,35 @@
 ﻿@import '../global/variables.less';
+@import '../global/mixins.less';
 
 #Listview {
     @manipulated-viewport-background-color: @white;
     @refresh-transition: all 200ms;
+    @enter-animation-name: LISTVIEW_ITEM_ENTER;
+    @enter-animation-duration: 300ms;
+    @leave-animation-name: LISTVIEW_ITEM_LEAVE;
+    @leave-animation-duration: 300ms;
+
+    .enter(@name: @enter-animation-name) {
+        #KeyFrames > .keyFrames(@name);
+        .frames(@prefix) {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    }
+
+    .leave(@name: @leave-animation-name) {
+        #KeyFrames > .keyFrames(@name);
+        .frames(@prefix) {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    }
 }

@@ -54,22 +54,29 @@ module app {
                 //this.context.groupedlistview.push({ group: 'C', items: ['callin', 'cork', 'casket'] });
                 //this.context.groupedlistview[1].items.shift();
                 //this.context.groupedlistview.pop();
-                //setTimeout(() => {
-                //    this.context.groupedlistview = [
-                //        { group: 'C', items: ['callin', 'cork', 'casket'] },
-                //        { group: 'B', items: ['ballin', 'bark', 'basket'] }
-                //    ];
-                //}, 2000);
+            //    setTimeout(() => {
+            //        this.context.groupedlistview = [
+            //            { group: 'C', items: ['callin', 'cork', 'casket'] },
+            //            { group: 'B', items: ['ballin', 'bark', 'basket'] }
+            //        ];
+            //    }, 2000);
             //}, 2000);
         }
 
         addListItem() {
             var listview = this.context.listview;
+            //this.context.groupedlistview[0].items.push('check');
+            this.context.groupedlistview.push({ group: 'C', items: ['callin', 'cork', 'casket'] });
+            //listview.push(10);
             //listview.push(listview[listview.length - 1] + 1);
+            //this.context.groupedlistview[0].items.push('aching');
+            //this.context.groupedlistview[0] = { group: 'C', items: ['callin', 'cork', 'casket'] };
         }
 
         popListItem() {
             this.context.listview.pop();
+            //this.context.groupedlistview[0].items.pop();
+            this.context.groupedlistview.pop();
         }
 
         foo(ev?: any) {
