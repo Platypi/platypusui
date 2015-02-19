@@ -1,19 +1,32 @@
-﻿@import '../global/variables.less';
+﻿/**/
+@import (reference) '../global/variables.less';
 
-#Carousel {
-    @background-color: @transparent;
-    @color: @primaryColor;
-    @border-size: 1px;
-    @border-color: @primaryColor;
-    @padding: 5px;
-    @padding-left: @padding;
-    @padding-right: @padding;
-    @padding-top: @padding;
-    @padding-bottom: @padding;
-    @arrow-font-size: 200%;
-    @arrow-length: 100%;
-    @arrow-width: 2em;
-    @arrow-color: fadeout(@white, 50%);
-    @arrow-active-color: @white;
-    @transition: all 300ms;
+#platui {
+    #Carousel {
+        #platui > #variables;
+    /// =========== Carousel Colors =========== ///
+
+        @background-color: @transparent;
+        @color: @primary-color;
+        @border-color: @primary-color;
+        @arrow-color: fadeout(@white, 50%);
+        @arrow-active-color: @white;
+
+        
+    /// ============ Carousel Size ============ ///
+
+        @border-size: 1px;
+        @padding: 5px;
+        @padding-left: @padding;
+        @padding-right: @padding;
+        @padding-top: @padding;
+        @padding-bottom: @padding;
+        @arrow-font-size: 200%;
+        @arrow-length: 100%;
+        @arrow-width: 2em;
+
+    /// ============ Carousel Transition ============ ///
+
+        @transition: all 300ms;
+    }
 }

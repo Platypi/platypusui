@@ -1,20 +1,23 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'slider.variables.less';
+﻿@import (reference) '../global/mixins.less';
+@import (reference) 'slider.variables.less';
 
 /// ============= Slider Constants ============= ///
 
-#Slider_Local {
-    #Slider;
-    @knob-radius: @knob-diameter / 2;
-    @half-thickness: @thickness / 2;
+#platui {
+    #__Slider {
+        #platui > #Slider;
+        @knob-radius: @knob-diameter / 2;
+        @half-thickness: @thickness / 2;
+    }
 }
 
 /// ========== Slider Default Style =========== ///
 
 .plat-slider {
-    #Slider;
-    #Slider_Local;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Slider;
+    #platui > #__Slider;
     position: relative;
     .fill();
     .user-select();
@@ -23,7 +26,7 @@
     
     .plat-slider-container {
         position: absolute;
-        background-color: @neutralColorLight;
+        background-color: @neutral-color-light;
         overflow: visible;
         .calc(width; '100% - @{knob-diameter}');
         .calc(height; '100% - @{knob-diameter}');
@@ -33,9 +36,9 @@
 
         .plat-slider-track {
             position: absolute;
-            background-color: @neutralColorDark;
+            background-color: @neutral-color-dark;
             overflow: visible;
-            .box-shadow(inset 0px 1px 1px 0px darken(@neutralColorDark, 10%));
+            .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
             .border-radius(@fill-border-radius);
             .box-sizing(content-box);
 
@@ -43,8 +46,8 @@
                 position: absolute;
                 width: @knob-diameter;
                 height: @knob-diameter;
-                background-color: lighten(@paleGrey, 10%);
-                border: @knob-border-size solid darken(@paleGrey, 5%);
+                background-color: lighten(@pale-grey, 10%);
+                border: @knob-border-size solid darken(@pale-grey, 5%);
                 cursor: pointer;
                 .border-radius(@knob-diameter);
                 .box-sizing(border-box);
@@ -158,8 +161,8 @@
     &.slider-primary {
         .plat-slider-container {
             .plat-slider-track {
-                background-color: @primaryColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@primaryColor, 10%));
+                background-color: @primary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
             }
         }
     }
@@ -167,8 +170,8 @@
     &.slider-secondary {
         .plat-slider-container {
             .plat-slider-track {
-                background-color: @secondaryColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@secondaryColor, 10%));
+                background-color: @secondary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
             }
         }
     }
@@ -176,8 +179,8 @@
     &.slider-success {
         .plat-slider-container {
             .plat-slider-track {
-                background-color: @successColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@successColor, 10%));
+                background-color: @success-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
             }
         }
     }
@@ -185,8 +188,8 @@
     &.slider-caution {
         .plat-slider-container {
             .plat-slider-track {
-                background-color: @cautionColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@cautionColor, 10%));
+                background-color: @caution-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
             }
         }
     }
@@ -194,8 +197,8 @@
     &.slider-danger {
         .plat-slider-container {
             .plat-slider-track {
-                background-color: @dangerColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@dangerColor, 10%));
+                background-color: @danger-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
             }
         }
     }

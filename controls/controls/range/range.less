@@ -1,19 +1,22 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'range.variables.less';
+﻿@import (reference)'../global/mixins.less';
+@import (reference) 'range.variables.less';
 
 /// ============= Range Constants ============= ///
 
-#Range_Local {
-    #Range;
-    @half-thickness: @thickness / 2;
+#platui {
+    #__Range {
+        #platui > #Range;
+        @half-thickness: @thickness / 2;
+    }
 }
 
 /// ========== Range Default Style =========== ///
 
 .plat-range {
-    #Range;
-    #Range_Local;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Range;
+    #platui > #__Range;
     position: relative;
     .fill();
     .user-select();
@@ -22,7 +25,7 @@
     
     .plat-range-container {
         position: absolute;
-        background-color: @neutralColorLight;
+        background-color: @neutral-color-light;
         overflow: visible;
         .calc(height; '100% - @{knob-radius} - @{knob-radius}');
         .border-radius(@fill-border-radius);
@@ -31,9 +34,9 @@
 
         .plat-range-track {
             position: absolute;
-            background-color: @neutralColorDark;
+            background-color: @neutral-color-dark;
             overflow: visible;
-            .box-shadow(inset 0px 1px 1px 0px darken(@neutralColorDark, 10%));
+            .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
             .border-radius(@fill-border-radius);
             .box-sizing(content-box);
 
@@ -42,8 +45,8 @@
                 position: absolute;
                 width: @knob-diameter;
                 height: @knob-diameter;
-                background-color: lighten(@paleGrey, 10%);
-                border: @knob-border-size solid darken(@paleGrey, 5%);
+                background-color: lighten(@pale-grey, 10%);
+                border: @knob-border-size solid darken(@pale-grey, 5%);
                 cursor: pointer;
                 .border-radius(@knob-diameter / 2);
                 .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.24));
@@ -153,8 +156,8 @@
     &.range-primary {
         .plat-range-container {
             .plat-range-track {
-                background-color: @primaryColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@primaryColor, 10%));
+                background-color: @primary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
             }
         }
     }
@@ -162,8 +165,8 @@
     &.range-secondary {
         .plat-range-container {
             .plat-range-track {
-                background-color: @secondaryColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@secondaryColor, 10%));
+                background-color: @secondary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
             }
         }
     }
@@ -171,8 +174,8 @@
     &.range-success {
         .plat-range-container {
             .plat-range-track {
-                background-color: @successColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@successColor, 10%));
+                background-color: @success-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
             }
         }
     }
@@ -180,8 +183,8 @@
     &.range-caution {
         .plat-range-container {
             .plat-range-track {
-                background-color: @cautionColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@cautionColor, 10%));
+                background-color: @caution-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
             }
         }
     }
@@ -189,8 +192,8 @@
     &.range-danger {
         .plat-range-container {
             .plat-range-track {
-                background-color: @dangerColor;
-                .box-shadow(inset 0px 1px 1px 0px darken(@dangerColor, 10%));
+                background-color: @danger-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
             }
         }
     }

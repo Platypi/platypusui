@@ -1,38 +1,168 @@
-@import 'variables.less';
-@import 'mixins.less';
+@import (reference) 'variables.less';
+@import (reference) 'mixins.less';
 
 /// ======= Globally-Used Animations ======== ///
 
-.plat-slidein {
-    .animation-name(@slideIn);
-    .animation-duration(250ms);
-    .animation-fill-mode(forwards);
-}
 
-.plat-slideout {
-    .animation-name(@slideOut);
-    .animation-duration(200ms);
-    .animation-fill-mode(forwards);
-}
+#platui {
+    #animations {
+        #platui > #mixins;
+        
+    /// Animation Creation
 
-.plat-fadein {
-    .animation-name(@fadeIn);
-    .animation-duration(500ms);
-    .animation-fill-mode(forwards);
-}
+        #keyframes {
+            .keyframes(@name) {
+                @-webkit-keyframes @name {
+                    .frames(@webkit);
+                }
 
-.plat-fadeout {
-    .animation-name(@fadeOut);
-    .animation-duration(100ms);
-    .animation-fill-mode(forwards);
+                @-moz-keyframes @name {
+                    .frames(@moz);
+                }               
+
+                @keyframes @name {
+                    .frames(@vanilla);
+                }
+            }
+        }
+
+        .fade(@name: @fade-out; @direction: out) {
+            #keyframes > .keyframes(@name);
+            .frames(@prefix) {
+                & when (@direction = in) {
+                    from {
+                        opacity: 0;
+                    }
+                    to {
+                        opacity: 1;
+                    }
+                } & when (@direction = out) {
+                    from {
+                        opacity: 1;
+                    }
+                    to {
+                        opacity: 0;
+                    }
+                }
+            }
+        }
+
+        .slide(@name: @slide-in; @direction: in; @from: right) {
+            #keyframes > .keyframes(@name);
+            .frames(@prefix) {
+                & when (@direction = in) {
+                    & when (@from = left) {
+                        from {
+                            padding-left: -100%;
+                        }
+                    } & when (@from = right) {
+                        from {
+                            padding-left: 100%;
+                        }
+                    }
+                } & when (@direction = out) {
+                    & when (@from = left) {
+                        to {
+                            padding-left: -100%;
+                        }
+                    } & when (@from = right) {
+                        to {
+                            padding-left: 100%;
+                        }
+                    }
+                }
+            }
+        }
+
+        .slideAndFade(@name: @slide-in-fade-in; @direction: in; @from-to: right) {
+            #keyframes > .keyframes(@name);
+            .frames(@prefix) {
+                & when (@direction = in) {
+                    & when (@from-to = left) {
+                        0% {
+                            padding-left: -100%;
+                            opacity: 0;
+                        }
+                    } & when (@from-to = right) {
+                        0% {
+                            padding-left: 100%;
+                            opacity: 0;
+                        }
+                    }
+                    25% {
+                        opacity: 0.1;
+                    }
+                    50% {
+                        opacity: 0.2;
+                    }
+                    75% {
+                        opacity: 0.3;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
+                } & when (@direction = out) {
+                    0% {
+                        opacity: 1;
+                    }
+                    25% {
+                        opacity: 0.3;
+                    }
+                    50% {
+                        opacity: 0.2;
+                    }
+                    75% {
+                        opacity: 0.1;
+                    } & when (@from-to = left) {
+                        100% {
+                            padding-left: -100%;
+                            opacity: 0;
+                        }
+                    } & when (@from-to = right) {
+                        100% {
+                            padding-left: 100%;
+                            opacity: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 & {
-    #Animations;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #animations;
+
+    .plat-slidein {
+        .animation-name(@slide-in);
+        .animation-duration(250ms);
+        .animation-fill-mode(forwards);
+    }
+
+    .plat-slideout {
+        .animation-name(@slide-out);
+        .animation-duration(200ms);
+        .animation-fill-mode(forwards);
+    }
+
+    .plat-fadein {
+        .animation-name(@fade-in);
+        .animation-duration(500ms);
+        .animation-fill-mode(forwards);
+    }
+
+    .plat-fadeout {
+        .animation-name(@fade-out);
+        .animation-duration(100ms);
+        .animation-fill-mode(forwards);
+    }
+
     .fade();
-    .fade(@fadeIn; in);
+    .fade(@fade-in; in);
     .slide();
-    .slide(@slideOut; out; left);
+    .slide(@slide-out; out; left);
     .slideAndFade();
-    .slideAndFade(@slideOutFadeOut; out; left);
+    .slideAndFade(@slide-out-fade-out; out; left);
 }

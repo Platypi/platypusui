@@ -75,12 +75,6 @@
     <Content Include="button\button.min.css">
       <DependentUpon>button.css</DependentUpon>
     </Content>
-    <Content Include="button\button.mixins.css">
-      <DependentUpon>button.mixins.less</DependentUpon>
-    </Content>
-    <Content Include="button\button.mixins.min.css">
-      <DependentUpon>button.mixins.css</DependentUpon>
-    </Content>
     <Content Include="button\button.variables.css">
       <DependentUpon>button.variables.less</DependentUpon>
     </Content>
@@ -105,12 +99,6 @@
     <Content Include="checkbox\checkbox.less" />
     <Content Include="checkbox\checkbox.min.css">
       <DependentUpon>checkbox.css</DependentUpon>
-    </Content>
-    <Content Include="checkbox\checkbox.mixins.css">
-      <DependentUpon>checkbox.mixins.less</DependentUpon>
-    </Content>
-    <Content Include="checkbox\checkbox.mixins.min.css">
-      <DependentUpon>checkbox.mixins.css</DependentUpon>
     </Content>
     <Content Include="checkbox\checkbox.variables.css">
       <DependentUpon>checkbox.variables.less</DependentUpon>
@@ -141,6 +129,12 @@
     </Content>
     <Content Include="global\gestures.min.css">
       <DependentUpon>gestures.css</DependentUpon>
+    </Content>
+    <Content Include="global\helpers.css">
+      <DependentUpon>helpers.less</DependentUpon>
+    </Content>
+    <Content Include="global\helpers.min.css">
+      <DependentUpon>helpers.css</DependentUpon>
     </Content>
     <Content Include="global\media.css">
       <DependentUpon>media.less</DependentUpon>
@@ -239,10 +233,10 @@
     <Content Include="modal\modal.variables.min.css">
       <DependentUpon>modal.variables.css</DependentUpon>
     </Content>
-    <Content Include="popover\popover.css">
+    <Content Include="modal\popover.css">
       <DependentUpon>popover.less</DependentUpon>
     </Content>
-    <Content Include="popover\popover.min.css">
+    <Content Include="modal\popover.min.css">
       <DependentUpon>popover.css</DependentUpon>
     </Content>
     <Content Include="progress\determinate\progressbar\progressbar.css">
@@ -316,12 +310,6 @@
     </Content>
     <Content Include="toggle\toggle.min.css">
       <DependentUpon>toggle.css</DependentUpon>
-    </Content>
-    <Content Include="toggle\toggle.mixins.css">
-      <DependentUpon>toggle.mixins.less</DependentUpon>
-    </Content>
-    <Content Include="toggle\toggle.mixins.min.css">
-      <DependentUpon>toggle.mixins.css</DependentUpon>
     </Content>
     <Content Include="toggle\toggle.variables.css">
       <DependentUpon>toggle.variables.less</DependentUpon>
@@ -408,15 +396,6 @@
     <Content Include="button\button.variables.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="button\button.mixins.less" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="checkbox\checkbox.mixins.less" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="toggle\toggle.mixins.less" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="range\range.variables.less" />
   </ItemGroup>
   <ItemGroup>
@@ -435,14 +414,16 @@
     <Content Include="listview\listview.variables.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="popover\popover.less" />
-    <Content Include="popover\popover.variables.less" />
+    <Content Include="modal\popover.less" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\fonts\icons.eot" />
     <Content Include="icons\icons.less" />
     <Content Include="icons\fonts\icons.ttf" />
     <Content Include="icons\fonts\icons.woff" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="global\helpers.less" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>

@@ -1,19 +1,21 @@
-@import '../global/variables.less';
+/**/
+@import (reference) '../global/variables.less';
 
-#Slider {
+#platui {
+    #Slider {
+    /// ================= Slider Size ================== ///    
 
-/// ================= Size ================== ///    
+        @thickness: 8px;
+        @fill-border-radius: 4px;
 
-    @thickness: 8px;
-    @fill-border-radius: 4px;
-
-/// ================= Knob ================== ///    
+    /// ================= Slider Knob Properties ================== ///    
     
-    @knob-diameter: 1.6em;
-    @knob-border-size: 1px;
+        @knob-diameter: 1.6em;
+        @knob-border-size: 1px;
 
-/// ============== Animations =============== ///    
+    /// ============== Slider Transitions =============== ///    
 
-    @horizontal-transition: width 300ms;
-    @vertical-transition: height 300ms;
+        @horizontal-transition: width 300ms;
+        @vertical-transition: height 300ms;
+    }
 }

@@ -1,12 +1,21 @@
-@import '../global/variables.less';
+/**/
+@import (reference) '../global/variables.less';
 
-#Radio {
-    @background-color: @transparent;
-    @border-color: @grey;
-    @checked-border-color: @primaryColor;
-    @mark-color: @checked-border-color;
-    @mark-padding-color: @transparent;
-    @diameter: 1em;
-    @border-size: 1px;
-    @mark-padding: 1px;
+#platui {
+    #Radio {
+        #platui > #variables;
+    /// =========== Radio Colors =========== ///
+
+        @background-color: @transparent;
+        @border-color: @grey;
+        @checked-border-color: @primary-color;
+        @mark-color: @checked-border-color;
+        @mark-padding-color: @transparent;
+        
+    /// =========== Radio Size =========== ///
+
+        @diameter: 1em;
+        @border-size: 1px;
+        @mark-padding: 1px;
+    }
 }

@@ -1,21 +1,25 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'input.variables.less';
+﻿@import (reference) '../global/mixins.less';
+@import (reference) 'input.variables.less';
 
 /// ============= Input Constants ============= ///
 
-#Input_Local {
-    @input-border-color: @neutralColorLight;
-    @input-border-width: 2px;
-    @border-color-accent: darken(@neutralColor, 5%);
-    @input-height: 2.5em;
+#platui {
+    #__Input {
+        #platui > #variables;
+        @input-border-color: @neutral-color-light;
+        @input-border-width: 2px;
+        @border-color-accent: darken(@neutral-color, 5%);
+        @input-height: 2.5em;
+    }
 }
 
 /// =========== Input Default Styles =========== ///
 
 .plat-input {
-    #Input;
-    #Input_Local;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Input;
+    #platui > #__Input;
     .box-sizing(border-box);
     display: inline-block;
     width: @default-width;
@@ -66,19 +70,19 @@
 /// =========== Placeholder Styling =========== ///
 
         ::-webkit-input-placeholder {
-            color: @neutralColorLight;
+            color: @neutral-color-light;
         }
 
         ::-moz-input-placeholder {
-            color: @neutralColorLight;   
+            color: @neutral-color-light;   
         }
 
         :-moz-input-placeholder {
-            color: @neutralColorLight;
+            color: @neutral-color-light;
         }
 
         :-ms-input-placeholder {
-            color: @neutralColorLight;
+            color: @neutral-color-light;
         }
 
 /// =============== Input Icon =============== ///
@@ -101,17 +105,18 @@
 
 /// ============== Input Types =============== ///
 
-    &.plat-email {
+    /*&.plat-email {
 
-    }
+    }*/
 
-    &.plat-password {
+    /*&.plat-password {
   
-    }    
+    }*/
 }
 
 .input-group {
-    #Input_Local;
+    #platui > #mixins;
+    #platui > #__Input;
 
     [class*="col-"] {
         padding: 0;
@@ -131,10 +136,4 @@
             right: 8px;
         }
     }
-
-    // [class*="col-"] ~ [class*="col-"] {
-    //     input {
-    //         border-left: @input-border-width solid @input-border-color;   
-    //     }
-    // }
 }

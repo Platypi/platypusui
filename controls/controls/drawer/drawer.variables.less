@@ -1,16 +1,28 @@
-@import '../global/variables.less';
+/**/
+@import (reference) '../global/variables.less';
 
-#Drawer {
-    @color: @white;
-    @background-color: @neutralColor;
-    @length-default: 80%;
-    @length-left: @length-default;
-    @length-right: @length-default;
-    @length-top: @length-default;
-    @length-bottom: @length-default;
-    @shadow-color: fadeout(@black, 30%);
-    @shadow-offset: 2px;
-    @shadow-blur: 10px;
-    @shadow-spread: 0px;
-    @transition: all 300ms ease-out;
+#platui {
+    #Drawer {
+        #platui > #variables;
+    /// =========== Drawer Colors =========== ///
+
+        @color: @white;
+        @background-color: @neutral-color;
+        @shadow-color: fadeout(@black, 30%);
+
+    /// =========== Drawer Lengths =========== ///
+
+        @length-default: 80%;
+        @length-left: @length-default;
+        @length-right: @length-default;
+        @length-top: @length-default;
+        @length-bottom: @length-default;
+        @shadow-offset: 2px;
+        @shadow-blur: 10px;
+        @shadow-spread: 0px;
+        
+    /// =========== Drawer Transition =========== ///
+
+        @transition: all 300ms ease-out;
+    }
 }

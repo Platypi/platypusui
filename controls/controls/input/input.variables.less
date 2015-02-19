@@ -1,20 +1,23 @@
-@import '../global/variables.less';
+/**/
+@import (reference) '../global/variables.less';
 
-#Input {
+#platui {
+    #Input {
+        #platui > #variables;
+    /// ============== Input Colors =============== ///
 
-/// ============== Colors =============== ///
+        @text-color: @black;
+        @action-color: @border-color;
+        @border-color: @primary-color;
 
-    @text-color: @black;
-    @action-color: @border-color;
-    @border-color: @primaryColor;
+    /// =============== Input Sizes =============== ///
 
-/// =============== Sizes =============== ///
-
-    @default-width: 18em;
-    @primary-border-bottom-width: 1px;
-    @primary-border-bottom: @primary-border-bottom-width solid @border-color;
-    @primary-border-radius: 0;
-    @secondary-border-width: 1px;
-    @secondary-border: @secondary-border-width solid @border-color;
-    @secondary-border-radius: 2px;
+        @default-width: 18em;
+        @primary-border-bottom-width: 1px;
+        @primary-border-bottom: @primary-border-bottom-width solid @border-color;
+        @primary-border-radius: 0;
+        @secondary-border-width: 1px;
+        @secondary-border: @secondary-border-width solid @border-color;
+        @secondary-border-radius: 2px;
+    }
 }

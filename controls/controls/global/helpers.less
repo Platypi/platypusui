@@ -1,25 +1,28 @@
-@import '../global/variables.less';
-@import '../global/mixins.less';
+@import (reference) '../global/variables.less';
 
 /// ========== PlatypusUI Helper Classes =========== ///
 
 
 /// =========== Hide Content for Width ============= ///
 
-@media (max-width: @phone-end) {
-	.hide-on-@{phone-alias} {
-		display: none;
-	}
-}
+& {
+    #platui > #variables;
 
-@media (max-width: @phablet-end) {
-	.hide-on-@{phablet-alias} {
-		display: none;
-	}
-}
+    @media (max-width: @phone-end) {
+	    .hide-on-@{phone-alias} {
+		    display: none !important;
+	    }
+    }
 
-@media (max-width: @tablet-end) {
-	.hide-on-@{tablet-alias} {
-		display: none;
-	}
+    @media (max-width: @phablet-end) {
+	    .hide-on-@{phablet-alias} {
+		    display: none !important;
+	    }
+    }
+
+    @media (max-width: @tablet-end) {
+	    .hide-on-@{tablet-alias} {
+		    display: none !important;
+	    }
+    }
 }

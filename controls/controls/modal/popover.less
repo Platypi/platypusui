@@ -1,13 +1,13 @@
-@import '../global/variables.less';
-@import '../global/mixins.less';
-@import '../modal/modal.variables.less';
-@import './popover.variables.less';
+@import (reference) '../global/mixins.less';
+@import (reference) 'modal.variables.less';
 
 /// =========== Modal Popover Styles =========== ///
 
 .plat-modal {
-    #Modal;
-    #Popover;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Modal;
+
     &.modal-popover {
         background-color: rgba(0,0,0,0.6);
 
@@ -17,7 +17,7 @@
             max-width: 30em;
             height: auto;
             background-color: @white;
-            color: @textGrey;
+            color: @text-grey;
             .border-radius(@popover-border-radius);
             
             &.plat-no-transition,
@@ -98,7 +98,7 @@
                         border-width: 0;
                         border-top: 2px solid @popover-accent-color;
                         background-color: transparent;
-                        color: lighten(@textGrey, 20%);
+                        color: lighten(@text-grey, 20%);
                         .flex(1);
 
                         &:last-child {
@@ -110,7 +110,7 @@
                         }
 
                         &.button-suggested {
-                            color: @textGrey;
+                            color: @text-grey;
                         }
                     }
                 }

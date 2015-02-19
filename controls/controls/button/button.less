@@ -1,28 +1,31 @@
-@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'button.variables.less';
-@import 'button.mixins.less';
+@import (reference) '../global/mixins.less';
+@import (reference) 'button.variables.less';
 
 /// ============= Button Constants ============= ///
 
-#Button_Local {
-    @default-color: @white;
-    @default-background-color: @neutralColor;
+#platui {
+    #__Button {
+        #platui > #variables;
+        @default-color: @white;
+        @default-background-color: @neutral-color;
+    }
 }
 
 /// ====== Button Default and Outline Style ====== ///
 
 .plat-button, 
 .button {
-    #Button;
-    #Button_Local;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Button;
+    #platui > #__Button;
     position: relative;
     display: inline-block;
     padding: @padding-vertical @padding-horizontal;
     background-color: @default-background-color;
     color: @default-color;
     outline: none;
-    border: @border-size solid @neutralColorDark;
+    border: @border-size solid @neutral-color-dark;
     cursor: pointer;
     font-size: @button-font-size;
     font-weight: 300;
@@ -31,42 +34,42 @@
     .box-sizing(border-box);
     
     &.button-outline {
-        color: @neutralColor;
+        color: @neutral-color;
     }
 
 /// ============== Button Colors  =============== ///    
 
     &.button-primary {
-        background-color: @primaryColor;
-        border-color: @primaryColorDark;
+        background-color: @primary-color;
+        border-color: @primary-color-dark;
         
         &:active,
         &.plat-selected {
-            background-color: darken(@primaryColor, 10%);
+            background-color: darken(@primary-color, 10%);
         }
         
         &.button-disabled,
         &[disabled="disabled"],
         &:disabled {
-            background-color: @primaryColor;
+            background-color: @primary-color;
             opacity: 0.5;
             cursor: default;
         }
 
         &.button-outline {
-            border-color: @primaryColor;
-            color: @primaryColor;
+            border-color: @primary-color;
+            color: @primary-color;
 
             &:active,
             &.plat-selected {
                 color: @white;
-                background-color: @primaryColor;
+                background-color: @primary-color;
             }
         
             &.button-disabled,
             &[disabled="disabled"],
             &:disabled {
-                color: @primaryColor;
+                color: @primary-color;
                 background-color: @default-background-color;
                 opacity: 0.5;
                 cursor: default;
@@ -75,36 +78,36 @@
     }
 
     &.button-secondary {
-        background-color: @secondaryColor;
-        border-color: @secondaryColorDark;
+        background-color: @secondary-color;
+        border-color: @secondary-color-dark;
 
         &:active,
         &.plat-selected {
-            background-color: darken(@secondaryColor, 10%);
+            background-color: darken(@secondary-color, 10%);
         }
         
         &.button-disabled,
         &[disabled="disabled"],
         &:disabled {
-            background-color: @secondaryColor;
+            background-color: @secondary-color;
             opacity: 0.5;
             cursor: default;
         }
 
         &.button-outline {
-            border-color: @secondaryColor;
-            color: @secondaryColor;
+            border-color: @secondary-color;
+            color: @secondary-color;
 
             &:active,
             &.plat-selected {
                 color: @white;
-                background-color: @secondaryColor;
+                background-color: @secondary-color;
             }
         
             &.button-disabled,
             &[disabled="disabled"],
             &:disabled {
-                color: @secondaryColor;
+                color: @secondary-color;
                 background-color: @default-background-color;
                 opacity: 0.5;
                 cursor: default;
@@ -113,36 +116,36 @@
     }
 
     &.button-neutral {
-        background-color: @neutralColor;
-        border-color: @neutralColorDark;
+        background-color: @neutral-color;
+        border-color: @neutral-color-dark;
 
         &:active,
         &.plat-selected {
-            background-color: darken(@neutralColor, 10%);
+            background-color: darken(@neutral-color, 10%);
         }
         
         &.button-disabled,
         &[disabled="disabled"],
         &:disabled {
-            background-color: @neutralColor;
+            background-color: @neutral-color;
             opacity: 0.5;
             cursor: default;
         }
 
         &.button-outline {
-            border-color: @neutralColor;
-            color: @neutralColor;
+            border-color: @neutral-color;
+            color: @neutral-color;
 
             &:active,
             &.plat-selected {
                 color: @white;
-                background-color: @neutralColor;
+                background-color: @neutral-color;
             }
         
             &.button-disabled,
             &[disabled="disabled"],
             &:disabled {
-                color: @neutralColor;
+                color: @neutral-color;
                 background-color: @default-background-color;
                 opacity: 0.5;
                 cursor: default;
@@ -151,36 +154,36 @@
     }
 
     &.button-success {
-        background-color: @successColor;
-        border-color: @successColorDark;
+        background-color: @success-color;
+        border-color: @success-color-dark;
 
         &:active,
         &.plat-selected {
-            background-color: darken(@successColor, 10%);
+            background-color: darken(@success-color, 10%);
         }
         
         &.button-disabled,
         &[disabled="disabled"],
         &:disabled {
-            background-color: @successColor;
+            background-color: @success-color;
             opacity: 0.5;
             cursor: default;
         }
 
         &.button-outline {
-            border-color: @successColor;
-            color: @successColor;
+            border-color: @success-color;
+            color: @success-color;
 
             &:active,
             &.plat-selected {
                 color: @white;
-                background-color: @successColor;
+                background-color: @success-color;
             }
         
             &.button-disabled,
             &[disabled="disabled"],
             &:disabled {
-                color: @successColor;
+                color: @success-color;
                 background-color: @default-background-color;
                 opacity: 0.5;
                 cursor: default;
@@ -189,36 +192,36 @@
     }
 
     &.button-danger {
-        background-color: @dangerColor;
-        border-color: @dangerColorDark;
+        background-color: @danger-color;
+        border-color: @danger-color-dark;
 
         &:active,
         &.plat-selected {
-            background-color: darken(@dangerColor, 10%);
+            background-color: darken(@danger-color, 10%);
         }
         
         &.button-disabled,
         &[disabled="disabled"],
         &:disabled {
-            background-color: @dangerColor;
+            background-color: @danger-color;
             opacity: 0.5;
             cursor: default;
         }
 
         &.button-outline {
-            border-color: @dangerColor;
-            color: @dangerColor;
+            border-color: @danger-color;
+            color: @danger-color;
 
             &:active,
             &.plat-selected {
                 color: @white;
-                background-color: @dangerColor;
+                background-color: @danger-color;
             }
         
             &.button-disabled,
             &[disabled="disabled"],
             &:disabled {
-                color: @dangerColor;
+                color: @danger-color;
                 background-color: @default-background-color;
                 opacity: 0.5;
                 cursor: default;
@@ -227,36 +230,36 @@
     }
 
     &.button-caution {
-        background-color: @cautionColor;
-        border-color: @cautionColorDark;
+        background-color: @caution-color;
+        border-color: @caution-color-dark;
 
         &:active,
         &.plat-selected {
-            background-color: darken(@cautionColor, 10%);
+            background-color: darken(@caution-color, 10%);
         }
         
         &.button-disabled,
         &[disabled="disabled"],
         &:disabled {
-            background-color: @cautionColor;
+            background-color: @caution-color;
             opacity: 0.5;
             cursor: default;
         }
 
         &.button-outline {
-            border-color: @cautionColor;
-            color: @cautionColor;
+            border-color: @caution-color;
+            color: @caution-color;
 
             &:active,
             &.plat-selected {
                 color: @white;
-                background-color: @cautionColor;
+                background-color: @caution-color;
             }
         
             &.button-disabled,
             &[disabled="disabled"],
             &:disabled {
-                color: @cautionColor;
+                color: @caution-color;
                 background-color: @default-background-color;
                 opacity: 0.5;
                 cursor: default;
@@ -300,6 +303,7 @@
 
 .button-group > .plat-button,
 .button-group > .button {
+    #platui > #mixins;
     margin: 0;
     border-right-width: 0;
     border-left-width: 0;
@@ -309,7 +313,8 @@
 
 .button-group > .plat-button:nth-of-type(1),
 .button-group > .button:nth-of-type(1) {
-    #Button;
+    #platui > #mixins;
+    #platui > #Button;
     border-left-width: 1px;
     border-right-width: 1px;
     .border-top-left-radius(@border-radius);
@@ -323,7 +328,8 @@
 
 .button-group > .plat-button:nth-last-of-type(1),
 .button-group > .button:nth-last-of-type(1) {
-    #Button;
+    #platui > #mixins;
+    #platui > #Button;
     border-left-width: 1px;
     border-right-width: 1px;
     .border-top-right-radius(@border-radius);

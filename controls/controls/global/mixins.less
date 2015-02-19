@@ -1,746 +1,635 @@
-﻿@import 'variables.less';
+﻿/**/
+#platui {
+    #mixins {
+        /// Mixin Vars
 
-/// Mixin Vars
+        @webkit: -webkit-;
+        @moz: -moz-;
+        @ms: -ms-;
+        @khtml: -khtml-;
+        @vanilla: -;
 
-@webkit: -webkit-;
-@moz: -moz-;
-@ms: -ms-;
-@khtml: -khtml-;
-@vanilla: -;
+        @webList: @webkit, @vanilla;
+        @msList: @ms, @vanilla;
+        @mozList: @moz, @vanilla;
+        @webMozList: @webkit, @moz, @vanilla;
+        @webMozMsList: @webkit, @moz, @ms, @vanilla;
+        @allList: @webkit, @moz, @ms, @khtml, @vanilla;
 
-@webList: @webkit, @vanilla;
-@msList: @ms, @vanilla;
-@mozList: @moz, @vanilla;
-@webMozList: @webkit, @moz, @vanilla;
-@webMozMsList: @webkit, @moz, @ms, @vanilla;
-@allList: @webkit, @moz, @ms, @khtml, @vanilla;
+        /// Helper Methods
 
-/// Helper Methods
-
-.looper(@property; @value; @list; @counter) when (@counter > 0) {
-    .looper(@property; @value; @list; (@counter - 1));
-    @extraction: extract(@list, @counter);
-    @{extraction}@{property}: @value;
-}
-
-.value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = length(@list)) and (extract(@list, @counter) = @vanilla) {
-    .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
-    @{property}: ~'@{valuePropety}(@{value})';
-}
-.value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 1) and not(extract(@list, @counter) = @vanilla) {
-    @extraction: extract(@list, @counter);
-    @{property}: ~'@{extraction}@{valuePropety}(@{value})';
-}
-.value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 0) { }
-.value-looper(@property; @valuePropety; @value; @list; @counter) when (default()) {
-    .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
-    @extraction: extract(@list, @counter);
-    @{property}: ~'@{extraction}@{valuePropety}(@{value})';
-}
-
-.vendor-loop(@property; @value; @list) when (length(@list) > 1) {
-    .looper(@property; @value; @list; length(@list) - 1);
-    @{property}: @value;
-}
-.vendor-loop(@property; @value; @list) when (length(@list) = 1) and not(@list = @vanilla) {
-    @{list}@{property}: @value;
-}
-.vendor-loop(@property; @value; @list) when (default())  {
-    @{property}: @value;
-}
-
-/// Touch
-
-.touch-action(@behavior: manipulation) {
-    .touch-action(@behavior; @msList);
-}
-.touch-action(@behavior: manipulation; @vendorList: @msList) when (default()) {
-    .vendor-loop(touch-action; @behavior; @vendorList);
-}
-
-.user-select(@behavior: none) {
-    .user-select(@behavior; @allList);
-}
-.user-select(@behavior: none; @vendorList: @allList) when (default()) {
-    .vendor-loop(user-select; @behavior; @vendorList);
-}
-
-.webkit-touch-additions(@callout: none; @highlight: transparent) {
-    -webkit-touch-callout: @callout;
-    -webkit-tap-highlight-color: @highlight;
-}
-
-.misc-webkit-touch(@callout: none; @drag: none; @highlight: transparent; @overflowscroll: touch) {
-    -webkit-user-drag: @drag;
-    -webkit-overflow-scrolling: @overflowscroll;
-    .webkit-touch-additions(@callout; @highlight);
-}
-
-
-/// Background Size
-
-.background-size(@args) {
-    .background-size(@args; @webList);
-}
-.background-size(@args; @vendorList: @webList) when (default()) {
-    .vendor-loop(background-size; @args; @vendorList);
-}
-
-/// Border Radius
-
-.border-radius(@radius) {
-    .border-radius(@radius; @webList);
-}
-.border-top-left-radius(@radius) {
-    .border-top-left-radius(@radius; @webList);
-}
-.border-top-left-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
-    .vendor-loop(border-top-left-radius; @radius; @webList);
-}
-.border-top-left-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
-    .vendor-loop(border-top-left-radius; @radius; @vanilla);
-}
-.border-top-left-radius(@radius; @vendorList: @webList) when (default()) {
-    .vendor-loop(border-top-left-radius; @radius; @webList);
-}
-.border-top-right-radius(@radius) {
-    .border-top-right-radius(@radius; @webList);
-}
-.border-top-right-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
-    .vendor-loop(border-top-right-radius; @radius; @webList);
-}
-.border-top-right-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
-    .vendor-loop(border-top-right-radius; @radius; @vanilla);
-}
-.border-top-right-radius(@radius; @vendorList: @webList) when (default()) {
-    .vendor-loop(border-top-right-radius; @radius; @webList);
-}
-.border-bottom-left-radius(@radius) {
-    .border-bottom-left-radius(@radius; @webList);
-}
-.border-bottom-left-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
-    .vendor-loop(border-bottom-left-radius; @radius; @webList);
-}
-.border-bottom-left-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
-    .vendor-loop(border-bottom-left-radius; @radius; @vanilla);
-}
-.border-bottom-left-radius(@radius; @vendorList: @webList) when (default()) {
-    .vendor-loop(border-bottom-left-radius; @radius; @webList);
-}
-.border-bottom-right-radius(@radius) {
-    .border-bottom-right-radius(@radius; @webList);
-}
-.border-bottom-right-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
-    .vendor-loop(border-bottom-right-radius; @radius; @webList);
-}
-.border-bottom-right-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
-    .vendor-loop(border-bottom-right-radius; @radius; @vanilla);
-}
-.border-bottom-right-radius(@radius; @vendorList: @webList) when (default()) {
-    .vendor-loop(border-bottom-right-radius; @radius; @webList);
-}
-.border-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
-    .vendor-loop(border-top-left-radius; @radius; @webList);
-    .vendor-loop(border-top-right-radius; @radius; @webList);
-    .vendor-loop(border-bottom-left-radius; @radius; @webList);
-    .vendor-loop(border-bottom-right-radius; @radius; @webList);
-}
-.border-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
-    .vendor-loop(border-top-left-radius; @radius; @vanilla);
-    .vendor-loop(border-top-right-radius; @radius; @vanilla);
-    .vendor-loop(border-bottom-left-radius; @radius; @vanilla);
-    .vendor-loop(border-bottom-right-radius; @radius; @vanilla);
-}
-.border-radius(@radius; @vendorList: @webList) when (default()) {
-    .vendor-loop(border-top-left-radius; @radius; @webList);
-    .vendor-loop(border-top-right-radius; @radius; @webList);
-    .vendor-loop(border-bottom-left-radius; @radius; @webList);
-    .vendor-loop(border-bottom-right-radius; @radius; @webList);
-}
-
-/// Background Clip
-
-.background-clip(@box: border-box) {
-    .background-clip(@box; @webMozList);
-}
-.background-clip(@box; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(background-clip; @box; @vendorList);
-}
-
-/// Box Shadows
-
-.box-shadow(@args) {
-    .box-shadow(@args; @webList);
-}
-.box-shadow(@args; @vendorList: @webList) when (default()) {
-    .vendor-loop(box-shadow; @args; @vendorList);
-}
-
-/// Box Sizing
-
-.box-sizing(@args) {
-    .box-sizing(@args; @webMozList);
-}
-.box-sizing(@args; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(box-sizing; @args; @vendorList);
-}
-
-/// Gradients
-
-.gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
-    .gradient(@default; @start; @stop; @webMozMsList);
-}
-.gradient(@default: #ffffff; @start: #000000; @stop: #ffffff; @vendorList: @webMozMsList) when (default()) {
-    .linear-gradient-top(@default; @start; 0%; @stop; 100%; @vendorList);
-}
-
-.horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
-    .horizontal-gradient(@default; @start; @stop; @webMozMsList);
-}
-.horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff; @vendorList: @webMozMsList) when (default()) {
-    .linear-gradient-left(@default; @start; 0%; @stop; 100%; @vendorList);
-}
-
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2) when (default()) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
-    .value-looper(background-image; linear-gradient; @gradient-value; @vendor; length(@vendor));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @webkit) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @moz) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @vanilla) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
-}
-
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @webkit) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @moz) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @vanilla) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
-}
-
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @webkit) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @moz) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
-}
-.linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @vanilla) {
-    @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
-}
-
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2) when (default()) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
-    .value-looper(background-image; linear-gradient; @gradient-value; @vendor; length(@vendor));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @webkit) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @moz) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @vanilla) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
-}
-
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @webkit) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @moz) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @vanilla) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
-}
-
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @webkit) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
-    .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @moz) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
-}
-.linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @vanilla) {
-    @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
-    background-color: @default;
-    .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
-}
-
-/// Animations
-.animation(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none) {
-    .animation(@name; @duration; @function; @delay; @count; @direction; @mode; @webMozList);
-}
-.animation(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation; @name @duration @function @delay @count @direction @mode; @vendorList);
-}
-
-.animation-delay(@delay) {
-    .animation-delay(@delay; @webMozList);
-}
-.animation-delay(@delay; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-delay; @delay; @vendorList);
-}
-
-.animation-direction(@direction) {
-    .animation-direction(@direction; @webMozList);
-}
-.animation-direction(@direction; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-direction; @direction; @vendorList);
-}
-
-.animation-duration(@duration) {
-    .animation-duration(@duration; @webMozList);
-}
-.animation-duration(@duration; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-duration; @duration; @vendorList);
-}
-
-.animation-fill-mode(@mode) {
-    .animation-fill-mode(@mode; @webMozList);
-}
-.animation-fill-mode(@mode; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-fill-mode; @mode; @vendorList);
-}
-
-.animation-iteration-count(@count) {
-    .animation-iteration-count(@count; @webMozList);
-}
-.animation-iteration-count(@count; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-iteration-count; @count; @vendorList);
-}
-
-.animation-name(@name) {
-    .animation-name(@name; @webMozList);
-}
-.animation-name(@name; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-name; @name; @vendorList);
-}
-
-.animation-play-state(@state) {
-    .animation-play-state(@state; @webMozList);
-}
-.animation-play-state(@state; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-play-state; @state; @vendorList);
-}
-
-.animation-timing-function(@function) {
-    .animation-timing-function(@function; @webMozList);
-}
-.animation-timing-function(@function; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(animation-timing-function; @function; @vendorList);
-}
-
-.basic-prefixed-animation(@values) {
-    -webkit-animation: @values;
-    -moz-animation: @values;
-    -o-animation: @values;
-    animation: @values; 
-}
-
-/// Custom Animations
-#KeyFrames {
-    .keyFrames(@name) {
-        @-webkit-keyframes @name {
-            .frames(@webkit);
+        .looper(@property; @value; @list; @counter) when (@counter > 0) {
+            .looper(@property; @value; @list; (@counter - 1));
+            @extraction: extract(@list, @counter);
+            @{extraction}@{property}: @value;
         }
 
-        @-moz-keyframes @name {
-            .frames(@moz);
-        }               
-
-        @keyframes @name {
-            .frames(@vanilla);
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = length(@list)) and (extract(@list, @counter) = @vanilla) {
+            .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
+            @{property}: ~'@{valuePropety}(@{value})';
         }
-    }
-}
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 1) and not(extract(@list, @counter) = @vanilla) {
+            @extraction: extract(@list, @counter);
+            @{property}: ~'@{extraction}@{valuePropety}(@{value})';
+        }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 0) { }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (default()) {
+            .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
+            @extraction: extract(@list, @counter);
+            @{property}: ~'@{extraction}@{valuePropety}(@{value})';
+        }
 
-#Animations {
-    .fade(@name: @fadeOut; @direction: out) {
-        #KeyFrames > .keyFrames(@name);
-        .frames(@prefix) {
-            & when (@direction = in) {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
-            } & when (@direction = out) {
-                from {
-                    opacity: 1;
-                }
-                to {
-                    opacity: 0;
-                }
+        .vendor-loop(@property; @value; @list) when (length(@list) > 1) {
+            .looper(@property; @value; @list; length(@list) - 1);
+            @{property}: @value;
+        }
+        .vendor-loop(@property; @value; @list) when (length(@list) = 1) and not(@list = @vanilla) {
+            @{list}@{property}: @value;
+        }
+        .vendor-loop(@property; @value; @list) when (default())  {
+            @{property}: @value;
+        }
+
+        /// Touch
+
+        .touch-action(@behavior: manipulation) {
+            .touch-action(@behavior; @msList);
+        }
+        .touch-action(@behavior: manipulation; @vendorList: @msList) when (default()) {
+            .vendor-loop(touch-action; @behavior; @vendorList);
+        }
+
+        .user-select(@behavior: none) {
+            .user-select(@behavior; @allList);
+        }
+        .user-select(@behavior: none; @vendorList: @allList) when (default()) {
+            .vendor-loop(user-select; @behavior; @vendorList);
+        }
+
+        .webkit-touch-additions(@callout: none; @highlight: transparent) {
+            -webkit-touch-callout: @callout;
+            -webkit-tap-highlight-color: @highlight;
+        }
+
+        .misc-webkit-touch(@callout: none; @drag: none; @highlight: transparent; @overflowscroll: touch) {
+            -webkit-user-drag: @drag;
+            -webkit-overflow-scrolling: @overflowscroll;
+            .webkit-touch-additions(@callout; @highlight);
+        }
+
+
+        /// Background Size
+
+        .background-size(@args) {
+            .background-size(@args; @webList);
+        }
+        .background-size(@args; @vendorList: @webList) when (default()) {
+            .vendor-loop(background-size; @args; @vendorList);
+        }
+
+        /// Border Radius
+
+        .border-radius(@radius) {
+            .border-radius(@radius; @webList);
+        }
+        .border-top-left-radius(@radius) {
+            .border-top-left-radius(@radius; @webList);
+        }
+        .border-top-left-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
+            .vendor-loop(border-top-left-radius; @radius; @webList);
+        }
+        .border-top-left-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
+            .vendor-loop(border-top-left-radius; @radius; @vanilla);
+        }
+        .border-top-left-radius(@radius; @vendorList: @webList) when (default()) {
+            .vendor-loop(border-top-left-radius; @radius; @webList);
+        }
+        .border-top-right-radius(@radius) {
+            .border-top-right-radius(@radius; @webList);
+        }
+        .border-top-right-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
+            .vendor-loop(border-top-right-radius; @radius; @webList);
+        }
+        .border-top-right-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
+            .vendor-loop(border-top-right-radius; @radius; @vanilla);
+        }
+        .border-top-right-radius(@radius; @vendorList: @webList) when (default()) {
+            .vendor-loop(border-top-right-radius; @radius; @webList);
+        }
+        .border-bottom-left-radius(@radius) {
+            .border-bottom-left-radius(@radius; @webList);
+        }
+        .border-bottom-left-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
+            .vendor-loop(border-bottom-left-radius; @radius; @webList);
+        }
+        .border-bottom-left-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
+            .vendor-loop(border-bottom-left-radius; @radius; @vanilla);
+        }
+        .border-bottom-left-radius(@radius; @vendorList: @webList) when (default()) {
+            .vendor-loop(border-bottom-left-radius; @radius; @webList);
+        }
+        .border-bottom-right-radius(@radius) {
+            .border-bottom-right-radius(@radius; @webList);
+        }
+        .border-bottom-right-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
+            .vendor-loop(border-bottom-right-radius; @radius; @webList);
+        }
+        .border-bottom-right-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
+            .vendor-loop(border-bottom-right-radius; @radius; @vanilla);
+        }
+        .border-bottom-right-radius(@radius; @vendorList: @webList) when (default()) {
+            .vendor-loop(border-bottom-right-radius; @radius; @webList);
+        }
+        .border-radius(@radius; @vendorList: @webList) when (@vendorList = @webkit) {
+            .vendor-loop(border-top-left-radius; @radius; @webList);
+            .vendor-loop(border-top-right-radius; @radius; @webList);
+            .vendor-loop(border-bottom-left-radius; @radius; @webList);
+            .vendor-loop(border-bottom-right-radius; @radius; @webList);
+        }
+        .border-radius(@radius; @vendorList: @webList) when (@vendorList = @moz), (@vendorList = @vanilla) {
+            .vendor-loop(border-top-left-radius; @radius; @vanilla);
+            .vendor-loop(border-top-right-radius; @radius; @vanilla);
+            .vendor-loop(border-bottom-left-radius; @radius; @vanilla);
+            .vendor-loop(border-bottom-right-radius; @radius; @vanilla);
+        }
+        .border-radius(@radius; @vendorList: @webList) when (default()) {
+            .vendor-loop(border-top-left-radius; @radius; @webList);
+            .vendor-loop(border-top-right-radius; @radius; @webList);
+            .vendor-loop(border-bottom-left-radius; @radius; @webList);
+            .vendor-loop(border-bottom-right-radius; @radius; @webList);
+        }
+
+        /// Background Clip
+
+        .background-clip(@box: border-box) {
+            .background-clip(@box; @webMozList);
+        }
+        .background-clip(@box; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(background-clip; @box; @vendorList);
+        }
+
+        /// Box Shadows
+
+        .box-shadow(@args) {
+            .box-shadow(@args; @webList);
+        }
+        .box-shadow(@args; @vendorList: @webList) when (default()) {
+            .vendor-loop(box-shadow; @args; @vendorList);
+        }
+
+        /// Box Sizing
+
+        .box-sizing(@args) {
+            .box-sizing(@args; @webMozList);
+        }
+        .box-sizing(@args; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(box-sizing; @args; @vendorList);
+        }
+
+        /// Gradients
+
+        .gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
+            .gradient(@default; @start; @stop; @webMozMsList);
+        }
+        .gradient(@default: #ffffff; @start: #000000; @stop: #ffffff; @vendorList: @webMozMsList) when (default()) {
+            .linear-gradient-top(@default; @start; 0%; @stop; 100%; @vendorList);
+        }
+
+        .horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
+            .horizontal-gradient(@default; @start; @stop; @webMozMsList);
+        }
+        .horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff; @vendorList: @webMozMsList) when (default()) {
+            .linear-gradient-left(@default; @start; 0%; @stop; 100%; @vendorList);
+        }
+
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2) when (default()) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            .value-looper(background-image; linear-gradient; @gradient-value; @vendor; length(@vendor));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @webkit) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @moz) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @vanilla) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
+        }
+
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @webkit) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @moz) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @vanilla) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
+        }
+
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @webkit) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @moz) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @vanilla) {
+            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
+        }
+
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2) when (default()) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor: @webMozMsList) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            .value-looper(background-image; linear-gradient; @gradient-value; @vendor; length(@vendor));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @webkit) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @moz) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor) when (@vendor = @vanilla) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
+        }
+
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @webkit) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @moz) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor) when (@vendor = @vanilla) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
+        }
+
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webMozMsList; length(@webMozMsList));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @webkit) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
+            .value-looper(background-image; linear-gradient; @gradient-value; @webkit; length(@webkit));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @moz) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @moz; length(@moz));
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor) when (@vendor = @vanilla) {
+            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            background-color: @default;
+            .value-looper(background-image; linear-gradient; @gradient-value; @vanilla; length(@vanilla));
+        }
+
+        /// Animations
+        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none) {
+            .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @webMozList);
+        }
+        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation; @name @duration @function @delay @count @direction @mode; @vendorList);
+        }
+
+        .animation(@args) {
+            .animation(@args; @webMozList);
+        }
+        .animation(@args; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation; @args; @vendorList);
+        }
+
+        .animation-delay(@delay) {
+            .animation-delay(@delay; @webMozList);
+        }
+        .animation-delay(@delay; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-delay; @delay; @vendorList);
+        }
+
+        .animation-direction(@direction) {
+            .animation-direction(@direction; @webMozList);
+        }
+        .animation-direction(@direction; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-direction; @direction; @vendorList);
+        }
+
+        .animation-duration(@duration) {
+            .animation-duration(@duration; @webMozList);
+        }
+        .animation-duration(@duration; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-duration; @duration; @vendorList);
+        }
+
+        .animation-fill-mode(@mode) {
+            .animation-fill-mode(@mode; @webMozList);
+        }
+        .animation-fill-mode(@mode; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-fill-mode; @mode; @vendorList);
+        }
+
+        .animation-iteration-count(@count) {
+            .animation-iteration-count(@count; @webMozList);
+        }
+        .animation-iteration-count(@count; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-iteration-count; @count; @vendorList);
+        }
+
+        .animation-name(@name) {
+            .animation-name(@name; @webMozList);
+        }
+        .animation-name(@name; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-name; @name; @vendorList);
+        }
+
+        .animation-play-state(@state) {
+            .animation-play-state(@state; @webMozList);
+        }
+        .animation-play-state(@state; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-play-state; @state; @vendorList);
+        }
+
+        .animation-timing-function(@function) {
+            .animation-timing-function(@function; @webMozList);
+        }
+        .animation-timing-function(@function; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(animation-timing-function; @function; @vendorList);
+        }
+
+        .basic-prefixed-animation(@values) {
+            -webkit-animation: @values;
+            -moz-animation: @values;
+            -o-animation: @values;
+            animation: @values; 
+        }
+
+        /// Transforms
+
+        .transform(@args) {
+            .transform(@args; @webMozMsList);
+        }
+        .transform(@args; @vendorList: @webMozMsList) when (default()) {
+            .vendor-loop(transform; @args; @vendorList);
+        }
+
+        .transform-origin(@origin) {
+            .transform-origin(@origin; @webMozMsList);
+        }
+        .transform-origin(@origin; @vendorList: @webMozMsList) when (default()) {
+            .vendor-loop(transform-origin; @origin; @vendorList);
+        }
+
+        .transform-style(@style) {
+            .transform-style(@style; @webMozMsList);
+        }
+        .transform-style(@style; @vendorList: @webMozMsList) when (default()) {
+            .vendor-loop(transform-style; @style; @vendorList);
+        }
+
+        .rotate(@deg: 45deg) {
+            .transform(rotate(@deg));
+        }
+        .rotate(@deg: 45deg; @vendorList: @webMozMsList) when (default()) {
+            .transform(rotate(@deg); @vendorList);
+        }
+
+        .scale(@factor: .5) {
+            .transform(scale(@factor));
+        }
+        .scale(@factor: .5; @vendorList: @webMozMsList) when (default()) {
+            .transform(scale(@factor); @vendorList);
+        }
+
+        .translate(@x; @y) {
+            .transform(translate(@x, @y));
+        }
+        .translate(@x; @y; @vendorList: @webMozMsList) when (default()) {
+            .transform(translate(@x, @y), @vendorList);
+        }
+
+        .translateZ(@z) {
+            .transform(translateZ(@z));
+        }
+        .translateZ(@z; @vendorList: @webMozMsList) when (default()) {
+            .transform(translateZ(@z), @vendorList);
+        }
+
+        .translate3d(@x; @y; @z) {
+            .transform(translate3d(@x, @y, @z));
+        }
+        .translate3d(@x; @y; @z; @vendorList: @webMozMsList) when (default()) {
+            .transform(translate3d(@x, @y, @z), @vendorList);
+        }
+
+        .translateAccelerate(@x; @y) {
+            .translate(@x; @y);
+            .transform(translate3d(@x, @y, 0));
+        }
+        .translateAccelerate(@x; @y; @vendorList: @webMozMsList) when (default()) {
+            .translate(@x; @y; @vendorList);
+            .transform(translate3d(@x, @y, 0); @vendorList);
+        }
+
+        /// Transitions
+
+        .transition(@args) {
+            .transition(@args; @webMozList);
+        }
+        .transition(@args; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(transition; @args; @vendorList);
+        }
+
+        .transitionAll(@duration: 200ms; @function: ease; @delay: 0s) {
+            .transitionAll(all; @duration; @function; @delay; @webMozList);
+        }
+        .transitionAll(@duration: 200ms; @function: ease; @delay: 0s; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(transition; all @duration @function @delay; @vendorList);
+        }
+
+        .transition-delay(@delay) {
+            .transition-delay(@delay; @webMozList);
+        }
+        .transition-delay(@delay; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(transition-delay; @delay; @vendorList);
+        }
+
+        .transition-duration(@duration) {
+            .transition-duration(@duration; @webMozList);
+        }
+        .transition-duration(@duration; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(transition-duration; @duration; @vendorList);
+        }
+
+        .transition-property(@property: all) {
+            .transition-property(@property: all; @webMozList);
+        }
+        .transition-property(@property: all; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(transition-property; @property; @vendorList);
+        }
+
+        .transition-timing-function(@function: ease) {
+            .transition-timing-function(@function: ease; @webMozList);
+        }
+        .transition-timing-function(@function: ease; @vendorList: @webMozList) when (default()) {
+            .vendor-loop(transition-timing-function; @function; @vendorList);
+        }
+
+        /// Typography
+        .type(@type, @size, @lineHeight) {
+            @{type} {
+                font-size: @size;
+                line-height: @lineHeight;
             }
         }
-    }
 
-    .slide(@name: @slideIn; @direction: in; @from: right) {
-        #KeyFrames > .keyFrames(@name);
-        .frames(@prefix) {
-            & when (@direction = in) {
-                & when (@from = left) {
-                    from {
-                        padding-left: -100%;
-                    }
-                } & when (@from = right) {
-                    from {
-                        padding-left: 100%;
-                    }
-                }
-            } & when (@direction = out) {
-                & when (@from = left) {
-                    to {
-                        padding-left: -100%;
-                    }
-                } & when (@from = right) {
-                    to {
-                        padding-left: 100%;
-                    }
-                }
+        /// Flexbox
+
+        .flexbox() {
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+        }
+
+        .align-items(@position) {
+            -webkit-align-items: @position;
+            -moz-align-items: @position;
+            -ms-align-items: @position;
+            align-items: @position;
+        }
+
+        .align-content(@position) {
+            -webkit-align-content: @position;
+            -moz-align-content: @position;
+            -ms-align-content: @position;
+            align-content: @position;
+        }
+
+        .justify-content(@position) {
+            -webkit-justify-content: @position;
+            -moz-justify-content: @position;
+            -ms-justify-content: @position;
+            justify-content: @position;   
+        }
+
+        .flex(@values) {
+            -webkit-box-flex: @values;
+            -moz-box-flex:  @values;
+            -webkit-flex:  @values;
+            -ms-flex:  @values;
+            flex:  @values;
+        }
+
+        .flex-absolute-center() {
+            .flexbox();
+            .align-items(center);
+            .justify-content(center);
+        }
+
+        .flex-vertical-center() {
+            .flexbox();
+            .align-items(center);
+        }
+
+
+        /// Misc
+
+        .calc(@prop; @val) {
+          @{prop}: -webkit-calc(~'@{val}');
+          @{prop}: calc(~'@{val}');
+        }
+
+        .fill() {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .scroll() {
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll(@direction) {
+            & when (@direction = x) {
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            & when not (@direction = x) {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
             }
         }
-    }
-
-    .slideAndFade(@name: @slideInFadeIn; @direction: in; @from-to: right) {
-        #KeyFrames > .keyFrames(@name);
-        .frames(@prefix) {
-            & when (@direction = in) {
-                & when (@from-to = left) {
-                    0% {
-                        padding-left: -100%;
-                        opacity: 0;
-                    }
-                } & when (@from-to = right) {
-                    0% {
-                        padding-left: 100%;
-                        opacity: 0;
-                    }
-                }
-                25% {
-                    opacity: 0.1;
-                }
-                50% {
-                    opacity: 0.2;
-                }
-                75% {
-                    opacity: 0.3;
-                }
-                100% {
-                    opacity: 1;
-                }
-            } & when (@direction = out) {
-                0% {
-                    opacity: 1;
-                }
-                25% {
-                    opacity: 0.3;
-                }
-                50% {
-                    opacity: 0.2;
-                }
-                75% {
-                    opacity: 0.1;
-                } & when (@from-to = left) {
-                    100% {
-                        padding-left: -100%;
-                        opacity: 0;
-                    }
-                } & when (@from-to = right) {
-                    100% {
-                        padding-left: 100%;
-                        opacity: 0;
-                    }
-                }
-            }
-        }
-    }
-}
-
-/// Transforms
-
-.transform(@args) {
-    .transform(@args; @webMozMsList);
-}
-.transform(@args; @vendorList: @webMozMsList) when (default()) {
-    .vendor-loop(transform; @args; @vendorList);
-}
-
-.transform-origin(@origin) {
-    .transform-origin(@origin; @webMozMsList);
-}
-.transform-origin(@origin; @vendorList: @webMozMsList) when (default()) {
-    .vendor-loop(transform-origin; @origin; @vendorList);
-}
-
-.transform-style(@style) {
-    .transform-style(@style; @webMozMsList);
-}
-.transform-style(@style; @vendorList: @webMozMsList) when (default()) {
-    .vendor-loop(transform-style; @style; @vendorList);
-}
-
-.rotate(@deg: 45deg) {
-    .transform(rotate(@deg));
-}
-.rotate(@deg: 45deg; @vendorList: @webMozMsList) when (default()) {
-    .transform(rotate(@deg); @vendorList);
-}
-
-.scale(@factor: .5) {
-    .transform(scale(@factor));
-}
-.scale(@factor: .5; @vendorList: @webMozMsList) when (default()) {
-    .transform(scale(@factor); @vendorList);
-}
-
-.translate(@x; @y) {
-    .transform(translate(@x, @y));
-}
-.translate(@x; @y; @vendorList: @webMozMsList) when (default()) {
-    .transform(translate(@x, @y), @vendorList);
-}
-
-.translateZ(@z) {
-    .transform(translateZ(@z));
-}
-.translateZ(@z; @vendorList: @webMozMsList) when (default()) {
-    .transform(translateZ(@z), @vendorList);
-}
-
-.translate3d(@x; @y; @z) {
-    .transform(translate3d(@x, @y, @z));
-}
-.translate3d(@x; @y; @z; @vendorList: @webMozMsList) when (default()) {
-    .transform(translate3d(@x, @y, @z), @vendorList);
-}
-
-.translateAccelerate(@x; @y) {
-    .translate(@x; @y);
-    .transform(translate3d(@x, @y, 0));
-}
-.translateAccelerate(@x; @y; @vendorList: @webMozMsList) when (default()) {
-    .translate(@x; @y; @vendorList);
-    .transform(translate3d(@x, @y, 0); @vendorList);
-}
-
-/// Transitions
-
-.transition(@args) {
-    .transition(@args; @webMozList);
-}
-.transition(@args; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(transition; @args; @vendorList);
-}
-
-.transitionAll(@duration: 200ms; @function: ease; @delay: 0s) {
-    .transitionAll(all; @duration; @function; @delay; @webMozList);
-}
-.transitionAll(@duration: 200ms; @function: ease; @delay: 0s; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(transition; all @duration @function @delay; @vendorList);
-}
-
-.transition-delay(@delay) {
-    .transition-delay(@delay; @webMozList);
-}
-.transition-delay(@delay; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(transition-delay; @delay; @vendorList);
-}
-
-.transition-duration(@duration) {
-    .transition-duration(@duration; @webMozList);
-}
-.transition-duration(@duration; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(transition-duration; @duration; @vendorList);
-}
-
-.transition-property(@property: all) {
-    .transition-property(@property: all; @webMozList);
-}
-.transition-property(@property: all; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(transition-property; @property; @vendorList);
-}
-
-.transition-timing-function(@function: ease) {
-    .transition-timing-function(@function: ease; @webMozList);
-}
-.transition-timing-function(@function: ease; @vendorList: @webMozList) when (default()) {
-    .vendor-loop(transition-timing-function; @function; @vendorList);
-}
-
-/// Typography
-.type(@type, @size, @lineHeight) {
-    @{type} {
-        font-size: @size;
-        line-height: @lineHeight;
-    }
-}
-
-/// Flexbox
-
-.flexbox() {
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-}
-
-.align-items(@position) {
-    -webkit-align-items: @position;
-    -moz-align-items: @position;
-    -ms-align-items: @position;
-    align-items: @position;
-}
-
-.align-content(@position) {
-    -webkit-align-content: @position;
-    -moz-align-content: @position;
-    -ms-align-content: @position;
-    align-content: @position;
-}
-
-.justify-content(@position) {
-    -webkit-justify-content: @position;
-    -moz-justify-content: @position;
-    -ms-justify-content: @position;
-    justify-content: @position;   
-}
-
-.flex(@values) {
-    -webkit-box-flex: @values;
-    -moz-box-flex:  @values;
-    -webkit-flex:  @values;
-    -ms-flex:  @values;
-    flex:  @values;
-}
-
-.flex-absolute-center() {
-    .flexbox();
-    .align-items(center);
-    .justify-content(center);
-}
-
-.flex-vertical-center() {
-    .flexbox();
-    .align-items(center);
-}
-
-
-/// Misc
-
-.calc(@prop; @val) {
-  @{prop}: -webkit-calc(~'@{val}');
-  @{prop}: calc(~'@{val}');
-}
-
-.fill() {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-}
-
-.scroll() {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.scroll(@direction) {
-    & when (@direction = x) {
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-    }
-    & when not (@direction = x) {
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
     }
 }

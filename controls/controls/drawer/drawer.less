@@ -1,10 +1,10 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'drawer.variables.less';
+﻿@import (reference) '../global/mixins.less';
+@import (reference) 'drawer.variables.less';
 
 /// =========== Drawer Controller Default Styles =========== ///
 
 .plat-drawer-controller {
+    #platui > #mixins;
     .user-select();
     .touch-action(none);
 }
@@ -12,7 +12,9 @@
 /// =========== Drawer Default Styles =========== ///
 
 .plat-drawer {
-    #Drawer;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Drawer;
     position: absolute;
     color: @color;
     z-index: 0;
@@ -57,7 +59,8 @@
 /// =========== Drawer Controller Root Element Styles =========== ///
 
 .plat-drawer-transition-prep {
-    #Drawer;
+    #platui > #mixins;
+    #platui > #Drawer;
     -webkit-backface-visibility: hidden;
     -webkit-perspective: none;
     

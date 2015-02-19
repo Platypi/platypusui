@@ -1,14 +1,17 @@
-@import 'variables.less';
-@import 'mixins.less';
+@import (reference) 'mixins.less';
 
 /// ======= Globally-Used Gestures ======== ///
 
-.plat-gesture {
-    .misc-webkit-touch();
-    .user-select();
-    .touch-action();
-}
+& {
+    #platui > #mixins;
 
-.plat-no-touch-action {
-    .touch-action(none);
+    .plat-gesture {
+        .misc-webkit-touch();
+        .user-select();
+        .touch-action();
+    }
+
+    .plat-no-touch-action {
+        .touch-action(none);
+    }
 }

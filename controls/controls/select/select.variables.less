@@ -1,11 +1,23 @@
-@import '../global/variables.less';
+/**/
+@import (reference) '../global/variables.less';
 
-#Select {
-    @background-color: @transparent;
-    @color: @primaryColor;
-    @padding: 2px;
-    @border: @border-width solid @border-color;
-    @border-width: 1px;
-    @border-color: @primaryColor;
-    @border-radius: 2px;
+#platui {
+    #Select {
+        #platui > #variables;
+    /// =========== Select Colors =========== ///
+
+        @background-color: @transparent;
+        @color: @primary-color;
+        @border-color: @primary-color;
+
+    /// =========== Select Sizes =========== ///
+
+        @padding: 2px;
+        @border-width: 1px;
+        @border-radius: 2px;
+
+    /// =========== Select Properties =========== ///
+
+        @border: @border-width solid @border-color;
+    }
 }

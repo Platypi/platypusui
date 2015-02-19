@@ -1,15 +1,37 @@
-@import '../global/variables.less';
+/**/
+@import (reference) '../global/variables.less';
 
-#Modal {
-    @color: @defaultFontColor;
-    @background-color: @white;
-    @width: 100%;
-    @height: 50%;
-    @left: 0%;
-    @top: 0%;
-    @left-transition: right 500ms;
-    @right-transition: left 500ms;
-    @up-transition: bottom 500ms;
-    @down-transition: top 500ms;
-    @fade-transition: opacity 300ms;
+#platui {
+    #Modal {
+        #platui > #variables;
+    /// =========== Modal Colors =========== ///
+
+        @color: @default-font-color;
+        @background-color: @white;
+
+    /// =========== Modal Sizes =========== ///
+
+        @width: 100%;
+        @height: 50%;
+        
+    /// =========== Modal Positions =========== ///
+
+        @left: 0%;
+        @top: 0%;
+        
+    /// =========== Modal Transitions =========== ///
+
+        @left-transition: right 500ms;
+        @right-transition: left 500ms;
+        @up-transition: bottom 500ms;
+        @down-transition: top 500ms;
+        @fade-transition: opacity 300ms;
+
+    /// =========== Modal Popover =========== ///
+
+	    @popover-top: 20%;
+	    @popover-body-color: @pale-grey;
+	    @popover-accent-color: darken(@popover-body-color, 4%);
+	    @popover-border-radius: 8px;
+    }
 }

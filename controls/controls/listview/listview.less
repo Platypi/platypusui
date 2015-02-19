@@ -1,25 +1,27 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'listview.variables.less';
+﻿@import (reference) 'listview.variables.less';
 
 /// ============= Listview Constants ============= ///
 
-#Listview_Local {
-    .plat-ring-constants() {
-        height: 2.5em;
-        width: 100%;
+#platui {
+    #__Listview {
+        #platui > #mixins;
 
-        .plat-ring {
-            height: 2em;
-            width: 2em;
-            margin-top: 0.25em;
-            margin-bottom: 0.25em;
-            position: absolute;
-            .calc(left, '50% - 1em');
+        .plat-ring-constants() {
+            height: 2.5em;
+            width: 100%;
 
-            .plat-progress-container {
-                .plat-animated-ring {
-                    .border-radius(2em);
+            .plat-ring {
+                height: 2em;
+                width: 2em;
+                margin-top: 0.25em;
+                margin-bottom: 0.25em;
+                position: absolute;
+                .calc(left, '50% - 1em');
+
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .border-radius(2em);
+                    }
                 }
             }
         }
@@ -29,8 +31,9 @@
 /// =========== Listview Default Styles =========== ///
 
 .plat-listview {
-    #Listview;
-    #Listview_Local;
+    #platui > #mixins;
+    #platui > #Listview;
+    #platui > #__Listview;
     .fill();
     .box-sizing(border-box);
     position: relative;
@@ -136,7 +139,7 @@
                     .plat-enter-init {
                         &.plat-item,
                         &.plat-listview-group {
-                            .animation(@enter-animation-name; @enter-animation-duration);
+                            .animation(@enter-animation);
                         }
                     }
                 }
@@ -149,7 +152,7 @@
                     .plat-leave {
                         &.plat-item,
                         &.plat-listview-group {
-                            .animation(@leave-animation-name; @leave-animation-duration);
+                            .animation(@leave-animation);
                         }
                     }
                 }
@@ -159,7 +162,7 @@
 }
 
 & {
-    #Listview;
+    #platui > #Listview;
     .enter(@enter-animation-name);
     .leave(@leave-animation-name);
 }

@@ -1,34 +1,39 @@
-﻿@import 'mixins.less';
+﻿@import (reference) 'variables.less';
+@import (reference) 'mixins.less';
 
 /// ======= Globally Set Styles for PlatypusUI ======== ///
+& {
+    #platui > #variables;
+    #platui > #mixins;
 
-html {
-    .fill();
-}
-
-body {
-    position: relative;
-    font-size: @defaultFontSize;
-    font-weight: 100;
-    .fill();
-}
-
-[plat-control="plat-viewport"] {
-    position: relative;
-    .fill();
-
-    & > *:only-child {
-        position: relative;
+    html {
         .fill();
     }
-}
 
-.plat-hide,
-[plat-hide] {
-    display: none !important;
-}
+    body {
+        position: relative;
+        font-size: @default-font-size;
+        font-weight: 100;
+        .fill();
+    }
 
-.plat-hidden,
-[plat-hidden] {
-    visibility: hidden !important;
+    [plat-control="plat-viewport"] {
+        position: relative;
+        .fill();
+
+        & > *:only-child {
+            position: relative;
+            .fill();
+        }
+    }
+
+    .plat-hide,
+    [plat-hide] {
+        display: none !important;
+    }
+
+    .plat-hidden,
+    [plat-hidden] {
+        visibility: hidden !important;
+    }
 }

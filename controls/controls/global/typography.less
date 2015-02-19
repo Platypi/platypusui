@@ -1,74 +1,79 @@
-@import 'variables.less';
-@import 'mixins.less';
+@import (reference) 'variables.less';
+@import (reference) 'mixins.less';
 
 /// ======= Globally Set Styles for PlatypusUI ======== ///
 
-html, body {
-	font-family: @fontSansSerif;
-	color: @defaultFontColor;
-    -webkit-font-smoothing: antialiased;
-}
+& {
+    #platui > #variables;
+    #platui > #mixins;
 
-h1, h2, h3,
-h4, h5, h6 {
-	font-weight: 600;
-	margin: 0.75em 0;
-}
+    html, body {
+	    font-family: @default-font-type;
+	    color: @default-font-color;
+        -webkit-font-smoothing: antialiased;
+    }
 
-a {
-	color: @primaryColor;
-	text-decoration: none;
-}
+    h1, h2, h3,
+    h4, h5, h6 {
+	    font-weight: 600;
+	    margin: 0.75em 0;
+    }
 
-blockquote {
-	display: block;
-	margin: 0.5em 0;
-	padding-left: 1em;
-	color: lighten(@defaultFontColor, 30%);
-	font-size: @defaultFontSize;
-	border-left: 1px solid lighten(@defaultFontColor, 30%);
-}
+    a {
+	    color: @primary-color;
+	    text-decoration: none;
+    }
 
-cite {
-	display: block;
-	padding: 0.3em 0;
-	font-size: @defaultFontSize * 0.9;
-}
+    blockquote {
+	    display: block;
+	    margin: 0.5em 0;
+	    padding-left: 1em;
+	    color: lighten(@default-font-color, 30%);
+	    font-size: @default-font-size;
+	    border-left: 1px solid lighten(@default-font-color, 30%);
+    }
 
-/**
- * Font Sizes
- *
- * Font sizes and line-height adjust based on the device-width. Device breakpoints
- * are set in global/variables.less. Measurements adapted from Robert Bringhurst's
- * classic and exhaustive work The Elements of Typographic Style.
- */
+    cite {
+	    display: block;
+	    padding: 0.3em 0;
+	    font-size: @default-font-size * 0.9;
+    }
 
-/// Phone
-@media (min-width: @phone-start) {
-	.type(p, @defaultFontSize, 1.25em);
-	.type(h1, 2em, 1.25em);
-	.type(h2, 1.625em, 1.1538em);
-	.type(h3, 1.375em, 1.1363em);
-	.type(h4, 1.125em, 1.1111em);
-	.type(h5, 0.925em, 1.0974em);
-	.type(h6, 0.775em, 1.0783em);
-}
+    /**
+     * Font Sizes
+     *
+     * Font sizes and line-height adjust based on the device-width. Device breakpoints
+     * are set in global/variables.less. Measurements adapted from Robert Bringhurst's
+     * classic and exhaustive work The Elements of Typographic Style.
+     */
 
-/// Tablet
-@media (min-width: @tablet-start) {
-	.type(p, @defaultFontSize, 1.375em);
-	.type(h1, 2.5em, 1.125em);
-	.type(h2, 2em, 1.25em);
-	.type(h3, 1.5em, 1.25em);
-	.type(h4, 1.125em, 1.2222em);
+    /// Phone
+    @media (min-width: @phone-start) {
+	    .type(p, @default-font-size, 1.25em);
+	    .type(h1, 2em, 1.25em);
+	    .type(h2, 1.625em, 1.1538em);
+	    .type(h3, 1.375em, 1.1363em);
+	    .type(h4, 1.125em, 1.1111em);
+	    .type(h5, 0.925em, 1.0974em);
+	    .type(h6, 0.775em, 1.0783em);
+    }
+
+    /// Tablet
+    @media (min-width: @tablet-start) {
+	    .type(p, @default-font-size, 1.375em);
+	    .type(h1, 2.5em, 1.125em);
+	    .type(h2, 2em, 1.25em);
+	    .type(h3, 1.5em, 1.25em);
+	    .type(h4, 1.125em, 1.2222em);
 	
-}
+    }
 
-/// Desktop
-@media (min-width: @desktop-start) {
-	.type(h1, 3em, 1.05em);
-	.type(h2, 2.25em, 1.25em);
-	.type(h3, 1.75em, 1.25em);
-	.type(h5, 1em, 1.1111em);
-	.type(h6, 0.925em, 1.1111em);
+    /// Desktop
+    @media (min-width: @desktop-start) {
+	    .type(h1, 3em, 1.05em);
+	    .type(h2, 2.25em, 1.25em);
+	    .type(h3, 1.75em, 1.25em);
+	    .type(h5, 1em, 1.1111em);
+	    .type(h6, 0.925em, 1.1111em);
+    }
 }

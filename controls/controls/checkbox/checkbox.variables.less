@@ -1,15 +1,18 @@
-@import '../global/variables.less';
+/**/
+@import (reference) '../global/variables.less';
 
-#Checkbox {
+#platui {
+    #Checkbox {
+        #platui > #variables;
+    /// =========== Checkbox Colors =========== ///
 
-/// =========== Checkbox Colors =========== ///
+        @secondary-mark-color: undefined;
+        @background-color: @transparent;
+        @border-color: @grey;
 
-    @secondary-mark-color: undefined;
-    @background-color: @transparent;
-    @border-color: @grey;
+    /// =========== Checkbox Sizes ============ ///
 
-/// =========== Checkbox Sizes ============ ///
-
-    @diameter: 1.3em;
-    @border-size: 1px;
+        @diameter: 1.3em;
+        @border-size: 1px;
+    }
 }

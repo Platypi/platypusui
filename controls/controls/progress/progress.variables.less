@@ -1,31 +1,56 @@
-@import '../global/variables.less';
-@import '../global/mixins.less';
+/**/
+@import (reference) '../global/variables.less';
+@import (reference) '../global/mixins.less';
+@import (reference) '../global/animations.less';
 
-#ProgressBar {
-    @border-color: @neutralColor;
-    @fill-color: @primaryColor;
-    @height: 8px;
-    @border: none;
-    @transition: none;
-}
+#platui {
+    #platui > #variables;
+    #platui > #animations;
 
-#ProgressRing {
-    @ring-color: @primaryColor;
-    @fill-color: fade(@ring-color, 75%);
-    @unfilled-color: fade(@ring-color, 10%);
-    @diameter: 3em;
-    @thickness: @diameter / 10;
-    @animation: PLAT-SPIN;
-    @spin-frequency: 600ms;
+    #ProgressBar {
+    /// =========== Progress Bar Colors =========== ///
 
-    .spin() {
-        #KeyFrames > .keyFrames(@animation);
-        .frames(@prefix) {
-            from {
-                .transform(rotate(0deg), @prefix);
-            }
-            to {
-                .transform(rotate(359deg), @prefix);
+        @border-color: @neutral-color;
+        @fill-color: @primary-color;
+        
+    /// =========== Progress Bar Properties =========== ///
+
+        @height: 8px;
+        @border: none;
+
+    /// =========== Progress Bar Transition =========== ///
+
+        @transition: none;
+    }
+
+    #ProgressRing {
+    /// =========== Progress Ring Colors =========== ///
+
+        @ring-color: @primary-color;
+        @fill-color: fade(@ring-color, 75%);
+        @unfilled-color: fade(@ring-color, 10%);
+        
+    /// =========== Progress Ring Sizes =========== ///
+
+        @diameter: 3em;
+        @thickness: @diameter / 10;
+
+    /// =========== Progress Ring Animation =========== ///
+
+        @animation-name: PLAT-SPIN;
+        @spin-frequency: 600ms;
+        
+    /// =========== Progress Ring Animation Mixins =========== ///
+
+        .spin() {
+            #keyframes > .keyframes(@animation-name);
+            .frames(@prefix) {
+                from {
+                    .transform(rotate(0deg); @prefix);
+                }
+                to {
+                    .transform(rotate(359deg); @prefix);
+                }
             }
         }
     }

@@ -1,23 +1,24 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'toggle.variables.less';
-@import 'toggle.mixins.less';
+﻿@import (reference) '../global/mixins.less';
+@import (reference) 'toggle.variables.less';
 
 /// ============= Toggle Constants ============= ///
 
-#Toggle_Local {
-    #Toggle;
-    @height: @width * @ratio;
-    @toggle-thin-height: @width * @toggle-thin-ratio;
-    @knob-radius: @knob-diameter / 2;
-    @half-thin-height: @toggle-thin-height / 2;
+#platui {
+    #__Toggle {
+        #platui > #Toggle;
+        @height: @width * @ratio;
+        @toggle-thin-height: @width * @toggle-thin-ratio;
+        @knob-radius: @knob-diameter / 2;
+        @half-thin-height: @toggle-thin-height / 2;
+    }
 }
 
 /// ========== Toggle Default Style =========== ///
 
 .plat-toggle {
-    #Toggle;
-    #Toggle_Local;
+    #platui > #mixins;
+    #platui > #Toggle;
+    #platui > #__Toggle;
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);
@@ -42,7 +43,7 @@
             width: @knob-diameter;
             background-color: @white;
             .border-radius(@knob-diameter);
-            .box-shadow(inset -1px 0px 3px 0px @paleGrey);
+            .box-shadow(inset -1px 0px 3px 0px @pale-grey);
             .box-sizing(border-box);
             .translateZ(0);
             .transition(@knob-transition);
@@ -54,7 +55,7 @@
 
             .plat-knob {
                 left: @width - @knob-diameter;
-                .box-shadow(inset 1px -2px 3px 0px @paleGrey);
+                .box-shadow(inset 1px -2px 3px 0px @pale-grey);
             }
         }
     }
@@ -77,7 +78,7 @@
         .plat-toggle-container {
             height: @toggle-thin-height;
             overflow: visible;
-            background-color: @neutralColorDark;
+            background-color: @neutral-color-dark;
             border: none;
 
             .plat-knob {
@@ -101,29 +102,29 @@
 
     &.toggle-primary {
         .plat-toggle-container.plat-slide {
-            background-color: @primaryColor;
-            border-color: darken(@primaryColor, 5%);
+            background-color: @primary-color;
+            border-color: darken(@primary-color, 5%);
         }
     }
 
     &.toggle-secondary {
         .plat-toggle-container.plat-slide {
-            background-color: @secondaryColor;
-            border-color: darken(@secondaryColor, 5%);
+            background-color: @secondary-color;
+            border-color: darken(@secondary-color, 5%);
         }
     }
 
     &.toggle-danger {
         .plat-toggle-container.plat-slide {
-            background-color: @dangerColor;
-            border-color: darken(@dangerColor, 5%);
+            background-color: @danger-color;
+            border-color: darken(@danger-color, 5%);
         }
     }
 
     &.toggle-caution {
         .plat-toggle-container.plat-slide {
-            background-color: @cautionColor;
-            border-color: darken(@cautionColor, 5%);
+            background-color: @caution-color;
+            border-color: darken(@caution-color, 5%);
         }
     }
 }

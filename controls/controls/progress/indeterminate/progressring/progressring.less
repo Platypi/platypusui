@@ -1,9 +1,10 @@
-﻿@import '../../progress.variables.less';
+﻿@import (reference) '../../progress.variables.less';
 
 /// =========== Progress Ring Default Styles =========== ///
 
 .plat-ring {
-    #ProgressRing;
+    #platui > #mixins;
+    #platui > #ProgressRing;
     display: inline-block;
     width: @diameter;
     height: @diameter;
@@ -24,7 +25,7 @@
             border-right: @thickness solid @unfilled-color;
             border-top: @thickness solid @unfilled-color;
             .border-radius(@diameter);
-            .animation(@animation, @spin-frequency, linear, 0s, infinite);
+            .animate(@animation-name; @spin-frequency; linear; 0s; infinite);
             .box-sizing(border-box);
         }
     }
@@ -33,7 +34,7 @@
 /// =========== Progress Ring Animation =========== ///
 
 & {
-    #ProgressRing;
+    #platui > #ProgressRing;
     .spin();
 }
 

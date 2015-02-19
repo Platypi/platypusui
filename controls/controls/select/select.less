@@ -1,19 +1,22 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'select.variables.less';
+﻿@import (reference) '../global/mixins.less';
+@import (reference) 'select.variables.less';
 
 /// ============= Select Constants ============= ///
 
-#Select_Local {
-    @checked-option-hover-color: @white;
-    @checked-option-hover-background-color: #1e90ff;
+#platui {
+    #__Select {
+        #platui > #variables;
+        @checked-option-hover-color: @white;
+        @checked-option-hover-background-color: #1e90ff;
+    }
 }
 
 /// =========== Select Default Styles =========== ///
 
 .plat-select {
-    #Select;
-    #Select_Local;
+    #platui > #mixins;
+    #platui > #Select;
+    #platui > #__Select;
     display: inline-block;
     color: @color;
     background-color: @background-color;

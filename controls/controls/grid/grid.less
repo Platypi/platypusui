@@ -1,43 +1,40 @@
-@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'grid.variables.less';
-@import 'grid.mixins.less';
-
-/// ======= Grid Styles ======== ///
-
-[class*='col-'],
-[class*='col-']:after,
-[class*='col-']:before {
-	margin: 0;
-	padding: 0;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-}
-
-[class*='col-'] {
-	#Grid;
-	position: relative;
-	float: left;
-	padding: @column-padding;
-}
-
-[class*='col-']:last-of-type {
-	#Grid;
-	padding-right: @column-padding;
-	float: right;
-}
-
-.row:after {
-	content: "";
-	display: table;
-	clear: both;
-}
-
-/// ======= Grid Column Generation ======== ///
+@import (reference) '../global/variables.less';
+@import (reference) '../global/mixins.less';
+@import (reference) 'grid.mixins.less';
 
 & {
-	#Grid;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #grid;
+/// ======= Grid Styles ======== ///
+
+    [class*='col-'],
+    [class*='col-']:after,
+    [class*='col-']:before {
+        #platui;
+	    margin: 0;
+	    padding: 0;
+        .box-sizing(border-box);
+    }
+
+    [class*='col-'] {
+	    position: relative;
+	    float: left;
+	    padding: @column-padding;
+    }
+
+    [class*='col-']:last-of-type {
+	    padding-right: @column-padding;
+	    float: right;
+    }
+
+    .row:after {
+	    content: "";
+	    display: table;
+	    clear: both;
+    }
+
+/// ======= Grid Column Generation ======== ///
 	
 	/// Phone
 	@media (min-width: @phone-start) {

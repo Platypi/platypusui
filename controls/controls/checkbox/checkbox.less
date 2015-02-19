@@ -1,12 +1,12 @@
-﻿@import '../global/variables.less';
-@import '../global/mixins.less';
-@import 'checkbox.variables.less';
-@import 'checkbox.mixins.less';
+﻿@import (reference) '../global/mixins.less';
+@import (reference) 'checkbox.variables.less';
 
 /// =========== Default Checkbox =========== ///
 
 .plat-checkbox {
-    #Checkbox;
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Checkbox;
     display: inline-block;
     cursor: pointer;
     .box-sizing(border-box);
@@ -94,55 +94,55 @@
 
     &.checkbox-primary {
         .plat-checkbox-container {
-            border-color: @primaryColor;
+            border-color: @primary-color;
 
             &.plat-check,
             &.plat-x {
-                background-color: @primaryColor;
+                background-color: @primary-color;
             }
         }
     }
 
     &.checkbox-secondary {
         .plat-checkbox-container {
-            border-color: @secondaryColor;
+            border-color: @secondary-color;
             
             &.plat-check,
             &.plat-x {
-                background-color: @secondaryColor;
+                background-color: @secondary-color;
             }
         }
     }
 
     &.checkbox-success {
         .plat-checkbox-container {
-            border-color: @successColor;
+            border-color: @success-color;
             
             &.plat-check,
             &.plat-x {
-                background-color: @successColor;
+                background-color: @success-color;
             }
         }
     }
 
     &.checkbox-caution {
         .plat-checkbox-container {
-            border-color: @cautionColor;
+            border-color: @caution-color;
             
             &.plat-check,
             &.plat-x {
-                background-color: @cautionColor;
+                background-color: @caution-color;
             }
         }
     }
 
     &.checkbox-danger {
         .plat-checkbox-container {
-            border-color: @dangerColor;
+            border-color: @danger-color;
             
             &.plat-check,
             &.plat-x {
-                background-color: @dangerColor;
+                background-color: @danger-color;
             }
         }
     }

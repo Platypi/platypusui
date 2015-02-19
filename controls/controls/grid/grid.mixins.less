@@ -1,30 +1,38 @@
 /**/
-.generate-full-width-cols(@size) {
-	[class*="col-@{size}"] {
-		width: @base-percent;
-	}
-}
+@import (reference) 'grid.variables.less';
 
-.generate-partial-width-cols(@size; @i: @num-columns) when (@i > 0) {
-	.col-@{size}-@{i} {
-		width: @base-percent * (@i / @num-columns);
-	}
-	.generate-partial-width-cols(@size; (@i - 1));
-}
+#platui {
+    #mixins {
+        #platui > #grid;
 
-.generate-offset-cols(@size; @i: @num-columns) when (@i > 0) {
-	.col-@{size}-offset-@{i} {
-		margin-left: @base-percent * (@i / @num-columns);
-	}
-	.generate-offset-cols(@size; (@i - 1));
-}
+        .generate-full-width-cols(@size) {
+	        [class*="col-@{size}"] {
+		        width: @base-percent;
+	        }
+        }
 
-.generate-shiftable-cols(@size; @i: @num-columns) when (@i > 0) {
-	.col-@{size}-push-@{i} {
-		left: @base-percent * (@i / @num-columns);
-	}
-	.col-@{size}-pull-@{i} {
-		right: @base-percent * (@i / @num-columns);
-	}
-	.generate-shiftable-cols(@size; (@i - 1));
+        .generate-partial-width-cols(@size; @i: @num-columns) when (@i > 0) {
+	        .col-@{size}-@{i} {
+		        width: @base-percent * (@i / @num-columns);
+	        }
+	        .generate-partial-width-cols(@size; (@i - 1));
+        }
+
+        .generate-offset-cols(@size; @i: @num-columns) when (@i > 0) {
+	        .col-@{size}-offset-@{i} {
+		        margin-left: @base-percent * (@i / @num-columns);
+	        }
+	        .generate-offset-cols(@size; (@i - 1));
+        }
+
+        .generate-shiftable-cols(@size; @i: @num-columns) when (@i > 0) {
+	        .col-@{size}-push-@{i} {
+		        left: @base-percent * (@i / @num-columns);
+	        }
+	        .col-@{size}-pull-@{i} {
+		        right: @base-percent * (@i / @num-columns);
+	        }
+	        .generate-shiftable-cols(@size; (@i - 1));
+        }
+    }
 }
