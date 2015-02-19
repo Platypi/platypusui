@@ -8,18 +8,36 @@
 
 @media (max-width: @phone-end) {
 	.hide-on-@{phone-alias} {
-		display: none;
+		display: none!important;
 	}
 }
 
 @media (max-width: @phablet-end) {
 	.hide-on-@{phablet-alias} {
-		display: none;
+		display: none!important;
 	}
 }
 
 @media (max-width: @tablet-end) {
 	.hide-on-@{tablet-alias} {
-		display: none;
+		display: none!important;
+	}
+}
+
+@media (min-width: @phablet-start) {
+	.hide-above-@{phone-alias} {
+		display: none!important;
+	}
+}
+
+@media (min-width: @tablet-start) {
+	.hide-above-@{phablet-alias} {
+		display: none!important;
+	}
+}
+
+@media (min-width: @desktop-start) {
+	.hide-above-@{tablet-alias} {
+		display: none!important;
 	}
 }
