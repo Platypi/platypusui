@@ -1,4 +1,5 @@
-@import (reference) '../global/variables.less';
+@import (reference) 'variables.less';
+@import (reference) 'media.less';
 
 /// ========== PlatypusUI Helper Classes =========== ///
 
@@ -7,40 +8,41 @@
 
 & {
     #platui > #variables;
+    #platui > #media;
 
-    @media all and (max-width: @phone-end) {
+    .media-phone-max({
 	    .hide-on-@{phone-alias} {
 		    display: none !important;
 	    }
-    }
+    });
 
-    @media all and (max-width: @phablet-end) {
+    .media-phablet-max({
 	    .hide-on-@{phablet-alias} {
 		    display: none !important;
 	    }
-    }
+    });
 
-    @media all and (max-width: @tablet-end) {
+    .media-tablet-max({
 	    .hide-on-@{tablet-alias} {
 		    display: none !important;
 	    }
-    }
+    });
 
-    @media all and (min-width: @phablet-start) {
+    .media-phablet({
 	    .hide-above-@{phone-alias} {
 		    display: none !important;
 	    }
-    }
+    });
 
-    @media all and (min-width: @tablet-start) {
+    .media-tablet({
 	    .hide-above-@{phablet-alias} {
 		    display: none !important;
 	    }
-    }
+    });
 
-    @media all and (min-width: @desktop-start) {
+    .media-desktop({
 	    .hide-above-@{tablet-alias} {
 		    display: none !important;
 	    }
-    }
+    });
 }

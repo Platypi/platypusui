@@ -495,10 +495,10 @@
             .vendor-loop(transition; @args; @vendorList);
         }
 
-        .transitionAll(@duration: 200ms; @function: ease; @delay: 0s) {
+        .transition-all(@duration: 200ms; @function: ease; @delay: 0s) {
             .transitionAll(all; @duration; @function; @delay; @webMozList);
         }
-        .transitionAll(@duration: 200ms; @function: ease; @delay: 0s; @vendorList: @webMozList) when (default()) {
+        .transition-all(@duration: 200ms; @function: ease; @delay: 0s; @vendorList: @webMozList) when (default()) {
             .vendor-loop(transition; all @duration @function @delay; @vendorList);
         }
 
