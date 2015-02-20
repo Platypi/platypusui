@@ -12,7 +12,7 @@ module platui {
      * @description
      * An {@link plat.ui.ITemplateControl|ITemplateControl} for showing indeterminate progress.
      */
-    export class ProgressRing extends plat.ui.TemplateControl implements IUIControl {
+    export class ProgressRing extends plat.ui.TemplateControl implements IUiControl {
         /**
          * @name templateString
          * @memberof platui.ProgressRing

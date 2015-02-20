@@ -13,7 +13,7 @@ module platui {
      * An {@link plat.ui.ITemplateControl|ITemplateControl} that allows for data-binding a select box and adds 
      * custom styling to make it look consistent across all platforms.
      */
-    export class Select extends plat.ui.controls.Select implements IUIControl {
+    export class Select extends plat.ui.controls.Select implements IUiControl {
         /**
          * @name setClasses
          * @memberof platui.Select

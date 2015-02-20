@@ -12,7 +12,7 @@ module platui {
      * @description
      * An {@link plat.ui.ITemplateControl|ITemplateControl} for showing incremental progress.
      */
-    export class ProgressBar extends plat.ui.TemplateControl implements IUIControl {
+    export class ProgressBar extends plat.ui.TemplateControl implements IUiControl {
         protected static _inject: any = {
             _window: __Window,
             _utils: __Utils

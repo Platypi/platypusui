@@ -13,7 +13,7 @@ module platui {
      * A {@link plat.ui.BindControl|BindControl} that allows for a lower and upper value, 
      * thus creating a variable range of included values.
      */
-    export class Range extends plat.ui.BindControl implements IUIControl {
+    export class Range extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,

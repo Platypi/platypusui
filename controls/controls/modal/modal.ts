@@ -12,7 +12,7 @@ module platui {
      * @description
      * An {@link plat.ui.BindControl|BindControl} for showing a templated and animated overlay.
      */
-    export class Modal extends plat.ui.BindControl implements IUIControl {
+    export class Modal extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
             _utils: __Utils,
             _compat: __Compat

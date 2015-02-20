@@ -12,7 +12,7 @@ module platui {
      * An {@link plat.ui.ITemplateControl|ITemplateControl} for creating a complex list of items with 
      * extensive functionality.
      */
-    export class Listview extends plat.ui.TemplateControl implements IUIControl {
+    export class Listview extends plat.ui.TemplateControl implements IUiControl {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,

@@ -12,7 +12,7 @@ module platui {
      * @description
      * An {@link plat.ui.BindControl|BindControl} that standardizes an HTML5 input[type="range"].
      */
-    export class Slider extends plat.ui.BindControl implements IUIControl {
+    export class Slider extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,

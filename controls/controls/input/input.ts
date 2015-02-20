@@ -13,7 +13,7 @@ module platui {
      * An {@link plat.ui.BindControl|BindControl} that standardizes and styles 
      * an HTML input element of various types.
      */
-    export class Input extends plat.ui.BindControl implements IUIControl, IFormControl {
+    export class Input extends plat.ui.BindControl implements IUiControl, IFormControl {
         protected static _inject: any = {
             _utils: __Utils,
             _compat: __Compat,

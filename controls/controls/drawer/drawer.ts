@@ -12,7 +12,7 @@ module platui {
      * @description
      * An {@link plat.ui.BindControl|BindControl} that acts as a global drawer.
      */
-    export class Drawer extends plat.ui.BindControl implements IUIControl {
+    export class Drawer extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
             _utils: __Utils,
             _Promise: __Promise

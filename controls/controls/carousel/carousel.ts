@@ -13,7 +13,7 @@ module platui {
      * An {@link plat.ui.BindControl|BindControl} that acts as a HTML template carousel 
      * and can bind the selected index to a value.
      */
-    export class Carousel extends plat.ui.BindControl implements IUIControl {
+    export class Carousel extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,

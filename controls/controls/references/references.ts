@@ -26,7 +26,7 @@ var __prefix = '$',
     __Button = __Plat + 'button',
     __Checkbox = __Plat + 'checkbox',
     __Drawer = __Plat + 'drawer',
-    __DrawerController = __Plat + 'drawer-controller',
+    __DrawerController = __Plat + __Drawer + '-controller',
     __Modal = __Plat + 'modal',
     __ProgressBar = __Plat + 'progress',
     __ProgressRing = __Plat + 'ring',
@@ -43,7 +43,6 @@ var __prefix = '$',
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
-    __Context = __Plat + __CONTEXT,
     __Checked = __Plat + 'checked',
     __ForEach = __Plat + 'foreach',
     __Bind = __Plat + 'bind',
@@ -112,7 +111,7 @@ module platui {
     }
 
     /**
-     * @name IUIControl
+     * @name IUiControl
      * @memberof platui
      * @kind interface
      * 
@@ -120,7 +119,7 @@ module platui {
      * An interface a control should implement if they plan on using 
      * class based CSS to style the UI.
      */
-    export interface IUIControl {
+    export interface IUiControl {
         /**
          * @name setClasses
          * @memberof platui.IUIControl

@@ -12,7 +12,7 @@ module platui {
      * @description
      * An {@link plat.ui.BindControl|BindControl} that simulates a toggle switch.
      */
-    export class Toggle extends plat.ui.BindControl implements IUIControl {
+    export class Toggle extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
             _utils: __Utils
         };
