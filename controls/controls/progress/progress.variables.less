@@ -5,7 +5,6 @@
 
 #platui {
     #platui > #variables;
-    #platui > #animations;
 
     #ProgressBar {
     /// =========== Progress Bar Colors =========== ///
@@ -43,8 +42,9 @@
     /// =========== Progress Ring Animation Mixins =========== ///
 
         .spin() {
-            #keyframes > .keyframes(@animation-name);
+            #platui > #keyframes > .keyframes(@animation-name);
             .frames(@prefix) {
+                #platui > #mixins;
                 from {
                     .transform(rotate(0deg); @prefix);
                 }

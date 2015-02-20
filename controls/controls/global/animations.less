@@ -5,29 +5,28 @@
 
 
 #platui {
-    #animations {
-        #platui > #mixins;
-        
     /// Animation Creation
 
-        #keyframes {
-            .keyframes(@name) {
-                @-webkit-keyframes @name {
-                    .frames(@webkit);
-                }
+    #keyframes {
+        .keyframes(@name) {
+            #platui > #variables;
+            @-webkit-keyframes @name {
+                .frames(@webkit);
+            }
 
-                @-moz-keyframes @name {
-                    .frames(@moz);
-                }               
+            @-moz-keyframes @name {
+                .frames(@moz);
+            }               
 
-                @keyframes @name {
-                    .frames(@vanilla);
-                }
+            @keyframes @name {
+                .frames(@vanilla);
             }
         }
+    }
 
+    #animations {
         .fade(@name: @fade-out; @direction: out) {
-            #keyframes > .keyframes(@name);
+            #platui > #keyframes > .keyframes(@name);
             .frames(@prefix) {
                 & when (@direction = in) {
                     from {
@@ -48,7 +47,7 @@
         }
 
         .slide(@name: @slide-in; @direction: in; @from: right) {
-            #keyframes > .keyframes(@name);
+            #platui > #keyframes > .keyframes(@name);
             .frames(@prefix) {
                 & when (@direction = in) {
                     & when (@from = left) {
@@ -75,7 +74,7 @@
         }
 
         .slideAndFade(@name: @slide-in-fade-in; @direction: in; @from-to: right) {
-            #keyframes > .keyframes(@name);
+            #platui > #keyframes > .keyframes(@name);
             .frames(@prefix) {
                 & when (@direction = in) {
                     & when (@from-to = left) {

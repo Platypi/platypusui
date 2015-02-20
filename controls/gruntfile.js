@@ -167,7 +167,7 @@ module.exports = exports = function load(grunt) {
                     cleancss: true
                 },
                 files: {
-                    'controls/lib/platypus.min.css': 'controls/lib/platypus.less'
+                    'controls/lib/platypus.css': 'controls/lib/platypus.less'
                 }
             },
             app: {
@@ -180,7 +180,20 @@ module.exports = exports = function load(grunt) {
                     cleancss: true
                 },
                 files: {
-					'dist/platypus.min.css': 'dist/platypus.less'
+					'dist/platypus.css': 'dist/platypus.less'
+                }
+            }
+        },
+        cssmin: {
+            packaging: {
+                options: {
+                    keepSpecialComments: 0,
+                    target: 'dist/platypus.min.css'
+                },
+                files: {
+                    'dist/platypus.min.css': [
+                        'dist/platypus.css'
+                    ]
                 }
             }
         },
@@ -246,6 +259,7 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-ts-bundle');
     grunt.loadNpmTasks('grunt-ts');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.renameTask('less', 'lessCompile');
 
@@ -255,7 +269,7 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'copy:fonts', 'clean:after']);
+    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'cssmin', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'copy:fonts', 'clean:after']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
-    grunt.registerTask('compile', ['lessCompile', 'ts:base', 'ts:app']);
+    grunt.registerTask('compile', ['lessCompile:main', 'lessCompile:app', 'ts:base', 'ts:app']);
 };

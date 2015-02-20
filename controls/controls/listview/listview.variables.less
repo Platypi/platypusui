@@ -1,12 +1,11 @@
 ﻿/**/
 @import (reference) '../global/variables.less';
-@import (reference) '../global/mixins.less';
+@import (reference) '../global/variables.less';
 @import (reference) '../global/animations.less';
 
 #platui {
     #Listview {
         #platui > #variables;
-        #platui > #mixins;
 
     /// =========== Listview Colors =========== ///
 
@@ -25,7 +24,7 @@
     /// =========== Listview Animation Mixins =========== ///
 
         .enter(@name) {
-            #platui > #animations > #keyframes > .keyframes(@name);
+            #platui > #keyframes > .keyframes(@name);
             .frames(@prefix) {
                 0% {
                     opacity: 0;
@@ -37,7 +36,7 @@
         }
 
         .leave(@name) {
-            #platui > #animations > #keyframes > .keyframes(@name);
+            #platui > #keyframes > .keyframes(@name);
             .frames(@prefix) {
                 0% {
                     opacity: 1;
