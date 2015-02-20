@@ -1,4 +1,6 @@
-﻿module platui {
+﻿/// <reference path="../../references.d.ts" />
+
+module platui {
     /**
      * @name Carousel
      * @memberof platui
