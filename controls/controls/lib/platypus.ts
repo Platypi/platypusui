@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.10.11 (http://getplatypi.com) 
+ * PlatypusTS v0.11.2 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -160,6 +160,8 @@ module plat {
         __MetaName = 'name',
         __MetaProperty = 'property',
         __MetaImage = 'image',
+        __MetaVideo = 'video',
+        __MetaType = 'type',
         __Rel = 'rel',
         __Url = 'url',
         __Article = 'article:',
@@ -19277,9 +19279,9 @@ module plat {
                 protected _animate: boolean;
 
                 /**
-                 * A collection of all the current animations and their animation type.
+                 * A collection of all the current animations and their animation operation.
                  */
-                protected _animationQueue: Array<{ animation: animations.IAnimationThenable<any>; op: boolean; }>;
+                protected _animationQueue: Array<{ animation: animations.IAnimationThenable<any>; op: string; }>;
 
                  /**
                  * A queue representing all current add operations.
@@ -19416,7 +19418,7 @@ module plat {
                  * the array.
                  * @param {number} index The point in the array to start adding items.
                  * @param {number} numberOfItems The number of items to add.
-                 * @param {number} animateItems? The number of items to animate.
+                 * @param {number} animateItems The number of items to animate.
                  */
                 protected _addItems(index: number, numberOfItems: number, animateItems: number): async.IThenable<void>  {
                     var max = +(index + numberOfItems),
@@ -19436,7 +19438,7 @@ module plat {
                                     container = this._container;
                                 for (var i = 0; i < length; ++i) {
                                     if (i < animateItems) {
-                                        this._appendAnimatedItem(templates[i], __Enter);
+                                        this._appendAnimatedItem(templates[i]);
                                     } else {
                                         container.insertBefore(templates[i], null);
                                     }
@@ -19473,9 +19475,8 @@ module plat {
                 /**
                  * Adds an item to the control's element animating its elements.
                  * @param {DocumentFragment} item The HTML fragment representing a single item.
-                 * @param {string} key The animation key/type.
                  */
-                protected _appendAnimatedItem(item: DocumentFragment, key: string): void {
+                protected _appendAnimatedItem(item: DocumentFragment): void {
                     if (!isNode(item)) {
                         return;
                     }
@@ -19649,13 +19650,13 @@ module plat {
                 protected _unshift(changes: Array<observable.IArrayChanges<any>>): void {
                     var change = changes[0],
                         addedCount = change.addedCount,
-                        _Promise = this._Promise,
                         addQueue = this._addQueue;
 
                     if (this._animate) {
                         var animationQueue = this._animationQueue,
                             animationLength = animationQueue.length;
-                        this._animateItems(0, addedCount, __Enter, null, animationLength > 0 && animationQueue[animationLength - 1].op === true);
+                        this._animateItems(0, addedCount, __Enter, null,
+                            animationLength > 0 && animationQueue[animationLength - 1].op === 'clone');
                     }
 
                     this._addCount += addedCount;
@@ -19742,7 +19743,7 @@ module plat {
                             }
 
                             this._animateItems(startIndex, animationCount, __Enter, null,
-                                animationLength > 0 && animationQueue[animationLength - 1].op === true);
+                                animationLength > 0 && animationQueue[animationLength - 1].op === 'clone');
 
                             animationCount = addCount - animationCount;
                         } else {
@@ -19767,7 +19768,7 @@ module plat {
                             if (animating && adding) {
                                 var animLength = animationQueue.length;
                                 this._animateItems(change.index, addCount, __Enter, null,
-                                    animLength > 0 && animationQueue[animLength - 1].op === true);
+                                    animLength > 0 && animationQueue[animLength - 1].op === 'clone');
                             }
                             this._removeItems(removeLength - deleteCount, deleteCount);
                         });
@@ -19867,7 +19868,7 @@ module plat {
 
                     animationQueue.push({
                         animation: animation,
-                        op: false
+                        op: 'leave'
                     });
 
                     return animation;
@@ -19916,11 +19917,11 @@ module plat {
 
                     if (cancel && animationQueue.length > 0) {
                         var cancelPromise = this._cancelCurrentAnimations().then(callback);
-                        animationQueue.push({ animation: animationPromise, op: true });
+                        animationQueue.push({ animation: animationPromise, op: 'clone' });
                         return cancelPromise;
                     }
 
-                    animationQueue.push({ animation: animationPromise, op: true });
+                    animationQueue.push({ animation: animationPromise, op: 'clone' });
                     return callback();
                 }
 
@@ -20089,14 +20090,9 @@ module plat {
                 protected _twitterCreatorElement: HTMLMetaElement;
 
                 /**
-                 * A reference to the the <meta property="og:image" /> element.
+                 * A reference to the the <meta property="og:type" /> element.
                  */
-                protected _ogImageElement: HTMLMetaElement;
-
-                /**
-                 * A reference to the the <meta name="twitter:image" /> element.
-                 */
-                protected _twitterImageElement: HTMLMetaElement;
+                protected _ogTypeElement: HTMLMetaElement;
 
                 /**
                  * Registers for the navigating event to know when to remove all the elements so they 
@@ -20116,8 +20112,10 @@ module plat {
                         title = __Title,
                         link = __MetaLink,
                         author = __Author,
+                        type = __MetaType,
                         creator = __Creator,
                         image = __MetaImage,
+                        video = __MetaVideo,
                         description = __Description,
                         url = __Url,
                         og = __OpenGraph,
@@ -20140,8 +20138,7 @@ module plat {
                     this._fbAuthorElement = this._createElement<HTMLMetaElement>(meta, article + author);
                     this._twitterCreatorElement = this._createElement<HTMLMetaElement>(meta, twitter + creator);
 
-                    this._ogImageElement = this._createElement<HTMLMetaElement>(meta, og + image);
-                    this._twitterImageElement = this._createElement<HTMLMetaElement>(meta, twitter + image);
+                    this._ogTypeElement = this._createElement<HTMLMetaElement>(meta, og + type);
                 }
 
                 /**
@@ -20266,22 +20263,71 @@ module plat {
                 }
 
                 /**
-                 * Gets the image or sets the image elements.
-                 * @param {string} image? If supplied, the image elements will be set to this value.
+                 * Gets the type or sets the type elements.
+                 * @param {string} type? If supplied, the image elements will be set to this value.
                  */
-                image(image?: string): string {
-                    if (!isString(image)) {
-                        return this._getContent(this._ogImageElement);
+                fbType(type?: string): string {
+                    if (!isString(type)) {
+                        return this._getContent(this._ogTypeElement);
                     }
 
-                    image = this._browser.urlUtils(image).href;
-
                     this._setContent([
-                        this._ogImageElement,
-                        this._twitterImageElement
-                    ], image);
+                        this._ogTypeElement
+                    ], type);
 
-                    return image;
+                    return type;
+                }
+
+                /**
+                 * Sets the image elements.
+                 * @param {Array<string>} images For each image, a tag will be created
+                 */
+                images(images: Array<string>): void {
+                    if (!isArray(images)) {
+                        return;
+                    }
+
+                    var meta = __Meta,
+                        og = __OpenGraph,
+                        twitter = __Twitter,
+                        ogElement: HTMLMetaElement,
+                        twitterElement: HTMLMetaElement;
+
+                    forEach((image: string): void => {
+                        ogElement = this._createElement<HTMLMetaElement>(meta, og + __MetaImage);
+                        twitterElement = this._createElement<HTMLMetaElement>(meta, twitter + __MetaImage);
+
+                        image = this._browser.urlUtils(image).href;
+
+                        this._setContent([
+                            ogElement,
+                            twitterElement
+                        ], image);
+                    }, images);
+                }
+
+                /**
+                 * Sets the video elements.
+                 * @param {Array<string>} videos For each video, a tag will be created
+                 */
+                videos(videos: Array<string>): void {
+                    if (!isArray(videos)) {
+                        return;
+                    }
+
+                    var meta = __Meta,
+                        og = __OpenGraph,
+                        twitter = __Twitter,
+                        ogElement: HTMLMetaElement;
+
+                    forEach((video: string): void => {
+                        ogElement = this._createElement<HTMLMetaElement>(meta, og + __MetaVideo);
+                        video = this._browser.urlUtils(video).href;
+
+                        this._setContent([
+                            ogElement
+                        ], video);
+                    }, videos);
                 }
 
                 /**
@@ -20386,19 +20432,15 @@ module plat {
                  * incorrect tags on the page.
                  */
                 protected _removeAllElements(): void {
-                    this._removeElements(
-                        this._ogTitleElement,
-                        this._twitterTitleElement,
+                    var slice = Array.prototype.slice,
+                        og = this._document.head.querySelectorAll('meta[' + __MetaProperty + '^="' + __OpenGraph + '"]'),
+                        twitter = this._document.head.querySelectorAll('meta[' + __MetaName + '^="' + __Twitter + '"]');
+
+                    this._removeElements.apply(this, [
                         this._descriptionElement,
-                        this._ogDescriptionElement,
-                        this._twitterDescriptionElement,
                         this._authorElement,
-                        this._googleAuthorElement,
-                        this._fbAuthorElement,
-                        this._twitterCreatorElement,
-                        this._ogImageElement,
-                        this._twitterImageElement
-                    );
+                        this._googleAuthorElement
+                    ].concat(slice.call(og), slice.call(twitter)));
                 }
 
                 /**
