@@ -1,85 +1,4 @@
 <div class="container">
-    <!-- Carousel -->
-    <div class="demo-area">
-        <h2 class="demo-heading">Carousel</h2>
-        <input type="checkbox" id="carousel" checked/>
-        <label for="carousel"></label>
-        <div class="demo-stage">
-            <plat-carousel plat-context="carouselItems" plat-options="{ type: 'tap' }" style="width: 800px; height: 400px;">
-                <div style="width: 100%; height: 100%; text-align: center; vertical-align: middle; background-color: lightblue;">
-                    <span>{{text}}</span>
-                </div>
-            </plat-carousel>
-        </div>
-    </div>
-
-    <!-- Icons -->
-    <div class="demo-area">
-        <h2 class="demo-heading">Icons</h2>
-        <input type="checkbox" id="icons">
-        <label for="icons"></label>
-        <div class="demo-stage">
-            <span class="icon-cog"></span>
-            <span class="icon-desktop"></span>
-            <span class="icon-download"></span>
-            <span class="icon-envelope"></span>
-            <span class="icon-exclamation-o"></span>
-            <span class="icon-exclamation"></span>
-            <span class="icon-eye-closed"></span>
-            <span class="icon-eye"></span>
-            <span class="icon-heart-o"></span>
-            <span class="icon-heart"></span>
-            <span class="icon-link"></span>
-            <span class="icon-paperclip"></span>
-            <span class="icon-pencil"></span>
-            <span class="icon-phone"></span>
-            <span class="icon-refresh-a"></span>
-            <span class="icon-refresh"></span>
-            <span class="icon-search"></span>
-            <span class="icon-tablet"></span>
-            <span class="icon-user-girl"></span>
-            <span class="icon-user"></span>
-            <span class="icon-arrow-down"></span>
-            <span class="icon-arrow-left"></span>
-            <span class="icon-arrow-right"></span>
-            <span class="icon-arrow-up"></span>
-            <span class="icon-camera"></span>
-            <span class="icon-checkbox"></span>
-            <span class="icon-checkmark"></span>
-            <span class="icon-close"></span>
-        </div>
-        <div class="demo-stage">
-            <span class="icon-2x icon-cog"></span>
-            <span class="icon-2x icon-desktop"></span>
-            <span class="icon-2x icon-download"></span>
-            <span class="icon-2x icon-envelope"></span>
-            <span class="icon-2x icon-exclamation-o"></span>
-            <span class="icon-2x icon-exclamation"></span>
-            <span class="icon-2x icon-eye-closed"></span>
-            <span class="icon-2x icon-eye"></span>
-            <span class="icon-2x icon-heart-o"></span>
-            <span class="icon-2x icon-heart"></span>
-            <span class="icon-2x icon-link"></span>
-            <span class="icon-2x icon-paperclip"></span>
-            <span class="icon-2x icon-pencil"></span>
-            <span class="icon-2x icon-phone"></span>
-            <span class="icon-2x icon-refresh-a"></span>
-            <span class="icon-2x icon-refresh"></span>
-            <span class="icon-2x icon-search"></span>
-            <span class="icon-2x icon-tablet"></span>
-            <span class="icon-2x icon-user-girl"></span>
-            <span class="icon-2x icon-user"></span>
-            <span class="icon-2x icon-arrow-down"></span>
-            <span class="icon-2x icon-arrow-left"></span>
-            <span class="icon-2x icon-arrow-right"></span>
-            <span class="icon-2x icon-arrow-up"></span>
-            <span class="icon-2x icon-camera"></span>
-            <span class="icon-2x icon-checkbox"></span>
-            <span class="icon-2x icon-checkmark"></span>
-            <span class="icon-2x icon-close"></span>
-        </div>
-    </div>
-
     <!-- Listview -->
     <div class="demo-area">
         <h2 class="demo-heading">Listview</h2>
@@ -629,8 +548,22 @@
                     <div>col-phn-3 col-phb-4</div>
                 </div>
             </div>
-            </div>
         </div>
+    </div>
+
+    <!-- Carousel -->
+    <div class="demo-area">
+        <h2 class="demo-heading">Carousel</h2>
+        <input type="checkbox" id="carousel" />
+        <label for="carousel"></label>
+        <div class="demo-stage">
+            <plat-carousel plat-context="carouselItems" plat-options="{ type: 'tap', orientation: 'vertical' }" style="width: 800px; height: 400px;">
+                <div style="width: 100%; height: 100%; text-align: center; vertical-align: middle; background-color: lightblue;">
+                    <span>{{text}}</span>
+                </div>
+            </plat-carousel>
+        </div>
+    </div>
 
     <!-- Other -->
     <div class="demo-area">

@@ -52,18 +52,38 @@
     .plat-back-arrow,
     .plat-forward-arrow {
         position: absolute;
-        display: table;
         text-align: center;
         color: @arrow-color;
+        cursor: pointer;
         font-size: @arrow-font-size;
+        .box-sizing(border-box);
 
-        span {
-            display: table-cell;
+        .plat-icon-arrow-down,
+        .plat-icon-arrow-up,
+        .plat-icon-arrow-left,
+        .plat-icon-arrow-right {
+            display: inline-block;
             vertical-align: middle;
-            cursor: pointer;
-            font-size: 200%;
+            position: absolute;
+            height: 0.55em;
+            width: 100%;
+            left: 0;
+            top: 50%;
+            font-family: "platypus-icons";
             font-weight: bold;
+            font-style: normal;
+            font-variant: normal;
+            speak: none;
+            text-decoration: inherit;
+            text-transform: none;
+            line-height: normal;
+            .translate-accelerate(0;-50%);
         }
+
+        .plat-icon-arrow-down::before { content: '\e815'; }
+        .plat-icon-arrow-left::before { content: '\e816'; }
+        .plat-icon-arrow-right::before { content: '\e817'; }
+        .plat-icon-arrow-up::before { content: '\e818'; }
 
         &:active,
         &:hover {

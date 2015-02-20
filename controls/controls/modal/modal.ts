@@ -84,7 +84,7 @@ module platui {
         protected _compat: plat.Compat;
 
         /**
-         * @name _modalElement
+         * @name _container
          * @memberof platui.Modal
          * @kind property
          * @access protected
@@ -94,7 +94,7 @@ module platui {
          * @description
          * The HTML element representing the content of the modal.
          */
-        protected _modalElement: HTMLElement;
+        protected _container: HTMLElement;
 
         /**
          * @name _isVisible
@@ -200,7 +200,7 @@ module platui {
                     element = this.element,
                     childNodes: Array<Node> = Array.prototype.slice.call(element.childNodes);
 
-                modalContainer = this._modalElement = <HTMLElement>fragment.firstChild;
+                modalContainer = this._container = <HTMLElement>fragment.firstChild;
                 while (childNodes.length > 0) {
                     modalContainer.appendChild(childNodes.shift());
                 }
@@ -209,7 +209,7 @@ module platui {
                 return;
             }
 
-            modalContainer = this._modalElement = <HTMLElement>this.element.firstElementChild;
+            modalContainer = this._container = <HTMLElement>this.element.firstElementChild;
 
             var innerTemplate = this.innerTemplate;
             if (_utils.isNode(innerTemplate)) {
@@ -234,10 +234,10 @@ module platui {
                 _Exception: plat.IExceptionStatic;
 
             // in case of cloning
-            this._modalElement = this._modalElement || <HTMLElement>this.element.firstElementChild;
+            this._container = this._container || <HTMLElement>this.element.firstElementChild;
 
             if (!this._utils.isString(transition) || transition === 'none') {
-                this.dom.addClass(this._modalElement, __Plat + 'no-transition');
+                this.dom.addClass(this._container, __Plat + 'no-transition');
                 return;
             } else if (!this._transitionHash[transition]) {
                 _Exception = this._Exception;
@@ -249,12 +249,12 @@ module platui {
             if (this._utils.isNull(animationEvents)) {
                 _Exception = this._Exception;
                 _Exception.warn('This browser does not support CSS3 animations.', _Exception.COMPAT);
-                this.dom.addClass(this._modalElement, __Plat + 'no-transition');
+                this.dom.addClass(this._container, __Plat + 'no-transition');
                 return;
             }
 
             this._transitionEnd = animationEvents.$transitionEnd;
-            this.dom.addClass(this._modalElement, __Plat + transition + ' ' + __Plat + 'modal-transition');
+            this.dom.addClass(this._container, __Plat + transition + ' ' + __Plat + 'modal-transition');
         }
 
         /**
@@ -410,7 +410,7 @@ module platui {
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
             this._utils.defer((): void => {
-                dom.addClass(this._modalElement, __Plat + 'activate');
+                dom.addClass(this._container, __Plat + 'activate');
             }, 25);
 
             this._isVisible = true;
@@ -435,7 +435,7 @@ module platui {
                 dom.addClass(this.element, __Hide);
             }
 
-            dom.removeClass(this._modalElement, __Plat + 'activate');
+            dom.removeClass(this._container, __Plat + 'activate');
             this._isVisible = false;
         }
 

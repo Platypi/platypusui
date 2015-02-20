@@ -1054,11 +1054,11 @@ module platui {
                 forwardArrow = _document.createElement('span');
 
             if (this._isVertical) {
-                backArrow.className = 'icon-arrow-up';
-                forwardArrow.className = 'icon-arrow-down';
+                backArrow.className = __Plat + 'icon-arrow-up';
+                forwardArrow.className = __Plat + 'icon-arrow-down';
             } else {
-                backArrow.className = 'icon-arrow-left';
-                forwardArrow.className = 'icon-arrow-right';
+                backArrow.className = __Plat + 'icon-arrow-left';
+                forwardArrow.className = __Plat + 'icon-arrow-right';
             }
 
             backArrowContainer.className = __Plat + 'back-arrow';

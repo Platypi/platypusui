@@ -412,13 +412,6 @@
             .vendor-loop(animation-timing-function; @function; @vendorList);
         }
 
-        .basic-prefixed-animation(@values) {
-            -webkit-animation: @values;
-            -moz-animation: @values;
-            -o-animation: @values;
-            animation: @values; 
-        }
-
         /// Transforms
 
         .transform(@args) {
@@ -477,11 +470,11 @@
             .transform(translate3d(@x, @y, @z), @vendorList);
         }
 
-        .translateAccelerate(@x; @y) {
+        .translate-accelerate(@x; @y) {
             .translate(@x; @y);
             .transform(translate3d(@x, @y, 0));
         }
-        .translateAccelerate(@x; @y; @vendorList: @webMozMsList) when (default()) {
+        .translate-accelerate(@x; @y; @vendorList: @webMozMsList) when (default()) {
             .translate(@x; @y; @vendorList);
             .transform(translate3d(@x, @y, 0); @vendorList);
         }
