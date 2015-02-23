@@ -1018,15 +1018,18 @@ module platui {
         protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, groupHeaderTemplate: string): void {
             var _Exception: plat.IExceptionStatic,
                 _utils = this._utils,
+                bindableTemplates = this.bindableTemplates,
+                templates = this._templates,
                 template: HTMLElement;
 
             if (_utils.isString(groupHeaderTemplate)) {
                 this._isGrouped = true;
 
-                template = this._templates[groupHeaderTemplate];
+                template = templates[groupHeaderTemplate];
                 if (_utils.isNode(template)) {
                     this._groupHeaderTemplate = groupHeaderTemplate;
                     this.bindableTemplates.add(groupHeaderTemplate, template);
+                    delete templates[groupHeaderTemplate];
                 } else {
                     _Exception = this._Exception;
                     _Exception.warn(__Listview + ' group header template "' + groupHeaderTemplate +
@@ -1036,10 +1039,11 @@ module platui {
                 this._groupHeaderTemplatePromise = this._createGroupTemplate();
             }
 
-            template = this._templates[itemTemplateKey];
+            template = templates[itemTemplateKey];
             if (_utils.isNode(template)) {
                 this._itemTemplate = itemTemplateKey;
                 this.bindableTemplates.add(itemTemplateKey, template);
+                delete templates[itemTemplateKey];
                 return;
             }
 
@@ -1053,6 +1057,13 @@ module platui {
 
             this._templateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
             this._templateSelectorKeys = {};
+            var keys = Object.keys(templates),
+                key: string;
+            while (keys.length > 0) {
+                key = keys.pop();
+                bindableTemplates.add(key, templates[key]);
+                delete templates[key];
+            }
         }
 
         /**
@@ -1186,10 +1197,12 @@ module platui {
                 temp.name = newName;
                 groups[newName] = temp;
 
+                name = newName;
+
                 removeArrayListener();
                 removeMutationListener();
-                removeArrayListener = control.observe(this._childContextChanged.bind(this, newName), items);
-                removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, newName), items);
+                removeArrayListener = control.observe(this._childContextChanged.bind(this, name), items);
+                removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
             });
             removeArrayListener = control.observe(this._childContextChanged.bind(this, name), items);
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
