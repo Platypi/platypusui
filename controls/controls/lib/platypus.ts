@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.11.2 (http://getplatypi.com) 
+ * PlatypusTS v0.12.0 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * PlatypusTS is licensed under the GPL-3.0 found at  
  * http://opensource.org/licenses/GPL-3.0 
@@ -9877,10 +9877,10 @@ module plat {
                 /**
                  * A function that allows this control to observe both the bound property itself as well as 
                  * potential child properties if being bound to an object.
-                 * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the 
+                 * @param {plat.observable.IImplementTwoWayBinding} binder The control that facilitates the 
                  * databinding.
                  */
-                observeProperties(implementer: observable.IImplementTwoWayBinding): void;
+                observeProperties(binder: observable.IImplementTwoWayBinding): void;
             }
 
             /**
@@ -11892,23 +11892,23 @@ module plat {
             /**
              * A Node array for managing the TemplateControl's childNodes in the event that this control 
              * replaces its element. This property will only exist/be of use for a TemplateControl that 
-             * implements the replaceWith property.
+             * implements the replaceWith property. This is an expirimental API.
              */
             elementNodes: Array<Node>;
 
             /**
-             * The first node in the TemplateControl's body. This property will be a Comment node when the 
-             * control implements `replaceWith = null`, otherwise it will be null. This property allows an 
-             * TemplateControl to add nodes to its body in the event that it replaces its element.
+             * The first node in the TemplateControl's body. This property allows an 
+             * TemplateControl to add nodes to its body in the event that it replaces its element. 
+             * This is an expirimental API.
              */
-            startNode: Node;
+            startNode: Comment;
 
             /**
-             * The last node in the TemplateControl's body. This property will be a Comment node when the 
-             * control implements the replaceWith property, otherwise it will be null. This property allows a 
-             * TemplateControl to add nodes to its body in the event that it replaces its element.
+             * The last node in the TemplateControl's body. This property allows a 
+             * TemplateControl to add nodes to its body in the event that it replaces its element. 
+             * This is an expirimental API.
              */
-            endNode: Node;
+            endNode: Comment;
 
             /**
              * Allows a TemplateControl to either swap its element with another element (e.g. plat-select), 
@@ -12211,9 +12211,7 @@ module plat {
             }
 
             /**
-             * Completely removes a control's element from its parentNode. If the 
-             * control implements `replaceWith=null`, All of its nodes between its 
-             * startNode and endNode (inclusive) will be removed.
+             * Completely removes a control's element from its parentNode.
              * @param {plat.ui.TemplateControl} control The control whose element should be removed.
              */
             static removeElement(control: TemplateControl): void {
@@ -12488,9 +12486,7 @@ module plat {
             setContextResources(control: TemplateControl): void;
 
             /**
-             * Completely removes a control's element from its parentNode. If the 
-             * control implements `replaceWith=null`, All of its nodes between its 
-             * startNode and endNode (inclusive) will be removed.
+             * Completely removes a control's element from its parentNode.
              * @param {plat.ui.TemplateControl} control The control whose element should be removed.
              */
             removeElement(control: TemplateControl): void;
@@ -12558,10 +12554,10 @@ module plat {
             /**
              * A function that allows this control to observe both the bound property itself as well as 
              * potential child properties if being bound to an object.
-             * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the 
+             * @param {plat.observable.IImplementTwoWayBinding} binder The control that facilitates the 
              * databinding.
              */
-            observeProperties(implementer: observable.IImplementTwoWayBinding): void { }
+            observeProperties(binder: observable.IImplementTwoWayBinding): void { }
 
             /**
              * A function that signifies when this control's bindable property has changed.
@@ -13435,9 +13431,9 @@ module plat {
                         return _document.createDocumentFragment();
                     }
 
-                    control.startNode = template.insertBefore(_document.createComment(control.type + __START_NODE),
+                    control.startNode = <Comment>template.insertBefore(_document.createComment(control.type + __START_NODE),
                         template.firstChild);
-                    control.endNode = template.insertBefore(_document.createComment(control.type + __END_NODE),
+                    control.endNode = <Comment>template.insertBefore(_document.createComment(control.type + __END_NODE),
                         null);
 
                     return template;
@@ -20567,6 +20563,11 @@ module plat {
                 protected _defaultOption: HTMLOptionElement;
 
                 /**
+                 * The complementary control implementing two way databinding.
+                 */
+                protected _binder: observable.IImplementTwoWayBinding;
+
+                /**
                  * Whether or not the Array listener has been set.
                  */
                 private __listenerSet: boolean;
@@ -20627,10 +20628,16 @@ module plat {
                  * @param {Array<any>} oldValue The old array context.
                  */
                 contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
-                    if (!isArray(newValue)) {
-                        this.itemsLoaded.then((): void => {
-                            this._removeItems(this.controls.length);
-                        });
+                    if (isEmpty(newValue)) {
+                        if (!isEmpty(oldValue)) {
+                            this.itemsLoaded.then((): void => {
+                                this._removeItems(this.controls.length);
+                            });
+                        }
+                        return;
+                    } else if (!isArray(newValue)) {
+                        var _Exception = this._Exception;
+                        _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
                         return;
                     }
 
@@ -20662,6 +20669,8 @@ module plat {
 
                     var context = this.context;
                     if (!isArray(context)) {
+                        var _Exception = this._Exception;
+                        _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
                         return;
                     }
 
@@ -20681,27 +20690,29 @@ module plat {
                 /**
                  * A function that allows this control to observe both the bound property itself as well as
                  * potential child properties if being bound to an object.
-                 * @param {plat.observable.IImplementTwoWayBinding} implementer The control that facilitates the
+                 * @param {plat.observable.IImplementTwoWayBinding} binder The control that facilitates the
                  * databinding.
                  */
-                observeProperties(implementer: observable.IImplementTwoWayBinding): void {
+                observeProperties(binder: observable.IImplementTwoWayBinding): void {
                     var element = <HTMLSelectElement>this.element,
                         setter: observable.IBoundPropertyChangedListener<any>;
 
+                    this._binder = binder;
+
                     if (element.multiple) {
                         setter = this._setSelectedIndices.bind(this);
-                        if (isNull(implementer.evaluate())) {
+                        if (isNull(binder.evaluate())) {
                             this.inputChanged([]);
                         }
 
-                        implementer.observeProperty((): void => {
-                            setter(implementer.evaluate(), null, null);
+                        binder.observeProperty((): void => {
+                            setter(binder.evaluate(), null, null);
                         }, null, true);
                     } else {
                         setter = this._setSelectedIndex.bind(this);
                     }
 
-                    implementer.observeProperty(setter);
+                    binder.observeProperty(setter);
                     this.addEventListener(element, 'change', this._observeChange, false);
                 }
 
@@ -20718,7 +20729,9 @@ module plat {
                     if (isNull(newValue)) {
                         if (firstTime === true || !this._document.body.contains(element)) {
                             this.itemsLoaded.then((): void => {
-                                this.inputChanged(element.value);
+                                if (isNull(this._binder.evaluate())) {
+                                    this.inputChanged(element.value);
+                                }
                             });
                             return;
                         }
@@ -20774,7 +20787,7 @@ module plat {
 
                     this.itemsLoaded.then((): void => {
                         if (nullValue || !isArray(newValue)) {
-                            if (firstTime === true) {
+                            if (firstTime === true && isNull(this._binder.evaluate())) {
                                 this.inputChanged(this._getSelectedValues());
                             }
                             // unselects the options unless a match is found
@@ -21432,10 +21445,6 @@ module plat {
                 initialize(): void {
                     var element = this.element;
 
-                    this.addEventListener(element, 'click', (ev: Event): void => {
-                        ev.preventDefault();
-                    }, false);
-
                     this.addEventListener(element, __tap, (ev: IExtendedEvent): void => {
                         if (ev.buttons !== 1) {
                             return;
@@ -21446,6 +21455,7 @@ module plat {
                             return;
                         }
 
+                        element.removeAttribute('data-href');
                         ev.preventDefault();
 
                         requestAnimationFrameGlobal((): void => {
@@ -22895,8 +22905,8 @@ module plat {
                     childNodes = arrayProto.slice.call(nodes, startIndex + 1, startIndex + this.replaceNodeLength);
                     clonedManager = ElementManager.clone(this, parentManager, null, newControl, nodeMap);
                     newControl.elementNodes = childNodes;
-                    newControl.startNode = newNode;
-                    newControl.endNode = childNodes.pop();
+                    newControl.startNode = <Comment>newNode;
+                    newControl.endNode = <Comment>childNodes.pop();
 
                     startNodeManager = children.shift();
                     endNodeManager = children.shift();
@@ -27737,25 +27747,6 @@ module plat {
              * Used to set the element's href property.
              */
             property: string = 'href';
-
-            /**
-             * The TemplateControl for a plat-href is an Link control.
-             */
-            templateControl: ui.controls.Link;
-
-            /**
-             * Sets the href property, then calls the Link control to 
-             * normalize the href.
-             */
-            setter(): void {
-                super.setter();
-
-                var templateControl: ui.controls.Link = this.templateControl;
-
-                if (isObject(templateControl) && isFunction(templateControl.setHref)) {
-                    templateControl.setHref();
-                }
-            }
         }
 
         /**
