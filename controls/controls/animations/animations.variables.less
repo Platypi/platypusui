@@ -1,8 +1,8 @@
-@import (reference) 'variables.less';
-@import (reference) 'mixins.less';
+﻿/**/
+@import (reference) '../global/variables.less';
+@import (reference) '../global/mixins.less';
 
 /// ======= Globally-Used Animations ======== ///
-
 
 #platui {
     /// Animation Creation
@@ -125,41 +125,4 @@
             }
         }
     }
-}
-
-& {
-    #platui > #variables;
-    #platui > #mixins;
-    #platui > #animations;
-
-    .plat-slidein {
-        .animation-name(@slide-in);
-        .animation-duration(250ms);
-        .animation-fill-mode(forwards);
-    }
-
-    .plat-slideout {
-        .animation-name(@slide-out);
-        .animation-duration(200ms);
-        .animation-fill-mode(forwards);
-    }
-
-    .plat-fadein {
-        .animation-name(@fade-in);
-        .animation-duration(500ms);
-        .animation-fill-mode(forwards);
-    }
-
-    .plat-fadeout {
-        .animation-name(@fade-out);
-        .animation-duration(100ms);
-        .animation-fill-mode(forwards);
-    }
-
-    .fade();
-    .fade(@fade-in; in);
-    .slide();
-    .slide(@slide-out; out; left);
-    .slideAndFade();
-    .slideAndFade(@slide-out-fade-out; out; left);
 }
