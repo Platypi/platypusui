@@ -9217,17 +9217,12 @@ module plat {
                     newChild: any,
                     oldChild: any;
 
-                if (length === 0) {
-                    deleteProperty(this.__identifierHash, identifier);
-                    return;
-                }
-
                 for (var i = 0; i < length; ++i) {
                     binding = mappings[i];
                     property = binding.slice(start);
                     split = property.split(period);
                     key = split.pop();
-                    keyIsLength = key === lengthStr,
+                    keyIsLength = (key === lengthStr),
                     parentProperty = split.join(period);
 
                     if (isEmpty(parentProperty)) {
@@ -9310,6 +9305,7 @@ module plat {
             protected _addObservableListener(absoluteIdentifier: string, observableListener: IListener, isLength?: boolean): IRemoveListener {
                 if (isLength === true) {
                     var split = absoluteIdentifier.split('.');
+                    // pop length key
                     split.pop();
 
                     var property = split.pop(),
@@ -9547,11 +9543,7 @@ module plat {
 
                         if (isObject(props)) {
                             mappings = Object.keys(props);
-                            if (mappings.length > 0) {
-                                childPropertiesExist = true;
-                            } else {
-                                deleteProperty(this.__identifierHash, identifier);
-                            }
+                            childPropertiesExist = mappings.length > 0;
                         }
 
                         this._execute(identifier, value, oldValue);
@@ -9607,12 +9599,8 @@ module plat {
                             mappings: Array<string>;
 
                         if (isObject(props)) {
-                            var mappings = Object.keys(props);
-                            if (mappings.length > 0) {
-                                childPropertiesExist = true;
-                            } else {
-                                deleteProperty(this.__identifierHash, identifier);
-                            }
+                            mappings = Object.keys(props);
+                            childPropertiesExist = mappings.length > 0;
                         }
 
                         this._execute(identifier, newValue, oldValue);
