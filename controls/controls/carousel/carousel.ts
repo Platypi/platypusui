@@ -548,7 +548,7 @@ module platui {
                 index = options.index,
                 orientation = this._validateOrientation(options.orientation);
 
-            this._container = this._container || <HTMLElement>this.element.firstElementChild
+            this._container = this._container || <HTMLElement>this.element.firstElementChild;
             this._interval = options.interval || 3000;
             this._isInfinite = options.infinite === true;
 
