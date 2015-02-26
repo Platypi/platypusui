@@ -185,6 +185,19 @@ module platui {
         protected _isVertical = false;
 
         /**
+         * @name _type
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {string}
+         * 
+         * @description
+         * The type of the control (i.e. how it is scrolled).
+         */
+        protected _type: string;
+
+        /**
          * @name _transform
          * @memberof platui.Carousel
          * @kind property
@@ -508,9 +521,48 @@ module platui {
          * @type {HTMLElement}
          * 
          * @description
-         * The index `length + 1` node used for infinite scrolling.
+         * The index `length` node used for infinite scrolling.
          */
         protected _postClonedNode: HTMLElement;
+
+        /**
+         * @name _forwardArrow
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * A reference to the forward arrow element.
+         */
+        protected _forwardArrow: HTMLElement;
+
+        /**
+         * @name _backArrow
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLElement}
+         * 
+         * @description
+         * A reference to the back arrow element.
+         */
+        protected _backArrow: HTMLElement;
+
+        /**
+         * @name _removeListeners
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {Array<plat.IRemoveListener>}
+         * 
+         * @description
+         * A collection of remove listeners to stop listening for events.
+         */
+        protected _removeListeners: Array<plat.IRemoveListener> = [];
 
         /**
          * @name setClasses
@@ -541,12 +593,19 @@ module platui {
          * @description
          * Checks if the control has been initialized, otherwise it does so.
          * 
+         * @param {Array<any>} newValue The new array context.
+         * @param {Array<any>} oldValue The old array context.
+         * 
          * @returns {void}
          */
-        contextChanged(): void {
+        contextChanged(newValue: Array<any>, oldvalue: Array<any>): void {
             this._verifyLength();
 
-            if (this._utils.isFunction(this._onLoad)) {
+            var _utils = this._utils;
+            if (_utils.isFunction(this._onLoad)) {
+                if (_utils.isArray(newValue) && newValue.length > 0) {
+                    this.goToIndex(0);
+                }
                 return;
             }
 
@@ -609,7 +668,6 @@ module platui {
 
             var optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
                 options = optionObj.value || <ICarouselOptions>{},
-                controlType = options.type || 'track swipe',
                 index = options.index,
                 isNumber = _utils.isNumber,
                 orientation = this._validateOrientation(options.orientation),
@@ -617,6 +675,7 @@ module platui {
                 intervalNum = this._interval = isNumber(interval) ? Math.abs(interval) : 3000,
                 suspend = options.suspend;
 
+            this._type = options.type || 'track swipe';
             this._container = this._container || <HTMLElement>this.element.firstElementChild;
             this._isInfinite = options.infinite === true;
             this._suspend = Math.abs(isNumber(suspend) ? intervalNum - suspend : intervalNum - 3000);
@@ -628,7 +687,8 @@ module platui {
                 var setIndex = this._index;
                 this._index = 0;
                 this.goToIndex(_utils.isNull(index) ? setIndex : index);
-                this._addEventListeners(controlType);
+                this._addEventListeners();
+                this.observeArray(this._verifyLength);
                 this._loaded = true;
             };
 
@@ -649,10 +709,8 @@ module platui {
          */
         goToNext(): plat.async.IThenable<void> {
             var index = this._index;
-            console.log('index = ' + index);
             if (this._isInfinite) {
                 if (index === this.context.length - 1) {
-                    console.log('infinite next');
                     return this._infiniteNext();
                 }
             } else if (index >= this.context.length - 1) {
@@ -884,7 +942,36 @@ module platui {
          * @returns {void}
          */
         protected _verifyLength(): void {
-            var maxIndex = this.context.length - 1,
+            var context = this.context,
+                _utils = this._utils;
+            if (!_utils.isArray(context) || context.length === 0) {
+                var index = this._index;
+                if (!_utils.isUndefined(index)) {
+                    this.inputChanged((this._index = undefined), index);
+                }
+                this._currentOffset = 0;
+                this._removeEventListeners();
+                return;
+            }
+
+            // if no remove listeners exist we know that we had previously removed them.
+            var addListeners = this._removeListeners.length === 0;
+            if (addListeners || this._isInfinite) {
+                var foreach = <plat.ui.controls.ForEach>this.controls[0],
+                    itemsLoaded = (): void => {
+                        if (context.length === 0) {
+                            foreach.itemsLoaded.then(itemsLoaded);
+                            return;
+                        } else if (addListeners) {
+                            this._addEventListeners();
+                            return;
+                        }
+                        this._cloneForInfinite();
+                    };
+                foreach.itemsLoaded.then(itemsLoaded);
+            }
+
+            var maxIndex = context.length - 1,
                 maxOffset = maxIndex * this._intervalOffset;
 
             if (-this._currentOffset > maxOffset) {
@@ -909,6 +996,10 @@ module platui {
          */
         protected _goToIndex(index: number): plat.async.IThenable<void> {
             var oldIndex = this._index;
+            if (this._utils.isUndefined(oldIndex)) {
+                this._index = oldIndex = 0;
+            }
+
             if (index === oldIndex || index < 0 || index >= this.context.length) {
                 return null;
             } else if (this._selfPause) {
@@ -1063,12 +1154,10 @@ module platui {
          * @description
          * Adds all event listeners on this control's element.
          * 
-         * @param {string} controlType The type of movement.
-         * 
          * @returns {void}
          */
-        protected _addEventListeners(controlType: string): void {
-            var types = controlType.split(' ');
+        protected _addEventListeners(): void {
+            var types = this._type.split(' ');
 
             if (types.indexOf('tap') !== -1) {
                 this._initializeTap();
@@ -1090,11 +1179,38 @@ module platui {
                 this._initializeInfinite();
             }
 
-            this.addEventListener(this._window, 'resize', (): void => {
+            this._removeListeners.push(this.addEventListener(this._window, 'resize', (): void => {
                 this._setPosition();
-            }, false);
+            }, false));
+        }
 
-            this.observeArray(this._verifyLength);
+        /**
+         * @name _removeEventListeners
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Removes all event listeners on this control's element.
+         * 
+         * @returns {void}
+         */
+        protected _removeEventListeners(): void {
+            var removeListeners = this._removeListeners;
+            while (removeListeners.length > 0) {
+                removeListeners.pop()();
+            }
+
+            if (this._isAuto) {
+                this._removeInterval();
+                this._removeInterval = noop;
+                this._removeSuspend();
+                this._removeSuspend = noop;
+            }
+
+            if (this._isInfinite) {
+                this._removeClones();
+            }
         }
 
         /**
@@ -1109,7 +1225,7 @@ module platui {
          * @returns {void}
          */
         protected _initializeInfinite(): void {
-            this.observeArray(this._cloneForInfinite);
+            this._removeListeners.push(this.observeArray(this._cloneForInfinite));
             this._cloneForInfinite();
             // offset the newly added clone
             this._utils.requestAnimationFrame((): void => {
@@ -1129,6 +1245,33 @@ module platui {
          * @returns {void}
          */
         protected _cloneForInfinite(): void {
+            this._removeClones();
+
+            var context = this.context;
+            if (this._utils.isNull(context) || context.length === 0) {
+                return;
+            }
+
+            var slider = this._slider,
+                preClone = this._preClonedNode = <HTMLElement>slider.lastElementChild.cloneNode(true),
+                postClone = this._postClonedNode = <HTMLElement>slider.firstElementChild.cloneNode(true);
+
+            slider.insertBefore(preClone, slider.firstChild);
+            slider.insertBefore(postClone, null);
+        }
+
+        /**
+         * @name _removeClones
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Removes the clones for infinite scrolling.
+         * 
+         * @returns {void}
+         */
+        protected _removeClones(): void {
             var slider = this._slider,
                 preClone = this._preClonedNode,
                 postClone = this._postClonedNode;
@@ -1140,12 +1283,6 @@ module platui {
             if (slider.contains(postClone)) {
                 slider.removeChild(postClone);
             }
-
-            preClone = this._preClonedNode = <HTMLElement>slider.lastElementChild.cloneNode(true);
-            postClone = this._postClonedNode = <HTMLElement>slider.firstElementChild.cloneNode(true);
-
-            slider.insertBefore(preClone, slider.firstChild);
-            slider.insertBefore(postClone, null);
         }
 
         /**
@@ -1216,10 +1353,37 @@ module platui {
          * @returns {void}
          */
         protected _initializeTap(): void {
+            if (!this._utils.isNode(this._forwardArrow)) {
+                this._createArrowElements();
+            }
+
+            var removeListeners = this._removeListeners;
+            removeListeners.push(this.addEventListener(this._backArrow, __$tap, (): void => {
+                this._suspendInterval();
+                this.goToPrevious();
+            }, false));
+            removeListeners.push(this.addEventListener(this._forwardArrow, __$tap, (): void => {
+                this._suspendInterval();
+                this.goToNext();
+            }, false));
+        }
+
+        /**
+         * @name _createArrowElements
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates the arrow elements for type `tap` and places them in the DOM.
+         * 
+         * @returns {void}
+         */
+        protected _createArrowElements(): void {
             var _document = this._document,
                 element = this.element,
-                backArrowContainer = _document.createElement('div'),
-                forwardArrowContainer = _document.createElement('div'),
+                backArrowContainer = this._backArrow = _document.createElement('div'),
+                forwardArrowContainer = this._forwardArrow = _document.createElement('div'),
                 backArrow = _document.createElement('span'),
                 forwardArrow = _document.createElement('span');
 
@@ -1237,15 +1401,6 @@ module platui {
             forwardArrowContainer.appendChild(forwardArrow);
             element.appendChild(backArrowContainer);
             element.appendChild(forwardArrowContainer);
-
-            this.addEventListener(backArrowContainer, __$tap, (): void => {
-                this._suspendInterval();
-                this.goToPrevious();
-            }, false);
-            this.addEventListener(forwardArrowContainer, __$tap, (): void => {
-                this._suspendInterval();
-                this.goToNext();
-            }, false);
         }
 
         /**
@@ -1273,8 +1428,9 @@ module platui {
                 reverseSwipe = __$swipe + 'right';
             }
 
-            this.addEventListener(container, swipe, swipeFn, false);
-            this.addEventListener(container, reverseSwipe, swipeFn, false);
+            var removeListeners = this._removeListeners;
+            removeListeners.push(this.addEventListener(container, swipe, swipeFn, false));
+            removeListeners.push(this.addEventListener(container, reverseSwipe, swipeFn, false));
         }
 
         /**
@@ -1303,11 +1459,12 @@ module platui {
                 reverseTrack = __$track + 'right';
             }
 
-            this.addEventListener(container, track, trackFn, false);
-            this.addEventListener(container, reverseTrack, trackFn, false);
-            this.addEventListener(container, __$touchstart, this._touchStart, false);
-            this.addEventListener(container, __$trackend, touchEnd, false);
-            this.addEventListener(container, __$touchend, touchEnd, false);
+            var removeListeners = this._removeListeners;
+            removeListeners.push(this.addEventListener(container, track, trackFn, false));
+            removeListeners.push(this.addEventListener(container, reverseTrack, trackFn, false));
+            removeListeners.push(this.addEventListener(container, __$touchstart, this._touchStart, false));
+            removeListeners.push(this.addEventListener(container, __$trackend, touchEnd, false));
+            removeListeners.push(this.addEventListener(container, __$touchend, touchEnd, false));
         }
 
         /**

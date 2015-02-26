@@ -19478,10 +19478,10 @@ module plat {
                 protected _removeItems(index: number, numberOfItems: number): void {
                     var dispose = TemplateControl.dispose,
                         controls = this.controls,
-                        max = index + numberOfItems;
+                        last = index + numberOfItems;
 
-                    while (index < max) {
-                        dispose(controls[index++]);
+                    while (last-- > index) {
+                        dispose(controls[last]);
                     }
 
                     this._updateResource(controls.length - 1);
@@ -19611,7 +19611,9 @@ module plat {
                     }
 
                     var removeIndex = change.object.length;
-                    this._addCount -= 1;
+                    if (this._addCount > 0) {
+                        this._addCount -= 1;
+                    }
                     this._Promise.all(addQueue).then((): async.IThenable<void> => {
                         if (this._animate) {
                             this._animateItems(start, 1, __Leave, 'leave', false).then((): void => {
@@ -19663,7 +19665,9 @@ module plat {
                     }
 
                     var removeIndex = change.object.length;
-                    this._addCount -= 1;
+                    if (this._addCount > 0) {
+                        this._addCount -= 1;
+                    }
                     this._Promise.all(addQueue).then((): void => {
                         this._removeItems(removeIndex, 1);
                     });
@@ -19696,7 +19700,10 @@ module plat {
                                 addQueue.shift();
                             }));
                         } else if (currentLength > newLength) {
-                            this._addCount -= itemCount;
+                            if (this._addCount > 0) {
+                                this._addCount -= itemCount;
+                            }
+
                             this._Promise.all(addQueue).then((): void => {
                                 this._removeItems(currentLength - itemCount, itemCount);
                             });
@@ -19743,7 +19750,11 @@ module plat {
 
                         var removeLength = this.controls.length + this._addCount,
                             deleteCount = removeCount - addCount;
-                        this._addCount -= deleteCount;
+
+                        if (this._addCount > 0) {
+                            this._addCount -= deleteCount;
+                        }
+
                         this._Promise.all(addQueue).then((): void => {
                             if (animating && adding) {
                                 var animLength = animationQueue.length;
