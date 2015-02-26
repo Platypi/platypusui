@@ -1090,23 +1090,8 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when the animation is complete.
          */
         protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): plat.async.IThenable<void> {
-            if (this._utils.isNull(this._animationThenable)) {
                 return this._animationThenable =
                     <plat.ui.animations.IAnimationThenable<any>>this._animator.animate(this._slider, __Transition, animationOptions);
-            }
-
-            var cancelable = this._animationThenable,
-                animationCreation = this._animator.create(this._slider, __Transition, animationOptions),
-                animation = this._animationThenable =
-                    <plat.ui.animations.IAnimationThenable<any>>animationCreation.current;
-
-            cancelable.cancel().then((): plat.async.IThenable<void> => {
-                return animationCreation.previous;
-            }).then((): void => {
-                animation.start();
-            });
-
-            return animation;
         }
 
         /**
