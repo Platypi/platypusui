@@ -1096,10 +1096,13 @@ module platui {
             }
 
             var cancelable = this._animationThenable,
+                animationCreation = this._animator.create(this._slider, __Transition, animationOptions),
                 animation = this._animationThenable =
-                    <plat.ui.animations.IAnimationThenable<any>>this._animator.create(this._slider, __Transition, animationOptions).current;
+                    <plat.ui.animations.IAnimationThenable<any>>animationCreation.current;
 
-            cancelable.cancel().then((): any => {
+            cancelable.cancel().then((): plat.async.IThenable<void> => {
+                return animationCreation.previous;
+            }).then((): void => {
                 animation.start();
             });
 

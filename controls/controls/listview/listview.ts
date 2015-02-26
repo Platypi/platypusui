@@ -2590,11 +2590,14 @@ module platui {
             }
 
             var animationQueue = group.animationQueue,
-                animationPromise = this._animator.create(nodes, key).current.then((): void => {
+                animationCreation = this._animator.create(nodes, key),
+                animationPromise = animationCreation.current.then((): void => {
                     animationQueue.shift();
                 }),
                 callback = (): plat.ui.animations.IAnimationThenable<any> => {
-                    animationPromise.start();
+                    animationCreation.previous.then((): void => {
+                        animationPromise.start();
+                    });
                     return animationPromise;
                 };
 
@@ -2679,7 +2682,8 @@ module platui {
             var parentNode: Node,
                 animationQueue = group.animationQueue,
                 isNull = this._utils.isNull,
-                animationPromise = this._animator.create(nodes, key).current.then((): void => {
+                animationCreation = this._animator.create(nodes, key),
+                animationPromise = animationCreation.current.then((): void => {
                     animationQueue.shift();
                     if (isNull(parentNode)) {
                         return;
@@ -2695,7 +2699,9 @@ module platui {
                     }
 
                     parentNode.replaceChild(clonedContainer, container);
-                    animationPromise.start();
+                    animationCreation.previous.then((): void => {
+                        animationPromise.start();
+                    });
                     return animationPromise;
                 };
 
