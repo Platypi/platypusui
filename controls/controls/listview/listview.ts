@@ -1917,7 +1917,8 @@ module platui {
                 threshold = scrollContainer.scrollWidth;
             }
 
-            if (scrollLength < threshold) {
+            // do plus 1 here for browser pixel inconsistency
+            if (scrollLength + 1 < threshold) {
                 return;
             }
 
@@ -2060,7 +2061,8 @@ module platui {
                     threshold = scrollContainer.scrollWidth;
                 }
 
-                if (scrollLength < threshold) {
+                // do plus 1 here for browser pixel inconsistency
+                if (scrollLength + 1 < threshold) {
                     return;
                 }
 

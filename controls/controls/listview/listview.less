@@ -5,17 +5,31 @@
 
 #platui {
     #__Listview {
-        .plat-ring-constants() {
-            height: 2.5em;
-            width: 100%;
+        .plat-ring-constants(@orientation: vertical) {
+            & when (@orientation = vertical) {
+                height: 2.5em;
+                width: 100%;
+            } 
+            & when (@orientation = horizontal) {
+                height: 100%;
+                width: 2.5em;
+            }
 
             .plat-ring {
                 height: 2em;
                 width: 2em;
-                margin-top: 0.25em;
-                margin-bottom: 0.25em;
                 position: absolute;
-                .calc(left, '50% - 1em');
+
+                & when (@orientation = vertical) {
+                    margin-top: 0.25em;
+                    margin-bottom: 0.25em;
+                    .calc(left, '50% - 1em');
+                } 
+                & when (@orientation = horizontal) {
+                    margin-left: 0.25em;
+                    margin-right: 0.25em;
+                    .calc(top, '50% - 1em');
+                }
 
                 .plat-progress-container {
                     .plat-animated-ring {
@@ -57,6 +71,43 @@
                 .box-sizing(border-box);
             }
         }
+
+        &.plat-manipulation-prep {
+            background-color: @manipulated-viewport-background-color;
+
+            .plat-scroll-container {
+                overflow: hidden;
+            }
+        }
+            
+        &.plat-transition-init {
+            .translateZ(0);
+            .transition(@refresh-transition);
+        }
+    }
+
+    .plat-refresh,
+    .plat-incremental {
+        position: absolute;
+        z-index: 0;
+
+        .plat-ring {
+            .plat-progress-container {
+                .plat-animated-ring {
+                    .animation-play-state(paused);
+                }
+            }
+        }
+
+        &.plat-play {
+            .plat-ring {
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .animation-play-state(running);
+                    }
+                }
+            }
+        }
     }
 
     &.plat-vertical {
@@ -71,45 +122,12 @@
                     }
                 }
             }
-
-            &.plat-manipulation-prep {
-                background-color: @manipulated-viewport-background-color;
-
-                .plat-scroll-container {
-                    overflow: hidden;
-                }
-            }
-            
-            &.plat-transition-init {
-                .translateZ(0);
-                .transition(@refresh-transition);
-            }
         }
 
         .plat-refresh,
         .plat-incremental {
             .plat-ring-constants();
-            position: absolute;
             left: 0;
-            z-index: 0;
-
-            .plat-ring {
-                .plat-progress-container {
-                    .plat-animated-ring {
-                        .animation-play-state(paused);
-                    }
-                }
-            }
-
-            &.plat-play {
-                .plat-ring {
-                    .plat-progress-container {
-                        .plat-animated-ring {
-                            .animation-play-state(running);
-                        }
-                    }
-                }
-            }
         }
 
         .plat-refresh {
@@ -122,12 +140,30 @@
     }
 
     &.plat-horizontal {
-        .plat-scroll-container {
-            .scroll(x);
+        .plat-listview-viewport {
+            .plat-scroll-container {
+                .scroll(x);
 
-            .plat-container {
-
+                .plat-container {
+                    .plat-infinite {
+                        position: relative;
+                    }
+                }
             }
+        }
+
+        .plat-refresh,
+        .plat-incremental {
+            .plat-ring-constants(horizontal);
+            top: 0;
+        }
+
+        .plat-refresh {
+            left: 0;
+        }
+
+        .plat-incremental {
+            right: 0;
         }
     }
 
