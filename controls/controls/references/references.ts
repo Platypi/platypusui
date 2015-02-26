@@ -96,7 +96,8 @@ var __prefix = '$',
         left: 'right',
         up: 'down',
         down: 'up'
-    };
+    },
+    noop = (): void => { };
 /* tslint:enable:no-unused-variable */
 
 module platui {

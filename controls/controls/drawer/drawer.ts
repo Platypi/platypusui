@@ -1023,7 +1023,7 @@ module platui {
          * A function for removing the listener for responding to other {@link platui.DrawerController|DrawerControllers} 
          * being disposed.
          */
-        protected _disposeRemover: plat.IRemoveListener = (): void => { };
+        protected _disposeRemover: plat.IRemoveListener = noop;
 
         /**
          * @name _rootElement
@@ -1908,10 +1908,7 @@ module platui {
             }
 
             if (!this._utils.isNull(this._animationThenable)) {
-                this._animationThenable.cancel().then((): void => {
-                    this._animationThenable = null;
-                    this._initTouch(ev);
-                });
+                this._animationThenable.cancel();
             }
 
             this._initTouch(ev);

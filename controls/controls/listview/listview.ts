@@ -1207,7 +1207,7 @@ module platui {
             removeArrayListener = control.observe(this._childContextChanged.bind(this, name), items);
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
 
-            this._createItems(0,(group.items || []).length, groupHash, 0);
+            this._createItems(0, (group.items || []).length, groupHash, 0);
             if (animate) {
                 var animationQueue = this._defaultGroup.animationQueue;
                 animationQueue.push({
@@ -2590,7 +2590,7 @@ module platui {
             }
 
             var animationQueue = group.animationQueue,
-                animationPromise = this._animator.create(nodes, key).then((): void => {
+                animationPromise = this._animator.create(nodes, key).current.then((): void => {
                     animationQueue.shift();
                 }),
                 callback = (): plat.ui.animations.IAnimationThenable<any> => {
@@ -2679,7 +2679,7 @@ module platui {
             var parentNode: Node,
                 animationQueue = group.animationQueue,
                 isNull = this._utils.isNull,
-                animationPromise = this._animator.create(nodes, key).then((): void => {
+                animationPromise = this._animator.create(nodes, key).current.then((): void => {
                     animationQueue.shift();
                     if (isNull(parentNode)) {
                         return;

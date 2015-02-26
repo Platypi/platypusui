@@ -163,9 +163,6 @@ module.exports = exports = function load(grunt) {
         },
         lessCompile: {
             main: {
-                options: {
-                    cleancss: true
-                },
                 files: {
                     'controls/lib/platypus.css': 'controls/lib/platypus.less'
                 }
@@ -176,9 +173,6 @@ module.exports = exports = function load(grunt) {
                 }
             },
             packaging: {
-                options: {
-                    cleancss: true
-                },
                 files: {
 					'dist/platypus.css': 'dist/platypus.less'
                 }

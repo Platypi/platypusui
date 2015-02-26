@@ -677,13 +677,24 @@ module plat {
     }
     
     function defer(method: (...args: any[]) => void, timeout: number, args?: Array<any>, context?: any): plat.IRemoveListener {
-        function defer(): void {
+        function execDefer(): void {
             method.apply(context, args);
         }
     
-        var timeoutId = setTimeout(defer, timeout);
+        var timeoutId = setTimeout(execDefer, timeout);
         return (): void => {
             clearTimeout(timeoutId);
+        };
+    }
+    
+    function setIntervalGlobal(method: (...args: any[]) => void, interval: number, args?: Array<any>, context?: any): plat.IRemoveListener {
+        function execInterval(): void {
+            method.apply(context, args);
+        }
+    
+        var intervalId = setInterval(execInterval, interval);
+        return (): void => {
+            clearInterval(intervalId);
         };
     }
     
@@ -3301,12 +3312,24 @@ module plat {
          * Takes in a method and array of arguments to pass to that method. Delays calling the method until 
          * after the current call stack is clear. Equivalent to a setTimeout with the specified timeout value.
          * @param {(...args: Array<any>) => void} method The method to call.
-         * @param {number} timeout The time (in milliseconds) to delay before calling the provided method
+         * @param {number} timeout The time (in milliseconds) to delay before calling the provided method.
          * @param {Array<any>} args? The arguments to apply to the method.
          * @param {any} context? An optional context to bind to the method.
          */
         defer(method: (...args: any[]) => void, timeout: number, args?: Array<any>, context?: any): IRemoveListener {
             return defer(method, timeout, args, context);
+        }
+
+        /**
+         * Takes in a method and array of arguments to pass to that method. Adds the method to the call stack every 
+         * interval amount of time. Equivalent to a setInterval with the specified interval value.
+         * @param {(...args: Array<any>) => void} method The method to call.
+         * @param {number} interval The time (in milliseconds) between each consecutive call of the provided method.
+         * @param {Array<any>} args? The arguments to apply to the method.
+         * @param {any} context? An optional context to bind to the method.
+         */
+        setInterval(method: (...args: any[]) => void, interval: number, args?: Array<any>, context?: any): IRemoveListener {
+            return setIntervalGlobal(method, interval, args, context);
         }
 
         /**
@@ -6203,7 +6226,7 @@ module plat {
             then<U>(onFulfilled: (success: R) => any, onRejected?: (error: any) => any): IThenable<U> {
                 var promise = this;
 
-                var thenPromise = <IThenable<U>>new (<any>this).constructor((): void => { }, this);
+                var thenPromise = <IThenable<U>>new (<any>this).constructor(noop, this);
 
                 if (this.__state) {
                     var callbacks = arguments;
@@ -14487,19 +14510,19 @@ module plat {
             protected _subscribers: IObject<IEventSubscriber> = {};
 
             /**
-             * The touch start events defined by this browser.
+             * The space delimited touch start events defined by this browser.
              */
-            protected _startEvents: Array<string>;
+            protected _startEvents: string;
 
             /**
-             * The touch move events defined by this browser.
+             * The space delimited touch move events defined by this browser.
              */
-            protected _moveEvents: Array<string>;
+            protected _moveEvents: string;
 
             /**
-             * The touch end events defined by this browser.
+             * The space delimited touch end events defined by this browser.
              */
-            protected _endEvents: Array<string>;
+            protected _endEvents: string;
 
             /**
              * An object containing the event types for all of the 
@@ -14537,18 +14560,6 @@ module plat {
                 $trackend: 0
             };
 
-            /**
-             * A constant for specifying the start condition.
-             */
-            private __START = 'start';
-            /**
-             * A constant for specifying the move condition.
-             */
-            private __MOVE = 'move';
-            /**
-             * A constant for specifying the end condition.
-             */
-            private __END = 'end';
             /**
              * Whether or not the user moved while in touch.
              */
@@ -14647,11 +14658,7 @@ module plat {
             /**
              * A set of touch start, move, and end listeners to be place on the document.
              */
-            private __listeners: ICustomEventListener = {
-                start: this._onTouchStart.bind(this),
-                move: this._onTouchMove.bind(this),
-                end: this._onTouchEnd.bind(this)
-            };
+            private __listeners: IObject<EventListener> = {};
 
             /**
              * Retrieve the type of touch events for this browser and create the default gesture style.
@@ -14812,7 +14819,8 @@ module plat {
                     return true;
                 }
 
-                if (ev.type !== 'mousedown') {
+                var eventType = ev.type;
+                if (eventType !== 'mousedown') {
                     this._inTouch = true;
                 } else if (this._inTouch === true) {
                     // return immediately if mouse event and currently in a touch
@@ -14844,8 +14852,9 @@ module plat {
                     noRelease = gestureCount.$release <= 0;
 
                 // if any moving events registered, register move
-                if (gestureCount.$track > 0 || gestureCount.$trackend > 0 || gestureCount.$swipe > 0) {
-                    this.__registerType(this.__MOVE);
+                if (eventType === 'touchstart' || gestureCount.$track > 0 ||
+                    gestureCount.$trackend > 0 || gestureCount.$swipe > 0) {
+                    this.__registerType(this._moveEvents);
                     this.__detectingMove = true;
                 }
 
@@ -14972,8 +14981,8 @@ module plat {
                                 ev.preventDefault();
                             }
                         } else if (this._inTouch === true) {
-                            // handInput must be called prior to preventClickFromTouch due to an 
-                            // order of operations
+                            // handleInput must be called prior to preventClickFromTouch due to an 
+                            // order of operations issue / potential race condition
                             this.__handleInput(<HTMLInputElement>ev.target);
                             if (ev.cancelable === true) {
                                 ev.preventDefault();
@@ -15074,7 +15083,7 @@ module plat {
                 this.__cancelDeferredHold = noop;
 
                 if (this.__detectingMove) {
-                    this.__unregisterType(this.__MOVE);
+                    this.__unregisterType(this._moveEvents);
                     this.__detectingMove = false;
                 }
             }
@@ -15274,98 +15283,79 @@ module plat {
              */
             private __getTypes(): void {
                 var _compat = this._compat,
-                    touchEvents = _compat.mappedEvents;
+                    touchEvents = _compat.mappedEvents,
+                    listeners = this.__listeners,
+                    startEvents: string,
+                    moveEvents: string,
+                    endEvents: string;
 
                 if (_compat.hasPointerEvents) {
-                    this._startEvents = [touchEvents.$touchstart];
-                    this._moveEvents = [touchEvents.$touchmove];
-                    this._endEvents = [touchEvents.$touchend, touchEvents.$touchcancel];
-                    return;
+                    startEvents = this._startEvents = touchEvents.$touchstart;
+                    moveEvents = this._moveEvents = touchEvents.$touchmove;
+                    endEvents = this._endEvents = touchEvents.$touchend + ' ' + touchEvents.$touchcancel;
                 } else if (_compat.hasTouchEvents) {
-                    this._startEvents = [touchEvents.$touchstart, 'mousedown'];
-                    this._moveEvents = [touchEvents.$touchmove, 'mousemove'];
-                    this._endEvents = [touchEvents.$touchend, touchEvents.$touchcancel, 'mouseup'];
-                    return;
+                    startEvents = this._startEvents = touchEvents.$touchstart + ' mousedown';
+                    moveEvents = this._moveEvents = touchEvents.$touchmove + ' mousemove';
+                    endEvents = this._endEvents = touchEvents.$touchend + ' mouseup ' + touchEvents.$touchcancel;
+                } else {
+                    var cancelEvent = touchEvents.$touchcancel;
+                    startEvents = this._startEvents = touchEvents.$touchstart;
+                    moveEvents = this._moveEvents = touchEvents.$touchmove;
+                    endEvents = this._endEvents = touchEvents.$touchend + (!cancelEvent ? '' : (' ' + cancelEvent));
                 }
 
-                var cancelEvent = touchEvents.$touchcancel;
-                this._startEvents = [touchEvents.$touchstart];
-                this._moveEvents = [touchEvents.$touchmove];
-                this._endEvents = isNull(cancelEvent) ? [touchEvents.$touchend] : [touchEvents.$touchend, cancelEvent];
+                listeners[startEvents] = this._onTouchStart.bind(this);
+                listeners[moveEvents] = this._onTouchMove.bind(this);
+                listeners[endEvents] = this._onTouchEnd.bind(this);
             }
 
             /**
              * Registers for and starts listening to start and end touch events on the document.
              */
             private __registerTypes(): void {
-                this.__registerType(this.__START);
-                this.__registerType(this.__END);
+                this.__registerType(this._startEvents);
+                this.__registerType(this._endEvents);
             }
 
             /**
              * Unregisters for and stops listening to all touch events on the document.
              */
             private __unregisterTypes(): void {
-                this.__unregisterType(this.__START);
-                this.__unregisterType(this.__MOVE);
-                this.__unregisterType(this.__END);
+                this.__unregisterType(this._startEvents);
+                this.__unregisterType(this._endEvents);
+                if (this.__detectingMove) {
+                    this.__unregisterType(this._moveEvents);
+                    this.__detectingMove = false;
+                }
             }
 
             /**
              * Registers for and begins listening to a particular touch event type.
-             * @param {string} event The event type to begin listening for.
+             * @param {string} events The events to begin listening for.
              */
-            private __registerType(event: string): void {
-                var events: Array<string>,
-                    listener = this.__listeners[event],
-                    _document = this._document;
+            private __registerType(events: string): void {
+                var listener = this.__listeners[events],
+                    _document = this._document,
+                    eventSplit = events.split(' '),
+                    index = eventSplit.length;
 
-                switch (event) {
-                    case this.__START:
-                        events = this._startEvents;
-                        break;
-                    case this.__MOVE:
-                        events = this._moveEvents;
-                        break;
-                    case this.__END:
-                        events = this._endEvents;
-                        break;
-                    default:
-                        return;
-                }
-
-                var index = events.length;
                 while (index-- > 0) {
-                    _document.addEventListener(events[index], listener, false);
+                    _document.addEventListener(eventSplit[index], listener, false);
                 }
             }
 
             /**
              * Unregisters for and stops listening to a particular touch event type.
-             * @param {string} event The event type to stop listening for.
+             * @param {string} events The events to stop listening for.
              */
-            private __unregisterType(event: string): void {
-                var events: Array<string>,
-                    listener = this.__listeners[event],
-                    _document = this._document;
+            private __unregisterType(events: string): void {
+                var listener = this.__listeners[events],
+                    _document = this._document,
+                    eventSplit = events.split(' '),
+                    index = eventSplit.length;
 
-                switch (event) {
-                    case this.__START:
-                        events = this._startEvents;
-                        break;
-                    case this.__MOVE:
-                        events = this._moveEvents;
-                        break;
-                    case this.__END:
-                        events = this._endEvents;
-                        break;
-                    default:
-                        return;
-                }
-
-                var index = events.length;
                 while (index-- > 0) {
-                    _document.removeEventListener(events[index], listener, false);
+                    _document.removeEventListener(eventSplit[index], listener, false);
                 }
             }
 
@@ -15672,15 +15662,20 @@ module plat {
                     touches = ev.touches || this.__pointerEvents,
                     changedTouches = ev.changedTouches,
                     changedTouchesExist = !isUndefined(changedTouches),
+                    preventDefault: () => void,
                     timeStamp = ev.timeStamp;
 
                 if (changedTouchesExist) {
                     if (isStart) {
+                        preventDefault = ev.preventDefault.bind(ev);
                         ev = changedTouches[0];
+                        ev.preventDefault = preventDefault;
                     } else {
                         var changedTouchIndex = this.__getTouchIndex(changedTouches);
                         if (changedTouchIndex >= 0) {
+                            preventDefault = ev.preventDefault.bind(ev);
                             ev = changedTouches[changedTouchIndex];
+                            ev.preventDefault = preventDefault;
                         } else if (this.__getTouchIndex(touches) >= 0) {
                             // we want to return null because our point of interest is in touches 
                             // but was not in changedTouches so it is still playing a part on the page
@@ -16340,26 +16335,6 @@ module plat {
         }
 
         /**
-         * Describes the touch event listeners for the document.
-         */
-        interface ICustomEventListener extends IObject<EventListener> {
-            /**
-             * The touch start event.
-             */
-            start: EventListener;
-
-            /**
-             * The touch end event.
-             */
-            end: EventListener;
-
-            /**
-             * The touch move event.
-             */
-            move: EventListener;
-        }
-
-        /**
          * An extended event object containing coordinate, time, and target info.
          */
         export interface IBaseEventProperties {
@@ -16905,35 +16880,35 @@ module plat {
                  * @param {Element} element The Element to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
-                 * resolves when the animation is complete.
+                 * previous animation is finished and a promise that resolves when the current animation is finished.
                  */
-                create(element: Element, key: string, options?: any): IAnimatingThenable;
+                create(element: Element, key: string, options?: any): IAnimationCreation;
                 /**
                  * Creates the defined animation denoted by the key but does not start the animation.
                  * @param {DocumentFragment} elements The DocumentFragment whose childNodes are to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
-                 * resolves when the animation is complete.
+                 * previous animation is finished and a promise that resolves when the current animation is finished.
                  */
-                create(element: DocumentFragment, key: string, options?: any): IAnimatingThenable;
+                create(element: DocumentFragment, key: string, options?: any): IAnimationCreation;
                 /**
                  * Creates the defined animation denoted by the key but does not start the animation.
                  * @param {NodeList} elements The list of Nodes to be animated.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
-                 * resolves when the animation is complete.
+                 * previous animation is finished and a promise that resolves when the current animation is finished.
                  */
-                create(elements: NodeList, key: string, options?: any): IAnimatingThenable;
+                create(elements: NodeList, key: string, options?: any): IAnimationCreation;
                 /**
                  * Creates the defined animation denoted by the key but does not start the animation.
                  * @param {Array<Node>} elements The Array of Nodes to be animated. All nodes in the Array must have 
                  * the same parent, otherwise the animation will not function correctly.
                  * @param {string} key The identifier specifying the type of animation.
                  * @param {any} options? Specified options for the animation.
-                 * resolves when the animation is complete.
+                 * previous animation is finished and a promise that resolves when the current animation is finished.
                  */
-                create(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
-                create(elements: any, key: string, options?: any): IAnimatingThenable {
+                create(elements: Array<Node>, key: string, options?: any): IAnimationCreation;
+                create(elements: any, key: string, options?: any): IAnimationCreation {
                     return this._create(elements, key, options, {
                         key: null
                     });
@@ -16973,15 +16948,9 @@ module plat {
                  */
                 animate(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 animate(elements: any, key: string, options?: any): IAnimatingThenable {
-                    var animation = this._create(elements, key, options, {
+                    return this._animate(elements, key, options, {
                         key: null
                     });
-
-                    requestAnimationFrameGlobal((): void => {
-                        animation.start();
-                    });
-
-                    return animation;
                 }
 
                 /**
@@ -17034,17 +17003,11 @@ module plat {
                  */
                 enter(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
                 enter(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
-                    var animation = this._create(elements, key, options, {
+                    return this._animate(elements, key, options, {
                         key: 'enter',
                         parent: parent,
                         refChild: refChild
                     });
-
-                    requestAnimationFrameGlobal((): void => {
-                        animation.start();
-                    });
-
-                    return animation;
                 }
 
                 /**
@@ -17085,15 +17048,9 @@ module plat {
                  */
                 leave(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 leave(elements: any, key: string, options?: any): IAnimatingThenable {
-                    var animation = this._create(elements, key, options, {
+                    return this._animate(elements, key, options, {
                         key: 'leave'
                     });
-
-                    requestAnimationFrameGlobal((): void => {
-                        animation.start();
-                    });
-
-                    return animation;
                 }
 
                 /**
@@ -17154,17 +17111,11 @@ module plat {
                  */
                 move(elements: Array<Node>, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable;
                 move(elements: any, key: string, parent: Element, refChild?: Node, options?: any): IAnimatingThenable {
-                    var animation = this._create(elements, key, options, {
+                    return this._animate(elements, key, options, {
                         key: 'move',
                         parent: parent,
                         refChild: refChild
                     });
-
-                    requestAnimationFrameGlobal((): void => {
-                        animation.start();
-                    });
-
-                    return animation;
                 }
 
                 /**
@@ -17201,15 +17152,9 @@ module plat {
                  */
                 show(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 show(elements: any, key: string, options?: any): IAnimatingThenable {
-                    var animation = this._create(elements, key, options, {
+                    return this._animate(elements, key, options, {
                         key: 'show'
                     });
-
-                    requestAnimationFrameGlobal((): void => {
-                        animation.start();
-                    });
-
-                    return animation;
                 }
 
                 /**
@@ -17246,15 +17191,9 @@ module plat {
                  */
                 hide(elements: Array<Node>, key: string, options?: any): IAnimatingThenable;
                 hide(elements: any, key: string, options?: any): IAnimatingThenable {
-                    var animation = this._create(elements, key, options, {
+                    return this._animate(elements, key, options, {
                         key: 'hide'
                     });
-
-                    requestAnimationFrameGlobal((): void => {
-                        animation.start();
-                    });
-
-                    return animation;
                 }
 
                 /**
@@ -17263,8 +17202,8 @@ module plat {
                 all(promises: Array<IAnimationThenable<any>>): IAnimationThenable<void> {
                     var length = promises.length,
                         args = <Array<IAnimationEssentials>>[],
-                        animationPromise = new AnimationPromise((resolve) => {
-                            this._Promise.all(promises).then(() => {
+                        animationPromise = new AnimationPromise((resolve): void => {
+                            this._Promise.all(promises).then((): void => {
                                 resolve();
                             });
                         });
@@ -17300,10 +17239,35 @@ module plat {
                  * @param {plat.ui.animations.IAnimationFunction} functionality An object containing detailed information about 
                  * special animation functionality.
                  */
-                protected _create(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimatingThenable {
+                protected _animate(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimatingThenable {
+                    var animation = this._create(elements, key, options, functionality),
+                        current = animation.current;
+
+                    animation.previous.then((): void => {
+                        requestAnimationFrameGlobal((): void => {
+                            current.start();
+                        });
+                    });
+
+                    return current;
+                }
+
+                /**
+                 * Animates the passed in elements with the given key and handles special animation functionality. Returns both 
+                 * the previous and current animations for the given element(s).
+                 * @param {any} elements The Nodes to be animated. All nodes in the Array must have 
+                 * the same parent, otherwise the animation will not function correctly.
+                 * @param {string} key The identifier specifying the type of animation.
+                 * @param {any} options? Specified options for the animation.
+                 * @param {plat.ui.animations.IAnimationFunction} functionality An object containing detailed information about 
+                 * special animation functionality.
+                 * previous animation is finished and a promise that resolves when the current animation is finished.
+                 */
+                protected _create(elements: any, key: string, options: any, functionality: IAnimationFunction): IAnimationCreation {
                     var animationInjector = animationInjectors[key],
                         animationInstances: Array<BaseAnimation> = [],
-                        elementNodes: Array<Element> = [];
+                        elementNodes: Array<Element> = [],
+                        immediateResolve: IAnimationThenable<any>;
 
                     if (!this._compat.animationSupported || isUndefined(animationInjector)) {
                         animationInjector = jsAnimationInjectors[key];
@@ -17312,7 +17276,8 @@ module plat {
                             this._handlePreInitFunctionality(elements, elementNodes, functionality);
                             this._handlePostInitFunctionality(elements, elementNodes, functionality);
                             this._handleEndFunctionality(elements, elementNodes, functionality);
-                            return this.resolve();
+                            immediateResolve = this.resolve();
+                            return { previous: immediateResolve, current: immediateResolve };
                         }
                     }
 
@@ -17323,60 +17288,62 @@ module plat {
                         this._handlePreInitFunctionality(elements, elementNodes, functionality);
                         this._handlePostInitFunctionality(elements, elementNodes, functionality);
                         this._handleEndFunctionality(elements, elementNodes, functionality);
-                        return this.resolve();
+                        immediateResolve = this.resolve();
+                        return { previous: immediateResolve, current: immediateResolve };
                     }
 
                     this._handlePreInitFunctionality(elements, elementNodes, functionality);
 
-                    var animationPromises: Array<IAnimationThenable<any>> = [],
-                        id = uniqueId('animation_'),
-                        previousAnimations = this.__setAnimationId(id, elementNodes);
+                    var id = uniqueId('animation_'),
+                        previousAnimations = this.__setAnimationId(id, elementNodes),
+                        previousPromise: async.IThenable<void>,
+                        animationPromise = new AnimationPromise((resolve: any): void => {
+                            var _Promise = this._Promise;
+                            previousPromise = _Promise.all(previousAnimations).then((): void => {
+                                var animationPromises: Array<IAnimationThenable<any>> = [];
 
-                    // instantiate needs to be called after __setAnimationId in the case that 
-                    // the same element is animating while in an animation
-                    for (var i = 0; i < length; ++i) {
-                        animationPromises.push(animationInstances[i].instantiate(elementNodes[i], options));
-                    }
+                                for (var i = 0; i < length; ++i) {
+                                    animationPromises.push(animationInstances[i].instantiate(elementNodes[i], options));
+                                }
 
-                    this._handlePostInitFunctionality(elements, elementNodes, functionality);
+                                this._handlePostInitFunctionality(elements, elementNodes, functionality);
 
-                    var animationPromise = new AnimationPromise((resolve: any): void => {
-                        this._Promise.all(animationPromises.concat(previousAnimations)).then(resolve);
-                    })
+                                var animationsFinished = _Promise.all(animationPromises),
+                                    animatingParentId = this.__isParentAnimating(elementNodes),
+                                    animatedElement = this.__generateAnimatedElement(id, elementNodes, animationPromise);
+
+                                if (!isNull(animatingParentId)) {
+                                    this._handleEndFunctionality(elements, elementNodes, functionality);
+                                    animatedElement.animationEnd(true);
+
+                                    var parent = this._animatedElements[animatingParentId],
+                                        resolvedPromise = isPromise(parent.promise) ?
+                                            (): IAnimationThenable<any> => {
+                                                return parent.promise;
+                                            } : (): IAnimationThenable<any> => {
+                                                return animationPromise;
+                                            };
+
+                                    animationsFinished.then((): void => {
+                                        resolve(resolvedPromise);
+                                    });
+                                }
+
+                                this.__stopChildAnimations(elementNodes);
+
+                                animatedElement.promise = animationPromise;
+                                animationsFinished.then((): void => {
+                                    this._handleEndFunctionality(elements, elementNodes, functionality);
+                                    animatedElement.animationEnd();
+                                    resolve((): IAnimationThenable<any> => {
+                                        return animationPromise;
+                                    });
+                                });
+                            });
+                        });
 
                     animationPromise.initialize(animationInstances);
-
-                    var animatingParentId = this.__isParentAnimating(elementNodes),
-                        animatedElement = this.__generateAnimatedElement(id, elementNodes, animationPromise);
-                    if (!isNull(animatingParentId)) {
-                        this._handleEndFunctionality(elements, elementNodes, functionality);
-                        animatedElement.animationEnd(true);
-
-                        var parent = this._animatedElements[animatingParentId];
-                        if (isPromise(parent.promise)) {
-                            return animationPromise.then((): () => IAnimationThenable<any> => {
-                                return (): IAnimationThenable<any> => {
-                                    return parent.promise;
-                                };
-                            });
-                        }
-
-                        return animationPromise.then((): () => IAnimationThenable<any> => {
-                            return (): IAnimationThenable<any> => {
-                                return animationPromise;
-                            };
-                        });
-                    }
-
-                    this.__stopChildAnimations(elementNodes);
-
-                    return animatedElement.promise = animationPromise.then((): () => IAnimationThenable<any> => {
-                        this._handleEndFunctionality(elements, elementNodes, functionality);
-                        animatedElement.animationEnd();
-                        return (): IAnimationThenable<any> => {
-                            return animationPromise;
-                        };
-                    });
+                    return { previous: previousPromise, current: animationPromise };
                 }
 
                 /**
@@ -17499,9 +17466,9 @@ module plat {
                         }
                     }
 
-                    return promises
+                    return promises;
                 }
-        
+
                 /**
                  * Generates a new animated element for the Animator to easily reference and be able 
                  * to end later on.
@@ -17790,7 +17757,7 @@ module plat {
                  */
                 pause(): async.IThenable<void> {
                     if (this.__animationState !== 1) {
-                        return;
+                        return this._Promise.resolve();
                     }
 
                     var animationInstances = this.__animationInstances,
@@ -17814,7 +17781,7 @@ module plat {
                  */
                 resume(): async.IThenable<void> {
                     if (this.__animationState !== 1) {
-                        return;
+                        return this._Promise.resolve();
                     }
 
                     var animationInstances = this.__animationInstances,
@@ -17837,7 +17804,7 @@ module plat {
                  */
                 cancel(): IAnimatingThenable {
                     if (this.__animationState === 2) {
-                        return;
+                        return this;
                     }
 
                     var animationInstances = this.__animationInstances,
@@ -18012,6 +17979,22 @@ module plat {
             export interface IAnimatingThenable extends IAnimationThenable<IGetAnimatingThenable> { }
 
             /**
+             * Describes an object containing two promises. One that resolves when the previous animation is finished, the 
+             * other that resolves when the current animation is finished.
+             */
+            export interface IAnimationCreation {
+                /**
+                 * A promise that resolves when a potential previous animation is done.
+                 */
+                previous: async.IThenable<void>;
+
+                /**
+                 * An animation promise that resolves when the current animation is complete.
+                 */
+                current: IAnimatingThenable;
+            }
+
+            /**
              * Describes base functional requirements for externally referenced animations.
              */
             export interface IAnimationEssentials {
@@ -18093,11 +18076,6 @@ module plat {
                 protected _Promise: async.IPromise;
 
                 /**
-                 * Whether or not the animation has been canceled.
-                 */
-                protected _canceled = false;
-
-                /**
                  * The resolve function for the end of the animation.
                  */
                 protected _resolve: () => void;
@@ -18147,10 +18125,10 @@ module plat {
                 }
 
                 /**
-                 * A function to be called to let it be known the animation is being cancelled.
+                 * A function to be called to let it be known the animation is being cancelled. Although not 
+                 * necessary, we call end() in this function as well for safe measure.
                  */
                 cancel(): void {
-                    this._canceled = true;
                     this.end();
                 }
 
@@ -18290,6 +18268,11 @@ module plat {
                 options: ISimpleCssAnimationOptions;
 
                 /**
+                 * A function for stopping a potential callback in the animation chain.
+                 */
+                protected _stopAnimation: IRemoveListener = noop;
+
+                /**
                  * Adds the class to initialize the animation.
                  */
                 initialize(): void {
@@ -18300,12 +18283,10 @@ module plat {
                  * A function denoting the start of the animation.
                  */
                 start(): void {
-                    requestAnimationFrameGlobal((): void => {
+                    this._stopAnimation = requestAnimationFrameGlobal((): void => {
                         var element = this.element;
 
-                        if (this._canceled) {
-                            return;
-                        } else if (element.offsetParent === null) {
+                        if (element.offsetParent === null) {
                             this._dispose();
                             this.end();
                             return;
@@ -18324,7 +18305,11 @@ module plat {
                             return;
                         }
 
-                        this.animationEnd(this.cancel);
+                        this._stopAnimation = this.animationEnd((): void => {
+                            this._stopAnimation = requestAnimationFrameGlobal((): void => {
+                                this._dispose();
+                            });
+                        });
                     });
                 }
 
@@ -18332,14 +18317,16 @@ module plat {
                  * A function to be called to pause the animation.
                  */
                 pause(): async.IThenable<void> {
-                    if (this._canceled) {
+                    if (this._stopAnimation === noop) {
                         return this._Promise.resolve();
                     }
 
                     var animationEvents = this._compat.animationEvents;
                     return new this._Promise<void>((resolve): void => {
                         requestAnimationFrameGlobal((): void => {
-                            this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'paused';
+                            if (this._stopAnimation !== noop) {
+                                this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'paused';
+                            }
                             resolve();
                         });
                     });
@@ -18349,14 +18336,16 @@ module plat {
                  * A function to be called to resume a paused animation.
                  */
                 resume(): async.IThenable<void> {
-                    if (this._canceled) {
+                    if (this._stopAnimation === noop) {
                         return this._Promise.resolve();
                     }
 
                     var animationEvents = this._compat.animationEvents;
                     return new this._Promise<void>((resolve): void => {
                         requestAnimationFrameGlobal((): void => {
-                            this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'running';
+                            if (this._stopAnimation !== noop) {
+                                this.element.style[<any>(animationEvents.$animation + 'PlayState')] = 'running';
+                            }
                             resolve();
                         });
                     });
@@ -18367,11 +18356,9 @@ module plat {
                  * Removes the animation class and the animation "-init" class.
                  */
                 cancel(): void {
-                    super.cancel();
-
-                    requestAnimationFrameGlobal((): void => {
-                        this._dispose();
-                    });
+                    this._stopAnimation();
+                    this._dispose();
+                    this.end();
                 }
 
                 /**
@@ -18380,6 +18367,7 @@ module plat {
                 protected _dispose(): void {
                     var className = this.className;
                     removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
+                    this._stopAnimation = noop;
                 }
             }
 
@@ -18474,6 +18462,11 @@ module plat {
                 className = __SimpleTransition;
 
                 /**
+                 * A function for stopping a potential callback in the animation chain.
+                 */
+                protected _stopAnimation: IRemoveListener = noop;
+
+                /**
                  * A JavaScript object containing all modified properties as a result 
                  * of this animation. Used in the case of a disposal to reset the changed 
                  * properties.
@@ -18511,37 +18504,32 @@ module plat {
                  * A function denoting the start of the animation.
                  */
                 start(): void {
-                    requestAnimationFrameGlobal((): void => {
+                    this._stopAnimation = requestAnimationFrameGlobal((): void => {
                         var element = this.element;
 
-                        if (this._canceled) {
-                            return;
-                        } else if (element.offsetParent === null) {
+                        if (element.offsetParent === null) {
                             this._animate();
                             this._dispose();
                             this.end();
                         }
 
                         addClass(element, this.className);
+                        this._started = true;
 
                         var transitionId = this._animationEvents.$transition,
                             computedStyle = this._window.getComputedStyle(element, (this.options || <ISimpleCssTransitionOptions>{}).pseudo),
                             transitionProperty = computedStyle[<any>(transitionId + 'Property')],
                             transitionDuration = computedStyle[<any>(transitionId + 'Duration')];
 
-                        this._started = true;
-
                         if (transitionProperty === '' || transitionProperty === 'none' ||
                             transitionDuration === '' || transitionDuration === '0s') {
-                            requestAnimationFrameGlobal((): void => {
-                                this._animate();
-                                this._dispose();
-                                this.end();
-                            });
+                            this._animate();
+                            this._dispose();
+                            this.end();
                             return;
                         }
 
-                        this.transitionEnd(this._done);
+                        this._stopAnimation = this.transitionEnd(this._done);
 
                         if (this._animate()) {
                             return;
@@ -18556,15 +18544,14 @@ module plat {
                  * A function to be called to let it be known the animation is being cancelled.
                  */
                 cancel(): void {
-                    super.cancel();
+                    this._stopAnimation();
 
-                    requestAnimationFrameGlobal((): void => {
-                        if (!this._started) {
-                            this._animate();
-                        }
+                    if (!this._started) {
+                        this._animate();
+                    }
 
-                        this._dispose();
-                    });
+                    this._dispose();
+                    this.end();
                 }
 
                 /**
@@ -18573,6 +18560,7 @@ module plat {
                 protected _dispose(): void {
                     var className = this.className;
                     removeClass(this.element, className + ' ' + className + __INIT_SUFFIX);
+                    this._stopAnimation = noop;
                 }
 
                 /**
@@ -18591,10 +18579,8 @@ module plat {
                         }
                     }
 
+                    this._dispose();
                     this.end();
-                    requestAnimationFrameGlobal((): void => {
-                        this._dispose();
-                    });
                 }
 
                 /**
@@ -19278,8 +19264,8 @@ module plat {
                 protected _animationQueue: Array<{ animation: animations.IAnimationThenable<any>; op: string; }>;
 
                  /**
-                 * A queue representing all current add operations.
-                 */
+                  * A queue representing all current add operations.
+                  */
                 protected _addQueue: Array<async.IThenable<void>> = [];
 
                 /**
@@ -19406,7 +19392,7 @@ module plat {
                         }
                     }
                 }
-        
+
                 /**
                  * Adds new items to the control's element when items are added to 
                  * the array.
@@ -19724,7 +19710,7 @@ module plat {
                         var _Promise = this._Promise,
                             itemAddCount = addCount - removeCount,
                             animationCount: number;
-                    
+
                         if (animating) {
                             animationCount = addCount;
 
@@ -19768,7 +19754,7 @@ module plat {
                         });
                     }
                 }
-        
+
                 /**
                  * Grabs the total blocklength of the specified items.
                  * @param {number} startIndex The starting index of items.
@@ -19821,7 +19807,7 @@ module plat {
                     }
 
                     var animationQueue = this._animationQueue,
-                        animationPromise = this._animator.create(nodes, key).then((): void => {
+                        animationPromise = this._animator.create(nodes, key).current.then((): void => {
                             animationQueue.shift();
                         }),
                         callback = (): animations.IAnimationThenable<any> => {
@@ -19889,7 +19875,7 @@ module plat {
 
                     var parentNode: Node,
                         animationQueue = this._animationQueue,
-                        animationPromise = this._animator.create(nodes, key).then((): void => {
+                        animationPromise = this._animator.create(nodes, key).current.then((): void => {
                             animationQueue.shift();
                             if (isNull(parentNode)) {
                                 return;
@@ -21408,6 +21394,16 @@ module plat {
                 replaceWith = 'a';
 
                 /**
+                 * The options for Link, if ignore is true, anchor will ignore changing the url.
+                 */
+                options: observable.IObservableProperty<ILinkOptions>;
+
+                /**
+                 * The control's anchor element.
+                 */
+                element: HTMLAnchorElement;
+
+                /**
                  * The RouterStatic injectable instance
                  */
                 protected _Router: routing.IRouterStatic;
@@ -21420,68 +21416,20 @@ module plat {
                 /**
                  * The router associated with this link.
                  */
-                router: routing.Router = this._Router.currentRouter();
-
-                /**
-                 * The options for Link, if ignore is true, anchor will ignore changing the url.
-                 */
-                options: observable.IObservableProperty<ILinkOptions>;
-
-                /**
-                 * The control's anchor element.
-                 */
-                element: HTMLAnchorElement;
+                protected _router: routing.Router = this._Router.currentRouter();
 
                 /**
                  * The a method for removing the click event listener for this control's element.
                  */
-                removeClickListener: IRemoveListener = noop;
+                protected _removeClickListener: IRemoveListener;
 
                 /**
-                 * Prevents default on the anchor tag if the href attribute is left empty, also determines internal links.
+                 * Initializes both tap and click events.
                  */
                 initialize(): void {
                     var element = this.element;
-
-                    this.addEventListener(element, __tap, (ev: IExtendedEvent): void => {
-                        if (ev.buttons !== 1) {
-                            return;
-                        }
-
-                        var href = this.getHref();
-                        if (isUndefined(href)) {
-                            return;
-                        }
-
-                        element.removeAttribute('data-href');
-                        ev.preventDefault();
-
-                        requestAnimationFrameGlobal((): void => {
-                            this._browser.url(href);
-                        });
-
-                        this.removeClickListener();
-                        element.addEventListener('click', this.getListener(element));
-                    }, false);
-                }
-
-                /**
-                 * Returns a click event listener. Also handles disposing of the listener.
-                 */
-                getListener(element: HTMLAnchorElement): (ev: Event) => void {
-                    var cancel: IRemoveListener,
-                        listener = (ev: Event): void => {
-                            ev.preventDefault();
-                            this.removeClickListener();
-                            cancel();
-                            element.removeEventListener('click', listener);
-                        };
-
-                    cancel = defer((): void => {
-                        element.removeEventListener('click', listener);
-                    }, 3000);
-
-                    return listener;
+                    this._removeClickListener = this.dom.addEventListener(element, 'click', this._handleClick, false);
+                    this.addEventListener(element, __tap, this._handleTap, false);
                 }
 
                 /**
@@ -21490,13 +21438,16 @@ module plat {
                 loaded(): void {
                     this.setHref();
 
-                    if (!isObject(this.options)) {
+                    var options = this.options;
+                    if (!isObject(options)) {
+                        options = this.options = <observable.IObservableProperty<ILinkOptions>>{};
+                        options.value = <ILinkOptions>{ view: '' };
                         return;
+                    } else if (!isObject(options.value)) {
+                        options.value = <ILinkOptions>{ view: '' };
                     }
 
-                    this.options.observe(() => {
-                        this.setHref();
-                    });
+                    options.observe(this.setHref.bind(this));
                 }
 
                 /**
@@ -21506,8 +21457,9 @@ module plat {
                     var href = this.getHref();
 
                     if (!isEmpty(href)) {
-                        this.element.href = href;
-                        this.element.setAttribute('data-href', href);
+                        var element = this.element;
+                        element.href = href;
+                        element.setAttribute('data-href', href);
                     }
                 }
 
@@ -21515,21 +21467,12 @@ module plat {
                  * Determines the href based on the input options.
                  */
                 getHref(): string {
-                    if (isNull(this.router)) {
+                    if (isNull(this._router)) {
                         return;
                     }
 
-                    if (!isObject(this.options)) {
-                        return '';
-                    }
-
-                    var value = this.options.value;
-
-                    if (!isObject(value)) {
-                        return '';
-                    }
-
-                    var href = value.view;
+                    var value = this.options.value,
+                        href = value.view;
 
                     if (value.isUrl !== true) {
                         var parameters = value.parameters,
@@ -21539,14 +21482,88 @@ module plat {
                             return href;
                         }
 
-                        href = this.router.generate(href, parameters, query);
+                        href = this._router.generate(href, parameters, query);
                     }
 
                     return this._browser.formatUrl(href);
                 }
+
+                /**
+                 * Determines Whether or not the default click behavior should be prevented.
+                 */
+                protected _handleClick(ev: Event): void {
+                    var buttons: number;
+                    if (isNumber((<any>ev).buttons)) {
+                        if ((<any>ev).buttons === 0) {
+                            buttons = 1;
+                        } else {
+                            buttons = (<any>ev).buttons;
+                        }
+                    } else if (isNumber((<any>ev).which) && (<any>ev).which > 0) {
+                        buttons = (<any>ev).which;
+                    } else {
+                        switch ((<any>ev).button) {
+                            case -1:
+                                buttons = 0;
+                                break;
+                            case 0:
+                                buttons = 1;
+                                break;
+                            case 1:
+                                buttons = 4;
+                                break;
+                            case 2:
+                                buttons = 2;
+                                break;
+                            case 3:
+                                buttons = 8;
+                                break;
+                            case 4:
+                                buttons = 16;
+                                break;
+                            default:
+                                buttons = 1;
+                                break;
+                        }
+                    }
+
+                    if (buttons === 1) {
+                        ev.preventDefault();
+                    }
+                }
+
+                /**
+                 * Determines the proper link upon $tap.
+                 */
+                protected _handleTap(ev: IGestureEvent): void {
+                    if (ev.buttons !== 1) {
+                        return;
+                    }
+
+                    var href = this.getHref();
+                    if (isUndefined(href)) {
+                        return;
+                    }
+
+                    this.element.removeAttribute('data-href');
+                    ev.preventDefault();
+
+                    requestAnimationFrameGlobal((): void => {
+                        this._browser.url(href);
+                    });
+
+                    defer(this._removeClickListener, 3000);
+                }
             }
 
+            /**
+             * The available options for the Link control.
+             */
             export interface ILinkOptions extends routing.INavigateOptions {
+                /**
+                 * The view to which the Navigator should navigate. Can be specified by either a string path, the 
+                 * registered name of the view, or the registered Constructor.
+                 */
                 view: any;
             }
 
@@ -25634,7 +25651,7 @@ module plat {
 
                 this.navigating = true;
                 return this._resolve(this.finishNavigating)
-                    .catch((): void => { })
+                    .catch(noop)
                     .then((): async.IThenable<void> => {
                     var routeInfo = _clone(this.currentRouteInfo, true);
                     return this.finishNavigating = this._canNavigateTo(routeInfo)
