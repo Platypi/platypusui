@@ -38,7 +38,34 @@ module app {
             listview: [10, 9, 8],
             groupedlistview: <Array<platui.IListviewGroup>>[
                 { group: 'A', items: ['apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
-                { group: 'B', items: ['ballin', 'bark', 'basket'] }
+                { group: 'B', items: ['ballin', 'bark', 'basket'] },
+                { group: 'C', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'D', items: ['ballin', 'bark', 'basket'] },
+                { group: 'E', items: ['ballin', 'bark', 'basket'] },
+                { group: 'F', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'G', items: ['ballin', 'bark', 'basket'] },
+                { group: 'H', items: ['ballin', 'bark', 'basket'] },
+                { group: 'I', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'J', items: ['ballin', 'bark', 'basket'] },
+                { group: 'K', items: ['ballin', 'bark', 'basket'] },
+                { group: 'L', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'M', items: ['ballin', 'bark', 'basket'] },
+                { group: 'N', items: ['ballin', 'bark', 'basket'] },
+                { group: 'O', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'P', items: ['ballin', 'bark', 'basket'] },
+                { group: 'Q', items: ['ballin', 'bark', 'basket'] },
+                { group: 'R', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'S', items: ['ballin', 'bark', 'basket'] },
+                { group: 'T', items: ['ballin', 'bark', 'basket'] },
+                { group: 'U', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'V', items: ['ballin', 'bark', 'basket'] },
+                { group: 'W', items: ['ballin', 'bark', 'basket'] },
+                { group: 'X', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'Y', items: ['ballin', 'bark', 'basket'] },
+                { group: 'Z', items: ['ballin', 'bark', 'basket'] },
+                { group: 'AA', items: ['ballin', 'bark', 'basket', 'apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
+                { group: 'AB', items: ['ballin', 'bark', 'basket'] },
+                { group: 'AC', items: ['ballin', 'bark', 'basket'] }
             ]
         };
 

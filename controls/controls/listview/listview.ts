@@ -2870,17 +2870,16 @@ module platui {
          * Sets the height of a group's item container.
          *
          * @param {HTMLElement} element The element to set the height on.
-         * @param {number} height? The height to set.
          *
          * @returns {void}
          */
-        protected _setItemContainerHeight(element: HTMLElement, height?: number): void {
+        protected _setItemContainerHeight(element: HTMLElement): void {
             var parent = element.parentElement,
                 parentHeight = parent.offsetHeight,
                 headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
 
             if (!(parentHeight && headerHeight)) {
-                this._setHeightWithClone(element);
+                this._setItemContainerHeightWithClone(element);
                 return;
             }
 
@@ -2888,7 +2887,7 @@ module platui {
         }
 
         /**
-         * @name _setHeightWithClone
+         * @name _setItemContainerHeightWithClone
          * @memberof platui.Listview
          * @kind function
          * @access protected
@@ -2900,7 +2899,7 @@ module platui {
          *
          * @returns {void}
          */
-        protected _setHeightWithClone(item: HTMLElement): void {
+        protected _setItemContainerHeightWithClone(item: HTMLElement): void {
             var body = this._document.body,
                 parent = item.parentElement,
                 element = <HTMLElement>parent.firstElementChild;
@@ -2916,7 +2915,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setHeightWithClone, 10, [item], this);
+                this._utils.defer(this._setItemContainerHeightWithClone, 10, [item], this);
                 return;
             }
 
