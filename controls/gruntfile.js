@@ -182,6 +182,7 @@ module.exports = exports = function load(grunt) {
             packaging: {
                 options: {
                     keepSpecialComments: 0,
+                    restructuring: false,
                     target: 'dist/platypus.min.css'
                 },
                 files: {
