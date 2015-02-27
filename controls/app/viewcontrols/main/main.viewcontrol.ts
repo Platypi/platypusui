@@ -37,7 +37,7 @@ module app {
             //listview: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
             listview: [10, 9, 8],
             groupedlistview: <Array<platui.IListviewGroup>>[
-                { group: 'A', items: ['apple', 'apricot', 'ardvark'] },
+                { group: 'A', items: ['apple', 'apricot', 'ardvark', 'apple', 'apricot', 'ardvark'] },
                 { group: 'B', items: ['ballin', 'bark', 'basket'] }
             ]
         };
@@ -76,7 +76,7 @@ module app {
         popListItem() {
             this.context.listview.pop();
             //this.context.groupedlistview[0].items.pop();
-            this.context.groupedlistview.pop();
+            this.context.groupedlistview[0].items.pop();
         }
 
         foo(ev?: any) {

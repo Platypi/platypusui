@@ -632,6 +632,34 @@ module platui {
          * A promise that resolves when the group template has been created.
          */
         protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
+        
+        /**
+         * @name _cloneAttempts
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current number of times we checked to see if the element was placed into the DOM. 
+         * Used for determining height.
+         */
+        protected _cloneAttempts = 0;
+
+        /**
+         * @name _maxCloneCount
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * Used for determining height.
+         */
+        protected _maxCloneAttempts = 25;
 
         /**
          * @name __listenerSet
@@ -1166,12 +1194,13 @@ module platui {
                 group: IListviewGroup = context[index],
                 name = group.group,
                 groupContainer = <HTMLElement>fragment.childNodes[1],
+                itemContainer = <HTMLElement>groupContainer.lastElementChild,
                 control = this.controls[index],
                 groupHash = groups[name] = {
                     name: name,
                     index: index,
                     element: groupContainer,
-                    itemContainer: <HTMLElement>groupContainer.lastElementChild,
+                    itemContainer: itemContainer,
                     control: control,
                     addCount: 0,
                     addQueue: <Array<plat.async.IThenable<void>>>[],
@@ -1213,11 +1242,19 @@ module platui {
                 animationQueue.push({
                     animation: this._animator.enter(fragment, __Enter, this._container).then((): void => {
                         animationQueue.shift();
+                        if (!this._isVertical) {
+                            // set height for flexbox container
+                            this._setItemContainerHeight(itemContainer);
+                        }
                     }),
                     op: null
                 });
             } else {
                 this._container.insertBefore(fragment, null);
+                if (!this._isVertical) {
+                    // set height for flexbox container
+                    this._setItemContainerHeight(itemContainer);
+                }
             }
         }
 
@@ -2821,6 +2858,122 @@ module platui {
             }
 
             return validOrientation;
+        }
+
+        /**
+         * @name _setItemContainerHeight
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the height of a group's item container.
+         *
+         * @param {HTMLElement} element The element to set the height on.
+         * @param {number} height? The height to set.
+         *
+         * @returns {void}
+         */
+        protected _setItemContainerHeight(element: HTMLElement, height?: number): void {
+            var parent = element.parentElement,
+                parentHeight = parent.offsetHeight,
+                headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
+
+            if (!(parentHeight && headerHeight)) {
+                this._setHeightWithClone(element);
+                return;
+            }
+
+            element.style.height = (parentHeight - headerHeight) + 'px';
+        }
+
+        /**
+         * @name _setHeightWithClone
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a clone of the group container and uses it to find height values.
+         *
+         * @param {HTMLElement} item The element having its height set.
+         *
+         * @returns {void}
+         */
+        protected _setHeightWithClone(item: HTMLElement): void {
+            var body = this._document.body,
+                parent = item.parentElement,
+                element = <HTMLElement>parent.firstElementChild;
+
+            if (!body.contains(parent)) {
+                var cloneAttempts = ++this._cloneAttempts;
+                if (cloneAttempts === this._maxCloneAttempts) {
+                    var _Exception = this._Exception,
+                        type = this.type;
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
+                    this._TemplateControlFactory.dispose(this);
+                    return;
+                }
+
+                this._utils.defer(this._setHeightWithClone, 10, [item], this);
+                return;
+            }
+
+            this._cloneAttempts = 0;
+
+            var parentClone = <HTMLElement>parent.cloneNode(true),
+                clone = <HTMLElement>parentClone.firstElementChild,
+                regex = /\d+(?!\d+|%)/,
+                _window = this._window,
+                parentChain = <Array<HTMLElement>>[],
+                shallowCopy = clone,
+                computedStyle: CSSStyleDeclaration,
+                dependencyProperty = 'height',
+                dependencyValue: string;
+
+            shallowCopy.id = '';
+            if (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
+                if (computedStyle.display === 'none') {
+                    shallowCopy.style.setProperty('display', 'block', 'important');
+                }
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
+                element = element.parentElement;
+                shallowCopy = <HTMLElement>element.cloneNode(false);
+                shallowCopy.id = '';
+
+                while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
+                    if (computedStyle.display === 'none') {
+                        shallowCopy.style.setProperty('display', 'block', 'important');
+                    }
+                    shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
+                    element = element.parentElement;
+                    shallowCopy = <HTMLElement>element.cloneNode(false);
+                    shallowCopy.id = '';
+                    parentChain.push(shallowCopy);
+                }
+            }
+
+            if (parentChain.length > 0) {
+                var curr = parentChain.pop(),
+                    currStyle = curr.style,
+                    temp: HTMLElement;
+
+                while (parentChain.length > 0) {
+                    temp = parentChain.pop();
+                    curr.insertBefore(temp, null);
+                    curr = temp;
+                }
+
+                curr.insertBefore(parentClone, null);
+            }
+
+            var shallowStyle = shallowCopy.style;
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
+            shallowStyle.setProperty('visibility', 'hidden', 'important');
+            body.appendChild(shallowCopy);
+            item.style.height = (parentClone.offsetHeight - clone.offsetHeight) + 'px';
+            body.removeChild(shallowCopy);
         }
     }
 

@@ -145,6 +145,20 @@
                 .scroll(x);
 
                 .plat-container {
+                    .flexbox();
+                    .flex-direction(row);
+                    .align-items(stretch);
+
+                    .plat-listview-group {
+                        height: 100%;
+
+                        .plat-listview-items {
+                            .inline-flexbox();
+                            .flex-flow(column wrap);
+                            .align-content(flex-start);
+                        }
+                    }
+
                     .plat-infinite {
                         position: relative;
                     }
