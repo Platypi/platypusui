@@ -9,6 +9,10 @@
     #platui > #mixins;
     #platui > #media;
 
+    /// ======= Local Variables =======
+
+    @line-height-ratio: 1.5;
+
     html, body {
 	    font-family: @default-font-type;
 	    color: @default-font-color;
@@ -17,12 +21,6 @@
         -webkit-font-smoothing: antialiased;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
-    }
-
-    h1, h2, h3,
-    h4, h5, h6 {
-	    font-weight: 600;
-	    margin: 0.75em 0;
     }
 
     a {
@@ -88,10 +86,34 @@
     /* Font sizes and line-height adjust based on the device-width. Device breakpoints */
     /* are set in global/variables.less. Measurements adapted from Robert Bringhurst's */
     /* classic and exhaustive work The Elements of Typographic Style. */
-    
+
+    .headings {
+        padding: 0;
+        font-weight: 600;
+    }
+
+    @typography-margin-top: 20px;
+    @typography-margin-bottom: 10px;
+
+    h1, h2, h3 {
+        .headings();
+        margin: @typography-margin-top 0 @typography-margin-bottom;
+    }
+
+    h4, h5, h6 {
+        .headings();
+        margin: (@typography-margin-top / 2) 0 @typography-margin-bottom;
+    }
+
+    p {
+        margin: 0;
+        padding: 0;
+        margin-bottom: @typography-margin-top 0 @typography-margin-top;
+    }
+
     /// Phone
-	.type(p, @default-font-size, 1.25em);
-	.type(h1, 2em, 1.25em);
+	.type(p, @default-font-size, 1.30em);
+	.type(h1, 2em, 1.5874em);
 	.type(h2, 1.625em, 1.1538em);
 	.type(h3, 1.375em, 1.1363em);
 	.type(h4, 1.125em, 1.1111em);
@@ -100,8 +122,8 @@
 
     /// Tablet
     .media-tablet({
-	    .type(p, @default-font-size, 1.375em);
-	    .type(h1, 2.5em, 1.125em);
+	    .type(p, @default-font-size, 1.412em);
+	    .type(h1, 2.5em, 1.37em);
 	    .type(h2, 2em, 1.25em);
 	    .type(h3, 1.5em, 1.25em);
 	    .type(h4, 1.125em, 1.2222em);
@@ -109,7 +131,7 @@
 
     /// Desktop
     .media-desktop({
-	    .type(h1, 3em, 1.05em);
+	    .type(h1, 3em, 1.3em);
 	    .type(h2, 2.25em, 1.25em);
 	    .type(h3, 1.75em, 1.25em);
 	    .type(h5, 1em, 1.1111em);

@@ -8,7 +8,7 @@
     #platui > #mixins;
     #platui > #Modal;
 
-    &.modal-popover {
+    &.modal-prompt {
         background-color: rgba(0,0,0,0.6);
 
         .plat-modal-container {
@@ -18,7 +18,7 @@
             height: auto;
             background-color: @white;
             color: @text-grey;
-            .border-radius(@popover-border-radius);
+            .border-radius(@prompt-border-radius);
             
             &.plat-no-transition,
             &.plat-modal-transition.plat-fade {
@@ -42,19 +42,19 @@
                     top: 100%;
                     
                     &.plat-activate {
-                        top: @popover-top;
+                        top: @prompt-top;
                     }
                 }
 
                 &.plat-down {
                     &.plat-activate {
-                        top: @popover-top;
+                        top: @prompt-top;
                     }
                 }
 
                 &.plat-left,
                 &.plat-right {
-                    top: @popover-top;
+                    top: @prompt-top;
 
                     &.plat-activate {
                         left: 0;
@@ -65,23 +65,23 @@
                 }
             }
 
-            & .popover-title {
+            & .prompt-title {
                 padding: 1em 2em;
-                border-bottom: 1px solid @popover-accent-color;
+                border-bottom: 1px solid @prompt-accent-color;
                 text-align: center;
                 font-size: 110%;
             }
 
-            & .popover-body {
+            & .prompt-body {
                 padding: 1em 2em;
                 text-align: center;
-                background-color: @popover-body-color;
+                background-color: @prompt-body-color;
             }
 
-            & .popover-action {
+            & .prompt-action {
                 text-align: center;
                 padding: 0 2em 1em;
-                background-color: @popover-body-color;
+                background-color: @prompt-body-color;
 
                 &.button-group {
                     padding-left: 0;
@@ -96,13 +96,13 @@
                         padding-bottom: 1em;
                         font-size: 110%;
                         border-width: 0;
-                        border-top: 2px solid @popover-accent-color;
+                        border-top: 2px solid @prompt-accent-color;
                         background-color: transparent;
                         color: lighten(@text-grey, 20%);
                         .flex(1);
 
                         &:last-child {
-                            border-left: 2px solid @popover-accent-color;
+                            border-left: 2px solid @prompt-accent-color;
                         }
 
                         &:hover {
