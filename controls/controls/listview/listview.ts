@@ -1317,6 +1317,9 @@ module platui {
                 var itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises).then((): void => {
                     opGroup.addCount -= count;
                     addQueue.shift();
+                    if (!this._isVertical) {
+                        this._setItemContainerWidth(opGroup.itemContainer);
+                    }
                 });
                 addQueue.push(itemsLoaded);
                 this.itemsLoaded = itemsLoaded;
@@ -1333,6 +1336,9 @@ module platui {
             addQueue.push(this._addItems(index, count, opGroup, animateItems).then((): void => {
                 opGroup.addCount -= count;
                 addQueue.shift();
+                if (!this._isVertical) {
+                    this._setItemContainerWidth(opGroup.itemContainer);
+                }
             }));
         }
 
@@ -2861,6 +2867,30 @@ module platui {
         }
 
         /**
+         * @name _setItemContainerWidth
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the width of a group's item container.
+         *
+         * @param {HTMLElement} element The element to set the width on.
+         *
+         * @returns {void}
+         */
+        protected _setItemContainerWidth(element: HTMLElement): void {
+            var width = element.scrollWidth;
+
+            if (!width) {
+                this._setItemContainerDimensionWithClone(element, 'width');
+                return;
+            }
+
+            element.style.width = width + 'px';
+        }
+
+        /**
          * @name _setItemContainerHeight
          * @memberof platui.Listview
          * @kind function
@@ -2879,11 +2909,11 @@ module platui {
                 headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
 
             if (!(parentHeight && headerHeight)) {
-                this._setItemContainerHeightWithClone(element);
+                this._setItemContainerDimensionWithClone(element, 'height');
                 return;
             }
 
-            element.style.height = (parentHeight - headerHeight) + 'px';
+            element.style.height = (parentHeight - headerHeight - 15) + 'px';
         }
 
         /**
@@ -2896,10 +2926,11 @@ module platui {
          * Creates a clone of the group container and uses it to find height values.
          *
          * @param {HTMLElement} item The element having its height set.
+         * @param {string} dependencyProperty The property being used to set the dimension.
          *
          * @returns {void}
          */
-        protected _setItemContainerHeightWithClone(item: HTMLElement): void {
+        protected _setItemContainerDimensionWithClone(item: HTMLElement, dependencyProperty: string): void {
             var body = this._document.body,
                 parent = item.parentElement,
                 element = <HTMLElement>parent.firstElementChild;
@@ -2915,7 +2946,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setItemContainerHeightWithClone, 10, [item], this);
+                this._utils.defer(this._setItemContainerDimensionWithClone, 10, [item, dependencyProperty], this);
                 return;
             }
 
@@ -2928,7 +2959,6 @@ module platui {
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
-                dependencyProperty = 'height',
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -2971,7 +3001,11 @@ module platui {
             shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
             shallowStyle.setProperty('visibility', 'hidden', 'important');
             body.appendChild(shallowCopy);
-            item.style.height = (parentClone.offsetHeight - clone.offsetHeight) + 'px';
+            if (dependencyProperty === 'height') {
+                item.style.height = (parentClone.offsetHeight - clone.offsetHeight - 15) + 'px';
+            } else {
+                item.style.width = clone.scrollWidth + 'px';
+            }
             body.removeChild(shallowCopy);
         }
     }

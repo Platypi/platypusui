@@ -92,8 +92,8 @@ module app {
 
         addListItem() {
             var listview = this.context.listview;
-            //this.context.groupedlistview[0].items.push('check');
-            this.context.groupedlistview.push({ group: 'C', items: ['callin', 'cork', 'casket'] });
+            this.context.groupedlistview[0].items.push('check');
+            //this.context.groupedlistview.push({ group: 'C', items: ['callin', 'cork', 'casket'] });
             //listview.push(10);
             //listview.push(listview[listview.length - 1] + 1);
             //this.context.groupedlistview[0].items.push('aching');
