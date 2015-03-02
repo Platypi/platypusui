@@ -2905,7 +2905,7 @@ module platui {
             var width = element.scrollWidth;
 
             if (!width) {
-                this._setItemContainerDimensionWithClone(element, 'width');
+                this._setItemContainerWidthWithClone(element);
                 return;
             }
 
@@ -2913,49 +2913,22 @@ module platui {
         }
 
         /**
-         * @name _setItemContainerHeight
+         * @name _setItemContainerWidthWithClone
          * @memberof platui.Listview
          * @kind function
          * @access protected
          * 
          * @description
-         * Sets the height of a group's item container.
-         *
-         * @param {HTMLElement} element The element to set the height on.
-         *
-         * @returns {void}
-         */
-        protected _setItemContainerHeight(element: HTMLElement): void {
-            var parent = element.parentElement,
-                parentHeight = parent.offsetHeight,
-                headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
-
-            if (!(parentHeight && headerHeight)) {
-                this._setItemContainerDimensionWithClone(element, 'height');
-                return;
-            }
-
-            element.style.height = (parentHeight - headerHeight - 15) + 'px';
-        }
-
-        /**
-         * @name _setItemContainerHeightWithClone
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Creates a clone of the group container and uses it to find height values.
+         * Creates a clone of the group container and uses it to find width values.
          *
          * @param {HTMLElement} item The element having its height set.
-         * @param {string} dependencyProperty The property being used to set the dimension.
          *
          * @returns {void}
          */
-        protected _setItemContainerDimensionWithClone(item: HTMLElement, dependencyProperty: string): void {
+        protected _setItemContainerWidthWithClone(item: HTMLElement): void {
             var body = this._document.body,
                 parent = item.parentElement,
-                element = <HTMLElement>parent.firstElementChild;
+                element = <HTMLElement>parent.lastElementChild;
 
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
@@ -2968,36 +2941,41 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setItemContainerDimensionWithClone, 10, [item, dependencyProperty], this);
+                this._utils.defer(this._setItemContainerWidthWithClone, 10, [item], this);
                 return;
             }
 
             this._cloneAttempts = 0;
 
             var parentClone = <HTMLElement>parent.cloneNode(true),
-                clone = <HTMLElement>parentClone.firstElementChild,
+                clone = <HTMLElement>parentClone.lastElementChild,
                 regex = /\d+(?!\d+|%)/,
                 _window = this._window,
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
+                dependencyProperty = 'width',
+                codependentProperty = 'height',
+                important = 'important',
                 dependencyValue: string;
 
             shallowCopy.id = '';
             if (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', 'important');
+                    shallowCopy.style.setProperty('display', 'block', important);
                 }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
+                shallowCopy.style.setProperty(codependentProperty, computedStyle.height, important);
                 element = element.parentElement;
-                shallowCopy = <HTMLElement>element.cloneNode(false);
+                shallowCopy = parentClone;
                 shallowCopy.id = '';
 
                 while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                     if (computedStyle.display === 'none') {
-                        shallowCopy.style.setProperty('display', 'block', 'important');
+                        shallowCopy.style.setProperty('display', 'block', important);
                     }
-                    shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
+                    shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
+                    shallowCopy.style.setProperty(codependentProperty, computedStyle.height, important);
                     element = element.parentElement;
                     shallowCopy = <HTMLElement>element.cloneNode(false);
                     shallowCopy.id = '';
@@ -3020,14 +2998,127 @@ module platui {
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
-            shallowStyle.setProperty('visibility', 'hidden', 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
+            shallowStyle.setProperty(codependentProperty, computedStyle.height, important);
+            shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            if (dependencyProperty === 'height') {
-                item.style.height = (parentClone.offsetHeight - clone.offsetHeight - 15) + 'px';
-            } else {
-                item.style.width = clone.scrollWidth + 'px';
+            item.style.width = clone.scrollWidth + 'px';
+            body.removeChild(shallowCopy);
+        }
+
+        /**
+         * @name _setItemContainerHeight
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the height of a group's item container.
+         *
+         * @param {HTMLElement} element The element to set the height on.
+         *
+         * @returns {void}
+         */
+        protected _setItemContainerHeight(element: HTMLElement): void {
+            var parent = element.parentElement,
+                parentHeight = parent.offsetHeight,
+                headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
+
+            if (!(parentHeight && headerHeight)) {
+                this._setItemContainerHeightWithClone(element);
+                return;
             }
+
+            element.style.height = (parentHeight - headerHeight - 15) + 'px';
+        }
+
+        /**
+         * @name _setItemContainerHeightWithClone
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a clone of the group container and uses it to find height values.
+         *
+         * @param {HTMLElement} item The element having its height set.
+         *
+         * @returns {void}
+         */
+        protected _setItemContainerHeightWithClone(item: HTMLElement): void {
+            var body = this._document.body,
+                parent = item.parentElement,
+                element = <HTMLElement>parent.firstElementChild;
+
+            if (!body.contains(parent)) {
+                var cloneAttempts = ++this._cloneAttempts;
+                if (cloneAttempts === this._maxCloneAttempts) {
+                    var _Exception = this._Exception,
+                        type = this.type;
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
+                    this._TemplateControlFactory.dispose(this);
+                    return;
+                }
+
+                this._utils.defer(this._setItemContainerHeightWithClone, 10, [item], this);
+                return;
+            }
+
+            this._cloneAttempts = 0;
+
+            var parentClone = <HTMLElement>parent.cloneNode(true),
+                clone = <HTMLElement>parentClone.firstElementChild,
+                regex = /\d+(?!\d+|%)/,
+                _window = this._window,
+                parentChain = <Array<HTMLElement>>[],
+                shallowCopy = clone,
+                computedStyle: CSSStyleDeclaration,
+                dependencyProperty = 'height',
+                important = 'important',
+                dependencyValue: string;
+
+            shallowCopy.id = '';
+            if (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
+                if (computedStyle.display === 'none') {
+                    shallowCopy.style.setProperty('display', 'block', important);
+                }
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
+                element = element.parentElement;
+                shallowCopy = parentClone;
+                shallowCopy.id = '';
+
+                while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
+                    if (computedStyle.display === 'none') {
+                        shallowCopy.style.setProperty('display', 'block', important);
+                    }
+                    shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
+                    element = element.parentElement;
+                    shallowCopy = <HTMLElement>element.cloneNode(false);
+                    shallowCopy.id = '';
+                    parentChain.push(shallowCopy);
+                }
+            }
+
+            if (parentChain.length > 0) {
+                var curr = parentChain.pop(),
+                    currStyle = curr.style,
+                    temp: HTMLElement;
+
+                while (parentChain.length > 0) {
+                    temp = parentChain.pop();
+                    curr.insertBefore(temp, null);
+                    curr = temp;
+                }
+
+                curr.insertBefore(parentClone, null);
+            }
+
+            var shallowStyle = shallowCopy.style;
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
+            shallowStyle.setProperty('visibility', 'hidden', important);
+            body.appendChild(shallowCopy);
+            item.style.height = (parentClone.offsetHeight - clone.offsetHeight - 15) + 'px';
             body.removeChild(shallowCopy);
         }
     }
