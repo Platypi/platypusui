@@ -1664,7 +1664,7 @@ module platui {
             if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                 this._transform = vendorPrefix.lowerCase + 'Transform';
             } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
+                this._transform = vendorPrefix.upperCase + 'Transform';
             }
         }
 

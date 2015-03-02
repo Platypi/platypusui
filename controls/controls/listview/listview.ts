@@ -2058,7 +2058,7 @@ module platui {
                     return this._Promise.resolve(refreshing ? this._refresh() : this._requestItems());
                 }
 
-                dom.removeClass(viewport, 'plat-manipulation-prep');
+                dom.removeClass(viewport, __Plat + 'manipulation-prep');
                 progressRing.setAttribute(__Hide, '');
                 return this._Promise.resolve();
             }).then((): plat.ui.animations.IAnimationThenable<void> => {
@@ -2067,14 +2067,14 @@ module platui {
                     return;
                 }
 
-                dom.removeClass(progressRing, 'plat-play');
+                dom.removeClass(progressRing, __Plat + 'play');
                 animationOptions[this._transform] = this._preTransform;
                 return this._touchAnimationThenable = this._animator.animate(viewport, __Transition, {
                     properties: animationOptions
                 }).then((): void => {
                     this._touchState = 0;
                     this._touchAnimationThenable = null;
-                    dom.removeClass(viewport, 'plat-manipulation-prep');
+                    dom.removeClass(viewport, __Plat + 'manipulation-prep');
                     progressRing.setAttribute(__Hide, '');
                 });
             }).then(null, (error): void => {
@@ -2223,16 +2223,16 @@ module platui {
                 diff = 0;
             } else if (!this._hasMoved) {
                 this._hasMoved = true;
-                this.dom.addClass(this._viewport, 'plat-manipulation-prep');
+                this.dom.addClass(this._viewport, __Plat + 'manipulation-prep');
                 progressRing.removeAttribute(__Hide);
             } else if (Math.abs(diff) >= threshold) {
                 if (this._touchState < 3) {
                     this._touchState = 3;
-                    this.dom.addClass(progressRing, 'plat-play');
+                    this.dom.addClass(progressRing, __Plat + 'play');
                 }
             } else if (this._touchState === 3) {
                 this._touchState = 2;
-                this.dom.removeClass(progressRing, 'plat-play');
+                this.dom.removeClass(progressRing, __Plat + 'play');
             }
 
             if (isVertical) {
@@ -2264,7 +2264,7 @@ module platui {
             if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                 this._transform = vendorPrefix.lowerCase + 'Transform';
             } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
+                this._transform = vendorPrefix.upperCase + 'Transform';
             }
         }
 

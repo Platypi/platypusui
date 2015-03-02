@@ -84,10 +84,7 @@
 
         &.plat-manipulation-prep {
             background-color: @manipulated-viewport-background-color;
-
-            .plat-scroll-container {
-                overflow: hidden;
-            }
+            .touch-action(none);
         }
             
         &.plat-transition-init {
@@ -130,6 +127,12 @@
                         .plat-ring-constants();
                         position: relative;
                     }
+                }
+            }
+
+            &.plat-manipulation-prep {
+                .plat-scroll-container {
+                    overflow: hidden;
                 }
             }
         }
@@ -180,6 +183,12 @@
                     .plat-infinite {
                         position: relative;
                     }
+                }
+            }
+
+            &.plat-manipulation-prep {
+                .plat-scroll-container {
+                    overflow: hidden;
                 }
             }
         }
