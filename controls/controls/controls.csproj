@@ -239,12 +239,6 @@
     <Content Include="modal\modal.variables.min.css">
       <DependentUpon>modal.variables.css</DependentUpon>
     </Content>
-    <Content Include="modal\popover.css">
-      <DependentUpon>popover.less</DependentUpon>
-    </Content>
-    <Content Include="modal\popover.min.css">
-      <DependentUpon>popover.css</DependentUpon>
-    </Content>
     <Content Include="progress\determinate\progressbar\progressbar.css">
       <DependentUpon>progressbar.less</DependentUpon>
     </Content>
@@ -420,9 +414,6 @@
     <Content Include="listview\listview.variables.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="modal\popover.less" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="icons\fonts\icons.eot" />
     <Content Include="icons\icons.less" />
     <Content Include="icons\fonts\icons.ttf" />
@@ -433,6 +424,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="animations\animations.variables.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="modal\prompt.less" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
