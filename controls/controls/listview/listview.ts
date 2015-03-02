@@ -1879,6 +1879,7 @@ module platui {
                 trackFn = this._trackLoad;
                 this.addEventListener(viewport, __$touchend, touchEnd, false);
                 this.addEventListener(viewport, __$trackend, touchEnd, false);
+                this.addEventListener(viewport, __$touchcancel, touchEnd, false);
                 this.addEventListener(viewport, track, trackFn, false);
                 this.addEventListener(viewport, reverseTrack, trackFn, false);
             }
@@ -1888,6 +1889,7 @@ module platui {
                 trackFn = this._trackRefresh;
                 this.addEventListener(viewport, __$touchend, touchEnd, false);
                 this.addEventListener(viewport, __$trackend, touchEnd, false);
+                this.addEventListener(viewport, __$touchcancel, touchEnd, false);
                 this.addEventListener(viewport, track, trackFn, false);
                 this.addEventListener(viewport, reverseTrack, trackFn, false);
             }
@@ -1945,6 +1947,9 @@ module platui {
             var isLoading = this._isLoading;
             this._isLoading = false;
             if (!isLoading) {
+                if (!this._isRefreshing) {
+                    this._touchState = 0;
+                }
                 return;
             }
 
@@ -1962,6 +1967,7 @@ module platui {
 
             // do plus 1 here for browser pixel inconsistency
             if (scrollLength + 1 < threshold) {
+                this._touchState = 0;
                 return;
             }
 
@@ -1985,7 +1991,13 @@ module platui {
             var isRefreshing = this._isRefreshing;
             this._isRefreshing = false;
 
-            if (!isRefreshing || (this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
+            if (!isRefreshing) {
+                if (!this._isLoading) {
+                    this._touchState = 0;
+                }
+                return;
+            } else if ((this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
+                this._touchState = 0;
                 return;
             }
 
@@ -2065,7 +2077,8 @@ module platui {
                     dom.removeClass(viewport, 'plat-manipulation-prep');
                     progressRing.setAttribute(__Hide, '');
                 });
-            }).then(null, (error): void => {
+            }).then(null,(error): void => {
+                this._touchState = 0;
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
             });
@@ -2085,6 +2098,10 @@ module platui {
          * @returns {void}
          */
         protected _trackLoad(ev: plat.ui.IGestureEvent): void {
+            if (this._isRefreshing) {
+                return;
+            }
+
             if (!this._isLoading) {
                 var scrollContainer = this._scrollContainer,
                     scrollLength: number,
@@ -2129,6 +2146,10 @@ module platui {
          * @returns {void}
          */
         protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
+            if (this._isLoading) {
+                return;
+            }
+
             if (!this._isRefreshing) {
                 if (this._isVertical) {
                     if (ev.direction.y !== 'down' || this._scrollContainer.scrollTop > 0) {
@@ -2164,8 +2185,9 @@ module platui {
                 return;
             }
 
+            var translation = this._calculateTranslation(ev, refreshing);
             this._utils.requestAnimationFrame((): void => {
-                this._viewport.style[<any>this._transform] = this._calculateTranslation(ev, refreshing);
+                this._viewport.style[<any>this._transform] = translation;
             });
         }
 
