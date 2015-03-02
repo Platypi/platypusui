@@ -65,10 +65,17 @@
         .plat-scroll-container {
             .fill();
             .box-sizing(border-box);
+            -ms-overflow-style:-ms-autohiding-scrollbar;
 
             .plat-container {
                 .fill();
                 .box-sizing(border-box);
+
+                .plat-listview-group,
+                .plat-listview-group .plat-header,
+                .plat-listview-group .plat-listview-items {
+                    .box-sizing(border-box);
+                }
             }
         }
 
@@ -145,6 +152,23 @@
                 .scroll(x);
 
                 .plat-container {
+                    .flexbox();
+                    .flex-direction(row);
+                    .flex-wrap(nowrap);
+                    .align-items(stretch);
+
+                    .plat-listview-group {
+                        height: 100%;
+                        .flex(0 0 auto);
+
+                        .plat-listview-items {
+                            .flexbox();
+                            .flex-direction(column);
+                            .flex-wrap(wrap);
+                            .align-content(flex-start);
+                        }
+                    }
+
                     .plat-infinite {
                         position: relative;
                     }

@@ -2,20 +2,20 @@
     <!-- Listview -->
     <div class="demo-area">
         <h2 class="demo-heading">Listview</h2>
-        <input type="checkbox" id="listview" checked>
+        <input type="checkbox" id="listview">
         <label for="listview"></label>
         <div class="demo-stage">
             <button plat-tap="addListItem">add</button>
             <button plat-tap="popListItem">pop</button>
             <div class="demo-item">
-                <plat-listview style="height: 200px;" plat-context="groupedlistview" 
-                               plat-options="{ 
+                <plat-listview style="height: 100px;" plat-context="groupedlistview" 
+                               plat-options="{
+                                   orientation: 'horizontal',
                                    itemTemplate: 'listview-template',
                                    groupHeaderTemplate: 'listview-header',
                                    onRefresh: 'refresh', 
                                    loading: 'incremental', 
-                                   onItemsRequested: 'refresh',
-                                   animate: true
+                                   onItemsRequested: 'refresh'
                                }">
                     <listview-header>
                         <div>{{group}}</div>
