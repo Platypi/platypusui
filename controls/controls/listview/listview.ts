@@ -632,6 +632,34 @@ module platui {
          * A promise that resolves when the group template has been created.
          */
         protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
+        
+        /**
+         * @name _cloneAttempts
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current number of times we checked to see if the element was placed into the DOM. 
+         * Used for determining height.
+         */
+        protected _cloneAttempts = 0;
+
+        /**
+         * @name _maxCloneCount
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * Used for determining height.
+         */
+        protected _maxCloneAttempts = 25;
 
         /**
          * @name __listenerSet
@@ -1166,12 +1194,13 @@ module platui {
                 group: IListviewGroup = context[index],
                 name = group.group,
                 groupContainer = <HTMLElement>fragment.childNodes[1],
+                itemContainer = <HTMLElement>groupContainer.lastElementChild,
                 control = this.controls[index],
                 groupHash = groups[name] = {
                     name: name,
                     index: index,
                     element: groupContainer,
-                    itemContainer: <HTMLElement>groupContainer.lastElementChild,
+                    itemContainer: itemContainer,
                     control: control,
                     addCount: 0,
                     addQueue: <Array<plat.async.IThenable<void>>>[],
@@ -1213,11 +1242,19 @@ module platui {
                 animationQueue.push({
                     animation: this._animator.enter(fragment, __Enter, this._container).then((): void => {
                         animationQueue.shift();
+                        if (!this._isVertical) {
+                            // set height for flexbox container
+                            this._setItemContainerHeight(itemContainer);
+                        }
                     }),
                     op: null
                 });
             } else {
                 this._container.insertBefore(fragment, null);
+                if (!this._isVertical) {
+                    // set height for flexbox container
+                    this._setItemContainerHeight(itemContainer);
+                }
             }
         }
 
@@ -1280,6 +1317,9 @@ module platui {
                 var itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises).then((): void => {
                     opGroup.addCount -= count;
                     addQueue.shift();
+                    if (!this._isVertical) {
+                        this._setItemContainerWidth(opGroup.itemContainer);
+                    }
                 });
                 addQueue.push(itemsLoaded);
                 this.itemsLoaded = itemsLoaded;
@@ -1296,6 +1336,9 @@ module platui {
             addQueue.push(this._addItems(index, count, opGroup, animateItems).then((): void => {
                 opGroup.addCount -= count;
                 addQueue.shift();
+                if (!this._isVertical) {
+                    this._setItemContainerWidth(opGroup.itemContainer);
+                }
             }));
         }
 
@@ -1836,6 +1879,7 @@ module platui {
                 trackFn = this._trackLoad;
                 this.addEventListener(viewport, __$touchend, touchEnd, false);
                 this.addEventListener(viewport, __$trackend, touchEnd, false);
+                this.addEventListener(viewport, __$touchcancel, touchEnd, false);
                 this.addEventListener(viewport, track, trackFn, false);
                 this.addEventListener(viewport, reverseTrack, trackFn, false);
             }
@@ -1845,6 +1889,7 @@ module platui {
                 trackFn = this._trackRefresh;
                 this.addEventListener(viewport, __$touchend, touchEnd, false);
                 this.addEventListener(viewport, __$trackend, touchEnd, false);
+                this.addEventListener(viewport, __$touchcancel, touchEnd, false);
                 this.addEventListener(viewport, track, trackFn, false);
                 this.addEventListener(viewport, reverseTrack, trackFn, false);
             }
@@ -1902,6 +1947,9 @@ module platui {
             var isLoading = this._isLoading;
             this._isLoading = false;
             if (!isLoading) {
+                if (!this._isRefreshing) {
+                    this._touchState = 0;
+                }
                 return;
             }
 
@@ -1917,7 +1965,9 @@ module platui {
                 threshold = scrollContainer.scrollWidth;
             }
 
-            if (scrollLength < threshold) {
+            // do plus 1 here for browser pixel inconsistency
+            if (scrollLength + 1 < threshold) {
+                this._touchState = 0;
                 return;
             }
 
@@ -1941,7 +1991,13 @@ module platui {
             var isRefreshing = this._isRefreshing;
             this._isRefreshing = false;
 
-            if (!isRefreshing || (this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
+            if (!isRefreshing) {
+                if (!this._isLoading) {
+                    this._touchState = 0;
+                }
+                return;
+            } else if ((this._isVertical ? this._scrollContainer.scrollTop : this._scrollContainer.scrollLeft) > 0) {
+                this._touchState = 0;
                 return;
             }
 
@@ -2021,7 +2077,8 @@ module platui {
                     dom.removeClass(viewport, 'plat-manipulation-prep');
                     progressRing.setAttribute(__Hide, '');
                 });
-            }).then(null, (error): void => {
+            }).then(null,(error): void => {
+                this._touchState = 0;
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
             });
@@ -2041,6 +2098,10 @@ module platui {
          * @returns {void}
          */
         protected _trackLoad(ev: plat.ui.IGestureEvent): void {
+            if (this._isRefreshing) {
+                return;
+            }
+
             if (!this._isLoading) {
                 var scrollContainer = this._scrollContainer,
                     scrollLength: number,
@@ -2060,7 +2121,8 @@ module platui {
                     threshold = scrollContainer.scrollWidth;
                 }
 
-                if (scrollLength < threshold) {
+                // do plus 1 here for browser pixel inconsistency
+                if (scrollLength + 1 < threshold) {
                     return;
                 }
 
@@ -2084,6 +2146,10 @@ module platui {
          * @returns {void}
          */
         protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
+            if (this._isLoading) {
+                return;
+            }
+
             if (!this._isRefreshing) {
                 if (this._isVertical) {
                     if (ev.direction.y !== 'down' || this._scrollContainer.scrollTop > 0) {
@@ -2119,8 +2185,9 @@ module platui {
                 return;
             }
 
+            var translation = this._calculateTranslation(ev, refreshing);
             this._utils.requestAnimationFrame((): void => {
-                this._viewport.style[<any>this._transform] = this._calculateTranslation(ev, refreshing);
+                this._viewport.style[<any>this._transform] = translation;
             });
         }
 
@@ -2590,11 +2657,14 @@ module platui {
             }
 
             var animationQueue = group.animationQueue,
-                animationPromise = this._animator.create(nodes, key).current.then((): void => {
+                animationCreation = this._animator.create(nodes, key),
+                animationPromise = animationCreation.current.then((): void => {
                     animationQueue.shift();
                 }),
                 callback = (): plat.ui.animations.IAnimationThenable<any> => {
-                    animationPromise.start();
+                    animationCreation.previous.then((): void => {
+                        animationPromise.start();
+                    });
                     return animationPromise;
                 };
 
@@ -2679,7 +2749,8 @@ module platui {
             var parentNode: Node,
                 animationQueue = group.animationQueue,
                 isNull = this._utils.isNull,
-                animationPromise = this._animator.create(nodes, key).current.then((): void => {
+                animationCreation = this._animator.create(nodes, key),
+                animationPromise = animationCreation.current.then((): void => {
                     animationQueue.shift();
                     if (isNull(parentNode)) {
                         return;
@@ -2695,7 +2766,9 @@ module platui {
                     }
 
                     parentNode.replaceChild(clonedContainer, container);
-                    animationPromise.start();
+                    animationCreation.previous.then((): void => {
+                        animationPromise.start();
+                    });
                     return animationPromise;
                 };
 
@@ -2813,6 +2886,149 @@ module platui {
             }
 
             return validOrientation;
+        }
+
+        /**
+         * @name _setItemContainerWidth
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the width of a group's item container.
+         *
+         * @param {HTMLElement} element The element to set the width on.
+         *
+         * @returns {void}
+         */
+        protected _setItemContainerWidth(element: HTMLElement): void {
+            var width = element.scrollWidth;
+
+            if (!width) {
+                this._setItemContainerDimensionWithClone(element, 'width');
+                return;
+            }
+
+            element.style.width = width + 'px';
+        }
+
+        /**
+         * @name _setItemContainerHeight
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Sets the height of a group's item container.
+         *
+         * @param {HTMLElement} element The element to set the height on.
+         *
+         * @returns {void}
+         */
+        protected _setItemContainerHeight(element: HTMLElement): void {
+            var parent = element.parentElement,
+                parentHeight = parent.offsetHeight,
+                headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
+
+            if (!(parentHeight && headerHeight)) {
+                this._setItemContainerDimensionWithClone(element, 'height');
+                return;
+            }
+
+            element.style.height = (parentHeight - headerHeight - 15) + 'px';
+        }
+
+        /**
+         * @name _setItemContainerHeightWithClone
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a clone of the group container and uses it to find height values.
+         *
+         * @param {HTMLElement} item The element having its height set.
+         * @param {string} dependencyProperty The property being used to set the dimension.
+         *
+         * @returns {void}
+         */
+        protected _setItemContainerDimensionWithClone(item: HTMLElement, dependencyProperty: string): void {
+            var body = this._document.body,
+                parent = item.parentElement,
+                element = <HTMLElement>parent.firstElementChild;
+
+            if (!body.contains(parent)) {
+                var cloneAttempts = ++this._cloneAttempts;
+                if (cloneAttempts === this._maxCloneAttempts) {
+                    var _Exception = this._Exception,
+                        type = this.type;
+                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
+                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
+                    this._TemplateControlFactory.dispose(this);
+                    return;
+                }
+
+                this._utils.defer(this._setItemContainerDimensionWithClone, 10, [item, dependencyProperty], this);
+                return;
+            }
+
+            this._cloneAttempts = 0;
+
+            var parentClone = <HTMLElement>parent.cloneNode(true),
+                clone = <HTMLElement>parentClone.firstElementChild,
+                regex = /\d+(?!\d+|%)/,
+                _window = this._window,
+                parentChain = <Array<HTMLElement>>[],
+                shallowCopy = clone,
+                computedStyle: CSSStyleDeclaration,
+                dependencyValue: string;
+
+            shallowCopy.id = '';
+            if (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
+                if (computedStyle.display === 'none') {
+                    shallowCopy.style.setProperty('display', 'block', 'important');
+                }
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
+                element = element.parentElement;
+                shallowCopy = <HTMLElement>element.cloneNode(false);
+                shallowCopy.id = '';
+
+                while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
+                    if (computedStyle.display === 'none') {
+                        shallowCopy.style.setProperty('display', 'block', 'important');
+                    }
+                    shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
+                    element = element.parentElement;
+                    shallowCopy = <HTMLElement>element.cloneNode(false);
+                    shallowCopy.id = '';
+                    parentChain.push(shallowCopy);
+                }
+            }
+
+            if (parentChain.length > 0) {
+                var curr = parentChain.pop(),
+                    currStyle = curr.style,
+                    temp: HTMLElement;
+
+                while (parentChain.length > 0) {
+                    temp = parentChain.pop();
+                    curr.insertBefore(temp, null);
+                    curr = temp;
+                }
+
+                curr.insertBefore(parentClone, null);
+            }
+
+            var shallowStyle = shallowCopy.style;
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
+            shallowStyle.setProperty('visibility', 'hidden', 'important');
+            body.appendChild(shallowCopy);
+            if (dependencyProperty === 'height') {
+                item.style.height = (parentClone.offsetHeight - clone.offsetHeight - 15) + 'px';
+            } else {
+                item.style.width = clone.scrollWidth + 'px';
+            }
+            body.removeChild(shallowCopy);
         }
     }
 
