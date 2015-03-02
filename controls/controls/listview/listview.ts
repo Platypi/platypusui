@@ -632,7 +632,7 @@ module platui {
          * A promise that resolves when the group template has been created.
          */
         protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
-        
+
         /**
          * @name _cloneAttempts
          * @memberof platui.Listview
@@ -2077,7 +2077,7 @@ module platui {
                     dom.removeClass(viewport, 'plat-manipulation-prep');
                     progressRing.setAttribute(__Hide, '');
                 });
-            }).then(null,(error): void => {
+            }).then(null, (error): void => {
                 this._touchState = 0;
                 var _Exception = this._Exception;
                 _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
