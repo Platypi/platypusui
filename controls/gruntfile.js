@@ -163,6 +163,9 @@ module.exports = exports = function load(grunt) {
         },
         lessCompile: {
             main: {
+                options: {
+                    relativeUrls: true
+                },
                 files: {
                     'controls/lib/platypus.css': 'controls/lib/platypus.less'
                 }

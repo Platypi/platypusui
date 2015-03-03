@@ -1911,6 +1911,14 @@ module platui {
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
             if (this._touchState !== 0) {
                 return;
+            } else if (!this._isVertical) {
+                var pos = Math.ceil(ev.offsetY),
+                    // we're going to decrease the threshold by 20 to buffer the scrollbar
+                    threshold = this._viewport.offsetHeight - 20;
+
+                if (pos >= threshold) {
+                    return;
+                }
             }
 
             this._touchState = 1;
