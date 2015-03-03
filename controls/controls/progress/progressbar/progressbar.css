@@ -1,0 +1,65 @@
+﻿.plat-progress {
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.plat-progress .plat-progress-container {
+  position: relative;
+  height: 8px;
+  width: 100%;
+  background-color: #e2e2e5;
+  overflow: hidden;
+  border: none;
+  -webkit-border-top-left-radius: 8px;
+  border-top-left-radius: 8px;
+  -webkit-border-top-right-radius: 8px;
+  border-top-right-radius: 8px;
+  -webkit-border-bottom-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  -webkit-border-bottom-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.13);
+  box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.13);
+}
+.plat-progress .plat-progress-container .plat-animated-bar {
+  background-color: #aeacb5;
+  width: 0;
+  height: 8px;
+  -webkit-border-top-left-radius: 4px;
+  border-top-left-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+  border-top-right-radius: 4px;
+  -webkit-border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  -webkit-border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-transition: none;
+  -moz-transition: none;
+  transition: none;
+}
+.plat-progress.progress-primary .plat-animated-bar {
+  background-color: #2d97d2;
+}
+.plat-progress.progress-secondary .plat-animated-bar {
+  background-color: #a283a5;
+}
+.plat-progress.progress-success .plat-animated-bar {
+  background-color: #8fcbb5;
+}
+.plat-progress.progress-danger .plat-animated-bar {
+  background-color: #ef716f;
+}
+.plat-progress.progress-caution .plat-animated-bar {
+  background-color: #ffe088;
+}

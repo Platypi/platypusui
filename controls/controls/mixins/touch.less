@@ -1,0 +1,33 @@
+﻿/**/
+@import (reference) '../global/variables.less';
+@import (reference) 'loopers.less';
+
+#platui {
+    #mixins {
+        /// Touch
+
+        .touch-action(@behavior: manipulation) {
+            #platui > #variables;
+            #platui > #__mixins > .vendor-loop(touch-action; @behavior; @ms-list);
+        }
+
+        .user-select(@behavior: none) {
+            #platui > #variables;
+            .user-select(@behavior; @all-list);
+        }
+        .user-select(@behavior; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(user-select; @behavior; @vendor-list);
+        }
+
+        .webkit-touch-additions(@callout: none; @highlight: transparent) {
+            -webkit-touch-callout: @callout;
+            -webkit-tap-highlight-color: @highlight;
+        }
+
+        .misc-webkit-touch(@callout: none; @drag: none; @highlight: transparent; @overflowscroll: touch) {
+            -webkit-user-drag: @drag;
+            -webkit-overflow-scrolling: @overflowscroll;
+            .webkit-touch-additions(@callout; @highlight);
+        }
+    }
+}

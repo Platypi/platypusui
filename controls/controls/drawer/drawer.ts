@@ -2375,8 +2375,12 @@ module platui {
          * @returns {void}
          */
         private _setOffset(): void {
-            var drawerElement = this._drawerElement;
-            drawerElement.removeAttribute(__Hide);
+            var drawerElement = this._drawerElement,
+                hasAttribute = drawerElement.hasAttribute(__Hide);
+
+            if (hasAttribute) {
+                drawerElement.removeAttribute(__Hide);
+            }
 
             switch (this._position) {
                 case 'left':
@@ -2391,7 +2395,9 @@ module platui {
                     break;
             }
 
-            drawerElement.setAttribute(__Hide, '');
+            if (hasAttribute) {
+                drawerElement.setAttribute(__Hide, '');
+            }
         }
     }
 

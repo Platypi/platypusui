@@ -1,0 +1,132 @@
+﻿/**/
+@import 'loopers.less';
+
+#platui {
+    #mixins {
+        /// Frequently used
+
+        .calc(@prop; @val) {
+          @{prop}: -webkit-calc(~'@{val}');
+          @{prop}: calc(~'@{val}');
+        }
+
+        .fill() {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .scroll() {
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll(@direction) {
+            & when (@direction = x) {
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            & when not (@direction = x) {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /// Border Radius
+
+        .border-radius(@radius) {
+            #platui > #variables;
+            .border-radius(@radius; @webkit-list);
+        }
+        .border-radius(@radius; @vendor-list) {
+            #platui > #__mixins;
+            .vendor-loop(border-top-left-radius; @radius; @vendor-list);
+            .vendor-loop(border-top-right-radius; @radius; @vendor-list);
+            .vendor-loop(border-bottom-left-radius; @radius; @vendor-list);
+            .vendor-loop(border-bottom-right-radius; @radius; @vendor-list);
+        }
+
+        .border-top-left-radius(@radius) {
+            #platui > #variables;
+            .border-top-left-radius(@radius; @webkit-list);
+        }
+        .border-top-left-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-top-left-radius; @radius; @vendor-list);
+        }
+
+        .border-top-right-radius(@radius) {
+            #platui > #variables;
+            .border-top-right-radius(@radius; @webkit-list);
+        }
+        .border-top-right-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-top-right-radius; @radius; @vendor-list);
+        }
+
+        .border-bottom-left-radius(@radius) {
+            #platui > #variables;
+            .border-bottom-left-radius(@radius; @webkit-list);
+        }
+        .border-bottom-left-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-bottom-left-radius; @radius; @vendor-list);
+        }
+
+        .border-bottom-right-radius(@radius) {
+            #platui > #variables;
+            .border-bottom-right-radius(@radius; @webkit-list);
+        }
+        .border-bottom-right-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-bottom-right-radius; @radius; @vendor-list);
+        }
+
+        /// Background Clip
+
+        .background-clip(@box: border-box) {
+            #platui > #variables;
+            .background-clip(@box; @webkit-list);
+        }
+        .background-clip(@box; @vendor-list) when (@box = border-box) {
+            -moz-background-clip: border;
+            #platui > #__mixins > .vendor-loop(background-clip; @box; @vendor-list);
+        }
+        .background-clip(@box; @vendor-list) when (@box = padding-box) {
+            -moz-background-clip: padding;
+            #platui > #__mixins > .vendor-loop(background-clip; @box; @vendor-list);
+        }
+        .background-clip(@box; @vendor-list) when (default()) {
+            #platui > #__mixins > .vendor-loop(background-clip; @box; @vendor-list);
+        }
+
+        /// Box Shadows
+
+        .box-shadow(@args) {
+            #platui > #variables;
+            .box-shadow(@args; @webkit-list);
+        }
+        .box-shadow(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(box-shadow; @args; @vendor-list);
+        }
+
+        /// Box Sizing
+
+        .box-sizing(@args: border-box) {
+            #platui > #variables;
+            .box-sizing(@args; @webkit-moz-list);
+        }
+        .box-sizing(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(box-sizing; @args; @vendor-list);
+        }
+
+        /// Background Size
+
+        .background-size(@args) {
+            #platui > #variables;
+            .background-size(@args; @webkit-list);
+        }
+        .background-size(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(background-size; @args; @vendor-list);
+        }
+    }
+}

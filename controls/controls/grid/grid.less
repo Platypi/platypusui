@@ -1,11 +1,14 @@
 @import (reference) '../global/variables.less';
-@import (reference) '../global/mixins.less';
+@import (reference) '../mixins/helpers.less';
+@import (reference) '../mixins/media.less';
 @import (reference) 'grid.mixins.less';
 
 & {
     #platui > #variables;
-    #platui > #mixins;
+    #platui > #__mixins;
     #platui > #grid;
+    #platui > #media;
+
 /// ======= Grid Styles ======== ///
 
     [class*='col-'],
@@ -14,7 +17,7 @@
         #platui;
 	    margin: 0;
 	    padding: 0;
-        .box-sizing(border-box);
+        #platui > #mixins > .box-sizing(border-box);
     }
 
     [class*='col-'] {
@@ -36,36 +39,34 @@
 /// ======= Grid Column Generation ======== ///
 	
 	/// Phone
-	@media (min-width: @phone-start) {
-		.generate-full-width-cols(@phablet-alias);
-		.generate-full-width-cols(@tablet-alias);
-		.generate-full-width-cols(@desktop-alias);
-		.generate-partial-width-cols(@phone-alias);
-		.generate-offset-cols(@phone-alias);
-		.generate-shiftable-cols(@phone-alias);
-	}
+	.generate-full-width-cols(@phablet-alias);
+	.generate-full-width-cols(@tablet-alias);
+	.generate-full-width-cols(@desktop-alias);
+	.generate-partial-width-cols(@phone-alias);
+	.generate-offset-cols(@phone-alias);
+	.generate-shiftable-cols(@phone-alias);
 
 	/// Phablet
-	@media (min-width: @phablet-start) {
+	.media-phablet({
 		.generate-full-width-cols(@tablet-alias);
 		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@phablet-alias);
 		.generate-offset-cols(@phablet-alias);
 		.generate-shiftable-cols(@phablet-alias);
-	}
+	});
 
 	/// Tablet
-	@media (min-width: @tablet-start) {
+	.media-tablet({
 		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@tablet-alias);
 		.generate-offset-cols(@tablet-alias);
 		.generate-shiftable-cols(@tablet-alias);
-	}
+	});
 
 	/// Desktop
-	@media (min-width: @desktop-start) {
+	.media-desktop({
 		.generate-partial-width-cols(@desktop-alias);
 		.generate-offset-cols(@desktop-alias);	
 		.generate-shiftable-cols(@desktop-alias);
-	}
+	});
 }

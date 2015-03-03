@@ -1,0 +1,89 @@
+﻿/**/
+@import (reference) '../global/variables.less';
+@import (reference) 'loopers.less';
+
+#platui {
+    #mixins {
+        /// Animations
+
+        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none) {
+            #platui > #variables;
+            .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @webkit-moz-list);
+        }
+        .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation; @name @duration @function @delay @count @direction @mode; @vendor-list);
+        }
+
+        .animation(@args) {
+            #platui > #variables;
+            .animation(@args; @webkit-moz-list);
+        }
+        .animation(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation; @args; @vendor-list);
+        }
+
+        .animation-delay(@delay) {
+            #platui > #variables;
+            .animation-delay(@delay; @webkit-moz-list);
+        }
+        .animation-delay(@delay; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-delay; @delay; @vendor-list);
+        }
+
+        .animation-direction(@direction) {
+            #platui > #variables;
+            .animation-direction(@direction; @webkit-moz-list);
+        }
+        .animation-direction(@direction; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-direction; @direction; @vendor-list);
+        }
+
+        .animation-duration(@duration) {
+            #platui > #variables;
+            .animation-duration(@duration; @webkit-moz-list);
+        }
+        .animation-duration(@duration; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-duration; @duration; @vendor-list);
+        }
+
+        .animation-fill-mode(@mode) {
+            #platui > #variables;
+            .animation-fill-mode(@mode; @webkit-moz-list);
+        }
+        .animation-fill-mode(@mode; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-fill-mode; @mode; @vendor-list);
+        }
+
+        .animation-iteration-count(@count) {
+            #platui > #variables;
+            .animation-iteration-count(@count; @webkit-moz-list);
+        }
+        .animation-iteration-count(@count; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-iteration-count; @count; @vendor-list);
+        }
+
+        .animation-name(@name) {
+            #platui > #variables;
+            .animation-name(@name; @webkit-moz-list);
+        }
+        .animation-name(@name; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-name; @name; @vendor-list);
+        }
+
+        .animation-play-state(@state) {
+            #platui > #variables;
+            .animation-play-state(@state; @webkit-moz-list);
+        }
+        .animation-play-state(@state; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-play-state; @state; @vendor-list);
+        }
+
+        .animation-timing-function(@function) {
+            #platui > #variables;
+            .animation-timing-function(@function; @webkit-moz-list);
+        }
+        .animation-timing-function(@function; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-timing-function; @function; @vendor-list);
+        }
+    }
+}

@@ -1,9 +1,8 @@
 ﻿/**/
-@import (reference) 'variables.less';
+@import (reference) '../global/variables.less';
 
 #platui {
     #media {
-        #platui > #variables;
     /// ======= Globally-Used Media Query Mixins ======== ///
 
         .media(@type; @condition1; @condition2; @condition3; @condition4; @rules) {
@@ -59,34 +58,42 @@
         }
 
         .media-phone-max(@rules) {
+            #platui > #variables;
             .media-width(@maxWidth: @phone-end; @rules: @rules);
         }
 
         .media-phablet(@rules) {
+            #platui > #variables;
             .media-width(@phablet-start; @rules: @rules);
         }
 
         .media-phablet-max(@rules) {
+            #platui > #variables;
             .media-width(@maxWidth: @phablet-end; @rules: @rules);
         }
 
         .media-phablet-only(@rules) {
+            #platui > #variables;
             .media-width(@phablet-start; @phablet-end; @rules);
         }
 
         .media-tablet(@rules) {
+            #platui > #variables;
             .media-width(@tablet-start; @rules: @rules);
         }
 
         .media-tablet-max(@rules) {
+            #platui > #variables;
             .media-width(@maxWidth: @tablet-end; @rules: @rules);
         }
 
         .media-tablet-only(@rules) {
+            #platui > #variables;
             .media-width(@tablet-start; @tablet-end; @rules);
         }
 
         .media-desktop(@rules) {
+            #platui > #variables;
             .media-width(@desktop-start; @rules: @rules);
         }
     }

@@ -1,0 +1,58 @@
+﻿/**/
+@import (reference) '../global/variables.less';
+@import (reference) 'loopers.less';
+
+#platui {
+    #mixins {
+        /// Transitions
+
+        .transition(@args) {
+            #platui > #variables;
+            .transition(@args; @webkit-moz-list);
+        }
+        .transition(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition; @args; @vendor-list);
+        }
+
+        .transition-all(@duration: 200ms; @function: ease; @delay: 0s) {
+            #platui > #variables;
+            .transitionAll(all; @duration; @function; @delay; @webkit-moz-list);
+        }
+        .transition-all(@duration; @function; @delay; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition; all @duration @function @delay; @vendor-list);
+        }
+
+        .transition-delay(@delay) {
+            #platui > #variables;
+            .transition-delay(@delay; @webkit-moz-list);
+        }
+        .transition-delay(@delay; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-delay; @delay; @vendor-list);
+        }
+
+        .transition-duration(@duration) {
+            #platui > #variables;
+            .transition-duration(@duration; @webkit-moz-list);
+        }
+        .transition-duration(@duration; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-duration; @duration; @vendor-list);
+        }
+
+        .transition-property(@property: all) {
+            #platui > #variables;
+            .transition-property(@property: all; @webkit-moz-list);
+        }
+        .transition-property(@property; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-property; @property; @vendor-list);
+        }
+
+        .transition-timing-function(@function: ease) {
+            #platui > #variables;
+            .transition-timing-function(@function: ease; @webkit-moz-list);
+        }
+        .transition-timing-function(@function: ease; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-timing-function; @function; @vendor-list);
+        }
+    }
+}
+

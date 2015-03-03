@@ -1,6 +1,5 @@
 ﻿/**/
 @import (reference) '../global/variables.less';
-@import (reference) '../global/mixins.less';
 
 /// ======= Globally-Used Animations ======== ///
 
@@ -8,6 +7,8 @@
     /// Animation Creation
 
     #animations {
+        #platui > #variables;
+
         .keyframes(@name) {
             #platui > #variables;
             @-webkit-keyframes @name {
