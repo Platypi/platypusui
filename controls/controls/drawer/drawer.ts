@@ -1192,6 +1192,34 @@ module platui {
         protected _preInitializedValue = false;
 
         /**
+         * @name _cloneAttempts
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current number of times we checked to see if the element was placed into the DOM. 
+         * Used for determining max offset width.
+         */
+        protected _cloneAttempts = 0;
+
+        /**
+         * @name _maxCloneCount
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * Used for determining max offset width.
+         */
+        protected _maxCloneAttempts = 25;
+
+        /**
          * @name initialize
          * @memberof platui.DrawerController
          * @kind function
@@ -1808,7 +1836,9 @@ module platui {
             // remove event listeners here first if we want to later be able to dynamically change position of drawer.
             // this._removeEventListeners();
 
-            this.addEventListener(this._window, 'resize', this._setOffset, false);
+            this.addEventListener(this._window, 'resize', (): void => {
+                this._setOffset();
+            }, false);
 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
                 this._addTapOpen();
@@ -2418,32 +2448,129 @@ module platui {
          * @description
          * Sets the max offset to translate the {@link platui.Drawer|Drawer}.
          * 
+         * @param {HTMLElement} element? The element to use to obtain the max offset length.
+         * 
          * @returns {void}
          */
-        private _setOffset(): void {
-            var drawerElement = this._drawerElement,
-                hasAttribute = drawerElement.hasAttribute(__Hide);
+        private _setOffset(element?: HTMLElement): void {
+            var isNode = this._utils.isNode(element),
+                el = isNode ? element : this._drawerElement,
+                hasAttribute = el.hasAttribute(__Hide),
+                lengthProperty: string;
 
             if (hasAttribute) {
-                drawerElement.removeAttribute(__Hide);
+                el.removeAttribute(__Hide);
             }
 
             switch (this._position) {
                 case 'left':
                 case 'right':
-                    this._maxOffset = this._drawerElement.offsetWidth;
+                    this._maxOffset = el.offsetWidth;
+                    lengthProperty = 'width';
                     break;
                 case 'top':
                 case 'bottom':
-                    this._maxOffset = this._drawerElement.offsetHeight;
+                    this._maxOffset = el.offsetHeight;
+                    lengthProperty = 'height';
                     break;
                 default:
                     break;
             }
 
             if (hasAttribute) {
-                drawerElement.setAttribute(__Hide, '');
+                el.setAttribute(__Hide, '');
             }
+
+            if (!(isNode || this._maxOffset)) {
+                this._setOffsetWithClone(lengthProperty);
+            }
+        }
+
+        /**
+         * @name _setOffsetWithClone
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Creates a clone of this element and uses it to find the max offset.
+         *
+         * @param {string} dependencyProperty The property that the offset is being based off of.
+         *
+         * @returns {void}
+         */
+        protected _setOffsetWithClone(dependencyProperty: string): void {
+            var element = this._drawerElement,
+                body = this._document.body,
+                _Exception: plat.IExceptionStatic;
+
+            if (!body.contains(element)) {
+                var cloneAttempts = ++this._cloneAttempts;
+                if (cloneAttempts === this._maxCloneAttempts) {
+                    var controlType = this.type;
+                    _Exception = this._Exception,
+                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
+                    return;
+                }
+
+                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
+                return;
+            }
+
+            this._cloneAttempts = 0;
+
+            var clone = <HTMLElement>element.cloneNode(true),
+                regex = /\d+(?!\d+|%)/,
+                _window = this._window,
+                parentChain = <Array<HTMLElement>>[],
+                shallowCopy = clone,
+                computedStyle: CSSStyleDeclaration,
+                important = 'important',
+                isNull = this._utils.isNull,
+                dependencyValue: string;
+
+            shallowCopy.id = '';
+            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
+                if (computedStyle.display === 'none') {
+                    shallowCopy.style.setProperty('display', 'block', important);
+                }
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
+                element = element.parentElement;
+                if (isNull(element)) {
+                    // if we go all the way up to <html> the body may currently be hidden.
+                    _Exception = this._Exception,
+                    _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                        'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                    this._utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
+                    return;
+                }
+                shallowCopy = <HTMLElement>element.cloneNode(false);
+                shallowCopy.id = '';
+                parentChain.push(shallowCopy);
+            }
+
+            if (parentChain.length > 0) {
+                var curr = parentChain.pop(),
+                    currStyle = curr.style,
+                    temp: HTMLElement;
+
+                while (parentChain.length > 0) {
+                    temp = parentChain.pop();
+                    curr.insertBefore(temp, null);
+                    curr = temp;
+                }
+
+                curr.insertBefore(clone, null);
+            }
+
+            var shallowStyle = shallowCopy.style;
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
+            shallowStyle.setProperty('visibility', 'hidden', important);
+            body.appendChild(shallowCopy);
+            this._setOffset(clone);
+            body.removeChild(shallowCopy);
         }
     }
 

@@ -1386,15 +1386,16 @@ module platui {
          */
         protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
-                body = this._document.body;
+                body = this._document.body,
+                _Exception: plat.IExceptionStatic;
 
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var _Exception = this._Exception,
-                        type = this.type;
-                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
+                    var controlType = this.type;
+                    _Exception = this._Exception,
+                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
@@ -1412,6 +1413,7 @@ module platui {
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 important = 'important',
+                isNull = this._utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -1421,6 +1423,14 @@ module platui {
                 }
                 shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
                 element = element.parentElement;
+                if (isNull(element)) {
+                    // if we go all the way up to <html> the body may currently be hidden.
+                    _Exception = this._Exception,
+                    _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                        'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                    this._utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
+                    return;
+                }
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
                 parentChain.push(shallowCopy);

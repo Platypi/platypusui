@@ -2936,15 +2936,16 @@ module platui {
         protected _setItemContainerWidthWithClone(item: HTMLElement): void {
             var body = this._document.body,
                 parent = item.parentElement,
-                element = <HTMLElement>parent.lastElementChild;
+                element = <HTMLElement>parent.lastElementChild,
+                _Exception: plat.IExceptionStatic;
 
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var _Exception = this._Exception,
-                        type = this.type;
-                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
+                    var controlType = this.type;
+                    _Exception = this._Exception,
+                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
@@ -2965,6 +2966,7 @@ module platui {
                 dependencyProperty = 'width',
                 codependentProperty = 'height',
                 important = 'important',
+                isNull = this._utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -2985,6 +2987,14 @@ module platui {
                     shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
                     shallowCopy.style.setProperty(codependentProperty, computedStyle.height, important);
                     element = element.parentElement;
+                    if (isNull(element)) {
+                        // if we go all the way up to <html> the body may currently be hidden.
+                        _Exception = this._Exception,
+                        _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                            'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                        this._utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
+                        return;
+                    }
                     shallowCopy = <HTMLElement>element.cloneNode(false);
                     shallowCopy.id = '';
                     parentChain.push(shallowCopy);
@@ -3056,15 +3066,16 @@ module platui {
         protected _setItemContainerHeightWithClone(item: HTMLElement): void {
             var body = this._document.body,
                 parent = item.parentElement,
-                element = <HTMLElement>parent.firstElementChild;
+                element = <HTMLElement>parent.firstElementChild,
+                _Exception: plat.IExceptionStatic;
 
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
-                    var _Exception = this._Exception,
-                        type = this.type;
-                    _Exception.warn('Max clone attempts reached before the ' + type + ' was placed into the ' +
-                        'DOM. Disposing of the ' + type + '.', _Exception.CONTROL);
+                    var controlType = this.type;
+                    _Exception = this._Exception,
+                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
@@ -3084,6 +3095,7 @@ module platui {
                 computedStyle: CSSStyleDeclaration,
                 dependencyProperty = 'height',
                 important = 'important',
+                isNull = this._utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -3102,6 +3114,14 @@ module platui {
                     }
                     shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
                     element = element.parentElement;
+                    if (isNull(element)) {
+                        // if we go all the way up to <html> the body may currently be hidden.
+                        _Exception = this._Exception,
+                        _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                            'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                        this._utils.defer(this._setItemContainerHeightWithClone, 100, [dependencyProperty], this);
+                        return;
+                    }
                     shallowCopy = <HTMLElement>element.cloneNode(false);
                     shallowCopy.id = '';
                     parentChain.push(shallowCopy);
