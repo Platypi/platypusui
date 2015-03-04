@@ -504,12 +504,15 @@ module platui {
          * @returns {void}
          */
         protected _setValue(value: number, propertyChanged: boolean): void {
-            if (!this._utils.isNumber(value)) {
-                return;
-            } else if (this._touchState === 1) {
+            var _utils = this._utils;
+            if (this._touchState === 1) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the value of ' + this.type +
                     ' while the user is manipulating it.', _Exception.CONTROL);
+                return;
+            } else if(_utils.isNull(value)) {
+                value = this.min;
+            } else if (!_utils.isNumber(value)) {
                 return;
             }
 

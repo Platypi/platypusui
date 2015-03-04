@@ -629,16 +629,19 @@ module platui {
          * @returns {void}
          */
         protected _setLower(value: number, propertyChanged: boolean): void {
+            var _utils = this._utils;
             if (this._touchState === 2) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the value of the ' + this.type +
                     '\'s lower knob while the user is manipulating it.', _Exception.CONTROL);
                 return;
+            } else if (_utils.isNull(value)) {
+                value = this.min;
             }
 
-            if (!this._utils.isNumber(value)) {
+            if (!_utils.isNumber(value)) {
                 var numberVal = Number(value);
-                if (this._utils.isNumber(numberVal)) {
+                if (_utils.isNumber(numberVal)) {
                     value = numberVal;
                 } else {
                     return;
@@ -664,16 +667,19 @@ module platui {
          * @returns {void}
          */
         protected _setUpper(value: number, propertyChanged: boolean): void {
+            var _utils = this._utils;
             if (this._touchState === 3) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the upper value of the ' + this.type +
                     '\'s upper knob while the user is manipulating it.', _Exception.CONTROL);
                 return;
+            } else if (_utils.isNull(value)) {
+                value = this.max;
             }
 
-            if (!this._utils.isNumber(value)) {
+            if (!_utils.isNumber(value)) {
                 var numberVal = Number(value);
-                if (this._utils.isNumber(numberVal)) {
+                if (_utils.isNumber(numberVal)) {
                     value = numberVal;
                 } else {
                     return;
