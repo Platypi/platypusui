@@ -1,12 +1,10 @@
 @import (reference) 'variables.less';
-@import (reference) 'mixins.less';
-@import (reference) 'media.less';
+@import (reference) '../mixins/media.less';
 
 /// ======= Globally Set Styles for PlatypusUI ======== ///
 
 & {
     #platui > #variables;
-    #platui > #mixins;
     #platui > #media;
 
     /// ======= Local Variables =======
@@ -21,17 +19,6 @@
         -webkit-font-smoothing: antialiased;
         -ms-text-size-adjust: 100%;
         -webkit-text-size-adjust: 100%;
-    }
-
-    a {
-	    color: @primary-color;
-	    text-decoration: none;
-	    background-color: transparent;
-
-	    &:active,
-	    &:hover {
-		    outline: 0;
-	    }
     }
 
     blockquote {
@@ -87,28 +74,38 @@
     /* are set in global/variables.less. Measurements adapted from Robert Bringhurst's */
     /* classic and exhaustive work The Elements of Typographic Style. */
 
-    .headings {
+    .headings() {
         padding: 0;
         font-weight: 600;
     }
 
-    @typography-margin-top: 20px;
-    @typography-margin-bottom: 10px;
-
-    h1, h2, h3 {
-        .headings();
-        margin: @typography-margin-top 0 @typography-margin-bottom;
+    .type(@type; @size; @lineHeight) {
+        @{type} {
+            font-size: @size;
+            line-height: @lineHeight;
+        }
     }
 
-    h4, h5, h6 {
+    @typography-margin: 0.67em;
+
+    h1 {
         .headings();
-        margin: (@typography-margin-top / 2) 0 @typography-margin-bottom;
+        margin: @typography-margin 0 (@typography-margin / 1.25);
+    }
+
+    h2, h3, h4 {
+        .headings();
+        margin: (@typography-margin * 1.25) 0 @typography-margin;
+    }
+
+    h5, h6 {
+        .headings();
+        margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
     }
 
     p {
-        margin: 0;
         padding: 0;
-        margin-bottom: @typography-margin-top 0 @typography-margin-top;
+        margin: (@typography-margin * 1.5) 0;
     }
 
     /// Phone

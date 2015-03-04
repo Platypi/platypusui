@@ -1,0 +1,38 @@
+﻿/**/
+#platui {
+    #__mixins {
+        /// Helper Methods
+
+        .looper(@property; @value; @list; @counter) when (@counter > 0) {
+            .looper(@property; @value; @list; (@counter - 1));
+            @extraction: extract(@list, @counter);
+            @{extraction}@{property}: @value;
+        }
+
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = length(@list)) and (extract(@list, @counter) = @vanilla) {
+            .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
+            @{property}: ~'@{valuePropety}(@{value})';
+        }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 1) and not(extract(@list, @counter) = @vanilla) {
+            @extraction: extract(@list, @counter);
+            @{property}: ~'@{extraction}@{valuePropety}(@{value})';
+        }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 0) { }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (default()) {
+            .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
+            @extraction: extract(@list, @counter);
+            @{property}: ~'@{extraction}@{valuePropety}(@{value})';
+        }
+
+        .vendor-loop(@property; @value; @list) when (length(@list) > 1) {
+            .looper(@property; @value; @list; length(@list) - 1);
+            @{property}: @value;
+        }
+        .vendor-loop(@property; @value; @list) when (length(@list) = 1) and not(@list = @vanilla) {
+            @{list}@{property}: @value;
+        }
+        .vendor-loop(@property; @value; @list) when (default())  {
+            @{property}: @value;
+        }
+    }
+}

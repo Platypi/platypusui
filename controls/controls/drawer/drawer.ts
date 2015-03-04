@@ -50,13 +50,18 @@ module platui {
          * @kind property
          * @access protected
          * 
-         * @type {{ position?: string; zIndex?: string; parentEl?: HTMLElement; parentOverflow?: string }}
+         * @type {{ position?: string; zIndex?: string; rootElement?: HTMLElement; parentOverflow?: { key: string; value: string; }; }}
          * 
          * @description
          * An object to hold the stored style and element properties so that we can reference and reset them 
          * when all {@link platui.DrawerController|Drawer Controllers} are disposed.
          */
-        storedProperties: { position?: string; zIndex?: string; parentEl?: HTMLElement; parentOverflow?: string; };
+        storedProperties: {
+            position?: string;
+            zIndex?: string;
+            rootElement?: HTMLElement;
+            parentOverflow?: { key: string; value: string; };
+        };
 
         /**
          * @name _utils
@@ -1274,12 +1279,13 @@ module platui {
 
                 if (_utils.isObject(storedStyle)) {
                     var rootElementStyle = rootElement.style,
-                        parent = rootElement.parentElement;
+                        parent = rootElement.parentElement,
+                        overflow = storedStyle.parentOverflow;
 
                     rootElementStyle.position = storedStyle.position;
                     rootElementStyle.zIndex = storedStyle.zIndex;
-                    if (_utils.isNode(parent)) {
-                        parent.style.overflow = storedStyle.parentOverflow;
+                    if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+                        parent.style[<any>overflow.key] = overflow.value;
                     }
                 }
             }, 25);
@@ -1791,16 +1797,13 @@ module platui {
          * @description
          * Adds primary and secondary tracking events to the {@link platui.DrawerController|DrawerController} element.
          * 
-         * @param {string} position The position of the {@link platui.Drawer|Drawer}.
-         * 
          * @returns {void}
          */
-        protected _addEventListeners(position: string): void {
+        protected _addEventListeners(): void {
             var element = this.element,
                 isNull = this._utils.isNull,
-                types = this._type.split(' ');
-
-            this._position = position;
+                types = this._type.split(' '),
+                position = this._position;
 
             // remove event listeners here first if we want to later be able to dynamically change position of drawer.
             // this._removeEventListeners();
@@ -1831,10 +1834,6 @@ module platui {
                         trackDirection = 'down';
                         break;
                     default:
-                        var _Exception = this._Exception;
-                        _Exception.warn('Incorrect position: "' + position +
-                            '" defined for the a control such as "' +
-                            __Drawer + '", or "' + this.type + '."', _Exception.CONTROL);
                         return;
                 }
 
@@ -2159,12 +2158,12 @@ module platui {
                         }
                     }
 
-                    if (!this._controllerIsValid(position)) {
+                    if (!this._controllerIsValid(position.toLowerCase())) {
                         return;
                     }
 
                     this._setTransform();
-                    this._addEventListeners(position.toLowerCase());
+                    this._addEventListeners();
                     this._setOffset();
 
                     if (isUndefined(this._isElastic)) {
@@ -2256,7 +2255,7 @@ module platui {
             if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                 this._transform = vendorPrefix.lowerCase + 'Transform';
             } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
+                this._transform = vendorPrefix.upperCase + 'Transform';
             }
         }
 
@@ -2282,6 +2281,21 @@ module platui {
                 _Exception.warn('Could not find a corresponding control such as "' + __Drawer +
                     '" for this "' + this.type + '."', _Exception.CONTROL);
                 return false;
+            }
+
+            switch (position) {
+                case 'left':
+                case 'right':
+                case 'top':
+                case 'bottom':
+                    this._position = position;
+                    break;
+                default:
+                    _Exception = this._Exception;
+                    _Exception.warn('Incorrect position: "' + position +
+                        '" defined for the a control such as "' +
+                        __Drawer + '", or "' + this.type + '."', _Exception.CONTROL);
+                    return false;
             }
 
             var rootElement = this._rootElement = this._getRootElement();
@@ -2320,7 +2334,7 @@ module platui {
                 _utils = this._utils;
 
             if (!_utils.isNull(drawer.storedProperties)) {
-                return drawer.storedProperties.parentEl;
+                return drawer.storedProperties.rootElement;
             }
 
             var isNode = _utils.isNode,
@@ -2338,8 +2352,11 @@ module platui {
                 style = element.style,
                 position = computedStyle.position,
                 zIndex = Number(computedStyle.zIndex),
-                rootElementStyle: { position?: string; zIndex?: string; parentEl?: HTMLElement; parentOverflow?: string } = {
-                    parentEl: element
+                rootElementStyle: {
+                    position?: string; zIndex?: string; rootElement?: HTMLElement;
+                    parentOverflow?: { key: string; value: string; }
+                } = {
+                    rootElement: element
                 };
 
             if (position === 'static') {
@@ -2353,9 +2370,38 @@ module platui {
             }
 
             if (isNode(parent)) {
-                var parentStyle = parent.style;
-                rootElementStyle.parentOverflow = parentStyle.overflow;
-                parentStyle.overflow = 'hidden';
+                var parentStyle = parent.style,
+                    overflow = parentStyle.overflow;
+
+                if (overflow !== 'hidden') {
+                    var computedParentStyle = _window.getComputedStyle(parent),
+                        computedOverflow = computedParentStyle.overflow,
+                        computedDirectionalOverflow: string,
+                        key: string;
+
+                    switch (this._position) {
+                        case 'left':
+                        case 'right':
+                            key = 'overflowX';
+                            computedDirectionalOverflow = computedParentStyle.overflowX;
+                            break;
+                        case 'top':
+                        case 'bottom':
+                            key = 'overflowY';
+                            computedDirectionalOverflow = computedParentStyle.overflowY;
+                            break;
+                        default:
+                            break;
+
+                    }
+                    if (computedDirectionalOverflow !== 'hidden') {
+                        rootElementStyle.parentOverflow = {
+                            key: key,
+                            value: parentStyle[<any>key]
+                        };
+                        parentStyle[<any>key] = 'hidden';
+                    }
+                }
             }
 
             drawer.storedProperties = rootElementStyle;
@@ -2375,8 +2421,12 @@ module platui {
          * @returns {void}
          */
         private _setOffset(): void {
-            var drawerElement = this._drawerElement;
-            drawerElement.removeAttribute(__Hide);
+            var drawerElement = this._drawerElement,
+                hasAttribute = drawerElement.hasAttribute(__Hide);
+
+            if (hasAttribute) {
+                drawerElement.removeAttribute(__Hide);
+            }
 
             switch (this._position) {
                 case 'left':
@@ -2391,7 +2441,9 @@ module platui {
                     break;
             }
 
-            drawerElement.setAttribute(__Hide, '');
+            if (hasAttribute) {
+                drawerElement.setAttribute(__Hide, '');
+            }
         }
     }
 

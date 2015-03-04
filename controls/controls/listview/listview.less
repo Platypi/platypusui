@@ -1,4 +1,9 @@
-﻿@import (reference) '../global/mixins.less';
+﻿@import (reference) '../mixins/helpers.less';
+@import (reference) '../mixins/touch.less';
+@import (reference) '../mixins/animations.less';
+@import (reference) '../mixins/transforms.less';
+@import (reference) '../mixins/transitions.less';
+@import (reference) '../mixins/flexbox.less';
 @import (reference) 'listview.variables.less';
 
 /// ============= Listview Constants ============= ///
@@ -84,10 +89,7 @@
 
         &.plat-manipulation-prep {
             background-color: @manipulated-viewport-background-color;
-
-            .plat-scroll-container {
-                overflow: hidden;
-            }
+            .touch-action(none);
         }
             
         &.plat-transition-init {
@@ -132,6 +134,12 @@
                     }
                 }
             }
+
+            &.plat-manipulation-prep {
+                .plat-scroll-container {
+                    overflow: hidden;
+                }
+            }
         }
 
         .plat-refresh,
@@ -169,12 +177,23 @@
                             .flex-direction(column);
                             .flex-wrap(wrap);
                             .align-content(flex-start);
+                            .fill();
+
+                            .plat-item {
+                                .flex(0 0 auto);
+                            }
                         }
                     }
 
                     .plat-infinite {
                         position: relative;
                     }
+                }
+            }
+
+            &.plat-manipulation-prep {
+                .plat-scroll-container {
+                    overflow: hidden;
                 }
             }
         }

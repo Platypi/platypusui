@@ -1,4 +1,6 @@
-﻿@import (reference) '../global/mixins.less';
+﻿@import (reference) '../mixins/helpers.less';
+@import (reference) '../mixins/transforms.less';
+@import (reference) '../mixins/flexbox.less';
 @import (reference) 'radio.variables.less';
 
 /// =========== Radio Default Styles =========== ///
@@ -8,13 +10,12 @@
     #platui > #Radio;
     display: inline-block;
     cursor: pointer;
-    .box-sizing(border-box);
     .flex-vertical-center();
+    .box-sizing(border-box);
 
     & > span {
-        font-size: 125%;
         line-height: @diameter;
-        
+
         &:first-of-type {
             margin-left: 0.4em;
         }
@@ -29,6 +30,7 @@
         background-color: @background-color;
         border: @border-size solid @border-color;
         .border-radius(@diameter);
+        .background-clip(padding-box);
         .box-sizing(content-box);
 
         &.plat-bullet {

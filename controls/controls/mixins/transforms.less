@@ -1,0 +1,92 @@
+﻿/**/
+@import (reference) '../global/variables.less';
+@import (reference) 'loopers.less';
+
+#platui {
+    #mixins {
+        /// Transforms
+
+        .transform(@args) {
+            #platui > #variables;
+            .transform(@args; @webkit-moz-ms-list);
+        }
+        .transform(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform; @args; @vendor-list);
+        }
+
+        .transform-origin(@origin) {
+            #platui > #variables;
+            .transform-origin(@origin; @webkit-moz-ms-list);
+        }
+        .transform-origin(@origin; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform-origin; @origin; @vendor-list);
+        }
+
+        .transform-style(@style) {
+            #platui > #variables;
+            .transform-style(@style; @webkit-moz-ms-list);
+        }
+        .transform-style(@style; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform-style; @style; @vendor-list);
+        }
+
+        .rotate(@deg: 45deg) {
+            .transform(rotate(@deg));
+        }
+        .rotate(@deg; @vendor-list) {
+            .transform(rotate(@deg); @vendor-list);
+        }
+
+        .scale(@factor: .5) {
+            .transform(scale(@factor));
+        }
+        .scale(@factor; @vendor-list) {
+            .transform(scale(@factor); @vendor-list);
+        }
+
+        .skew(@deg; @deg2) {
+            .transform(skew(@deg, @deg2));
+        }
+        .skew(@deg; @deg2; @vendor-list) {
+            .transform(skew(@deg, @deg2); @vendor-list);
+        }
+
+        .perspective(@value: 1000) {
+            #platui > #variables;
+            .perspective(@value; @webkit-moz-ms-list);
+        }
+        .perspective(@value; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(perspective; @value; @vendor-list);
+        }
+
+        .translate(@x; @y) {
+            .transform(translate(@x, @y));
+        }
+        .translate(@x; @y; @vendor-list) {
+            .transform(translate(@x, @y), @vendor-list);
+        }
+
+        .translateZ(@z) {
+            .transform(translateZ(@z));
+        }
+        .translateZ(@z; @vendor-list) {
+            .transform(translateZ(@z), @vendor-list);
+        }
+
+        .translate3d(@x; @y; @z) {
+            .transform(translate3d(@x, @y, @z));
+        }
+        .translate3d(@x; @y; @z; @vendor-list) {
+            .transform(translate3d(@x, @y, @z), @vendor-list);
+        }
+
+        .translate-accelerate(@x; @y) {
+            .translate(@x; @y);
+            .transform(translate3d(@x, @y, 0));
+        }
+        .translate-accelerate(@x; @y; @vendor-list) {
+            .translate(@x; @y; @vendor-list);
+            .transform(translate3d(@x, @y, 0); @vendor-list);
+        }
+    }
+}

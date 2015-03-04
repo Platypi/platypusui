@@ -1,4 +1,4 @@
-﻿/// <reference path="../../../../references.d.ts" />
+﻿/// <reference path="../../../references.d.ts" />
 
 module platui {
     /**

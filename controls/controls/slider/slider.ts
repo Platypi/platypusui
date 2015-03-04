@@ -985,14 +985,15 @@ module platui {
                 parentChain = <Array<HTMLElement>>[],
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
+                important = 'important',
                 dependencyValue: string;
 
             shallowCopy.id = '';
             while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', 'important');
+                    shallowCopy.style.setProperty('display', 'block', important);
                 }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, 'important');
+                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
                 element = element.parentElement;
                 shallowCopy = <HTMLElement>element.cloneNode(false);
                 shallowCopy.id = '';
@@ -1014,8 +1015,8 @@ module platui {
             }
 
             var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, 'important');
-            shallowStyle.setProperty('visibility', 'hidden', 'important');
+            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
+            shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
             this._setLength(<HTMLElement>clone.firstElementChild);
             body.removeChild(shallowCopy);

@@ -1,4 +1,6 @@
-﻿@import (reference) '../global/mixins.less';
+﻿@import (reference) '../mixins/helpers.less';
+@import (reference) '../mixins/transforms.less';
+@import (reference) '../mixins/flexbox.less';
 @import (reference) 'checkbox.variables.less';
 
 /// =========== Default Checkbox =========== ///
@@ -9,11 +11,12 @@
     #platui > #Checkbox;
     display: inline-block;
     cursor: pointer;
+    .flex-vertical-center();
     .box-sizing(border-box);
 
     & > span {
-        font-size: 125%;
-        
+        line-height: @diameter;
+
         &:first-of-type {
             margin-left: 0.4em;
         }
