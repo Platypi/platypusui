@@ -60,6 +60,15 @@
                 </div>
             </div>
 
+            <p>Select Input</p>
+            <div class="demo-item">
+                <div class="demo-item-inline">
+                    <plat-select plat-options="{ default: { value: '', textContent: '--' }}" plat-context="states">
+                        <option value="{{@context}}">{{@context}}</option>
+                    </plat-select>
+                </div>
+            </div>
+
             <h4>Input Groups</h4>
             <p>Combines input-group with the grid system.</p>
             <div class="demo-item">
@@ -154,7 +163,7 @@
                 </div>
             <div class="demo-item">
                 <plat-radio plat-bind="text">Definitely interested</plat-radio>
-                </div>
+            </div>
             
             <!-- Sliders -->
             <h4>Ranges</h4>
