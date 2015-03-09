@@ -116,14 +116,16 @@ module.exports = exports = function load(grunt) {
                 src: './platypusui.ts',
                 dest: 'dist/platypusui.ts'
             },
-            libs: {
+            rmLibs: {
                 options: {
                     process: function (data) {
                         return removeLib(data);
                     }
                 },
-                src: 'dist/platypusui.d.ts',
-				dest: 'dist/platypusui.d.ts'
+				expand: true,
+				cwd: 'dist/',
+                src: ['platypusui.d.ts', 'platypusui.js'],
+				dest: 'dist/'
             },
             typings: {
                 options: {
@@ -267,7 +269,7 @@ module.exports = exports = function load(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     
     // By default, run all tests.
-    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'cssmin', 'copy:main', 'ts:packaging', 'copy:libs', 'uglify', 'copy:typings', 'copy:fonts', 'clean:after']);
+    grunt.registerTask('default', ['clean', 'bundle', 'less', 'lessCompile:packaging', 'cssmin', 'copy:main', 'ts:packaging', 'copy:rmLibs', 'uglify', 'copy:typings', 'copy:fonts', 'clean:after']);
     grunt.registerTask('dev', ['connect', 'open', 'watch']);  
     grunt.registerTask('compile', ['lessCompile:main', 'lessCompile:app', 'ts:base', 'ts:app']);
 };
