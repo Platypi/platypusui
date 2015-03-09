@@ -3,6 +3,7 @@
 /// <reference path="controls/carousel/carousel.ts" />
 /// <reference path="controls/checkbox/checkbox.ts" />
 /// <reference path="controls/drawer/drawer.ts" />
+/// <reference path="controls/drawer/drawercontroller.ts" />
 /// <reference path="controls/input/input.ts" />
 /// <reference path="controls/listview/listview.ts" />
 /// <reference path="controls/modal/modal.ts" />

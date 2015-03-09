@@ -55,6 +55,7 @@
     <TypeScriptCompile Include="carousel\carousel.ts" />
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
     <TypeScriptCompile Include="drawer\drawer.ts" />
+    <TypeScriptCompile Include="drawer\drawercontroller.ts" />
     <TypeScriptCompile Include="input\input.ts" />
     <TypeScriptCompile Include="lib\platypus.ts" />
     <TypeScriptCompile Include="listview\listview.ts" />
