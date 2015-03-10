@@ -7,9 +7,7 @@
     #__Input {
         #platui > #variables;
         @input-border-color: @neutral-color-light;
-        @input-border-width: 2px;
         @border-color-accent: darken(@neutral-color, 5%);
-        @input-height: 2.5em;
     }
 }
 
@@ -26,13 +24,12 @@
     height: @input-height;
 
     .plat-input-container {
-        .border-radius(@primary-border-radius);
         .fill();
         .box-sizing(border-box);
         position: relative;
 
         input {
-            .box-sizing(border-box);
+            .border-radius(@primary-border-radius);
             position: absolute;
             height: 100%;
             width: 100%;
@@ -43,7 +40,7 @@
             color: @text-color;
             outline: none;
             border: none;
-            border-bottom: @input-border-width solid @input-border-color;
+            border-bottom: @primary-border-bottom;
             font: inherit;
             -webkit-appearance: none;
 
@@ -63,24 +60,24 @@
             &:focus {
                 border-color: @border-color-accent;
             }
-        }
 
 /// =========== Placeholder Styling =========== ///
 
-        ::-webkit-input-placeholder {
-            color: @neutral-color-light;
-        }
+            &::-webkit-input-placeholder {
+                color: @neutral-color-light;
+            }
 
-        ::-moz-input-placeholder {
-            color: @neutral-color-light;   
-        }
+            &::-moz-input-placeholder {
+                color: @neutral-color-light;   
+            }
 
-        :-moz-input-placeholder {
-            color: @neutral-color-light;
-        }
+            &:-moz-input-placeholder {
+                color: @neutral-color-light;
+            }
 
-        :-ms-input-placeholder {
-            color: @neutral-color-light;
+            &:-ms-input-placeholder {
+                color: @neutral-color-light;
+            }
         }
 
 /// =============== Input Icon =============== ///
@@ -101,20 +98,23 @@
         }
     }
 
+/// ============== Secondary Input =============== ///
+
+    &.input-outline {
+        .plat-input-container {
+            input {
+                .border-radius(@secondary-border-radius);
+                border: @secondary-border;
+            }
+        }
+    }
+
 /// ============== Input Types =============== ///
-
-    /*&.plat-email {
-
-    }*/
-
-    /*&.plat-password {
-  
-    }*/
 }
 
 .input-group {
     #platui > #mixins;
-    #platui > #__Input;
+    #platui > #Input;
 
     [class*="col-"] {
         padding: 0;
