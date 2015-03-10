@@ -196,24 +196,13 @@ module platui {
                 modalContainer: HTMLElement;
 
             if (_utils.isString(this.templateUrl)) {
-                var fragment = this.dom.serializeHtml(this.templateString),
-                    element = this.element,
-                    childNodes: Array<Node> = Array.prototype.slice.call(element.childNodes);
+                var dom = this.dom,
+                    fragment = dom.serializeHtml(this.templateString),
+                    element = this.element;
 
                 modalContainer = this._container = <HTMLElement>fragment.firstChild;
-                while (childNodes.length > 0) {
-                    modalContainer.appendChild(childNodes.shift());
-                }
-
+                this.innerTemplate = dom.appendChildren(element.childNodes);
                 element.appendChild(fragment);
-                return;
-            }
-
-            modalContainer = this._container = <HTMLElement>this.element.firstElementChild;
-
-            var innerTemplate = this.innerTemplate;
-            if (_utils.isNode(innerTemplate)) {
-                modalContainer.appendChild(innerTemplate);
             }
         }
 
@@ -407,6 +396,10 @@ module platui {
          * @returns {void}
          */
         protected _show(): void {
+            if (this._bindTemplate()) {
+                return;
+            }
+
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
             this._utils.defer((): void => {
@@ -437,6 +430,34 @@ module platui {
 
             dom.removeClass(this._container, __Plat + 'activate');
             this._isVisible = false;
+        }
+
+        /**
+         * @name _bindTemplate
+         * @memberof platui.Modal
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Checks whether or not the template has already been bound to this control. If it hasn't, 
+         * it will add and bind the template to the DOM.
+         * 
+         * @returns {boolean} Whether or not the template has already been bound.
+         */
+        protected _bindTemplate(): boolean {
+            var innerTemplate = this.innerTemplate;
+            if (this._utils.isNode(innerTemplate)) {
+                var bindableTemplates = this.bindableTemplates,
+                    modal = 'modal';
+                bindableTemplates.add(modal, innerTemplate);
+                bindableTemplates.bind(modal).then((template): void => {
+                    this._container.insertBefore(template, null);
+                    this._show();
+                });
+                this.innerTemplate = null;
+                return true;
+            }
+            return false;
         }
 
         /**
