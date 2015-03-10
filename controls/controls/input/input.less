@@ -6,8 +6,9 @@
 #platui {
     #__Input {
         #platui > #variables;
-        @input-border-color: @neutral-color-light;
-        @border-color-accent: darken(@neutral-color, 5%);
+        #platui > #Input;
+        @border-color-accent: darken(@border-color, 25%);
+        @action-padding: 2.5em;
     }
 }
 
@@ -21,7 +22,7 @@
     .box-sizing(border-box);
     display: inline-block;
     width: @default-width;
-    height: @input-height;
+    height: @default-height;
 
     .plat-input-container {
         .fill();
@@ -29,18 +30,18 @@
         position: relative;
 
         input {
-            .border-radius(@primary-border-radius);
+            .box-sizing(border-box);
+            .border-radius(0px);
             position: absolute;
             height: 100%;
             width: 100%;
             left: 0;
             bottom: 0;
-            padding: 0 @input-height 0 0;
+            padding: 0 @action-padding 0 0;
             background-color: @transparent;
             color: @text-color;
             outline: none;
             border: none;
-            border-bottom: @primary-border-bottom;
             font: inherit;
             -webkit-appearance: none;
 
@@ -88,9 +89,9 @@
             position: absolute;
             right: 0;
             bottom: 0;
-            width: @input-height;
-            height: @input-height;
-            line-height: @input-height;
+            width: @action-padding;
+            height: @default-height;
+            line-height: @default-height;
             text-align: center;
             text-align: right;
             color: @border-color-accent;
@@ -98,14 +99,22 @@
         }
     }
 
-/// ============== Secondary Input =============== ///
-
-    &.input-outline {
+    &:not(.input-outline) {
         .plat-input-container {
             input {
-                .border-radius(@secondary-border-radius);
-                border: @secondary-border;
+                border-bottom: @primary-border-bottom;
             }
+        }
+    }
+
+/// ============== Secondary Input =============== ///
+    &.input-outline {
+        .border-radius(@secondary-border-radius);
+        border: @secondary-border;
+        padding: 0 1em;
+
+        .plat-input-action {
+            .calc(line-height; '@{default-height} + 3px');
         }
     }
 
@@ -127,7 +136,7 @@
         
         input {
             padding-left: 8px;
-            .calc(padding-right; '@{input-height} + 8px');
+            .calc(padding-right; '@{default-height} + 8px');
         }
 
         .plat-input-action {
