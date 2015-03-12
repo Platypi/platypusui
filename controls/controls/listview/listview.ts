@@ -2950,7 +2950,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setItemContainerWidthWithClone, 10, [item], this);
+                this._utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
                 return;
             }
 
@@ -3080,7 +3080,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setItemContainerHeightWithClone, 10, [item], this);
+                this._utils.defer(this._setItemContainerHeightWithClone, 20, [item], this);
                 return;
             }
 

@@ -1768,7 +1768,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
+                this._utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
                 return;
             }
 

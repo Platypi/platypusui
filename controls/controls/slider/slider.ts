@@ -421,7 +421,6 @@ module platui {
             }
 
             this._setLength();
-            this._setIncrement();
             this._initializeEvents();
             this.setValue(value);
         }
@@ -552,7 +551,6 @@ module platui {
             this.addEventListener(element, __$trackend, touchEnd, false);
             this.addEventListener(this._window, 'resize', (): void => {
                 this._setLength();
-                this._setIncrement();
                 this._setKnob();
             }, false);
         }
@@ -807,7 +805,10 @@ module platui {
 
             if (!(isNode || this._maxOffset)) {
                 this._setOffsetWithClone(this._lengthProperty);
+                return;
             }
+
+            this._setIncrement();
         }
 
         /**
@@ -977,10 +978,11 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setOffsetWithClone, 10, [dependencyProperty], this);
+                this._utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
                 return;
             }
 
+            var hasDeferred = this._cloneAttempts > 0;
             this._cloneAttempts = 0;
 
             var clone = <HTMLElement>element.cloneNode(true),
@@ -1033,6 +1035,9 @@ module platui {
             body.appendChild(shallowCopy);
             this._setLength(<HTMLElement>clone.firstElementChild);
             body.removeChild(shallowCopy);
+            if (hasDeferred) {
+                this._setKnob();
+            }
         }
     }
 
