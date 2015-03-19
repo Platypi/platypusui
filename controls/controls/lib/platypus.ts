@@ -5230,7 +5230,7 @@ module plat {
                 var location = this._location;
 
                 if (isString(url) && this.__lastUrl !== url) {
-                    if (isArray(this._stack)) {
+                    if (!replace && isArray(this._stack)) {
                         this._stack.push(location.href);
                     }
 
@@ -20907,7 +20907,7 @@ module plat {
                 /**
                  * The Comment used to hold the place of the plat-if element.
                  */
-                commentNode: Comment = this._document.createComment(__If + __BOUND_PREFIX + 'placeholder');
+                commentNode: Comment;
 
                 /**
                  * The DocumentFragment that stores the plat-if element when hidden.
@@ -20947,6 +20947,18 @@ module plat {
                 private __initialBind: async.IThenable<void>;
 
                 /**
+                 * The constructor for a If. Creates the comment node and document fragment storage 
+                 * used by this control.
+                 */
+                constructor() {
+                    super();
+
+                    var _document = this._document;
+                    this.commentNode = _document.createComment(__If + __BOUND_PREFIX + 'placeholder');
+                    this.fragmentStore = _document.createDocumentFragment();
+                }
+
+                /**
                  * Checks the options and initializes the 
                  * evaluation.
                  */
@@ -20964,8 +20976,7 @@ module plat {
                  * Creates a bindable template with the control element's childNodes (innerHTML).
                  */
                 setTemplate(): void {
-                    var childNodes: Array<Node> = Array.prototype.slice.call(this.element.childNodes);
-                    this.bindableTemplates.add('template', childNodes);
+                    this.bindableTemplates.add('template', Array.prototype.slice.call(this.element.childNodes));
                 }
 
                 /**
@@ -20976,7 +20987,7 @@ module plat {
                 loaded(): async.IThenable<void> {
                     if (isNull(this.options)) {
                         var _Exception = this._Exception;
-                        _Exception.warn('No condition specified in plat-options for plat-if.', _Exception.BIND);
+                        _Exception.warn('No condition specified in ' + __Options + ' for ' + this.type + '.', _Exception.BIND);
 
                         this.options = {
                             value: {
@@ -21057,15 +21068,16 @@ module plat {
                         this.__firstTime = false;
                         this.__initialBind = this.bindableTemplates.bind('template').then((template): animations.IAnimatingThenable => {
                             var element = this.element;
-
-                            element.appendChild(template);
                             this.__initialBind = null;
 
                             if (element.parentNode === this.fragmentStore) {
+                                element.insertBefore(template, null);
                                 return <any>this._animateEntrance();
                             }
 
-                            return this.__enterAnimation = this._animator.animate(element, __Enter);
+                            this.__enterAnimation = this._animator.animate(element, __Enter);
+                            element.insertBefore(template, null);
+                            return this.__enterAnimation;
                         }).then((): void => {
                             this.__enterAnimation = null;
                         });
@@ -21089,8 +21101,11 @@ module plat {
                     var commentNode = this.commentNode,
                         parentNode = commentNode.parentNode;
 
-                    parentNode.replaceChild(this.fragmentStore, commentNode);
-                    return this.__enterAnimation = this._animator.animate(this.element, __Enter).then((): void => {
+                    if (!isNode(parentNode)) {
+                        return this._animator.resolve().then(noop);
+                    }
+
+                    return this.__enterAnimation = this._animator.enter(this.element, __Enter, <Element>parentNode, commentNode).then((): void => {
                         this.__enterAnimation = null;
                     });
                 }
@@ -21112,17 +21127,18 @@ module plat {
                  * Animates the template as it leaves the DOM.
                  */
                 protected _animateLeave(): animations.IAnimationThenable<void> {
-                    var element = this.element;
+                    var element = this.element,
+                        parent = element.parentElement,
+                        nextSibling = element.nextSibling;
 
-                    return this.__leaveAnimation = this._animator.animate(element, __Leave).then((): void => {
+                    if (!isNode(parent)) {
+                        return this._animator.resolve().then(noop);
+                    }
+
+                    return this.__leaveAnimation = this._animator.leave(element, __Leave).then((): void => {
                         this.__leaveAnimation = null;
-                        element.parentNode.insertBefore(this.commentNode, element);
-
-                        if (!isDocumentFragment(this.fragmentStore)) {
-                            this.fragmentStore = this._document.createDocumentFragment();
-                        }
-
-                        insertBefore(this.fragmentStore, element);
+                        parent.insertBefore(this.commentNode, nextSibling);
+                        this.fragmentStore.insertBefore(element, null);
                     });
                 }
             }
@@ -25548,8 +25564,14 @@ module plat {
                     view = '*';
                 }
 
+                var alias = view;
+
                 if (view !== '*') {
                     view = this._Injector.convertDependency(view);
+                }
+
+                if (view === __NOOP_INJECTOR) {
+                    view = alias;
                 }
 
                 var interceptors = this._interceptors[view];
@@ -25683,7 +25705,13 @@ module plat {
              */
             generate(name: string, parameters?: IObject<string>, query?: IObject<string>): string;
             generate(name: any, parameters?: IObject<string>, query?: IObject<string>): string {
+                var alias = name;
+
                 name = this._Injector.convertDependency(name);
+
+                if (name === __NOOP_INJECTOR) {
+                    name = alias;
+                }
 
                 var router = this,
                     prefix = '';
@@ -25715,13 +25743,15 @@ module plat {
              */
             protected _configureRoute(route: IRouteMapping): void {
                 var resolve = this._resolve,
-                    view: string = this._Injector.convertDependency(route.view);
+                    view: string = this._Injector.convertDependency(route.view),
+                    alias = route.alias || view;
 
                 if (view === __NOOP_INJECTOR) {
                     return;
                 }
 
                 route.view = view;
+                route.alias = alias || view;
 
                 var routeDelegate: IRouteDelegate = {
                     pattern: route.pattern,
@@ -25732,11 +25762,12 @@ module plat {
                         pattern: childPattern,
                         delegate: {
                             pattern: childPattern,
-                            view: view
+                            view: view,
+                            alias: alias
                         }
                     };
 
-                this._recognizer.register([routeDelegate], { name: view });
+                this._recognizer.register([routeDelegate], { name: alias });
                 this._childRecognizer.register([childDelegate]);
             }
 
@@ -25752,8 +25783,14 @@ module plat {
                     view = '*';
                 }
 
+                var alias = view;
+
                 if (view !== '*') {
                     view = this._Injector.convertDependency(view);
+                }
+
+                if (view === __NOOP_INJECTOR) {
+                    view = alias;
                 }
 
                 if (isEmpty(view) || isEmpty(parameter)) {
@@ -25925,7 +25962,7 @@ module plat {
                 if (isEmpty(this._ports)) {
                     return this._resolve(true);
                 }
-                return this._callAllHandlers(info.delegate.view, info.parameters, info.query).then((): async.IThenable<boolean> => {
+                return this._callAllHandlers(info.delegate.alias, info.parameters, info.query).then((): async.IThenable<boolean> => {
                     return this._callInterceptors(info);
                 }).then((canNavigateTo): async.IThenable<Array<boolean>> => {
                     if (canNavigateTo === false || ignorePorts) {
@@ -25993,7 +26030,7 @@ module plat {
 
                     return mapAsync((handler: (routeInfo: IRouteInfo) => any): async.IThenable<boolean> => {
                         return resolve(handler(info));
-                    }, this._interceptors[info.delegate.view]);
+                    }, this._interceptors[info.delegate.alias]);
                 })
                     .then(booleanReduce);
             }
@@ -26017,6 +26054,7 @@ module plat {
                     query = serializeQuery(info.query);
 
                 return currentDelegate.view === delegate.view &&
+                    currentDelegate.alias === delegate.alias &&
                     currentDelegate.pattern === delegate.pattern &&
                     currentParameters === parameters &&
                     currentQuery === query;
@@ -26074,6 +26112,11 @@ module plat {
              * that ViewControl.
              */
             view: any;
+
+            /**
+             * An optional alias with which to associate this mapping. Alias is used over view when specified.
+             */
+            alias?: string;
         }
 
         /**
@@ -28967,6 +29010,13 @@ module plat {
          */
         load(node?: Node): void {
             App.load(node);
+        }
+
+        /**
+         * Calls to exit the application. Makes the necessary calls to the device is possible.
+         */
+        exit(): void {
+            this.dispatchEvent(__shutdown);
         }
     }
 
