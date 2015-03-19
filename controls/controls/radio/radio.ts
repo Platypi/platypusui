@@ -168,7 +168,7 @@ module platui {
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
             if (newValue === oldValue) {
                 return;
-            } else if (setProperty === true && this._utils.isNull(newValue)) {
+            } else if (setProperty === true && this.utils.isNull(newValue)) {
                 this.inputChanged();
                 return;
             }
@@ -221,7 +221,7 @@ module platui {
          */
         protected _toggle(setProperty?: boolean): void {
             super._toggle(setProperty);
-            if (this._utils.isFunction(this._removeListener)) {
+            if (this.utils.isFunction(this._removeListener)) {
                 this._removeListener();
                 this._removeListener = null;
             }
@@ -252,7 +252,7 @@ module platui {
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (_utils.isBoolean(newValue)) {
                 if (newValue) {
                     this._setBoundProperty(this._getValue(), null, null, true);

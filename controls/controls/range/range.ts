@@ -17,7 +17,6 @@ module platui {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,
-            _utils: __Utils,
             _animator: __Animator
         };
 
@@ -143,19 +142,6 @@ module platui {
          * Reference to the Document injectable.
          */
         protected _document: Document;
-
-        /**
-         * @name _utils
-         * @memberof platui.Range
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _animator
@@ -455,7 +441,7 @@ module platui {
         loaded(): void {
             var element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
-                _utils = this._utils,
+                _utils = this.utils,
                 isNumber = _utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
                 options = optionObj.value || <IRangeOptions>{},
@@ -581,7 +567,7 @@ module platui {
          * @returns {void}
          */
         protected _setLowerBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
-            if (firstTime === true && this._utils.isNull(newValue)) {
+            if (firstTime === true && this.utils.isNull(newValue)) {
                 this._fireChange();
             }
 
@@ -605,7 +591,7 @@ module platui {
          * @returns {void}
          */
         protected _setUpperBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
-            if (firstTime === true && this._utils.isNull(newValue)) {
+            if (firstTime === true && this.utils.isNull(newValue)) {
                 this._fireChange();
             }
 
@@ -628,7 +614,7 @@ module platui {
          * @returns {void}
          */
         protected _setLower(value: number, propertyChanged: boolean): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (this._touchState === 2) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the value of the ' + this.type +
@@ -666,7 +652,7 @@ module platui {
          * @returns {void}
          */
         protected _setUpper(value: number, propertyChanged: boolean): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (this._touchState === 3) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the upper value of the ' + this.type +
@@ -757,7 +743,7 @@ module platui {
 
             var target = <HTMLElement>ev.currentTarget,
                 lastTouch = this._lastTouch;
-            if (!this._utils.isNull(lastTouch)) {
+            if (!this.utils.isNull(lastTouch)) {
                 if (lastTouch.target !== target) {
                     lastTouch.target.style.zIndex = '0';
                     target.style.zIndex = '1';
@@ -799,11 +785,11 @@ module platui {
             var lastTouch = this._lastTouch,
                 target = ev.currentTarget;
 
-            if (this._utils.isNull(lastTouch) || (lastTouch.target !== target)) {
+            if (this.utils.isNull(lastTouch) || (lastTouch.target !== target)) {
                 return;
             }
 
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._touchState = 0;
 
                 var isLower = target === this._lowerKnob,
@@ -976,7 +962,7 @@ module platui {
          * @returns {void}
          */
         protected _positionLower(position: number, value?: number): void {
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 var style = this._slider.style;
                 style[<any>this._positionProperty] = position + 'px';
                 style[<any>this._lengthProperty] = (this._upperKnobOffset - position) + 'px';
@@ -1005,7 +991,7 @@ module platui {
          * @returns {void}
          */
         protected _positionUpper(position: number, value?: number): void {
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._slider.style[<any>this._lengthProperty] = (position - this._lowerKnobOffset) + 'px';
 
                 if (value === null) {
@@ -1032,7 +1018,7 @@ module platui {
          * @returns {void}
          */
         protected _positionTogether(position: number, value?: number): void {
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 var style = this._slider.style;
                 style[<any>this._positionProperty] = position + 'px';
                 style[<any>this._lengthProperty] = '0px';
@@ -1223,7 +1209,7 @@ module platui {
          * @returns {void}
          */
         protected _setPositionAndLength(element?: HTMLElement): void {
-            var isNode = this._utils.isNode(element),
+            var isNode = this.utils.isNode(element),
                 el = isNode ? element : this._slider.parentElement;
 
             if (this._isVertical) {
@@ -1261,7 +1247,7 @@ module platui {
         protected _setLowerKnobPosition(value?: number): void {
             var animationOptions: plat.IObject<string> = {},
                 upperKnobOffset = this._upperKnobOffset,
-                upperOffset = this._utils.isNumber(upperKnobOffset) ? upperKnobOffset :
+                upperOffset = this.utils.isNumber(upperKnobOffset) ? upperKnobOffset :
                 this._setOffset(this._calculateKnobPosition(this.upper), false),
                 position = this._calculateKnobPosition((value || this.lower));
 
@@ -1358,7 +1344,7 @@ module platui {
          * @returns {string} The orientation to be used.
          */
         protected _validateOrientation(orientation: string): string {
-            if (this._utils.isUndefined(orientation)) {
+            if (this.utils.isUndefined(orientation)) {
                 return 'horizontal';
             }
 
@@ -1407,7 +1393,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
+                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
                 return;
             }
 
@@ -1421,7 +1407,7 @@ module platui {
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 important = 'important',
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -1436,7 +1422,7 @@ module platui {
                     _Exception = this._Exception,
                     _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                         'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this._utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
+                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }
                 shallowCopy = <HTMLElement>element.cloneNode(false);

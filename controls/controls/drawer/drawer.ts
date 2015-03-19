@@ -14,7 +14,6 @@ module platui {
      */
     export class Drawer extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
-            _utils: __Utils,
             _Promise: __Promise
         };
 
@@ -62,19 +61,6 @@ module platui {
             rootElement?: HTMLElement;
             parentOverflow?: { key: string; value: string; };
         };
-
-        /**
-         * @name _utils
-         * @memberof platui.Drawer
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _Promise
@@ -205,7 +191,7 @@ module platui {
          */
         loaded(): void {
             var element = this.element,
-                _utils = this._utils,
+                _utils = this.utils,
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
                 position = this._currentPosition = options.position || 'left',
@@ -241,7 +227,7 @@ module platui {
          */
         open(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this._utils.isNull(controller)) {
+            if (this.utils.isNull(controller)) {
                 var _Exception = this._Exception;
                 _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to open.', _Exception.TEMPLATE);
@@ -265,7 +251,7 @@ module platui {
          */
         close(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this._utils.isNull(controller)) {
+            if (this.utils.isNull(controller)) {
                 var _Exception = this._Exception;
                 _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to close.', _Exception.TEMPLATE);
@@ -289,7 +275,7 @@ module platui {
          */
         toggle(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this._utils.isNull(controller)) {
+            if (this.utils.isNull(controller)) {
                 var _Exception = this._Exception;
                 _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to toggle.', _Exception.TEMPLATE);
@@ -313,7 +299,7 @@ module platui {
          */
         reset(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
-            if (this._utils.isNull(controller)) {
+            if (this.utils.isNull(controller)) {
                 var _Exception = this._Exception;
                 _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to reset.', _Exception.TEMPLATE);
@@ -336,7 +322,7 @@ module platui {
          */
         isOpen(): boolean {
             var controller = this._controllers[0];
-            if (this._utils.isNull(controller)) {
+            if (this.utils.isNull(controller)) {
                 var _Exception = this._Exception;
                 _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to check if open.', _Exception.TEMPLATE);
@@ -451,7 +437,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 controller = this._controllers[0];
             if (firstTime === true && _utils.isNull(drawerState)) {
                 this.inputChanged(_utils.isNull(controller) ? false : controller.isOpen());
@@ -503,7 +489,7 @@ module platui {
          * @returns {void}
          */
         protected _changeDirection(position: string): void {
-            if (this._utils.isNull(position) || position === this._currentPosition) {
+            if (this.utils.isNull(position) || position === this._currentPosition) {
                 return;
             }
 
@@ -533,7 +519,7 @@ module platui {
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string, isElastic: boolean): void {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 innerTemplate = this.innerTemplate;
 
             this.on(__DrawerControllerFetchEvent + '_' + id,
@@ -595,7 +581,7 @@ module platui {
          */
         protected _checkPreInit(): void {
             if (this._preInitializedValue) {
-                var _utils = this._utils;
+                var _utils = this.utils;
                 _utils.postpone(() => {
                     var controller = this._controllers[0];
                     if (!_utils.isNull(controller)) {

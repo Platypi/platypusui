@@ -13,10 +13,6 @@ module platui {
      * An {@link plat.ui.BindControl|BindControl} that simulates a toggle switch.
      */
     export class Toggle extends plat.ui.BindControl implements IUiControl {
-        protected static _inject: any = {
-            _utils: __Utils
-        };
-
         /**
          * @name templateString
          * @memberof platui.Toggle
@@ -58,19 +54,6 @@ module platui {
          * A boolean value indicating whether the control is actively selected.
          */
         isActive = false;
-
-        /**
-         * @name _utils
-         * @memberof platui.Toggle
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _targetType
@@ -190,7 +173,7 @@ module platui {
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
             if (newValue === oldValue) {
                 return;
-            } else if (setProperty === true && this._utils.isNull(newValue)) {
+            } else if (setProperty === true && this.utils.isNull(newValue)) {
                 this.inputChanged(this.isActive);
                 return;
             }

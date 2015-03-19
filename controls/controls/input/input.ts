@@ -15,7 +15,6 @@ module platui {
      */
     export class Input extends plat.ui.BindControl implements IUiControl, IFormControl {
         protected static _inject: any = {
-            _utils: __Utils,
             _compat: __Compat,
             _regex: __Regex
         };
@@ -63,19 +62,6 @@ module platui {
          * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
          */
         priority = 120;
-
-        /**
-         * @name _utils
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -290,7 +276,7 @@ module platui {
                 controlInjectors = plat.dependency.injectors.control,
                 hasPlaceholder = false,
                 attrRegex = /plat-(?:control|hide|context)|class|style/,
-                _utils = this._utils,
+                _utils = this.utils,
                 isNull = _utils.isNull,
                 delimit = _utils.delimit,
                 isString = _utils.isString,
@@ -347,7 +333,7 @@ module platui {
             this.dom.addClass(element, __Plat + inputType);
             this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
 
-            if (!this._utils.isEmpty(pattern)) {
+            if (!this.utils.isEmpty(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
                 }
@@ -483,11 +469,11 @@ module platui {
          */
         protected _setBoundProperty(newValue: string, oldValue: string, identifier: void, firstTime?: boolean): void {
             var value = this._inputElement.value;
-            if (this._utils.isNull(newValue)) {
+            if (this.utils.isNull(newValue)) {
                 newValue = '';
 
                 if (firstTime === true) {
-                    if (this._utils.isNull(value)) {
+                    if (this.utils.isNull(value)) {
                         this._onInputChanged(newValue);
                     }
                     return;
@@ -606,7 +592,7 @@ module platui {
         protected _addTextEventListener(): void {
             var input = this._inputElement,
                 _compat = this._compat,
-                _utils = this._utils,
+                _utils = this.utils,
                 composing = false,
                 timeout: plat.IRemoveListener,
                 eventListener = (): void => {

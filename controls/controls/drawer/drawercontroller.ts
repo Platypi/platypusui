@@ -16,7 +16,6 @@ module platui {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,
-            _utils: __Utils,
             _compat: __Compat,
             _animator: __Animator,
             _Promise: __Promise
@@ -47,19 +46,6 @@ module platui {
          * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
          */
         priority = 120;
-
-        /**
-         * @name _utils
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -647,7 +633,7 @@ module platui {
         dispose(): void {
             super.dispose();
 
-            var _utils = this._utils,
+            var _utils = this.utils,
                 drawer = this._drawer;
             if (_utils.isNull(drawer)) {
                 return;
@@ -708,7 +694,7 @@ module platui {
          */
         open(): plat.async.IThenable<void> {
             var wasClosed = !this._isOpen,
-                _utils = this._utils;
+                _utils = this.utils;
 
             if (_utils.isFunction(this._toggleDelay)) {
                 this._toggleDelay();
@@ -748,7 +734,7 @@ module platui {
          */
         close(): plat.async.IThenable<void> {
             var wasOpen = this._isOpen,
-                _utils = this._utils;
+                _utils = this.utils;
 
             if (_utils.isFunction(this._toggleDelay)) {
                 this._toggleDelay();
@@ -894,7 +880,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (firstTime === true && _utils.isNull(drawerState)) {
                 this.inputChanged(this._isOpen);
                 return;
@@ -949,7 +935,7 @@ module platui {
         protected _open(): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
-                _utils = this._utils,
+                _utils = this.utils,
                 isNode = _utils.isNode,
                 wasClosed = !this._isOpen;
 
@@ -1011,7 +997,7 @@ module platui {
             var rootElement = this._rootElement,
                 drawerElement = this._drawerElement,
                 dom = this.dom,
-                _utils = this._utils,
+                _utils = this.utils,
                 isNode = _utils.isNode;
 
             if (this._isOpen) {
@@ -1102,7 +1088,7 @@ module platui {
         protected _removeEventIntercepts(): void {
             this._rootElement.removeChild(this._clickEater);
 
-            var isFunction = this._utils.isFunction;
+            var isFunction = this.utils.isFunction;
             if (this._isTap && isFunction(this._openTapRemover)) {
                 this._openTapRemover();
                 this._openTapRemover = null;
@@ -1204,7 +1190,7 @@ module platui {
          */
         protected _addEventListeners(): void {
             var element = this.element,
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 types = this._type.split(' '),
                 position = this._position;
 
@@ -1268,7 +1254,7 @@ module platui {
          * @returns {void}
          */
         protected _removeEventListeners(): void {
-            var isFunction = this._utils.isFunction;
+            var isFunction = this.utils.isFunction;
 
             if (this._isTap && isFunction(this._removeTap)) {
                 this._removeTap();
@@ -1311,7 +1297,7 @@ module platui {
                 return;
             }
 
-            if (!this._utils.isNull(this._animationThenable)) {
+            if (!this.utils.isNull(this._animationThenable)) {
                 this._animationThenable.cancel();
             }
 
@@ -1424,7 +1410,7 @@ module platui {
                 return;
             }
 
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
             });
         }
@@ -1545,7 +1531,7 @@ module platui {
                     (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent): void => {
                         eventRemover();
 
-                        var _utils = this._utils,
+                        var _utils = this.utils,
                             isString = _utils.isString,
                             isUndefined = _utils.isUndefined,
                             drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{},
@@ -1618,7 +1604,7 @@ module platui {
          */
         protected _checkPreInit(): void {
             if (this._preInitializedValue) {
-                this._toggleDelay = this._utils.postpone((): void => {
+                this._toggleDelay = this.utils.postpone((): void => {
                     this._touchState = 0;
                     this._toggleDelay = null;
                     this._open();
@@ -1641,7 +1627,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been determined.
          */
         protected _determineTemplate(fragment?: Node): plat.async.IThenable<void> {
-            var _utils = this._utils;
+            var _utils = this.utils;
 
             if (_utils.isString(this._templateUrl)) {
                 return plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template): plat.async.IThenable<void> => {
@@ -1667,7 +1653,7 @@ module platui {
          */
         protected _setTransform(): void {
             var style = this._rootElement.style,
-                isUndefined = this._utils.isUndefined;
+                isUndefined = this.utils.isUndefined;
 
             if (!isUndefined(this._preTransform = style.transform)) {
                 this._transform = 'transform';
@@ -1696,7 +1682,7 @@ module platui {
          * @returns {boolean} Whether or not this control is valid.
          */
         protected _controllerIsValid(position: string): boolean {
-            var isNull = this._utils.isNull,
+            var isNull = this.utils.isNull,
                 _Exception: plat.IExceptionStatic;
 
             if (isNull(this._drawerElement)) {
@@ -1754,7 +1740,7 @@ module platui {
          */
         protected _getRootElement(): HTMLElement {
             var drawer = this._drawer,
-                _utils = this._utils;
+                _utils = this.utils;
 
             if (!_utils.isNull(drawer.storedProperties)) {
                 return drawer.storedProperties.rootElement;
@@ -1846,7 +1832,7 @@ module platui {
          * @returns {void}
          */
         private _setOffset(element?: HTMLElement): void {
-            var isNode = this._utils.isNode(element),
+            var isNode = this.utils.isNode(element),
                 el = isNode ? element : this._drawerElement,
                 hasAttribute = el.hasAttribute(__Hide),
                 lengthProperty: string;
@@ -1908,7 +1894,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
+                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
                 return;
             }
 
@@ -1921,7 +1907,7 @@ module platui {
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 important = 'important',
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -1936,7 +1922,7 @@ module platui {
                     _Exception = this._Exception,
                     _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                         'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this._utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
+                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }
                 shallowCopy = <HTMLElement>element.cloneNode(false);

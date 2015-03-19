@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.12.6 (http://getplatypi.com) 
+ * PlatypusTS v0.12.7 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusTS is licensed under the GPL-3.0 found at  
@@ -10817,6 +10817,11 @@ module plat {
         dom: ui.Dom = Control._dom;
 
         /**
+         * Contains helper methods for data manipulation.
+         */
+        utils: Utils = acquire(__Utils);
+
+        /**
          * Finds the ancestor control for the given control that contains the root 
          * context.
          * @param {plat.Control} control The control with which to find the root.
@@ -17790,7 +17795,8 @@ module plat {
                     _compat: __Compat,
                     _Exception: __ExceptionStatic,
                     _Promise: __Promise,
-                    dom: __Dom
+                    dom: __Dom,
+                    utils: __Utils
                 };
 
                 /**
@@ -17802,6 +17808,11 @@ module plat {
                  * Contains DOM helper methods for manipulating this control's element.
                  */
                 dom: Dom;
+
+                /**
+                 * Contains helper methods for data manipulation.
+                 */
+                utils: Utils;
 
                 /**
                  * Specified options for the animation.

@@ -22,8 +22,7 @@ module platui {
      */
     export class Button extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
-            _document: __Document,
-            _utils: __Utils
+            _document: __Document
         };
 
         /**
@@ -78,19 +77,6 @@ module platui {
          * Reference to the Document injectable.
          */
         protected _document: Document;
-
-        /**
-         * @name _utils
-         * @memberof platui.Button
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _group
@@ -171,7 +157,7 @@ module platui {
                 childNode: Node,
                 span: HTMLSpanElement;
 
-            var isEmpty = this._utils.isEmpty;
+            var isEmpty = this.utils.isEmpty;
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
                 if (childNode.nodeType === Node.TEXT_NODE) {
@@ -202,7 +188,7 @@ module platui {
                 optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
                 options = optionObj.value || <IButtonOptions>{},
                 group = options.group,
-                isString = this._utils.isString;
+                isString = this.utils.isString;
 
             if (!isString(group)) {
                 group = this.attributes[__CamelBind];

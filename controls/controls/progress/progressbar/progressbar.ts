@@ -14,8 +14,7 @@ module platui {
      */
     export class ProgressBar extends plat.ui.TemplateControl implements IUiControl {
         protected static _inject: any = {
-            _window: __Window,
-            _utils: __Utils
+            _window: __Window
         };
 
         /**
@@ -46,19 +45,6 @@ module platui {
          * Reference to the Window injectable.
          */
         protected _window: Window;
-
-        /**
-         * @name _utils
-         * @memberof platui.ProgressBar
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _barElement
@@ -170,7 +156,7 @@ module platui {
                 this._setOffsetWithClone('width');
             }
 
-            if (!this._utils.isNumber(context) || context > 1 || context < 0) {
+            if (!this.utils.isNumber(context) || context > 1 || context < 0) {
                 var _Exception = this._Exception;
                 _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
                 return;
@@ -216,7 +202,7 @@ module platui {
          */
         setProgress(value?: number): void {
             var barValue = value || this.context;
-            if (!this._utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
+            if (!this.utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
                 var _Exception = this._Exception;
                 _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
                 return;
@@ -255,7 +241,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
+                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
                 return;
             }
 
@@ -268,7 +254,7 @@ module platui {
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 important = 'important',
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -283,7 +269,7 @@ module platui {
                     _Exception = this._Exception,
                     _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                         'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this._utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
+                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }
                 shallowCopy = <HTMLElement>element.cloneNode(false);

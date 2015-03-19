@@ -16,7 +16,6 @@ module platui {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,
-            _utils: __Utils,
             _animator: __Animator
         };
 
@@ -128,19 +127,6 @@ module platui {
          * Reference to the Document injectable.
          */
         protected _document: Document;
-
-        /**
-         * @name _utils
-         * @memberof platui.Slider
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _animator
@@ -388,7 +374,7 @@ module platui {
         loaded(): void {
             var element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
-                isNumber = this._utils.isNumber,
+                isNumber = this.utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
                 options = optionObj.value || <ISliderOptions>{},
                 optionValue = Number(options.value),
@@ -480,7 +466,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(newValue: number, oldValue: number, identifier: void, firstTime?: boolean): void {
-            if (firstTime === true && this._utils.isNull(newValue)) {
+            if (firstTime === true && this.utils.isNull(newValue)) {
                 this.inputChanged(this.value);
                 return;
             }
@@ -503,7 +489,7 @@ module platui {
          * @returns {void}
          */
         protected _setValue(value: number, propertyChanged: boolean): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (this._touchState === 1) {
                 var _Exception = this._Exception;
                 _Exception.warn('Cannot set the value of ' + this.type +
@@ -605,7 +591,7 @@ module platui {
                 }
             }
 
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._knobOffset = this._setSliderProperties(offset);
             });
         }
@@ -634,7 +620,7 @@ module platui {
             var newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._touchState = 0;
 
                 if (this._lastTouch.value !== this.value) {
@@ -671,7 +657,7 @@ module platui {
                 return;
             }
 
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._setSliderProperties(this._calculateOffset(ev));
             });
         }
@@ -790,7 +776,7 @@ module platui {
          * @returns {void}
          */
         protected _setLength(element?: HTMLElement): void {
-            var isNode = this._utils.isNode(element),
+            var isNode = this.utils.isNode(element),
                 el = isNode ? element : this._slider.parentElement;
 
             if (this._isVertical) {
@@ -929,7 +915,7 @@ module platui {
          * @returns {string} The orientation to be used.
          */
         protected _validateOrientation(orientation: string): string {
-            if (this._utils.isUndefined(orientation)) {
+            if (this.utils.isUndefined(orientation)) {
                 return 'horizontal';
             }
 
@@ -978,7 +964,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
+                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
                 return;
             }
 
@@ -992,7 +978,7 @@ module platui {
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 important = 'important',
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -1007,7 +993,7 @@ module platui {
                     _Exception = this._Exception,
                     _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                         'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this._utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
+                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }
                 shallowCopy = <HTMLElement>element.cloneNode(false);

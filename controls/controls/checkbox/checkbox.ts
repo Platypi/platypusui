@@ -103,7 +103,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var isNull = this._utils.isNull,
+            var isNull = this.utils.isNull,
                 innerTemplate = this.innerTemplate;
 
             if (isNull(innerTemplate)) {
@@ -217,7 +217,7 @@ module platui {
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (_utils.isBoolean(newValue)) {
                 return this._setBoundProperty(newValue, oldValue, null, true);
             } else if (!_utils.isString(newValue)) {

@@ -14,7 +14,6 @@ module platui {
      */
     export class Modal extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
-            _utils: __Utils,
             _compat: __Compat
         };
 
@@ -56,19 +55,6 @@ module platui {
          * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
          */
         priority = 120;
-
-        /**
-         * @name _utils
-         * @memberof platui.Modal
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -192,7 +178,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 modalContainer: HTMLElement;
 
             if (_utils.isString(this.templateUrl)) {
@@ -225,7 +211,7 @@ module platui {
             // in case of cloning
             this._container = this._container || <HTMLElement>this.element.firstElementChild;
 
-            if (!this._utils.isString(transition) || transition === 'none') {
+            if (!this.utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._container, __Plat + 'no-transition');
                 return;
             } else if (!this._transitionHash[transition]) {
@@ -235,7 +221,7 @@ module platui {
             }
 
             var animationEvents = this._compat.animationEvents;
-            if (this._utils.isNull(animationEvents)) {
+            if (this.utils.isNull(animationEvents)) {
                 _Exception = this._Exception;
                 _Exception.warn('This browser does not support CSS3 animations.', _Exception.COMPAT);
                 this.dom.addClass(this._container, __Plat + 'no-transition');
@@ -357,7 +343,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(modalState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (firstTime === true && _utils.isNull(modalState)) {
                 this.inputChanged(this._isVisible);
                 return;
@@ -402,7 +388,7 @@ module platui {
 
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
-            this._utils.defer((): void => {
+            this.utils.defer((): void => {
                 dom.addClass(this._container, __Plat + 'activate');
             }, 25);
 
@@ -422,7 +408,7 @@ module platui {
          */
         protected _hide(): void {
             var dom = this.dom;
-            if (this._utils.isString(this._transitionEnd)) {
+            if (this.utils.isString(this._transitionEnd)) {
                 this._addHideOnTransitionEnd();
             } else {
                 dom.addClass(this.element, __Hide);
@@ -446,7 +432,7 @@ module platui {
          */
         protected _bindTemplate(): boolean {
             var innerTemplate = this.innerTemplate;
-            if (this._utils.isNode(innerTemplate)) {
+            if (this.utils.isNode(innerTemplate)) {
                 var bindableTemplates = this.bindableTemplates,
                     modal = 'modal';
                 bindableTemplates.add(modal, innerTemplate);

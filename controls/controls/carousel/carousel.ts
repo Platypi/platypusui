@@ -17,7 +17,6 @@ module platui {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,
-            _utils: __Utils,
             _compat: __Compat,
             _animator: __Animator
         };
@@ -105,19 +104,6 @@ module platui {
         get index(): number {
             return this._index;
         }
-
-        /**
-         * @name _utils
-         * @memberof platui.Carousel
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -601,7 +587,7 @@ module platui {
         contextChanged(newValue: Array<any>, oldvalue: Array<any>): void {
             this._verifyLength();
 
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (_utils.isFunction(this._onLoad)) {
                 if (_utils.isArray(newValue) && newValue.length > 0) {
                     this.goToIndex(0);
@@ -658,7 +644,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 context = this.context;
             if (!_utils.isArray(context)) {
                 var _Exception = this._Exception;
@@ -887,7 +873,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(index: number, oldValue: number, identifier: void, firstTime?: boolean): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (_utils.isNull(index)) {
                 if (firstTime === true) {
                     this.inputChanged(0);
@@ -943,7 +929,7 @@ module platui {
          */
         protected _verifyLength(): void {
             var context = this.context,
-                _utils = this._utils;
+                _utils = this.utils;
             if (!_utils.isArray(context) || context.length === 0) {
                 var index = this._index;
                 if (!_utils.isUndefined(index)) {
@@ -996,7 +982,7 @@ module platui {
          */
         protected _goToIndex(index: number): plat.async.IThenable<void> {
             var oldIndex = this._index;
-            if (this._utils.isUndefined(oldIndex)) {
+            if (this.utils.isUndefined(oldIndex)) {
                 this._index = oldIndex = 0;
             }
 
@@ -1216,7 +1202,7 @@ module platui {
             this._removeListeners.push(this.observeArray(this._cloneForInfinite));
             this._cloneForInfinite();
             // offset the newly added clone
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
             });
         }
@@ -1236,7 +1222,7 @@ module platui {
             this._removeClones();
 
             var context = this.context;
-            if (this._utils.isNull(context) || context.length === 0) {
+            if (this.utils.isNull(context) || context.length === 0) {
                 return;
             }
 
@@ -1301,7 +1287,7 @@ module platui {
          * @returns {void}
          */
         protected _initiateInterval(): void {
-            this._removeInterval = this._utils.setInterval(this.goToNext, this._interval, null, this);
+            this._removeInterval = this.utils.setInterval(this.goToNext, this._interval, null, this);
         }
 
         /**
@@ -1323,7 +1309,7 @@ module platui {
             this._removeSuspend();
             this._removeInterval();
 
-            this._removeSuspend = this._utils.defer((): void => {
+            this._removeSuspend = this.utils.defer((): void => {
                 this._initiateInterval();
                 this._removeSuspend = noop;
             }, this._suspend);
@@ -1341,7 +1327,7 @@ module platui {
          * @returns {void}
          */
         protected _initializeTap(): void {
-            if (!this._utils.isNode(this._forwardArrow)) {
+            if (!this.utils.isNode(this._forwardArrow)) {
                 this._createArrowElements();
             }
 
@@ -1533,7 +1519,7 @@ module platui {
                 y: ev.clientY
             };
 
-            if (this._utils.isNull(this._animationThenable)) {
+            if (this.utils.isNull(this._animationThenable)) {
                 return;
             }
 
@@ -1593,7 +1579,7 @@ module platui {
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._slider.style[<any>this._transform] = this._calculateDynamicTranslation(ev);
             });
         }
@@ -1653,7 +1639,7 @@ module platui {
          */
         protected _setTransform(): void {
             var style = this._slider.style,
-                isUndefined = this._utils.isUndefined;
+                isUndefined = this.utils.isUndefined;
 
             if (!isUndefined(style.transform)) {
                 this._transform = 'transform';
@@ -1682,7 +1668,7 @@ module platui {
          * @returns {boolean} Whether or not all necessary dimensions were set.
          */
         protected _setPosition(element?: HTMLElement): boolean {
-            var isNode = this._utils.isNode(element),
+            var isNode = this.utils.isNode(element),
                 el = isNode ? element : this._container,
                 dependencyProperty: string;
 
@@ -1719,7 +1705,7 @@ module platui {
          * @returns {string} The orientation to be used.
          */
         protected _validateOrientation(orientation: string): string {
-            if (this._utils.isUndefined(orientation)) {
+            if (this.utils.isUndefined(orientation)) {
                 return 'horizontal';
             }
 
@@ -1768,7 +1754,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
+                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
                 return;
             }
 
@@ -1781,7 +1767,7 @@ module platui {
                 shallowCopy = clone,
                 computedStyle: CSSStyleDeclaration,
                 important = 'important',
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -1796,7 +1782,7 @@ module platui {
                     _Exception = this._Exception,
                     _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                         'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this._utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
+                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }
                 shallowCopy = <HTMLElement>element.cloneNode(false);

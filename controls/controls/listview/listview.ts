@@ -16,7 +16,6 @@ module platui {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,
-            _utils: __Utils,
             _compat: __Compat,
             _animator: __Animator,
             _Promise: __Promise,
@@ -157,19 +156,6 @@ module platui {
          * Reference to the {@link plat.async.IPromise|IPromise} injectable.
          */
         protected _Promise: plat.async.IPromise;
-
-        /**
-         * @name _utils
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         * 
-         * @type {plat.IUtils}
-         * 
-         * @description
-         * Reference to the {@link plat.Utils|Utils} injectable.
-         */
-        protected _utils: plat.Utils;
 
         /**
          * @name _compat
@@ -756,7 +742,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            if (!this._utils.isString(this.templateUrl)) {
+            if (!this.utils.isString(this.templateUrl)) {
                 return;
             }
 
@@ -783,9 +769,9 @@ module platui {
          * @returns {void}
          */
         contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
-            var _utils = this._utils;
+            var _utils = this.utils;
             if (_utils.isEmpty(newValue)) {
-                if (!this._utils.isEmpty(oldValue)) {
+                if (!this.utils.isEmpty(oldValue)) {
                     this._Promise.all(this._defaultGroup.addQueue).then((): void => {
                         this._removeItems(0, this.controls.length, this);
                     });
@@ -816,7 +802,7 @@ module platui {
          */
         loaded(): void {
             var options = this.options.value,
-                _utils = this._utils,
+                _utils = this.utils,
                 isString = _utils.isString,
                 element = this.element,
                 viewport = this._viewport = <HTMLElement>element.firstElementChild,
@@ -920,7 +906,7 @@ module platui {
          * @returns {void}
          */
         render(index?: number, count?: number, group?: IGroupHash): void {
-            var isNumber = this._utils.isNumber,
+            var isNumber = this.utils.isNumber,
                 opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 context = this === control ? this.context : control.context.items;
@@ -1006,7 +992,7 @@ module platui {
          */
         protected _setAliases(): void {
             var aliases = this.options.value.aliases,
-                _utils = this._utils;
+                _utils = this.utils;
 
             if (!_utils.isObject(aliases)) {
                 return;
@@ -1045,7 +1031,7 @@ module platui {
          */
         protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, groupHeaderTemplate: string): void {
             var _Exception: plat.IExceptionStatic,
-                _utils = this._utils,
+                _utils = this.utils,
                 bindableTemplates = this.bindableTemplates,
                 templates = this._templates,
                 template: HTMLElement;
@@ -1108,7 +1094,7 @@ module platui {
          */
         protected _createGroupTemplate(): plat.async.IThenable<void> {
             var _document = this._document,
-                _utils = this._utils,
+                _utils = this.utils,
                 options = this.options.value,
                 bindableTemplates = this.bindableTemplates,
                 groupHeaderTemplate = this._groupHeaderTemplate,
@@ -1152,7 +1138,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
          */
         protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.IThenable<void> {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 context = this.context,
                 initialIndex = index,
                 max = +(index + numberOfGroups);
@@ -1217,7 +1203,7 @@ module platui {
 
             control.observe((newValue?: IListviewGroup, oldValue?: IListviewGroup): void => {
                 var newName = newValue.group;
-                if (newName === name || !this._utils.isObject(newValue)) {
+                if (newName === name || !this.utils.isObject(newValue)) {
                     return;
                 }
 
@@ -1292,7 +1278,7 @@ module platui {
          * @returns {void}
          */
         protected _createItems(index: number, count: number, group: IGroupHash, animateItems: number): void {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 opGroup = group || this._defaultGroup,
                 control = opGroup.control;
 
@@ -1400,12 +1386,12 @@ module platui {
 
                     this._updateResource(initialIndex - 1, control);
 
-                    if (this._utils.isFunction(this.__resolveFn)) {
+                    if (this.utils.isFunction(this.__resolveFn)) {
                         this.__resolveFn();
                         this.__resolveFn = null;
                     }
                 }).catch((error: any): void => {
-                    this._utils.postpone((): void => {
+                    this.utils.postpone((): void => {
                         var _Exception = this._Exception;
                         _Exception.warn(error, _Exception.BIND);
                     });
@@ -1434,7 +1420,7 @@ module platui {
          */
         protected _renderUsingFunction(index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void> {
             var _Promise = this._Promise,
-                _utils = this._utils,
+                _utils = this.utils,
                 opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 identifier: any,
@@ -1608,7 +1594,7 @@ module platui {
          * @returns {void}
          */
         protected _appendAnimatedItem(item: DocumentFragment, group: IGroupHash): void {
-            if (!this._utils.isNode(item)) {
+            if (!this.utils.isNode(item)) {
                 return;
             }
 
@@ -1687,7 +1673,7 @@ module platui {
          */
         protected _determineLoading(requestItems: string, showRing: boolean): void {
             var controlProperty = this.findProperty(requestItems) || <plat.IControlProperty>{};
-            if (!this._utils.isFunction(controlProperty.value)) {
+            if (!this.utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
                 _Exception.warn(__Listview + ' onItemsRequested function "' + requestItems +
                     '" was not found.', _Exception.CONTROL);
@@ -1770,7 +1756,7 @@ module platui {
             // infinite scrolling set to load items at 80% of scroll length
             var scrollContainer = this._scrollContainer,
                 scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth),
-                _utils = this._utils;
+                _utils = this.utils;
 
             if (scrollLength === 0) {
                 return;
@@ -1822,7 +1808,7 @@ module platui {
          */
         protected _initializeRefresh(refresh: string): void {
             var controlProperty = this.findProperty(refresh) || <plat.IControlProperty>{};
-            if (!this._utils.isFunction(controlProperty.value)) {
+            if (!this.utils.isFunction(controlProperty.value)) {
                 var _Exception = this._Exception;
                 _Exception.warn(__Listview + ' onRefresh function "' + refresh +
                     '" was not found.', _Exception.CONTROL);
@@ -1927,7 +1913,7 @@ module platui {
                 y: ev.clientY
             };
 
-            if (!this._utils.isNull(this._touchAnimationThenable)) {
+            if (!this.utils.isNull(this._touchAnimationThenable)) {
                 this._touchAnimationThenable.cancel().then((): void => {
                     this._touchAnimationThenable = null;
                     this._touchState = 2;
@@ -2194,7 +2180,7 @@ module platui {
             }
 
             var translation = this._calculateTranslation(ev, refreshing);
-            this._utils.requestAnimationFrame((): void => {
+            this.utils.requestAnimationFrame((): void => {
                 this._viewport.style[<any>this._transform] = translation;
             });
         }
@@ -2262,7 +2248,7 @@ module platui {
          */
         protected _setTransform(): void {
             var style = this._viewport.style,
-                isUndefined = this._utils.isUndefined;
+                isUndefined = this.utils.isUndefined;
 
             if (!isUndefined(this._preTransform = style.transform)) {
                 this._transform = 'transform';
@@ -2295,7 +2281,7 @@ module platui {
                 slice = Array.prototype.slice,
                 appendChildren = this.dom.appendChildren,
                 _document = this._document,
-                validGroupTemplate = !this._utils.isNull(groupHeaderTemplate),
+                validGroupTemplate = !this.utils.isNull(groupHeaderTemplate),
                 childNodes: Array<Node> = slice.call(this.innerTemplate.childNodes),
                 length = childNodes.length,
                 itemClass = __Plat + 'item',
@@ -2340,7 +2326,7 @@ module platui {
          */
         protected _executeEvent(changes: Array<plat.observable.IArrayChanges<any>>): void {
             var method = '_' + changes[0].type;
-            if (this._utils.isFunction((<any>this)[method])) {
+            if (this.utils.isFunction((<any>this)[method])) {
                 (<any>this)[method](changes);
             }
         }
@@ -2360,7 +2346,7 @@ module platui {
          * @returns {void}
          */
         protected _executeChildEvent(groupName: string, changes: Array<plat.observable.IArrayChanges<any>>): void {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 method = '_' + changes[0].type;
             if (_utils.isFunction((<any>this)[method])) {
                 var group = this._groups[groupName];
@@ -2442,7 +2428,7 @@ module platui {
          * @returns {void}
          */
         protected _unshift(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            if (this._utils.isFunction(this._templateSelector)) {
+            if (this.utils.isFunction(this._templateSelector)) {
                 this.rerender(group);
                 return;
             }
@@ -2510,7 +2496,7 @@ module platui {
          * @returns {void}
          */
         protected _splice(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            var _utils = this._utils,
+            var _utils = this.utils,
                 change = changes[0],
                 opGroup = group || this._defaultGroup,
                 addCount = change.addedCount,
@@ -2756,7 +2742,7 @@ module platui {
 
             var parentNode: Node,
                 animationQueue = group.animationQueue,
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 animationCreation = this._animator.create(nodes, key),
                 animationPromise = animationCreation.current.then((): void => {
                     animationQueue.shift();
@@ -2830,7 +2816,7 @@ module platui {
          * @returns {string} The normalized template name.
          */
         protected _normalizeTemplateName(templateName: string): string {
-            if (this._utils.isString(templateName)) {
+            if (this.utils.isString(templateName)) {
                 return templateName.toLowerCase().replace(this._nodeNormalizeRegex, '');
             }
         }
@@ -2876,7 +2862,7 @@ module platui {
          * @returns {string} The orientation to be used.
          */
         protected _validateOrientation(orientation: string): string {
-            if (this._utils.isUndefined(orientation)) {
+            if (this.utils.isUndefined(orientation)) {
                 return 'vertical';
             }
 
@@ -2950,7 +2936,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
+                this.utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
                 return;
             }
 
@@ -2966,7 +2952,7 @@ module platui {
                 dependencyProperty = 'width',
                 codependentProperty = 'height',
                 important = 'important',
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -2992,7 +2978,7 @@ module platui {
                         _Exception = this._Exception,
                         _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                             'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                        this._utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
+                        this.utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
                         return;
                     }
                     shallowCopy = <HTMLElement>element.cloneNode(false);
@@ -3080,7 +3066,7 @@ module platui {
                     return;
                 }
 
-                this._utils.defer(this._setItemContainerHeightWithClone, 20, [item], this);
+                this.utils.defer(this._setItemContainerHeightWithClone, 20, [item], this);
                 return;
             }
 
@@ -3095,7 +3081,7 @@ module platui {
                 computedStyle: CSSStyleDeclaration,
                 dependencyProperty = 'height',
                 important = 'important',
-                isNull = this._utils.isNull,
+                isNull = this.utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -3119,7 +3105,7 @@ module platui {
                         _Exception = this._Exception,
                         _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                             'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                        this._utils.defer(this._setItemContainerHeightWithClone, 100, [dependencyProperty], this);
+                        this.utils.defer(this._setItemContainerHeightWithClone, 100, [dependencyProperty], this);
                         return;
                     }
                     shallowCopy = <HTMLElement>element.cloneNode(false);
