@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.12.7 (http://getplatypi.com) 
+ * PlatypusTS v0.12.8 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusTS is licensed under the GPL-3.0 found at  
@@ -14230,7 +14230,7 @@ module plat {
                     minScrollDistance: 3,
                     /**
                      */
-                    maxDblTapDistance: 20
+                    maxDblTapDistance: 10
                 },
 
                 /**
@@ -14238,7 +14238,7 @@ module plat {
                 velocities: <IVelocities>{
                     /**
                      */
-                    minSwipeVelocity: 0.8
+                    minSwipeVelocity: 0.645
                 },
 
                 /**
@@ -14363,10 +14363,6 @@ module plat {
              */
             private __hasMoved = false;
             /**
-             * Whether or not the user swiped while in touch.
-             */
-            private __hasSwiped = false;
-            /**
              * Whether or not their is a registered "release" event.
              */
             private __hasRelease = false;
@@ -14402,11 +14398,11 @@ module plat {
             /**
              * The user's last touch down.
              */
-            private __lastTouchDown: IBaseEventProperties;
+            private __lastTouchDown: ITouchStartEventProperties;
             /**
              * The starting place of an initiated swipe gesture.
              */
-            private __swipeOrigin: IBaseEventProperties;
+            private __swipeOrigin: ISwipeOriginProperties;
             /**
              * The user's last move while in touch.
              */
@@ -14441,10 +14437,6 @@ module plat {
                 $touchend: 0,
                 $touchcancel: 0
             };
-            /**
-             * An array of subscribers for the swipe gesture.
-             */
-            private __swipeSubscribers: Array<DomEvent>;
             /**
              * A hash of the current pointer touch points on the page.
              */
@@ -14602,7 +14594,7 @@ module plat {
                 this.__pointerHash = {};
                 this.__reverseMap = {};
                 this.__tapCount = this.__touchCount = 0;
-                this.__detectingMove = this.__hasMoved = this.__hasRelease = this.__hasSwiped = false;
+                this.__detectingMove = this.__hasMoved = this.__hasRelease = false;
                 this.__lastMoveEvent = this.__lastTouchDown = this.__lastTouchUp = null;
                 this.__swipeOrigin = this.__capturedTarget = this.__focusedElement = null;
                 this.__cancelDeferredHold = this.__cancelDeferredTap = noop;
@@ -14636,13 +14628,28 @@ module plat {
                 // set any captured target and last move back to null
                 this.__capturedTarget = this.__lastMoveEvent = null;
                 this.__hasMoved = false;
-                this.__lastTouchDown = this.__swipeOrigin = {
+
+                var clientX = ev.clientX,
+                    clientY = ev.clientY,
+                    timeStamp = ev.timeStamp,
+                    target = ev.target;
+
+                this.__lastTouchDown = {
                     _buttons: ev._buttons,
-                    clientX: ev.clientX,
-                    clientY: ev.clientY,
-                    timeStamp: ev.timeStamp,
-                    target: ev.target,
+                    clientX: clientX,
+                    clientY: clientY,
+                    timeStamp: timeStamp,
+                    target: target,
                     identifier: ev.identifier
+                };
+
+                this.__swipeOrigin = {
+                    clientX: clientX,
+                    clientY: clientY,
+                    xTimestamp: timeStamp,
+                    yTimestamp: timeStamp,
+                    xTarget: target,
+                    yTarget: target
                 };
 
                 var gestureCount = this._gestureCount,
@@ -14741,16 +14748,15 @@ module plat {
                     return true;
                 }
 
-                var lastMove = <IBaseEventProperties>this.__lastMoveEvent || swipeOrigin,
-                    direction = evt.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY),
-                    originChanged = this.__checkForOriginChanged(direction),
-                    velocity = evt.velocity = this.__getVelocity(x - swipeOrigin.clientX, y - swipeOrigin.clientY,
-                        evt.timeStamp - swipeOrigin.timeStamp);
+                var lastMove = <ITouchStartEventProperties>this.__lastMoveEvent || swipeOrigin,
+                    direction = evt.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY);
 
-                // if swiping events exist
-                if (!(noSwiping || (this.__hasSwiped && !originChanged))) {
-                    this.__setRegisteredSwipes(direction, velocity);
-                }
+                this.__checkForOriginChanged(direction);
+            
+                var dx = Math.abs(x - swipeOrigin.clientX),
+                    dy = Math.abs(y - swipeOrigin.clientY),
+                    velocity = evt.velocity = this.__getVelocity(dx, dy,
+                        evt.timeStamp - swipeOrigin.xTimestamp, evt.timeStamp - swipeOrigin.yTimestamp);
 
                 // if tracking events exist
                 if (!noTracking) {
@@ -14831,9 +14837,7 @@ module plat {
                 }
 
                 // handle swipe events
-                if (this.__hasSwiped) {
-                    this.__handleSwipe();
-                }
+                this.__handleSwipe();
 
                 var config = DomEvents.config,
                     intervals = config.intervals,
@@ -14891,7 +14895,7 @@ module plat {
              */
             private __resetTouchEnd(): void {
                 this.__tapCount = this.__touchCount = 0;
-                this._inTouch = this.__hasRelease = this.__hasSwiped = false;
+                this._inTouch = this.__hasRelease = false;
                 this.__pointerHash = {};
                 this.__pointerEvents = [];
                 this.__capturedTarget = null;
@@ -14994,21 +14998,27 @@ module plat {
              * A function for handling and firing swipe events.
              */
             private __handleSwipe(): void {
-                var lastMove = this.__lastMoveEvent;
-                if (isNull(lastMove)) {
-                    this.__hasSwiped = false;
-                    this.__swipeSubscribers = null;
+                // if swiping events exist
+                if (this._gestureCount.$swipe <= 0) {
                     return;
                 }
 
-                var swipeSubscribers = this.__swipeSubscribers || [];
+                var lastMove = this.__lastMoveEvent;
+
+                if (isNull(lastMove)) {
+                    return;
+                }
+
+                var origin = this.__swipeOrigin,
+                    dx = Math.abs(lastMove.clientX - origin.clientX),
+                    dy = Math.abs(lastMove.clientY - origin.clientY),
+                    swipeSubscribers = this.__getRegisteredSwipes(lastMove.direction, lastMove.velocity, dx, dy);
+
                 while (swipeSubscribers.length > 0) {
                     swipeSubscribers.pop().trigger(lastMove);
                 }
 
-                this.__hasSwiped = false;
                 this.__lastMoveEvent = null;
-                this.__swipeSubscribers = null;
             }
 
             /**
@@ -15544,7 +15554,7 @@ module plat {
              * to search through.
              */
             private __getTouchIndex(touches: Array<IExtendedEvent>): number {
-                var identifier = (this.__lastTouchDown || <IBaseEventProperties>{}).identifier,
+                var identifier = (this.__lastTouchDown || <ITouchStartEventProperties>{}).identifier,
                     length = touches.length;
 
                 for (var i = 0; i < length; ++i) {
@@ -15606,12 +15616,24 @@ module plat {
              * Calculates the velocity between two (x, y) coordinate points over a given time.
              * @param {number} dx The change in x position.
              * @param {number} dy The change in y position.
-             * @param {number} dt The change in time.
+             * @param {number} dtx The change in time in x direction.
+             * @param {number} dty The change in time in y direction.
              */
-            private __getVelocity(dx: number, dy: number, dt: number): IVelocity {
+            private __getVelocity(dx: number, dy: number, dtx: number, dty: number): IVelocity {
+                var x = 0,
+                    y = 0;
+
+                if (dtx > 0) {
+                    x = (dx / dtx) || 0;
+                }
+
+                if (dty > 0) {
+                    y = (dy / dty) || 0;
+                }
+
                 return {
-                    x: Math.abs(dx / dt) || 0,
-                    y: Math.abs(dy / dt) || 0
+                    x: x,
+                    y: y
                 };
             }
 
@@ -15639,52 +15661,64 @@ module plat {
              * an origin point.
              * @param {plat.ui.IDirection} direction The current vertical and horiztonal directions of movement.
              */
-            private __checkForOriginChanged(direction: IDirection): boolean {
+            private __checkForOriginChanged(direction: IDirection): void {
                 var lastMove = this.__lastMoveEvent;
                 if (isNull(lastMove)) {
-                    this.__hasSwiped = false;
-                    return true;
+                    return;
                 }
 
-                var swipeDirection = lastMove.direction;
-                if (swipeDirection.x === direction.x && swipeDirection.y === direction.y) {
-                    return false;
+                var swipeDirection = lastMove.direction,
+                    xSame = swipeDirection.x === direction.x,
+                    ySame = swipeDirection.y === direction.y;
+
+                if (xSame && ySame) {
+                    return;
                 }
 
-                this.__swipeOrigin = {
-                    clientX: lastMove.clientX,
-                    clientY: lastMove.clientY,
-                    timeStamp: lastMove.timeStamp,
-                    target: lastMove.target,
-                    identifier: lastMove.identifier
-                };
+                var origin = this.__swipeOrigin;
 
-                this.__hasSwiped = false;
-                return true;
+                if (!xSame) {
+                    origin.clientX = lastMove.clientX;
+                    origin.xTimestamp = lastMove.timeStamp;
+                    origin.xTarget = lastMove.target;
+                }
+
+                if (!ySame) {
+                    origin.clientY = lastMove.clientY;
+                    origin.yTimestamp = lastMove.timeStamp;
+                    origin.yTarget = lastMove.target;
+                }
             }
 
             /**
              * Checks to see if a swipe event has been registered.
              * @param {plat.ui.IDirection} direction The current horizontal and vertical directions of movement.
              * @param {plat.ui.IVelocity} velocity The current horizontal and vertical velocities.
+             * @param {number} dx The distance in the x direction.
+             * @param {number} dy The distance in the y direction.
              */
-            private __setRegisteredSwipes(direction: IDirection, velocity: IVelocity): void {
-                var swipeTarget = <ICustomElement>(this.__swipeOrigin || <IBaseEventProperties>{}).target,
+            private __getRegisteredSwipes(direction: IDirection, velocity: IVelocity, dx: number, dy: number): Array<DomEvent> {
+                var swipeTarget: ICustomElement,
                     swipeGesture = this._gestures.$swipe,
                     minSwipeVelocity = DomEvents.config.velocities.minSwipeVelocity,
-                    events = [swipeGesture];
+                    events = [swipeGesture],
+                    origin = (this.__swipeOrigin || <ISwipeOriginProperties>{});
 
-                if (velocity.x >= minSwipeVelocity) {
-                    this.__hasSwiped = true;
-                    events.push(swipeGesture + direction.x);
+                if (dx > dy) {
+                    swipeTarget = <ICustomElement>origin.xTarget;
+
+                    if (velocity.x >= minSwipeVelocity) {
+                        events.push(swipeGesture + direction.x);
+                    }
+                } else if (dy > dx) {
+                    swipeTarget = <ICustomElement>origin.yTarget;
+
+                    if (velocity.y >= minSwipeVelocity) {
+                        events.push(swipeGesture + direction.y);
+                    }
                 }
 
-                if (velocity.y >= minSwipeVelocity) {
-                    this.__hasSwiped = true;
-                    events.push(swipeGesture + direction.y);
-                }
-
-                this.__swipeSubscribers = this.__findFirstSubscribers(swipeTarget, events);
+                return this.__findFirstSubscribers(swipeTarget, events);
             }
 
             /**
@@ -16128,7 +16162,7 @@ module plat {
         /**
          * An extended event object containing coordinate, time, and target info.
          */
-        export interface IBaseEventProperties {
+        export interface ITouchStartEventProperties {
             /**
              * Indicates which mouse button is being pressed in a mouse event.
              */
@@ -16160,6 +16194,43 @@ module plat {
              * The target of an Event object.
              */
             target?: EventTarget;
+        }
+
+        /**
+         * An extended event object containing coordinate, time, and target info for a swipe origin.
+         */
+        export interface ISwipeOriginProperties {
+            /**
+             * The x-coordinate of the event on the screen relative to the upper left corner of the 
+             * browser window. This value cannot be affected by scrolling.
+             */
+            clientX?: number;
+
+            /**
+             * The y-coordinate of the event on the screen relative to the upper left corner of the 
+             * browser window. This value cannot be affected by scrolling.
+             */
+            clientY?: number;
+
+            /**
+             * A timestamp.
+             */
+            xTimestamp?: number;
+
+            /**
+             * A timestamp.
+             */
+            yTimestamp?: number;
+
+            /**
+             * The target of an Event object.
+             */
+            xTarget?: EventTarget;
+
+            /**
+             * The target of an Event object.
+             */
+            yTarget?: EventTarget;
         }
 
         /**
