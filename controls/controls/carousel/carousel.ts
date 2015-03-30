@@ -262,19 +262,6 @@ module platui {
         protected _index = 0;
 
         /**
-         * @name _intervalOffset
-         * @memberof platui.Carousel
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The interval offset to translate the {@link platui.Carousel|Carousel's} sliding element.
-         */
-        protected _intervalOffset: number;
-
-        /**
          * @name _currentOffset
          * @memberof platui.Carousel
          * @kind property
@@ -325,34 +312,6 @@ module platui {
          * Denotes the sliding element contained within the control.
          */
         protected _slider: HTMLElement;
-
-        /**
-         * @name _cloneAttempts
-         * @memberof platui.Carousel
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The current number of times we checked to see if the element was placed into the DOM. 
-         * Used for determining max offset width or height.
-         */
-        protected _cloneAttempts = 0;
-
-        /**
-         * @name _maxCloneCount
-         * @memberof platui.Carousel
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * The max number of times we'll check to see if the element was placed into the DOM. 
-         * Used for determining max offset width or height.
-         */
-        protected _maxCloneAttempts = 25;
 
         /**
          * @name _animationThenable
@@ -696,6 +655,8 @@ module platui {
         goToNext(): plat.async.IThenable<void> {
             var index = this._index;
             if (this._isInfinite) {
+                this._initializeInfinite();
+
                 if (index === this.context.length - 1) {
                     return this._infiniteNext();
                 }
@@ -707,8 +668,14 @@ module platui {
                 return null;
             }
 
-            var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
+            var animationOptions: plat.IObject<string> = {},
+                length = this._getLength();
+
+            if (!length) {
+                return null;
+            }
+
+            animationOptions[this._transform] = this._calculateStaticTranslation(-length);
 
             var animation = this._initiateAnimation({ properties: animationOptions });
             this.inputChanged(++this._index, index);
@@ -731,6 +698,8 @@ module platui {
         goToPrevious(): plat.async.IThenable<void> {
             var index = this._index;
             if (this._isInfinite) {
+                this._initializeInfinite();
+
                 if (index === 0) {
                     return this._infinitePrevious();
                 }
@@ -740,8 +709,14 @@ module platui {
                 this.resume();
             }
 
-            var animationOptions: plat.IObject<string> = {};
-            animationOptions[this._transform] = this._calculateStaticTranslation(this._intervalOffset);
+            var animationOptions: plat.IObject<string> = {},
+                length = this._getLength();
+
+            if (!length) {
+                return null;
+            }
+
+            animationOptions[this._transform] = this._calculateStaticTranslation(length);
 
             var animation = this._initiateAnimation({ properties: animationOptions });
             this.inputChanged(--this._index, index);
@@ -958,7 +933,11 @@ module platui {
             }
 
             var maxIndex = context.length - 1,
-                maxOffset = maxIndex * this._intervalOffset;
+                maxOffset = maxIndex * this._getLength();
+
+            if (!maxOffset) {
+                return;
+            }
 
             if (-this._currentOffset > maxOffset) {
                 this.goToIndex(maxIndex);
@@ -993,7 +972,11 @@ module platui {
             }
 
             var animationOptions: plat.IObject<string> = {},
-                interval = (oldIndex - index) * this._intervalOffset;
+                interval = (oldIndex - index) * this._getLength();
+
+            if (!interval) {
+                return null;
+            }
 
             animationOptions[this._transform] = this._calculateStaticTranslation(interval);
             return this._initiateAnimation({ properties: animationOptions });
@@ -1012,8 +995,12 @@ module platui {
          */
         protected _infiniteNext(): plat.async.IThenable<void> {
             var index = this._index,
-                offset = -this._intervalOffset,
+                offset = -this._getLength(),
                 animationOptions: plat.IObject<string> = {};
+
+            if (!offset) {
+                return null;
+            }
 
             animationOptions[this._transform] = this._calculateStaticTranslation(offset);
 
@@ -1044,8 +1031,12 @@ module platui {
             var index = this._index,
                 animationOptions: plat.IObject<string> = {},
                 maxLength = this.context.length,
-                offset = this._intervalOffset,
-                maxOffset = maxLength * this._intervalOffset;
+                offset = this._getLength(),
+                maxOffset = maxLength * offset;
+
+            if (!offset) {
+                return null;
+            }
 
             animationOptions[this._transform] = this._calculateStaticTranslation(offset);
 
@@ -1094,17 +1085,14 @@ module platui {
         protected _init(): void {
             var foreach = <plat.ui.controls.ForEach>this.controls[0],
                 container = this._container,
-                postLoad = (): void => {
-                    if (this._setPosition()) {
-                        this._onLoad();
-                    }
-                },
                 itemsLoaded = (): void => {
                     if (this.context.length === 0) {
                         foreach.itemsLoaded.then(itemsLoaded);
                         return;
                     }
-                    postLoad();
+
+                    this._setPosition();
+                    this._onLoad();
                 };
 
             this._slider = <HTMLElement>container.firstElementChild;
@@ -1152,10 +1140,6 @@ module platui {
             if (this._isInfinite) {
                 this._initializeInfinite();
             }
-
-            this._removeListeners.push(this.addEventListener(this._window, 'resize', (): void => {
-                this._setPosition();
-            }, false));
         }
 
         /**
@@ -1199,12 +1183,17 @@ module platui {
          * @returns {void}
          */
         protected _initializeInfinite(): void {
+            var length = this._getLength();
+            if (!length) {
+                return;
+            }
+
             this._removeListeners.push(this.observeArray(this._cloneForInfinite));
             this._cloneForInfinite();
             // offset the newly added clone
-            this.utils.requestAnimationFrame((): void => {
-                this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-this._intervalOffset);
-            });
+            this._slider.style[<any>this._transform] = this._calculateStaticTranslation(-length);
+
+            this._initializeInfinite = noop;
         }
 
         /**
@@ -1519,6 +1508,10 @@ module platui {
                 y: ev.clientY
             };
 
+            if (this._isInfinite) {
+                this._initializeInfinite();
+            }
+
             if (this.utils.isNull(this._animationThenable)) {
                 return;
             }
@@ -1550,8 +1543,12 @@ module platui {
                 this._initiateInterval();
             }
 
-            var distanceMoved = this._isVertical ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x);
-            if (Math.abs(distanceMoved) > Math.ceil(this._intervalOffset / 2)) {
+            var distanceMoved = this._isVertical ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x),
+                length = this._getLength();
+
+            if (!length) {
+                return;
+            } else if (Math.abs(distanceMoved) > Math.ceil(length / 2)) {
                 if (distanceMoved < 0) {
                     if (this.goToNext()) {
                         return;
@@ -1598,11 +1595,8 @@ module platui {
          * @returns {string} The translation value.
          */
         protected _calculateStaticTranslation(interval: number): string {
-            if (this._isVertical) {
-                return 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)';
-            }
-
-            return 'translate3d(' + (this._currentOffset += interval) + 'px,0,0)';
+            return this._isVertical ? 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)' :
+                'translate3d(' + (this._currentOffset += interval) + 'px,0,0)';
         }
 
         /**
@@ -1619,11 +1613,8 @@ module platui {
          * @returns {string} The translation value.
          */
         protected _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
-            if (this._isVertical) {
-                return 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)';
-            }
-
-            return 'translate3d(' + (this._currentOffset + (ev.clientX - this._lastTouch.x)) + 'px,0,0)';
+            return this._isVertical ? 'translate3d(0,' + (this._currentOffset + (ev.clientY - this._lastTouch.y)) + 'px,0)' :
+                'translate3d(' + (this._currentOffset + (ev.clientX - this._lastTouch.x)) + 'px,0,0)';
         }
 
         /**
@@ -1661,33 +1652,27 @@ module platui {
          * @access protected
          * 
          * @description
-         * Sets the properties to use for position and sets the interval length of the sliding container.
+         * Sets the properties to use for position.
          * 
-         * @param {HTMLElement} element? The element to base the length off of.
-         * 
-         * @returns {boolean} Whether or not all necessary dimensions were set.
+         * @returns {void}
          */
-        protected _setPosition(element?: HTMLElement): boolean {
-            var isNode = this.utils.isNode(element),
-                el = isNode ? element : this._container,
-                dependencyProperty: string;
+        protected _setPosition(): void {
+            this._positionProperty = this._isVertical ? 'top' : 'left';
+        }
 
-            if (this._isVertical) {
-                this._positionProperty = 'top';
-                dependencyProperty = 'height';
-                this._intervalOffset = el.offsetHeight;
-            } else {
-                this._positionProperty = 'left';
-                dependencyProperty = 'width';
-                this._intervalOffset = el.offsetWidth;
-            }
-
-            if (!(isNode || this._intervalOffset)) {
-                this._setOffsetWithClone(dependencyProperty);
-                return false;
-            }
-
-            return true;
+        /**
+         * @name _getLength
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Gets the interval length of the sliding container.
+         * 
+         * @returns {number} The length of the sliding container.
+         */
+        protected _getLength(): number {
+            return this._isVertical ? this._container.offsetHeight : this._container.offsetWidth;
         }
 
         /**
@@ -1723,98 +1708,6 @@ module platui {
             }
 
             return validOrientation;
-        }
-
-        /**
-         * @name _setOffsetWithClone
-         * @memberof platui.Carousel
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Creates a clone of this element and uses it to find the max offset.
-         * 
-         * @param {string} dependencyProperty The property that the offset is being based off of.
-         * 
-         * @returns {void}
-         */
-        protected _setOffsetWithClone(dependencyProperty: string): void {
-            var element = this.element,
-                body = this._document.body,
-                _Exception: plat.IExceptionStatic;
-
-            if (!body.contains(element)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    _Exception = this._Exception,
-                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
-                    (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
-                    return;
-                }
-
-                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
-                return;
-            }
-
-            this._cloneAttempts = 0;
-
-            var clone = <HTMLElement>element.cloneNode(true),
-                regex = /\d+(?!\d+|%)/,
-                _window = this._window,
-                parentChain = <Array<HTMLElement>>[],
-                shallowCopy = clone,
-                computedStyle: CSSStyleDeclaration,
-                important = 'important',
-                isNull = this.utils.isNull,
-                dependencyValue: string;
-
-            shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                element = element.parentElement;
-                if (isNull(element)) {
-                    // if we go all the way up to <html> the body may currently be hidden.
-                    _Exception = this._Exception,
-                    _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                        'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
-                    return;
-                }
-                shallowCopy = <HTMLElement>element.cloneNode(false);
-                shallowCopy.id = '';
-                parentChain.push(shallowCopy);
-            }
-
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(),
-                    currStyle = curr.style,
-                    temp: HTMLElement;
-
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-
-                curr.insertBefore(clone, null);
-            }
-
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            this._setPosition(<HTMLElement>clone.firstElementChild);
-            body.removeChild(shallowCopy);
-            if (this._loaded) {
-                return;
-            }
-
-            this._onLoad();
         }
     }
 

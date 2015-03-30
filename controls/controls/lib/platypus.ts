@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.12.8 (http://getplatypi.com) 
+ * PlatypusTS v0.12.10 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusTS is licensed under the GPL-3.0 found at  
@@ -2679,7 +2679,11 @@ module plat {
                 def = (<any>_window).define,
                 msA = (<any>_window).MSApp,
                 winJs = (<any>_window).WinJS,
-                android = parseInt((<any>/android (\d+)/.exec(userAgent) || [])[1], 10);
+                android = (<any>/android ((?:\d|\.)+)/.exec(userAgent) || [])[1];
+
+            if (isString(android)) {
+                android = parseInt(android.replace(/\./g, ''), 10);
+            }
 
             this.isCompatible = isFunction(Object.defineProperty) && isFunction(this._document.querySelector);
             this.cordova = !isNull((<any>_window).cordova);
@@ -6651,7 +6655,16 @@ module plat {
                             responseType = '';
                         }
 
-                        xhr.responseType = responseType;
+                        // Android < 4.4 will throw a DOM Exception 12 if responseType is set to json.
+                        // The only way to do feature detection is with try/catch.
+                        if (responseType === 'json') {
+                            try {
+                                xhr.responseType = responseType;
+                            } catch (e) {
+                                xhr.responseType = '';
+                            }
+                        }
+
                         xhr.withCredentials = options.withCredentials;
 
                         var mimeType = options.overrideMimeType,
@@ -14285,6 +14298,16 @@ module plat {
             protected _compat: Compat;
 
             /**
+             * The version of android, or -1 if not on android.
+             */
+            protected _androidVersion: number = isUndefined(this._compat.ANDROID) ? -1 : this._compat.ANDROID;
+
+            /**
+             * Whether or not we're on Android 4.4.x
+             */
+            protected _android44orBelow: boolean = Math.floor(this._androidVersion / 10) <= 44;
+
+            /**
              * Whether or not the DomEvents are currently active. 
              * They become active at least one element on the current 
              * page is listening for a custom event.
@@ -14403,6 +14426,10 @@ module plat {
              * The starting place of an initiated swipe gesture.
              */
             private __swipeOrigin: ISwipeOriginProperties;
+            /**
+             * Whether or not there are any swipe subscribers for the current target during touch move events.
+             */
+            private __haveSwipeSubscribers: boolean;
             /**
              * The user's last move while in touch.
              */
@@ -14594,7 +14621,7 @@ module plat {
                 this.__pointerHash = {};
                 this.__reverseMap = {};
                 this.__tapCount = this.__touchCount = 0;
-                this.__detectingMove = this.__hasMoved = this.__hasRelease = false;
+                this.__detectingMove = this.__hasMoved = this.__hasRelease = this.__haveSwipeSubscribers = false;
                 this.__lastMoveEvent = this.__lastTouchDown = this.__lastTouchUp = null;
                 this.__swipeOrigin = this.__capturedTarget = this.__focusedElement = null;
                 this.__cancelDeferredHold = this.__cancelDeferredTap = noop;
@@ -14632,7 +14659,8 @@ module plat {
                 var clientX = ev.clientX,
                     clientY = ev.clientY,
                     timeStamp = ev.timeStamp,
-                    target = ev.target;
+                    target = ev.target,
+                    gestures = this._gestures;
 
                 this.__lastTouchDown = {
                     _buttons: ev._buttons,
@@ -14651,6 +14679,9 @@ module plat {
                     xTarget: target,
                     yTarget: target
                 };
+
+                this.__haveSwipeSubscribers = this.__findFirstSubscribers(<ICustomElement>target,
+                    [gestures.$swipe, gestures.$swipedown, gestures.$swipeleft, gestures.$swiperight, gestures.$swipeup]).length > 0;
 
                 var gestureCount = this._gestureCount,
                     noHolds = gestureCount.$hold <= 0,
@@ -14749,14 +14780,17 @@ module plat {
                 }
 
                 var lastMove = <ITouchStartEventProperties>this.__lastMoveEvent || swipeOrigin,
-                    direction = evt.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY);
-
-                this.__checkForOriginChanged(direction);
+                    direction = evt.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY),
+                    haveSubscribers = this.__handleOriginChange(direction);
             
                 var dx = Math.abs(x - swipeOrigin.clientX),
                     dy = Math.abs(y - swipeOrigin.clientY),
                     velocity = evt.velocity = this.__getVelocity(dx, dy,
                         evt.timeStamp - swipeOrigin.xTimestamp, evt.timeStamp - swipeOrigin.yTimestamp);
+
+                if (!noSwiping && this._android44orBelow && this.__haveSwipeSubscribers) {
+                    ev.preventDefault();
+                }
 
                 // if tracking events exist
                 if (!noTracking) {
@@ -14914,6 +14948,12 @@ module plat {
                 ev = index >= 0 ? touches[index] : this.__standardizeEventObject(ev);
                 this.__clearTempStates();
                 if (this.__hasMoved) {
+                    // Android 4.4.x fires touchcancel when the finger moves off an element that
+                    // is listening for touch events, so we should handle swipes here in that case.
+                    if (this._android44orBelow) {
+                        this.__handleSwipe();
+                    }
+
                     this.__handleTrackEnd(ev);
                 }
                 this.__resetTouchEnd();
@@ -15008,7 +15048,7 @@ module plat {
                 if (isNull(lastMove)) {
                     return;
                 }
-
+            
                 var origin = this.__swipeOrigin,
                     dx = Math.abs(lastMove.clientX - origin.clientX),
                     dy = Math.abs(lastMove.clientY - origin.clientY),
@@ -15028,14 +15068,26 @@ module plat {
              * used for preventing default in the case of an ANDROID device.
              */
             private __handleTrack(ev: IPointerEvent, originalEv: IPointerEvent): void {
-                var trackGesture = this._gestures.$track,
+                var gestures = this._gestures,
+                    trackGesture = gestures.$track,
                     direction = ev.direction,
                     eventTarget = this.__capturedTarget || <ICustomElement>ev.target;
 
                 var domEvents = this.__findFirstSubscribers(eventTarget,
                     [trackGesture, (trackGesture + direction.x), (trackGesture + direction.y)]);
+
+                if (this._android44orBelow) {
+                    var anyEvents = this.__findFirstSubscribers(eventTarget,
+                        [trackGesture, gestures.$trackdown, gestures.$trackup,
+                            gestures.$trackleft, gestures.$trackright, gestures.$trackend]);
+
+                    if (anyEvents.length > 0) {
+                        originalEv.preventDefault();
+                    }
+                }
+
                 if (domEvents.length > 0) {
-                    if (!isUndefined(this._compat.ANDROID)) {
+                    if (this._androidVersion > -1) {
                         originalEv.preventDefault();
                     }
 
@@ -15497,7 +15549,7 @@ module plat {
                 ev.touches = touches;
                 ev.offset = this.__getOffset(ev);
 
-                if (isUndefined(ev.timeStamp)) {
+                if (isUndefined(ev.timeStamp) || timeStamp > ev.timeStamp) {
                     ev.timeStamp = timeStamp;
                 }
 
@@ -15661,7 +15713,7 @@ module plat {
              * an origin point.
              * @param {plat.ui.IDirection} direction The current vertical and horiztonal directions of movement.
              */
-            private __checkForOriginChanged(direction: IDirection): void {
+            private __handleOriginChange(direction: IDirection): void {
                 var lastMove = this.__lastMoveEvent;
                 if (isNull(lastMove)) {
                     return;
@@ -15675,18 +15727,28 @@ module plat {
                     return;
                 }
 
-                var origin = this.__swipeOrigin;
+                var origin = this.__swipeOrigin,
+                    gestures = this._gestures,
+                    swipes = [gestures.$swipe, gestures.$swipedown, gestures.$swipeleft, gestures.$swiperight, gestures.$swipeup];
 
                 if (!xSame) {
                     origin.clientX = lastMove.clientX;
                     origin.xTimestamp = lastMove.timeStamp;
                     origin.xTarget = lastMove.target;
+
+                    if (this._android44orBelow) {
+                        this.__haveSwipeSubscribers = this.__findFirstSubscribers(<ICustomElement>origin.xTarget, swipes).length > 0;
+                    }
                 }
 
                 if (!ySame) {
                     origin.clientY = lastMove.clientY;
                     origin.yTimestamp = lastMove.timeStamp;
                     origin.yTarget = lastMove.target;
+
+                    if (this._android44orBelow) {
+                        this.__haveSwipeSubscribers = this.__findFirstSubscribers(<ICustomElement>origin.yTarget, swipes).length > 0;
+                    }
                 }
             }
 
@@ -15827,7 +15889,7 @@ module plat {
                                     focusedElement.blur();
                                 }
                                 postpone((): void => {
-                                    if (this._document.body.contains(target)) {
+                                    if (this._document.body.contains(target) && isFunction(target.click)) {
                                         target.click();
                                     }
                                 });
@@ -15851,7 +15913,7 @@ module plat {
                             focusedElement.blur();
                         }
                         postpone((): void => {
-                            if (this._document.body.contains(target)) {
+                            if (this._document.body.contains(target) && isFunction(target.click)) {
                                 target.click();
                             }
                         });
