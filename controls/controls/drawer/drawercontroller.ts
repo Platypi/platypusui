@@ -551,34 +551,6 @@ module platui {
         protected _preInitializedValue = false;
 
         /**
-         * @name _cloneAttempts
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The current number of times we checked to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
-         */
-        protected _cloneAttempts = 0;
-
-        /**
-         * @name _maxCloneCount
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * The max number of times we'll check to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
-         */
-        protected _maxCloneAttempts = 25;
-
-        /**
          * @name initialize
          * @memberof platui.DrawerController
          * @kind function
