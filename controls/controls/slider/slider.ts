@@ -495,7 +495,7 @@ module platui {
                 _Exception.warn('Cannot set the value of ' + this.type +
                     ' while the user is manipulating it.', _Exception.CONTROL);
                 return;
-            } else if(_utils.isNull(value)) {
+            } else if (_utils.isNull(value)) {
                 value = this.min;
             } else if (!_utils.isNumber(value)) {
                 return;
