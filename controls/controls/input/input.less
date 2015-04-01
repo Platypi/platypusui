@@ -23,6 +23,7 @@
     display: inline-block;
     width: @default-width;
     height: @default-height;
+    cursor: text;
 
     .plat-input-container {
         .fill();
@@ -92,10 +93,14 @@
             width: @action-padding;
             height: @default-height;
             line-height: @default-height;
-            text-align: center;
             text-align: right;
             color: @border-color-accent;
-            cursor: pointer;
+
+            .plat-action {
+                display: inline-block;
+                min-width: 20px;
+                cursor: pointer;
+            }
         }
     }
 
@@ -111,11 +116,7 @@
     &.input-outline {
         .border-radius(@secondary-border-radius);
         border: @secondary-border;
-        padding: 0 1em;
-
-        .plat-input-action {
-            .calc(line-height; '@{default-height} + 3px');
-        }
+        padding: 0 0.5em;
     }
 
 /// ============== Input Types =============== ///
@@ -124,6 +125,7 @@
 .input-group {
     #platui > #mixins;
     #platui > #Input;
+    #platui > #__Input;
 
     [class*="col-"] {
         padding: 0;
@@ -136,11 +138,11 @@
         
         input {
             padding-left: 8px;
-            .calc(padding-right; '@{default-height} + 8px');
+            padding-right: @action-padding + 0.5em;
         }
 
         .plat-input-action {
-            right: 8px;
+            right: 0.25em;
         }
     }
 }

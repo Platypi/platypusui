@@ -34,7 +34,9 @@ module platui {
         '<div class="plat-input-container">\n' +
         '    <span class="plat-input-image"></span>\n' +
         '    <input type="text" />\n' +
-        '    <span class="plat-input-action"></span>\n' +
+        '    <span class="plat-input-action">\n' +
+        '    <span class="plat-action"></span>\n' +
+        '    </span>\n' +
         '</div>\n';
 
         /**
@@ -331,7 +333,11 @@ module platui {
             this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
 
             this.dom.addClass(element, __Plat + inputType);
-            this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
+            var actionContainer = <HTMLElement>this._inputElement.nextElementSibling;
+            this.addEventListener(actionContainer, __$tap, () => {
+                this._inputElement.focus();
+            }, false);
+            this._actionElement = <HTMLElement>actionContainer.firstElementChild;
 
             if (!this.utils.isEmpty(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
