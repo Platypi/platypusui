@@ -22,20 +22,21 @@
     #platui > #Slider;
     #platui > #__Slider;
     position: relative;
-    .fill();
+    width: 100%;
+    height: 100%;
+    margin: 0;
     .user-select();
     .touch-action(none);
     .box-sizing(border-box);
     
     .plat-slider-container {
-        position: absolute;
+        position: relative;
         background-color: @neutral-color-light;
         overflow: visible;
-        .calc(width; '100% - @{knob-diameter}');
-        .calc(height; '100% - @{knob-diameter}');
+        .fill();
         .border-radius(@fill-border-radius);
-        .box-sizing(content-box);
-        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.13));
+        .box-sizing(border-box);
+        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
 
         .plat-slider-track {
             position: absolute;
@@ -43,7 +44,7 @@
             overflow: visible;
             .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
             .border-radius(@fill-border-radius);
-            .box-sizing(content-box);
+            .box-sizing(border-box);
 
             .plat-knob {
                 position: absolute;
@@ -52,9 +53,9 @@
                 background-color: lighten(@pale-grey, 10%);
                 border: @knob-border-size solid darken(@pale-grey, 5%);
                 cursor: pointer;
-                .border-radius(@knob-diameter);
                 .box-sizing(border-box);
-                .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.24));
+                .border-radius(@knob-diameter);
+                .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.25));
             }
         }
     }
@@ -64,18 +65,20 @@
     &.plat-horizontal,
     &.plat-horizontal-reversed {
         height: @knob-diameter;
+        padding: 0 @knob-radius;
 
         .plat-slider-container {
-            .calc(top; '50% - @{half-thickness}');
-            left: @knob-radius;
+            top: 50%;
             height: @thickness;
+            .translate-accelerate(0;-@half-thickness);
 
             .plat-slider-track {
                 width: 0;
                 height: 100%;
 
                 .plat-knob {
-                    .calc(top; '@{half-thickness} - @{knob-radius}');
+                    top: @half-thickness;
+                    .translate-accelerate(0;-@knob-radius);
                 }
 
                 &.plat-transition-init {
@@ -113,18 +116,21 @@
     &.plat-vertical,
     &.plat-vertical-reversed {
         width: @knob-diameter;
+        padding: @knob-radius 0;
 
         .plat-slider-container {
-            .calc(left; '50% - @{half-thickness}');
+            left: 50%;
             top: @knob-radius;
             width: @thickness;
+            .translate-accelerate(-@half-thickness;0);
 
             .plat-slider-track {
                 width: 100%;
                 height: 0;
 
                 .plat-knob {
-                    .calc(left; '@{half-thickness} - @{knob-radius}');
+                    left: @half-thickness;
+                    .translate-accelerate(-@knob-radius;0)
                 }
 
                 &.plat-transition-init {
