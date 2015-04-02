@@ -14,6 +14,8 @@ module platui {
      */
     export class Modal extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
+            _window: __Window,
+            _document: __Document,
             _compat: __Compat
         };
 
@@ -55,6 +57,32 @@ module platui {
          * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
          */
         priority = 120;
+
+        /**
+         * @name _window
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {Window}
+         * 
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window;
+
+        /**
+         * @name _document
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {Document}
+         * 
+         * @description
+         * Reference to the Document injectable.
+         */
+        protected _document: Document;
 
         /**
          * @name _compat
@@ -107,6 +135,19 @@ module platui {
          * The browser's "transitionend" event.
          */
         protected _transitionEnd: string;
+
+        /**
+         * @name _scrollRemover
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.IRemoveListener}
+         * 
+         * @description
+         * A function to stop listening to scroll events.
+         */
+        protected _scrollRemover: plat.IRemoveListener = noop;
 
         /**
          * @name _transitionHash
@@ -210,6 +251,8 @@ module platui {
 
             // in case of cloning
             this._container = this._container || <HTMLElement>this.element.firstElementChild;
+
+            this._injectElement();
 
             if (!this.utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._container, __Plat + 'no-transition');
@@ -386,13 +429,48 @@ module platui {
                 return;
             }
 
+            this._alignModal();
+
             var dom = this.dom;
             dom.removeClass(this.element, __Hide);
+
             this.utils.defer((): void => {
                 dom.addClass(this._container, __Plat + 'activate');
             }, 25);
 
             this._isVisible = true;
+        }
+
+        /**
+         * @name _alignModal
+         * @memberof platui.Modal
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Aligns the control to the top of the viewport.
+         * 
+         * @param {Event} ev? The scroll event object.
+         * 
+         * @returns {void}
+         */
+        protected _alignModal(ev?: Event): void {
+            var utils = this.utils,
+                isNull = utils.isNull,
+                _document = this._document,
+                documentEl = _document.documentElement,
+                scrollEl = isNull(documentEl) || !documentEl.scrollTop ? _document.body : documentEl;
+
+
+            if (!isNull(ev)) {
+                utils.requestAnimationFrame(() => {
+                    this.element.style.top = scrollEl.scrollTop + 'px';
+                });
+                return;
+            }
+
+            this.element.style.top = scrollEl.scrollTop + 'px';
+            this._scrollRemover = this.addEventListener(this._window, 'scroll', this._alignModal, false);
         }
 
         /**
@@ -408,6 +486,10 @@ module platui {
          */
         protected _hide(): void {
             var dom = this.dom;
+
+            this._scrollRemover();
+            this._scrollRemover = noop;
+
             if (this.utils.isString(this._transitionEnd)) {
                 this._addHideOnTransitionEnd();
             } else {
@@ -444,6 +526,30 @@ module platui {
                 return true;
             }
             return false;
+        }
+
+        /**
+         * @name _injectElement
+         * @memberof platui.Modal
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Removes itself from the DOM and inserts itself into the body to work with 
+         * absolute positioning.
+         * 
+         * @returns {void}
+         */
+        protected _injectElement(): void {
+            var element = this.element,
+                parentElement = element.parentElement,
+                body = this._document.body;
+
+            if (!this.utils.isNode(parentElement) || parentElement === body) {
+                return;
+            }
+
+            body.insertBefore(element, null);
         }
 
         /**

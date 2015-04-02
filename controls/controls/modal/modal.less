@@ -9,7 +9,7 @@
 .plat-modal {
     #platui > #mixins;
     #platui > #Modal;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     z-index: 999999;
@@ -24,6 +24,7 @@
         position: absolute;
         background-color: @background-color;
         color: @color;
+        -webkit-backface-visibility: hidden;
         .fill();
         .scroll();
         .box-sizing(content-box);

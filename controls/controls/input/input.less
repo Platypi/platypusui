@@ -57,28 +57,22 @@
                 margin: 0;
             }
 
-/// ============== Input States =============== ///
-
-            &:focus {
-                border-color: @border-color-accent;
-            }
-
 /// =========== Placeholder Styling =========== ///
 
             &::-webkit-input-placeholder {
-                color: @neutral-color-light;
+                color: @placeholder-color;
             }
 
             &::-moz-input-placeholder {
-                color: @neutral-color-light;   
+                color: @placeholder-color;   
             }
 
             &:-moz-input-placeholder {
-                color: @neutral-color-light;
+                color: @placeholder-color;
             }
 
             &:-ms-input-placeholder {
-                color: @neutral-color-light;
+                color: @placeholder-color;
             }
         }
 
@@ -108,6 +102,10 @@
         .plat-input-container {
             input {
                 border-bottom: @primary-border-bottom;
+
+                &:focus {
+                    border-color: @border-color-accent;
+                }
             }
         }
     }
