@@ -150,6 +150,19 @@ module platui {
         protected _scrollRemover: plat.IRemoveListener = noop;
 
         /**
+         * @name _scrollTop
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {number}
+         * 
+         * @description
+         * The current scroll position of the modal.
+         */
+        protected _scrollTop = 0;
+
+        /**
          * @name _transitionHash
          * @memberof platui.Modal
          * @kind property
@@ -459,17 +472,28 @@ module platui {
                 isNull = utils.isNull,
                 _document = this._document,
                 documentEl = _document.documentElement,
-                scrollEl = isNull(documentEl) || !documentEl.scrollTop ? _document.body : documentEl;
+                scrollEl = isNull(documentEl) || !documentEl.scrollHeight ? _document.body : documentEl;
 
-
-            if (!isNull(ev)) {
-                utils.requestAnimationFrame(() => {
-                    this.element.style.top = scrollEl.scrollTop + 'px';
-                });
+            if (!scrollEl.scrollHeight) {
+                return;
+            } else if (!isNull(ev)) {
+                if (this._scrollTop !== scrollEl.scrollTop) {
+                    utils.requestAnimationFrame(() => {
+                        var scrollTop = scrollEl.scrollTop;
+                        this.element.style.top = scrollTop + 'px';
+                        this._scrollTop = scrollTop;
+                    });
+                    this._scrollTop = scrollEl.scrollTop;
+                }
                 return;
             }
 
-            this.element.style.top = scrollEl.scrollTop + 'px';
+            if (this._scrollTop !== scrollEl.scrollTop) {
+                var top = scrollEl.scrollTop;
+                this.element.style.top = top + 'px';
+                this._scrollTop = top;
+            }
+
             this._scrollRemover = this.addEventListener(this._window, 'scroll', this._alignModal, false);
         }
 
