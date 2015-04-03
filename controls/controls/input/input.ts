@@ -505,9 +505,15 @@ module platui {
         protected _initializeType(): void {
             var type = this._type,
                 event = __$tap,
-                actionElement = this._actionElement;
+                actionElement = this._actionElement,
+                _Exception: plat.IExceptionStatic;
 
             switch (type) {
+                case 'text':
+                    this._pattern = this._pattern || /[\S\s]*/;
+                    this._actionHandler = this._checkText.bind(this);
+                    this._typeHandler = this._erase;
+                    break;
                 case 'email':
                     this._pattern = this._pattern || this._regex.validateEmail;
                     this._actionHandler = this._checkEmail.bind(this);
@@ -534,7 +540,29 @@ module platui {
                     this._typeHandler = this._erase;
                     type = 'tel';
                     break;
+                case 'hidden':
+                    this.element.setAttribute(__Hide, '');
+                    return;
+                case 'radio':
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Radio + ' instead.', _Exception.CONTROL);
+                    break;
+                case 'checkbox':
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Checkbox + ' instead.', _Exception.CONTROL);
+                    break;
+                case 'range':
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Slider + ' instead.', _Exception.CONTROL);
+                    break;
                 default:
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not yet fully supported by ' + this.type +
+                        '. Defaulting to type="text".', _Exception.CONTROL);
+                    type = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;

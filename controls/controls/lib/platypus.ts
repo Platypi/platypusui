@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.12.10 (http://getplatypi.com) 
+ * PlatypusTS v0.12.11 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusTS is licensed under the GPL-3.0 found at  
@@ -302,6 +302,10 @@ module plat {
         __CONTROL_RESOURCE = 'control',
         __CONTEXT_RESOURCE = __CONTEXT;
     /* tslint:enable:no-unused-variable */
+    
+    interface IInternal {
+        __injectable__type?: string;
+    }
     
     /* tslint:disable:no-unused-variable */
     var ___Promise: plat.async.IPromise,
@@ -1601,7 +1605,7 @@ module plat {
             /**
              * The dependencies for this injector
              */
-            private __dependencies: Array<string>;
+            dependencies: Array<string>;
 
             /**
              * Initializes all static injectors.
@@ -1871,7 +1875,7 @@ module plat {
                 return <any>{
                     inject: (): any => value,
                     name: __WRAPPED_INJECTOR,
-                    __dependencies: [],
+                    dependencies: [],
                     Constructor: value
                 };
             }
@@ -1884,7 +1888,7 @@ module plat {
                     inject: noop,
                     type: __NOOP_INJECTOR,
                     name: __NOOP_INJECTOR,
-                    __dependencies: [],
+                    dependencies: [],
                     Constructor: <any>noop
                 };
             }
@@ -1894,12 +1898,12 @@ module plat {
              * @param {plat.dependency.Injector<any>} injector The starting point for the dependency tree search.
              */
             private static __findCircularReferences(injector: Injector<any>): string {
-                if (!(isObject(injector) && isArray(injector.__dependencies))) {
+                if (!(isObject(injector) && isArray(injector.dependencies))) {
                     return;
                 }
 
                 var source = injector.name,
-                    dependencies = injector.__dependencies,
+                    dependencies = injector.dependencies,
                     node: {
                         name: string;
                         dependencies: Array<string>;
@@ -1927,13 +1931,13 @@ module plat {
 
                         injector = locate(dependency);
 
-                        if (!(isObject(injector) && isArray(injector.__dependencies))) {
+                        if (!(isObject(injector) && isArray(injector.dependencies))) {
                             continue;
                         }
 
                         stack.push({
                             name: injector.name,
-                            dependencies: injector.__dependencies.slice(0)
+                            dependencies: injector.dependencies.slice(0)
                         });
                     }
                 }
@@ -1950,7 +1954,7 @@ module plat {
              * STATIC, SINGLETON, FACTORY, INSTANCE, or CLASS. The default is SINGLETON.
              */
             constructor(public name: string, public Constructor: new () => T, dependencies?: Array<any>, public type: string = null) {
-                var deps = this.__dependencies = Injector.convertDependencies(dependencies),
+                var deps = this.dependencies = Injector.convertDependencies(dependencies),
                     index = deps.indexOf(__NOOP_INJECTOR),
                     circularReference: string;
 
@@ -1992,7 +1996,7 @@ module plat {
 
                 if (name === __AppStatic) {
                     var App: IAppStatic = <IAppStatic>(<any>this).inject();
-                    this.__dependencies = deps;
+                    this.dependencies = deps;
                     App.start();
                 }
             }
@@ -2007,7 +2011,7 @@ module plat {
                 var toInject: any = [],
                     type = this.type;
 
-                var dependencies = this.__dependencies,
+                var dependencies = this.dependencies,
                     length = dependencies.length,
                     dependency: Injector<any>,
                     injectable: any;
@@ -2022,7 +2026,8 @@ module plat {
                 if (isString(type) && type !== __INSTANCE) {
                     this._wrapInjector(injectable);
                 }
-
+            
+                (<IInternal>injectable).__injectable__type = type;
                 return injectable;
             }
 
@@ -3421,12 +3426,6 @@ module plat {
              * Finds the arguments in a method expression.
              */
             argumentRegex = /\((.*)\)/;
-
-            /**
-             * Given a string, finds the root alias name if that string is an
-             * alias path.
-             */
-            aliasRegex = /[^@\.\[\(]+(?=[\.\[\(])/;
 
             /**
              * Finds '/*.html' or '/*.htm' in a url. Useful for removing 
@@ -10935,6 +10934,11 @@ module plat {
             Control._ContextManager.dispose(control);
             control.element = null;
             Control.removeParent(control);
+
+            if ((<IInternal>control).__injectable__type === __STATIC) {
+                var injector = controlInjectors[control.type];
+                register.control(control.type, (<any>control).constructor, injector.dependencies, true);
+            }
         }
 
         /**
@@ -12053,6 +12057,11 @@ module plat {
                 control.controls = [];
                 control.root = null;
                 control.innerTemplate = null;
+
+                if ((<IInternal>control).__injectable__type === __STATIC) {
+                    var injector = controlInjectors[control.type];
+                    register.control(control.type, (<any>control).constructor,injector.dependencies, true);
+                }
             }
 
             /**
@@ -26614,20 +26623,25 @@ module plat {
             protected _findAliases(args: Array<string>): Array<string> {
                 var length = args.length,
                     arg: string,
-                    exec: RegExpExecArray,
-                    aliases: IObject<boolean> = {},
-                    _regex = this._regex;
+                    hash: IObject<boolean> = {},
+                    aliases: Array<string> = [],
+                    parsedAliases: Array<string> = [],
+                    _parser = this._parser;
 
-                for (var i = 0; i < length; ++i) {
-                    arg = args[i].trim();
+                while (length-- > 0) {
+                    arg = args[length].trim();
+                    parsedAliases = parsedAliases.concat(_parser.parse(arg).aliases);
+                }
 
-                    if (arg[0] === '@') {
-                        exec = _regex.aliasRegex.exec(arg);
-                        aliases[!isNull(exec) ? exec[0] : arg.slice(1)] = true;
+                while (parsedAliases.length > 0) {
+                    arg = parsedAliases.pop();
+                    if (!hash[arg]) {
+                        aliases.push(arg);
+                        hash[arg] = true;
                     }
                 }
 
-                return Object.keys(aliases);
+                return aliases;
             }
 
             /**
@@ -27444,7 +27458,7 @@ module plat {
              * attribute property value.
              */
             setter(): void {
-                postpone((): void => {
+                requestAnimationFrameGlobal((): void => {
                     var element = this.element,
                         property = this.property;
 
@@ -27464,6 +27478,7 @@ module plat {
                         default:
                             element.setAttribute(property, property);
                             (<any>element)[property] = true;
+                            break;
                     }
                 });
             }
@@ -27574,7 +27589,7 @@ module plat {
              * Hides or shows the element depending upon the attribute value
              */
             setter(): void {
-                postpone((): void => {
+                requestAnimationFrameGlobal((): void => {
                     if (!isNode(this.element)) {
                         return;
                     }
@@ -27626,38 +27641,24 @@ module plat {
          */
         export class Style extends SetAttributeControl {
             /**
+             * The property to set on the associated template control.
+             */
+            property: string = 'style';
+
+            /**
              * Sets the evaluated styles on the element.
              */
             setter(): void {
-                var expression: string = this.attributes[this.attribute];
+                var element = this.element,
+                    expression = this.attributes[this.attribute];
 
-                if (isEmpty(expression)) {
+                if (isEmpty(expression) || isNull(element)) {
                     return;
                 }
 
-                var attributes = expression.split(';'),
-                    elementStyle = this.element.style || {},
-                    length = attributes.length,
-                    splitStyles: Array<string>,
-                    styleType: string,
-                    styleValue: string;
-
-                for (var i = 0; i < length; ++i) {
-                    splitStyles = attributes[i].split(':');
-
-                    if (splitStyles.length < 2) {
-                        continue;
-                    } else if (splitStyles.length > 2) {
-                        splitStyles = [splitStyles.shift(), splitStyles.join(':')];
-                    }
-
-                    styleType = camelCase(splitStyles[0].trim());
-                    styleValue = splitStyles[1].trim();
-
-                    if (!isUndefined((<any>elementStyle)[styleType])) {
-                        (<any>elementStyle)[styleType] = styleValue;
-                    }
-                }
+                requestAnimationFrameGlobal((): void => {
+                    element.setAttribute(this.property, expression);
+                });
             }
         }
 

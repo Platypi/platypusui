@@ -1,6 +1,6 @@
 {
   "name": "controls",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "",
   "main": "gruntfile.js",
   "devDependencies": {
