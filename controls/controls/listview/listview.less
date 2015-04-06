@@ -28,12 +28,14 @@
                 & when (@orientation = vertical) {
                     margin-top: 0.25em;
                     margin-bottom: 0.25em;
-                    .calc(left, '50% - 1em');
+                    left: 50%;
+                    .translate-accelerate(-50%;0);
                 } 
                 & when (@orientation = horizontal) {
                     margin-left: 0.25em;
                     margin-right: 0.25em;
-                    .calc(top, '50% - 1em');
+                    top: 50%;
+                    .translate-accelerate(0;-50%);
                 }
 
                 .plat-progress-container {

@@ -60,47 +60,6 @@ module platui {
         protected _barElement: HTMLElement;
 
         /**
-         * @name _barMax
-         * @memberof platui.ProgressBar
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The max value of the bar.
-         */
-        protected _barMax: number;
-
-        /**
-         * @name _cloneAttempts
-         * @memberof platui.ProgressBar
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The current number of times we checked to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
-         */
-        protected _cloneAttempts = 0;
-
-        /**
-         * @name _maxCloneCount
-         * @memberof platui.ProgressBar
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * The max number of times we'll check to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
-         */
-        protected _maxCloneAttempts = 25;
-
-        /**
          * @name setClasses
          * @memberof platui.ProgressBar
          * @kind function
@@ -142,33 +101,17 @@ module platui {
          * @access public
          * 
          * @description
-         * Grabs the bar element and bar max value and checks to make sure the context is correctly 
-         * set or a plat-bind is being used, then does the initial animation of the bar.
+         * Grabs the bar element then sets any initial progress.
          * 
          * @returns {void}
          */
         loaded(): void {
-            var context = this.context,
-                barElement = this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild,
-                bar = this._barMax = barElement.parentElement.offsetWidth;
+            this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
+            this.setProgress(this.context);
 
-            if (!bar) {
-                this._setOffsetWithClone('width');
-            }
-
-            if (!this.utils.isNumber(context) || context > 1 || context < 0) {
-                var _Exception = this._Exception;
-                _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
-                return;
-            }
-
-            this.addEventListener(this._window, 'resize', (): void => {
-                var offset = this._barMax = barElement.parentElement.offsetWidth;
-                if (!offset) {
-                    this._setOffsetWithClone('width');
-                }
-            }, false);
-            this.setProgress();
+            this.addEventListener(this._window, 'resize', () => {
+                this.setProgress(this.context);
+            });
         }
 
         /**
@@ -183,7 +126,7 @@ module platui {
          * @returns {void}
          */
         contextChanged(): void {
-            this.setProgress();
+            this.setProgress(this.context);
         }
 
         /**
@@ -195,108 +138,25 @@ module platui {
          * @description
          * Sets the progress bar value.
          * 
-         * @param {number} value? The decimal number between 0 and 1 to set as the 
+         * @param {number} value The decimal number between 0 and 1 to set as the 
          * bar percentage (e.g. - 0.5 would be 50% complete).
          * 
          * @returns {void}
          */
-        setProgress(value?: number): void {
-            var barValue = value || this.context;
-            if (!this.utils.isNumber(barValue) || barValue > 1 || barValue < 0) {
+        setProgress(value: number): void {
+            if (!this.utils.isNumber(value) || value > 1 || value < 0) {
                 var _Exception = this._Exception;
                 _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
                 return;
             }
 
-            this._barElement.style.width = Math.ceil(this._barMax * barValue) + 'px';
-        }
-
-        /**
-         * @name _setOffsetWithClone
-         * @memberof platui.ProgressBar
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Creates a clone of this element and uses it to find the max offset.
-         *
-         * @param {string} dependencyProperty The property that the offset is being based off of.
-         *
-         * @returns {void}
-         */
-        protected _setOffsetWithClone(dependencyProperty: string): void {
-            var element = this.element,
-                _document: Document = plat.acquire(__Document),
-                body = _document.body,
-                _Exception: plat.IExceptionStatic;
-
-            if (!body.contains(element)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    _Exception = this._Exception,
-                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
-                    (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
-                    return;
-                }
-
-                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
+            var barElement = this._barElement,
+                barMax = barElement.parentElement.offsetWidth;
+            if (!barMax) {
                 return;
             }
 
-            this._cloneAttempts = 0;
-
-            var clone = <HTMLElement>element.cloneNode(true),
-                regex = /\d+(?!\d+|%)/,
-                _window = this._window,
-                parentChain = <Array<HTMLElement>>[],
-                shallowCopy = clone,
-                computedStyle: CSSStyleDeclaration,
-                important = 'important',
-                isNull = this.utils.isNull,
-                dependencyValue: string;
-
-            shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                element = element.parentElement;
-                if (isNull(element)) {
-                    // if we go all the way up to <html> the body may currently be hidden.
-                    _Exception = this._Exception,
-                    _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                        'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
-                    return;
-                }
-                shallowCopy = <HTMLElement>element.cloneNode(false);
-                shallowCopy.id = '';
-                parentChain.push(shallowCopy);
-            }
-
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(),
-                    currStyle = curr.style,
-                    temp: HTMLElement;
-
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-
-                curr.insertBefore(clone, null);
-            }
-
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            this._barMax = (<HTMLElement>clone.firstElementChild).offsetWidth;
-            body.removeChild(shallowCopy);
+            barElement.style.width = Math.ceil(barMax * value) + 'px';
         }
     }
 

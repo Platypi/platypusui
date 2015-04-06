@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.12.8 (http://getplatypi.com) 
+ * PlatypusTS v0.12.11 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusTS is licensed under the GPL-3.0 found at  
@@ -302,6 +302,10 @@ module plat {
         __CONTROL_RESOURCE = 'control',
         __CONTEXT_RESOURCE = __CONTEXT;
     /* tslint:enable:no-unused-variable */
+    
+    interface IInternal {
+        __injectable__type?: string;
+    }
     
     /* tslint:disable:no-unused-variable */
     var ___Promise: plat.async.IPromise,
@@ -1601,7 +1605,7 @@ module plat {
             /**
              * The dependencies for this injector
              */
-            private __dependencies: Array<string>;
+            dependencies: Array<string>;
 
             /**
              * Initializes all static injectors.
@@ -1871,7 +1875,7 @@ module plat {
                 return <any>{
                     inject: (): any => value,
                     name: __WRAPPED_INJECTOR,
-                    __dependencies: [],
+                    dependencies: [],
                     Constructor: value
                 };
             }
@@ -1884,7 +1888,7 @@ module plat {
                     inject: noop,
                     type: __NOOP_INJECTOR,
                     name: __NOOP_INJECTOR,
-                    __dependencies: [],
+                    dependencies: [],
                     Constructor: <any>noop
                 };
             }
@@ -1894,12 +1898,12 @@ module plat {
              * @param {plat.dependency.Injector<any>} injector The starting point for the dependency tree search.
              */
             private static __findCircularReferences(injector: Injector<any>): string {
-                if (!(isObject(injector) && isArray(injector.__dependencies))) {
+                if (!(isObject(injector) && isArray(injector.dependencies))) {
                     return;
                 }
 
                 var source = injector.name,
-                    dependencies = injector.__dependencies,
+                    dependencies = injector.dependencies,
                     node: {
                         name: string;
                         dependencies: Array<string>;
@@ -1927,13 +1931,13 @@ module plat {
 
                         injector = locate(dependency);
 
-                        if (!(isObject(injector) && isArray(injector.__dependencies))) {
+                        if (!(isObject(injector) && isArray(injector.dependencies))) {
                             continue;
                         }
 
                         stack.push({
                             name: injector.name,
-                            dependencies: injector.__dependencies.slice(0)
+                            dependencies: injector.dependencies.slice(0)
                         });
                     }
                 }
@@ -1950,7 +1954,7 @@ module plat {
              * STATIC, SINGLETON, FACTORY, INSTANCE, or CLASS. The default is SINGLETON.
              */
             constructor(public name: string, public Constructor: new () => T, dependencies?: Array<any>, public type: string = null) {
-                var deps = this.__dependencies = Injector.convertDependencies(dependencies),
+                var deps = this.dependencies = Injector.convertDependencies(dependencies),
                     index = deps.indexOf(__NOOP_INJECTOR),
                     circularReference: string;
 
@@ -1992,7 +1996,7 @@ module plat {
 
                 if (name === __AppStatic) {
                     var App: IAppStatic = <IAppStatic>(<any>this).inject();
-                    this.__dependencies = deps;
+                    this.dependencies = deps;
                     App.start();
                 }
             }
@@ -2007,7 +2011,7 @@ module plat {
                 var toInject: any = [],
                     type = this.type;
 
-                var dependencies = this.__dependencies,
+                var dependencies = this.dependencies,
                     length = dependencies.length,
                     dependency: Injector<any>,
                     injectable: any;
@@ -2022,7 +2026,8 @@ module plat {
                 if (isString(type) && type !== __INSTANCE) {
                     this._wrapInjector(injectable);
                 }
-
+            
+                (<IInternal>injectable).__injectable__type = type;
                 return injectable;
             }
 
@@ -2679,7 +2684,11 @@ module plat {
                 def = (<any>_window).define,
                 msA = (<any>_window).MSApp,
                 winJs = (<any>_window).WinJS,
-                android = parseInt((<any>/android (\d+)/.exec(userAgent) || [])[1], 10);
+                android = (<any>/android ((?:\d|\.)+)/.exec(userAgent) || [])[1];
+
+            if (isString(android)) {
+                android = parseInt(android.replace(/\./g, ''), 10);
+            }
 
             this.isCompatible = isFunction(Object.defineProperty) && isFunction(this._document.querySelector);
             this.cordova = !isNull((<any>_window).cordova);
@@ -3417,12 +3426,6 @@ module plat {
              * Finds the arguments in a method expression.
              */
             argumentRegex = /\((.*)\)/;
-
-            /**
-             * Given a string, finds the root alias name if that string is an
-             * alias path.
-             */
-            aliasRegex = /[^@\.\[\(]+(?=[\.\[\(])/;
 
             /**
              * Finds '/*.html' or '/*.htm' in a url. Useful for removing 
@@ -6651,7 +6654,16 @@ module plat {
                             responseType = '';
                         }
 
-                        xhr.responseType = responseType;
+                        // Android < 4.4 will throw a DOM Exception 12 if responseType is set to json.
+                        // The only way to do feature detection is with try/catch.
+                        if (responseType === 'json') {
+                            try {
+                                xhr.responseType = responseType;
+                            } catch (e) {
+                                xhr.responseType = '';
+                            }
+                        }
+
                         xhr.withCredentials = options.withCredentials;
 
                         var mimeType = options.overrideMimeType,
@@ -10922,6 +10934,11 @@ module plat {
             Control._ContextManager.dispose(control);
             control.element = null;
             Control.removeParent(control);
+
+            if ((<IInternal>control).__injectable__type === __STATIC) {
+                var injector = controlInjectors[control.type];
+                register.control(control.type, (<any>control).constructor, injector.dependencies, true);
+            }
         }
 
         /**
@@ -12040,6 +12057,11 @@ module plat {
                 control.controls = [];
                 control.root = null;
                 control.innerTemplate = null;
+
+                if ((<IInternal>control).__injectable__type === __STATIC) {
+                    var injector = controlInjectors[control.type];
+                    register.control(control.type, (<any>control).constructor,injector.dependencies, true);
+                }
             }
 
             /**
@@ -14285,6 +14307,16 @@ module plat {
             protected _compat: Compat;
 
             /**
+             * The version of android, or -1 if not on android.
+             */
+            protected _androidVersion: number = isUndefined(this._compat.ANDROID) ? -1 : this._compat.ANDROID;
+
+            /**
+             * Whether or not we're on Android 4.4.x
+             */
+            protected _android44orBelow: boolean = Math.floor(this._androidVersion / 10) <= 44;
+
+            /**
              * Whether or not the DomEvents are currently active. 
              * They become active at least one element on the current 
              * page is listening for a custom event.
@@ -14403,6 +14435,10 @@ module plat {
              * The starting place of an initiated swipe gesture.
              */
             private __swipeOrigin: ISwipeOriginProperties;
+            /**
+             * Whether or not there are any swipe subscribers for the current target during touch move events.
+             */
+            private __haveSwipeSubscribers: boolean;
             /**
              * The user's last move while in touch.
              */
@@ -14594,7 +14630,7 @@ module plat {
                 this.__pointerHash = {};
                 this.__reverseMap = {};
                 this.__tapCount = this.__touchCount = 0;
-                this.__detectingMove = this.__hasMoved = this.__hasRelease = false;
+                this.__detectingMove = this.__hasMoved = this.__hasRelease = this.__haveSwipeSubscribers = false;
                 this.__lastMoveEvent = this.__lastTouchDown = this.__lastTouchUp = null;
                 this.__swipeOrigin = this.__capturedTarget = this.__focusedElement = null;
                 this.__cancelDeferredHold = this.__cancelDeferredTap = noop;
@@ -14632,7 +14668,8 @@ module plat {
                 var clientX = ev.clientX,
                     clientY = ev.clientY,
                     timeStamp = ev.timeStamp,
-                    target = ev.target;
+                    target = ev.target,
+                    gestures = this._gestures;
 
                 this.__lastTouchDown = {
                     _buttons: ev._buttons,
@@ -14651,6 +14688,9 @@ module plat {
                     xTarget: target,
                     yTarget: target
                 };
+
+                this.__haveSwipeSubscribers = this.__findFirstSubscribers(<ICustomElement>target,
+                    [gestures.$swipe, gestures.$swipedown, gestures.$swipeleft, gestures.$swiperight, gestures.$swipeup]).length > 0;
 
                 var gestureCount = this._gestureCount,
                     noHolds = gestureCount.$hold <= 0,
@@ -14749,14 +14789,17 @@ module plat {
                 }
 
                 var lastMove = <ITouchStartEventProperties>this.__lastMoveEvent || swipeOrigin,
-                    direction = evt.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY);
-
-                this.__checkForOriginChanged(direction);
+                    direction = evt.direction = this.__getDirection(x - lastMove.clientX, y - lastMove.clientY),
+                    haveSubscribers = this.__handleOriginChange(direction);
             
                 var dx = Math.abs(x - swipeOrigin.clientX),
                     dy = Math.abs(y - swipeOrigin.clientY),
                     velocity = evt.velocity = this.__getVelocity(dx, dy,
                         evt.timeStamp - swipeOrigin.xTimestamp, evt.timeStamp - swipeOrigin.yTimestamp);
+
+                if (!noSwiping && this._android44orBelow && this.__haveSwipeSubscribers) {
+                    ev.preventDefault();
+                }
 
                 // if tracking events exist
                 if (!noTracking) {
@@ -14914,6 +14957,12 @@ module plat {
                 ev = index >= 0 ? touches[index] : this.__standardizeEventObject(ev);
                 this.__clearTempStates();
                 if (this.__hasMoved) {
+                    // Android 4.4.x fires touchcancel when the finger moves off an element that
+                    // is listening for touch events, so we should handle swipes here in that case.
+                    if (this._android44orBelow) {
+                        this.__handleSwipe();
+                    }
+
                     this.__handleTrackEnd(ev);
                 }
                 this.__resetTouchEnd();
@@ -15008,7 +15057,7 @@ module plat {
                 if (isNull(lastMove)) {
                     return;
                 }
-
+            
                 var origin = this.__swipeOrigin,
                     dx = Math.abs(lastMove.clientX - origin.clientX),
                     dy = Math.abs(lastMove.clientY - origin.clientY),
@@ -15028,14 +15077,26 @@ module plat {
              * used for preventing default in the case of an ANDROID device.
              */
             private __handleTrack(ev: IPointerEvent, originalEv: IPointerEvent): void {
-                var trackGesture = this._gestures.$track,
+                var gestures = this._gestures,
+                    trackGesture = gestures.$track,
                     direction = ev.direction,
                     eventTarget = this.__capturedTarget || <ICustomElement>ev.target;
 
                 var domEvents = this.__findFirstSubscribers(eventTarget,
                     [trackGesture, (trackGesture + direction.x), (trackGesture + direction.y)]);
+
+                if (this._android44orBelow) {
+                    var anyEvents = this.__findFirstSubscribers(eventTarget,
+                        [trackGesture, gestures.$trackdown, gestures.$trackup,
+                            gestures.$trackleft, gestures.$trackright, gestures.$trackend]);
+
+                    if (anyEvents.length > 0) {
+                        originalEv.preventDefault();
+                    }
+                }
+
                 if (domEvents.length > 0) {
-                    if (!isUndefined(this._compat.ANDROID)) {
+                    if (this._androidVersion > -1) {
                         originalEv.preventDefault();
                     }
 
@@ -15497,7 +15558,7 @@ module plat {
                 ev.touches = touches;
                 ev.offset = this.__getOffset(ev);
 
-                if (isUndefined(ev.timeStamp)) {
+                if (isUndefined(ev.timeStamp) || timeStamp > ev.timeStamp) {
                     ev.timeStamp = timeStamp;
                 }
 
@@ -15661,7 +15722,7 @@ module plat {
              * an origin point.
              * @param {plat.ui.IDirection} direction The current vertical and horiztonal directions of movement.
              */
-            private __checkForOriginChanged(direction: IDirection): void {
+            private __handleOriginChange(direction: IDirection): void {
                 var lastMove = this.__lastMoveEvent;
                 if (isNull(lastMove)) {
                     return;
@@ -15675,18 +15736,28 @@ module plat {
                     return;
                 }
 
-                var origin = this.__swipeOrigin;
+                var origin = this.__swipeOrigin,
+                    gestures = this._gestures,
+                    swipes = [gestures.$swipe, gestures.$swipedown, gestures.$swipeleft, gestures.$swiperight, gestures.$swipeup];
 
                 if (!xSame) {
                     origin.clientX = lastMove.clientX;
                     origin.xTimestamp = lastMove.timeStamp;
                     origin.xTarget = lastMove.target;
+
+                    if (this._android44orBelow) {
+                        this.__haveSwipeSubscribers = this.__findFirstSubscribers(<ICustomElement>origin.xTarget, swipes).length > 0;
+                    }
                 }
 
                 if (!ySame) {
                     origin.clientY = lastMove.clientY;
                     origin.yTimestamp = lastMove.timeStamp;
                     origin.yTarget = lastMove.target;
+
+                    if (this._android44orBelow) {
+                        this.__haveSwipeSubscribers = this.__findFirstSubscribers(<ICustomElement>origin.yTarget, swipes).length > 0;
+                    }
                 }
             }
 
@@ -15827,7 +15898,7 @@ module plat {
                                     focusedElement.blur();
                                 }
                                 postpone((): void => {
-                                    if (this._document.body.contains(target)) {
+                                    if (this._document.body.contains(target) && isFunction(target.click)) {
                                         target.click();
                                     }
                                 });
@@ -15851,7 +15922,7 @@ module plat {
                             focusedElement.blur();
                         }
                         postpone((): void => {
-                            if (this._document.body.contains(target)) {
+                            if (this._document.body.contains(target) && isFunction(target.click)) {
                                 target.click();
                             }
                         });
@@ -26552,20 +26623,25 @@ module plat {
             protected _findAliases(args: Array<string>): Array<string> {
                 var length = args.length,
                     arg: string,
-                    exec: RegExpExecArray,
-                    aliases: IObject<boolean> = {},
-                    _regex = this._regex;
+                    hash: IObject<boolean> = {},
+                    aliases: Array<string> = [],
+                    parsedAliases: Array<string> = [],
+                    _parser = this._parser;
 
-                for (var i = 0; i < length; ++i) {
-                    arg = args[i].trim();
+                while (length-- > 0) {
+                    arg = args[length].trim();
+                    parsedAliases = parsedAliases.concat(_parser.parse(arg).aliases);
+                }
 
-                    if (arg[0] === '@') {
-                        exec = _regex.aliasRegex.exec(arg);
-                        aliases[!isNull(exec) ? exec[0] : arg.slice(1)] = true;
+                while (parsedAliases.length > 0) {
+                    arg = parsedAliases.pop();
+                    if (!hash[arg]) {
+                        aliases.push(arg);
+                        hash[arg] = true;
                     }
                 }
 
-                return Object.keys(aliases);
+                return aliases;
             }
 
             /**
@@ -27382,7 +27458,7 @@ module plat {
              * attribute property value.
              */
             setter(): void {
-                postpone((): void => {
+                requestAnimationFrameGlobal((): void => {
                     var element = this.element,
                         property = this.property;
 
@@ -27402,6 +27478,7 @@ module plat {
                         default:
                             element.setAttribute(property, property);
                             (<any>element)[property] = true;
+                            break;
                     }
                 });
             }
@@ -27512,7 +27589,7 @@ module plat {
              * Hides or shows the element depending upon the attribute value
              */
             setter(): void {
-                postpone((): void => {
+                requestAnimationFrameGlobal((): void => {
                     if (!isNode(this.element)) {
                         return;
                     }
@@ -27564,38 +27641,24 @@ module plat {
          */
         export class Style extends SetAttributeControl {
             /**
+             * The property to set on the associated template control.
+             */
+            property: string = 'style';
+
+            /**
              * Sets the evaluated styles on the element.
              */
             setter(): void {
-                var expression: string = this.attributes[this.attribute];
+                var element = this.element,
+                    expression = this.attributes[this.attribute];
 
-                if (isEmpty(expression)) {
+                if (isEmpty(expression) || isNull(element)) {
                     return;
                 }
 
-                var attributes = expression.split(';'),
-                    elementStyle = this.element.style || {},
-                    length = attributes.length,
-                    splitStyles: Array<string>,
-                    styleType: string,
-                    styleValue: string;
-
-                for (var i = 0; i < length; ++i) {
-                    splitStyles = attributes[i].split(':');
-
-                    if (splitStyles.length < 2) {
-                        continue;
-                    } else if (splitStyles.length > 2) {
-                        splitStyles = [splitStyles.shift(), splitStyles.join(':')];
-                    }
-
-                    styleType = camelCase(splitStyles[0].trim());
-                    styleValue = splitStyles[1].trim();
-
-                    if (!isUndefined((<any>elementStyle)[styleType])) {
-                        (<any>elementStyle)[styleType] = styleValue;
-                    }
-                }
+                requestAnimationFrameGlobal((): void => {
+                    element.setAttribute(this.property, expression);
+                });
             }
         }
 

@@ -259,6 +259,19 @@ module platui {
         protected _touchState = 0;
 
         /**
+         * @name _isVertical
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether the corresponding {@link platui.Drawer|Drawer} is vertical or horizontal.
+         */
+        protected _isVertical = false;
+
+        /**
          * @name _useContext
          * @memberof platui.DrawerController
          * @kind property
@@ -270,19 +283,6 @@ module platui {
          * Whether or not to use this control's inherited context.
          */
         protected _useContext: boolean;
-
-        /**
-         * @name _maxOffset
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The max offset to transform the {@link platui.Drawer|Drawer's} element.
-         */
-        protected _maxOffset: number;
 
         /**
          * @name _removeTap
@@ -549,34 +549,6 @@ module platui {
          * A bound value that may have come through prior to initialization.
          */
         protected _preInitializedValue = false;
-
-        /**
-         * @name _cloneAttempts
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The current number of times we checked to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
-         */
-        protected _cloneAttempts = 0;
-
-        /**
-         * @name _maxCloneCount
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * The max number of times we'll check to see if the element was placed into the DOM. 
-         * Used for determining max offset width.
-         */
-        protected _maxCloneAttempts = 25;
 
         /**
          * @name initialize
@@ -937,25 +909,26 @@ module platui {
                 drawerElement = this._drawerElement,
                 _utils = this.utils,
                 isNode = _utils.isNode,
-                wasClosed = !this._isOpen;
+                wasClosed = !this._isOpen,
+                offset = this._getOffset();
 
-            if (!(isNode(rootElement) && isNode(drawerElement))) {
+            if (!(offset && isNode(rootElement) && isNode(drawerElement))) {
                 return this._Promise.resolve(null);
             }
 
             var translation: string;
             switch (this._position) {
                 case 'left':
-                    translation = 'translate3d(' + this._maxOffset + 'px,0,0)';
+                    translation = 'translate3d(' + offset + 'px,0,0)';
                     break;
                 case 'right':
-                    translation = 'translate3d(' + (-this._maxOffset) + 'px,0,0)';
+                    translation = 'translate3d(' + (-offset) + 'px,0,0)';
                     break;
                 case 'top':
-                    translation = 'translate3d(0,' + this._maxOffset + 'px,0)';
+                    translation = 'translate3d(0,' + offset + 'px,0)';
                     break;
                 case 'bottom':
-                    translation = 'translate3d(0,' + (-this._maxOffset) + 'px,0)';
+                    translation = 'translate3d(0,' + (-offset) + 'px,0)';
                     break;
                 default:
                     return <any>this._animator.resolve();
@@ -1197,10 +1170,6 @@ module platui {
             // remove event listeners here first if we want to later be able to dynamically change position of drawer.
             // this._removeEventListeners();
 
-            this.addEventListener(this._window, 'resize', (): void => {
-                this._setOffset();
-            }, false);
-
             if (this._isTap = (types.indexOf('tap') !== -1)) {
                 this._addTapOpen();
             }
@@ -1360,22 +1329,12 @@ module platui {
 
             this._touchState = 2;
 
-            var distanceMoved: number;
-            switch (this._position) {
-                case 'left':
-                case 'right':
-                    distanceMoved = ev.clientX - this._lastTouch.x;
-                    break;
-                case 'top':
-                case 'bottom':
-                    distanceMoved = ev.clientY - this._lastTouch.y;
-                    break;
-                default:
-                    return;
-            }
-
+            var distanceMoved = this._isVertical ? ev.clientY - this._lastTouch.y : ev.clientX - this._lastTouch.x;
             if (this._isRightDirection(distanceMoved)) {
-                if (Math.abs(distanceMoved) > Math.ceil(this._maxOffset / 2)) {
+                var offset = this._getOffset();
+                if (!offset) {
+                    return;
+                } else if (Math.abs(distanceMoved) > Math.ceil(offset / 2)) {
                     this.toggle();
                     return;
                 }
@@ -1456,27 +1415,24 @@ module platui {
          * @returns {string} The translation value.
          */
         protected _calculateTranslation(ev: plat.ui.IGestureEvent): string {
-            var distanceMoved: number;
+            var offset = this._getOffset(),
+                distanceMoved: number;
+            if (!offset) {
+                return 'translate3d(0,0,0)';
+            }
+
             switch (this._position) {
                 case 'left':
-                    distanceMoved = this._isOpen ?
-                        this._checkElasticity(this._maxOffset + ev.clientX - this._lastTouch.x) :
-                        this._checkElasticity(ev.clientX - this._lastTouch.x);
+                    distanceMoved = this._checkElasticity(offset, ev.clientX - this._lastTouch.x);
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
                 case 'right':
-                    distanceMoved = this._isOpen ?
-                        this._checkElasticity(this._maxOffset + this._lastTouch.x - ev.clientX) :
-                        this._checkElasticity(this._lastTouch.x - ev.clientX);
+                    distanceMoved = this._checkElasticity(offset, this._lastTouch.x - ev.clientX);
                     return 'translate3d(' + (-distanceMoved) + 'px,0,0)';
                 case 'top':
-                    distanceMoved = this._isOpen ?
-                        this._checkElasticity(this._maxOffset + ev.clientY - this._lastTouch.y) :
-                        this._checkElasticity(ev.clientY - this._lastTouch.y);
+                    distanceMoved = this._checkElasticity(offset, ev.clientY - this._lastTouch.y);
                     return 'translate3d(0,' + distanceMoved + 'px,0)';
                 case 'bottom':
-                    distanceMoved = this._isOpen ?
-                        this._checkElasticity(this._maxOffset + this._lastTouch.y - ev.clientY) :
-                        this._checkElasticity(this._lastTouch.y - ev.clientY);
+                    distanceMoved = this._checkElasticity(offset, this._lastTouch.y - ev.clientY);
                     return 'translate3d(0,' + (-distanceMoved) + 'px,0)';
                 default:
                     return this._preTransform;
@@ -1493,19 +1449,21 @@ module platui {
          * Checks for elasticity and potentially readjusts the user's 
          * distance moved.
          * 
-         * @param {number} distanceMoved The distance the user's finger moved.
+         * @param {number} maxOffset The maximum distance the corresponding {@link platui.Drawer|Drawer} can translate.
+         * @param {number} delta The distance the user's finger moved.
          * 
          * @returns {number} The potentially recalcuated distance moved.
          */
-        protected _checkElasticity(distanceMoved: number): number {
+        protected _checkElasticity(maxOffset: number, delta: number): number {
+            var distanceMoved = this._isOpen ? maxOffset + delta : delta;
             if (this._isElastic) {
                 return distanceMoved;
             }
 
             if (distanceMoved < 0) {
                 distanceMoved = 0;
-            } else if (distanceMoved > this._maxOffset) {
-                distanceMoved = this._maxOffset;
+            } else if (distanceMoved > maxOffset) {
+                distanceMoved = maxOffset;
             }
 
             return distanceMoved;
@@ -1555,7 +1513,6 @@ module platui {
 
                         this._setTransform();
                         this._addEventListeners();
-                        this._setOffset();
 
                         if (isUndefined(this._isElastic)) {
                             this._isElastic = drawerArg.elastic === true;
@@ -1693,10 +1650,11 @@ module platui {
             }
 
             switch (position) {
-                case 'left':
-                case 'right':
                 case 'top':
                 case 'bottom':
+                    this._isVertical = true;
+                case 'left':
+                case 'right':
                     this._position = position;
                     break;
                 default:
@@ -1788,21 +1746,14 @@ module platui {
                         computedDirectionalOverflow: string,
                         key: string;
 
-                    switch (this._position) {
-                        case 'left':
-                        case 'right':
-                            key = 'overflowX';
-                            computedDirectionalOverflow = computedParentStyle.overflowX;
-                            break;
-                        case 'top':
-                        case 'bottom':
-                            key = 'overflowY';
-                            computedDirectionalOverflow = computedParentStyle.overflowY;
-                            break;
-                        default:
-                            break;
-
+                    if (this._isVertical) {
+                        key = 'overflowY';
+                        computedDirectionalOverflow = computedParentStyle.overflowY;
+                    } else {
+                        key = 'overflowX';
+                        computedDirectionalOverflow = computedParentStyle.overflowX;
                     }
+
                     if (computedDirectionalOverflow !== 'hidden') {
                         rootElementStyle.parentOverflow = {
                             key: key,
@@ -1819,137 +1770,28 @@ module platui {
         }
 
         /**
-         * @name _setOffset
+         * @name _getOffset
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
          * 
          * @description
-         * Sets the max offset to translate the {@link platui.Drawer|Drawer}.
+         * Sets the max offset to translate the corresponding {@link platui.Drawer|Drawer}.
          * 
-         * @param {HTMLElement} element? The element to use to obtain the max offset length.
-         * 
-         * @returns {void}
+         * @returns {number} The max offset to translate.
          */
-        private _setOffset(element?: HTMLElement): void {
-            var isNode = this.utils.isNode(element),
-                el = isNode ? element : this._drawerElement,
-                hasAttribute = el.hasAttribute(__Hide),
-                lengthProperty: string;
+        protected _getOffset(): number {
+            var drawerElement = this._drawerElement,
+                hasAttribute = drawerElement.hasAttribute(__Hide);
 
-            if (hasAttribute) {
-                el.removeAttribute(__Hide);
+            if (drawerElement.hasAttribute(__Hide)) {
+                drawerElement.removeAttribute(__Hide);
+                var offset = this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
+                drawerElement.setAttribute(__Hide, '');
+                return offset;
             }
 
-            switch (this._position) {
-                case 'left':
-                case 'right':
-                    this._maxOffset = el.offsetWidth;
-                    lengthProperty = 'width';
-                    break;
-                case 'top':
-                case 'bottom':
-                    this._maxOffset = el.offsetHeight;
-                    lengthProperty = 'height';
-                    break;
-                default:
-                    break;
-            }
-
-            if (hasAttribute) {
-                el.setAttribute(__Hide, '');
-            }
-
-            if (!(isNode || this._maxOffset)) {
-                this._setOffsetWithClone(lengthProperty);
-            }
-        }
-
-        /**
-         * @name _setOffsetWithClone
-         * @memberof platui.DrawerController
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * Creates a clone of this element and uses it to find the max offset.
-         *
-         * @param {string} dependencyProperty The property that the offset is being based off of.
-         *
-         * @returns {void}
-         */
-        protected _setOffsetWithClone(dependencyProperty: string): void {
-            var element = this._drawerElement,
-                body = this._document.body,
-                _Exception: plat.IExceptionStatic;
-
-            if (!body.contains(element)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    _Exception = this._Exception,
-                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
-                    (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
-                    return;
-                }
-
-                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
-                return;
-            }
-
-            this._cloneAttempts = 0;
-
-            var clone = <HTMLElement>element.cloneNode(true),
-                regex = /\d+(?!\d+|%)/,
-                _window = this._window,
-                parentChain = <Array<HTMLElement>>[],
-                shallowCopy = clone,
-                computedStyle: CSSStyleDeclaration,
-                important = 'important',
-                isNull = this.utils.isNull,
-                dependencyValue: string;
-
-            shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                element = element.parentElement;
-                if (isNull(element)) {
-                    // if we go all the way up to <html> the body may currently be hidden.
-                    _Exception = this._Exception,
-                    _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                        'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
-                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
-                    return;
-                }
-                shallowCopy = <HTMLElement>element.cloneNode(false);
-                shallowCopy.id = '';
-                parentChain.push(shallowCopy);
-            }
-
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(),
-                    currStyle = curr.style,
-                    temp: HTMLElement;
-
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-
-                curr.insertBefore(clone, null);
-            }
-
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            this._setOffset(clone);
-            body.removeChild(shallowCopy);
+            return this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
         }
     }
 

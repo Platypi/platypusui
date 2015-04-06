@@ -85,9 +85,9 @@
             border: none;
 
             .plat-knob {
+                top: @half-thin-height - @knob-radius;
                 background-color: @toggle-thin-color;
                 border: 1px solid darken(@toggle-thin-color, 10%);
-                .calc(top; '-@{knob-radius} + @{half-thin-height}');
                 .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
             }
 

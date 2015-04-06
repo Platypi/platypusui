@@ -34,7 +34,9 @@ module platui {
         '<div class="plat-input-container">\n' +
         '    <span class="plat-input-image"></span>\n' +
         '    <input type="text" />\n' +
-        '    <span class="plat-input-action"></span>\n' +
+        '    <span class="plat-input-action">\n' +
+        '    <span class="plat-action"></span>\n' +
+        '    </span>\n' +
         '</div>\n';
 
         /**
@@ -335,7 +337,11 @@ module platui {
             this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
 
             this.dom.addClass(element, __Plat + inputType);
-            this._actionElement = <HTMLElement>this._inputElement.nextElementSibling;
+            var actionContainer = <HTMLElement>this._inputElement.nextElementSibling;
+            this.addEventListener(actionContainer, __$tap, () => {
+                this._inputElement.focus();
+            }, false);
+            this._actionElement = <HTMLElement>actionContainer.firstElementChild;
 
             if (!this.utils.isEmpty(pattern)) {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
@@ -503,9 +509,15 @@ module platui {
         protected _initializeType(): void {
             var type = this._type,
                 event = __$tap,
-                actionElement = this._actionElement;
+                actionElement = this._actionElement,
+                _Exception: plat.IExceptionStatic;
 
             switch (type) {
+                case 'text':
+                    this._pattern = this._pattern || /[\S\s]*/;
+                    this._actionHandler = this._checkText.bind(this);
+                    this._typeHandler = this._erase;
+                    break;
                 case 'email':
                     this._pattern = this._pattern || this._regex.validateEmail;
                     this._actionHandler = this._checkEmail.bind(this);
@@ -532,7 +544,29 @@ module platui {
                     this._typeHandler = this._erase;
                     type = 'tel';
                     break;
+                case 'hidden':
+                    this.element.setAttribute(__Hide, '');
+                    return;
+                case 'radio':
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Radio + ' instead.', _Exception.CONTROL);
+                    break;
+                case 'checkbox':
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Checkbox + ' instead.', _Exception.CONTROL);
+                    break;
+                case 'range':
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Slider + ' instead.', _Exception.CONTROL);
+                    break;
                 default:
+                    _Exception = this._Exception;
+                    _Exception.warn(type + ' is not yet fully supported by ' + this.type +
+                        '. Defaulting to type="text".', _Exception.CONTROL);
+                    type = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
