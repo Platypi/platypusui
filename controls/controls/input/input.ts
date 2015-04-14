@@ -300,11 +300,7 @@ module platui {
                 }
             }
 
-            if (hasPlaceholder) {
-                return;
-            }
-
-            if (!_utils.isDocumentFragment(this.innerTemplate)) {
+            if (hasPlaceholder || _utils.isNull(this.innerTemplate)) {
                 return;
             }
 
