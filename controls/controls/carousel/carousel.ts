@@ -34,7 +34,7 @@ module platui {
          */
         templateString =
         '<div class="plat-carousel-container">\n' +
-        '    <' + __ForEach + ' class="plat-carousel-slider"></' + __ForEach + '>\n' +
+        '    <div class="plat-carousel-slider" plat-control="' + __ForEach + '"></div>\n' +
         '</div>\n';
 
         /**
@@ -544,10 +544,10 @@ module platui {
          * @returns {void}
          */
         contextChanged(newValue: Array<any>, oldvalue: Array<any>): void {
-            this._verifyLength();
-
             var _utils = this.utils;
             if (_utils.isFunction(this._onLoad)) {
+                this._verifyLength();
+
                 if (_utils.isArray(newValue) && newValue.length > 0) {
                     this.goToIndex(0);
                 }
@@ -680,7 +680,9 @@ module platui {
             var animation = this._initiateAnimation({ properties: animationOptions });
             this.inputChanged(++this._index, index);
 
-            return animation;
+            return animation.then((): void => {
+                this._checkArrows();
+            });
         }
 
         /**
@@ -721,7 +723,9 @@ module platui {
             var animation = this._initiateAnimation({ properties: animationOptions });
             this.inputChanged(--this._index, index);
 
-            return animation;
+            return animation.then((): void => {
+                this._checkArrows();
+            });
         }
 
         /**
@@ -745,6 +749,9 @@ module platui {
 
             if (promise !== null) {
                 this.inputChanged((this._index = index), oldIndex);
+                promise = promise.then((): void => {
+                    this._checkArrows();
+                });
             }
 
             return promise;
@@ -912,6 +919,7 @@ module platui {
                 }
                 this._currentOffset = 0;
                 this._removeEventListeners();
+                this._checkArrows();
                 return;
             }
 
@@ -920,6 +928,7 @@ module platui {
             if (addListeners || this._isInfinite) {
                 var foreach = <plat.ui.controls.ForEach>this.controls[0],
                     itemsLoaded = (): void => {
+                        this._checkArrows();
                         if (context.length === 0) {
                             foreach.itemsLoaded.then(itemsLoaded);
                             return;
@@ -933,15 +942,20 @@ module platui {
             }
 
             var maxIndex = context.length - 1,
-                maxOffset = maxIndex * this._getLength();
+                offset = this._getLength(),
+                maxOffset = maxIndex * offset;
 
-            if (!maxOffset) {
+            if (!offset) {
+                this._checkArrows();
                 return;
             }
 
             if (-this._currentOffset > maxOffset) {
                 this.goToIndex(maxIndex);
+                return;
             }
+
+            this._checkArrows();
         }
 
         /**
@@ -1009,7 +1023,7 @@ module platui {
                     var slider = this._slider;
                     slider.style[<any>this._transform] = resetTranslation;
                     // access property to force a repaint
-                    this._window.getComputedStyle(slider)[<any>this._transform];
+                    slider.offsetWidth;
                 });
 
             this.inputChanged((this._index = 0), index);
@@ -1045,7 +1059,7 @@ module platui {
                     var slider = this._slider;
                     slider.style[<any>this._transform] = resetTranslation;
                     // access property to force a repaint
-                    this._window.getComputedStyle(slider)[<any>this._transform];
+                    slider.offsetWidth;
                 });
 
             this.inputChanged((this._index = maxLength - 1), index);
@@ -1329,6 +1343,8 @@ module platui {
                 this._suspendInterval();
                 this.goToNext();
             }, false));
+
+            this._checkArrows();
         }
 
         /**
@@ -1364,6 +1380,35 @@ module platui {
             forwardArrowContainer.appendChild(forwardArrow);
             element.appendChild(backArrowContainer);
             element.appendChild(forwardArrowContainer);
+        }
+
+        protected _checkArrows(): void {
+            var utils = this.utils,
+                isNode = utils.isNode;
+            if (this._isInfinite || !(isNode(this._forwardArrow) && isNode(this._backArrow))) {
+                return;
+            }
+
+            var contextLength = this.context.length,
+                index = this._index;
+
+            if (utils.isNull(index)) {
+                this._backArrow.setAttribute(__Hide, '');
+                this._forwardArrow.setAttribute(__Hide, '');
+                return;
+            }
+
+            if (index <= 0) {
+                this._backArrow.setAttribute(__Hide, '');
+            } else {
+                this._backArrow.removeAttribute(__Hide);
+            }
+
+            if (index >= contextLength - 1) {
+                this._forwardArrow.setAttribute(__Hide, '');
+            } else {
+                this._forwardArrow.removeAttribute(__Hide);
+            }
         }
 
         /**
