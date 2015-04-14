@@ -304,6 +304,10 @@ module platui {
                 return;
             }
 
+            if (!_utils.isDocumentFragment(this.innerTemplate)) {
+                return;
+            }
+
             var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
             if (!_utils.isEmpty(placeholder)) {
                 input.placeholder = placeholder;
