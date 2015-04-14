@@ -9,7 +9,7 @@
 
         .gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
             #platui > #variables;
-            .gradient(@default; @start; @stop; @webkit-moz-ms-list);
+            .gradient(@default; @start; @stop; @webkit-moz-ms-strict);
         }
         .gradient(@default; @start; @stop; @vendor-list) {
             .linear-gradient-top(@default; @start; 0%; @stop; 100%; @vendor-list);
@@ -17,7 +17,7 @@
 
         .horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
             #platui > #variables;
-            .horizontal-gradient(@default; @start; @stop; @webkit-moz-ms-list);
+            .horizontal-gradient(@default; @start; @stop; @webkit-moz-ms-strict);
         }
         .horizontal-gradient(@default; @start; @stop; @vendor-list) {
             .linear-gradient-left(@default; @start; 0%; @stop; 100%; @vendor-list);
@@ -25,69 +25,80 @@
 
         .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2) {
             #platui > #variables;
-            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @webkit-moz-ms-list);
+            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @webkit-moz-ms-strict);
         }
         .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor-list) when not (iscolor(@vendor-list)) {
-            @gradient-value: top, @color1 @stop1, @color2 @stop2;
+            @color-values: @color1 @stop1, @color2 @stop2;
+            @gradient-value: top, @color-values;
             background-color: @default;
             background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
             #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to bottom, @color-values);
         }
 
         .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
             #platui > #variables;
-            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @webkit-moz-ms-list);
+            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @webkit-moz-ms-strict);
         }
         .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor-list) when not (iscolor(@vendor-list)) {
-            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            @gradient-value: top, @color-values;
             background-color: @default;
             background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
             #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to bottom, @color-values);
         }
 
         .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
             #platui > #variables;
-            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @webkit-moz-ms-list);
+            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @webkit-moz-ms-strict);
         }
         .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor-list) {
-            #platui > #variables;
-            @gradient-value: top, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            @gradient-value: top, @color-values;
             background-color: @default;
             background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
             #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to bottom, @color-values);
         }
 
         .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2) {
             #platui > #variables;
-            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @webkit-moz-ms-list);
+            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @webkit-moz-ms-strict);
         }
         .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor-list) when not (iscolor(@vendor-list)) {
-            @gradient-value: left, @color1 @stop1, @color2 @stop2;
+            @color-values: @color1 @stop1, @color2 @stop2;
+            @gradient-value: left, @color-values;
             background-color: @default;
-            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
             #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to right, @color-values);
         }
 
         .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
             #platui > #variables;
-            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @webkit-moz-ms-list);
+            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @webkit-moz-ms-strict);
         }
         .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor-list) when not (iscolor(@vendor-list)) {
-            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            @gradient-value: left, @color-values;
             background-color: @default;
-            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
             #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to right, @color-values);
         }
 
         .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
             #platui > #variables;
-            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @webkit-moz-ms-list);
+            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @webkit-moz-ms-strict);
         }
         .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor-list) {
-            @gradient-value: left, @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            @gradient-value: left, @color-values;
             background-color: @default;
-            background-image: -webkit-gradient(linear, left top, left top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
             #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to right, @color-values);
         }
     }
 }
