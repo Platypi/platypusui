@@ -2,7 +2,7 @@
 
 module platui {
     /**
-     * @name Input
+     * @name File
      * @memberof platui
      * @kind class
      * 
@@ -11,12 +11,12 @@ module platui {
      * 
      * @description
      * An {@link plat.ui.BindControl|BindControl} that standardizes and styles 
-     * an HTML input element of various types.
+     * an HTML input[type="file"] element.
      */
     export class File extends plat.ui.BindControl implements IUiControl, IFormControl {
         /**
          * @name templateString
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind property
          * @access public
          * 
@@ -27,27 +27,27 @@ module platui {
          */
         templateString =
         '<div class="plat-file-container">\n' +
-        '    <input type="file" class="plat-file-hidden" />\n' +
-        '    <input type="text" class="plat-file-input" />\n' +
-        '    <button plat-control="plat-button"></button>\n' +
+        '    <input type="file" class="plat-file-hidden" plat-change="_filesSelected" />\n' +
+        '    <input type="text" class="plat-file-input" disabled="disabled" />\n' +
+        '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
         '</div>\n';
 
         /**
          * @name options
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind property
          * @access public
          * 
-         * @type {plat.observable.IObservableProperty<platui.IInputOptions>}
+         * @type {plat.observable.IObservableProperty<platui.IFileOptions>}
          * 
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
-        options: plat.observable.IObservableProperty<IInputOptions>;
+        options: plat.observable.IObservableProperty<IFileOptions>;
 
         /**
          * @name priority
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind property
          * @access public
          * 
@@ -60,7 +60,7 @@ module platui {
 
         /**
          * @name _hiddenInput
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind property
          * @access protected
          * 
@@ -73,7 +73,7 @@ module platui {
 
         /**
          * @name _visibleInput
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind property
          * @access protected
          * 
@@ -85,8 +85,21 @@ module platui {
         protected _visibleInput: HTMLInputElement;
 
         /**
+         * @name _buttonInput
+         * @memberof platui.File
+         * @kind property
+         * @access protected
+         * 
+         * @type {HTMLButtonElement}
+         * 
+         * @description
+         * The HTMLButtonElement for selecting files.
+         */
+        protected _buttonInput: HTMLButtonElement;
+
+        /**
          * @name setClasses
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
@@ -106,7 +119,7 @@ module platui {
 
         /**
          * @name initialize
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
@@ -121,7 +134,7 @@ module platui {
 
         /**
          * @name setTemplate
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
@@ -132,13 +145,15 @@ module platui {
          */
         setTemplate(): void {
             var element = this.element,
-                input = <HTMLInputElement>element.firstElementChild.firstElementChild.nextElementSibling,
+                hiddenInput = this._hiddenInput = <HTMLInputElement>element.firstElementChild.firstElementChild,
+                visibleInput = this._visibleInput = <HTMLInputElement>hiddenInput.nextElementSibling,
+                buttonInput = this._buttonInput = <HTMLButtonElement>visibleInput.nextElementSibling,
                 attributes = this.attributes,
                 keys = Object.keys(attributes),
                 length = keys.length,
                 controlInjectors = plat.dependency.injectors.control,
-                hasPlaceholder = false,
                 attrRegex = /plat-(?:control|hide|context)|class|style/,
+                hasMultiple = false,
                 _utils = this.utils,
                 isNull = _utils.isNull,
                 delimit = _utils.delimit,
@@ -153,27 +168,31 @@ module platui {
                 value = attributes[key];
                 if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
                     continue;
-                } else if (name === 'placeholder') {
-                    hasPlaceholder = true;
-                    input.placeholder = value;
+                } else if (name === 'multiple') {
+                    hasMultiple = true;
+                    hiddenInput.setAttribute(name, value);
                 } else {
-                    input.setAttribute(name, value);
+                    hiddenInput.setAttribute(name, value);
                 }
             }
 
-            if (hasPlaceholder || _utils.isNull(this.innerTemplate)) {
+            if (isNull(this.innerTemplate)) {
+                buttonInput.textContent = hasMultiple ? 'Select files' : 'Select a file';
                 return;
             }
 
-            var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!_utils.isEmpty(placeholder)) {
-                input.placeholder = placeholder;
+            var buttonText = this.innerTemplate.textContent.replace(/\r|\n/g, '');
+            if (_utils.isEmpty(buttonText)) {
+                buttonInput.textContent = hasMultiple ? 'Select files' : 'Select a file';
+                return;
             }
+
+            buttonInput.textContent = buttonText;
         }
 
         /**
          * @name loaded
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
@@ -185,12 +204,16 @@ module platui {
         loaded(): void {
             var optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
                 options = optionObj.value || <IInputOptions>{},
-                element = this.element;
+                element = this.element,
+                hiddenInput = this._hiddenInput = <HTMLInputElement>element.firstElementChild.firstElementChild,
+                visibleInput = this._visibleInput = <HTMLInputElement>hiddenInput.nextElementSibling;
+
+            this._buttonInput = <HTMLButtonElement>visibleInput.nextElementSibling;
         }
 
         /**
          * @name validate
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
@@ -207,7 +230,7 @@ module platui {
 
         /**
          * @name clear
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
@@ -217,32 +240,34 @@ module platui {
          * @returns {void}
          */
         clear(): void {
+
         }
 
         /**
-         * @name focus
-         * @memberof platui.Input
+         * @name click
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
          * @description
-         * Focuses the input.
+         * Acts as a programmatic click for file selection.
          * 
          * @returns {void}
          */
-        focus(): void {
+        click(): void {
+            this._selectFiles();
         }
 
         /**
          * @name value
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * 
          * @description
-         * Returns the current value of {@link platui.Input|Input} control.
+         * Returns the current value of {@link platui.File|File} control.
          * 
-         * @returns {string} The current value of the {@link platui.Input|Input} control.
+         * @returns {string} The current value of the {@link platui.File|File} control.
          */
         value(): string {
             return this._hiddenInput.value;
@@ -250,7 +275,7 @@ module platui {
 
         /**
          * @name observeProperties
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access public
          * @virtual
@@ -270,7 +295,7 @@ module platui {
 
         /**
          * @name _setBoundProperty
-         * @memberof platui.Input
+         * @memberof platui.File
          * @kind function
          * @access protected
          * 
@@ -303,19 +328,33 @@ module platui {
         }
 
         /**
-         * @name _addEventListeners
-         * @memberof platui.Input
+         * @name _selectFiles
+         * @memberof platui.File
          * @kind function
          * @access protected
          * 
          * @description
-         * Adds all event listeners to the input and action element.
-         * 
-         * @param {string} event The primary action element's event.
+         * Kicks off the file selection process.
          * 
          * @returns {void}
          */
-        protected _addEventListeners(event: string): void {
+        protected _selectFiles(): void {
+            this._hiddenInput.click();
+        }
+
+        /**
+         * @name _filesSelected
+         * @memberof platui.File
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * An event indicating that files have been selected.
+         * 
+         * @returns {void}
+         */
+        protected _filesSelected(): void {
+
         }
     }
 
@@ -332,7 +371,7 @@ module platui {
     export interface IFileOptions {
         /**
          * @name pattern
-         * @memberof platui.IInputOptions
+         * @memberof platui.IFileOptions
          * @kind property
          * @access public
          * 

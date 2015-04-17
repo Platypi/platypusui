@@ -300,7 +300,7 @@ module platui {
                 }
             }
 
-            if (hasPlaceholder || _utils.isNull(this.innerTemplate)) {
+            if (hasPlaceholder || isNull(this.innerTemplate)) {
                 return;
             }
 
