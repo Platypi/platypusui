@@ -36,6 +36,7 @@ var __prefix = '$',
     __Range = __Plat + 'range',
     __Select = __Plat + 'select',
     __Input = __Plat + 'input',
+    __File = __Plat + 'file',
     __Carousel = __Plat + 'carousel',
     __Listview = __Plat + 'listview',
 

@@ -1,0 +1,85 @@
+﻿@import (reference) '../mixins/helpers.less';
+@import (reference) 'file.variables.less';
+
+/// ============= Input Constants ============= ///
+
+#platui {
+    #__File {
+        #platui > #variables;
+    }
+}
+
+/// =========== Input Default Styles =========== ///
+
+.plat-file {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #File;
+    #platui > #__File;
+    .box-sizing(border-box);
+    display: inline-block;
+    height: @default-height;
+    cursor: text;
+
+    .plat-file-container {
+        .box-sizing(border-box);
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        position: relative;
+
+        .plat-file-hidden {
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: -9999px;
+        }
+
+        .plat-file-input {
+            .box-sizing(border-box);
+            .border-radius(0px);
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            padding: 0;
+            text-align: right;
+            background-color: @transparent;
+            color: @text-color;
+            outline: none;
+            border: none;
+            font: inherit;
+            -webkit-appearance: none;
+
+            &::-ms-clear,
+            &::-ms-reveal {
+                display: none;
+            }
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+/// =========== Placeholder Styling =========== ///
+
+            &::-webkit-input-placeholder {
+                color: @placeholder-color;
+            }
+
+            &::-moz-input-placeholder {
+                color: @placeholder-color;   
+            }
+
+            &:-moz-input-placeholder {
+                color: @placeholder-color;
+            }
+
+            &:-ms-input-placeholder {
+                color: @placeholder-color;
+            }
+        }
+    }
+}

@@ -35,7 +35,7 @@ module platui {
         '    <span class="plat-input-image"></span>\n' +
         '    <input type="text" />\n' +
         '    <span class="plat-input-action">\n' +
-        '    <span class="plat-action"></span>\n' +
+        '        <span class="plat-action"></span>\n' +
         '    </span>\n' +
         '</div>\n';
 
@@ -113,7 +113,7 @@ module platui {
          * @type {HTMLInputElement}
          * 
          * @description
-         * The HTMLInputElement for the control's input[type="text"].
+         * The HTMLInputElement for control input.
          */
         protected _inputElement: HTMLInputElement;
 
@@ -503,12 +503,12 @@ module platui {
          * @returns {void}
          */
         protected _initializeType(): void {
-            var type = this._type,
+            var inputType = this._type,
                 event = __$tap,
                 actionElement = this._actionElement,
                 _Exception: plat.IExceptionStatic;
 
-            switch (type) {
+            switch (inputType) {
                 case 'text':
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._actionHandler = this._checkText.bind(this);
@@ -538,38 +538,43 @@ module platui {
                     this._pattern = this._pattern || /^[0-9\.,]*$/;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
-                    type = 'tel';
+                    inputType = 'tel';
                     break;
                 case 'hidden':
                     this.element.setAttribute(__Hide, '');
                     return;
                 case 'radio':
                     _Exception = this._Exception;
-                    _Exception.warn(type + ' is not supported by ' + this.type +
+                    _Exception.warn(inputType + ' is not supported by ' + this.type +
                         '. Please use a ' + __Radio + ' instead.', _Exception.CONTROL);
-                    break;
+                    return;
                 case 'checkbox':
                     _Exception = this._Exception;
-                    _Exception.warn(type + ' is not supported by ' + this.type +
+                    _Exception.warn(inputType + ' is not supported by ' + this.type +
                         '. Please use a ' + __Checkbox + ' instead.', _Exception.CONTROL);
-                    break;
+                    return;
                 case 'range':
                     _Exception = this._Exception;
-                    _Exception.warn(type + ' is not supported by ' + this.type +
+                    _Exception.warn(inputType + ' is not supported by ' + this.type +
                         '. Please use a ' + __Slider + ' instead.', _Exception.CONTROL);
-                    break;
+                    return;
+                case 'file':
+                    _Exception = this._Exception;
+                    _Exception.warn(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __File + ' instead.', _Exception.CONTROL);
+                    return;
                 default:
                     _Exception = this._Exception;
-                    _Exception.warn(type + ' is not yet fully supported by ' + this.type +
+                    _Exception.warn(inputType + ' is not yet fully supported by ' + this.type +
                         '. Defaulting to type="text".', _Exception.CONTROL);
-                    type = 'text';
+                    inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
             }
 
-            this._inputElement.type = type;
+            this._inputElement.type = inputType;
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
             this._addEventListeners(event);

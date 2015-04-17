@@ -56,6 +56,7 @@
     <TypeScriptCompile Include="checkbox\checkbox.ts" />
     <TypeScriptCompile Include="drawer\drawer.ts" />
     <TypeScriptCompile Include="drawer\drawercontroller.ts" />
+    <TypeScriptCompile Include="file\file.ts" />
     <TypeScriptCompile Include="input\input.ts" />
     <TypeScriptCompile Include="lib\platypus.ts" />
     <TypeScriptCompile Include="listview\listview.ts" />
@@ -130,6 +131,18 @@
     </Content>
     <Content Include="animations\animations.min.css">
       <DependentUpon>animations.css</DependentUpon>
+    </Content>
+    <Content Include="file\file.css">
+      <DependentUpon>file.less</DependentUpon>
+    </Content>
+    <Content Include="file\file.min.css">
+      <DependentUpon>file.css</DependentUpon>
+    </Content>
+    <Content Include="file\file.variables.css">
+      <DependentUpon>file.variables.less</DependentUpon>
+    </Content>
+    <Content Include="file\file.variables.min.css">
+      <DependentUpon>file.variables.css</DependentUpon>
     </Content>
     <Content Include="gestures\gestures.css">
       <DependentUpon>gestures.less</DependentUpon>
@@ -506,6 +519,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="mixins\flexbox.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="file\file.less" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="file\file.variables.less" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
