@@ -14,6 +14,10 @@ module platui {
      * an HTML input[type="file"] element.
      */
     export class File extends plat.ui.BindControl implements IUiControl, IFormControl {
+        protected static _inject: any = {
+            _compat: __Compat
+        };
+
         /**
          * @name templateString
          * @memberof platui.File
@@ -28,22 +32,9 @@ module platui {
         templateString =
         '<div class="plat-file-container">\n' +
         '    <input type="file" class="plat-file-hidden" plat-change="_filesSelected" />\n' +
-        '    <input type="text" class="plat-file-input" disabled="disabled" />\n' +
+        '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" plat-cut="clear" plat-paste="_onPaste" />\n' +
         '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
         '</div>\n';
-
-        /**
-         * @name options
-         * @memberof platui.File
-         * @kind property
-         * @access public
-         * 
-         * @type {plat.observable.IObservableProperty<platui.IFileOptions>}
-         * 
-         * @description
-         * The evaluated {@link plat.controls.Options|plat-options} object.
-         */
-        options: plat.observable.IObservableProperty<IFileOptions>;
 
         /**
          * @name priority
@@ -57,6 +48,19 @@ module platui {
          * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
          */
         priority = 120;
+
+        /**
+         * @name _compat
+         * @memberof platui.File
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.Compat}
+         * 
+         * @description
+         * Reference to the {@link plat.Compat|Compat} injectable.
+         */
+        protected _compat: plat.Compat;
 
         /**
          * @name _hiddenInput
@@ -220,7 +224,17 @@ module platui {
          * @returns {void}
          */
         clear(): void {
+            var hiddenInput = this._hiddenInput;
 
+            if (this.utils.isEmpty(hiddenInput.value)) {
+                return;
+            }
+
+            var clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
+
+            this.element.replaceChild(clone, hiddenInput);
+            this._visibleInput.value = '';
+            this.inputChanged(null);
         }
 
         /**
@@ -291,29 +305,80 @@ module platui {
          * @description
          * The function called when the bindable text is set externally.
          * 
-         * @param {string} newValue The new value of the bindable text.
-         * @param {string} oldValue The old value of the bindable text.
+         * @param {any} newValue The new value of the bindable file(s).
+         * @param {any} oldValue The old value of the bindable file(s).
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          * 
          * @returns {void}
          */
-        protected _setBoundProperty(newValue: string, oldValue: string, identifier: void, firstTime?: boolean): void {
-            //var value = this._inputElement.value;
-            //if (this.utils.isNull(newValue)) {
-            //    newValue = '';
+        protected _setBoundProperty(newValue: any, oldValue: any, identifier: void, firstTime?: boolean): void {
+            var utils = this.utils;
+            if (utils.isUndefined(newValue)) {
+                this.inputChanged(null);
+                return;
+            }
 
-            //    if (firstTime === true) {
-            //        if (this.utils.isNull(value)) {
-            //            this._onInputChanged(newValue);
-            //        }
-            //        return;
-            //    }
-            //} else if (newValue === value) {
-            //    return;
-            //}
+            var hiddenInput = this._hiddenInput,
+                files = hiddenInput.files;
 
-            //this._onInputChanged(newValue);
+            if (utils.isNull(files)) {
+                return;
+            }
+
+            if (!hiddenInput.multiple) {
+                if (newValue !== files[0]) {
+                    this.inputChanged(files[0]);
+                }
+                return;
+            }
+
+            this.inputChanged(Array.prototype.slice.call(files));
+        }
+
+        /**
+         * @name _onKeyDown
+         * @memberof plat.controls.Bind
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * An event listener to handle a "keydown" event on the visible input.
+         * 
+         * @param {KeyboardEvent} ev The "keydown" event.
+         * 
+         * @returns {boolean} Whether or not to prevent default behavior.
+         */
+        protected _onKeyDown(ev: KeyboardEvent): boolean {
+            var key = ev.keyCode,
+                keyCodes = plat.controls.KeyCodes;
+
+            if (key === keyCodes.tab) {
+                return true;
+            } else if (key === keyCodes.backspace || key === keyCodes.delete) {
+                this.clear();
+            }
+
+            ev.preventDefault();
+            return false;
+        }
+
+        /**
+         * @name _onPaste
+         * @memberof plat.controls.Bind
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * An event listener to handle a "keydown" event on the visible input.
+         * 
+         * @param {Event} ev The "paste" event.
+         * 
+         * @returns {boolean} Default behavior is prevented.
+         */
+        protected _onPaste(ev: Event): boolean {
+            ev.preventDefault();
+            return false;
         }
 
         /**
@@ -371,27 +436,4 @@ module platui {
     }
 
     plat.register.control(__File, File);
-
-    /**
-     * @name IFileOptions
-     * @memberof platui
-     * @kind interface
-     * 
-     * @description
-     * The available {@link plat.controls.Options|options} for the {@link platui.File|File} control.
-     */
-    export interface IFileOptions {
-        /**
-         * @name pattern
-         * @memberof platui.IFileOptions
-         * @kind property
-         * @access public
-         * 
-         * @type {string}
-         * 
-         * @description
-         * A regular expression string to regulate what text is allowed to be entered.
-         */
-        pattern?: string;
-    }
 }

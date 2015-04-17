@@ -71,7 +71,7 @@ module platui {
          * @kind property
          * @access protected
          * 
-         * @type {plat.ICompat}
+         * @type {plat.Compat}
          * 
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
