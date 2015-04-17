@@ -85,19 +85,6 @@ module platui {
         protected _visibleInput: HTMLInputElement;
 
         /**
-         * @name _buttonInput
-         * @memberof platui.File
-         * @kind property
-         * @access protected
-         * 
-         * @type {HTMLButtonElement}
-         * 
-         * @description
-         * The HTMLButtonElement for selecting files.
-         */
-        protected _buttonInput: HTMLButtonElement;
-
-        /**
          * @name setClasses
          * @memberof platui.File
          * @kind function
@@ -147,7 +134,7 @@ module platui {
             var element = this.element,
                 hiddenInput = this._hiddenInput = <HTMLInputElement>element.firstElementChild.firstElementChild,
                 visibleInput = this._visibleInput = <HTMLInputElement>hiddenInput.nextElementSibling,
-                buttonInput = this._buttonInput = <HTMLButtonElement>visibleInput.nextElementSibling,
+                buttonInput = <HTMLButtonElement>visibleInput.nextElementSibling,
                 attributes = this.attributes,
                 keys = Object.keys(attributes),
                 length = keys.length,
@@ -202,13 +189,8 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
-                options = optionObj.value || <IInputOptions>{},
-                element = this.element,
-                hiddenInput = this._hiddenInput = <HTMLInputElement>element.firstElementChild.firstElementChild,
-                visibleInput = this._visibleInput = <HTMLInputElement>hiddenInput.nextElementSibling;
-
-            this._buttonInput = <HTMLButtonElement>visibleInput.nextElementSibling;
+            var hiddenInput = this._hiddenInput = this._hiddenInput || <HTMLInputElement>this.element.firstElementChild.firstElementChild;
+            this._visibleInput = this._visibleInput || <HTMLInputElement>hiddenInput.nextElementSibling;
         }
 
         /**
@@ -218,9 +200,7 @@ module platui {
          * @access public
          * 
          * @description
-         * A function to validate the user's input. For action="email" it returns 
-         * true if the email can be a valid email address. For all other 
-         * actions it returns true if the input is not empty.
+         * A function to validate the user's input. Returns true if the input is not empty.
          * 
          * @returns {boolean} Whether or not the user's input is valid.
          */
@@ -267,10 +247,19 @@ module platui {
          * @description
          * Returns the current value of {@link platui.File|File} control.
          * 
-         * @returns {string} The current value of the {@link platui.File|File} control.
+         * @returns {any} The currently selected file(s) of the {@link platui.File|File} control.
          */
-        value(): string {
-            return this._hiddenInput.value;
+        value(): any {
+            var hiddenInput = this._hiddenInput,
+                files = hiddenInput.files;
+
+            if (this.utils.isNull(files)) {
+                return;
+            } else if (!hiddenInput.multiple) {
+                return files[0];
+            }
+
+            return Array.prototype.slice.call(files);
         }
 
         /**
@@ -354,7 +343,30 @@ module platui {
          * @returns {void}
          */
         protected _filesSelected(): void {
+            var hiddenInput = this._hiddenInput,
+                visibleInput = this._visibleInput,
+                files = hiddenInput.files;
 
+            if (this.utils.isNull(files)) {
+                return;
+            }
+
+            if (!hiddenInput.multiple) {
+                var file = files[0];
+                visibleInput.value = file.name;
+                this.inputChanged(file);
+                return;
+            }
+
+            var fileNames = <Array<string>>[],
+                length = files.length;
+
+            for (var i = 0; i < length; ++i) {
+                fileNames.push(files[i].name);
+            }
+
+            visibleInput.value = fileNames.join(', ');
+            this.inputChanged(Array.prototype.slice.call(files));
         }
     }
 
