@@ -16,7 +16,8 @@ module platui {
         protected static _inject: any = {
             _window: __Window,
             _document: __Document,
-            _compat: __Compat
+            _compat: __Compat,
+            _Promise: __Promise
         };
 
         /**
@@ -90,12 +91,25 @@ module platui {
          * @kind property
          * @access protected
          * 
-         * @type {plat.ICompat}
+         * @type {plat.Compat}
          * 
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
         protected _compat: plat.Compat;
+
+        /**
+         * @name _Promise
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         * 
+         * @type {plat.async.IPromise}
+         * 
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        protected _Promise: plat.async.IPromise;
 
         /**
          * @name _container
@@ -297,14 +311,17 @@ module platui {
          * @description
          * Shows the {@link platui.Modal|Modal}.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
-        show(): void {
-            var wasHidden = !this._isVisible;
-            this._show();
+        show(): plat.async.IThenable<void> {
+            var wasHidden = !this._isVisible,
+                promise = this._show();
+
             if (wasHidden) {
                 this.inputChanged(true);
             }
+
+            return promise;
         }
 
         /**
@@ -316,14 +333,17 @@ module platui {
          * @description
          * Hides the {@link platui.Modal|Modal}.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
-        hide(): void {
-            var wasVisible = this.isVisible;
-            this._hide();
+        hide(): plat.async.IThenable<void> {
+            var wasVisible = this.isVisible,
+                promise = this._hide();
+
             if (wasVisible) {
                 this.inputChanged(false);
             }
+
+            return promise;
         }
 
         /**
@@ -335,15 +355,14 @@ module platui {
          * @description
          * Toggles the visibility of the {@link platui.Modal|Modal}.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is toggled.
          */
-        toggle(): void {
+        toggle(): plat.async.IThenable<void> {
             if (this._isVisible) {
-                this.hide();
-                return;
+                return this.hide();
             }
 
-            this.show();
+            return this.show();
         }
 
         /**
@@ -435,23 +454,31 @@ module platui {
          * @description
          * Shows the {@link platui.Modal|Modal}.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
-        protected _show(): void {
-            if (this._bindTemplate()) {
-                return;
+        protected _show(): plat.async.IThenable<void> {
+            var dom = this.dom,
+                utils = this.utils;
+
+            if (!utils.isNull(this.innerTemplate)) {
+                return this._bindInnerTemplate();
             }
 
-            this._alignModal();
-
-            var dom = this.dom;
-            dom.removeClass(this.element, __Hide);
-
-            this.utils.defer((): void => {
-                dom.addClass(this._container, __Plat + 'activate');
-            }, 25);
-
             this._isVisible = true;
+
+            return new this._Promise<void>((resolve): void => {
+                utils.requestAnimationFrame((): void => {
+                    this._alignModal();
+                    dom.removeClass(this.element, __Hide);
+
+                    utils.defer((): void => {
+                        utils.requestAnimationFrame((): void => {
+                            dom.addClass(this._container, __Plat + 'activate');
+                            resolve();
+                        });
+                    }, 20);
+                });
+            });
         }
 
         /**
@@ -506,50 +533,59 @@ module platui {
          * @description
          * Hides the {@link platui.Modal|Modal}.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
-        protected _hide(): void {
-            var dom = this.dom;
+        protected _hide(): plat.async.IThenable<void> {
+            var dom = this.dom,
+                utils = this.utils,
+                promise: plat.async.IThenable<void>;
 
             this._scrollRemover();
             this._scrollRemover = noop;
 
-            if (this.utils.isString(this._transitionEnd)) {
-                this._addHideOnTransitionEnd();
+            this._isVisible = false;
+            if (utils.isString(this._transitionEnd)) {
+                promise = this._addHideOnTransitionEnd();
+                utils.requestAnimationFrame((): void => {
+                    dom.removeClass(this._container, __Plat + 'activate');
+                });
             } else {
-                dom.addClass(this.element, __Hide);
+                promise = new this._Promise<void>((resolve): void => {
+                    utils.requestAnimationFrame((): void => {
+                        dom.addClass(this.element, __Hide);
+                        dom.removeClass(this._container, __Plat + 'activate');
+                        resolve();
+                    });
+                });
             }
 
-            dom.removeClass(this._container, __Plat + 'activate');
-            this._isVisible = false;
+            return promise;
         }
 
         /**
-         * @name _bindTemplate
+         * @name _bindInnerTemplate
          * @memberof platui.Modal
          * @kind function
          * @access protected
          * 
          * @description
-         * Checks whether or not the template has already been bound to this control. If it hasn't, 
-         * it will add and bind the template to the DOM.
+         * Adds the innerTemplate to {@link plat.ui.BindableTemplates|BindableTemplates}, binds it, 
+         * and adds it to the DOM.
          * 
-         * @returns {boolean} Whether or not the template has already been bound.
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
-        protected _bindTemplate(): boolean {
-            var innerTemplate = this.innerTemplate;
-            if (this.utils.isNode(innerTemplate)) {
-                var bindableTemplates = this.bindableTemplates,
-                    modal = 'modal';
-                bindableTemplates.add(modal, innerTemplate);
-                bindableTemplates.bind(modal).then((template): void => {
-                    this._container.insertBefore(template, null);
-                    this._show();
-                });
-                this.innerTemplate = null;
-                return true;
-            }
-            return false;
+        protected _bindInnerTemplate(): plat.async.IThenable<void> {
+            var innerTemplate = this.innerTemplate,
+                bindableTemplates = this.bindableTemplates,
+                modal = 'modal';
+
+            bindableTemplates.add(modal, innerTemplate);
+            this.innerTemplate = null;
+
+            return bindableTemplates.bind(modal).then((template): plat.async.IThenable<void> => {
+                this._container.insertBefore(template, null);
+                return this._show();
+            });
         }
 
         /**
@@ -585,14 +621,17 @@ module platui {
          * @description
          * Listens for the transition to end and hides the element after it is finished.
          * 
-         * @returns {void}
+         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
-        protected _addHideOnTransitionEnd(): void {
-            var element = this.element,
-                remove = this.addEventListener(element, this._transitionEnd, (): void => {
-                    remove();
-                    this.dom.addClass(element, __Hide);
-                }, false);
+        protected _addHideOnTransitionEnd(): plat.async.IThenable<void> {
+            return new this._Promise<void>((resolve): void => {
+                var element = this.element,
+                    remove = this.addEventListener(element, this._transitionEnd,(): void => {
+                        remove();
+                        this.dom.addClass(element, __Hide);
+                        resolve();
+                    }, false);
+            });
         }
     }
 
