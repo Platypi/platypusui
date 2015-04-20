@@ -32,7 +32,7 @@ module platui {
         templateString =
         '<div class="plat-file-container">\n' +
         '    <input type="file" class="plat-file-hidden" plat-change="_filesSelected" />\n' +
-        '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" plat-cut="clear" plat-paste="_onPaste" />\n' +
+        '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" />\n' +
         '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
         '</div>\n';
 
@@ -232,7 +232,7 @@ module platui {
 
             var clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
 
-            this.element.replaceChild(clone, hiddenInput);
+            this.element.firstElementChild.replaceChild(clone, hiddenInput);
             this._visibleInput.value = '';
             this.inputChanged(null);
         }
@@ -359,24 +359,6 @@ module platui {
                 this.clear();
             }
 
-            ev.preventDefault();
-            return false;
-        }
-
-        /**
-         * @name _onPaste
-         * @memberof plat.controls.Bind
-         * @kind function
-         * @access protected
-         * 
-         * @description
-         * An event listener to handle a "keydown" event on the visible input.
-         * 
-         * @param {Event} ev The "paste" event.
-         * 
-         * @returns {boolean} Default behavior is prevented.
-         */
-        protected _onPaste(ev: Event): boolean {
             ev.preventDefault();
             return false;
         }
