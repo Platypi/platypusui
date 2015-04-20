@@ -1,4 +1,5 @@
 ﻿@import (reference) '../mixins/helpers.less';
+@import (reference) '../mixins/touch.less';
 @import (reference) 'file.variables.less';
 
 /// ============= Input Constants ============= ///
@@ -6,6 +7,8 @@
 #platui {
     #__File {
         #platui > #variables;
+        @default-button-color: @white;
+        @default-button-background-color: @neutral-color;
     }
 }
 
@@ -67,24 +70,6 @@
                 -webkit-appearance: none;
                 margin: 0;
             }
-
-/// =========== Placeholder Styling =========== ///
-
-            /*&::-webkit-input-placeholder {
-                color: @placeholder-color;
-            }
-
-            &::-moz-input-placeholder {
-                color: @placeholder-color;   
-            }
-
-            &:-moz-input-placeholder {
-                color: @placeholder-color;
-            }
-
-            &:-ms-input-placeholder {
-                color: @placeholder-color;
-            }*/
         }
 
         .plat-file-button {
@@ -92,13 +77,283 @@
             .border-bottom-left-radius(0px);
             .border-top-right-radius(@border-radius);
             .border-bottom-right-radius(@border-radius);
+            .webkit-touch-additions();
             position: relative;
             display: inline-block;
             margin: 0;
             height: 100%;
-            border: 1px solid @input-border-color;
+            background-color: @default-button-background-color;
+            color: @default-button-color;
+            border: 0px solid @default-button-background-color;
+            outline: none;
             font: inherit;
             margin-left: -5px;
+
+            &:active {
+                background-color: darken(@default-button-background-color, 10%);
+            }
+            
+            &[disabled],
+            &:disabled {
+                background-color: @default-button-background-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+    
+    &.file-outline {
+        .plat-file-button {
+            border-color: @default-button-background-color;
+            color: @default-button-background-color;
+            border-width: 2px;
+
+            &:active {
+                color: @white;
+                background-color: @default-button-background-color;
+            }
+            
+            &[disabled],
+            &:disabled {
+                color: @default-button-background-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.file-primary {
+        .plat-file-button {
+            background-color: @primary-color;
+            border-color: @primary-color-dark;
+        
+            &:active {
+                background-color: darken(@primary-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @primary-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @primary-color;
+                color: @primary-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @primary-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @primary-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-secondary {
+        .plat-file-button {
+            background-color: @secondary-color;
+            border-color: @secondary-color-dark;
+        
+            &:active {
+                background-color: darken(@secondary-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @secondary-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @secondary-color;
+                color: @secondary-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @secondary-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @secondary-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-neutral {
+        .plat-file-button {
+            background-color: @neutral-color;
+            border-color: @neutral-color-dark;
+        
+            &:active {
+                background-color: darken(@neutral-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @neutral-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @neutral-color;
+                color: @neutral-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @neutral-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @neutral-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-success {
+        .plat-file-button {
+            background-color: @success-color;
+            border-color: @success-color-dark;
+        
+            &:active {
+                background-color: darken(@success-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @success-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @success-color;
+                color: @success-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @success-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @success-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-danger {
+        .plat-file-button {
+            background-color: @danger-color;
+            border-color: @danger-color-dark;
+        
+            &:active {
+                background-color: darken(@danger-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @danger-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @danger-color;
+                color: @danger-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @danger-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @danger-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-caution {
+        .plat-file-button {
+            background-color: @caution-color;
+            border-color: @caution-color-dark;
+        
+            &:active {
+                background-color: darken(@caution-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @caution-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @caution-color;
+                color: @caution-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @caution-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @caution-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-outline {
+        .plat-file-button {
+            background-color: transparent;
         }
     }
 }

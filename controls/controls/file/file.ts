@@ -158,10 +158,19 @@ module platui {
                 name = delimit(key, '-');
                 value = attributes[key];
                 if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
+                    if (name === __Disabled) {
+                        hiddenInput.setAttribute(name, value);
+                        visibleInput.setAttribute(name, value);
+                        buttonInput.setAttribute(name, value);
+                    }
                     continue;
                 } else if (name === 'multiple') {
                     hasMultiple = true;
                     hiddenInput.setAttribute(name, value);
+                } else if (name === 'disabled') {
+                    hiddenInput.setAttribute(name, value);
+                    visibleInput.setAttribute(name, value);
+                    buttonInput.setAttribute(name, value);
                 } else {
                     hiddenInput.setAttribute(name, value);
                 }
@@ -274,6 +283,48 @@ module platui {
             }
 
             return Array.prototype.slice.call(files);
+        }
+
+        /**
+         * @name disable
+         * @memberof platui.File
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Disables the control.
+         * 
+         * @returns {void}
+         */
+        disable(): void {
+            var disabled = 'disabled',
+                visibleInput = this._visibleInput;
+
+            this._hiddenInput.setAttribute(disabled, disabled);
+            visibleInput.setAttribute(disabled, disabled);
+            visibleInput.nextElementSibling.setAttribute(disabled, disabled);
+            this.element.setAttribute(disabled, disabled);
+        }
+
+        /**
+         * @name enable
+         * @memberof platui.File
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Enables the control.
+         * 
+         * @returns {void}
+         */
+        enable(): void {
+            var disabled = 'disabled',
+                visibleInput = this._visibleInput;
+
+            this._hiddenInput.removeAttribute(disabled);
+            visibleInput.removeAttribute(disabled);
+            visibleInput.nextElementSibling.removeAttribute(disabled);
+            this.element.removeAttribute(disabled);
         }
 
         /**

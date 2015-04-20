@@ -33,8 +33,38 @@
     .webkit-touch-additions();
     .box-sizing(border-box);
     
+    &:active,
+    &.plat-selected {
+        background-color: darken(@default-background-color, 10%);
+    }
+        
+    &.button-disabled,
+    &[disabled],
+    &:disabled {
+        background-color: @default-background-color;
+        opacity: 0.5;
+        cursor: default;
+    }
+
     &.button-outline {
-        color: @neutral-color;
+        border-color: @default-background-color;
+        color: @default-background-color;
+        border-width: 2px;
+
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: @default-background-color;
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            color: @default-background-color;
+            background-color: transparent;
+            opacity: 0.5;
+            cursor: default;
+        }
     }
 
 /// ============== Button Colors  =============== ///    
@@ -49,7 +79,7 @@
         }
         
         &.button-disabled,
-        &[disabled="disabled"],
+        &[disabled],
         &:disabled {
             background-color: @primary-color;
             opacity: 0.5;
@@ -67,10 +97,10 @@
             }
         
             &.button-disabled,
-            &[disabled="disabled"],
+            &[disabled],
             &:disabled {
                 color: @primary-color;
-                background-color: @default-background-color;
+                background-color: transparent;
                 opacity: 0.5;
                 cursor: default;
             }
@@ -87,7 +117,7 @@
         }
         
         &.button-disabled,
-        &[disabled="disabled"],
+        &[disabled],
         &:disabled {
             background-color: @secondary-color;
             opacity: 0.5;
@@ -105,10 +135,10 @@
             }
         
             &.button-disabled,
-            &[disabled="disabled"],
+            &[disabled],
             &:disabled {
                 color: @secondary-color;
-                background-color: @default-background-color;
+                background-color: transparent;
                 opacity: 0.5;
                 cursor: default;
             }
@@ -125,7 +155,7 @@
         }
         
         &.button-disabled,
-        &[disabled="disabled"],
+        &[disabled],
         &:disabled {
             background-color: @neutral-color;
             opacity: 0.5;
@@ -143,10 +173,10 @@
             }
         
             &.button-disabled,
-            &[disabled="disabled"],
+            &[disabled],
             &:disabled {
                 color: @neutral-color;
-                background-color: @default-background-color;
+                background-color: transparent;
                 opacity: 0.5;
                 cursor: default;
             }
@@ -163,7 +193,7 @@
         }
         
         &.button-disabled,
-        &[disabled="disabled"],
+        &[disabled],
         &:disabled {
             background-color: @success-color;
             opacity: 0.5;
@@ -181,10 +211,10 @@
             }
         
             &.button-disabled,
-            &[disabled="disabled"],
+            &[disabled],
             &:disabled {
                 color: @success-color;
-                background-color: @default-background-color;
+                background-color: transparent;
                 opacity: 0.5;
                 cursor: default;
             }
@@ -201,7 +231,7 @@
         }
         
         &.button-disabled,
-        &[disabled="disabled"],
+        &[disabled],
         &:disabled {
             background-color: @danger-color;
             opacity: 0.5;
@@ -219,10 +249,10 @@
             }
         
             &.button-disabled,
-            &[disabled="disabled"],
+            &[disabled],
             &:disabled {
                 color: @danger-color;
-                background-color: @default-background-color;
+                background-color: transparent;
                 opacity: 0.5;
                 cursor: default;
             }
@@ -239,7 +269,7 @@
         }
         
         &.button-disabled,
-        &[disabled="disabled"],
+        &[disabled],
         &:disabled {
             background-color: @caution-color;
             opacity: 0.5;
@@ -257,10 +287,10 @@
             }
         
             &.button-disabled,
-            &[disabled="disabled"],
+            &[disabled],
             &:disabled {
                 color: @caution-color;
-                background-color: @default-background-color;
+                background-color: transparent;
                 opacity: 0.5;
                 cursor: default;
             }
@@ -269,7 +299,6 @@
 
     &.button-outline {
         background-color: transparent;
-        border-width: 2px;
     }
     
 /// ============== Button Sizes ================ ///
