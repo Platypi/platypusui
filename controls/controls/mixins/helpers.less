@@ -83,20 +83,25 @@
 
         /// Background Clip
 
-        .background-clip(@box: border-box) {
-            #platui > #variables;
-            .background-clip(@box; @webkit-list);
-        }
-        .background-clip(@box; @vendor-list) when (@box = border-box) {
+        .background-clip(@box) when (@box = border-box), (@box = border) {
             -moz-background-clip: border;
-            #platui > #__mixins > .vendor-loop(background-clip; @box; @vendor-list);
+            -webkit-background-clip: border;
+            background-clip: border-box;
         }
-        .background-clip(@box; @vendor-list) when (@box = padding-box) {
+        .background-clip(@box) when (@box = padding-box), (@box = padding) {
             -moz-background-clip: padding;
-            #platui > #__mixins > .vendor-loop(background-clip; @box; @vendor-list);
+            -webkit-background-clip: padding;
+            background-clip: padding-box;
         }
-        .background-clip(@box; @vendor-list) when (default()) {
-            #platui > #__mixins > .vendor-loop(background-clip; @box; @vendor-list);
+        .background-clip(@box) when (@box = content-box), (@box = content) {
+            -moz-background-clip: content;
+            -webkit-background-clip: content;
+            background-clip: content-box;
+        }
+        .background-clip(@box) when (default()) {
+            -moz-background-clip: @box;
+            -webkit-background-clip: @box;
+            background-clip: @box;
         }
 
         /// Box Shadows
