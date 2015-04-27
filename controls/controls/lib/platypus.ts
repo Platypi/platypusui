@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.12.12 (http://getplatypi.com) 
+ * PlatypusTS v0.12.13 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusTS is licensed under the GPL-3.0 found at  
@@ -2475,7 +2475,7 @@ module plat {
  
         var ErrorEvent: events.IErrorEventStatic = acquire(__ErrorEventStatic); 
  
-        ErrorEvent.dispatch(__error, Exception, error); 
+        ErrorEvent.dispatch(__error, Exception, error, isFatal); 
  
         if (isFatal) { 
             if (message instanceof Error) { 
@@ -2781,19 +2781,9 @@ module plat {
             (<any>_window)[prefix + 'CancelRequestAnimationFrame'] || 
             (<any>_window)[prefix + 'CancelAnimationFrame']; 
  
-            var style = documentElement.style, 
-                animationSupported: boolean; 
-            if (animationSupported = !isUndefined(style.animation)) { 
-                this.animationEvents = { 
-                    $animation: 'animation', 
-                    $animationStart: 'animationstart', 
-                    $animationEnd: 'animationend', 
-                    $animationIteration: 'animationiteration', 
-                    $transition: 'transition', 
-                    $transitionStart: 'transitionstart', 
-                    $transitionEnd: 'transitionend' 
-                }; 
-            } else if (animationSupported = !isUndefined((<any>style)[jsSyntax + 'Animation'])) { 
+            var style = documentElement.style; 
+            if (!(isUndefined((<any>style)[jsSyntax + 'Animation']) || isUndefined((<any>style)[jsSyntax + 'Transition']))) { 
+                this.animationSupported = true; 
                 this.animationEvents = { 
                     $animation: prefix + 'Animation', 
                     $animationStart: prefix + 'AnimationStart', 
@@ -2803,9 +2793,18 @@ module plat {
                     $transitionStart: prefix + 'TransitionStart', 
                     $transitionEnd: prefix + 'TransitionEnd' 
                 }; 
+            } else if (!(isUndefined(style.animation) || isUndefined(style.transition))) { 
+                this.animationSupported = true; 
+                this.animationEvents = { 
+                    $animation: 'animation', 
+                    $animationStart: 'animationstart', 
+                    $animationEnd: 'animationend', 
+                    $animationIteration: 'animationiteration', 
+                    $transition: 'transition', 
+                    $transitionStart: 'transitionstart', 
+                    $transitionEnd: 'transitionend' 
+                }; 
             } 
- 
-            this.animationSupported = animationSupported; 
         } 
  
         /** 
@@ -10674,15 +10673,26 @@ module plat {
             error: E; 
  
             /** 
+             * Whether or not the error is fatal. 
+             */ 
+            fatal: boolean = false; 
+ 
+            /** 
              * Creates a new ErrorEvent and fires it. 
              * @param {string} name The name of the event. 
              * @param {any} sender The sender of the event. 
              * @param {E} error The error that occurred, resulting in the event. 
+             * @param {boolean} isFatal Whether or not the error is fatal 
              */ 
-            static dispatch<E extends Error>(name: string, sender: any, error: E): ErrorEvent<E> { 
+            static dispatch<E extends Error>(name: string, sender: any, error: E, isFatal?: boolean): ErrorEvent<E> { 
                 var event: ErrorEvent<E> = acquire(ErrorEvent); 
  
                 event.initialize(name, sender, null, error); 
+            
+                if (isFatal) { 
+                    event.fatal = true; 
+                } 
+ 
                 ErrorEvent._EventManager.sendEvent(event); 
  
                 return event; 
@@ -10729,8 +10739,9 @@ module plat {
              * @param {string} name The name of the event. 
              * @param {any} sender The sender of the event. 
              * @param {E} error The error that occurred, resulting in the event. 
+             * @param {boolean} isFatal Whether or not the error is fatal 
              */ 
-            dispatch<E extends Error>(name: string, sender: any, error: E): ErrorEvent<E>; 
+            dispatch<E extends Error>(name: string, sender: any, error: E, isFatal?: boolean): ErrorEvent<E>; 
         } 
     } 
  
@@ -13504,7 +13515,7 @@ module plat {
  
                 if (isCompiled) { 
                     var contextManager = this._ContextManager.getManager(control.root); 
-                    control.absoluteContextPath = parent.absoluteContextPath || __Context; 
+                    control.absoluteContextPath = parent.absoluteContextPath || __CONTEXT; 
  
                     if (!isNull(childContext)) { 
                         control.absoluteContextPath += '.' + childContext; 
@@ -27533,7 +27544,7 @@ module plat {
  
                 if (super._compareKeys(ev) && ((keyCode >= 48 && keyCode <= 90) || 
                     (keyCode >= 186) || (keyCode >= 96 && keyCode <= 111))) { 
-                    var remove = this.addEventListener(this.element, 'keypress', (e: KeyboardEvent): void => { 
+                    var remove = this.addEventListener(this.element, 'keypress',(e: KeyboardEvent): void => { 
                         remove(); 
                         super._onEvent(e); 
                     }, false); 
