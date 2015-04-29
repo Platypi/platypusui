@@ -18,14 +18,14 @@
     .touch-action(none);
     .box-sizing(border-box);
 
-    .plat-carousel-container {
+    .plat-carousel-viewport {
         position: relative;
         min-height: 50px;
         overflow: hidden;
         .fill();
         .box-sizing(border-box);
 
-        .plat-carousel-slider {
+        .plat-carousel-container {
             position: absolute;
             left: 0;
             top: 0;
@@ -97,8 +97,8 @@
     }
 
     &.plat-horizontal {
-        .plat-carousel-container {
-            .plat-carousel-slider {
+        .plat-carousel-viewport {
+            .plat-carousel-container {
                 .plat-carousel-item {
                     display: inline-block;
                 }
@@ -122,8 +122,8 @@
     }
 
     &.plat-vertical {
-        .plat-carousel-container {
-            .plat-carousel-slider {
+        .plat-carousel-viewport {
+            .plat-carousel-container {
                 .plat-carousel-item {
                     display: block;
                 }

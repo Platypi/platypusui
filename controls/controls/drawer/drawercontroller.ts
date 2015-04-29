@@ -1612,16 +1612,13 @@ module platui {
             var style = this._rootElement.style,
                 isUndefined = this.utils.isUndefined;
 
-            if (!isUndefined(this._preTransform = style.transform)) {
-                this._transform = 'transform';
-                return;
-            }
-
             var vendorPrefix = this._compat.vendorPrefix;
             if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
                 this._transform = vendorPrefix.lowerCase + 'Transform';
             } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
                 this._transform = vendorPrefix.upperCase + 'Transform';
+            } else {
+                this._transform = 'transform';
             }
         }
 
