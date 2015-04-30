@@ -712,7 +712,7 @@ module platui {
          * reached and the animation is complete. The promise resolves with true if successful.
          */
         goToNext(): plat.async.IThenable<boolean> {
-            return this.itemsLoaded.then((): plat.async.IThenable<boolean> => {
+            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
                 var index = this._index,
                     reset = false;
 
@@ -771,7 +771,7 @@ module platui {
          * reached and the animation is complete. The promise resolves with true if successful.
          */
         goToPrevious(): plat.async.IThenable<boolean> {
-            return this.itemsLoaded.then((): plat.async.IThenable<boolean> => {
+            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
                 var index = this._index,
                     reset = false;
 
@@ -831,8 +831,11 @@ module platui {
          * reached and the animation is complete. The promise resolves with true if successful.
          */
         goToIndex(index: number, direct?: boolean): plat.async.IThenable<boolean> {
-            return this.itemsLoaded.then((): plat.async.IThenable<boolean> => {
+            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
                 var oldIndex = this._index;
+                if (this.utils.isUndefined(oldIndex)) {
+                    this._index = oldIndex = 0;
+                }
 
                 if (index === oldIndex) {
                     return this._Promise.resolve(false);
@@ -1069,37 +1072,39 @@ module platui {
          * @returns {void}
          */
         protected _verifyLength(): void {
-            var context = this.context,
-                index = this._index;
+            this._Promise.all(this._addQueue).then((): void => {
+                var context = this.context,
+                    index = this._index;
 
-            if (!this.utils.isArray(context) || context.length === 0) {
-                if (!this.utils.isUndefined(index)) {
-                    this.inputChanged((this._index = undefined), index);
+                if (!this.utils.isArray(context) || context.length === 0) {
+                    if (!this.utils.isUndefined(index)) {
+                        this.inputChanged((this._index = undefined), index);
+                    }
+                    this._container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                    this._removeEventListeners();
+                    this._checkArrows();
+                    return;
                 }
-                this._currentOffset = 0;
-                this._removeEventListeners();
-                this._checkArrows();
-                return;
-            }
 
-            // if no remove listeners exist we know that we had previously removed them.
-            if (this._removeListeners.length === 0) {
-                this.itemsLoaded.then((): void => {
-                    this._addEventListeners();
-                    this._initializeIndex(0);
-                    this.inputChanged(0, index);
-                });
+                // if no remove listeners exist we know that we had previously removed them.
+                if (this._removeListeners.length === 0) {
+                    this.itemsLoaded.then((): void => {
+                        this._addEventListeners();
+                        this._initializeIndex(0);
+                        this.inputChanged(0, index);
+                    });
 
-                return;
-            }
+                    return;
+                }
 
-            var maxIndex = context.length - 1;
-            if (maxIndex < 2) {
-                this._initializeIndex(index > maxIndex ? maxIndex : index);
-                this.inputChanged(this._index, index);
-            } else if (index > maxIndex) {
-                this.goToIndex(maxIndex);
-            }
+                var maxIndex = context.length - 1;
+                if (maxIndex < 2) {
+                    this._initializeIndex(index > maxIndex ? maxIndex : index);
+                    this.inputChanged(this._index, index);
+                } else if (index > maxIndex) {
+                    this.goToIndex(maxIndex);
+                }
+            });
         }
 
         /**
@@ -1154,12 +1159,9 @@ module platui {
          */
         protected _goToIndex(index: number): plat.async.IThenable<boolean> {
             var oldIndex = this._index;
-            if (this.utils.isUndefined(oldIndex)) {
-                this._index = oldIndex = 0;
-            }
 
             if (index === oldIndex || index < 0 || index >= this.context.length) {
-                return;
+                return this._Promise.resolve(false);
             } else if (this._selfPause) {
                 this.resume();
             }
@@ -1473,9 +1475,13 @@ module platui {
             this._setAliases();
 
             this._addCount += itemCount;
-            addQueue.push(this._addItems(0, itemCount, 0).then((): void => {
+            var addPromise = this._addItems(0, itemCount, 0).then((): void => {
+                var index = addQueue.indexOf(addPromise);
+                if (index !== -1) {
+                    addQueue.splice(index, 1);
+                }
+
                 this._addCount -= itemCount;
-                addQueue.shift();
                 this._onLoad();
             }).catch((): void => {
                 var _Exception = this._Exception;
@@ -1483,7 +1489,9 @@ module platui {
                     _Exception.CONTROL);
                 this._loaded = false;
                 return;
-            }));
+                });
+
+            addQueue.push(addPromise);
 
             this._setListener();
             this._setTransform();
