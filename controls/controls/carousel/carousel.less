@@ -50,49 +50,49 @@
                 .transition(@transition);
             }
         }
-    }
 
-    .plat-back-arrow,
-    .plat-forward-arrow {
-        position: absolute;
-        text-align: center;
-        color: @arrow-color;
-        cursor: pointer;
-        font-size: @arrow-font-size;
-        .box-sizing(border-box);
-
-        .plat-icon-arrow-down,
-        .plat-icon-arrow-up,
-        .plat-icon-arrow-left,
-        .plat-icon-arrow-right {
-            display: inline-block;
-            vertical-align: middle;
+        .plat-back-arrow,
+        .plat-forward-arrow {
             position: absolute;
-            height: 0.55em;
-            width: 100%;
-            left: 0;
-            top: 50%;
-            font-family: "platypus-icons";
-            font-weight: bold;
-            font-style: normal;
-            font-variant: normal;
-            font-size: inherit;
-            speak: none;
-            text-decoration: inherit;
-            text-transform: none;
-            line-height: normal;
-            .translate-accelerate(0;-50%);
-            .webkit-touch-additions();
-        }
+            text-align: center;
+            color: @arrow-color;
+            cursor: pointer;
+            font-size: @arrow-font-size;
+            .box-sizing(border-box);
 
-        .plat-icon-arrow-down::before { content: "\e815"; }
-        .plat-icon-arrow-left::before { content: "\e816"; }
-        .plat-icon-arrow-right::before { content: "\e817"; }
-        .plat-icon-arrow-up::before { content: "\e818"; }
+            .plat-icon-arrow-down,
+            .plat-icon-arrow-up,
+            .plat-icon-arrow-left,
+            .plat-icon-arrow-right {
+                display: inline-block;
+                vertical-align: middle;
+                position: absolute;
+                height: 0.55em;
+                width: 100%;
+                left: 0;
+                top: 50%;
+                font-family: "platypus-icons";
+                font-weight: bold;
+                font-style: normal;
+                font-variant: normal;
+                font-size: inherit;
+                speak: none;
+                text-decoration: inherit;
+                text-transform: none;
+                line-height: normal;
+                .translate-accelerate(0;-50%);
+                .webkit-touch-additions();
+            }
 
-        &:active,
-        &:hover {
-            color: @arrow-active-color;
+            .plat-icon-arrow-down::before { content: "\e815"; }
+            .plat-icon-arrow-left::before { content: "\e816"; }
+            .plat-icon-arrow-right::before { content: "\e817"; }
+            .plat-icon-arrow-up::before { content: "\e818"; }
+
+            &:active,
+            &:hover {
+                color: @arrow-active-color;
+            }
         }
     }
 
@@ -103,21 +103,21 @@
                     display: inline-block;
                 }
             }
-        }
 
-        .plat-back-arrow,
-        .plat-forward-arrow {
-            top: 0;
-            width: @arrow-width;
-            height: @arrow-length;
-        }
+            .plat-back-arrow,
+            .plat-forward-arrow {
+                top: 0;
+                width: @arrow-width;
+                height: @arrow-length;
+            }
 
-        .plat-back-arrow {
-            left: 0;
-        }
+            .plat-back-arrow {
+                left: 0;
+            }
 
-        .plat-forward-arrow {
-            right: 0;
+            .plat-forward-arrow {
+                right: 0;
+            }
         }
     }
 
@@ -128,21 +128,21 @@
                     display: block;
                 }
             }
-        }
 
-        .plat-back-arrow,
-        .plat-forward-arrow {
-            left: 0;
-            width: @arrow-length;
-            height: @arrow-width;
-        }
+            .plat-back-arrow,
+            .plat-forward-arrow {
+                left: 0;
+                width: @arrow-length;
+                height: @arrow-width;
+            }
 
-        .plat-back-arrow {
-            top: 0;
-        }
+            .plat-back-arrow {
+                top: 0;
+            }
 
-        .plat-forward-arrow {
-            bottom: 0;
+            .plat-forward-arrow {
+                bottom: 0;
+            }
         }
     }
 }
