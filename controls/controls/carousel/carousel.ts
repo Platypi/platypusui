@@ -621,7 +621,7 @@ module platui {
                 }]);
 
                 if (utils.isArray(newValue) && newValue.length > 0) {
-                    this.goToIndex(0);
+                    this._initializeIndex(0);
                 }
 
                 return;
@@ -746,7 +746,7 @@ module platui {
 
                 var length = this._getLength();
                 if (!length) {
-                    return this.goToIndex(index + 1, true);
+                    return this.goToIndex(this._nextIndex, true);
                 }
 
                 return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
@@ -802,7 +802,7 @@ module platui {
 
                 var length = this._getLength();
                 if (!length) {
-                    return this.goToIndex(index - 1, true);
+                    return this.goToIndex(this._previousIndex, true);
                 }
 
                 return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
@@ -1405,10 +1405,10 @@ module platui {
             var innerNodesCleared = this._clearInnerNodes(),
                 nodeLength = this._itemNodes.length;
 
-            if (index < 0) {
-                index = 0;
-            } else if (this._itemNodes.length === 0) {
+            if (this._itemNodes.length === 0) {
                 index = -1;
+            } else if (index < 0) {
+                index = 0;
             }
 
             this._index = index;
