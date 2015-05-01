@@ -247,7 +247,7 @@ module platui {
          * @description
          * The current index seen in the {@link platui.Carousel|Carousel}.
          */
-        protected _index = 0;
+        protected _index = -1;
 
         /**
          * @name _previousIndex
@@ -597,14 +597,33 @@ module platui {
          * 
          * @returns {void}
          */
-        contextChanged(newValue: Array<any>, oldvalue: Array<any>): void {
-            var _utils = this.utils;
-            if (_utils.isFunction(this._onLoad)) {
-                this._verifyLength();
+        contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
+            var utils = this.utils;
+            if (utils.isFunction(this._onLoad)) {
+                if (utils.isEmpty(newValue)) {
+                    if (!utils.isEmpty(oldValue)) {
+                        this._Promise.all(this._addQueue).then((): void => {
+                            this._removeItems(0, this.controls.length);
+                        });
+                    }
 
-                if (_utils.isArray(newValue) && newValue.length > 0) {
+                    this._verifyLength();
+                    return;
+                } else if (!utils.isArray(newValue)) {
+                    var _Exception = this._Exception;
+                    _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                    return;
+                }
+
+                this._executeEvent([{
+                    object: newValue || [],
+                    type: 'splice'
+                }]);
+
+                if (utils.isArray(newValue) && newValue.length > 0) {
                     this.goToIndex(0);
                 }
+
                 return;
             }
 
@@ -834,10 +853,22 @@ module platui {
             return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
                 var oldIndex = this._index;
                 if (this.utils.isUndefined(oldIndex)) {
-                    this._index = oldIndex = 0;
-                }
+                    this._initializeIndex(0);
+                    this.inputChanged(this._index, index);
 
-                if (index === oldIndex) {
+                    if (!this._isInfinite) {
+                        if (index < this.context.length - 1) {
+                            if (this._selfPause) {
+                                this.resume();
+                            }
+                        } else if (this._isAuto && !this._isPaused) {
+                            this.pause();
+                            this._selfPause = true;
+                        }
+                    }
+
+                    return this._Promise.resolve(true);
+                } else if (index === oldIndex) {
                     return this._Promise.resolve(false);
                 } else if (direct === true) {
                     this._initializeIndex(index);
@@ -1088,11 +1119,9 @@ module platui {
 
                 // if no remove listeners exist we know that we had previously removed them.
                 if (this._removeListeners.length === 0) {
-                    this.itemsLoaded.then((): void => {
-                        this._addEventListeners();
-                        this._initializeIndex(0);
-                        this.inputChanged(0, index);
-                    });
+                    this._addEventListeners();
+                    this._initializeIndex(0);
+                    this.inputChanged(0, index);
 
                     return;
                 }
@@ -1373,7 +1402,14 @@ module platui {
          * @returns {boolean} Whether or not initialization was a success.
          */
         protected _initializeIndex(index: number): boolean {
-            var innerNodesCleared = this._clearInnerNodes();
+            var innerNodesCleared = this._clearInnerNodes(),
+                nodeLength = this._itemNodes.length;
+
+            if (index < 0) {
+                index = 0;
+            } else if (this._itemNodes.length === 0) {
+                index = -1;
+            }
 
             this._index = index;
             this._setIndexWindow();
