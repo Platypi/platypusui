@@ -18,7 +18,6 @@
     .box-sizing(border-box);
     .misc-webkit-touch();
     .user-select();
-    .touch-action();
 
     .plat-modal-container {
         position: absolute;
@@ -39,9 +38,9 @@
             .translateZ(0);
 
             &.plat-right {
-                .transition(@right-transition);
                 top: 0;
                 left: -100%;
+                .transition(@right-transition);
 
                 &.plat-activate {
                     left: 0;
@@ -49,9 +48,9 @@
             }
 
             &.plat-left {
-                .transition(@left-transition);
                 top: 0;
                 right: -100%;
+                .transition(@left-transition);
 
                 &.plat-activate {
                     right: 0;
@@ -59,9 +58,9 @@
             }
 
             &.plat-down {
-                .transition(@down-transition);
                 top: -100%;
                 left: 0;
+                .transition(@down-transition);
 
                 &.plat-activate {
                     top: 0;
@@ -69,9 +68,9 @@
             }
 
             &.plat-up {
-                .transition(@up-transition);
                 bottom: -100%;
                 left: 0;
+                .transition(@up-transition);
 
                 &.plat-activate {
                     bottom: 0;
@@ -89,15 +88,17 @@
         }
     }
 
-    &.modal-halfwidth {
+    &.modal-custom-width {
+        #platui > #Modal > #custom-width;
+
         .plat-modal-container {
-            width: 50%;
+            width: @width;
             height: 100%;
 
             &.plat-no-transition,
             &.plat-modal-transition.plat-fade {
                 top: 0;
-                left: @left;
+                left: @x-offset;
             }
 
             &.plat-modal-transition {
@@ -106,7 +107,7 @@
                     left: -50%;
 
                     &.plat-activate {
-                        left: @left;
+                        left: @x-offset;
                     }
                 }
 
@@ -115,13 +116,13 @@
                     right: -50%;
 
                     &.plat-activate {
-                        right: @left;
+                        right: @x-offset;
                     }
                 }
 
                 &.plat-down {
                     top: -100%;
-                    left: @left;
+                    left: @x-offset;
 
                     &.plat-activate {
                         top: 0;
@@ -130,7 +131,7 @@
 
                 &.plat-up {
                     bottom: -100%;
-                    left: @left;
+                    left: @x-offset;
 
                     &.plat-activate {
                         bottom: 0;
@@ -170,20 +171,22 @@
         }
     }
 
-    &.modal-halfheight {
+    &.modal-custom-height {
+        #platui > #Modal > #custom-height;
+
         .plat-modal-container {
             width: 100%;
             height: 50%;
 
             &.plat-no-transition,
             &.plat-modal-transition.plat-fade {
-                top: @top;
+                top: @y-offset;
                 left: 0;
             }
 
             &.plat-modal-transition {
                 &.plat-right {
-                    top: @top;
+                    top: @y-offset;
                     left: -100%;
 
                     &.plat-activate {
@@ -192,7 +195,7 @@
                 }
 
                 &.plat-left {
-                    top: @top;
+                    top: @y-offset;
                     right: -100%;
 
                     &.plat-activate {
@@ -205,7 +208,7 @@
                     left: 0;
 
                     &.plat-activate {
-                        top: @top;
+                        top: @y-offset;
                     }
                 }
 
@@ -214,7 +217,7 @@
                     left: 0;
 
                     &.plat-activate {
-                        bottom: @top;
+                        bottom: @y-offset;
                     }
                 }
             }
@@ -251,51 +254,53 @@
         }
     }
 
-    &.modal-half {
+    &.modal-custom {
+        #platui > #Modal > #custom;
+
         .plat-modal-container {
-            width: 50%;
-            height: 50%;
+            width: @width;
+            height: @height;
 
             &.plat-no-transition,
             &.plat-modal-transition.plat-fade {
-                top: @top;
-                left: @left;
+                top: @y-offset;
+                left: @x-offset;
             }
 
             &.plat-modal-transition {
-                &.plat-right {
-                    top: @top;
-                    left: -50%;
+                .plat-right {
+                    top: @y-offset;
+                    left: -@x-offset;
 
                     &.plat-activate {
-                        left: @left;
+                        left: @x-offset;
                     }
                 }
 
                 &.plat-left {
-                    top: @top;
-                    right: -50%;
+                    top: @y-offset;
+                    right: -@width;
 
                     &.plat-activate {
-                        right: @left;
+                        right: @x-offset;
                     }
                 }
 
                 &.plat-down {
-                    top: -50%;
-                    left: @left;
+                    top: -@height;
+                    left: @x-offset;
 
                     &.plat-activate {
-                        top: @top;
+                        top: @y-offset;
                     }
                 }
 
                 &.plat-up {
-                    bottom: -50%;
-                    left: @left;
+                    bottom: -@height;
+                    left: @x-offset;
 
                     &.plat-activate {
-                        bottom: @top;
+                        bottom: @y-offset;
                     }
                 }
             }
@@ -328,7 +333,7 @@
                             right: 50%;
                         }
                     }
-                    
+
                     &.plat-down {
                         left: 50%;
                         .translate-accelerate(-50%;-50%);
@@ -345,83 +350,6 @@
                         &.plat-activate {
                             bottom: 50%;
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    &.modal-custom {
-        .plat-modal-container {
-            width: @width;
-            height: @height;
-
-            &.plat-no-transition,
-            &.plat-modal-transition.plat-fade {
-                top: @top;
-                left: @left;
-            }
-
-            &.plat-modal-transition {
-                .plat-right {
-                    top: @top;
-                    left: -@width;
-
-                    &.plat-activate {
-                        left: @left;
-                    }
-                }
-
-                &.plat-left {
-                    top: @top;
-                    right: -@width;
-
-                    &.plat-activate {
-                        right: @left;
-                    }
-                }
-
-                &.plat-down {
-                    top: -@height;
-                    left: @left;
-
-                    &.plat-activate {
-                        top: @top;
-                    }
-                }
-
-                &.plat-up {
-                    bottom: -@height;
-                    left: @left;
-
-                    &.plat-activate {
-                        bottom: @top;
-                    }
-                }
-            }
-        }
-
-        &.modal-centered {
-            .plat-modal-container {
-                &.plat-no-transition,
-                &.plat-modal-transition.plat-fade {
-                    top: 50%;
-                    left: 50%;
-                    .translate-accelerate(-50%;-50%);
-                }
-                
-                &.plat-modal-transition {
-                    &.plat-right,
-                    &.plat-down {
-                        .translate-accelerate(-50%;-50%);
-                    }
-
-                    &.plat-left {
-                        .translate-accelerate(50%;-50%);
-                    }
-
-                    &.plat-up {
-                        .translate-accelerate(-50%;50%);
                     }
                 }
             }

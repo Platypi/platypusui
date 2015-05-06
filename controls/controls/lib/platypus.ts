@@ -1,6 +1,6 @@
 /* tslint:disable */
 /**
- * PlatypusTS v0.12.13 (http://getplatypi.com) 
+ * PlatypusTS v0.13.0 (http://getplatypi.com) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusTS is licensed under the GPL-3.0 found at  
@@ -14318,7 +14318,7 @@ module plat {
              * An object containing the event types for all of the 
              * supported gestures. 
              */ 
-            gestures: IGestures<string> = { 
+            static gestures: IGestures<string> = { 
                 $tap: __tap, 
                 $dbltap: __dbltap, 
                 $hold: __hold, 
@@ -14335,6 +14335,12 @@ module plat {
                 $trackdown: __trackdown, 
                 $trackend: __trackend 
             }; 
+ 
+            /** 
+             * An object containing the event types for all of the 
+             * supported gestures. 
+             */ 
+            protected _gestures: IGestures<string> = DomEvents.gestures; 
  
             /** 
              * Reference to the Document injectable. 
@@ -14551,7 +14557,7 @@ module plat {
                     mappedCount = this.__mappedCount, 
                     mappedRemoveListener = noop, 
                     mappedTouchRemoveListener = noop, 
-                    gestures = this.gestures, 
+                    gestures = this._gestures, 
                     listenerRemoved = false; 
  
                 if (mappingExists) { 
@@ -14662,7 +14668,7 @@ module plat {
                 if (this.__touchCount++ > 0) { 
                     return true; 
                 } 
- 
+            
                 var eventType = ev.type; 
                 if (eventType !== 'mousedown') { 
                     this._inTouch = true; 
@@ -14687,7 +14693,7 @@ module plat {
                     clientY = ev.clientY, 
                     timeStamp = ev.timeStamp, 
                     target = ev.target, 
-                    gestures = this.gestures; 
+                    gestures = this._gestures; 
  
                 this.__lastTouchDown = { 
                     _buttons: ev._buttons, 
@@ -14738,7 +14744,7 @@ module plat {
                     }, holdInterval); 
                     return true; 
                 } else if (noRelease) { 
-                    domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this.gestures.$hold); 
+                    domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this._gestures.$hold); 
                     if ((domEventFound = !isNull(domEvent))) { 
                         subscribeFn = (): void => { 
                             domEvent.trigger(ev); 
@@ -14748,7 +14754,7 @@ module plat {
                 } else { 
                     this.__hasRelease = false; 
                     // has both hold and release events registered 
-                    domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this.gestures.$hold); 
+                    domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this._gestures.$hold); 
                     if ((domEventFound = !isNull(domEvent))) { 
                         subscribeFn = (): void => { 
                             domEvent.trigger(ev); 
@@ -14772,7 +14778,6 @@ module plat {
                 // clear hold event 
                 this.__cancelDeferredHold(); 
                 this.__cancelDeferredHold = noop; 
- 
                 // return immediately if there are multiple touches present, or 
                 // if it is a mouse event and currently in a touch 
                 if (this._inTouch === true && ev.type === 'mousemove') { 
@@ -14833,9 +14838,16 @@ module plat {
              */ 
             protected _onTouchEnd(ev: IPointerEvent): boolean { 
                 var eventType = ev.type, 
-                    hasMoved = this.__hasMoved; 
+                    hasMoved = this.__hasMoved, 
+                    notMouseUp = eventType !== 'mouseup'; 
  
-                if (eventType !== 'mouseup') { 
+                this.__touchCount--; 
+ 
+                if (this.__touchCount < 0) { 
+                    this.__touchCount = 0; 
+                } 
+ 
+                if (notMouseUp) { 
                     // all non mouse cases 
                     if (eventType === 'touchend') { 
                         // all to handle a strange issue when touch clicking certain types 
@@ -14862,8 +14874,6 @@ module plat {
  
                         this.__preventClickFromTouch(); 
                     } 
- 
-                    this._inTouch = false; 
                 } else if (!isUndefined(this._inTouch)) { 
                     if (!this._inMouse) { 
                         // this is case where touchend fired and now 
@@ -14884,13 +14894,14 @@ module plat {
  
                 // standardizeEventObject creates touches 
                 ev = this.__standardizeEventObject(ev); 
+ 
                 if (isNull(ev)) { 
                     return true; 
+                } else if (notMouseUp) { 
+                    this._inTouch = false; 
                 } 
  
                 this.__clearTempStates(); 
- 
-                this.__touchCount = ev.touches.length; 
  
                 // handle release event 
                 if (this.__hasRelease) { 
@@ -14973,6 +14984,7 @@ module plat {
                     index = this.__getTouchIndex(touches); 
  
                 ev = index >= 0 ? touches[index] : this.__standardizeEventObject(ev); 
+                this._inTouch = false; 
                 this.__clearTempStates(); 
                 if (this.__hasMoved) { 
                     // Android 4.4.x fires touchcancel when the finger moves off an element that 
@@ -14997,7 +15009,7 @@ module plat {
                     return; 
                 } 
  
-                var gestures = this.gestures, 
+                var gestures = this._gestures, 
                     domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, gestures.$tap); 
  
                 if (isNull(domEvent)) { 
@@ -15037,7 +15049,7 @@ module plat {
                     return; 
                 } 
  
-                var domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this.gestures.$dbltap); 
+                var domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this._gestures.$dbltap); 
                 if (isNull(domEvent)) { 
                     return; 
                 } 
@@ -15053,7 +15065,7 @@ module plat {
              * @param {plat.ui.IPointerEvent} ev The touch end event object. 
              */ 
             private __handleRelease(ev: IPointerEvent): void { 
-                var domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this.gestures.$release); 
+                var domEvent = this.__findFirstSubscriber(<ICustomElement>ev.target, this._gestures.$release); 
                 if (!isNull(domEvent)) { 
                     domEvent.trigger(ev); 
                 } 
@@ -15095,7 +15107,7 @@ module plat {
              * used for preventing default in the case of an ANDROID device. 
              */ 
             private __handleTrack(ev: IPointerEvent, originalEv: IPointerEvent): void { 
-                var gestures = this.gestures, 
+                var gestures = this._gestures, 
                     trackGesture = gestures.$track, 
                     direction = ev.direction, 
                     eventTarget = this.__capturedTarget || <ICustomElement>ev.target; 
@@ -15134,7 +15146,7 @@ module plat {
                 } 
  
                 var eventTarget = this.__capturedTarget || <ICustomElement>ev.target, 
-                    domEvent = this.__findFirstSubscriber(eventTarget, this.gestures.$trackend); 
+                    domEvent = this.__findFirstSubscriber(eventTarget, this._gestures.$trackend); 
                 if (isNull(domEvent)) { 
                     return; 
                 } 
@@ -15492,7 +15504,7 @@ module plat {
              */ 
             private __removeEventListener(element: ICustomElement, type: string, listener: IGestureListener, 
                 useCapture?: boolean): void { 
-                var gestures = this.gestures; 
+                var gestures = this._gestures; 
  
                 element.removeEventListener(type, listener, useCapture); 
  
@@ -15755,7 +15767,7 @@ module plat {
                 } 
  
                 var origin = this.__swipeOrigin, 
-                    gestures = this.gestures, 
+                    gestures = this._gestures, 
                     swipes = [gestures.$swipe, gestures.$swipedown, gestures.$swipeleft, gestures.$swiperight, gestures.$swipeup]; 
  
                 if (!xSame) { 
@@ -15788,7 +15800,7 @@ module plat {
              */ 
             private __getRegisteredSwipes(direction: IDirection, velocity: IVelocity, dx: number, dy: number): Array<DomEvent> { 
                 var swipeTarget: ICustomElement, 
-                    swipeGesture = this.gestures.$swipe, 
+                    swipeGesture = this._gestures.$swipe, 
                     minSwipeVelocity = DomEvents.config.velocities.minSwipeVelocity, 
                     events = [swipeGesture], 
                     origin = (this.__swipeOrigin || <ISwipeOriginProperties>{}); 
@@ -20550,7 +20562,7 @@ module plat {
              * A TemplateControl for adding HTML to the 
              * DOM through bound context strings. 
              */ 
-            export class Html extends TemplateControl { 
+            export class InnerHtml extends TemplateControl { 
                 /** 
                  * Loads the DOM with the new HTML String. 
                  */ 
@@ -20572,7 +20584,7 @@ module plat {
                 } 
             } 
  
-            register.control(__Html, Html); 
+            register.control(__Html, InnerHtml); 
  
  
  

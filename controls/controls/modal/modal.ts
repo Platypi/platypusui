@@ -303,6 +303,22 @@ module platui {
         }
 
         /**
+         * @name dispose
+         * @memberof platui.Modal
+         * @kind function
+         * @access public
+         * 
+         * @description
+         * Clean up the auto scroll.
+         * 
+         * @returns {void}
+         */
+        dispose(): void {
+            super.dispose();
+            this._scrollRemover();
+        }
+
+        /**
          * @name show
          * @memberof platui.Modal
          * @kind function
@@ -499,29 +515,23 @@ module platui {
                 isNull = utils.isNull,
                 _document = this._document,
                 documentEl = _document.documentElement,
-                scrollEl = isNull(documentEl) || !documentEl.scrollHeight ? _document.body : documentEl;
+                scrollEl = isNull(documentEl) || !documentEl.scrollTop ? _document.body : documentEl,
+                scrollTop = scrollEl.scrollTop;
 
-            if (!scrollEl.scrollHeight) {
-                return;
-            } else if (!isNull(ev)) {
-                if (this._scrollTop !== scrollEl.scrollTop) {
-                    utils.requestAnimationFrame(() => {
-                        var scrollTop = scrollEl.scrollTop;
-                        this.element.style.top = scrollTop + 'px';
-                        this._scrollTop = scrollTop;
-                    });
-                    this._scrollTop = scrollEl.scrollTop;
-                }
+            if (this._scrollTop === scrollTop) {
                 return;
             }
 
-            if (this._scrollTop !== scrollEl.scrollTop) {
-                var top = scrollEl.scrollTop;
-                this.element.style.top = top + 'px';
-                this._scrollTop = top;
+            if (!isNull(ev)) {
+                utils.requestAnimationFrame((): void => {
+                    this.element.style.top = scrollTop + 'px';
+                });
+            } else {
+                this.element.style.top = scrollTop + 'px';
+                this._scrollRemover = this.addEventListener(this._window, 'scroll', this._alignModal, false);
             }
 
-            this._scrollRemover = this.addEventListener(this._window, 'scroll', this._alignModal, false);
+            this._scrollTop = scrollTop;
         }
 
         /**

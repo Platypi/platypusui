@@ -11,13 +11,22 @@
 
     /// =========== Modal Sizes =========== ///
 
-        @width: 100%;
-        @height: 50%;
-        
-    /// =========== Modal Positions =========== ///
+        #custom-height {
+            @height: 50%;
+            @y-offset: 0%;
+        }
+    
+        #custom-width {
+            @width: 50%;
+            @x-offset: 0%;
+        }
 
-        @left: 0%;
-        @top: 0%;
+        #custom {
+            @width: 50%;
+            @height: 50%;
+            @x-offset: 0%;
+            @y-offset: 0%;
+        }
         
     /// =========== Modal Transitions =========== ///
 
@@ -27,7 +36,7 @@
         @down-transition: top 500ms;
         @fade-transition: opacity 300ms;
 
-    /// =========== Modal Popover =========== ///
+    /// =========== Modal Prompt =========== ///
 
 	    @prompt-top: 20%;
 	    @prompt-body-color: @pale-grey;
