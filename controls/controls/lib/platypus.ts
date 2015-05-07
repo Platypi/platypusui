@@ -339,19 +339,47 @@ module plat {
     
     function noop(): void { } 
     
-    function extend(destination: any, ...sources: any[]): any { 
+    function _defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean, writable?: boolean): void { 
+        Object.defineProperty(obj, key, { 
+            value: value, 
+            enumerable: enumerable === true, 
+            configurable: configurable === true, 
+            writable: writable === true 
+        }); 
+    } 
+    
+    function _defineGetter(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void { 
+        Object.defineProperty(obj, key, { 
+            get: (): any => value, 
+            enumerable: enumerable === true, 
+            configurable: configurable === true 
+        }); 
+    } 
+    
+    function _extend(deep: boolean, redefine: any, destination: any, ...sources: any[]): any { 
         if (isNull(destination)) { 
             return destination; 
         } 
     
-        var deep = isBoolean(destination); 
+        var keys: Array<string>, 
+            property: any, 
+            define: (obj: any, key: string, value: any) => void; 
     
-        if (deep) { 
-            destination = sources.shift(); 
+        if (isFunction(redefine)) { 
+            define = redefine; 
+        } else if (redefine) { 
+            define = (obj: any, key: string, value: any) => { 
+                _defineProperty(obj, key, value, true, true, true); 
+            }; 
+        } else { 
+            define = (obj: any, key: string, value: any) => { 
+                obj[key] = value; 
+            }; 
         } 
     
-        var keys: Array<string>, 
-            property: any; 
+        if (isEmpty(sources)) { 
+            sources.push(destination); 
+        } 
     
         forEach((source, k): void => { 
             if (!isObject(source)) { 
@@ -364,31 +392,27 @@ module plat {
                 property = source[key]; 
                 if (deep) { 
                     if (isArray(property)) { 
-                        extend(deep, destination[key] || (destination[key] = []), property); 
+                        _extend(deep, define, destination[key] || (destination[key] = []), property); 
                         return; 
                     } else if (isDate(property)) { 
-                        destination[key] = new Date(property.getTime()); 
+                        define(destination, key, new Date(property.getTime())); 
                         return; 
                     } else if (isRegExp(property)) { 
-                        destination[key] = new RegExp(property); 
+                        define(destination, key, new RegExp(property)); 
                         return; 
                     } else if (isNode(property)) { 
-                        destination[key] = (<Node>property).cloneNode(true); 
+                        define(destination, key, (<Node>property).cloneNode(true)); 
                         return; 
                     } else if (isObject(property)) { 
-                        extend(deep, destination[key] || (destination[key] = {}), property); 
+                        _extend(deep, define, destination[key] || (destination[key] = {}), property); 
                         return; 
                     } 
                 } 
-                destination[key] = property; 
+                define(destination, key, property); 
             }, keys); 
         }, sources); 
     
         return destination; 
-    } 
-    
-    function deepExtend(destination: any, ...sources: any[]): any { 
-        return extend.apply(null, [true, destination].concat(sources)); 
     } 
     
     function _clone(obj: any, deep?: boolean): any { 
@@ -411,10 +435,10 @@ module plat {
         } 
     
         if (isBoolean(deep) && deep) { 
-            return deepExtend(type, obj); 
+            return _extend(true, false, type, obj); 
         } 
     
-        return extend(type, obj); 
+        return _extend(false, false, type, obj); 
     } 
     
     function isError(obj: any): boolean { 
@@ -863,7 +887,7 @@ module plat {
             td: __tableData, 
             th: __tableData 
         }, 
-        __innerHtmlWrappers: plat.IObject<Array<any>> = extend({}, __innerTableWrappers, { 
+        __innerHtmlWrappers: plat.IObject<Array<any>> = _extend(false, false, {}, __innerTableWrappers, { 
             option: __option, 
             optgroup: __option, 
             legend: [1, '<fieldset>', '</fieldset>'], 
@@ -1806,7 +1830,7 @@ module plat {
  
                 var toInject = _clone(Constructor._inject, true); 
  
-                return extend({}, extendWith, parentInject, toInject); 
+                return _extend(false, false, {}, extendWith, parentInject, toInject); 
             } 
  
             /** 
@@ -2969,7 +2993,7 @@ module plat {
          * destination object. 
          */ 
         extend(destination: any, ...sources: any[]): any { 
-            return extend.apply(null, [destination].concat(sources)); 
+            return _extend.apply(null, [false, false, destination].concat(sources)); 
         } 
  
         /** 
@@ -2982,7 +3006,7 @@ module plat {
          * destination object. 
          */ 
         deepExtend(destination: any, ...sources: any[]): any { 
-            return extend.apply(null, [true, destination].concat(sources)); 
+            return _extend.apply(null, [true, false, destination].concat(sources)); 
         } 
  
         /** 
@@ -6461,7 +6485,7 @@ module plat {
              * @param {plat.async.IHttpConfig} options The IHttpConfigStatic used to customize this HttpRequest. 
              */ 
             initialize(options: IHttpConfig): void { 
-                this.__options = extend({}, this._config, options); 
+                this.__options = _extend(false, false, {}, this._config, options); 
             } 
  
             /** 
@@ -7597,7 +7621,7 @@ module plat {
              */ 
             json<R>(options: IHttpConfig): AjaxPromise<R> { 
                 var request: HttpRequest = acquire(__HttpRequestInstance); 
-                request.initialize(extend({}, options, { responseType: 'json' })); 
+                request.initialize(_extend(false, false, {}, options, { responseType: 'json' })); 
                 return request.execute<R>(); 
             } 
         } 
@@ -8453,11 +8477,9 @@ module plat {
             /** 
              * Removes all the listeners for a given control's unique ID. 
              * @param {plat.Control} control The control whose manager is being disposed. 
-             * @param {boolean} persist? Whether or not the control's context needs to 
-             * be persisted post-disposal or can be set to null. 
              */ 
-            static dispose(control: Control, persist?: boolean): void; 
-            static dispose(control: ui.TemplateControl, persist?: boolean): void { 
+            static dispose(control: Control): void; 
+            static dispose(control: ui.TemplateControl): void { 
                 if (isNull(control)) { 
                     return; 
                 } 
@@ -8486,8 +8508,8 @@ module plat {
                 deleteProperty(controls, uid); 
  
                 if (!isNull(control.context)) { 
-                    ContextManager.defineProperty(control, __CONTEXT, 
-                        persist === true ? _clone(control.context, true) : null, true, true, true); 
+                    ContextManager.unObserve(control.context); 
+                    ContextManager.defineProperty(control, __CONTEXT, control.context, true, true, true); 
                 } 
             } 
  
@@ -8538,12 +8560,7 @@ module plat {
              * @param {boolean} writable? Whether or not assignment operators work on the property. 
              */ 
             static defineProperty(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean, writable?: boolean): void { 
-                Object.defineProperty(obj, key, { 
-                    value: value, 
-                    enumerable: enumerable === true, 
-                    configurable: configurable === true, 
-                    writable: writable === true 
-                }); 
+                _defineProperty(obj, key, value, enumerable, configurable, writable); 
             } 
  
             /** 
@@ -8556,11 +8573,7 @@ module plat {
              * @param {boolean} configurable? Whether or not the property is able to be reconfigured. 
              */ 
             static defineGetter(obj: any, key: string, value: any, enumerable?: boolean, configurable?: boolean): void { 
-                Object.defineProperty(obj, key, { 
-                    get: (): any => value, 
-                    enumerable: enumerable === true, 
-                    configurable: configurable === true 
-                }); 
+                _defineGetter(obj, key, value, enumerable, configurable); 
             } 
  
             /** 
@@ -8683,6 +8696,14 @@ module plat {
                 } 
  
                 return context; 
+            } 
+ 
+            /** 
+             * Iterates through all the nested properties in an object and redefines the properties to not use getters/setters 
+             * @param {any} obj The object to stop observing. 
+             */ 
+            static unObserve(obj: any): void { 
+                _extend(true, true, obj); 
             } 
  
             /** 
@@ -9197,10 +9218,6 @@ module plat {
                         this._define(binding, newParent, key); 
                     } 
  
-                    if (!(isNull(oldChild) || (isArray(oldParent) && keyIsLength))) { 
-                        ContextManager.defineProperty(oldParent, key, oldChild, true, true, true); 
-                    } 
- 
                     this._execute(binding, newChild, oldChild); 
                 } 
  
@@ -9318,6 +9335,10 @@ module plat {
                             index = newLength; 
                             removed = oldLength > 0 ? [returnValue] : []; 
                         } 
+                    } 
+ 
+                    if (isShift || isSplice || method === 'pop') { 
+                        ContextManager.unObserve(returnValue); 
                     } 
  
                     var keys = Object.keys(callbackObjects), 
@@ -9443,6 +9464,8 @@ module plat {
                         if (this.__isArrayFunction) { 
                             return; 
                         } 
+ 
+                        ContextManager.unObserve(oldValue); 
  
                         var props = this.__identifierHash[identifier], 
                             childPropertiesExist = false, 
@@ -9625,10 +9648,8 @@ module plat {
             /** 
              * Removes all the listeners for a given control's unique ID. 
              * @param {plat.Control} control The control whose manager is being disposed. 
-             * @param {boolean} persist? Whether or not the control's context needs to 
-             * be persisted post-disposal or can be set to null. 
              */ 
-            dispose(control: Control, persist?: boolean): void; 
+            dispose(control: Control): void; 
  
             /** 
              * Removes all listeners for an Array associated with a given uid. 
@@ -12257,7 +12278,7 @@ module plat {
  
                 deleteProperty(TemplateControl.__resourceCache, control.uid); 
  
-                Control._ContextManager.dispose(control, true); 
+                Control._ContextManager.dispose(control); 
                 events.EventManager.dispose(control.uid); 
  
                 TemplateControl._managerCache.remove(control.uid); 
@@ -14841,10 +14862,10 @@ module plat {
                     hasMoved = this.__hasMoved, 
                     notMouseUp = eventType !== 'mouseup'; 
  
-                this.__touchCount--; 
- 
-                if (this.__touchCount < 0) { 
+                if (this.__touchCount <= 0) { 
                     this.__touchCount = 0; 
+                } else { 
+                    this.__touchCount--; 
                 } 
  
                 if (notMouseUp) { 
@@ -14899,6 +14920,11 @@ module plat {
                     return true; 
                 } else if (notMouseUp) { 
                     this._inTouch = false; 
+                } 
+ 
+                // additional check for mousedown/touchstart - mouseup/touchend inconsistencies 
+                if (this.__touchCount > 0) { 
+                    this.__touchCount = ev.touches.length; 
                 } 
  
                 this.__clearTempStates(); 
@@ -14986,6 +15012,7 @@ module plat {
                 ev = index >= 0 ? touches[index] : this.__standardizeEventObject(ev); 
                 this._inTouch = false; 
                 this.__clearTempStates(); 
+ 
                 if (this.__hasMoved) { 
                     // Android 4.4.x fires touchcancel when the finger moves off an element that 
                     // is listening for touch events, so we should handle swipes here in that case. 
@@ -14995,6 +15022,7 @@ module plat {
  
                     this.__handleTrackEnd(ev); 
                 } 
+ 
                 this.__resetTouchEnd(); 
             } 
  
@@ -16152,7 +16180,7 @@ module plat {
             trigger(eventExtension?: Object, detailArg?: any, dispatchElement?: Node): boolean { 
                 var customEv = <CustomEvent>this._document.createEvent(this.eventType); 
                 if (isObject(eventExtension)) { 
-                    extend(customEv, eventExtension); 
+                    _extend(false, false, customEv, eventExtension); 
                 } 
                 customEv.initCustomEvent(this.event, true, true, isNull(detailArg) ? 0 : detailArg); 
                 return <boolean>(dispatchElement || this.element).dispatchEvent(customEv); 
@@ -19332,9 +19360,10 @@ module plat {
                 protected _addQueue: Array<async.IThenable<void>> = []; 
  
                 /** 
-                 * The number of items currently being added. 
+                 * The number of items currently in the list or in the process of being added 
+                 * or removed from the list. 
                  */ 
-                protected _addCount = 0; 
+                protected _itemLength = 0; 
  
                 /** 
                  * Whether or not the Array listener has been set. 
@@ -19421,14 +19450,11 @@ module plat {
                     var addQueue = this._addQueue, 
                         itemCount = context.length; 
  
-                    this._addCount += itemCount; 
                     var addPromise = this._addItems(0, itemCount, 0).then((): void => { 
                         var index = addQueue.indexOf(addPromise); 
                         if (index !== -1) { 
                             addQueue.splice(index, 1); 
                         } 
- 
-                        this._addCount -= itemCount; 
                     }); 
  
                     addQueue.push(addPromise); 
@@ -19477,6 +19503,8 @@ module plat {
                     var max = +(index + numberOfItems), 
                         promises: Array<async.IThenable<DocumentFragment>> = [], 
                         initialIndex = index; 
+ 
+                    this._itemLength += numberOfItems; 
  
                     while (index < max) { 
                         promises.push(this._bindItem(index++)); 
@@ -19663,14 +19691,11 @@ module plat {
                         addQueue = this._addQueue, 
                         itemCount = change.addedCount; 
  
-                    this._addCount += itemCount; 
                     var addPromise = this._addItems(change.index, itemCount, this._animate ? itemCount : 0).then((): void => { 
                         var index = addQueue.indexOf(addPromise); 
                         if (index !== -1) { 
                             addQueue.splice(index, 1); 
                         } 
- 
-                        this._addCount -= itemCount; 
                     }); 
  
                     addQueue.push(addPromise); 
@@ -19689,8 +19714,8 @@ module plat {
                     } 
  
                     var removeIndex = change.object.length; 
-                    if (this._addCount > 0) { 
-                        this._addCount -= 1; 
+                    if (this._itemLength > 0) { 
+                        this._itemLength--; 
                     } 
  
                     this._Promise.all(this._addQueue).then((): async.IThenable<void> => { 
@@ -19721,14 +19746,11 @@ module plat {
                             animationLength > 0 && animationQueue[animationLength - 1].op === 'clone'); 
                     } 
  
-                    this._addCount += addedCount; 
                     var addPromise = this._addItems(change.object.length - addedCount, addedCount, 0).then((): void => { 
                         var index = addQueue.indexOf(addPromise); 
                         if (index !== -1) { 
                             addQueue.splice(index, 1); 
                         } 
- 
-                        this._addCount -= addedCount; 
                     }); 
  
                     addQueue.push(addPromise); 
@@ -19751,8 +19773,8 @@ module plat {
                     } 
  
                     var removeIndex = change.object.length; 
-                    if (this._addCount > 0) { 
-                        this._addCount -= 1; 
+                    if (this._itemLength > 0) { 
+                        this._itemLength--; 
                     } 
  
                     this._Promise.all(addQueue).then((): void => { 
@@ -19768,6 +19790,7 @@ module plat {
                     var change = changes[0], 
                         addCount = change.addedCount, 
                         addQueue = this._addQueue, 
+                        currentLength = this._itemLength, 
                         addPromise: async.IThenable<void>, 
                         animating = this._animate; 
  
@@ -19777,25 +19800,23 @@ module plat {
                         } 
  
                         var newLength = change.object.length, 
-                            currentLength = this.controls.length + this._addCount, 
                             itemCount = currentLength - newLength; 
  
                         if (newLength > currentLength) { 
                             // itemCount will be negative 
-                            this._addCount -= itemCount; 
                             addPromise = this._addItems(currentLength, -itemCount, 0).then((): void => { 
                                 var index = addQueue.indexOf(addPromise); 
                                 if (index !== -1) { 
                                     addQueue.splice(index, 1); 
                                 } 
- 
-                                this._addCount += itemCount; 
                             }); 
  
                             addQueue.push(addPromise); 
                         } else if (currentLength > newLength) { 
-                            if (this._addCount > 0) { 
-                                this._addCount -= itemCount; 
+                            if (currentLength >= itemCount) { 
+                                this._itemLength -= itemCount; 
+                            } else { 
+                                this._itemLength = 0; 
                             } 
  
                             this._Promise.all(addQueue).then((): void => { 
@@ -19816,11 +19837,10 @@ module plat {
                             animationCount = addCount; 
  
                             var animationLength = animationQueue.length, 
-                                startIndex = change.index, 
-                                currlength = this.controls.length + this._addCount; 
+                                startIndex = change.index; 
  
-                            if (currlength < addCount - startIndex) { 
-                                animationCount = currlength - startIndex; 
+                            if (currentLength < addCount - startIndex) { 
+                                animationCount = currentLength - startIndex; 
                             } 
  
                             this._animateItems(startIndex, animationCount, __Enter, null, 
@@ -19831,14 +19851,11 @@ module plat {
                             animationCount = 0; 
                         } 
  
-                        this._addCount += itemAddCount; 
                         addPromise = this._addItems(change.object.length - itemAddCount, itemAddCount, animationCount).then((): void => { 
                             var index = addQueue.indexOf(addPromise); 
                             if (index !== -1) { 
                                 addQueue.splice(index, 1); 
                             } 
- 
-                            this._addCount -= itemAddCount; 
                         }); 
  
                         addQueue.push(addPromise); 
@@ -19848,11 +19865,11 @@ module plat {
                             addQueue = addQueue.concat([this._animateItems(change.index, removeCount, __Leave, 'clone', true)]); 
                         } 
  
-                        var removeLength = this.controls.length + this._addCount, 
-                            deleteCount = removeCount - addCount; 
- 
-                        if (this._addCount > 0) { 
-                            this._addCount -= deleteCount; 
+                        var deleteCount = removeCount - addCount; 
+                        if (currentLength >= deleteCount) { 
+                            this._itemLength -= deleteCount; 
+                        } else { 
+                            this._itemLength = 0; 
                         } 
  
                         this._Promise.all(addQueue).then((): void => { 
@@ -19862,7 +19879,7 @@ module plat {
                                     animLength > 0 && animationQueue[animLength - 1].op === 'clone'); 
                             } 
  
-                            this._removeItems(removeLength - deleteCount, deleteCount); 
+                            this._removeItems(currentLength - deleteCount, deleteCount); 
                         }); 
                     } 
                 } 

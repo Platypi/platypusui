@@ -1510,14 +1510,12 @@ module platui {
             
             this._setAliases();
 
-            this._addCount += itemCount;
             var addPromise = this._addItems(0, itemCount, 0).then((): void => {
                 var index = addQueue.indexOf(addPromise);
                 if (index !== -1) {
                     addQueue.splice(index, 1);
                 }
 
-                this._addCount -= itemCount;
                 this._onLoad();
             }).catch((): void => {
                 var _Exception = this._Exception;
