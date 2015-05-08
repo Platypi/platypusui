@@ -30,7 +30,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-slider-container">\n' +
         '    <div class="plat-slider-track">\n' +
         '        <div class="plat-knob"></div>\n' +
@@ -49,19 +49,6 @@ module platui {
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<ISliderOptions>;
-
-        /**
-         * @name priority
-         * @memberof platui.Slider
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
 
         /**
          * @name value
@@ -243,7 +230,7 @@ module platui {
          * @description
          * Whether the control is vertical or horizontal.
          */
-        protected _isVertical = false;
+        protected _isVertical: boolean = false;
 
         /**
          * @name _reversed
@@ -269,7 +256,7 @@ module platui {
          * @description
          * The current knob offset.
          */
-        protected _knobOffset = 0;
+        protected _knobOffset: number = 0;
 
         /**
          * @name _touchState
@@ -282,7 +269,7 @@ module platui {
          * @description
          * An enum denoting the current touch state of the user.
          */
-        protected _touchState = 0;
+        protected _touchState: number = 0;
 
         /**
          * @name _lengthProperty
@@ -309,7 +296,7 @@ module platui {
          * The current number of times we checked to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        protected _cloneAttempts = 0;
+        protected _cloneAttempts: number = 0;
 
         /**
          * @name _maxCloneCount
@@ -323,7 +310,7 @@ module platui {
          * The max number of times we'll check to see if the element was placed into the DOM. 
          * Used for determining max offset width.
          */
-        protected _maxCloneAttempts = 25;
+        protected _maxCloneAttempts: number = 25;
 
         /**
          * @name setClasses

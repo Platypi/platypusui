@@ -37,7 +37,7 @@ module platui {
          * Replaces the <plat-button> node with 
          * a <button> node.
          */
-        replaceWith = 'button';
+        replaceWith: string = 'button';
 
         /**
          * @name options
@@ -51,19 +51,6 @@ module platui {
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IButtonOptions>;
-
-        /**
-         * @name priority
-         * @memberof platui.Button
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
 
         /**
          * @name _document
@@ -102,7 +89,7 @@ module platui {
          * @description
          * A boolean value showing the selected state of this {@link platui.Button|Button}.
          */
-        protected _isSelected = false;
+        protected _isSelected: boolean = false;
 
         /**
          * @name setClasses

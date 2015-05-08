@@ -28,7 +28,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-progress-container">\n' +
         '    <div class="plat-animated-bar"></div>\n' +
         '</div>\n';

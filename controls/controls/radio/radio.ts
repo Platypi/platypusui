@@ -23,7 +23,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-radio-container">\n' +
         '    <div class="plat-mark"></div>\n' +
         '</div>\n';
@@ -39,7 +39,7 @@ module platui {
          * @description
          * The radio groups name if a radio group is present.
          */
-        groupName = '';
+        groupName: string = '';
 
         /**
          * @name _targetType
@@ -52,7 +52,7 @@ module platui {
          * @description
          * The check type to be placed in the element.
          */
-        protected _targetType = 'bullet';
+        protected _targetType: string = 'bullet';
 
         /**
          * @name _targetTypeSet
@@ -65,7 +65,7 @@ module platui {
          * @description
          * Whether the target type has been set already or not.
          */
-        protected _targetTypeSet = true;
+        protected _targetTypeSet: boolean = true;
 
         /**
          * @name _removeListener

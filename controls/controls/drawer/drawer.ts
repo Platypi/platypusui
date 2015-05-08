@@ -31,19 +31,6 @@ module platui {
         options: plat.observable.IObservableProperty<IDrawerOptions>;
 
         /**
-         * @name priority
-         * @memberof platui.Drawer
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
-
-        /**
          * @name storedProperties
          * @memberof platui.Drawer
          * @kind property
@@ -112,7 +99,7 @@ module platui {
          * @description
          * Whether or not the this control has been paired with a corresponding {@link platui.Drawer|Drawer}.
          */
-        protected _isInitialized = false;
+        protected _isInitialized: boolean = false;
 
         /**
          * @name _preInitializedValue
@@ -125,7 +112,7 @@ module platui {
          * @description
          * A bound value that may have come through prior to initialization.
          */
-        protected _preInitializedValue = false;
+        protected _preInitializedValue: boolean = false;
 
         /**
          * @name setClasses

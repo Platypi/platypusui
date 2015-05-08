@@ -12494,6 +12494,7 @@ module plat {
          * another listening control (e.g. plat-bind control). 
          */ 
         export class BindControl extends TemplateControl implements observable.ISupportTwoWayBinding { 
+            priority = 120;
             /** 
              * The set of functions added externally that listens 
              * for property changes. 

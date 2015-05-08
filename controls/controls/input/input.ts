@@ -30,7 +30,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-input-container">\n' +
         '    <span class="plat-input-image"></span>\n' +
         '    <input type="text" />\n' +
@@ -51,19 +51,6 @@ module platui {
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IInputOptions>;
-
-        /**
-         * @name priority
-         * @memberof platui.Input
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
 
         /**
          * @name _compat
@@ -207,7 +194,7 @@ module platui {
          * @description
          * Whether the user is currently touching the screen.
          */
-        protected _inTouch = false;
+        protected _inTouch: boolean = false;
 
         /**
          * @name _inAction
@@ -220,7 +207,7 @@ module platui {
          * @description
          * Whether the user is currently in the process of performing the {@link platui.Input|Input's} action.
          */
-        protected _inAction = false;
+        protected _inAction: boolean = false;
 
         /**
          * @name setClasses

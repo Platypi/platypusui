@@ -29,25 +29,12 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-file-container">\n' +
         '    <input type="file" class="plat-file-hidden" plat-change="_filesSelected" />\n' +
         '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" />\n' +
         '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
         '</div>\n';
-
-        /**
-         * @name priority
-         * @memberof platui.File
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
 
         /**
          * @name _compat

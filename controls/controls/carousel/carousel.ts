@@ -32,7 +32,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-carousel-viewport">\n' +
         '    <div class="plat-carousel-container"></div>\n' +
         '</div>\n';
@@ -143,7 +143,7 @@ module platui {
          * @description
          * Whether the control is vertical or horizontal.
          */
-        protected _isVertical = false;
+        protected _isVertical: boolean = false;
 
         /**
          * @name _type
@@ -182,7 +182,7 @@ module platui {
          * @description
          * Whether or not the user has swiped.
          */
-        protected _hasSwiped = false;
+        protected _hasSwiped: boolean = false;
 
         /**
          * @name _inTouch
@@ -195,7 +195,7 @@ module platui {
          * @description
          * Whether or not the user is currently touching the screen.
          */
-        protected _inTouch = false;
+        protected _inTouch: boolean = false;
 
         /**
          * @name _hasMoved
@@ -208,7 +208,7 @@ module platui {
          * @description
          * Whether or not the user is currently touching the screen and has moved.
          */
-        protected _hasMoved = false;
+        protected _hasMoved: boolean = false;
 
         /**
          * @name _lastTouch
@@ -234,7 +234,7 @@ module platui {
          * @description
          * Whether or not the control has been loaded based on its context being an Array.
          */
-        protected _loaded = false;
+        protected _loaded: boolean = false;
 
         /**
          * @name _index
@@ -247,7 +247,7 @@ module platui {
          * @description
          * The current index seen in the {@link platui.Carousel|Carousel}.
          */
-        protected _index = -1;
+        protected _index: number = -1;
 
         /**
          * @name _previousIndex
@@ -260,7 +260,7 @@ module platui {
          * @description
          * The previous index of the {@link platui.Carousel|Carousel} in relation to the item nodes.
          */
-        protected _previousIndex = -1;
+        protected _previousIndex: number = -1;
 
         /**
          * @name _nextIndex
@@ -273,7 +273,7 @@ module platui {
          * @description
          * The next index of the {@link platui.Carousel|Carousel} in relation to the item nodes.
          */
-        protected _nextIndex = -1;
+        protected _nextIndex: number = -1;
 
         /**
          * @name _currentOffset
@@ -286,7 +286,7 @@ module platui {
          * @description
          * The current offset of the translated {@link platui.Carousel|Carousel's} sliding element.
          */
-        protected _currentOffset = 0;
+        protected _currentOffset: number = 0;
 
         /**
          * @name _viewport
@@ -417,7 +417,7 @@ module platui {
          * @description
          * Whether or not automatic scrolling is enabled.
          */
-        protected _isAuto = false;
+        protected _isAuto: boolean = false;
 
         /**
          * @name _isPaused
@@ -430,7 +430,7 @@ module platui {
          * @description
          * Whether or not automatic scrolling is currently paused.
          */
-        protected _isPaused = false;
+        protected _isPaused: boolean = false;
 
         /**
          * @name _selfPause
@@ -443,7 +443,7 @@ module platui {
          * @description
          * Whether or not the control is responsible for pausing itself.
          */
-        protected _selfPause = false;
+        protected _selfPause: boolean = false;
 
         /**
          * @name _itemNodes
@@ -534,7 +534,7 @@ module platui {
          * @description
          * Whether or not the start outer item node has been initialized.
          */
-        protected _outerStart = false;
+        protected _outerStart: boolean = false;
 
         /**
          * @name _outerEnd
@@ -547,7 +547,7 @@ module platui {
          * @description
          * Whether or not the end outer item node has been initialized.
          */
-        protected _outerEnd = false;
+        protected _outerEnd: boolean = false;
 
         /**
          * @name _goToIntervalConstant
@@ -561,7 +561,7 @@ module platui {
          * An interval constant used to regulate the speed of the auto scroll 
          * when the goToIndex function is called and is not direct.
          */
-        protected _goToIntervalConstant = 125;
+        protected _goToIntervalConstant: number = 125;
 
         /**
          * @name setClasses

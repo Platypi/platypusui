@@ -27,7 +27,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-checkbox-container">\n' +
         '    <span class="plat-mark"></span>\n' +
         '</div>\n';
@@ -69,7 +69,7 @@ module platui {
          * @description
          * Whether the target type has been set already or not.
          */
-        protected _targetTypeSet = false;
+        protected _targetTypeSet: boolean = false;
 
         /**
          * @name setClasses

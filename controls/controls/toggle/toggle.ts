@@ -24,23 +24,10 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString =
+        templateString: string =
         '<div class="plat-toggle-container">\n' +
         '    <div class="plat-knob"></div>\n' +
         '</div>\n';
-
-        /**
-         * @name priority
-         * @memberof platui.Toggle
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
 
         /**
          * @name isActive
@@ -53,7 +40,7 @@ module platui {
          * @description
          * A boolean value indicating whether the control is actively selected.
          */
-        isActive = false;
+        isActive: boolean = false;
 
         /**
          * @name _targetType
@@ -66,7 +53,7 @@ module platui {
          * @description
          * The type of the control's activated element.
          */
-        protected _targetType = 'slide';
+        protected _targetType: string = 'slide';
 
         /**
          * @name _targetElement

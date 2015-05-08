@@ -7,7 +7,6 @@ module platui {
      * @kind class
      * 
      * @extends {plat.ui.BindControl}
-     * @implements {platui.IUIControl}
      * 
      * @description
      * An {@link plat.ui.BindControl|BindControl} that manipulates and controls a global drawer.
@@ -33,19 +32,6 @@ module platui {
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IDrawerControllerOptions>;
-
-        /**
-         * @name priority
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
 
         /**
          * @name _compat
@@ -204,7 +190,7 @@ module platui {
          * @description
          * Whether or not the user has swiped.
          */
-        protected _hasSwiped = false;
+        protected _hasSwiped: boolean = false;
 
         /**
          * @name _hasTapped
@@ -217,7 +203,7 @@ module platui {
          * @description
          * Whether or not the user has tapped.
          */
-        protected _hasTapped = false;
+        protected _hasTapped: boolean = false;
 
         /**
          * @name _isOpen
@@ -230,7 +216,7 @@ module platui {
          * @description
          * Whether or not the {@link platui.Drawer|Drawer} is open.
          */
-        protected _isOpen = false;
+        protected _isOpen: boolean = false;
 
         /**
          * @name _isElastic
@@ -256,7 +242,7 @@ module platui {
          * @description
          * An enum denoting the current touch state of the user.
          */
-        protected _touchState = 0;
+        protected _touchState: number = 0;
 
         /**
          * @name _isVertical
@@ -269,7 +255,7 @@ module platui {
          * @description
          * Whether the corresponding {@link platui.Drawer|Drawer} is vertical or horizontal.
          */
-        protected _isVertical = false;
+        protected _isVertical: boolean = false;
 
         /**
          * @name _useContext
@@ -535,7 +521,7 @@ module platui {
          * @description
          * Whether or not the this control has been paired with a corresponding {@link platui.Drawer|Drawer}.
          */
-        protected _isInitialized = false;
+        protected _isInitialized: boolean = false;
 
         /**
          * @name _preInitializedValue
@@ -548,7 +534,7 @@ module platui {
          * @description
          * A bound value that may have come through prior to initialization.
          */
-        protected _preInitializedValue = false;
+        protected _preInitializedValue: boolean = false;
 
         /**
          * @name initialize

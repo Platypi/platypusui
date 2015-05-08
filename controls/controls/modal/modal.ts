@@ -31,7 +31,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString = '<div class="plat-modal-container"></div>\n';
+        templateString: string = '<div class="plat-modal-container"></div>\n';
 
         /**
          * @name options
@@ -45,19 +45,6 @@ module platui {
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IModalOptions>;
-
-        /**
-         * @name priority
-         * @memberof platui.Modal
-         * @kind property
-         * @access public
-         * 
-         * @type {number}
-         * 
-         * @description
-         * The load priority of the control (needs to load before a {@link plat.controls.Bind|Bind} control).
-         */
-        priority = 120;
 
         /**
          * @name _window
@@ -135,7 +122,7 @@ module platui {
          * @description
          * Whether or not the modal is currently visible.
          */
-        protected _isVisible = false;
+        protected _isVisible: boolean = false;
 
         /**
          * @name _transitionEnd
@@ -174,7 +161,7 @@ module platui {
          * @description
          * The current scroll position of the modal.
          */
-        protected _scrollTop = 0;
+        protected _scrollTop: number = 0;
 
         /**
          * @name _transitionHash
@@ -656,38 +643,6 @@ module platui {
      * The available {@link plat.controls.Options|options} for the {@link platui.Modal|Modal} control.
      */
     export interface IModalOptions {
-        /**
-         * @name style
-         * @memberof platui.IModalOptions
-         * @kind property
-         * @access public
-         * 
-         * @type {string}
-         * 
-         * @description
-         * The style of {@link platui.Modal|Modal}. 
-         * Defaults to "full".
-         * 
-         * @remarks
-         * - "full" - The {@link platui.Modal|Modal} fills the whole screen.
-         * - "halfWidth" - The {@link platui.Modal|Modal} fills the whole screen lengthwise and 
-         * half the screen in width. When combined as "halfWidth centered" it will place the 
-         * control in the middle of the screen horizontally. Otherwise, its position is specified 
-         * by the defined LESS variables.
-         * - "halfHeight" - The {@link platui.Modal|Modal} fills half the screen lengthwise and 
-         * the whole screen in width. When combined as "halfHeight centered" it will place the 
-         * control in the middle of the screen vertically. Otherwise, its position is specified 
-         * by the defined LESS variables.
-         * - "half" - The {@link platui.Modal|Modal} fills half the screen and its position is 
-         * specified by the defined LESS variables. The top and left positioning refer to the midpoint 
-         * of the {@link platui.Modal|Modal}. When combined as "half centered" the control will be 
-         * placed dead center in the middle of the screen.
-         * - "custom" - The {@link platui.Modal|Modal's} size and positioning is specified by the 
-         * defined LESS variables. When combined as "custom centered" the top and left positioning 
-         * refer to the midpoint of the control.
-         */
-        //style?: string;
-
         /**
          * @name transition
          * @memberof platui.IModalOptions
