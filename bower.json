@@ -1,0 +1,46 @@
+{
+  "name": "platypusui",
+  "version": "0.3.0",
+  "homepage": "https://platypi.io",
+  "authors": [
+    "Platypi <support@platypi.io> (https://platypi.io)"
+  ],
+  "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
+  "main": "dist/platypusui.js",
+  "dependencies": {
+	"platypus": "latest"
+  },
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "platypi",
+    "platypus",
+	"platui",
+	"platypusui",
+    "typescript",
+    "ui",
+    "controls"
+  ],
+  "license": "GPL-3.0",
+  "ignore": [
+    "**/.*",
+    "*.log",
+    "tscommand*",
+    "build",
+    "examples",
+    "node_modules",
+    "src",
+    "test",
+    "gruntfile.js",
+    "karma.conf.js",
+    "license.txt",
+    "tsd.test.json",
+    "tslint.json",
+    "CONTRIBUTE.md"
+  ],
+  "typescript": {
+    "definition": "dist/platypusui.d.ts"
+  }
+}

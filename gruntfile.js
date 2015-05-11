@@ -73,5 +73,11 @@ module.exports = function load(grunt) {
         'copy:fonts',
         'clean:after'
     ]);
+    
+    grunt.registerTask('docs', [
+        'clean',
+        'bundle'
+    ]);
+    
     grunt.registerTask('examples', ['lessCompile:examples', 'watch']);  
 };

@@ -1,7 +1,7 @@
 {
-  "name": "controls",
+  "name": "platypusui",
   "version": "0.3.0",
-  "description": "",
+  "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
   "main": "dist/platypusui.js",
   "devDependencies": {
     "glob": "latest",
@@ -39,6 +39,26 @@
     "watch-examples": "node_modules/.bin/tsc -p build/tsc/examples/watch",
     "watch-src": "node_modules/.bin/tsc -p build/tsc/src/watch"
   },
-  "author": "",
+  "keywords": [
+    "platypi",
+    "platypus",
+    "platui",
+    "platypusui",
+    "typescript",
+    "ui",
+    "controls"
+  ],
+  "author": "Platypi <support@platypi.io> (https://platypi.io)",
+  "bugs": {
+    "url": "https://github.com/Platypi/platypusui/issues"
+  },
+  "homepage": "https://platypi.io",
+  "typescript": {
+    "definition": "platypusui.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Platypi/dist-platypusui.git"
+  },
   "license": "GPL-3.0"
 }
