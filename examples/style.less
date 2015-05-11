@@ -1,0 +1,114 @@
+@import '../src/main.less';
+
+body {
+    overflow-x: hidden;
+}
+
+.content-container {
+    #platui > #mixins;
+    #platui > #variables;
+    background-color: @white;
+    .fill();
+    .scroll();
+}
+
+.container {
+    padding: 2%;
+}
+
+.input-text {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    border-bottom: solid;
+    border-bottom-width: 1px;
+}
+
+.input-group-container {
+    width: 30em;
+    max-width: 95%;
+}
+
+.radio-test {
+    width: 800px;
+    height: 800px;
+    background-color: white;
+}
+
+.drawer-test {
+    width: 2em;
+    height: 2em;
+    background-color: dodgerblue;
+}
+
+.grid-demo [class*="col-"] > div {
+    background-color: #dddddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.demo-area {
+    position: relative;
+    margin-bottom: 2em;
+    padding: 1em;
+    border: 1px solid #bbbbbb;
+    border-radius: 5px;
+
+    .demo-heading {
+        margin-top: 0;
+    }
+
+    label {
+        position: absolute;
+        right: 1em; top: 1.5em;
+        height: 0; width: 0;
+        border-bottom: 8px solid transparent;
+        border-top: 8px solid transparent;
+        border-left: 11px solid #dddddd;
+    }
+
+    .demo-stage {
+        display: none;
+
+        .demo-item {
+            display: block;
+            width: 100%;
+            padding: 1em 0;
+        }
+
+        .demo-item-inline {
+            display: inline-block;
+            padding: 0 1em;
+        }
+    }
+
+    [type=checkbox] {
+        display: none;
+    }
+
+    [type=checkbox]:checked ~ .demo-stage {
+        display: block;
+    }
+
+    [type=checkbox]:checked ~ label {
+        -webkit-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+
+.device {
+    background-color: #f6f6f6;
+    border: 1px solid #f0f0f0;
+    position: relative; 
+}
+
+.iPhone5 {
+    width: 320px;
+    height: 568px;
+}
+
+.nexus7 {
+    width: 603px;
+    height: 966px;
+}
