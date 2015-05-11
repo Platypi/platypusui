@@ -82,7 +82,7 @@ module.exports = exports = function load(grunt) {
                 rootModule: 'platui',
                 license: './license.txt',
                 version: '<%= pkg.version %>',
-                src: './app/index.html',
+                src: './references.d.ts',
                 dest: [
                     './platypusui.ts'
                 ],
@@ -157,7 +157,7 @@ module.exports = exports = function load(grunt) {
             main: {
                 license: './license.txt',
                 version: '<%= pkg.version %>',
-                src: './app/index.html',
+                src: './controls/lib/platypus.less',
                 dest: [
                     'dist/platypus.less'
                 ]
