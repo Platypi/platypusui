@@ -54,7 +54,7 @@
   },
   "homepage": "https://platypi.io",
   "typescript": {
-    "definition": "platypusui.d.ts"
+    "definition": "dist/platypusui.d.ts"
   },
   "repository": {
     "type": "git",
