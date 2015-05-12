@@ -1450,18 +1450,26 @@ module platui {
 
             var itemNodes = this._itemNodes,
                 container = this._container,
-                nodeLength = itemNodes.length;
+                nodeLength = itemNodes.length,
+                isNode = this.utils.isNode,
+                nodeToInsert: Node;
 
             if (nodeLength > 1) {
-                container.insertBefore(itemNodes[this._nextIndex], null);
+                nodeToInsert = itemNodes[this._nextIndex];
+                if (isNode(nodeToInsert)) {
+                    container.insertBefore(nodeToInsert, null);
+                }
                 this._outerEnd = true;
 
                 if (nodeLength > 2) {
                     if (this._isInfinite || this._index > 0) {
-                        container.insertBefore(itemNodes[this._previousIndex], container.firstChild);
-                        container.style[<any>this._transform] = this._calculateStaticTranslation(-length);
-                        // access property to force a repaint
-                        container.offsetWidth;
+                        nodeToInsert = itemNodes[this._previousIndex];
+                        if (isNode(nodeToInsert)) {
+                            container.insertBefore(nodeToInsert, container.firstChild);
+                            container.style[<any>this._transform] = this._calculateStaticTranslation(-length);
+                            // access property to force a repaint
+                            container.offsetWidth;
+                        }
                         this._outerStart = true;
                     }
                 } else if (this._isInfinite) {
@@ -1953,10 +1961,6 @@ module platui {
                 x: ev.clientX,
                 y: ev.clientY
             };
-
-            if (!(this._outerStart && this._outerEnd)) {
-                this._initializeOuterNodes();
-            }
         }
 
         /**
@@ -2033,7 +2037,11 @@ module platui {
             if (!this._inTouch) {
                 return;
             } else if (!this._hasMoved) {
-                this._cancelCurrentAnimations();
+                this._cancelCurrentAnimations().then((): void => {
+                    if (!(this._outerStart && this._outerEnd)) {
+                        this._initializeOuterNodes();
+                    }
+                });
             }
 
             this._hasMoved = true;

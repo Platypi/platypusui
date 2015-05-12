@@ -6,10 +6,10 @@ module.exports = function(config, grunt) {
 	examplesFiles[config.examples.css] = config.examples.less;
 	
 	return {
+        options: {
+            relativeUrls: true
+        },
         main: {
-            options: {
-                relativeUrls: true
-            },
             files: mainFiles
         },
         examples: {
