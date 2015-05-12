@@ -1,0 +1,4910 @@
+/**
+ * Copyright 2014 Platypi, LLC. All rights reserved. 
+ * 
+ * PlatypusUI is licensed under the GPL-3.0 found at  
+ * http://opensource.org/licenses/GPL-3.0 
+ * 
+ */
+/// ======= Global Variables ======== ///
+
+/**/
+#platui {
+    #variables {
+        /// ============= Global Colors ============== ///
+
+        /// Brand Colors
+
+        @primary-color: @blue;
+        @primary-color-light: lighten(@primary-color, 10%);
+        @primary-color-dark: darken(@primary-color, 8%);
+        @primary-color-pale: desaturate(@primary-color, 10%);
+
+        @secondary-color: @purple;
+        @secondary-color-light: lighten(@secondary-color, 10%);
+        @secondary-color-dark: darken(@secondary-color, 8%);
+        @secondary-color-pale: desaturate(@secondary-color, 10%);
+
+        /// State/Action Colors
+
+        @success-color: @green;
+        @success-color-light: lighten(@success-color, 10%);
+        @success-color-dark: darken(@success-color, 8%);
+        @success-color-pale: desaturate(@success-color, 10%);
+
+        @danger-color: @red;
+        @danger-color-light: lighten(@danger-color, 10%);
+        @danger-color-dark: darken(@danger-color, 8%);
+        @danger-color-pale: desaturate(@danger-color, 10%);
+
+        @caution-color: @yellow;
+        @caution-color-light: lighten(@caution-color, 10%);
+        @caution-color-dark: darken(@caution-color, 8%);
+        @caution-color-pale: desaturate(@caution-color, 10%);
+
+        @neutral-color: @grey;
+        @neutral-color-light: lighten(@neutral-color, 10%);
+        @neutral-color-dark: darken(@neutral-color, 10%);
+        @neutral-color-pale: desaturate(@neutral-color, 10%);
+
+        /// ========= Default Color Palette ========== ///
+
+        /// Red
+        @pale-red: #f8e5e7;
+        @red: #EF716F;
+        @red-offset: #dd4d4e;
+
+        /// Blue
+        @pale-blue: #edf4f6;
+        @blue: #2d97d2;
+        @blue-offset: #2d88be;
+
+        /// Green
+        @pale-green: #daeee8;
+        @green: #8fcbb5;
+        @green-offset: #8abca4;
+
+        /// Yellow
+        @pale-yellow: #ffefbd;
+        @yellow: #FFE088;
+        @yellow-offset: #f1c448;
+
+        /// Brown
+        @pale-brown: #eeeae7;
+        @brown: #cbc6c5;
+        @tan: #beb9b8;
+
+        /// Orange
+        @orange: #f0862c;
+
+        /// Purple
+        @purple: #A283A5;
+
+        /// Greyscale
+        @pale-grey: #edecec;
+        @grey: #c8c7cd;
+        @text-grey: #444444;
+        @black: #000000;
+        @white: #ffffff;
+        @transparent: transparent;
+
+        /// =============== Typography ================ ///
+
+        @default-font-size: 16px;
+        @default-font-type: @font-sans-serif;
+        @default-font-color: @text-grey;
+        @font-sans-serif: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+        @font-serif: Georgia, "Times New Roman", Times, serif;
+        @font-monospace: Menlo, Monaco, Consolas, "Courier New", monospace;
+        
+        /// Mixin Vars
+
+        @webkit: -webkit-;
+        @moz: -moz-;
+        @ms: -ms-;
+        @khtml: -khtml-;
+        @vanilla: -;
+
+        @webkit-list: @webkit, @vanilla;
+        @ms-list: @ms, @vanilla;
+        @moz-list: @moz, @vanilla;
+        @webkit-moz-list: @webkit, @moz, @vanilla;
+        @webkit-moz-strict: @webkit, @moz;
+        @webkit-moz-ms-list: @webkit, @moz, @ms, @vanilla;
+        @webkit-moz-ms-strict: @webkit, @moz, @ms;
+        @all-list: @webkit, @moz, @ms, @khtml, @vanilla;
+
+        /// =============== Animations ================ ///
+
+        @fade-in: FADE_IN;
+        @fade-out: FADE_OUT;
+        @slide-in: SLIDE_IN;
+        @slide-out: SLIDE_OUT;
+        @slide-in-fade-in: SLIDE_IN_FADE_IN;
+        @slide-out-fade-out: SLIDE_OUT_FADE_OUT;
+
+        /// ============== Various Sizes ============== ///
+
+        @global-border-radius: 4px;
+
+        /// ========= Responsive Breakpoints ========= ///
+
+        /// Currently used in the grid system and in Typography
+
+        /// Phone Breakpoint
+        @phone-alias: phn;
+        @phone-start: 0px;
+        @phone-end: 499px;
+
+        /// Phablet Breakpoint
+        @phablet-alias: phb;
+        @phablet-start: 500px;
+        @phablet-end: 699px;
+
+        /// Tablet Breakpoint
+        @tablet-alias: tab;
+        @tablet-start: 700px;
+        @tablet-end: 899px;
+
+        /// Desktop Breakpoint
+        @desktop-alias: dsk;
+        @desktop-start: 900px;
+    }
+}
+
+/**/
+
+/// ======= Globally-Used Animations ======== ///
+
+#platui {
+    /// Animation Creation
+
+    #animations {
+        #platui > #variables;
+
+        .keyframes(@name) {
+            #platui > #variables;
+            @-webkit-keyframes @name {
+                .frames(@webkit);
+            }
+
+            @-moz-keyframes @name {
+                .frames(@moz);
+            }               
+
+            @keyframes @name {
+                .frames(@vanilla);
+            }
+        }
+
+        .fade(@name: @fade-out; @direction: out) {
+            .keyframes(@name);
+            .frames(@prefix) {
+                & when (@direction = in) {
+                    from {
+                        opacity: 0;
+                    }
+                    to {
+                        opacity: 1;
+                    }
+                } & when (@direction = out) {
+                    from {
+                        opacity: 1;
+                    }
+                    to {
+                        opacity: 0;
+                    }
+                }
+            }
+        }
+
+        .slide(@name: @slide-in; @direction: in; @from: right) {
+            .keyframes(@name);
+            .frames(@prefix) {
+                & when (@direction = in) {
+                    & when (@from = left) {
+                        from {
+                            padding-left: -100%;
+                        }
+                    } & when (@from = right) {
+                        from {
+                            padding-left: 100%;
+                        }
+                    }
+                } & when (@direction = out) {
+                    & when (@from = left) {
+                        to {
+                            padding-left: -100%;
+                        }
+                    } & when (@from = right) {
+                        to {
+                            padding-left: 100%;
+                        }
+                    }
+                }
+            }
+        }
+
+        .slideAndFade(@name: @slide-in-fade-in; @direction: in; @from-to: right) {
+            .keyframes(@name);
+            .frames(@prefix) {
+                & when (@direction = in) {
+                    & when (@from-to = left) {
+                        0% {
+                            padding-left: -100%;
+                            opacity: 0;
+                        }
+                    } & when (@from-to = right) {
+                        0% {
+                            padding-left: 100%;
+                            opacity: 0;
+                        }
+                    }
+                    25% {
+                        opacity: 0.1;
+                    }
+                    50% {
+                        opacity: 0.2;
+                    }
+                    75% {
+                        opacity: 0.3;
+                    }
+                    100% {
+                        opacity: 1;
+                    }
+                } & when (@direction = out) {
+                    0% {
+                        opacity: 1;
+                    }
+                    25% {
+                        opacity: 0.3;
+                    }
+                    50% {
+                        opacity: 0.2;
+                    }
+                    75% {
+                        opacity: 0.1;
+                    } & when (@from-to = left) {
+                        100% {
+                            padding-left: -100%;
+                            opacity: 0;
+                        }
+                    } & when (@from-to = right) {
+                        100% {
+                            padding-left: 100%;
+                            opacity: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// ======= Mixins ======== ///
+
+/**/
+#platui {
+    #__mixins {
+        /// Helper Methods
+
+        .looper(@property; @value; @list; @counter) when (@counter > 0) {
+            .looper(@property; @value; @list; (@counter - 1));
+            @extraction: extract(@list, @counter);
+            @{extraction}@{property}: @value;
+        }
+
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = length(@list)) and (extract(@list, @counter) = @vanilla) {
+            .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
+            @{property}: ~'@{valuePropety}(@{value})';
+        }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 1) and not(extract(@list, @counter) = @vanilla) {
+            @extraction: extract(@list, @counter);
+            @{property}: ~'@{extraction}@{valuePropety}(@{value})';
+        }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (@counter = 0) { }
+        .value-looper(@property; @valuePropety; @value; @list; @counter) when (default()) {
+            .value-looper(@property; @valuePropety; @value; @list; (@counter - 1));
+            @extraction: extract(@list, @counter);
+            @{property}: ~'@{extraction}@{valuePropety}(@{value})';
+        }
+
+        .vendor-loop(@property; @value; @list) when (length(@list) > 1) {
+            .looper(@property; @value; @list; length(@list) - 1);
+            @{property}: @value;
+        }
+        .vendor-loop(@property; @value; @list) when (length(@list) = 1) and not(@list = @vanilla) {
+            @{list}@{property}: @value;
+        }
+        .vendor-loop(@property; @value; @list) when (default())  {
+            @{property}: @value;
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #mixins {
+        /// Frequently used
+
+        .calc(@prop; @val) {
+          @{prop}: -webkit-calc(~'@{val}');
+          @{prop}: calc(~'@{val}');
+        }
+
+        .fill() {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .scroll() {
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll(@direction) {
+            & when (@direction = x) {
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            & when not (@direction = x) {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /// Border Radius
+
+        .border-radius(@radius) {
+            #platui > #variables;
+            .border-radius(@radius; @webkit-list);
+        }
+        .border-radius(@radius; @vendor-list) {
+            #platui > #__mixins;
+            .vendor-loop(border-top-left-radius; @radius; @vendor-list);
+            .vendor-loop(border-top-right-radius; @radius; @vendor-list);
+            .vendor-loop(border-bottom-left-radius; @radius; @vendor-list);
+            .vendor-loop(border-bottom-right-radius; @radius; @vendor-list);
+        }
+
+        .border-top-left-radius(@radius) {
+            #platui > #variables;
+            .border-top-left-radius(@radius; @webkit-list);
+        }
+        .border-top-left-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-top-left-radius; @radius; @vendor-list);
+        }
+
+        .border-top-right-radius(@radius) {
+            #platui > #variables;
+            .border-top-right-radius(@radius; @webkit-list);
+        }
+        .border-top-right-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-top-right-radius; @radius; @vendor-list);
+        }
+
+        .border-bottom-left-radius(@radius) {
+            #platui > #variables;
+            .border-bottom-left-radius(@radius; @webkit-list);
+        }
+        .border-bottom-left-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-bottom-left-radius; @radius; @vendor-list);
+        }
+
+        .border-bottom-right-radius(@radius) {
+            #platui > #variables;
+            .border-bottom-right-radius(@radius; @webkit-list);
+        }
+        .border-bottom-right-radius(@radius; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(border-bottom-right-radius; @radius; @vendor-list);
+        }
+
+        /// Background Clip
+
+        .background-clip(@box) when (@box = border-box), (@box = border) {
+            -moz-background-clip: border;
+            -webkit-background-clip: border;
+            background-clip: border-box;
+        }
+        .background-clip(@box) when (@box = padding-box), (@box = padding) {
+            -moz-background-clip: padding;
+            -webkit-background-clip: padding;
+            background-clip: padding-box;
+        }
+        .background-clip(@box) when (@box = content-box), (@box = content) {
+            -moz-background-clip: content;
+            -webkit-background-clip: content;
+            background-clip: content-box;
+        }
+        .background-clip(@box) when (default()) {
+            -moz-background-clip: @box;
+            -webkit-background-clip: @box;
+            background-clip: @box;
+        }
+
+        /// Box Shadows
+
+        .box-shadow(@args) {
+            #platui > #variables;
+            .box-shadow(@args; @webkit-list);
+        }
+        .box-shadow(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(box-shadow; @args; @vendor-list);
+        }
+
+        /// Box Sizing
+
+        .box-sizing(@args: border-box) {
+            #platui > #variables;
+            .box-sizing(@args; @webkit-moz-list);
+        }
+        .box-sizing(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(box-sizing; @args; @vendor-list);
+        }
+
+        /// Background Size
+
+        .background-size(@args) {
+            #platui > #variables;
+            .background-size(@args; @webkit-list);
+        }
+        .background-size(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(background-size; @args; @vendor-list);
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #media {
+    /// ======= Globally-Used Media Query Mixins ======== ///
+
+        .media(@type; @condition1; @condition2; @condition3; @condition4; @rules) {
+            @media @type and (@condition1) and (@condition2) and (@condition3) and (@condition4) {
+                @rules();
+            }
+        }
+
+        .media(@type; @condition1; @condition2; @condition3; @rules) {
+            @media @type and (@condition1) and (@condition2) and (@condition3) {
+                @rules();
+            }
+        }
+
+        .media(@type; @condition1; @condition2; @rules) {
+            @media @type and (@condition1) and (@condition2) {
+                @rules();
+            }
+        }
+
+        .media(@type; @condition1; @rules) {
+            @media @type and (@condition1) {
+                @rules();
+            }
+        }
+
+        .media-width(@minWidth: 0px; @maxWidth: 0px; @rules) {
+            & when not(@maxWidth = 0px) {
+                & when not(@minWidth = 0px) {
+                    .media(all; ~'min-width: @{minWidth}'; ~'max-width: @{maxWidth}'; @rules);
+                } & when (@minWidth = 0px) {
+                    .media(all; ~'max-width: @{maxWidth}'; @rules);
+                }
+            } & when (@maxWidth = 0px) {
+                & when not(@minWidth = 0px) {
+                    .media(all; ~'min-width: @{minWidth}'; @rules);
+                }
+            }
+        }
+
+        .media-height(@minHeight: 0px; @maxHeight: 0px; @rules) {
+            & when not(@maxHeight = 0px) {
+                & when not(@minHeight = 0px) {
+                    .media(all; ~'min-height: @{minHeight}'; ~'max-height: @{maxHeight}'; @rules);
+                } & when (@minHeight = 0px) {
+                    .media(all; ~'max-height: @{maxHeight}'; @rules);
+                }
+            } & when (@maxHeight = 0px) {
+                & when not(@minHeight = 0px) {
+                    .media(all; ~'min-height: @{minHeight}'; @rules);
+                }
+            }
+        }
+
+        .media-phone-max(@rules) {
+            #platui > #variables;
+            .media-width(@maxWidth: @phone-end; @rules: @rules);
+        }
+
+        .media-phablet(@rules) {
+            #platui > #variables;
+            .media-width(@phablet-start; @rules: @rules);
+        }
+
+        .media-phablet-max(@rules) {
+            #platui > #variables;
+            .media-width(@maxWidth: @phablet-end; @rules: @rules);
+        }
+
+        .media-phablet-only(@rules) {
+            #platui > #variables;
+            .media-width(@phablet-start; @phablet-end; @rules);
+        }
+
+        .media-tablet(@rules) {
+            #platui > #variables;
+            .media-width(@tablet-start; @rules: @rules);
+        }
+
+        .media-tablet-max(@rules) {
+            #platui > #variables;
+            .media-width(@maxWidth: @tablet-end; @rules: @rules);
+        }
+
+        .media-tablet-only(@rules) {
+            #platui > #variables;
+            .media-width(@tablet-start; @tablet-end; @rules);
+        }
+
+        .media-desktop(@rules) {
+            #platui > #variables;
+            .media-width(@desktop-start; @rules: @rules);
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #mixins {
+        /// Touch
+
+        .touch-action(@behavior: manipulation) {
+            #platui > #variables;
+            #platui > #__mixins > .vendor-loop(touch-action; @behavior; @ms-list);
+        }
+
+        .user-select(@behavior: none) {
+            #platui > #variables;
+            .user-select(@behavior; @all-list);
+        }
+        .user-select(@behavior; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(user-select; @behavior; @vendor-list);
+        }
+
+        .webkit-touch-additions(@callout: none; @highlight: transparent) {
+            -webkit-touch-callout: @callout;
+            -webkit-tap-highlight-color: @highlight;
+        }
+
+        .misc-webkit-touch(@callout: none; @drag: none; @highlight: transparent; @overflowscroll: touch) {
+            -webkit-user-drag: @drag;
+            -webkit-overflow-scrolling: @overflowscroll;
+            .webkit-touch-additions(@callout; @highlight);
+        }
+    }
+}
+/**/
+
+#platui {
+    #mixins {
+        /// Animations
+
+        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none) {
+            #platui > #variables;
+            .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @webkit-moz-list);
+        }
+        .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation; @name @duration @function @delay @count @direction @mode; @vendor-list);
+        }
+
+        .animation(@args) {
+            #platui > #variables;
+            .animation(@args; @webkit-moz-list);
+        }
+        .animation(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation; @args; @vendor-list);
+        }
+
+        .animation-delay(@delay) {
+            #platui > #variables;
+            .animation-delay(@delay; @webkit-moz-list);
+        }
+        .animation-delay(@delay; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-delay; @delay; @vendor-list);
+        }
+
+        .animation-direction(@direction) {
+            #platui > #variables;
+            .animation-direction(@direction; @webkit-moz-list);
+        }
+        .animation-direction(@direction; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-direction; @direction; @vendor-list);
+        }
+
+        .animation-duration(@duration) {
+            #platui > #variables;
+            .animation-duration(@duration; @webkit-moz-list);
+        }
+        .animation-duration(@duration; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-duration; @duration; @vendor-list);
+        }
+
+        .animation-fill-mode(@mode) {
+            #platui > #variables;
+            .animation-fill-mode(@mode; @webkit-moz-list);
+        }
+        .animation-fill-mode(@mode; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-fill-mode; @mode; @vendor-list);
+        }
+
+        .animation-iteration-count(@count) {
+            #platui > #variables;
+            .animation-iteration-count(@count; @webkit-moz-list);
+        }
+        .animation-iteration-count(@count; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-iteration-count; @count; @vendor-list);
+        }
+
+        .animation-name(@name) {
+            #platui > #variables;
+            .animation-name(@name; @webkit-moz-list);
+        }
+        .animation-name(@name; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-name; @name; @vendor-list);
+        }
+
+        .animation-play-state(@state) {
+            #platui > #variables;
+            .animation-play-state(@state; @webkit-moz-list);
+        }
+        .animation-play-state(@state; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-play-state; @state; @vendor-list);
+        }
+
+        .animation-timing-function(@function) {
+            #platui > #variables;
+            .animation-timing-function(@function; @webkit-moz-list);
+        }
+        .animation-timing-function(@function; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-timing-function; @function; @vendor-list);
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #mixins {
+        /// Transforms
+
+        .transform(@args) {
+            #platui > #variables;
+            .transform(@args; @webkit-moz-ms-list);
+        }
+        .transform(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform; @args; @vendor-list);
+        }
+
+        .transform-origin(@origin) {
+            #platui > #variables;
+            .transform-origin(@origin; @webkit-moz-ms-list);
+        }
+        .transform-origin(@origin; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform-origin; @origin; @vendor-list);
+        }
+
+        .transform-style(@style) {
+            #platui > #variables;
+            .transform-style(@style; @webkit-moz-ms-list);
+        }
+        .transform-style(@style; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform-style; @style; @vendor-list);
+        }
+
+        .rotate(@deg: 45deg) {
+            .transform(rotate(@deg));
+        }
+        .rotate(@deg; @vendor-list) {
+            .transform(rotate(@deg); @vendor-list);
+        }
+
+        .scale(@factor: .5) {
+            .transform(scale(@factor));
+        }
+        .scale(@factor; @vendor-list) {
+            .transform(scale(@factor); @vendor-list);
+        }
+
+        .skew(@deg; @deg2) {
+            .transform(skew(@deg, @deg2));
+        }
+        .skew(@deg; @deg2; @vendor-list) {
+            .transform(skew(@deg, @deg2); @vendor-list);
+        }
+
+        .perspective(@value: 1000) {
+            #platui > #variables;
+            .perspective(@value; @webkit-moz-ms-list);
+        }
+        .perspective(@value; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(perspective; @value; @vendor-list);
+        }
+
+        .translate(@x; @y) {
+            .transform(translate(@x, @y));
+        }
+        .translate(@x; @y; @vendor-list) {
+            .transform(translate(@x, @y), @vendor-list);
+        }
+
+        .translateZ(@z) {
+            .transform(translateZ(@z));
+        }
+        .translateZ(@z; @vendor-list) {
+            .transform(translateZ(@z), @vendor-list);
+        }
+
+        .translate3d(@x; @y; @z) {
+            .transform(translate3d(@x, @y, @z));
+        }
+        .translate3d(@x; @y; @z; @vendor-list) {
+            .transform(translate3d(@x, @y, @z), @vendor-list);
+        }
+
+        .translate-accelerate(@x; @y) {
+            .translate(@x; @y);
+            .transform(translate3d(@x, @y, 0));
+        }
+        .translate-accelerate(@x; @y; @vendor-list) {
+            .translate(@x; @y; @vendor-list);
+            .transform(translate3d(@x, @y, 0); @vendor-list);
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #mixins {
+        /// Transitions
+
+        .transition(@args) {
+            #platui > #variables;
+            .transition(@args; @webkit-moz-list);
+        }
+        .transition(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition; @args; @vendor-list);
+        }
+
+        .transition-all(@duration: 200ms; @function: ease; @delay: 0s) {
+            #platui > #variables;
+            .transitionAll(all; @duration; @function; @delay; @webkit-moz-list);
+        }
+        .transition-all(@duration; @function; @delay; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition; all @duration @function @delay; @vendor-list);
+        }
+
+        .transition-delay(@delay) {
+            #platui > #variables;
+            .transition-delay(@delay; @webkit-moz-list);
+        }
+        .transition-delay(@delay; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-delay; @delay; @vendor-list);
+        }
+
+        .transition-duration(@duration) {
+            #platui > #variables;
+            .transition-duration(@duration; @webkit-moz-list);
+        }
+        .transition-duration(@duration; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-duration; @duration; @vendor-list);
+        }
+
+        .transition-property(@property: all) {
+            #platui > #variables;
+            .transition-property(@property; @webkit-moz-list);
+        }
+        .transition-property(@property; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-property; @property; @vendor-list);
+        }
+
+        .transition-timing-function(@function: ease) {
+            #platui > #variables;
+            .transition-timing-function(@function: ease; @webkit-moz-list);
+        }
+        .transition-timing-function(@function: ease; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transition-timing-function; @function; @vendor-list);
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #mixins {
+        /// Flexbox
+
+        .flexbox() {
+            display: -webkit-box;
+	        display: -webkit-flex;
+	        display: -moz-flex;
+	        display: -ms-flexbox;
+	        display: flex;
+        }
+
+        .inline-flexbox() {
+            display: -webkit-inline-box;
+	        display: -webkit-inline-flex;
+	        display: -moz-inline-flex;
+	        display: -ms-inline-flexbox;
+	        display: inline-flex;
+        }
+
+        .flex(@values) {
+            -webkit-box-flex: @values;
+            -webkit-flex:  @values;
+            -moz-box-flex:  @values;
+            -moz-flex: @values;
+            -ms-flex:  @values;
+            flex:  @values;
+        }
+
+        .flex-direction(@direction) when (@direction = row-reverse) {
+            -webkit-box-direction: reverse;
+		    -webkit-box-orient: horizontal;
+            -webkit-flex-direction: @direction;
+	        -moz-flex-direction: @direction;
+	        -ms-flex-direction: @direction;
+	        flex-direction: @direction;
+        }
+
+        .flex-direction(@direction) when (@direction = column) {
+            -webkit-box-direction: normal;
+		    -webkit-box-orient: vertical;
+            -webkit-flex-direction: @direction;
+	        -moz-flex-direction: @direction;
+	        -ms-flex-direction: @direction;
+	        flex-direction: @direction;
+        }
+
+        .flex-direction(@direction) when (@direction = column-reverse) {
+            -webkit-box-direction: reverse;
+		    -webkit-box-orient: vertical;
+            -webkit-flex-direction: @direction;
+	        -moz-flex-direction: @direction;
+	        -ms-flex-direction: @direction;
+	        flex-direction: @direction;
+        }
+
+        .flex-direction(@direction) when (default()) {
+            -webkit-box-direction: normal;
+		    -webkit-box-orient: horizontal;
+            -webkit-flex-direction: @direction;
+	        -moz-flex-direction: @direction;
+	        -ms-flex-direction: @direction;
+	        flex-direction: @direction;
+        }
+
+        .align-items(@position) when (@position = flex-start) {
+            -webkit-box-align: start;
+            -webkit-align-items: @position;
+            -moz-align-items: @position;
+            -ms-flex-align: start;
+            align-items: @position;
+        }
+
+        .align-items(@position) when (@position = flex-end) {
+            -webkit-box-align: end;
+            -webkit-align-items: @position;
+            -moz-align-items: @position;
+            -ms-flex-align: end;
+            align-items: @position;
+        }
+
+        .align-items(@position) when (default()) {
+            -webkit-box-align: @position;
+            -webkit-align-items: @position;
+            -moz-align-items: @position;
+            -ms-flex-align: @position;
+            align-items: @position;
+        }
+
+        .align-content(@position) when (@position = flex-start) {
+            -webkit-align-content: @position;
+            -moz-align-content: @position;
+            -ms-flex-line-pack: start;
+            align-content: @position;
+        }
+
+        .align-content(@position) when (@position = flex-end) {
+            -webkit-align-content: @position;
+            -moz-align-content: @position;
+            -ms-flex-line-pack: end;
+            align-content: @position;
+        }
+
+        .align-content(@position) when (default()) {
+            -webkit-align-content: @position;
+            -moz-align-content: @position;
+            -ms-flex-line-pack: @position;
+            align-content: @position;
+        }
+
+        .align-content(@position) {
+            -webkit-align-content: @position;
+            -moz-align-content: @position;
+            -ms-align-content: @position;
+            align-content: @position;
+        }
+
+        .align-self(@position) when (@position = flex-start) {
+            -webkit-align-self: @position;
+            -moz-align-self: @position;
+            -ms-flex-item-align: start;
+            align-self: @position;
+        }
+
+        .align-self(@position) when (@position = flex-end) {
+            -webkit-align-self: @position;
+            -moz-align-self: @position;
+            -ms-flex-item-align: end;
+            align-self: @position;
+        }
+
+        .align-self(@position) when (default()) {
+            -webkit-align-self: @position;
+            -moz-align-self: @position;
+            -ms-flex-item-align: @position;
+            align-self: @position;
+        }
+
+        .justify-content(@position) when (@position = flex-start) {
+		    -webkit-box-pack: start;
+            -webkit-justify-content: @position;
+            -moz-justify-content: @position;
+		    -ms-flex-pack: start;
+            justify-content: @position;   
+        }
+
+        .justify-content(@position) when (@position = flex-end) {
+		    -webkit-box-pack: end;
+            -webkit-justify-content: @position;
+            -moz-justify-content: @position;
+		    -ms-flex-pack: end;
+            justify-content: @position;   
+        }
+
+        .justify-content(@position) when (@position = space-around) {
+            -webkit-justify-content: @position;
+            -moz-justify-content: @position;
+		    -ms-flex-pack: distribute;
+            justify-content: @position;   
+        }
+
+        .justify-content(@position) when (@position = space-between) {
+		    -webkit-box-pack: justify;
+            -webkit-justify-content: @position;
+            -moz-justify-content: @position;
+		    -ms-flex-pack: justify;
+            justify-content: @position;   
+        }
+
+        .justify-content(@position) when (default()) {
+		    -webkit-box-pack: @position;
+            -webkit-justify-content: @position;
+            -moz-justify-content: @position;
+		    -ms-flex-pack: @position;
+            justify-content: @position;   
+        }
+
+        .flex-flow(@values) {
+            -webkit-flex-flow: @values;
+	        -moz-flex-flow: @values;
+	        -ms-flex-flow: @values;
+	        flex-flow: @values;
+        }
+
+        .flex-wrap(@wrap) {
+            -webkit-flex-wrap: @wrap;
+	        -moz-flex-wrap: @wrap;
+		    -ms-flex-wrap: @wrap;
+	        flex-wrap: @wrap;
+        }
+
+        .flex-order(@order) {
+            -webkit-box-ordinal-group: @order + 1;
+	        -webkit-order: @order;
+	        -moz-order: @order;
+	        -ms-flex-order: @order;
+	        order: @order;
+        }
+
+        .flex-grow(@factor) {
+            -webkit-box-flex: @factor;
+	        -webkit-flex-grow: @factor;
+	        -moz-flex-grow: @factor;
+	        -ms-flex-positive: @factor;
+	        flex-grow: @factor;
+        }
+
+        .flex-shrink(@factor) {
+            -webkit-flex-shrink: @factor;
+	        -moz-flex-shrink: @factor;
+	        -ms-flex-negative: @factor;
+	        flex-shrink: @factor;
+        }
+
+        .flex-basis(@basis) {
+	        -webkit-flex-basis: @basis;
+	        -moz-flex-basis: @basis;
+	        -ms-flex-preferred-size: @basis;
+	        flex-basis: @basis;
+        }
+
+        .flex-absolute-center() {
+            .flexbox();
+            .align-items(center);
+            .justify-content(center);
+        }
+
+        .flex-vertical-center() {
+            .flexbox();
+            .align-items(center);
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #mixins {
+        #platui > #variables;
+        /// Gradients
+
+        .gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
+            #platui > #variables;
+            .gradient(@default; @start; @stop; @webkit-moz-ms-strict);
+        }
+        .gradient(@default; @start; @stop; @vendor-list) {
+            .linear-gradient-top(@default; @start; 0%; @stop; 100%; @vendor-list);
+        }
+
+        .horizontal-gradient(@default: #ffffff; @start: #000000; @stop: #ffffff) {
+            #platui > #variables;
+            .horizontal-gradient(@default; @start; @stop; @webkit-moz-ms-strict);
+        }
+        .horizontal-gradient(@default; @start; @stop; @vendor-list) {
+            .linear-gradient-left(@default; @start; 0%; @stop; 100%; @vendor-list);
+        }
+
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2) {
+            #platui > #variables;
+            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @webkit-moz-ms-strict);
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @vendor-list) when not (iscolor(@vendor-list)) {
+            @color-values: @color1 @stop1, @color2 @stop2;
+            @gradient-value: top, @color-values;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to bottom, @color-values);
+        }
+
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
+            #platui > #variables;
+            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @webkit-moz-ms-strict);
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor-list) when not (iscolor(@vendor-list)) {
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            @gradient-value: top, @color-values;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
+            #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to bottom, @color-values);
+        }
+
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
+            #platui > #variables;
+            .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @webkit-moz-ms-strict);
+        }
+        .linear-gradient-top(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor-list) {
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            @gradient-value: top, @color-values;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, left bottom, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
+            #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to bottom, @color-values);
+        }
+
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2) {
+            #platui > #variables;
+            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @webkit-moz-ms-strict);
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @vendor-list) when not (iscolor(@vendor-list)) {
+            @color-values: @color1 @stop1, @color2 @stop2;
+            @gradient-value: left, @color-values;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(@stop1, @color1), color-stop(@stop2, @color2));
+            #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to right, @color-values);
+        }
+
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3) when (iscolor(@color3)) {
+            #platui > #variables;
+            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @webkit-moz-ms-strict);
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @vendor-list) when not (iscolor(@vendor-list)) {
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3;
+            @gradient-value: left, @color-values;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3));
+            #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to right, @color-values);
+        }
+
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4) when (iscolor(@color4)) {
+            #platui > #variables;
+            .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @webkit-moz-ms-strict);
+        }
+        .linear-gradient-left(@default; @color1; @stop1; @color2; @stop2; @color3; @stop3; @color4; @stop4; @vendor-list) {
+            @color-values: @color1 @stop1, @color2 @stop2, @color3 @stop3, @color4 @stop4;
+            @gradient-value: left, @color-values;
+            background-color: @default;
+            background-image: -webkit-gradient(linear, left top, right top, color-stop(@stop1, @color1), color-stop(@stop2, @color2), color-stop(@stop3, @color3), color-stop(@stop4, @color4));
+            #platui > #__mixins > .value-looper(background-image; linear-gradient; @gradient-value; @vendor-list; length(@vendor-list));
+            background-image: linear-gradient(to right, @color-values);
+        }
+    }
+}
+
+/// ======= Control Variables ======== ///
+
+/**/
+
+#platui {
+    #Button {
+        #platui > #variables;
+    /// ============= Button Sizes ============== ///
+        @border-size: 1px;
+        @button-font-size: 0.9em;
+        @border-radius: @global-border-radius;
+        @padding-vertical: 0.8em;
+        @padding-horizontal: 1.2em;
+    }
+}
+
+/**/
+
+#platui {
+    #Carousel {
+        #platui > #variables;
+    /// =========== Carousel Colors =========== ///
+
+        @background-color: @transparent;
+        @color: @primary-color;
+        @border-color: @primary-color;
+        @arrow-color: fadeout(@white, 50%);
+        @arrow-active-color: @white;
+
+    /// ============ Carousel Size ============ ///
+
+        @border-size: 1px;
+        @padding: 5px;
+        @padding-left: @padding;
+        @padding-right: @padding;
+        @padding-top: @padding;
+        @padding-bottom: @padding;
+        @arrow-font-size: 400%;
+        @arrow-length: 100%;
+        @arrow-width: 1em;
+
+    /// ============ Carousel Transition ============ ///
+
+        @transition: all 300ms;
+    }
+}
+
+/**/
+
+#platui {
+    #Checkbox {
+        #platui > #variables;
+    /// =========== Checkbox Colors =========== ///
+
+        @secondary-mark-color: undefined;
+        @background-color: @transparent;
+        @border-color: @grey;
+
+    /// =========== Checkbox Sizes ============ ///
+
+        @diameter: 1.3em;
+        @border-size: 1px;
+    }
+}
+/**/
+
+#platui {
+    #Drawer {
+        #platui > #variables;
+    /// =========== Drawer Colors =========== ///
+
+        @color: @white;
+        @background-color: @neutral-color;
+        @shadow-color: fadeout(@black, 30%);
+
+    /// =========== Drawer Lengths =========== ///
+
+        @length-default: 80%;
+        @length-left: @length-default;
+        @length-right: @length-default;
+        @length-top: @length-default;
+        @length-bottom: @length-default;
+        @shadow-offset: 2px;
+        @shadow-blur: 10px;
+        @shadow-spread: 0px;
+        
+    /// =========== Drawer Transition =========== ///
+
+        @transition: all 300ms ease-out;
+    }
+}
+
+/**/
+
+#platui {
+    #File {
+        #platui > #variables;
+    /// ============== File Colors =============== ///
+
+        @text-color: @text-grey;
+        @input-border-color: @neutral-color;
+
+    /// =============== File Sizes =============== ///
+    
+        @default-height: 2.5em;
+        @default-input-width: 10em;
+        @border-radius: 4px;
+    }
+}
+
+/**/
+
+#platui {
+    #Input {
+        #platui > #variables;
+    /// ============== Input Colors =============== ///
+
+        @text-color: @text-grey;
+        @border-color: @neutral-color;
+        @action-color: @border-color;
+        @placeholder-color: @neutral-color;
+
+    /// =============== Input Sizes =============== ///
+    
+        @default-height: 2.5em;
+        @default-width: 18em;
+        @primary-border-bottom-width: 2px;
+        @primary-border-bottom: @primary-border-bottom-width solid @border-color;
+        @secondary-border-width: 2px;
+        @secondary-border: @secondary-border-width solid @border-color;
+        @secondary-border-radius: 4px;
+    }
+}
+
+/**/
+
+#platui {
+    #Listview {
+        #platui > #variables;
+
+    /// =========== Listview Colors =========== ///
+
+        @manipulated-viewport-background-color: @white;
+
+    /// =========== Listview Animations =========== ///
+
+        @refresh-transition: all 200ms;
+        @enter-animation-name: LISTVIEW_ITEM_ENTER;
+        @enter-animation-duration: 300ms;
+        @enter-animation: @enter-animation-name @enter-animation-duration;
+        @leave-animation-name: LISTVIEW_ITEM_LEAVE;
+        @leave-animation-duration: 300ms;
+        @leave-animation: @leave-animation-name @leave-animation-duration;
+        
+    /// =========== Listview Animation Mixins =========== ///
+
+        .enter(@name) {
+            #platui > #animations > .keyframes(@name);
+            .frames(@prefix) {
+                0% {
+                    opacity: 0;
+                }
+                100% {
+                    opacity: 1;
+                }
+            }
+        }
+
+        .leave(@name) {
+            #platui > #animations > .keyframes(@name);
+            .frames(@prefix) {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                }
+            }
+        }
+    }
+}
+
+/**/
+
+#platui {
+    #Modal {
+        #platui > #variables;
+    /// =========== Modal Colors =========== ///
+
+        @color: @default-font-color;
+        @background-color: @white;
+
+    /// =========== Modal Sizes =========== ///
+
+        #custom-height {
+            @height: 50%;
+            @y-offset: 0%;
+        }
+    
+        #custom-width {
+            @width: 50%;
+            @x-offset: 0%;
+        }
+
+        #custom {
+            @width: 50%;
+            @height: 50%;
+            @x-offset: 0%;
+            @y-offset: 0%;
+        }
+        
+    /// =========== Modal Transitions =========== ///
+
+        @left-transition: right 500ms;
+        @right-transition: left 500ms;
+        @up-transition: bottom 500ms;
+        @down-transition: top 500ms;
+        @fade-transition: opacity 300ms;
+
+    /// =========== Modal Prompt =========== ///
+
+	    @prompt-top: 20%;
+	    @prompt-body-color: @pale-grey;
+	    @prompt-accent-color: darken(@prompt-body-color, 4%);
+	    @prompt-border-radius: 8px;
+    }
+}
+
+/**/
+
+#platui {
+    #platui > #variables;
+
+    #ProgressBar {
+    /// =========== Progress Bar Colors =========== ///
+
+        @border-color: @neutral-color;
+        @fill-color: @primary-color;
+        
+    /// =========== Progress Bar Properties =========== ///
+
+        @height: 8px;
+        @border: none;
+
+    /// =========== Progress Bar Transition =========== ///
+
+        @transition: none;
+    }
+}
+
+/**/
+
+#platui {
+    #platui > #variables;
+
+    #ProgressRing {
+    /// =========== Progress Ring Colors =========== ///
+
+        @ring-color: @primary-color;
+        @fill-color: fade(@ring-color, 75%);
+        @unfilled-color: fade(@ring-color, 10%);
+        
+    /// =========== Progress Ring Sizes =========== ///
+
+        @diameter: 3em;
+        @thickness: @diameter / 10;
+
+    /// =========== Progress Ring Animation =========== ///
+
+        @animation-name: PLAT-SPIN;
+        @spin-frequency: 600ms;
+        
+    /// =========== Progress Ring Animation Mixins =========== ///
+
+        .spin() {
+            #platui > #animations > .keyframes(@animation-name);
+            .frames(@prefix) {
+                #platui > #mixins;
+                from {
+                    .transform(rotate(0deg); @prefix);
+                }
+                to {
+                    .transform(rotate(359deg); @prefix);
+                }
+            }
+        }
+    }
+}
+/**/
+
+#platui {
+    #Radio {
+        #platui > #variables;
+    /// =========== Radio Colors =========== ///
+
+        @background-color: @transparent;
+        @border-color: @grey;
+        @checked-border-color: @primary-color;
+        @mark-color: @checked-border-color;
+        @mark-padding-color: @transparent;
+        
+    /// =========== Radio Size =========== ///
+
+        @diameter: 1em;
+        @border-size: 1px;
+        @mark-padding: 1px;
+    }
+}
+
+/**/
+
+#platui {
+    #Range {
+    /// ================= Range Size ================== ///
+
+        @thickness: 0.5em;
+        @fill-border-radius: 4px;
+
+    /// ================= Range Knob Properties ================== ///
+
+        @knob-diameter: 1.6em;
+        @knob-border-size: 1px;
+
+    /// =============== Range Transitions =============== ///
+    
+        @horizontal-transition: width 300ms;
+        @vertical-transition: height 300ms;
+    }
+}
+/**/
+
+#platui {
+    #Select {
+        #platui > #variables;
+    /// =========== Select Colors =========== ///
+
+        @background-color: @transparent;
+        @color: @default-font-color;
+        @border-color: @neutral-color-light;
+
+    /// =========== Select Sizes =========== ///
+
+        @border-width: 1px;
+        @border-radius: 2px;
+
+    /// =========== Select Properties =========== ///
+
+        @border: @border-width solid @border-color;
+    }
+}
+
+/**/
+
+#platui {
+    #Slider {
+    /// ================= Slider Size ================== ///    
+
+        @thickness: 0.5em;
+        @fill-border-radius: 4px;
+
+    /// ================= Slider Knob Properties ================== ///    
+    
+        @knob-diameter: 1.6em;
+        @knob-border-size: 1px;
+
+    /// ============== Slider Transitions =============== ///    
+
+        @horizontal-transition: width 300ms;
+        @vertical-transition: height 300ms;
+    }
+}
+/**/
+
+#platui {
+    #Toggle {
+        #platui > #variables;
+    /// =========== Toggle Colors =========== ///
+
+        @border-color: darken(@neutral-color-light, 3%);
+        @background-color-off: @neutral-color-light;
+        @background-color-on: @success-color;
+        @border-color-on: darken(@background-color-on, 5%);
+        @toggle-thin-color: lighten(@pale-grey, 10%);
+
+    /// ============ Toggle Size ============ ///
+    
+        @width: 3.25em;
+        @ratio: 1/2;
+        @toggle-thin-ratio: 1/4;
+
+    /// ========== Toggle Knob Properties ========== ///
+
+        @knob-diameter: @width * @ratio;
+        @knob-border-color: darken(@pale-grey, 5%);
+        @knob-border-size: 1px;
+
+    /// ============= Toggle Transition ============= ///
+
+        @transition-time: 250ms;
+        @transition: all @transition-time;
+        @knob-transition: left @transition-time;
+    }
+}
+
+/// ======= Global Styles ======== ///
+
+/// ======= Globally Set Styles for PlatypusUI ======== ///
+& {
+    #platui > #variables;
+    #platui > #mixins;
+
+    html {
+        .fill();
+    }
+
+    body {
+        position: relative;
+        .fill();
+    }
+
+    [plat-control="plat-viewport"] {
+        position: relative;
+        .fill();
+
+        & > *:only-child {
+            position: relative;
+            .fill();
+        }
+    }
+
+    .plat-hide,
+    [plat-hide] {
+        display: none !important;
+    }
+
+    .plat-hidden,
+    [plat-hidden] {
+        visibility: hidden !important;
+    }
+
+    /** Partially adapted from normalize.css | MIT License | http://necolas.github.io/normalize.css/ **/
+
+    a {
+	    color: @primary-color;
+	    text-decoration: none;
+	    background-color: transparent;
+
+	    &:active,
+	    &:hover {
+		    outline: 0;
+	    }
+    }
+
+    article,
+    aside,
+    details,
+    figcaption,
+    figure,
+    footer,
+    header,
+    hgroup,
+    main,
+    menu,
+    nav,
+    section,
+    summary {
+	    display: block;
+    }
+
+    audio,
+    canvas,
+    progress,
+    video {
+        display: inline-block;
+        vertical-align: baseline;
+    }
+
+    audio:not([controls]) {
+	    display: none;
+	    height: 0;
+    }
+
+    [hidden],
+    template {
+	    display: none;
+    }
+
+    img { 
+        border: 0;
+    }
+
+    svg:not(:root) { 
+        overflow: hidden;
+    }
+
+    figure { 
+        margin: 1em 40px;
+    }
+
+    hr {
+	    .box-sizing(content-box);
+	    height: 0;
+    }
+
+    pre { 
+        overflow: auto;
+    }
+
+    code,
+    kbd,
+    pre,
+    samp {
+	    font-family: monospace, monospace;
+	    font-size: 1em;
+    }
+
+    button {
+        overflow: visible;
+    }
+
+    button,
+    select {
+        text-transform: none;
+    }
+
+    button,
+    html input[type="button"],
+    input[type="reset"],
+    input[type="submit"] {
+        -webkit-appearance: button;
+        cursor: pointer;
+    }
+
+    button[disabled],
+    html input[disabled] {
+        cursor: default;
+    }
+
+    button::-moz-focus-inner,
+    input::-moz-focus-inner {
+        border: 0;
+        padding: 0;
+    }
+
+    input {
+        line-height: normal;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+        box-sizing: border-box;
+        padding: 0;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        height: auto;
+    }
+
+    input[type="search"] {
+        .box-sizing(content-box);
+        -webkit-appearance: textfield;
+    }
+
+    input[type="search"]::-webkit-search-cancel-button,
+    input[type="search"]::-webkit-search-decoration {
+        -webkit-appearance: none;
+    }
+
+    fieldset {
+        border: 1px solid #c0c0c0;
+        margin: 0 2px;
+        padding: 0.35em 0.625em 0.75em;
+    }
+
+    legend {
+        border: 0;
+        padding: 0;
+    }
+
+    textarea {
+        overflow: auto;
+    }
+
+    optgroup {
+        font-weight: bold;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    td,
+    th {
+        padding: 0;
+    }
+}
+
+/// ======= Globally-Used Gestures ======== ///
+
+& {
+    #platui > #mixins;
+
+    .plat-gesture {
+        .misc-webkit-touch();
+        .user-select();
+        .touch-action();
+    }
+
+    .plat-no-touch-action {
+        .touch-action(none);
+    }
+}
+
+/// ========== PlatypusUI Helper Classes =========== ///
+
+/// =========== Hide Content for Width ============= ///
+
+& {
+    #platui > #variables;
+    #platui > #media;
+
+    .media-phone-max({
+	    .hide-on-@{phone-alias} {
+		    display: none !important;
+	    }
+    });
+
+    .media-phablet-max({
+	    .hide-on-@{phablet-alias} {
+		    display: none !important;
+	    }
+    });
+
+    .media-tablet-max({
+	    .hide-on-@{tablet-alias} {
+		    display: none !important;
+	    }
+    });
+
+    .media-phablet({
+	    .hide-above-@{phone-alias} {
+		    display: none !important;
+	    }
+    });
+
+    .media-tablet({
+	    .hide-above-@{phablet-alias} {
+		    display: none !important;
+	    }
+    });
+
+    .media-desktop({
+	    .hide-above-@{tablet-alias} {
+		    display: none !important;
+	    }
+    });
+}
+
+/// ======= Globally Set Styles for PlatypusUI ======== ///
+
+& {
+    #platui > #variables;
+    #platui > #media;
+
+    /// ======= Local Variables =======
+
+    @line-height-ratio: 1.5;
+
+    html, body {
+	    font-family: @default-font-type;
+	    color: @default-font-color;
+        font-size: @default-font-size;
+        -webkit-font-smoothing: antialiased;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    blockquote {
+	    display: block;
+	    margin: 1em 0;
+	    padding-left: 1em;
+	    color: lighten(@default-font-color, 30%);
+	    font-size: @default-font-size;
+	    border-left: 1px solid lighten(@default-font-color, 30%);
+    }
+
+    cite {
+	    display: block;
+	    padding: 0.3em 0;
+	    font-size: @default-font-size * 0.9;
+    }
+
+    b,
+    strong {
+	    font-weight: bold;
+    }
+
+    dfn { 
+        font-style: italic;
+    }
+
+    abbr[title] {
+      border-bottom: 1px dotted;
+    }
+
+    small {
+      font-size: 80%;
+    }
+
+    sub,
+    sup {
+	    font-size: 75%;
+	    line-height: 0;
+	    position: relative;
+	    vertical-align: baseline;
+    }
+
+    sup { 
+        top: -0.5em;
+    }
+
+    sub { 
+        bottom: -0.25em;
+    }
+
+    /** Font Sizes **/
+    /* Font sizes and line-height adjust based on the device-width. Device breakpoints */
+    /* are set in global/variables.less. Measurements adapted from Robert Bringhurst's */
+    /* classic and exhaustive work The Elements of Typographic Style. */
+
+    .headings() {
+        padding: 0;
+        font-weight: 600;
+    }
+
+    .type(@type; @size; @lineHeight) {
+        @{type} {
+            font-size: @size;
+            line-height: @lineHeight;
+        }
+    }
+
+    @typography-margin: 0.67em;
+
+    h1 {
+        .headings();
+        margin: @typography-margin 0 (@typography-margin / 1.25);
+    }
+
+    h2, h3, h4 {
+        .headings();
+        margin: (@typography-margin * 1.25) 0 @typography-margin;
+    }
+
+    h5, h6 {
+        .headings();
+        margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
+    }
+
+    p {
+        padding: 0;
+        margin: (@typography-margin * 1.5) 0;
+    }
+
+    /// Phone
+	.type(p, @default-font-size, 1.30em);
+	.type(h1, 2em, 1.5874em);
+	.type(h2, 1.625em, 1.1538em);
+	.type(h3, 1.375em, 1.1363em);
+	.type(h4, 1.125em, 1.1111em);
+	.type(h5, 0.925em, 1.0974em);
+	.type(h6, 0.775em, 1.0783em);
+
+    /// Tablet
+    .media-tablet({
+	    .type(p, @default-font-size, 1.412em);
+	    .type(h1, 2.5em, 1.37em);
+	    .type(h2, 2em, 1.25em);
+	    .type(h3, 1.5em, 1.25em);
+	    .type(h4, 1.125em, 1.2222em);
+    });
+
+    /// Desktop
+    .media-desktop({
+	    .type(h1, 3em, 1.3em);
+	    .type(h2, 2.25em, 1.25em);
+	    .type(h3, 1.75em, 1.25em);
+	    .type(h5, 1em, 1.1111em);
+	    .type(h6, 0.925em, 1.1111em);
+    });
+}
+
+/// ======= Globally-Available Animations ======== ///
+
+& {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #animations;
+
+    .plat-slidein {
+        .animation-name(@slide-in);
+        .animation-duration(250ms);
+        .animation-fill-mode(forwards);
+    }
+
+    .plat-slideout {
+        .animation-name(@slide-out);
+        .animation-duration(200ms);
+        .animation-fill-mode(forwards);
+    }
+
+    .plat-fadein {
+        .animation-name(@fade-in);
+        .animation-duration(500ms);
+        .animation-fill-mode(forwards);
+    }
+
+    .plat-fadeout {
+        .animation-name(@fade-out);
+        .animation-duration(100ms);
+        .animation-fill-mode(forwards);
+    }
+
+    .fade();
+    .fade(@fade-in; in);
+    .slide();
+    .slide(@slide-out; out; left);
+    .slideAndFade();
+    .slideAndFade(@slide-out-fade-out; out; left);
+}
+
+/// ======= Controls ======== ///
+
+/// ============= Button Constants ============= ///
+
+#platui {
+    #__Button {
+        #platui > #variables;
+        @default-color: @white;
+        @default-background-color: @neutral-color;
+    }
+}
+
+/// ====== Button Default and Outline Style ====== ///
+
+.plat-button, 
+.button {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Button;
+    #platui > #__Button;
+    position: relative;
+    display: inline-block;
+    padding: @padding-vertical @padding-horizontal;
+    background-color: @default-background-color;
+    color: @default-color;
+    outline: none;
+    border: @border-size solid @neutral-color-dark;
+    cursor: pointer;
+    font-size: @button-font-size;
+    .border-radius(@border-radius);
+    .webkit-touch-additions();
+    .box-sizing(border-box);
+    
+    &:active,
+    &.plat-selected {
+        background-color: darken(@default-background-color, 10%);
+    }
+        
+    &.button-disabled,
+    &[disabled],
+    &:disabled {
+        background-color: @default-background-color;
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    &.button-outline {
+        border-color: @default-background-color;
+        color: @default-background-color;
+        border-width: 2px;
+
+        &:active,
+        &.plat-selected {
+            color: @white;
+            background-color: @default-background-color;
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            color: @default-background-color;
+            background-color: transparent;
+            opacity: 0.5;
+            cursor: default;
+        }
+    }
+
+/// ============== Button Colors  =============== ///    
+
+    &.button-primary {
+        background-color: @primary-color;
+        border-color: @primary-color-dark;
+        
+        &:active,
+        &.plat-selected {
+            background-color: darken(@primary-color, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            background-color: @primary-color;
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        &.button-outline {
+            border-color: @primary-color;
+            color: @primary-color;
+
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @primary-color;
+            }
+        
+            &.button-disabled,
+            &[disabled],
+            &:disabled {
+                color: @primary-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.button-secondary {
+        background-color: @secondary-color;
+        border-color: @secondary-color-dark;
+
+        &:active,
+        &.plat-selected {
+            background-color: darken(@secondary-color, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            background-color: @secondary-color;
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        &.button-outline {
+            border-color: @secondary-color;
+            color: @secondary-color;
+
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @secondary-color;
+            }
+        
+            &.button-disabled,
+            &[disabled],
+            &:disabled {
+                color: @secondary-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.button-neutral {
+        background-color: @neutral-color;
+        border-color: @neutral-color-dark;
+
+        &:active,
+        &.plat-selected {
+            background-color: darken(@neutral-color, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            background-color: @neutral-color;
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        &.button-outline {
+            border-color: @neutral-color;
+            color: @neutral-color;
+
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @neutral-color;
+            }
+        
+            &.button-disabled,
+            &[disabled],
+            &:disabled {
+                color: @neutral-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.button-success {
+        background-color: @success-color;
+        border-color: @success-color-dark;
+
+        &:active,
+        &.plat-selected {
+            background-color: darken(@success-color, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            background-color: @success-color;
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        &.button-outline {
+            border-color: @success-color;
+            color: @success-color;
+
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @success-color;
+            }
+        
+            &.button-disabled,
+            &[disabled],
+            &:disabled {
+                color: @success-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.button-danger {
+        background-color: @danger-color;
+        border-color: @danger-color-dark;
+
+        &:active,
+        &.plat-selected {
+            background-color: darken(@danger-color, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            background-color: @danger-color;
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        &.button-outline {
+            border-color: @danger-color;
+            color: @danger-color;
+
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @danger-color;
+            }
+        
+            &.button-disabled,
+            &[disabled],
+            &:disabled {
+                color: @danger-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.button-caution {
+        background-color: @caution-color;
+        border-color: @caution-color-dark;
+
+        &:active,
+        &.plat-selected {
+            background-color: darken(@caution-color, 10%);
+        }
+        
+        &.button-disabled,
+        &[disabled],
+        &:disabled {
+            background-color: @caution-color;
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        &.button-outline {
+            border-color: @caution-color;
+            color: @caution-color;
+
+            &:active,
+            &.plat-selected {
+                color: @white;
+                background-color: @caution-color;
+            }
+        
+            &.button-disabled,
+            &[disabled],
+            &:disabled {
+                color: @caution-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.button-outline {
+        background-color: transparent;
+    }
+    
+/// ============== Button Sizes ================ ///
+
+    &.button-small {
+        font-size: 80%;
+    }
+
+    &.button-large {
+        font-size: 115%;
+    }
+
+    &.button-jumbo {
+        font-size: 130%;
+    }
+
+/// ============== Button Icons =============== ///
+
+    [class^="icon-"], [class*=" icon-"] {
+        position: relative;
+        right: -0.3em;
+    }
+}
+
+/// ============== Button Groups =============== /// 
+
+.button-group {
+    overflow: auto;
+    width: 100%;
+}
+
+.button-group > .plat-button,
+.button-group > .button {
+    #platui > #mixins;
+    margin: 0;
+    border-right-width: 0;
+    border-left-width: 0;
+    float: left;
+    .border-radius(0);
+}
+
+.button-group > .plat-button:nth-of-type(1),
+.button-group > .button:nth-of-type(1) {
+    #platui > #mixins;
+    #platui > #Button;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    .border-top-left-radius(@border-radius);
+    .border-bottom-left-radius(@border-radius);
+
+    &.button-outline {
+        border-left-width: 2px;
+        border-right-width: 2px;
+    }
+}
+
+.button-group > .plat-button:nth-last-of-type(1),
+.button-group > .button:nth-last-of-type(1) {
+    #platui > #mixins;
+    #platui > #Button;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    .border-top-right-radius(@border-radius);
+    .border-bottom-right-radius(@border-radius);
+
+    &.button-outline {
+        border-left-width: 2px;
+        border-right-width: 2px;
+    }
+}
+
+/// =========== Carousel Default Styles =========== ///
+
+.plat-carousel {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Carousel;
+    position: relative;
+    display: inline-block;
+    min-height: 50px;
+    .fill();
+    .user-select();
+    .touch-action(none);
+    .box-sizing(border-box);
+
+    .plat-carousel-viewport {
+        position: relative;
+        min-height: 50px;
+        overflow: hidden;
+        .fill();
+        .box-sizing(border-box);
+
+        .plat-carousel-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            min-height: 50px;
+            background-color: @background-color;
+            white-space: nowrap;
+            .fill();
+            .box-sizing(border-box);
+
+            .plat-carousel-item {
+                width: 100%;
+                height: 100%;
+                padding-left: @padding-left;
+                padding-right: @padding-right;
+                padding-top: @padding-top;
+                padding-bottom: @padding-bottom;
+                .box-sizing(border-box);
+            }
+
+            &.plat-transition-init {
+                .translateZ(0);
+                .transition(@transition);
+            }
+        }
+
+        .plat-back-arrow,
+        .plat-forward-arrow {
+            position: absolute;
+            text-align: center;
+            color: @arrow-color;
+            cursor: pointer;
+            font-size: @arrow-font-size;
+            .box-sizing(border-box);
+
+            .plat-icon-arrow-down,
+            .plat-icon-arrow-up,
+            .plat-icon-arrow-left,
+            .plat-icon-arrow-right {
+                display: inline-block;
+                vertical-align: middle;
+                position: absolute;
+                height: 0.55em;
+                width: 100%;
+                left: 0;
+                top: 50%;
+                font-family: "platypus-icons";
+                font-weight: bold;
+                font-style: normal;
+                font-variant: normal;
+                font-size: inherit;
+                speak: none;
+                text-decoration: inherit;
+                text-transform: none;
+                line-height: normal;
+                .translate-accelerate(0;-50%);
+                .webkit-touch-additions();
+            }
+
+            .plat-icon-arrow-down::before { content: "\e815"; }
+            .plat-icon-arrow-left::before { content: "\e816"; }
+            .plat-icon-arrow-right::before { content: "\e817"; }
+            .plat-icon-arrow-up::before { content: "\e818"; }
+
+            &:active,
+            &:hover {
+                color: @arrow-active-color;
+            }
+        }
+    }
+
+    &.plat-horizontal {
+        .plat-carousel-viewport {
+            .plat-carousel-container {
+                .plat-carousel-item {
+                    display: inline-block;
+                }
+            }
+
+            .plat-back-arrow,
+            .plat-forward-arrow {
+                top: 0;
+                width: @arrow-width;
+                height: @arrow-length;
+            }
+
+            .plat-back-arrow {
+                left: 0;
+            }
+
+            .plat-forward-arrow {
+                right: 0;
+            }
+        }
+    }
+
+    &.plat-vertical {
+        .plat-carousel-viewport {
+            .plat-carousel-container {
+                .plat-carousel-item {
+                    display: block;
+                }
+            }
+
+            .plat-back-arrow,
+            .plat-forward-arrow {
+                left: 0;
+                width: @arrow-length;
+                height: @arrow-width;
+            }
+
+            .plat-back-arrow {
+                top: 0;
+            }
+
+            .plat-forward-arrow {
+                bottom: 0;
+            }
+        }
+    }
+}
+
+/// =========== Default Checkbox =========== ///
+
+.plat-checkbox {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Checkbox;
+    display: inline-block;
+    cursor: pointer;
+    .flex-vertical-center();
+    .box-sizing(border-box);
+
+    & > span {
+        line-height: @diameter;
+
+        &:first-of-type {
+            margin-left: 0.4em;
+        }
+    }
+
+    .plat-checkbox-container {
+        position: relative;
+        display: inline-block;
+        width: @diameter;
+        height: @diameter;
+        background-color: @background-color;
+        overflow: hidden;
+        border: 1px solid @border-color;
+        .border-radius(@diameter);
+        .box-sizing(content-box);
+
+/// ============ Checkmark Symbol ============ ///
+
+        &.plat-check,
+        &.plat-x {
+            background-color: @border-color;
+
+            .plat-mark::before,
+            .plat-mark::after {
+                content: "";
+                position: absolute;
+                height: 2px;
+                background-color: @white;
+                .border-radius(2px);
+            }
+        }
+
+        &.plat-check {
+            .plat-mark::before {
+                left: 13%;
+                top: 55%;
+                width: @diameter / 2.6;
+                .rotate(45deg);
+            }
+
+            .plat-mark::after {
+                left: 34%;
+                top: 47%;
+                width: @diameter / 1.7;
+                .rotate(-45deg);
+            }
+        }
+
+        &.plat-x {
+            .plat-mark::before,
+            .plat-mark::after {
+                left: 17.5%;
+                top: 48.5%;
+                width: @diameter / 1.5;
+            }
+
+            .plat-mark::before {
+                .rotate(45deg);
+            }
+
+            .plat-mark::after {
+                .rotate(-45deg);
+            }
+        }
+    }
+
+/// ============ Checkmark Square ============ ///
+
+    &.checkbox-square {
+        .plat-checkbox-container {
+            .border-radius(2px);
+        }
+    }
+
+/// ============ Checkmark Colors ============ ///
+
+    &.checkbox-primary {
+        .plat-checkbox-container {
+            border-color: @primary-color;
+
+            &.plat-check,
+            &.plat-x {
+                background-color: @primary-color;
+            }
+        }
+    }
+
+    &.checkbox-secondary {
+        .plat-checkbox-container {
+            border-color: @secondary-color;
+            
+            &.plat-check,
+            &.plat-x {
+                background-color: @secondary-color;
+            }
+        }
+    }
+
+    &.checkbox-success {
+        .plat-checkbox-container {
+            border-color: @success-color;
+            
+            &.plat-check,
+            &.plat-x {
+                background-color: @success-color;
+            }
+        }
+    }
+
+    &.checkbox-caution {
+        .plat-checkbox-container {
+            border-color: @caution-color;
+            
+            &.plat-check,
+            &.plat-x {
+                background-color: @caution-color;
+            }
+        }
+    }
+
+    &.checkbox-danger {
+        .plat-checkbox-container {
+            border-color: @danger-color;
+            
+            &.plat-check,
+            &.plat-x {
+                background-color: @danger-color;
+            }
+        }
+    }
+}
+
+/// =========== Drawer Controller Default Styles =========== ///
+
+.plat-drawer-controller {
+    #platui > #mixins;
+    .user-select();
+    .touch-action(none);
+}
+
+/// =========== Drawer Default Styles =========== ///
+
+.plat-drawer {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Drawer;
+    position: absolute;
+    color: @color;
+    z-index: 0;
+    background-color: @background-color;
+    -webkit-backface-visibility: hidden;
+    .scroll();
+    .box-sizing(border-box);
+
+    &.plat-left,
+    &.plat-right {
+        height: 100%;
+        top: 0;
+    }
+
+    &.plat-top,
+    &.plat-bottom {
+        width: 100%;
+        left: 0;
+    }
+
+    &.plat-left {
+        width: @length-left;
+        left: 0;
+    }
+
+    &.plat-right {
+        width: @length-right;
+        right: 0;
+    }
+
+    &.plat-top {
+        height: @length-top;
+        top: 0;
+    }
+
+    &.plat-bottom {
+        height: @length-bottom;
+        bottom: 0;
+    }
+}
+
+/// =========== Drawer Controller Root Element Styles =========== ///
+
+.plat-drawer-transition-prep {
+    #platui > #mixins;
+    #platui > #Drawer;
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: none;
+    
+    &.plat-drawer-transition-right,
+    &.plat-drawer-transition-left,
+    &.plat-drawer-transition-top,
+    &.plat-drawer-transition-bottom {
+        overflow: hidden;
+        .user-select(none);
+        .touch-action(none);
+
+        &.plat-drawer-open {
+            .plat-clickeater {
+                position: absolute;
+                background-color: transparent;
+                overflow: hidden;
+                z-index: 9999;
+                .fill();
+                .touch-action(none);
+            }
+        }
+    }
+
+    &.plat-drawer-transition-left {
+        .box-shadow(-@shadow-offset 0px @shadow-blur @shadow-spread @shadow-color);
+    }
+
+    &.plat-drawer-transition-right {
+        .box-shadow(@shadow-offset 0px @shadow-blur @shadow-spread @shadow-color);
+    }
+
+    &.plat-drawer-transition-top {
+        .box-shadow(0px -@shadow-offset @shadow-blur @shadow-spread @shadow-color);
+    }
+
+    &.plat-drawer-transition-bottom {
+        .box-shadow(0px @shadow-offset @shadow-blur @shadow-spread @shadow-color);
+    }
+
+    &.plat-transition-init {
+        .translateZ(0);
+        .transition(@transition);
+    }
+}
+
+/// ============= Input Constants ============= ///
+
+#platui {
+    #__File {
+        #platui > #variables;
+        @default-button-color: @white;
+        @default-button-background-color: @neutral-color;
+    }
+}
+
+/// =========== Input Default Styles =========== ///
+
+.plat-file {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #File;
+    #platui > #__File;
+    .box-sizing(border-box);
+    display: inline-block;
+    height: @default-height;
+    cursor: text;
+
+    .plat-file-container {
+        .box-sizing(border-box);
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        position: relative;
+
+        .plat-file-hidden {
+            visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: -9999px;
+        }
+
+        .plat-file-input {
+            .box-sizing(border-box);
+            .border-top-left-radius(@border-radius);
+            .border-bottom-left-radius(@border-radius);
+            .border-top-right-radius(0px);
+            .border-bottom-right-radius(0px);
+            position: relative;
+            display: inline-block;
+            height: 100%;
+            width: @default-input-width;
+            left: 0;
+            bottom: 0;
+            padding: 0 0.25em;
+            text-align: right;
+            background-color: @transparent;
+            color: @text-color;
+            border: 1px solid @input-border-color;
+            border-right: none;
+            outline: none;
+            font: inherit;
+            -webkit-appearance: none;
+
+            &::-ms-clear,
+            &::-ms-reveal {
+                display: none;
+            }
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
+
+        .plat-file-button {
+            .border-top-left-radius(0px);
+            .border-bottom-left-radius(0px);
+            .border-top-right-radius(@border-radius);
+            .border-bottom-right-radius(@border-radius);
+            .webkit-touch-additions();
+            position: relative;
+            display: inline-block;
+            margin: 0;
+            height: 100%;
+            background-color: @default-button-background-color;
+            color: @default-button-color;
+            border: 0px solid @default-button-background-color;
+            outline: none;
+            font: inherit;
+            margin-left: -5px;
+
+            &:active {
+                background-color: darken(@default-button-background-color, 10%);
+            }
+            
+            &[disabled],
+            &:disabled {
+                background-color: @default-button-background-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+    
+    &.file-outline {
+        .plat-file-button {
+            border-color: @default-button-background-color;
+            color: @default-button-background-color;
+            border-width: 2px;
+
+            &:active {
+                color: @white;
+                background-color: @default-button-background-color;
+            }
+            
+            &[disabled],
+            &:disabled {
+                color: @default-button-background-color;
+                background-color: transparent;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+    }
+
+    &.file-primary {
+        .plat-file-button {
+            background-color: @primary-color;
+            border-color: @primary-color-dark;
+        
+            &:active {
+                background-color: darken(@primary-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @primary-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @primary-color;
+                color: @primary-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @primary-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @primary-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-secondary {
+        .plat-file-button {
+            background-color: @secondary-color;
+            border-color: @secondary-color-dark;
+        
+            &:active {
+                background-color: darken(@secondary-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @secondary-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @secondary-color;
+                color: @secondary-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @secondary-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @secondary-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-neutral {
+        .plat-file-button {
+            background-color: @neutral-color;
+            border-color: @neutral-color-dark;
+        
+            &:active {
+                background-color: darken(@neutral-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @neutral-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @neutral-color;
+                color: @neutral-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @neutral-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @neutral-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-success {
+        .plat-file-button {
+            background-color: @success-color;
+            border-color: @success-color-dark;
+        
+            &:active {
+                background-color: darken(@success-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @success-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @success-color;
+                color: @success-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @success-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @success-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-danger {
+        .plat-file-button {
+            background-color: @danger-color;
+            border-color: @danger-color-dark;
+        
+            &:active {
+                background-color: darken(@danger-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @danger-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @danger-color;
+                color: @danger-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @danger-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @danger-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-caution {
+        .plat-file-button {
+            background-color: @caution-color;
+            border-color: @caution-color-dark;
+        
+            &:active {
+                background-color: darken(@caution-color, 10%);
+            }
+        
+            &[disabled],
+            &:disabled {
+                background-color: @caution-color;
+                opacity: 0.5;
+                cursor: default;
+            }
+        }
+        
+        &.file-outline {
+            .plat-file-button {
+                border-color: @caution-color;
+                color: @caution-color;
+
+                &:active {
+                    color: @white;
+                    background-color: @caution-color;
+                }
+        
+                &[disabled],
+                &:disabled {
+                    color: @caution-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+    }
+
+    &.file-outline {
+        .plat-file-button {
+            background-color: transparent;
+        }
+    }
+}
+
+/**/
+/**/
+#platui {
+    #grid {
+	    @base-percent: 100%;
+	    @num-columns: 12;
+	    @column-padding: 10px;
+    }
+}
+
+#platui {
+    #__mixins {
+        #platui > #grid;
+
+        .generate-full-width-cols(@size) {
+	        [class*="col-@{size}"] {
+		        width: @base-percent;
+	        }
+        }
+
+        .generate-partial-width-cols(@size; @i: @num-columns) when (@i > 0) {
+	        .col-@{size}-@{i} {
+		        width: @base-percent * (@i / @num-columns);
+	        }
+	        .generate-partial-width-cols(@size; (@i - 1));
+        }
+
+        .generate-offset-cols(@size; @i: @num-columns) when (@i > 0) {
+	        .col-@{size}-offset-@{i} {
+		        margin-left: @base-percent * (@i / @num-columns);
+	        }
+	        .generate-offset-cols(@size; (@i - 1));
+        }
+
+        .generate-shiftable-cols(@size; @i: @num-columns) when (@i > 0) {
+	        .col-@{size}-push-@{i} {
+		        left: @base-percent * (@i / @num-columns);
+	        }
+	        .col-@{size}-pull-@{i} {
+		        right: @base-percent * (@i / @num-columns);
+	        }
+	        .generate-shiftable-cols(@size; (@i - 1));
+        }
+    }
+}
+
+& {
+    #platui > #variables;
+    #platui > #__mixins;
+    #platui > #grid;
+    #platui > #media;
+
+/// ======= Grid Styles ======== ///
+
+    [class*='col-'],
+    [class*='col-']:after,
+    [class*='col-']:before {
+        #platui;
+	    margin: 0;
+	    padding: 0;
+        #platui > #mixins > .box-sizing(border-box);
+    }
+
+    [class*='col-'] {
+	    position: relative;
+	    float: left;
+	    padding: @column-padding;
+    }
+
+    [class*='col-']:last-of-type {
+	    padding-right: @column-padding;
+    }
+
+    .row:after {
+	    content: "";
+	    display: table;
+	    clear: both;
+    }
+
+/// ======= Grid Column Generation ======== ///
+	
+	/// Phone
+	.generate-full-width-cols(@phablet-alias);
+	.generate-full-width-cols(@tablet-alias);
+	.generate-full-width-cols(@desktop-alias);
+	.generate-partial-width-cols(@phone-alias);
+	.generate-offset-cols(@phone-alias);
+	.generate-shiftable-cols(@phone-alias);
+
+	/// Phablet
+	.media-phablet({
+		.generate-full-width-cols(@tablet-alias);
+		.generate-full-width-cols(@desktop-alias);
+		.generate-partial-width-cols(@phablet-alias);
+		.generate-offset-cols(@phablet-alias);
+		.generate-shiftable-cols(@phablet-alias);
+	});
+
+	/// Tablet
+	.media-tablet({
+		.generate-full-width-cols(@desktop-alias);
+		.generate-partial-width-cols(@tablet-alias);
+		.generate-offset-cols(@tablet-alias);
+		.generate-shiftable-cols(@tablet-alias);
+	});
+
+	/// Desktop
+	.media-desktop({
+		.generate-partial-width-cols(@desktop-alias);
+		.generate-offset-cols(@desktop-alias);	
+		.generate-shiftable-cols(@desktop-alias);
+	});
+}
+
+@font-face {
+  font-family: 'platypus-icons';
+  src: url('fonts/icons.eot');
+  src: url('fonts/icons.eot?#iefix') format('embedded-opentype'),
+       url('fonts/icons.woff') format('woff'),
+       url('fonts/icons.ttf') format('truetype'),
+       url('fonts/icons.svg?#platypus-icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "platypus-icons";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: 0.2em;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+}
+
+[class*="icon-1.5x"] {
+  font-size: 150%;
+}
+
+[class*="icon-2x"] {
+  font-size: 200%;
+}
+
+[class*="icon-3x"] {
+  font-size: 300%;
+}
+
+.icon-arrow-down:before { content: '\e800'; }
+.icon-arrow-left:before { content: '\e801'; }
+.icon-arrow-right:before { content: '\e802'; }
+.icon-arrow-up:before { content: '\e803'; }
+.icon-camera:before { content: '\e804'; }
+.icon-checkbox:before { content: '\e805'; }
+.icon-checkmark:before { content: '\e806'; }
+.icon-close:before { content: '\e807'; }
+.icon-heart-o:before { content: '\e808'; }
+.icon-cog:before { content: '\e808'; }
+.icon-heart:before { content: '\e809'; }
+.icon-download:before { content: '\e80a'; }
+.icon-envelope:before { content: '\e80b'; }
+.icon-exclamation-o:before { content: '\e80c'; }
+.icon-exclamation:before { content: '\e80d'; }
+.icon-eye:before { content: '\e80e'; }
+.icon-desktop:before { content: '\e810'; }
+.icon-link:before { content: '\e811'; }
+.icon-paperclip:before { content: '\e812'; }
+.icon-phone:before { content: '\e813'; }
+.icon-pinned:before { content: '\e814'; }
+.icon-refresh-a:before { content: '\e815'; }
+.icon-refresh:before { content: '\e816'; }
+.icon-search:before { content: '\e817'; }
+.icon-tablet:before { content: '\e818'; }
+.icon-user-girl:before { content: '\e819'; }
+.icon-user:before { content: '\e81a'; }*/
+
+/// ============= Input Constants ============= ///
+
+#platui {
+    #__Input {
+        #platui > #variables;
+        #platui > #Input;
+        @border-color-accent: darken(@border-color, 25%);
+        @action-padding: 2.5em;
+    }
+}
+
+/// =========== Input Default Styles =========== ///
+
+.plat-input {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Input;
+    #platui > #__Input;
+    .box-sizing(border-box);
+    display: inline-block;
+    width: @default-width;
+    height: @default-height;
+    cursor: text;
+
+    .plat-input-container {
+        .fill();
+        .box-sizing(border-box);
+        position: relative;
+
+        input {
+            .box-sizing(border-box);
+            .border-radius(0px);
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            left: 0;
+            bottom: 0;
+            padding: 0 @action-padding 0 0;
+            background-color: @transparent;
+            color: @text-color;
+            outline: none;
+            border: none;
+            font: inherit;
+            -webkit-appearance: none;
+
+            &::-ms-clear,
+            &::-ms-reveal {
+                display: none;
+            }
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+
+/// =========== Placeholder Styling =========== ///
+
+            &::-webkit-input-placeholder {
+                color: @placeholder-color;
+            }
+
+            &::-moz-input-placeholder {
+                color: @placeholder-color;   
+            }
+
+            &:-moz-input-placeholder {
+                color: @placeholder-color;
+            }
+
+            &:-ms-input-placeholder {
+                color: @placeholder-color;
+            }
+        }
+
+/// =============== Input Icon =============== ///
+
+        .plat-input-action {
+            .box-sizing(content-box);
+            display: inline-block;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: @action-padding;
+            height: @default-height;
+            line-height: @default-height;
+            text-align: right;
+            color: @border-color-accent;
+
+            .plat-action {
+                display: inline-block;
+                min-width: 20px;
+                cursor: pointer;
+            }
+        }
+    }
+
+    &:not(.input-outline) {
+        .plat-input-container {
+            input {
+                border-bottom: @primary-border-bottom;
+
+                &:focus {
+                    border-color: @border-color-accent;
+                }
+            }
+        }
+    }
+
+/// ============== Secondary Input =============== ///
+    &.input-outline {
+        .border-radius(@secondary-border-radius);
+        border: @secondary-border;
+        padding: 0 0.5em;
+    }
+
+/// ============== Input Types =============== ///
+}
+
+.input-group {
+    #platui > #mixins;
+    #platui > #Input;
+    #platui > #__Input;
+
+    [class*="col-"] {
+        padding: 0;
+    }
+
+    .plat-input {
+        width: 100%;
+        position: relative;
+        margin-top: -3px;
+        
+        input {
+            padding-left: 8px;
+            padding-right: @action-padding + 0.5em;
+        }
+
+        .plat-input-action {
+            right: 0.25em;
+        }
+    }
+}
+
+/// ============= Listview Constants ============= ///
+
+#platui {
+    #__Listview {
+        .plat-ring-constants(@orientation: vertical) {
+            & when (@orientation = vertical) {
+                height: 2.5em;
+                width: 100%;
+            } 
+            & when (@orientation = horizontal) {
+                height: 100%;
+                width: 2.5em;
+            }
+
+            .plat-ring {
+                height: 2em;
+                width: 2em;
+                position: absolute;
+
+                & when (@orientation = vertical) {
+                    margin-top: 0.25em;
+                    margin-bottom: 0.25em;
+                    left: 50%;
+                    .translate-accelerate(-50%;0);
+                } 
+                & when (@orientation = horizontal) {
+                    margin-left: 0.25em;
+                    margin-right: 0.25em;
+                    top: 50%;
+                    .translate-accelerate(0;-50%);
+                }
+
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .border-radius(2em);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// =========== Listview Default Styles =========== ///
+
+.plat-listview {
+    #platui > #mixins;
+    #platui > #Listview;
+    #platui > #__Listview;
+    .fill();
+    .box-sizing(border-box);
+    position: relative;
+    min-height: 50px;
+    overflow: hidden;
+
+    .plat-listview-viewport {
+        .fill();
+        .box-sizing(border-box);
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        overflow: hidden;
+        
+        .plat-scroll-container {
+            .fill();
+            .box-sizing(border-box);
+            position: absolute;
+            left: 0;
+            top: 0;
+            -ms-overflow-style:-ms-autohiding-scrollbar;
+
+            .plat-container {
+                .fill();
+                .box-sizing(border-box);
+
+                .plat-listview-group,
+                .plat-listview-group .plat-header,
+                .plat-listview-group .plat-listview-items {
+                    .box-sizing(border-box);
+                }
+            }
+        }
+
+        &.plat-manipulation-prep {
+            background-color: @manipulated-viewport-background-color;
+            .touch-action(none);
+        }
+            
+        &.plat-transition-init {
+            .translateZ(0);
+            .transition(@refresh-transition);
+        }
+    }
+
+    .plat-refresh,
+    .plat-incremental {
+        position: absolute;
+        z-index: 0;
+
+        .plat-ring {
+            .plat-progress-container {
+                .plat-animated-ring {
+                    .animation-play-state(paused);
+                }
+            }
+        }
+
+        &.plat-play {
+            .plat-ring {
+                .plat-progress-container {
+                    .plat-animated-ring {
+                        .animation-play-state(running);
+                    }
+                }
+            }
+        }
+    }
+
+    &.plat-vertical {
+        .plat-listview-viewport {
+            .plat-scroll-container {
+                .scroll(y);
+
+                .plat-container {
+                    .plat-infinite {
+                        .plat-ring-constants();
+                        position: relative;
+                    }
+                }
+            }
+
+            &.plat-manipulation-prep {
+                .plat-scroll-container {
+                    overflow: hidden;
+                }
+            }
+        }
+
+        .plat-refresh,
+        .plat-incremental {
+            .plat-ring-constants();
+            left: 0;
+        }
+
+        .plat-refresh {
+            top: 0;
+        }
+
+        .plat-incremental {
+            bottom: 0;
+        }
+    }
+
+    &.plat-horizontal {
+        .plat-listview-viewport {
+            .plat-scroll-container {
+                .scroll(x);
+
+                .plat-container {
+                    .flexbox();
+                    .flex-direction(row);
+                    .flex-wrap(nowrap);
+                    .align-items(stretch);
+
+                    .plat-listview-group {
+                        height: 100%;
+                        .flex(0 0 auto);
+
+                        .plat-listview-items {
+                            .flexbox();
+                            .flex-direction(column);
+                            .flex-wrap(wrap);
+                            .align-content(flex-start);
+                            .fill();
+
+                            .plat-item {
+                                .flex(0 0 auto);
+                            }
+                        }
+                    }
+
+                    .plat-infinite {
+                        position: relative;
+                    }
+                }
+            }
+
+            &.plat-manipulation-prep {
+                .plat-scroll-container {
+                    overflow: hidden;
+                }
+            }
+        }
+
+        .plat-refresh,
+        .plat-incremental {
+            .plat-ring-constants(horizontal);
+            top: 0;
+        }
+
+        .plat-refresh {
+            left: 0;
+        }
+
+        .plat-incremental {
+            right: 0;
+        }
+    }
+
+    &.plat-animated {
+        .plat-listview-viewport {
+            .plat-scroll-container {
+                .plat-container {
+                    .plat-enter-init {
+                        &.plat-item,
+                        &.plat-listview-group {
+                            .animation(@enter-animation);
+                        }
+                    }
+                }
+            }
+        }
+        
+        .plat-listview-viewport {
+            .plat-scroll-container {
+                .plat-container {
+                    .plat-leave {
+                        &.plat-item,
+                        &.plat-listview-group {
+                            .animation(@leave-animation);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+& {
+    #platui > #Listview;
+    .enter(@enter-animation-name);
+    .leave(@leave-animation-name);
+}
+
+/// =========== Modal Default Styles =========== ///
+
+.plat-modal {
+    #platui > #mixins;
+    #platui > #Modal;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 999999;
+    -webkit-backface-visibility: hidden;
+    .fill();
+    .box-sizing(border-box);
+    .misc-webkit-touch();
+    .user-select();
+
+    .plat-modal-container {
+        position: absolute;
+        background-color: @background-color;
+        color: @color;
+        -webkit-backface-visibility: hidden;
+        .fill();
+        .scroll();
+        .box-sizing(content-box);
+        
+        &.plat-no-transition,
+        &.plat-modal-transition.plat-fade {
+            top: 0;
+            left: 0;
+        }
+
+        &.plat-modal-transition {
+            .translateZ(0);
+
+            &.plat-right {
+                top: 0;
+                left: -100%;
+                .transition(@right-transition);
+
+                &.plat-activate {
+                    left: 0;
+                }
+            }
+
+            &.plat-left {
+                top: 0;
+                right: -100%;
+                .transition(@left-transition);
+
+                &.plat-activate {
+                    right: 0;
+                }
+            }
+
+            &.plat-down {
+                top: -100%;
+                left: 0;
+                .transition(@down-transition);
+
+                &.plat-activate {
+                    top: 0;
+                }
+            }
+
+            &.plat-up {
+                bottom: -100%;
+                left: 0;
+                .transition(@up-transition);
+
+                &.plat-activate {
+                    bottom: 0;
+                }
+            }
+
+            &.plat-fade {
+                opacity: 0;
+                .transition(@fade-transition);
+
+                &.plat-activate {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    &.modal-custom-width {
+        #platui > #Modal > #custom-width;
+
+        .plat-modal-container {
+            width: @width;
+            height: 100%;
+
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade {
+                top: 0;
+                left: @x-offset;
+            }
+
+            &.plat-modal-transition {
+                &.plat-right {
+                    top: 0;
+                    left: -50%;
+
+                    &.plat-activate {
+                        left: @x-offset;
+                    }
+                }
+
+                &.plat-left {
+                    top: 0;
+                    right: -50%;
+
+                    &.plat-activate {
+                        right: @x-offset;
+                    }
+                }
+
+                &.plat-down {
+                    top: -100%;
+                    left: @x-offset;
+
+                    &.plat-activate {
+                        top: 0;
+                    }
+                }
+
+                &.plat-up {
+                    bottom: -100%;
+                    left: @x-offset;
+
+                    &.plat-activate {
+                        bottom: 0;
+                    }
+                }
+            }
+        }
+
+        &.modal-centered {
+            .plat-modal-container {
+                &.plat-no-transition,
+                &.plat-modal-transition.plat-fade,
+                &.plat-modal-transition.plat-down,
+                &.plat-modal-transition.plat-up {
+                    left: 50%;
+                    .translate-accelerate(-50%;0);
+                }
+                
+                &.plat-modal-transition {
+                    &.plat-right {
+                        .translate-accelerate(-50%;0);
+
+                        &.plat-activate {
+                            left: 50%;
+                        }
+                    }
+
+                    &.plat-left {
+                        .translate-accelerate(50%;0);
+
+                        &.plat-activate {
+                            right: 50%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &.modal-custom-height {
+        #platui > #Modal > #custom-height;
+
+        .plat-modal-container {
+            width: 100%;
+            height: 50%;
+
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade {
+                top: @y-offset;
+                left: 0;
+            }
+
+            &.plat-modal-transition {
+                &.plat-right {
+                    top: @y-offset;
+                    left: -100%;
+
+                    &.plat-activate {
+                        left: 0;
+                    }
+                }
+
+                &.plat-left {
+                    top: @y-offset;
+                    right: -100%;
+
+                    &.plat-activate {
+                        right: 0;
+                    }
+                }
+
+                &.plat-down {
+                    top: -50%;
+                    left: 0;
+
+                    &.plat-activate {
+                        top: @y-offset;
+                    }
+                }
+
+                &.plat-up {
+                    bottom: -50%;
+                    left: 0;
+
+                    &.plat-activate {
+                        bottom: @y-offset;
+                    }
+                }
+            }
+        }
+
+        &.modal-centered {
+            .plat-modal-container {
+                &.plat-no-transition,
+                &.plat-modal-transition.plat-fade,
+                &.plat-modal-transition.plat-right,
+                &.plat-modal-transition.plat-left {
+                    top: 50%;
+                    .translate-accelerate(0;-50%);
+                }
+                
+                &.plat-modal-transition {
+                    &.plat-down {
+                        .translate-accelerate(0;-50%);
+
+                        &.plat-activate {
+                            top: 50%;
+                        }
+                    }
+
+                    &.plat-up {
+                        .translate-accelerate(0;50%);
+
+                        &.plat-activate {
+                            bottom: 50%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    &.modal-custom {
+        #platui > #Modal > #custom;
+
+        .plat-modal-container {
+            width: @width;
+            height: @height;
+
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade {
+                top: @y-offset;
+                left: @x-offset;
+            }
+
+            &.plat-modal-transition {
+                .plat-right {
+                    top: @y-offset;
+                    left: -@x-offset;
+
+                    &.plat-activate {
+                        left: @x-offset;
+                    }
+                }
+
+                &.plat-left {
+                    top: @y-offset;
+                    right: -@width;
+
+                    &.plat-activate {
+                        right: @x-offset;
+                    }
+                }
+
+                &.plat-down {
+                    top: -@height;
+                    left: @x-offset;
+
+                    &.plat-activate {
+                        top: @y-offset;
+                    }
+                }
+
+                &.plat-up {
+                    bottom: -@height;
+                    left: @x-offset;
+
+                    &.plat-activate {
+                        bottom: @y-offset;
+                    }
+                }
+            }
+        }
+
+        &.modal-centered {
+            .plat-modal-container {
+                &.plat-no-transition,
+                &.plat-modal-transition.plat-fade {
+                    top: 50%;
+                    left: 50%;
+                    .translate-accelerate(-50%;-50%);
+                }
+                
+                &.plat-modal-transition {
+                    &.plat-right {
+                        top: 50%;
+                        .translate-accelerate(-50%;-50%);
+
+                        &.plat-activate {
+                            left: 50%;
+                        }
+                    }
+
+                    &.plat-left {
+                        top: 50%;
+                        .translate-accelerate(50%;-50%);
+
+                        &.plat-activate {
+                            right: 50%;
+                        }
+                    }
+
+                    &.plat-down {
+                        left: 50%;
+                        .translate-accelerate(-50%;-50%);
+
+                        &.plat-activate {
+                            top: 50%;
+                        }
+                    }
+
+                    &.plat-up {
+                        left: 50%;
+                        .translate-accelerate(-50%;50%);
+
+                        &.plat-activate {
+                            bottom: 50%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// =========== Modal Popover Styles =========== ///
+
+.plat-modal {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Modal;
+
+    &.modal-prompt {
+        background-color: rgba(0,0,0,0.6);
+
+        .plat-modal-container {
+            margin: 0 auto;
+            width: 80%;
+            max-width: 30em;
+            height: auto;
+            background-color: @white;
+            color: @text-grey;
+            .border-radius(@prompt-border-radius);
+            
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade {
+                top: 20%;
+                left: 0;
+                right: 0;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            &.plat-modal-transition {
+                &.plat-up, &.plat-down {
+                    left: 0;
+                    right: 0;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+
+                &.plat-up {
+                    .transition(@down-transition);
+                    top: 100%;
+                    
+                    &.plat-activate {
+                        top: @prompt-top;
+                    }
+                }
+
+                &.plat-down {
+                    &.plat-activate {
+                        top: @prompt-top;
+                    }
+                }
+
+                &.plat-left,
+                &.plat-right {
+                    top: @prompt-top;
+
+                    &.plat-activate {
+                        left: 0;
+                        right: 0;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                }
+            }
+
+            & .prompt-title {
+                padding: 1em 2em;
+                border-bottom: 1px solid @prompt-accent-color;
+                text-align: center;
+                font-size: 110%;
+            }
+
+            & .prompt-body {
+                padding: 1em 2em;
+                text-align: center;
+                background-color: @prompt-body-color;
+            }
+
+            & .prompt-action {
+                text-align: center;
+                padding: 0 2em 1em;
+                background-color: @prompt-body-color;
+
+                &.button-group {
+                    padding-left: 0;
+                    padding-right: 0;
+                    padding-bottom: 0;
+                    width: 100%;
+                    .flexbox();
+
+                    & > button {
+                        height: 100%;
+                        padding-top: 1em;
+                        padding-bottom: 1em;
+                        font-size: 110%;
+                        border-width: 0;
+                        border-top: 2px solid @prompt-accent-color;
+                        background-color: transparent;
+                        color: lighten(@text-grey, 20%);
+                        .flex(1);
+
+                        &:last-child {
+                            border-left: 2px solid @prompt-accent-color;
+                        }
+
+                        &:hover {
+                            opacity: 1;
+                        }
+
+                        &.button-suggested {
+                            color: @text-grey;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// =========== Progress Bar Default Styles =========== ///
+
+.plat-progress {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #ProgressBar;
+    width: 100%;
+    .box-sizing(border-box);
+
+    .plat-progress-container {
+        position: relative;
+        height: @height;
+        width: 100%;
+        background-color: @neutral-color-light;
+        overflow: hidden;
+        border: @border;
+        .border-radius(@height);
+        .box-sizing(content-box);
+        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.13));
+
+        .plat-animated-bar {
+            background-color: @neutral-color-dark;
+            width: 0;
+            height: @height;
+            .border-radius(@height / 2);
+            .box-sizing(content-box);
+            .translateZ(0);
+            .transition(@transition);
+        }
+    }
+
+    &.progress-primary {
+        .plat-animated-bar {
+            background-color: @primary-color;
+        }
+    }
+
+    &.progress-secondary {
+        .plat-animated-bar {
+            background-color: @secondary-color;
+        }
+    }
+
+    &.progress-success {
+        .plat-animated-bar {
+            background-color: @success-color;
+        }
+    }
+
+    &.progress-danger {
+        .plat-animated-bar {
+            background-color: @danger-color;
+        }
+    }
+
+    &.progress-caution {
+        .plat-animated-bar {
+            background-color: @caution-color;
+        }
+    }
+}
+
+/// =========== Progress Ring Default Styles =========== ///
+
+.plat-ring {
+    #platui > #mixins;
+    #platui > #ProgressRing;
+    display: inline-block;
+    width: @diameter;
+    height: @diameter;
+    .box-sizing(border-box);
+
+    .plat-progress-container {
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+        .fill();
+        .box-sizing(border-box);
+
+        .plat-animated-ring {
+            width: 100%;
+            height: 100%;
+            border-left: @thickness solid @fill-color;
+            border-bottom: @thickness solid @unfilled-color;
+            border-right: @thickness solid @unfilled-color;
+            border-top: @thickness solid @unfilled-color;
+            .border-radius(@diameter);
+            .animate(@animation-name; @spin-frequency; linear; 0s; infinite);
+            .box-sizing(border-box);
+        }
+    }
+}
+
+/// =========== Progress Ring Animation =========== ///
+
+& {
+    #platui > #ProgressRing;
+    .spin();
+}
+
+/// =========== Radio Default Styles =========== ///
+
+.plat-radio {
+    #platui > #mixins;
+    #platui > #Radio;
+    display: inline-block;
+    cursor: pointer;
+    .flex-vertical-center();
+    .box-sizing(border-box);
+
+    & > span {
+        line-height: @diameter;
+
+        &:first-of-type {
+            margin-left: 0.4em;
+        }
+    }
+
+    .plat-radio-container {
+        position: relative;
+        display: inline-block;
+        width: @diameter;
+        height: @diameter;
+        overflow: hidden;
+        background-color: @background-color;
+        border: @border-size solid @border-color;
+        .border-radius(@diameter);
+        .background-clip(padding-box);
+        .box-sizing(content-box);
+
+        &.plat-bullet {
+            border-color: @checked-border-color;
+
+            .plat-mark {
+                background-color: @mark-color;
+                width: @diameter;
+                height: @diameter;
+                border: @mark-padding solid @mark-padding-color;
+                .border-radius(@diameter);
+                .background-clip(padding-box);
+                .box-sizing(border-box);
+            }
+        }
+    }
+}
+
+/// ============= Range Constants ============= ///
+
+#platui {
+    #__Range {
+        #platui > #Range;
+        @knob-radius: @knob-diameter / 2;
+        @half-thickness: @thickness / 2;
+    }
+}
+
+/// ========== Range Default Style =========== ///
+
+.plat-range {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Range;
+    #platui > #__Range;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    .user-select();
+    .touch-action(none);
+    .box-sizing(border-box);
+    
+    .plat-range-container {
+        position: relative;
+        background-color: @neutral-color-light;
+        overflow: visible;
+        .fill();
+        .border-radius(@fill-border-radius);
+        .box-sizing(border-box);
+        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
+
+        .plat-range-track {
+            position: absolute;
+            background-color: @neutral-color-dark;
+            overflow: visible;
+            .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
+            .border-radius(@fill-border-radius);
+            .box-sizing(border-box);
+
+            .plat-lower-knob,
+            .plat-upper-knob {
+                position: absolute;
+                width: @knob-diameter;
+                height: @knob-diameter;
+                background-color: lighten(@pale-grey, 10%);
+                border: @knob-border-size solid darken(@pale-grey, 5%);
+                cursor: pointer;
+                .box-sizing(border-box);
+                .border-radius(@knob-diameter / 2);
+                .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.25));
+            }
+        }
+    }
+    
+    &.plat-horizontal,
+    &.plat-horizontal-reversed {
+        height: @knob-diameter;
+        padding: 0 @knob-radius;
+
+        .plat-range-container {
+            top: 50%;
+            height: @thickness;
+            .translate-accelerate(0;-@half-thickness);
+
+            .plat-range-track {
+                width: 100%;
+                height: 100%;
+
+                .plat-lower-knob,
+                .plat-upper-knob {
+                    top: @half-thickness;
+                    .translate-accelerate(0;-@knob-radius);
+                }
+
+                .plat-lower-knob {
+                    left: -@knob-radius;
+                }
+
+                .plat-upper-knob {
+                    right: -@knob-radius;
+                }
+
+                &.plat-transition-init {
+                    .translateZ(0);
+                    .transition(@horizontal-transition);
+                }
+            }
+        }
+    }
+
+    &.plat-horizontal {
+        .plat-range-container {
+            .plat-range-track {
+                left: 0;
+            }
+        }
+    }
+
+    &.plat-horizontal-reversed {
+        .plat-range-container {
+            .plat-range-track {
+                right: 0;
+            }
+        }
+    }
+
+    &.plat-vertical,
+    &.plat-vertical-reversed {
+        width: @knob-diameter;
+        padding: @knob-radius 0;
+
+        .plat-range-container {
+            left: 50%;
+            top: @knob-radius;
+            width: @thickness;
+            .translate-accelerate(-@half-thickness;0);
+
+            .plat-range-track {
+                width: 100%;
+                height: 0;
+
+                .plat-lower-knob,
+                .plat-upper-knob {
+                    left: @half-thickness;
+                    .translate-accelerate(-@knob-radius;0)
+                }
+
+                .plat-lower-knob {
+                    bottom: -@knob-radius;
+                }
+
+                .plat-upper-knob {
+                    top: -@knob-radius;
+                }
+
+                &.plat-transition-init {
+                    .translateZ(0);
+                    .transition(@vertical-transition);
+                }
+            }
+        }
+    }
+
+    &.plat-vertical {
+        .plat-range-container {
+            .plat-range-track {
+                bottom: 0;
+            }
+        }
+    }
+
+    &.plat-vertical-reversed {
+        .plat-range-container {
+            .plat-range-track {
+                top: 0;
+            }
+        }
+    }
+
+/// =========== Slider Color Options =========== ///
+
+    &.range-primary {
+        .plat-range-container {
+            .plat-range-track {
+                background-color: @primary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
+            }
+        }
+    }
+
+    &.range-secondary {
+        .plat-range-container {
+            .plat-range-track {
+                background-color: @secondary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
+            }
+        }
+    }
+        
+    &.range-success {
+        .plat-range-container {
+            .plat-range-track {
+                background-color: @success-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
+            }
+        }
+    }
+
+    &.range-caution {
+        .plat-range-container {
+            .plat-range-track {
+                background-color: @caution-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
+            }
+        }
+    }
+
+    &.range-danger {
+        .plat-range-container {
+            .plat-range-track {
+                background-color: @danger-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
+            }
+        }
+    }
+}
+
+/// ============= Select Constants ============= ///
+
+#platui {
+    #__Select {
+        #platui > #variables;
+        @checked-option-hover-color: @white;
+        @checked-option-hover-background-color: #1e90ff;
+    }
+}
+
+/// =========== Select Default Styles =========== ///
+
+.plat-select {
+    #platui > #mixins;
+    #platui > #Select;
+    #platui > #__Select;
+    display: inline-block;
+    color: @color;
+    background-color: @background-color;
+    outline: none;
+    margin: 0;
+    padding: 0.5em 2.5em 0.5em 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font: inherit;
+    border: @border;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-position: right 40%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAeCAYAAADZ7LXbAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH/w/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA/g88wAAKCRFRHgg/P9eM4Ors7ONo62Dl8t6r8G/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt/qIl7gRoXgugdfeLZrIPQLUAoOnaV/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl/AV/1s+X48/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H/LcL//wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93/+8//UegJQCAZkmScQAAXkQkLlTKsz/HCAAARKCBKrBBG/TBGCzABhzBBdzBC/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q/pH5Z/YkGWcNMw09DpFGgsV/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L/1U/W36p/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV/MN8C3yLfLT8Nvnl+F30N/I/9k/3r/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a/zYnKOZarnivN7cyzytuQN5zvn//tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA/0HIw6217nU1R3SPVRSj9Yr60cOxx++/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb/1tWeOT3dvfN6b/fF9/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR/cGhYPP/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF/6i/suuFxYvfvjV69fO0ZjRoZfyl5O/bXyl/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o/2j5sfVT0Kf7kxmTk/8EA5jz/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5/wAAgOkAAHUwAADqYAAAOpgAABdvkl/FRgAAAKRJREFUeNrs1TEKwkAQheEvIoI2nsk7qFdIq1hoJ3gCC5sUVpY23sDKXnvrYOUBbGITG0kQjQriPlgYhmF/3ryFjbIs82nVfEEBEiAB8k+Q+q1IkqSDNVq4lMy3scIkjuP0FSdbjNHMLys6OwyQVlnXEsOS2QP6OL8jkzlmd70jus86eBT8FIu8PqGXg6oFX6ARGthgX+V1ReFnDJAACZAfhFwHAJI7HF2lZGQaAAAAAElFTkSuQmCC);
+    .box-sizing(border-box);
+    .border-radius(@border-radius);
+    .user-select(none);
+
+    &::-ms-expand {
+        display: none;
+    }
+
+    &::-ms-value {
+        color: @color;
+        background-color: @background-color;
+    }
+
+    option:checked {
+        color: lighten(@checked-option-hover-color, 15%);
+        background-color: lighten(@checked-option-hover-background-color, 15%);
+    }
+
+    option:focus,
+    option:active,
+    option:hover {
+        color: @checked-option-hover-color;
+        background-color: @checked-option-hover-background-color;
+    }
+}
+
+/// ============= Slider Constants ============= ///
+
+#platui {
+    #__Slider {
+        #platui > #Slider;
+        @knob-radius: @knob-diameter / 2;
+        @half-thickness: @thickness / 2;
+    }
+}
+
+/// ========== Slider Default Style =========== ///
+
+.plat-slider {
+    #platui > #variables;
+    #platui > #mixins;
+    #platui > #Slider;
+    #platui > #__Slider;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    .user-select();
+    .touch-action(none);
+    .box-sizing(border-box);
+    
+    .plat-slider-container {
+        position: relative;
+        background-color: @neutral-color-light;
+        overflow: visible;
+        .fill();
+        .border-radius(@fill-border-radius);
+        .box-sizing(border-box);
+        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
+
+        .plat-slider-track {
+            position: absolute;
+            background-color: @neutral-color-dark;
+            overflow: visible;
+            .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
+            .border-radius(@fill-border-radius);
+            .box-sizing(border-box);
+
+            .plat-knob {
+                position: absolute;
+                width: @knob-diameter;
+                height: @knob-diameter;
+                background-color: lighten(@pale-grey, 10%);
+                border: @knob-border-size solid darken(@pale-grey, 5%);
+                cursor: pointer;
+                .box-sizing(border-box);
+                .border-radius(@knob-diameter);
+                .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.25));
+            }
+        }
+    }
+
+/// ============ Slider Orientations ============= ///
+
+    &.plat-horizontal,
+    &.plat-horizontal-reversed {
+        height: @knob-diameter;
+        padding: 0 @knob-radius;
+
+        .plat-slider-container {
+            top: 50%;
+            height: @thickness;
+            .translate-accelerate(0;-@half-thickness);
+
+            .plat-slider-track {
+                width: 0;
+                height: 100%;
+
+                .plat-knob {
+                    top: @half-thickness;
+                    .translate-accelerate(0;-@knob-radius);
+                }
+
+                &.plat-transition-init {
+                    .translateZ(0);
+                    .transition(@horizontal-transition);
+                }
+            }
+        }
+    }
+
+    &.plat-horizontal {
+        .plat-slider-container {
+            .plat-slider-track {
+                left: 0;
+
+                .plat-knob {
+                    right: -@knob-radius;
+                }
+            }
+        }
+    }
+
+    &.plat-horizontal-reversed {
+        .plat-slider-container {
+            .plat-slider-track {
+                right: 0;
+
+                .plat-knob {
+                    left: -@knob-radius;
+                }
+            }
+        }
+    }
+
+    &.plat-vertical,
+    &.plat-vertical-reversed {
+        width: @knob-diameter;
+        padding: @knob-radius 0;
+
+        .plat-slider-container {
+            left: 50%;
+            top: @knob-radius;
+            width: @thickness;
+            .translate-accelerate(-@half-thickness;0);
+
+            .plat-slider-track {
+                width: 100%;
+                height: 0;
+
+                .plat-knob {
+                    left: @half-thickness;
+                    .translate-accelerate(-@knob-radius;0)
+                }
+
+                &.plat-transition-init {
+                    .translateZ(0);
+                    .transition(@vertical-transition);
+                }
+            }
+        }
+    }
+
+    &.plat-vertical {
+        .plat-slider-container {
+            .plat-slider-track {
+                bottom: 0;
+
+                .plat-knob {
+                    top: -@knob-radius;
+                }
+            }
+        }
+    }
+
+    &.plat-vertical-reversed {
+        .plat-slider-container {
+            .plat-slider-track {
+                top: 0;
+
+                .plat-knob {
+                    bottom: -@knob-radius;
+                }
+            }
+        }
+    }
+
+/// =========== Slider Color Options =========== ///
+
+    &.slider-primary {
+        .plat-slider-container {
+            .plat-slider-track {
+                background-color: @primary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
+            }
+        }
+    }
+
+    &.slider-secondary {
+        .plat-slider-container {
+            .plat-slider-track {
+                background-color: @secondary-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
+            }
+        }
+    }
+
+    &.slider-success {
+        .plat-slider-container {
+            .plat-slider-track {
+                background-color: @success-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
+            }
+        }
+    }
+
+    &.slider-caution {
+        .plat-slider-container {
+            .plat-slider-track {
+                background-color: @caution-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
+            }
+        }
+    }
+
+    &.slider-danger {
+        .plat-slider-container {
+            .plat-slider-track {
+                background-color: @danger-color;
+                .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
+            }
+        }
+    }
+}
+
+/// ============= Toggle Constants ============= ///
+
+#platui {
+    #__Toggle {
+        #platui > #Toggle;
+        @height: @width * @ratio;
+        @toggle-thin-height: @width * @toggle-thin-ratio;
+        @knob-radius: @knob-diameter / 2;
+        @half-thin-height: @toggle-thin-height / 2;
+    }
+}
+
+/// ========== Toggle Default Style =========== ///
+
+.plat-toggle {
+    #platui > #mixins;
+    #platui > #Toggle;
+    #platui > #__Toggle;
+    display: inline-block;
+    cursor: pointer;
+    .box-sizing(border-box);
+    
+    .plat-toggle-container {
+        width: @width;
+        height: @height;
+        position: relative;
+        overflow: hidden;
+        background-color: @background-color-off;
+        border: 1px solid;
+        border-color: @border-color;
+        .border-radius(@height);
+        .box-sizing(content-box);
+        .translateZ(0);
+        .transition(@transition);
+        
+        .plat-knob {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: @knob-diameter;
+            width: @knob-diameter;
+            background-color: @white;
+            .border-radius(@knob-diameter);
+            .box-shadow(inset -1px 0px 3px 0px @pale-grey);
+            .box-sizing(border-box);
+            .translateZ(0);
+            .transition(@knob-transition);
+        }
+
+        &.plat-slide {
+            border-color: @border-color-on;
+            background-color: @background-color-on;
+
+            .plat-knob {
+                left: @width - @knob-diameter;
+                .box-shadow(inset 1px -2px 3px 0px @pale-grey);
+            }
+        }
+    }
+
+/// ============== Toggle Square =============== ///
+
+    &.toggle-square {
+        .plat-toggle-container {
+            .border-radius(2px);
+
+            .plat-knob {
+                .border-radius(2px);
+            }
+        }
+    }
+
+/// =============== Toggle Thin ================ ///
+
+    &.toggle-thin {
+        .plat-toggle-container {
+            height: @toggle-thin-height;
+            overflow: visible;
+            background-color: @neutral-color-dark;
+            border: none;
+
+            .plat-knob {
+                top: @half-thin-height - @knob-radius;
+                background-color: @toggle-thin-color;
+                border: 1px solid darken(@toggle-thin-color, 10%);
+                .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+            }
+
+            &.plat-slide {
+                background-color: @background-color-on;
+
+                .plat-knob {
+                    .box-shadow(-2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+                }
+            }
+        }
+    }
+
+/// =========== Toggle Color Options =========== ///
+
+    &.toggle-primary {
+        .plat-toggle-container.plat-slide {
+            background-color: @primary-color;
+            border-color: darken(@primary-color, 5%);
+        }
+    }
+
+    &.toggle-secondary {
+        .plat-toggle-container.plat-slide {
+            background-color: @secondary-color;
+            border-color: darken(@secondary-color, 5%);
+        }
+    }
+
+    &.toggle-danger {
+        .plat-toggle-container.plat-slide {
+            background-color: @danger-color;
+            border-color: darken(@danger-color, 5%);
+        }
+    }
+
+    &.toggle-caution {
+        .plat-toggle-container.plat-slide {
+            background-color: @caution-color;
+            border-color: darken(@caution-color, 5%);
+        }
+    }
+}

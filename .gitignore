@@ -24,9 +24,6 @@
 *.js
 *.js.map
 !gruntfile.js
-controls/platypus.less
-controls/platypusui.ts
-dist/
 
 # Build results
 [Dd]ebug/
@@ -197,3 +194,4 @@ FakesAssemblies/
 .tscache
 !build/*.js
 !build/options/*.js
+!dist/*
