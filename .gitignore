@@ -33,7 +33,6 @@ dist/
 [Dd]ebugPublic/
 [Rr]elease/
 x64/
-build/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -196,3 +195,5 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 .tscache
+!build/*.js
+!build/options/*.js
