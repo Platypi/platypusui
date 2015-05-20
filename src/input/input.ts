@@ -279,6 +279,9 @@ module platui {
                 value = attributes[key];
                 if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
                     continue;
+                } else if (name === 'id') {
+                    input.setAttribute(name, value);
+                    element.removeAttribute(name);
                 } else if (name === 'placeholder') {
                     hasPlaceholder = true;
                     input.placeholder = value;
