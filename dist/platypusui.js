@@ -3339,6 +3339,10 @@ var platui;
                 if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
                     continue;
                 }
+                else if (name === 'id') {
+                    element.removeAttribute(name);
+                    input.setAttribute(name, value);
+                }
                 else if (name === 'placeholder') {
                     hasPlaceholder = true;
                     input.placeholder = value;
@@ -3856,6 +3860,10 @@ var platui;
                         buttonInput.setAttribute(name, value);
                     }
                     continue;
+                }
+                else if (name === 'id') {
+                    element.removeAttribute(name);
+                    hiddenInput.setAttribute(name, value);
                 }
                 else if (name === 'multiple') {
                     hasMultiple = true;
@@ -4708,16 +4716,22 @@ var platui;
                 this._outerStart = this._outerEnd = false;
                 return;
             }
-            var itemNodes = this._itemNodes, container = this._container, nodeLength = itemNodes.length;
+            var itemNodes = this._itemNodes, container = this._container, nodeLength = itemNodes.length, isNode = this.utils.isNode, nodeToInsert;
             if (nodeLength > 1) {
-                container.insertBefore(itemNodes[this._nextIndex], null);
+                nodeToInsert = itemNodes[this._nextIndex];
+                if (isNode(nodeToInsert)) {
+                    container.insertBefore(nodeToInsert, null);
+                }
                 this._outerEnd = true;
                 if (nodeLength > 2) {
                     if (this._isInfinite || this._index > 0) {
-                        container.insertBefore(itemNodes[this._previousIndex], container.firstChild);
-                        container.style[this._transform] = this._calculateStaticTranslation(-length);
-                        // access property to force a repaint 
-                        container.offsetWidth;
+                        nodeToInsert = itemNodes[this._previousIndex];
+                        if (isNode(nodeToInsert)) {
+                            container.insertBefore(nodeToInsert, container.firstChild);
+                            container.style[this._transform] = this._calculateStaticTranslation(-length);
+                            // access property to force a repaint 
+                            container.offsetWidth;
+                        }
                         this._outerStart = true;
                     }
                 }
@@ -5016,9 +5030,6 @@ var platui;
                 x: ev.clientX,
                 y: ev.clientY
             };
-            if (!(this._outerStart && this._outerEnd)) {
-                this._initializeOuterNodes();
-            }
         };
         /**
          * The $touchend and $trackend event handler.
@@ -5071,7 +5082,11 @@ var platui;
                 return;
             }
             else if (!this._hasMoved) {
-                this._cancelCurrentAnimations();
+                this._cancelCurrentAnimations().then(function () {
+                    if (!(_this._outerStart && _this._outerEnd)) {
+                        _this._initializeOuterNodes();
+                    }
+                });
             }
             this._hasMoved = true;
             this.utils.requestAnimationFrame(function () {

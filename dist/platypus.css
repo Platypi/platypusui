@@ -2481,6 +2481,9 @@ h6 {
   min-width: 20px;
   cursor: pointer;
 }
+.plat-input.input-no-action .plat-input-container .plat-input-action {
+  display: none;
+}
 .plat-input:not(.input-outline) .plat-input-container input {
   border-bottom: 2px solid #c8c7cd;
 }
