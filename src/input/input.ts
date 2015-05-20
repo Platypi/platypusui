@@ -280,8 +280,8 @@ module platui {
                 if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
                     continue;
                 } else if (name === 'id') {
-                    input.setAttribute(name, value);
                     element.removeAttribute(name);
+                    input.setAttribute(name, value);
                 } else if (name === 'placeholder') {
                     hasPlaceholder = true;
                     input.placeholder = value;

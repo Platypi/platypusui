@@ -152,8 +152,8 @@ module platui {
                     }
                     continue;
                 } else if (name === 'id') {
-                    hiddenInput.setAttribute(name, value);
                     element.removeAttribute(name);
+                    hiddenInput.setAttribute(name, value);
                 } else if (name === 'multiple') {
                     hasMultiple = true;
                     hiddenInput.setAttribute(name, value);
