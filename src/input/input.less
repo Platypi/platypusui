@@ -119,13 +119,62 @@
     }
 
 /// ============== Secondary Input =============== ///
+
     &.input-outline {
-        .border-radius(@secondary-border-radius);
-        border: @secondary-border;
-        padding: 0 0.5em;
+        .plat-input-container {
+            input {
+                .border-radius(@secondary-border-radius);
+                border: @secondary-border;
+                padding-left: 0.5em;
+            }
+            
+            .plat-input-action {
+                right: 6px;
+            }
+        }
     }
 
 /// ============== Input Types =============== ///
+    
+    &.input-primary {
+        .plat-input-container {
+            input:focus {
+                border-color: @primary-color;
+            }
+        }
+    }
+    
+    &.input-secondary {
+        .plat-input-container {
+            input:focus {
+                border-color: @secondary-color;
+            }
+        }
+    }
+    
+    &.input-success {
+        .plat-input-container {
+            input:focus {
+                border-color: @success-color;
+            }
+        }
+    }
+    
+    &.input-caution {
+        .plat-input-container {
+            input:focus {
+                border-color: @caution-color;
+            }
+        }
+    }
+    
+    &.input-danger {
+        .plat-input-container {
+            input:focus {
+                border-color: @danger-color;
+            }
+        }
+    }
 }
 
 .input-group {
