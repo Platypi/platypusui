@@ -324,7 +324,7 @@ module platui {
 
             this.dom.addClass(element, __Plat + inputType);
             var actionContainer = <HTMLElement>this._inputElement.nextElementSibling;
-            this.addEventListener(actionContainer, __$tap, () => {
+            this.addEventListener(actionContainer, __$touchend, (): void => {
                 this._inputElement.focus();
             }, false);
             this._actionElement = <HTMLElement>actionContainer.firstElementChild;
