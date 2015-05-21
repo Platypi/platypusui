@@ -223,15 +223,28 @@
 	        flex-basis: @basis;
         }
 
-        .flex-absolute-center() {
-            .flexbox();
-            .align-items(center);
-            .justify-content(center);
+        .flex-absolute-center(@inline: false) {
+            & when (@inline = false) {
+                .flexbox();
+                .align-items(center);
+                .justify-content(center);
+            }
+            & when (@inline = true) {
+                .inline-flexbox();
+                .align-items(center);
+                .justify-content(center);
+            }
         }
 
-        .flex-vertical-center() {
-            .flexbox();
-            .align-items(center);
+        .flex-vertical-center(@inline: false) {
+            & when (@inline = false) {
+                .flexbox();
+                .align-items(center);
+            }
+            & when (@inline = true) {
+                .inline-flexbox();
+                .align-items(center);
+            }
         }
     }
 }

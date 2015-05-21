@@ -756,22 +756,16 @@ module platui {
          * @returns {void}
          */
         contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
-            var utils = this.utils;
-            if (utils.isEmpty(newValue)) {
-                if (!this.utils.isEmpty(oldValue)) {
-                    this._Promise.all(this._defaultGroup.addQueue).then((): void => {
-                        this._removeItems(0, this.controls.length, this);
-                    });
-                }
-            } else if (!utils.isArray(newValue)) {
-                var _Exception = this._Exception;
-                _Exception.warn(this.type + ' context must be an Array.', _Exception.CONTEXT);
-                return;
+            if (this.utils.isArray(newValue)) {
+                this._setListener();
+            } else {
+               var _Exception = this._Exception;
+                _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                newValue = [];
             }
 
-            this._setListener();
             this._executeEvent([{
-                object: newValue || [],
+                object: newValue,
                 type: 'splice'
             }]);
         }

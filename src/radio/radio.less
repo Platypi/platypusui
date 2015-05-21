@@ -8,16 +8,16 @@
 .plat-radio {
     #platui > #mixins;
     #platui > #Radio;
-    display: inline-block;
     cursor: pointer;
-    .flex-vertical-center();
+    height: @diameter;
+    .flex-vertical-center(true);
     .box-sizing(border-box);
 
     & > span {
         line-height: @diameter;
 
         &:first-of-type {
-            margin-left: 0.4em;
+            padding-left: 0.4em;
         }
     }
 

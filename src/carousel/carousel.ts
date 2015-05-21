@@ -600,30 +600,20 @@ module platui {
         contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
             var utils = this.utils;
             if (utils.isFunction(this._onLoad)) {
-                if (utils.isEmpty(newValue)) {
-                    if (!utils.isEmpty(oldValue)) {
-                        this._Promise.all(this._addQueue).then((): void => {
-                            this._removeItems(0, this.controls.length);
-                        });
-                    }
-
-                    this._verifyLength();
-                    return;
-                } else if (!utils.isArray(newValue)) {
-                    var _Exception = this._Exception;
+                if (utils.isArray(newValue)) {
+                    this._setListener();
+                } else {
+                   var _Exception = this._Exception;
                     _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
-                    return;
+                    newValue = [];
                 }
-
+    
                 this._executeEvent([{
-                    object: newValue || [],
+                    object: newValue,
                     type: 'splice'
                 }]);
-
-                if (utils.isArray(newValue) && newValue.length > 0) {
-                    this._initializeIndex(0);
-                }
-
+                
+                this._initializeIndex(0);
                 return;
             }
 
@@ -1402,8 +1392,7 @@ module platui {
          * @returns {boolean} Whether or not initialization was a success.
          */
         protected _initializeIndex(index: number): boolean {
-            var innerNodesCleared = this._clearInnerNodes(),
-                nodeLength = this._itemNodes.length;
+            var innerNodesCleared = this._clearInnerNodes();
 
             if (this._itemNodes.length === 0) {
                 index = -1;
