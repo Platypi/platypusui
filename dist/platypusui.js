@@ -3370,7 +3370,7 @@ var platui;
             this._inputElement = this._inputElement || this._imageElement.nextElementSibling;
             this.dom.addClass(element, __Plat + inputType);
             var actionContainer = this._inputElement.nextElementSibling;
-            this.addEventListener(actionContainer, __$tap, function () {
+            this.addEventListener(actionContainer, __$touchend, function () {
                 _this._inputElement.focus();
             }, false);
             this._actionElement = actionContainer.firstElementChild;
@@ -4164,30 +4164,21 @@ var platui;
          * @param {Array<any>} oldValue The old array context.
          */
         Carousel.prototype.contextChanged = function (newValue, oldValue) {
-            var _this = this;
             var utils = this.utils;
             if (utils.isFunction(this._onLoad)) {
-                if (utils.isEmpty(newValue)) {
-                    if (!utils.isEmpty(oldValue)) {
-                        this._Promise.all(this._addQueue).then(function () {
-                            _this._removeItems(0, _this.controls.length);
-                        });
-                    }
-                    this._verifyLength();
-                    return;
+                if (utils.isArray(newValue)) {
+                    this._setListener();
                 }
-                else if (!utils.isArray(newValue)) {
+                else {
                     var _Exception = this._Exception;
                     _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
-                    return;
+                    newValue = [];
                 }
                 this._executeEvent([{
-                        object: newValue || [],
+                        object: newValue,
                         type: 'splice'
                     }]);
-                if (utils.isArray(newValue) && newValue.length > 0) {
-                    this._initializeIndex(0);
-                }
+                this._initializeIndex(0);
                 return;
             }
             this.loaded();
@@ -4686,7 +4677,7 @@ var platui;
          * @param {number} index The new index at the time of the animation.
          */
         Carousel.prototype._initializeIndex = function (index) {
-            var innerNodesCleared = this._clearInnerNodes(), nodeLength = this._itemNodes.length;
+            var innerNodesCleared = this._clearInnerNodes();
             if (this._itemNodes.length === 0) {
                 index = -1;
             }
@@ -5339,23 +5330,16 @@ var platui;
          * @param {Array<any>} oldValue? The old Array
          */
         Listview.prototype.contextChanged = function (newValue, oldValue) {
-            var _this = this;
-            var utils = this.utils;
-            if (utils.isEmpty(newValue)) {
-                if (!this.utils.isEmpty(oldValue)) {
-                    this._Promise.all(this._defaultGroup.addQueue).then(function () {
-                        _this._removeItems(0, _this.controls.length, _this);
-                    });
-                }
+            if (this.utils.isArray(newValue)) {
+                this._setListener();
             }
-            else if (!utils.isArray(newValue)) {
+            else {
                 var _Exception = this._Exception;
-                _Exception.warn(this.type + ' context must be an Array.', _Exception.CONTEXT);
-                return;
+                _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                newValue = [];
             }
-            this._setListener();
             this._executeEvent([{
-                    object: newValue || [],
+                    object: newValue,
                     type: 'splice'
                 }]);
         };

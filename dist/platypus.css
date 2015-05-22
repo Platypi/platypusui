@@ -1186,13 +1186,12 @@ h6 {
   bottom: 0;
 }
 .plat-checkbox {
-  display: inline-block;
   cursor: pointer;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flexbox;
-  display: flex;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -moz-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -webkit-box-align: center;
   -webkit-align-items: center;
   -moz-align-items: center;
@@ -1203,10 +1202,10 @@ h6 {
   box-sizing: border-box;
 }
 .plat-checkbox > span {
-  line-height: 1.3em;
+  line-height: 1px;
 }
 .plat-checkbox > span:first-of-type {
-  margin-left: 0.4em;
+  padding-left: 0.4em;
 }
 .plat-checkbox .plat-checkbox-container {
   position: relative;
@@ -1295,39 +1294,29 @@ h6 {
   -webkit-border-bottom-right-radius: 2px;
   border-bottom-right-radius: 2px;
 }
-.plat-checkbox.checkbox-primary .plat-checkbox-container {
-  border-color: #2d97d2;
-}
 .plat-checkbox.checkbox-primary .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-primary .plat-checkbox-container.plat-x {
+  border-color: #2d97d2;
   background-color: #2d97d2;
-}
-.plat-checkbox.checkbox-secondary .plat-checkbox-container {
-  border-color: #a283a5;
 }
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-x {
+  border-color: #a283a5;
   background-color: #a283a5;
-}
-.plat-checkbox.checkbox-success .plat-checkbox-container {
-  border-color: #8fcbb5;
 }
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-x {
+  border-color: #8fcbb5;
   background-color: #8fcbb5;
-}
-.plat-checkbox.checkbox-caution .plat-checkbox-container {
-  border-color: #ffe088;
 }
 .plat-checkbox.checkbox-caution .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-caution .plat-checkbox-container.plat-x {
+  border-color: #ffe088;
   background-color: #ffe088;
-}
-.plat-checkbox.checkbox-danger .plat-checkbox-container {
-  border-color: #ef716f;
 }
 .plat-checkbox.checkbox-danger .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-danger .plat-checkbox-container.plat-x {
+  border-color: #ef716f;
   background-color: #ef716f;
 }
 .plat-drawer-controller {
@@ -2490,7 +2479,7 @@ h6 {
 .plat-input:not(.input-outline) .plat-input-container input:focus {
   border-color: #868491;
 }
-.plat-input.input-outline {
+.plat-input.input-outline .plat-input-container input {
   -webkit-border-top-left-radius: 4px;
   border-top-left-radius: 4px;
   -webkit-border-top-right-radius: 4px;
@@ -2500,7 +2489,40 @@ h6 {
   -webkit-border-bottom-right-radius: 4px;
   border-bottom-right-radius: 4px;
   border: 2px solid #c8c7cd;
-  padding: 0 0.5em;
+  padding-left: 0.5em;
+}
+.plat-input.input-outline .plat-input-container .plat-input-action {
+  right: 6px;
+}
+.plat-input.input-primary .plat-input-container input:focus {
+  border-color: #2d97d2;
+}
+.plat-input.input-primary .plat-input-container .plat-input-action {
+  color: #2d97d2;
+}
+.plat-input.input-secondary .plat-input-container input:focus {
+  border-color: #a283a5;
+}
+.plat-input.input-secondary .plat-input-container .plat-input-action {
+  color: #a283a5;
+}
+.plat-input.input-success .plat-input-container input:focus {
+  border-color: #8fcbb5;
+}
+.plat-input.input-success .plat-input-container .plat-input-action {
+  color: #8fcbb5;
+}
+.plat-input.input-caution .plat-input-container input:focus {
+  border-color: #ffe088;
+}
+.plat-input.input-caution .plat-input-container .plat-input-action {
+  color: #ffe088;
+}
+.plat-input.input-danger .plat-input-container input:focus {
+  border-color: #ef716f;
+}
+.plat-input.input-danger .plat-input-container .plat-input-action {
+  color: #ef716f;
 }
 .input-group [class*="col-"] {
   padding: 0;
@@ -3457,13 +3479,12 @@ h6 {
   }
 }
 .plat-radio {
-  display: inline-block;
   cursor: pointer;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flexbox;
-  display: flex;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -moz-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -webkit-box-align: center;
   -webkit-align-items: center;
   -moz-align-items: center;
@@ -3474,10 +3495,10 @@ h6 {
   box-sizing: border-box;
 }
 .plat-radio > span {
-  line-height: 1em;
+  line-height: 1px;
 }
 .plat-radio > span:first-of-type {
-  margin-left: 0.4em;
+  padding-left: 0.4em;
 }
 .plat-radio .plat-radio-container {
   position: relative;

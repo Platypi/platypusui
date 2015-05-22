@@ -1047,15 +1047,28 @@
 	        flex-basis: @basis;
         }
 
-        .flex-absolute-center() {
-            .flexbox();
-            .align-items(center);
-            .justify-content(center);
+        .flex-absolute-center(@inline: false) {
+            & when (@inline = false) {
+                .flexbox();
+                .align-items(center);
+                .justify-content(center);
+            }
+            & when (@inline = true) {
+                .inline-flexbox();
+                .align-items(center);
+                .justify-content(center);
+            }
         }
 
-        .flex-vertical-center() {
-            .flexbox();
-            .align-items(center);
+        .flex-vertical-center(@inline: false) {
+            & when (@inline = false) {
+                .flexbox();
+                .align-items(center);
+            }
+            & when (@inline = true) {
+                .inline-flexbox();
+                .align-items(center);
+            }
         }
     }
 }
@@ -1217,7 +1230,6 @@
         #platui > #variables;
     /// =========== Checkbox Colors =========== ///
 
-        @secondary-mark-color: undefined;
         @background-color: @transparent;
         @border-color: @grey;
 
@@ -2515,16 +2527,15 @@
     #platui > #variables;
     #platui > #mixins;
     #platui > #Checkbox;
-    display: inline-block;
     cursor: pointer;
-    .flex-vertical-center();
+    .flex-vertical-center(true);
     .box-sizing(border-box);
 
     & > span {
-        line-height: @diameter;
+        line-height: 1px;
 
         &:first-of-type {
-            margin-left: 0.4em;
+            padding-left: 0.4em;
         }
     }
 
@@ -2601,10 +2612,9 @@
 
     &.checkbox-primary {
         .plat-checkbox-container {
-            border-color: @primary-color;
-
             &.plat-check,
             &.plat-x {
+                border-color: @primary-color;
                 background-color: @primary-color;
             }
         }
@@ -2612,10 +2622,9 @@
 
     &.checkbox-secondary {
         .plat-checkbox-container {
-            border-color: @secondary-color;
-            
             &.plat-check,
             &.plat-x {
+                border-color: @secondary-color;
                 background-color: @secondary-color;
             }
         }
@@ -2623,10 +2632,9 @@
 
     &.checkbox-success {
         .plat-checkbox-container {
-            border-color: @success-color;
-            
             &.plat-check,
             &.plat-x {
+                border-color: @success-color;
                 background-color: @success-color;
             }
         }
@@ -2634,10 +2642,9 @@
 
     &.checkbox-caution {
         .plat-checkbox-container {
-            border-color: @caution-color;
-            
             &.plat-check,
             &.plat-x {
+                border-color: @caution-color;
                 background-color: @caution-color;
             }
         }
@@ -2645,10 +2652,9 @@
 
     &.checkbox-danger {
         .plat-checkbox-container {
-            border-color: @danger-color;
-            
             &.plat-check,
             &.plat-x {
+                border-color: @danger-color;
                 background-color: @danger-color;
             }
         }
@@ -3414,13 +3420,82 @@
     }
 
 /// ============== Secondary Input =============== ///
+
     &.input-outline {
-        .border-radius(@secondary-border-radius);
-        border: @secondary-border;
-        padding: 0 0.5em;
+        .plat-input-container {
+            input {
+                .border-radius(@secondary-border-radius);
+                border: @secondary-border;
+                padding-left: 0.5em;
+            }
+            
+            .plat-input-action {
+                right: 6px;
+            }
+        }
     }
 
 /// ============== Input Types =============== ///
+    
+    &.input-primary {
+        .plat-input-container {
+            input:focus {
+                border-color: @primary-color;
+            }
+            
+            .plat-input-action {
+                color: @primary-color;
+            }
+        }
+    }
+    
+    &.input-secondary {
+        .plat-input-container {
+            input:focus {
+                border-color: @secondary-color;
+            }
+            
+            .plat-input-action {
+                color: @secondary-color;
+            }
+        }
+    }
+    
+    &.input-success {
+        .plat-input-container {
+            input:focus {
+                border-color: @success-color;
+            }
+            
+            .plat-input-action {
+                color: @success-color;
+            }
+        }
+    }
+    
+    &.input-caution {
+        .plat-input-container {
+            input:focus {
+                border-color: @caution-color;
+            }
+            
+            .plat-input-action {
+                color: @caution-color;
+            }
+        }
+    }
+    
+    &.input-danger {
+        .plat-input-container {
+            input:focus {
+                border-color: @danger-color;
+            }
+            
+            .plat-input-action {
+                color: @danger-color;
+            }
+        }
+    }
 }
 
 .input-group {
@@ -4268,16 +4343,15 @@
 .plat-radio {
     #platui > #mixins;
     #platui > #Radio;
-    display: inline-block;
     cursor: pointer;
-    .flex-vertical-center();
+    .flex-vertical-center(true);
     .box-sizing(border-box);
 
     & > span {
-        line-height: @diameter;
+        line-height: 1px;
 
         &:first-of-type {
-            margin-left: 0.4em;
+            padding-left: 0.4em;
         }
     }
 
