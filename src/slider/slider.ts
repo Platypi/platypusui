@@ -387,9 +387,7 @@ module platui {
             this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
 
             if (min >= max) {
-                var _Exception = this._Exception;
-                _Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.',
-                    _Exception.CONTROL);
+                this._log.debug('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
             }
 
@@ -478,9 +476,8 @@ module platui {
         protected _setValue(value: number, propertyChanged: boolean): void {
             var _utils = this.utils;
             if (this._touchState === 1) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set the value of ' + this.type +
-                    ' while the user is manipulating it.', _Exception.CONTROL);
+                this._log.debug('Cannot set the value of ' + this.type +
+                    ' while the user is manipulating it.');
                 return;
             } else if (_utils.isNull(value)) {
                 value = this.min;
@@ -913,9 +910,7 @@ module platui {
                 validOrientation = orientation;
                 this._isVertical = true;
             } else {
-                var _Exception = this._Exception;
-                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."',
-                    _Exception.CONTROL);
+                ('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
                 validOrientation = 'horizontal';
             }
 
@@ -937,16 +932,14 @@ module platui {
          */
         protected _setOffsetWithClone(dependencyProperty: string): void {
             var element = this.element,
-                body = this._document.body,
-                _Exception: plat.IExceptionStatic;
+                body = this._document.body;
 
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
                     var controlType = this.type;
-                    _Exception = this._Exception,
-                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.');
                     (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
                     return;
                 }
@@ -977,9 +970,8 @@ module platui {
                 element = element.parentElement;
                 if (isNull(element)) {
                     // if we go all the way up to <html> the body may currently be hidden.
-                    _Exception = this._Exception,
-                    _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                        'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                    this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                        'hidden. Please do not set the body\'s display to none.');
                     this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }

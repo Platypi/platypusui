@@ -759,8 +759,7 @@ module platui {
             if (this.utils.isArray(newValue)) {
                 this._setListener();
             } else {
-               var _Exception = this._Exception;
-                _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                this._log.debug(this.type + ' context set to something other than an Array.');
                 newValue = [];
             }
 
@@ -792,16 +791,14 @@ module platui {
                 animate = this._animate = options.animate === true,
                 requestItems = options.onItemsRequested,
                 refresh = options.onRefresh,
-                itemTemplate = options.itemTemplate,
-                _Exception: plat.IExceptionStatic;
+                itemTemplate = options.itemTemplate;
 
             this._container = <HTMLElement>scrollContainer.firstElementChild;
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (' ' + __Plat + 'animated') : ''));
 
             if (!isString(itemTemplate)) {
-                _Exception = this._Exception;
-                _Exception.warn('No item template or item template selector specified for ' + this.type + '.', _Exception.TEMPLATE);
+                this._log.debug('No item template or item template selector specified for ' + this.type + '.');
                 return;
             }
 
@@ -829,9 +826,8 @@ module platui {
                     isLoading = true;
                     this._determineLoading(requestItems, options.infiniteProgress !== false);
                 } else {
-                    _Exception = this._Exception;
-                    _Exception.warn(this.type + ' loading type specified as "' + loading +
-                        '" but no option specifying an onItemsRequested handler.', _Exception.CONTROL);
+                    this._log.debug(this.type + ' loading type specified as "' + loading +
+                        '" but no option specifying an onItemsRequested handler.');
                 }
             }
 
@@ -844,8 +840,7 @@ module platui {
 
             if (!utils.isArray(this.context)) {
                 if (!utils.isNull(this.context)) {
-                    _Exception = this._Exception;
-                    _Exception.warn(this.type + '\'s context must be an Array.', _Exception.CONTEXT);
+                    this._log.debug(this.type + '\'s context must be an Array.');
                 }
                 return;
             }
@@ -1011,8 +1006,7 @@ module platui {
          * @returns {void}
          */
         protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, groupHeaderTemplate: string): void {
-            var _Exception: plat.IExceptionStatic,
-                utils = this.utils,
+            var utils = this.utils,
                 bindableTemplates = this.bindableTemplates,
                 templates = this._templates,
                 template: HTMLElement;
@@ -1026,9 +1020,8 @@ module platui {
                     this.bindableTemplates.add(groupHeaderTemplate, template);
                     delete templates[groupHeaderTemplate];
                 } else {
-                    _Exception = this._Exception;
-                    _Exception.warn(__Listview + ' group header template "' + groupHeaderTemplate +
-                        '" was not a template defined in the DOM.', _Exception.TEMPLATE);
+                    this._log.debug(__Listview + ' group header template "' + groupHeaderTemplate +
+                        '" was not a template defined in the DOM.');
                 }
 
                 this._groupHeaderTemplatePromise = this._createGroupTemplate();
@@ -1044,10 +1037,8 @@ module platui {
 
             var controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
             if (!utils.isFunction(controlProperty.value)) {
-                _Exception = this._Exception;
-                _Exception.warn(__Listview + ' item template "' + itemTemplate +
-                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.',
-                    _Exception.TEMPLATE);
+                this._log.debug(__Listview + ' item template "' + itemTemplate +
+                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.');
             }
 
             this._templateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
@@ -1096,8 +1087,7 @@ module platui {
                 group.insertBefore(itemContainer, null);
                 bindableTemplates.add(listviewGroup, group);
             }).then(null, (error): void => {
-                var _Exception = this._Exception;
-                _Exception.warn(this.type + ' error: ' + error, _Exception.COMPILE);
+                this._log.debug(this.type + ' error: ' + error);
             });
         }
 
@@ -1265,8 +1255,7 @@ module platui {
                 this._groupHeaderTemplatePromise.then((): void => {
                     this._addGroups(count, index, animateItems);
                 }).then(null, (error): void => {
-                    var _Exception = this._Exception;
-                    _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
+                    this._log.debug(this.type + ' error: ' + error);
                 });
 
                 return;
@@ -1383,8 +1372,7 @@ module platui {
                     }
                 }).catch((error: any): void => {
                     this.utils.postpone((): void => {
-                        var _Exception = this._Exception;
-                        _Exception.warn(error, _Exception.BIND);
+                        this._log.debug(error);
                     });
                 });
             }
@@ -1472,8 +1460,7 @@ module platui {
 
                 opGroup.itemContainer.insertBefore(node, null);
             }).then(null, (error): void => {
-                var _Exception = this._Exception;
-                _Exception.warn(this.type + ' error: ' + error, _Exception.CONTROL);
+                this._log.debug(this.type + ' error: ' + error);
             });
         }
 
@@ -1665,9 +1652,8 @@ module platui {
         protected _determineLoading(requestItems: string, showRing: boolean): void {
             var controlProperty = this.findProperty(requestItems) || <plat.IControlProperty>{};
             if (!this.utils.isFunction(controlProperty.value)) {
-                var _Exception = this._Exception;
-                _Exception.warn(__Listview + ' onItemsRequested function "' + requestItems +
-                    '" was not found.', _Exception.CONTROL);
+                this._log.debug(__Listview + ' onItemsRequested function "' + requestItems +
+                    '" was not found.');
                 return;
             }
 
@@ -1800,9 +1786,8 @@ module platui {
         protected _initializeRefresh(refresh: string): void {
             var controlProperty = this.findProperty(refresh) || <plat.IControlProperty>{};
             if (!this.utils.isFunction(controlProperty.value)) {
-                var _Exception = this._Exception;
-                _Exception.warn(__Listview + ' onRefresh function "' + refresh +
-                    '" was not found.', _Exception.CONTROL);
+                this._log.debug(__Listview + ' onRefresh function "' + refresh +
+                    '" was not found.');
                 return;
             }
 
@@ -2064,8 +2049,7 @@ module platui {
                 });
             }).then(null, (error): void => {
                 this._touchState = 0;
-                var _Exception = this._Exception;
-                _Exception.warn(this.type + 'error: ' + error, _Exception.CONTROL);
+                this._log.debug(this.type + 'error: ' + error);
             });
         }
 
@@ -2877,9 +2861,7 @@ module platui {
                 validOrientation = orientation;
                 this._isVertical = false;
             } else {
-                var _Exception = this._Exception;
-                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "vertical."',
-                    _Exception.CONTROL);
+                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "vertical."');
                 validOrientation = 'vertical';
             }
 
@@ -2926,16 +2908,14 @@ module platui {
         protected _setItemContainerWidthWithClone(item: HTMLElement): void {
             var body = this._document.body,
                 parent = item.parentElement,
-                element = <HTMLElement>parent.lastElementChild,
-                _Exception: plat.IExceptionStatic;
+                element = <HTMLElement>parent.lastElementChild;
 
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
                     var controlType = this.type;
-                    _Exception = this._Exception,
-                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.');
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
@@ -2979,9 +2959,8 @@ module platui {
                     element = element.parentElement;
                     if (isNull(element)) {
                         // if we go all the way up to <html> the body may currently be hidden.
-                        _Exception = this._Exception,
-                        _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                            'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                        this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                            'hidden. Please do not set the body\'s display to none.');
                         this.utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
                         return;
                     }
@@ -3056,16 +3035,14 @@ module platui {
         protected _setItemContainerHeightWithClone(item: HTMLElement): void {
             var body = this._document.body,
                 parent = item.parentElement,
-                element = <HTMLElement>parent.firstElementChild,
-                _Exception: plat.IExceptionStatic;
+                element = <HTMLElement>parent.firstElementChild;
 
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
                     var controlType = this.type;
-                    _Exception = this._Exception,
-                    _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.');
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
@@ -3106,9 +3083,8 @@ module platui {
                     element = element.parentElement;
                     if (isNull(element)) {
                         // if we go all the way up to <html> the body may currently be hidden.
-                        _Exception = this._Exception,
-                        _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                            'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                        this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                            'hidden. Please do not set the body\'s display to none.');
                         this.utils.defer(this._setItemContainerHeightWithClone, 100, [dependencyProperty], this);
                         return;
                     }

@@ -796,8 +796,7 @@ module platui {
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error): void => {
-                var _Exception = this._Exception;
-                _Exception.warn('Error binding template for ' + this.type + ': ' + error, _Exception.BIND);
+                this._log.debug('Error binding template for ' + this.type + ': ' + error);
             });
         }
 
@@ -873,9 +872,8 @@ module platui {
                 return;
             }
 
-            var _Exception = this._Exception;
-            _Exception.warn('Attempting to bind ' + this.type +
-                ' with a value that is something other than a boolean.', _Exception.BIND);
+            this._log.debug('Attempting to bind ' + this.type +
+                ' with a value that is something other than a boolean.');
         }
 
         /**
@@ -1485,10 +1483,9 @@ module platui {
                             if (isString(drawerArg.position)) {
                                 position = drawerArg.position;
                             } else {
-                                var _Exception = this._Exception;
-                                _Exception.warn('"position" is incorrectly defined for a control such as "' +
+                                this._log.debug('"position" is incorrectly defined for a control such as "' +
                                     __Drawer + '" or "' + this.type + '."' +
-                                    ' Please ensure it is a string.', _Exception.CONTROL);
+                                    ' Please ensure it is a string.');
                                 return;
                             }
                         }
@@ -1622,13 +1619,11 @@ module platui {
          * @returns {boolean} Whether or not this control is valid.
          */
         protected _controllerIsValid(position: string): boolean {
-            var isNull = this.utils.isNull,
-                _Exception: plat.IExceptionStatic;
+            var isNull = this.utils.isNull;
 
             if (isNull(this._drawerElement)) {
-                _Exception = this._Exception;
-                _Exception.warn('Could not find a corresponding control such as "' + __Drawer +
-                    '" for this "' + this.type + '."', _Exception.CONTROL);
+                this._log.debug('Could not find a corresponding control such as "' + __Drawer +
+                    '" for this "' + this.type + '."');
                 return false;
             }
 
@@ -1641,18 +1636,16 @@ module platui {
                     this._position = position;
                     break;
                 default:
-                    _Exception = this._Exception;
-                    _Exception.warn('Incorrect position: "' + position +
+                    this._log.debug('Incorrect position: "' + position +
                         '" defined for the a control such as "' +
-                        __Drawer + '", or "' + this.type + '."', _Exception.CONTROL);
+                        __Drawer + '", or "' + this.type + '."');
                     return false;
             }
 
             var rootElement = this._rootElement = this._getRootElement();
             if (isNull(rootElement)) {
-                _Exception = this._Exception;
-                _Exception.warn('Cannot have a "' + this.type +
-                    '" in a hierarchy above the corresponding control such as "' + __Drawer + '."', _Exception.CONTROL);
+               this._log.debug('Cannot have a "' + this.type +
+                    '" in a hierarchy above the corresponding control such as "' + __Drawer + '."');
                 return false;
             }
 

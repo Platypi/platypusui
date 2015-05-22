@@ -356,8 +356,7 @@ var platui;
                 case 'x':
                     break;
                 default:
-                    var _Exception = this._Exception;
-                    _Exception.warn('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.', _Exception.CONTROL);
+                    this._log.debug('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.');
                     this._targetType = 'check';
                     break;
             }
@@ -662,8 +661,7 @@ var platui;
          */
         ProgressBar.prototype.setProgress = function (value) {
             if (!this.utils.isNumber(value) || value > 1 || value < 0) {
-                var _Exception = this._Exception;
-                _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
+                this._log.debug('The context of a "' + this.type + '" control must be a number between 0 and 1.');
                 return;
             }
             var barElement = this._barElement, barMax = barElement.parentElement.offsetWidth;
@@ -745,9 +743,8 @@ var platui;
         Drawer.prototype.open = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to open.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to open.');
                 return this._Promise.resolve(null);
             }
             return controller.open();
@@ -758,9 +755,8 @@ var platui;
         Drawer.prototype.close = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to close.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to close.');
                 return this._Promise.resolve(null);
             }
             return controller.close();
@@ -771,9 +767,8 @@ var platui;
         Drawer.prototype.toggle = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to toggle.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to toggle.');
                 return this._Promise.resolve(null);
             }
             return controller.toggle();
@@ -784,9 +779,8 @@ var platui;
         Drawer.prototype.reset = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to reset.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to reset.');
                 return this._Promise.resolve(null);
             }
             return controller.reset();
@@ -797,9 +791,8 @@ var platui;
         Drawer.prototype.isOpen = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to check if open.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to check if open.');
                 return false;
             }
             return controller.isOpen();
@@ -818,8 +811,7 @@ var platui;
                 _this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch(function (error) {
-                var _Exception = _this._Exception;
-                _Exception.warn('Error binding template for ' + _this.type + ': ' + error, _Exception.BIND);
+                _this._log.debug('Error binding template for ' + _this.type + ': ' + error);
             });
         };
         /**
@@ -885,9 +877,8 @@ var platui;
                 }
                 return;
             }
-            var _Exception = this._Exception;
-            _Exception.warn('Attempting to open or close ' + this.type +
-                ' with a bound value that is something other than a boolean.', _Exception.BIND);
+            this._log.debug('Attempting to open or close ' + this.type +
+                ' with a bound value that is something other than a boolean.');
         };
         /**
          * Changes the placement and implied position of the Drawer.
@@ -1157,8 +1148,7 @@ var platui;
                 _this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch(function (error) {
-                var _Exception = _this._Exception;
-                _Exception.warn('Error binding template for ' + _this.type + ': ' + error, _Exception.BIND);
+                _this._log.debug('Error binding template for ' + _this.type + ': ' + error);
             });
         };
         /**
@@ -1209,9 +1199,8 @@ var platui;
                 }
                 return;
             }
-            var _Exception = this._Exception;
-            _Exception.warn('Attempting to bind ' + this.type +
-                ' with a value that is something other than a boolean.', _Exception.BIND);
+            this._log.debug('Attempting to bind ' + this.type +
+                ' with a value that is something other than a boolean.');
         };
         /**
          * Opens the Drawer.
@@ -1587,10 +1576,9 @@ var platui;
                         position = drawerArg.position;
                     }
                     else {
-                        var _Exception = _this._Exception;
-                        _Exception.warn('"position" is incorrectly defined for a control such as "' +
+                        _this._log.debug('"position" is incorrectly defined for a control such as "' +
                             __Drawer + '" or "' + _this.type + '."' +
-                            ' Please ensure it is a string.', _Exception.CONTROL);
+                            ' Please ensure it is a string.');
                         return;
                     }
                 }
@@ -1680,11 +1668,10 @@ var platui;
          */
         DrawerController.prototype._controllerIsValid = function (position) {
             var _this = this;
-            var isNull = this.utils.isNull, _Exception;
+            var isNull = this.utils.isNull;
             if (isNull(this._drawerElement)) {
-                _Exception = this._Exception;
-                _Exception.warn('Could not find a corresponding control such as "' + __Drawer +
-                    '" for this "' + this.type + '."', _Exception.CONTROL);
+                this._log.debug('Could not find a corresponding control such as "' + __Drawer +
+                    '" for this "' + this.type + '."');
                 return false;
             }
             switch (position) {
@@ -1696,17 +1683,15 @@ var platui;
                     this._position = position;
                     break;
                 default:
-                    _Exception = this._Exception;
-                    _Exception.warn('Incorrect position: "' + position +
+                    this._log.debug('Incorrect position: "' + position +
                         '" defined for the a control such as "' +
-                        __Drawer + '", or "' + this.type + '."', _Exception.CONTROL);
+                        __Drawer + '", or "' + this.type + '."');
                     return false;
             }
             var rootElement = this._rootElement = this._getRootElement();
             if (isNull(rootElement)) {
-                _Exception = this._Exception;
-                _Exception.warn('Cannot have a "' + this.type +
-                    '" in a hierarchy above the corresponding control such as "' + __Drawer + '."', _Exception.CONTROL);
+                this._log.debug('Cannot have a "' + this.type +
+                    '" in a hierarchy above the corresponding control such as "' + __Drawer + '."');
                 return false;
             }
             this._clickEater = this._document.createElement('div');
@@ -1857,7 +1842,7 @@ var platui;
          * Check for a transition and initialize it if necessary.
          */
         Modal.prototype.loaded = function () {
-            var options = this.options.value, transition = options.transition, _Exception;
+            var options = this.options.value, transition = options.transition;
             // in case of cloning 
             this._container = this._container || this.element.firstElementChild;
             this._injectElement();
@@ -1866,14 +1851,12 @@ var platui;
                 return;
             }
             else if (!this._transitionHash[transition]) {
-                _Exception = this._Exception;
-                _Exception.warn('Custom transition: "' + transition + '" defined for "' + this.type +
-                    '." Please ensure the transition is defined to avoid errors.', _Exception.CONTROL);
+                this._log.debug('Custom transition: "' + transition + '" defined for "' + this.type +
+                    '." Please ensure the transition is defined to avoid errors.');
             }
             var animationEvents = this._compat.animationEvents;
             if (this.utils.isNull(animationEvents)) {
-                _Exception = this._Exception;
-                _Exception.warn('This browser does not support CSS3 animations.', _Exception.COMPAT);
+                this._log.debug('This browser does not support CSS3 animations.');
                 this.dom.addClass(this._container, __Plat + 'no-transition');
                 return;
             }
@@ -1957,9 +1940,8 @@ var platui;
                 }
                 return;
             }
-            var _Exception = this._Exception;
-            _Exception.warn('Attempting to show or hide a ' + this.type +
-                ' with a bound value that is something other than a boolean.', _Exception.BIND);
+            this._log.debug('Attempting to show or hide a ' + this.type +
+                ' with a bound value that is something other than a boolean.');
         };
         /**
          * Shows the Modal.
@@ -2147,8 +2129,7 @@ var platui;
             this.value = min;
             this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
             if (min >= max) {
-                var _Exception = this._Exception;
-                _Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.', _Exception.CONTROL);
+                this._log.debug('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
             }
             this._setLength();
@@ -2194,9 +2175,8 @@ var platui;
         Slider.prototype._setValue = function (value, propertyChanged) {
             var _utils = this.utils;
             if (this._touchState === 1) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set the value of ' + this.type +
-                    ' while the user is manipulating it.', _Exception.CONTROL);
+                this._log.debug('Cannot set the value of ' + this.type +
+                    ' while the user is manipulating it.');
                 return;
             }
             else if (_utils.isNull(value)) {
@@ -2477,8 +2457,7 @@ var platui;
                 this._isVertical = true;
             }
             else {
-                var _Exception = this._Exception;
-                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."', _Exception.CONTROL);
+                ('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
                 validOrientation = 'horizontal';
             }
             return validOrientation;
@@ -2488,14 +2467,13 @@ var platui;
          * @param {string} dependencyProperty The property that the offset is being based off of.
          */
         Slider.prototype._setOffsetWithClone = function (dependencyProperty) {
-            var element = this.element, body = this._document.body, _Exception;
+            var element = this.element, body = this._document.body;
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
                     var controlType = this.type;
-                    _Exception = this._Exception,
-                        _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                            'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.');
                     plat.acquire(__TemplateControlFactory).dispose(this);
                     return;
                 }
@@ -2514,9 +2492,8 @@ var platui;
                 element = element.parentElement;
                 if (isNull(element)) {
                     // if we go all the way up to <html> the body may currently be hidden. 
-                    _Exception = this._Exception,
-                        _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                            'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                    this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                        'hidden. Please do not set the body\'s display to none.');
                     this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }
@@ -2608,7 +2585,7 @@ var platui;
          * Determine the button type and apply the proper classes.
          */
         Range.prototype.loaded = function () {
-            var element = this.element, slider = this._slider = element.firstElementChild.firstElementChild, _utils = this.utils, isNumber = _utils.isNumber, optionObj = this.options || {}, options = optionObj.value || {}, optionLower = Number(options.lower), optionUpper = Number(options.upper), identifiers = options.identifiers || {}, optionMin = options.min, optionMax = options.max, step = options.step, reversed = this._reversed = (options.reverse === true), min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0, max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100, lower = isNumber(optionLower) ? Math.round(optionLower) : min, upper = isNumber(optionUpper) ? Math.round(optionUpper) : max, className = __Plat + this._validateOrientation(options.orientation), _Exception;
+            var element = this.element, slider = this._slider = element.firstElementChild.firstElementChild, _utils = this.utils, isNumber = _utils.isNumber, optionObj = this.options || {}, options = optionObj.value || {}, optionLower = Number(options.lower), optionUpper = Number(options.upper), identifiers = options.identifiers || {}, optionMin = options.min, optionMax = options.max, step = options.step, reversed = this._reversed = (options.reverse === true), min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0, max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100, lower = isNumber(optionLower) ? Math.round(optionLower) : min, upper = isNumber(optionUpper) ? Math.round(optionUpper) : max, className = __Plat + this._validateOrientation(options.orientation);
             this._lowerKnob = slider.firstElementChild;
             this._upperKnob = slider.lastElementChild;
             this._lowerIdentifier = identifiers.lower || 'lower';
@@ -2626,8 +2603,7 @@ var platui;
             this.upper = max;
             this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
             if (min >= max) {
-                _Exception = this._Exception;
-                _Exception.warn('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.', _Exception.CONTROL);
+                this._log.debug('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
                 this.max = min + 1;
             }
             this._setPositionAndLength();
@@ -2697,9 +2673,8 @@ var platui;
         Range.prototype._setLower = function (value, propertyChanged) {
             var _utils = this.utils;
             if (this._touchState === 2) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set the value of the ' + this.type +
-                    '\'s lower knob while the user is manipulating it.', _Exception.CONTROL);
+                this._log.debug('Cannot set the value of the ' + this.type +
+                    '\'s lower knob while the user is manipulating it.');
                 return;
             }
             else if (_utils.isNull(value)) {
@@ -2725,9 +2700,8 @@ var platui;
         Range.prototype._setUpper = function (value, propertyChanged) {
             var _utils = this.utils;
             if (this._touchState === 3) {
-                var _Exception = this._Exception;
-                _Exception.warn('Cannot set the upper value of the ' + this.type +
-                    '\'s upper knob while the user is manipulating it.', _Exception.CONTROL);
+                this._log.debug('Cannot set the upper value of the ' + this.type +
+                    '\'s upper knob while the user is manipulating it.');
                 return;
             }
             else if (_utils.isNull(value)) {
@@ -3178,8 +3152,7 @@ var platui;
                 this._isVertical = true;
             }
             else {
-                var _Exception = this._Exception;
-                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."', _Exception.CONTROL);
+                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
                 validOrientation = 'horizontal';
             }
             return validOrientation;
@@ -3189,14 +3162,13 @@ var platui;
          * @param {string} dependencyProperty The property that the offset is being based off of.
          */
         Range.prototype._setOffsetWithClone = function (dependencyProperty) {
-            var element = this.element, body = this._document.body, _Exception;
+            var element = this.element, body = this._document.body;
             if (!body.contains(element)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
                     var controlType = this.type;
-                    _Exception = this._Exception,
-                        _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                            'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.');
                     plat.acquire(__TemplateControlFactory).dispose(this);
                     return;
                 }
@@ -3215,9 +3187,8 @@ var platui;
                 element = element.parentElement;
                 if (isNull(element)) {
                     // if we go all the way up to <html> the body may currently be hidden. 
-                    _Exception = this._Exception,
-                        _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                            'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                    this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                        'hidden. Please do not set the body\'s display to none.');
                     this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
                     return;
                 }
@@ -3457,7 +3428,7 @@ var platui;
          * Initializes the type.
          */
         Input.prototype._initializeType = function () {
-            var inputType = this._type, event = __$tap, actionElement = this._actionElement, _Exception;
+            var inputType = this._type, event = __$tap, actionElement = this._actionElement;
             switch (inputType) {
                 case 'text':
                     this._pattern = this._pattern || /[\S\s]*/;
@@ -3494,29 +3465,24 @@ var platui;
                     this.element.setAttribute(__Hide, '');
                     return;
                 case 'radio':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Radio + ' instead.', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Radio + ' instead.');
                     return;
                 case 'checkbox':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Checkbox + ' instead.', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Checkbox + ' instead.');
                     return;
                 case 'range':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Slider + ' instead.', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Slider + ' instead.');
                     return;
                 case 'file':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __File + ' instead.', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __File + ' instead.');
                     return;
                 default:
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not yet fully supported by ' + this.type +
-                        '. Defaulting to type="text".', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not yet fully supported by ' + this.type +
+                        '. Defaulting to type="text".');
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._actionHandler = this._checkText.bind(this);
@@ -3790,9 +3756,8 @@ var platui;
                         this._inputElement.value = value;
                     }
                     else {
-                        var _Exception = this._Exception;
-                        _Exception.warn(this.type + '\'s value does not satisfy either ' +
-                            'the given pattern or type. The value will be reset to "".', _Exception.CONTROL);
+                        this._log.debug(this.type + '\'s value does not satisfy either ' +
+                            'the given pattern or type. The value will be reset to "".');
                         this.inputChanged((this._inputElement.value = ''), value);
                     }
                     break;
@@ -4170,8 +4135,7 @@ var platui;
                     this._setListener();
                 }
                 else {
-                    var _Exception = this._Exception;
-                    _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                    this._log.debug(this.type + ' context set to something other than an Array.');
                     newValue = [];
                 }
                 this._executeEvent([{
@@ -4205,8 +4169,7 @@ var platui;
             var _this = this;
             var utils = this.utils, context = this.context;
             if (!utils.isArray(context)) {
-                var _Exception = this._Exception;
-                _Exception.warn('The context of a ' + this.type + ' must be an Array.', _Exception.CONTEXT);
+                this._log.warn('The context of a ' + this.type + ' must be an Array.');
                 return;
             }
             // since we're extending the ForEach, we must set this animate to false as it refers to item manipulation. 
@@ -4449,8 +4412,7 @@ var platui;
             else if (!utils.isNumber(index)) {
                 index = Number(index);
                 if (!utils.isNumber(index)) {
-                    var _Exception = this._Exception;
-                    _Exception.warn(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.', _Exception.BIND);
+                    this._log.debug(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.');
                     return;
                 }
             }
@@ -4758,8 +4720,7 @@ var platui;
                 }
                 _this._onLoad();
             }).catch(function () {
-                var _Exception = _this._Exception;
-                _Exception.warn('An error occurred while processing the ' + _this.type + '. Please ensure you\'re context is correct.', _Exception.CONTROL);
+                _this._log.debug('An error occurred while processing the ' + _this.type + '. Please ensure you\'re context is correct.');
                 _this._loaded = false;
                 return;
             });
@@ -5157,8 +5118,7 @@ var platui;
                 this._isVertical = true;
             }
             else {
-                var _Exception = this._Exception;
-                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."', _Exception.CONTROL);
+                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
                 validOrientation = 'horizontal';
             }
             return validOrientation;
@@ -5334,8 +5294,7 @@ var platui;
                 this._setListener();
             }
             else {
-                var _Exception = this._Exception;
-                _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                this._log.debug(this.type + ' context set to something other than an Array.');
                 newValue = [];
             }
             this._executeEvent([{
@@ -5347,13 +5306,12 @@ var platui;
          * Determine item templates and kick off rendering.
          */
         Listview.prototype.loaded = function () {
-            var options = this.options.value, utils = this.utils, isString = utils.isString, element = this.element, viewport = this._viewport = element.firstElementChild, scrollContainer = this._scrollContainer = viewport.firstElementChild, loading = this._loading = options.loading, animate = this._animate = options.animate === true, requestItems = options.onItemsRequested, refresh = options.onRefresh, itemTemplate = options.itemTemplate, _Exception;
+            var options = this.options.value, utils = this.utils, isString = utils.isString, element = this.element, viewport = this._viewport = element.firstElementChild, scrollContainer = this._scrollContainer = viewport.firstElementChild, loading = this._loading = options.loading, animate = this._animate = options.animate === true, requestItems = options.onItemsRequested, refresh = options.onRefresh, itemTemplate = options.itemTemplate;
             this._container = scrollContainer.firstElementChild;
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (' ' + __Plat + 'animated') : ''));
             if (!isString(itemTemplate)) {
-                _Exception = this._Exception;
-                _Exception.warn('No item template or item template selector specified for ' + this.type + '.', _Exception.TEMPLATE);
+                this._log.debug('No item template or item template selector specified for ' + this.type + '.');
                 return;
             }
             var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate), groupHeaderTemplate = options.groupHeaderTemplate, normalizedGroupTemplate = isString(groupHeaderTemplate) ? this._normalizeTemplateName(groupHeaderTemplate) : null;
@@ -5376,9 +5334,8 @@ var platui;
                     this._determineLoading(requestItems, options.infiniteProgress !== false);
                 }
                 else {
-                    _Exception = this._Exception;
-                    _Exception.warn(this.type + ' loading type specified as "' + loading +
-                        '" but no option specifying an onItemsRequested handler.', _Exception.CONTROL);
+                    this._log.debug(this.type + ' loading type specified as "' + loading +
+                        '" but no option specifying an onItemsRequested handler.');
                 }
             }
             if (isString(refresh)) {
@@ -5388,8 +5345,7 @@ var platui;
             this._initializeTracking(isLoading, isRefreshing);
             if (!utils.isArray(this.context)) {
                 if (!utils.isNull(this.context)) {
-                    _Exception = this._Exception;
-                    _Exception.warn(this.type + '\'s context must be an Array.', _Exception.CONTEXT);
+                    this._log.debug(this.type + '\'s context must be an Array.');
                 }
                 return;
             }
@@ -5471,7 +5427,7 @@ var platui;
          * @param {string} groupHeaderTemplate The property for indicating the group header template.
          */
         Listview.prototype._determineTemplates = function (itemTemplate, itemTemplateKey, groupHeaderTemplate) {
-            var _Exception, utils = this.utils, bindableTemplates = this.bindableTemplates, templates = this._templates, template;
+            var utils = this.utils, bindableTemplates = this.bindableTemplates, templates = this._templates, template;
             if (utils.isString(groupHeaderTemplate)) {
                 this._isGrouped = true;
                 template = templates[groupHeaderTemplate];
@@ -5481,9 +5437,8 @@ var platui;
                     delete templates[groupHeaderTemplate];
                 }
                 else {
-                    _Exception = this._Exception;
-                    _Exception.warn(__Listview + ' group header template "' + groupHeaderTemplate +
-                        '" was not a template defined in the DOM.', _Exception.TEMPLATE);
+                    this._log.debug(__Listview + ' group header template "' + groupHeaderTemplate +
+                        '" was not a template defined in the DOM.');
                 }
                 this._groupHeaderTemplatePromise = this._createGroupTemplate();
             }
@@ -5496,9 +5451,8 @@ var platui;
             }
             var controlProperty = this.findProperty(itemTemplate) || {};
             if (!utils.isFunction(controlProperty.value)) {
-                _Exception = this._Exception;
-                _Exception.warn(__Listview + ' item template "' + itemTemplate +
-                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.', _Exception.TEMPLATE);
+                this._log.debug(__Listview + ' item template "' + itemTemplate +
+                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.');
             }
             this._templateSelector = controlProperty.value.bind(controlProperty.control);
             this._templateSelectorKeys = {};
@@ -5526,8 +5480,7 @@ var platui;
                 group.insertBefore(itemContainer, null);
                 bindableTemplates.add(listviewGroup, group);
             }).then(null, function (error) {
-                var _Exception = _this._Exception;
-                _Exception.warn(_this.type + ' error: ' + error, _Exception.COMPILE);
+                _this._log.debug(_this.type + ' error: ' + error);
             });
         };
         /**
@@ -5633,8 +5586,7 @@ var platui;
                 this._groupHeaderTemplatePromise.then(function () {
                     _this._addGroups(count, index, animateItems);
                 }).then(null, function (error) {
-                    var _Exception = _this._Exception;
-                    _Exception.warn(_this.type + ' error: ' + error, _Exception.CONTROL);
+                    _this._log.debug(_this.type + ' error: ' + error);
                 });
                 return;
             }
@@ -5720,8 +5672,7 @@ var platui;
                     }
                 }).catch(function (error) {
                     _this.utils.postpone(function () {
-                        var _Exception = _this._Exception;
-                        _Exception.warn(error, _Exception.BIND);
+                        _this._log.debug(error);
                     });
                 });
             }
@@ -5783,8 +5734,7 @@ var platui;
                 }
                 opGroup.itemContainer.insertBefore(node, null);
             }).then(null, function (error) {
-                var _Exception = _this._Exception;
-                _Exception.warn(_this.type + ' error: ' + error, _Exception.CONTROL);
+                _this._log.debug(_this.type + ' error: ' + error);
             });
         };
         /**
@@ -5890,9 +5840,8 @@ var platui;
             var _this = this;
             var controlProperty = this.findProperty(requestItems) || {};
             if (!this.utils.isFunction(controlProperty.value)) {
-                var _Exception = this._Exception;
-                _Exception.warn(__Listview + ' onItemsRequested function "' + requestItems +
-                    '" was not found.', _Exception.CONTROL);
+                this._log.debug(__Listview + ' onItemsRequested function "' + requestItems +
+                    '" was not found.');
                 return;
             }
             this._requestItems = controlProperty.value.bind(controlProperty.control);
@@ -5983,9 +5932,8 @@ var platui;
         Listview.prototype._initializeRefresh = function (refresh) {
             var controlProperty = this.findProperty(refresh) || {};
             if (!this.utils.isFunction(controlProperty.value)) {
-                var _Exception = this._Exception;
-                _Exception.warn(__Listview + ' onRefresh function "' + refresh +
-                    '" was not found.', _Exception.CONTROL);
+                this._log.debug(__Listview + ' onRefresh function "' + refresh +
+                    '" was not found.');
                 return;
             }
             this._refresh = controlProperty.value.bind(controlProperty.control);
@@ -6171,8 +6119,7 @@ var platui;
                 });
             }).then(null, function (error) {
                 _this._touchState = 0;
-                var _Exception = _this._Exception;
-                _Exception.warn(_this.type + 'error: ' + error, _Exception.CONTROL);
+                _this._log.debug(_this.type + 'error: ' + error);
             });
         };
         /**
@@ -6672,8 +6619,7 @@ var platui;
                 this._isVertical = false;
             }
             else {
-                var _Exception = this._Exception;
-                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "vertical."', _Exception.CONTROL);
+                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "vertical."');
                 validOrientation = 'vertical';
             }
             return validOrientation;
@@ -6695,14 +6641,13 @@ var platui;
          * @param {HTMLElement} item The element having its height set.
          */
         Listview.prototype._setItemContainerWidthWithClone = function (item) {
-            var body = this._document.body, parent = item.parentElement, element = parent.lastElementChild, _Exception;
+            var body = this._document.body, parent = item.parentElement, element = parent.lastElementChild;
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
                     var controlType = this.type;
-                    _Exception = this._Exception,
-                        _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                            'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.');
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
@@ -6730,9 +6675,8 @@ var platui;
                     element = element.parentElement;
                     if (isNull(element)) {
                         // if we go all the way up to <html> the body may currently be hidden. 
-                        _Exception = this._Exception,
-                            _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                                'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                        this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                            'hidden. Please do not set the body\'s display to none.');
                         this.utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
                         return;
                     }
@@ -6775,14 +6719,13 @@ var platui;
          * @param {HTMLElement} item The element having its height set.
          */
         Listview.prototype._setItemContainerHeightWithClone = function (item) {
-            var body = this._document.body, parent = item.parentElement, element = parent.firstElementChild, _Exception;
+            var body = this._document.body, parent = item.parentElement, element = parent.firstElementChild;
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
                     var controlType = this.type;
-                    _Exception = this._Exception,
-                        _Exception.warn('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                            'DOM. Disposing of the ' + controlType + '.', _Exception.CONTROL);
+                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
+                        'DOM. Disposing of the ' + controlType + '.');
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
@@ -6808,9 +6751,8 @@ var platui;
                     element = element.parentElement;
                     if (isNull(element)) {
                         // if we go all the way up to <html> the body may currently be hidden. 
-                        _Exception = this._Exception,
-                            _Exception.warn('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                                'hidden. Please do not set the body\'s display to none.', _Exception.CONTROL);
+                        this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
+                            'hidden. Please do not set the body\'s display to none.');
                         this.utils.defer(this._setItemContainerHeightWithClone, 100, [dependencyProperty], this);
                         return;
                     }

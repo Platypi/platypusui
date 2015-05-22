@@ -260,8 +260,7 @@ module platui {
          */
         loaded(): void {
             var options = this.options.value,
-                transition = options.transition,
-                _Exception: plat.IExceptionStatic;
+                transition = options.transition;
 
             // in case of cloning
             this._container = this._container || <HTMLElement>this.element.firstElementChild;
@@ -272,15 +271,13 @@ module platui {
                 this.dom.addClass(this._container, __Plat + 'no-transition');
                 return;
             } else if (!this._transitionHash[transition]) {
-                _Exception = this._Exception;
-                _Exception.warn('Custom transition: "' + transition + '" defined for "' + this.type +
-                    '." Please ensure the transition is defined to avoid errors.', _Exception.CONTROL);
+                this._log.debug('Custom transition: "' + transition + '" defined for "' + this.type +
+                    '." Please ensure the transition is defined to avoid errors.');
             }
 
             var animationEvents = this._compat.animationEvents;
             if (this.utils.isNull(animationEvents)) {
-                _Exception = this._Exception;
-                _Exception.warn('This browser does not support CSS3 animations.', _Exception.COMPAT);
+                this._log.debug('This browser does not support CSS3 animations.');
                 this.dom.addClass(this._container, __Plat + 'no-transition');
                 return;
             }
@@ -443,9 +440,8 @@ module platui {
                 return;
             }
 
-            var _Exception = this._Exception;
-            _Exception.warn('Attempting to show or hide a ' + this.type +
-                ' with a bound value that is something other than a boolean.', _Exception.BIND);
+            this._log.debug('Attempting to show or hide a ' + this.type +
+                ' with a bound value that is something other than a boolean.');
         }
 
         /**

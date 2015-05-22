@@ -145,8 +145,7 @@ module platui {
          */
         setProgress(value: number): void {
             if (!this.utils.isNumber(value) || value > 1 || value < 0) {
-                var _Exception = this._Exception;
-                _Exception.warn('The context of a "' + this.type + '" control must be a number between 0 and 1.', _Exception.CONTEXT);
+                this._log.debug('The context of a "' + this.type + '" control must be a number between 0 and 1.');
                 return;
             }
 

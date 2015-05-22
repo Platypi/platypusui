@@ -159,8 +159,7 @@ module platui {
                 case 'x':
                     break;
                 default:
-                    var _Exception = this._Exception;
-                    _Exception.warn('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.', _Exception.CONTROL);
+                    this._log.debug('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.');
                     this._targetType = 'check';
                     break;
             }

@@ -603,8 +603,7 @@ module platui {
                 if (utils.isArray(newValue)) {
                     this._setListener();
                 } else {
-                   var _Exception = this._Exception;
-                    _Exception.warn(this.type + ' context set to something other than an Array.', _Exception.CONTEXT);
+                    this._log.debug(this.type + ' context set to something other than an Array.');
                     newValue = [];
                 }
     
@@ -669,8 +668,7 @@ module platui {
                 context = this.context;
 
             if (!utils.isArray(context)) {
-                var _Exception = this._Exception;
-                _Exception.warn('The context of a ' + this.type + ' must be an Array.', _Exception.CONTEXT);
+                this._log.warn('The context of a ' + this.type + ' must be an Array.');
                 return;
             }
 
@@ -1049,9 +1047,7 @@ module platui {
             } else if (!utils.isNumber(index)) {
                 index = Number(index);
                 if (!utils.isNumber(index)) {
-                    var _Exception = this._Exception;
-                    _Exception.warn(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.',
-                        _Exception.BIND);
+                    this._log.debug(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.');
                     return;
                 }
             }
@@ -1515,9 +1511,7 @@ module platui {
 
                 this._onLoad();
             }).catch((): void => {
-                var _Exception = this._Exception;
-                _Exception.warn('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.',
-                    _Exception.CONTROL);
+                this._log.debug('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.');
                 this._loaded = false;
                 return;
                 });
@@ -2162,9 +2156,7 @@ module platui {
                 validOrientation = orientation;
                 this._isVertical = true;
             } else {
-                var _Exception = this._Exception;
-                _Exception.warn('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."',
-                    _Exception.CONTROL);
+                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
                 validOrientation = 'horizontal';
             }
 
