@@ -14,7 +14,7 @@
     .box-sizing(border-box);
 
     & > span {
-        line-height: 1px;
+        line-height: @diameter;
 
         &:first-of-type {
             padding-left: 0.4em;
@@ -29,6 +29,7 @@
         background-color: @background-color;
         overflow: hidden;
         border: 1px solid @border-color;
+        .flex(0 0 @diameter);
         .border-radius(@diameter);
         .box-sizing(content-box);
 
