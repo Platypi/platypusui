@@ -495,8 +495,7 @@ module platui {
         protected _initializeType(): void {
             var inputType = this._type,
                 event = __$tap,
-                actionElement = this._actionElement,
-                _Exception: plat.IExceptionStatic;
+                actionElement = this._actionElement;
 
             switch (inputType) {
                 case 'text':
@@ -534,29 +533,24 @@ module platui {
                     this.element.setAttribute(__Hide, '');
                     return;
                 case 'radio':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Radio + ' instead.', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Radio + ' instead.');
                     return;
                 case 'checkbox':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Checkbox + ' instead.', _Exception.CONTROL);
+                   this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Checkbox + ' instead.');
                     return;
                 case 'range':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Slider + ' instead.', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __Slider + ' instead.');
                     return;
                 case 'file':
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __File + ' instead.', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not supported by ' + this.type +
+                        '. Please use a ' + __File + ' instead.');
                     return;
                 default:
-                    _Exception = this._Exception;
-                    _Exception.warn(inputType + ' is not yet fully supported by ' + this.type +
-                        '. Defaulting to type="text".', _Exception.CONTROL);
+                    this._log.debug(inputType + ' is not yet fully supported by ' + this.type +
+                        '. Defaulting to type="text".');
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._actionHandler = this._checkText.bind(this);
@@ -965,9 +959,8 @@ module platui {
                     if (this._pattern.test(value)) {
                         this._inputElement.value = value;
                     } else {
-                        var _Exception = this._Exception;
-                        _Exception.warn(this.type + '\'s value does not satisfy either ' +
-                            'the given pattern or type. The value will be reset to "".', _Exception.CONTROL);
+                        this._log.debug(this.type + '\'s value does not satisfy either ' +
+                            'the given pattern or type. The value will be reset to "".');
                         this.inputChanged((this._inputElement.value = ''), value);
                     }
                     break;

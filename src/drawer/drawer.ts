@@ -215,9 +215,8 @@ module platui {
         open(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to open.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to open.');
                 return this._Promise.resolve(null);
             }
 
@@ -239,9 +238,8 @@ module platui {
         close(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to close.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to close.');
                 return this._Promise.resolve(null);
             }
 
@@ -263,9 +261,8 @@ module platui {
         toggle(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to toggle.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to toggle.');
                 return this._Promise.resolve(null);
             }
 
@@ -287,9 +284,8 @@ module platui {
         reset(): plat.async.IThenable<void> {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to reset.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to reset.');
                 return this._Promise.resolve(null);
             }
 
@@ -310,9 +306,8 @@ module platui {
         isOpen(): boolean {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                var _Exception = this._Exception;
-                _Exception.warn('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to check if open.', _Exception.TEMPLATE);
+                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
+                    this.type + ' attempting to check if open.');
                 return false;
             }
 
@@ -341,8 +336,7 @@ module platui {
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error): void => {
-                var _Exception = this._Exception;
-                _Exception.warn('Error binding template for ' + this.type + ': ' + error, _Exception.BIND);
+                this._log.debug('Error binding template for ' + this.type + ': ' + error);
             });
         }
 
@@ -457,9 +451,8 @@ module platui {
                 return;
             }
 
-            var _Exception = this._Exception;
-            _Exception.warn('Attempting to open or close ' + this.type +
-                ' with a bound value that is something other than a boolean.', _Exception.BIND);
+            this._log.debug('Attempting to open or close ' + this.type +
+                ' with a bound value that is something other than a boolean.');
         }
 
         /**
