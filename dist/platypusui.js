@@ -30,7 +30,7 @@ var platui;
     __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', 
     /**
      */
-    __Hide = __Plat + 'hide', __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', 
+    __Hide = __Plat + 'hide', __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', 
     /**
      */
     __listviewAliasOptions = {
@@ -3308,6 +3308,9 @@ var platui;
                 name = delimit(key, '-');
                 value = attributes[key];
                 if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
+                    if (name === __Disabled || name === __Readonly) {
+                        input.setAttribute(name, value);
+                    }
                     continue;
                 }
                 else if (name === 'id') {
