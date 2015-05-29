@@ -278,6 +278,9 @@ module platui {
                 name = delimit(key, '-');
                 value = attributes[key];
                 if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
+                    if (name === __Disabled || name === __Readonly) {
+                        input.setAttribute(name, value);
+                    }
                     continue;
                 } else if (name === 'id') {
                     element.removeAttribute(name);
