@@ -6,10 +6,11 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * Copyright 2014 Platypi, LLC. All rights reserved.
+ * PlatypusUI v0.4.8 (https://platypi.io)
+ * Copyright 2015 Platypi, LLC. All rights reserved.
  *
- * PlatypusUI is licensed under the GPL-3.0 found at
- * http://opensource.org/licenses/GPL-3.0
+ * PlatypusUI is licensed under the MIT license found at
+ * https://github.com/Platypi/platypusui/blob/master/LICENSE
  *
  */
 /**

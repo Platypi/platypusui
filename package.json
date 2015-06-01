@@ -1,6 +1,6 @@
 {
   "name": "platypusui",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
   "main": "dist/platypusui.js",
   "devDependencies": {
@@ -60,5 +60,5 @@
     "type": "git",
     "url": "https://github.com/Platypi/dist-platypusui.git"
   },
-  "license": "GPL-3.0"
+  "license": "MIT"
 }
