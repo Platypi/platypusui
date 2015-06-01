@@ -1,6 +1,6 @@
 {
   "name": "platypusui",
-  "version": "0.4.5",
+  "version": "0.4.8",
   "homepage": "https://platypi.io",
   "authors": [
     "Platypi <support@platypi.io> (https://platypi.io)"
@@ -23,7 +23,7 @@
     "ui",
     "controls"
   ],
-  "license": "GPL-3.0",
+  "license": "MIT",
   "ignore": [
     "**/.*",
     "*.log",

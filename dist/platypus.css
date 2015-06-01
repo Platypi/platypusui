@@ -1,36 +1,11 @@
 /**
- * Copyright 2014 Platypi, LLC. All rights reserved. 
+ * PlatypusUI v0.4.8 (https://platypi.io) 
+ * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
- * PlatypusUI is licensed under the GPL-3.0 found at  
- * http://opensource.org/licenses/GPL-3.0 
+ * PlatypusUI is licensed under the MIT license found at  
+ * https://github.com/Platypi/platypusui/blob/master/LICENSE
  * 
  */
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
-/**/
 html {
   width: 100%;
   height: 100%;
@@ -1202,7 +1177,7 @@ h6 {
   box-sizing: border-box;
 }
 .plat-checkbox > span {
-  line-height: 1px;
+  line-height: 1.3em;
 }
 .plat-checkbox > span:first-of-type {
   padding-left: 0.4em;
@@ -1215,6 +1190,12 @@ h6 {
   background-color: transparent;
   overflow: hidden;
   border: 1px solid #c8c7cd;
+  -webkit-box-flex: 0 0 1.3em;
+  -webkit-flex: 0 0 1.3em;
+  -moz-box-flex: 0 0 1.3em;
+  -moz-flex: 0 0 1.3em;
+  -ms-flex: 0 0 1.3em;
+  flex: 0 0 1.3em;
   -webkit-border-top-left-radius: 1.3em;
   border-top-left-radius: 1.3em;
   -webkit-border-top-right-radius: 1.3em;
@@ -1701,8 +1682,6 @@ h6 {
 .plat-file.file-outline .plat-file-button {
   background-color: transparent;
 }
-/**/
-/**/
 [class*='col-'],
 [class*='col-']:after,
 [class*='col-']:before {
@@ -3495,7 +3474,7 @@ h6 {
   box-sizing: border-box;
 }
 .plat-radio > span {
-  line-height: 1px;
+  line-height: 1em;
 }
 .plat-radio > span:first-of-type {
   padding-left: 0.4em;
@@ -3508,6 +3487,12 @@ h6 {
   overflow: hidden;
   background-color: transparent;
   border: 1px solid #c8c7cd;
+  -webkit-box-flex: 0 0 1em;
+  -webkit-flex: 0 0 1em;
+  -moz-box-flex: 0 0 1em;
+  -moz-flex: 0 0 1em;
+  -ms-flex: 0 0 1em;
+  flex: 0 0 1em;
   -webkit-border-top-left-radius: 1em;
   border-top-left-radius: 1em;
   -webkit-border-top-right-radius: 1em;

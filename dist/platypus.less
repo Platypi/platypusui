@@ -1,13 +1,13 @@
 /**
- * Copyright 2014 Platypi, LLC. All rights reserved. 
+ * PlatypusUI v0.4.8 (https://platypi.io) 
+ * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
- * PlatypusUI is licensed under the GPL-3.0 found at  
- * http://opensource.org/licenses/GPL-3.0 
+ * PlatypusUI is licensed under the MIT license found at  
+ * https://github.com/Platypi/platypusui/blob/master/LICENSE
  * 
  */
 /// ======= Global Variables ======== ///
 
-/**/
 #platui {
     #variables {
         /// ============= Global Colors ============== ///
@@ -151,8 +151,6 @@
     }
 }
 
-/**/
-
 /// ======= Globally-Used Animations ======== ///
 
 #platui {
@@ -282,7 +280,6 @@
 
 /// ======= Mixins ======== ///
 
-/**/
 #platui {
     #__mixins {
         /// Helper Methods
@@ -320,8 +317,6 @@
         }
     }
 }
-
-/**/
 
 #platui {
     #mixins {
@@ -458,8 +453,6 @@
     }
 }
 
-/**/
-
 #platui {
     #media {
     /// ======= Globally-Used Media Query Mixins ======== ///
@@ -558,8 +551,6 @@
     }
 }
 
-/**/
-
 #platui {
     #mixins {
         /// Touch
@@ -589,7 +580,6 @@
         }
     }
 }
-/**/
 
 #platui {
     #mixins {
@@ -676,8 +666,6 @@
         }
     }
 }
-
-/**/
 
 #platui {
     #mixins {
@@ -768,8 +756,6 @@
     }
 }
 
-/**/
-
 #platui {
     #mixins {
         /// Transitions
@@ -823,8 +809,6 @@
         }
     }
 }
-
-/**/
 
 #platui {
     #mixins {
@@ -1073,8 +1057,6 @@
     }
 }
 
-/**/
-
 #platui {
     #mixins {
         #platui > #variables;
@@ -1178,8 +1160,6 @@
 
 /// ======= Control Variables ======== ///
 
-/**/
-
 #platui {
     #Button {
         #platui > #variables;
@@ -1191,8 +1171,6 @@
         @padding-horizontal: 1.2em;
     }
 }
-
-/**/
 
 #platui {
     #Carousel {
@@ -1223,8 +1201,6 @@
     }
 }
 
-/**/
-
 #platui {
     #Checkbox {
         #platui > #variables;
@@ -1239,7 +1215,6 @@
         @border-size: 1px;
     }
 }
-/**/
 
 #platui {
     #Drawer {
@@ -1267,8 +1242,6 @@
     }
 }
 
-/**/
-
 #platui {
     #File {
         #platui > #variables;
@@ -1284,8 +1257,6 @@
         @border-radius: 4px;
     }
 }
-
-/**/
 
 #platui {
     #Input {
@@ -1308,8 +1279,6 @@
         @secondary-border-radius: 4px;
     }
 }
-
-/**/
 
 #platui {
     #Listview {
@@ -1357,8 +1326,6 @@
     }
 }
 
-/**/
-
 #platui {
     #Modal {
         #platui > #variables;
@@ -1403,8 +1370,6 @@
     }
 }
 
-/**/
-
 #platui {
     #platui > #variables;
 
@@ -1424,8 +1389,6 @@
         @transition: none;
     }
 }
-
-/**/
 
 #platui {
     #platui > #variables;
@@ -1463,7 +1426,6 @@
         }
     }
 }
-/**/
 
 #platui {
     #Radio {
@@ -1484,8 +1446,6 @@
     }
 }
 
-/**/
-
 #platui {
     #Range {
     /// ================= Range Size ================== ///
@@ -1504,7 +1464,6 @@
         @vertical-transition: height 300ms;
     }
 }
-/**/
 
 #platui {
     #Select {
@@ -1526,8 +1485,6 @@
     }
 }
 
-/**/
-
 #platui {
     #Slider {
     /// ================= Slider Size ================== ///    
@@ -1546,7 +1503,6 @@
         @vertical-transition: height 300ms;
     }
 }
-/**/
 
 #platui {
     #Toggle {
@@ -2532,7 +2488,7 @@
     .box-sizing(border-box);
 
     & > span {
-        line-height: 1px;
+        line-height: @diameter;
 
         &:first-of-type {
             padding-left: 0.4em;
@@ -2547,6 +2503,7 @@
         background-color: @background-color;
         overflow: hidden;
         border: 1px solid @border-color;
+        .flex(0 0 @diameter);
         .border-radius(@diameter);
         .box-sizing(content-box);
 
@@ -3122,8 +3079,6 @@
     }
 }
 
-/**/
-/**/
 #platui {
     #grid {
 	    @base-percent: 100%;
@@ -4348,7 +4303,7 @@
     .box-sizing(border-box);
 
     & > span {
-        line-height: 1px;
+        line-height: @diameter;
 
         &:first-of-type {
             padding-left: 0.4em;
@@ -4363,6 +4318,7 @@
         overflow: hidden;
         background-color: @background-color;
         border: @border-size solid @border-color;
+        .flex(0 0 @diameter);
         .border-radius(@diameter);
         .background-clip(padding-box);
         .box-sizing(content-box);
