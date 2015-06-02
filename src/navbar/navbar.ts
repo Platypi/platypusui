@@ -28,7 +28,7 @@ module platui {
         '<div class="plat-navbar-container">\n' +
         '</div>\n';
         
-        context: Navbar.INavbarContext;
+        context: INavbarContext;
         
         /**
          * @name setClasses
@@ -67,28 +67,26 @@ module platui {
     }
 
     plat.register.control(__Navbar, Navbar);
-
-    export module Navbar {
-        /**
-         * @name INavbarOptions
-         * @memberof platui.Navbar
-         * @kind interface
-         * 
-         * @description
-         * The available {@link plat.controls.Options|options} for the {@link platui.Navbar|Navbar} control.
-         */
-        export interface INavbarOptions {
-            
-        }
+    
+    /**
+     * @name INavbarOptions
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * The available {@link plat.controls.Options|options} for the {@link platui.Navbar|Navbar} control.
+     */
+    export interface INavbarOptions {
         
-        export interface INavbarComponent {
-            
-        }
+    }
+    
+    export interface INavbarComponent {
         
-        export interface INavbarContext {
-            left: INavbarComponent;
-            center: INavbarComponent;
-            right: INavbarComponent;
-        }
+    }
+    
+    export interface INavbarContext {
+        left: INavbarComponent;
+        center: INavbarComponent;
+        right: INavbarComponent;
     }
 }
