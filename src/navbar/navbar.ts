@@ -10,12 +10,12 @@ module platui {
      * @implements {platui.IUIControl}
      * 
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} that acts as a global navigation bar.
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} that acts as a global navigation bar that defines its own context.
      */
     export class Navbar extends plat.ui.TemplateControl implements IUiControl {
         /**
          * @name templateString
-         * @memberof platui.Input
+         * @memberof platui.Navbar
          * @kind property
          * @access public
          * 
@@ -28,11 +28,35 @@ module platui {
         '<div class="plat-navbar-container">\n' +
         '</div>\n';
         
+        /**
+         * @name context
+         * @memberof platui.Navbar
+         * @kind property
+         * @access public
+         * 
+         * @type {platui.INavbarContext}
+         * 
+         * @description
+         * The {@link platui.Navbar|Navbar} control's context.
+         */
         context: INavbarContext;
         
         /**
+         * @name hasOwnContext
+         * @memberof platui.Navbar
+         * @kind property
+         * @access public
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Specifies that the {@link platui.Navbar|Navbar} defines it's own context.
+         */
+        hasOwnContext: boolean = true;
+        
+        /**
          * @name setClasses
-         * @memberof platui.Select
+         * @memberof platui.Navbar
          * @kind function
          * @access public
          * 
@@ -52,7 +76,7 @@ module platui {
 
         /**
          * @name initialize
-         * @memberof platui.Select
+         * @memberof platui.Navbar
          * @kind function
          * @access public
          * 
@@ -66,7 +90,7 @@ module platui {
         }
     }
 
-    plat.register.control(__Navbar, Navbar);
+    plat.register.control(__Navbar, Navbar, null, true);
     
     /**
      * @name INavbarOptions
@@ -80,13 +104,29 @@ module platui {
         
     }
     
+    /**
+     * @name INavbarComponent
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * Defines the available bindings for a single componenet of the {@link platui.Navbar|Navbar} control.
+     */
     export interface INavbarComponent {
         
     }
     
+    /**
+     * @name INavbarContext
+     * @memberof platui
+     * @kind interface
+     * 
+     * @description
+     * Defines the type of context for the {@link platui.Navbar|Navbar} control.
+     */
     export interface INavbarContext {
-        left: INavbarComponent;
-        center: INavbarComponent;
-        right: INavbarComponent;
+        left: Array<INavbarComponent>;
+        center: Array<INavbarComponent>;
+        right: Array<INavbarComponent>;
     }
 }
