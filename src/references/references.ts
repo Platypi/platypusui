@@ -41,6 +41,7 @@ var __prefix = '$',
     __File = __Plat + 'file',
     __Carousel = __Plat + 'carousel',
     __Listview = __Plat + 'listview',
+    __Navbar = __Plat + 'navbar',
 
     /**
      * Referenced Controls / Vars
