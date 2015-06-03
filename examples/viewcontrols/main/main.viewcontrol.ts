@@ -80,6 +80,12 @@ module app {
         password: plat.controls.INamedElement<HTMLElement, void>;
         modal1: plat.controls.INamedElement<Element, platui.Modal>;
         modal2: plat.controls.INamedElement<Element, platui.Modal>;
+        
+        protected navbar: platui.Navbar = plat.acquire(platui.Navbar);
+        
+        initialize() {
+            this.initNavbar();
+        }
 
         loaded() {
             var context = this.context;
@@ -95,6 +101,26 @@ module app {
             //        ];
             //    }, 2000);
             //}, 2000);
+        }
+        
+        initNavbar() {
+            this.navbar.setLeft({
+               html: '<span class="icon-arrow-left"></span><span>Back</span>',
+               action: () => {
+                   alert('back');
+               } 
+            });
+            
+            this.navbar.setCenter({
+               html: 'PlatypusUI'
+            });
+            
+            this.navbar.setRight({
+               html: '<span>some icon</span>',
+               action: () => {
+                   alert('icon action');
+               }
+            });
         }
 
         addListItem() {

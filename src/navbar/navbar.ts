@@ -29,21 +29,19 @@ module platui {
          * The HTML template represented as a string.
          */
         templateString: string =
-        '<div class="plat-navbar-container">\n' +
-        '    <div class="plat-navbar-left">\n' + 
-        '        <div class="plat-navbar-left-items" plat-control="' + __ForEach + '" plat-context="left">\n' + 
-        '            <div class="plat-navbar-left-item" plat-control="' + __Html + '" plat-context="html" plat-tap="leftAction(@index)"></div>\n' +
-        '        </div>\n' +
+        '<div class="plat-navbar-left">\n' + 
+        '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="left">\n' + 
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="html" plat-tap="leftAction(@index)"></div>\n' +
         '    </div>\n' +
-        '    <div class="plat-navbar-center">\n' + 
-        '        <div class="plat-navbar-center-items" plat-control="' + __ForEach + '" plat-context="center">\n' + 
-        '            <div class="plat-navbar-center-item" plat-control="' + __Html + '" plat-context="html" plat-tap="centerAction(@index)"></div>\n' +
-        '        </div>\n' +
+        '</div>\n' +
+        '<div class="plat-navbar-center">\n' + 
+        '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="center">\n' + 
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="html" plat-tap="centerAction(@index)"></div>\n' +
         '    </div>\n' +
-        '    <div class="plat-navbar-right">\n' + 
-        '        <div class="plat-navbar-right-items" plat-control="' + __ForEach + '" plat-context="right">\n' + 
-        '            <div class="plat-navbar-right-item" plat-control="' + __Html + '" plat-context="html" plat-tap="rightAction(@index)"></div>\n' +
-        '        </div>\n' +
+        '</div>\n' +
+        '<div class="plat-navbar-right">\n' + 
+        '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="right">\n' + 
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="html" plat-tap="rightAction(@index)"></div>\n' +
         '    </div>\n' +
         '</div>\n';
         
@@ -191,8 +189,8 @@ module platui {
                 childNodes = slice.call(innerTemplate.childNodes),
                 childNode: Node,
                 newNode: HTMLElement,
-                container = this.element.firstElementChild,
-                containerNodes = slice.call(container.childNodes);
+                element = this.element,
+                elementNodes = slice.call(element.childNodes);
 
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
@@ -205,19 +203,19 @@ module platui {
                         overrides.left = true;
                         newNode = doc.createElement('div');
                         newNode.className = __Navbar + '-left';
-                        container.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), containerNodes[0]);
+                        element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[0]);
                         break;
                     case 'center':
                         overrides.center = true;
                         newNode = doc.createElement('div');
                         newNode.className = __Navbar + '-center';
-                        container.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), containerNodes[1]);
+                        element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[1]);
                         break;
                     case 'right':
                         overrides.right = true;
                         newNode = doc.createElement('div');
                         newNode.className = __Navbar + '-right';
-                        container.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), containerNodes[2]);
+                        element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[2]);
                         break;
                 }
             }
@@ -360,10 +358,11 @@ module platui {
          * The defined action of the left part of the {@link platui.Navbar|Navbar} when tapped.
          * 
          * @param {number} index The index of the action tapped.
+         * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          * 
          * @returns {void}
          */
-        leftAction(index: number): void {
+        leftAction(index: number, ev?: plat.ui.IGestureEvent): void {
             this._executeAction('left', index);
         }
         
@@ -377,10 +376,11 @@ module platui {
          * The defined action of the center part of the {@link platui.Navbar|Navbar} when tapped.
          * 
          * @param {number} index The index of the action tapped.
+         * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          * 
          * @returns {void}
          */
-        centerAction(index: number): void {
+        centerAction(index: number, ev?: plat.ui.IGestureEvent): void {
             this._executeAction('center', index);
         }
         
@@ -394,10 +394,11 @@ module platui {
          * The defined action of the right part of the {@link platui.Navbar|Navbar} when tapped.
          * 
          * @param {number} index The index of the action tapped.
+         * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          * 
          * @returns {void}
          */
-        rightAction(index: number): void {
+        rightAction(index: number, ev?: plat.ui.IGestureEvent): void {
             this._executeAction('right', index);
         }
         
@@ -438,10 +439,11 @@ module platui {
          */
         protected _setComponent(position: string, components: Array<INavbarComponent>): void;
         protected _setComponent(position: string, components: any): void {
+            var context = this.context;
             if (!this.utils.isArray(components)) {
                 if (this._overrides[position]) {
                     this._parseComponent(components);
-                    this.context[position] = components;
+                    context[position] = components;
                     return;
                 }
                 
@@ -450,10 +452,10 @@ module platui {
             
             var curr = components.length;
             while (curr-- > 0) {
-                this._parseComponent(components[curr]);
+                this._parseComponent(components[curr], (<any>context[position])[curr]);
             }
             
-            this.context[position] = components;
+            context[position] = components;
         }
         
         /**
@@ -465,25 +467,31 @@ module platui {
          * @description
          * Sets default component parameters and grabs custom actions from it.
          * 
-         * @param {platui.INavbarComponent} component The {@link platui.INavbarComponent|INavbarComponent} 
+         * @param {platui.INavbarComponent} newComponent The new {@link platui.INavbarComponent|INavbarComponent} 
          * to parse.
+         * @param {platui.INavbarComponent} oldComponent? The old {@link platui.INavbarComponent|INavbarComponent} 
+         * whose place is being taken.
          * 
          * @returns {void}
          */
-        protected _parseComponent(component: INavbarComponent): void {
+        protected _parseComponent(newComponent: INavbarComponent, oldComponent?: INavbarComponent): void {
             var utils = this.utils,
                 isObject = utils.isObject,
-                isFunction = utils.isFunction,
+                oldComponentExists = isObject(oldComponent),
                 customActions: plat.IObject<() => any>,
                 keys: Array<string>,
                 key: string,
                 currKey: number;
                 
-            if (!isFunction(component.action)) {
-                component.action = noop;
+            if (oldComponentExists && !utils.isString(newComponent.html)) {
+                newComponent.html = oldComponent.html;
+            }
+                
+            if (!utils.isFunction(newComponent.action)) {
+                newComponent.action = oldComponentExists ? oldComponent.action : noop;
             }
             
-            customActions = component.customActions;
+            customActions = newComponent.customActions;
             if (isObject(customActions)) {
                 keys = Object.keys(customActions);
                 currKey = keys.length;
@@ -513,7 +521,7 @@ module platui {
                 component: INavbarComponent = this.context[position];
                 
             if (utils.isArray(component) && !utils.isNull(property)) {
-                component = component[property];
+                component = (<any>component)[property];
             }
             
             if (utils.isFunction(component.action)) {
@@ -619,6 +627,8 @@ module platui {
     }
     
     export interface INavbarProperties<T> {
+        [x: string]: T;
+        
         /**
          * @name left
          * @memberof platui.INavbarContext

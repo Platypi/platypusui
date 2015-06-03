@@ -10,6 +10,11 @@ body {
     background-color: @white;
     .fill();
     .scroll();
+    
+    .top-viewport {
+        #platui > #Navbar;
+        padding-top: @height;
+    }
 }
 
 .container {
@@ -111,4 +116,21 @@ body {
 .nexus7 {
     width: 603px;
     height: 966px;
+}
+
+.icon-arrow-left {
+    vertical-align: middle;
+    font-family: "platypus-icons";
+    font-weight: bold;
+    font-style: normal;
+    font-variant: normal;
+    font-size: 1.25em;
+    speak: none;
+    text-decoration: inherit;
+    text-transform: none;
+    line-height: normal;
+    
+    &::before {
+        content: "\e816";
+    }
 }
