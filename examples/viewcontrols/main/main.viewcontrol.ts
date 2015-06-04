@@ -104,19 +104,19 @@ module app {
         }
         
         initNavbar() {
-            this.navbar.setLeft({
-               html: '<span class="icon-arrow-left"></span><span>Back</span>',
+            this.navbar.setLeft([{
+               content: '<span class="icon-arrow-left"></span><span>Back</span>',
                action: () => {
                    alert('back');
                } 
-            });
+            }]);
             
             this.navbar.setCenter({
-               html: 'PlatypusUI'
+               content: 'PlatypusUI'
             });
             
             this.navbar.setRight({
-               html: '<span>some icon</span>',
+               content: '<span>some icon</span>',
                action: () => {
                    alert('icon action');
                }

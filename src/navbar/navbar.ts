@@ -31,17 +31,17 @@ module platui {
         templateString: string =
         '<div class="plat-navbar-left">\n' + 
         '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="left">\n' + 
-        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="html" plat-tap="leftAction(@index)"></div>\n' +
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="leftAction(@index)"></div>\n' +
         '    </div>\n' +
         '</div>\n' +
         '<div class="plat-navbar-center">\n' + 
         '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="center">\n' + 
-        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="html" plat-tap="centerAction(@index)"></div>\n' +
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="centerAction(@index)"></div>\n' +
         '    </div>\n' +
         '</div>\n' +
         '<div class="plat-navbar-right">\n' + 
         '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="right">\n' + 
-        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="html" plat-tap="rightAction(@index)"></div>\n' +
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="rightAction(@index)"></div>\n' +
         '    </div>\n' +
         '</div>\n';
         
@@ -71,15 +71,15 @@ module platui {
          */
         context: INavbarContext = {
             left: [{
-                html: '<span>left</span>',
+                content: '<span>left</span>',
                 action: noop
             }],
             center: [{
-                html: '<span>center</span>',
+                content: '<span>center</span>',
                 action: noop
             }],
             right: [{
-                html: '<span>right</span>',
+                content: '<span>right</span>',
                 action: noop
             }]
         };
@@ -190,7 +190,7 @@ module platui {
                 childNode: Node,
                 newNode: HTMLElement,
                 element = this.element,
-                elementNodes = slice.call(element.childNodes);
+                elementNodes = slice.call(element.children);
 
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
@@ -203,18 +203,21 @@ module platui {
                         overrides.left = true;
                         newNode = doc.createElement('div');
                         newNode.className = __Navbar + '-left';
+                        newNode.setAttribute(__Context, 'left');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[0]);
                         break;
                     case 'center':
                         overrides.center = true;
                         newNode = doc.createElement('div');
                         newNode.className = __Navbar + '-center';
+                        newNode.setAttribute(__Context, 'center');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[1]);
                         break;
                     case 'right':
                         overrides.right = true;
                         newNode = doc.createElement('div');
                         newNode.className = __Navbar + '-right';
+                        newNode.setAttribute(__Context, 'right');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[2]);
                         break;
                 }
@@ -483,8 +486,8 @@ module platui {
                 key: string,
                 currKey: number;
                 
-            if (oldComponentExists && !utils.isString(newComponent.html)) {
-                newComponent.html = oldComponent.html;
+            if (oldComponentExists && !utils.isString(newComponent.content)) {
+                newComponent.content = oldComponent.content;
             }
                 
             if (!utils.isFunction(newComponent.action)) {
@@ -573,7 +576,7 @@ module platui {
      */
     export interface INavbarComponent {
         /**
-         * @name html
+         * @name content
          * @memberof platui.INavbarComponent
          * @kind property
          * @access public
@@ -581,9 +584,12 @@ module platui {
          * @type {string}
          * 
          * @description
-         * The html contained inside the component.
+         * The content contained inside the component.
+         * 
+         * @remarks
+         * Can be html.
          */
-        html?: string;
+        content?: string;
         
         /**
          * @name action
