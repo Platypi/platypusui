@@ -3180,6 +3180,189 @@ declare module platui {
           */
         group?: string;
     }
+    /**
+      * An ITemplateControl that acts as a global navigation bar that defines its own context.
+      */
+    class Navbar extends plat.ui.TemplateControl implements IUiControl {
+        protected static _inject: any;
+        /**
+          * The HTML template represented as a string.
+          */
+        templateString: string;
+        /**
+          * The evaluated plat-options object.
+          */
+        options: plat.observable.IObservableProperty<INavbarOptions>;
+        /**
+          * The Navbar control's context.
+          */
+        context: INavbarContext;
+        /**
+          * Specifies that the Navbar defines it's own context.
+          */
+        hasOwnContext: boolean;
+        /**
+          * Reference to the Document injectable.
+          */
+        protected _document: Document;
+        /**
+          * An object specifying whether a particular section of the Navbar
+          * has been overridden.
+          */
+        protected _overrides: INavbarProperties<boolean>;
+        /**
+          * Sets the classes on the proper elements.
+          * @param {string} className? An optional, additional class name or class names to set on the control
+          * in addition to its standard set.
+          * @param {Element} element? The element to set the class name on. Should default to
+          * the control's element if not specified.
+          */
+        setClasses(className?: string, element?: Element): void;
+        /**
+          * Set the class name.
+          */
+        initialize(): void;
+        /**
+          * Looks for and applies overwritten components.
+          */
+        setTemplate(): void;
+        /**
+          * Initializes all options.
+          */
+        loaded(): void;
+        /**
+          * Sets the left part of the Navbar.
+          * @param {platui.INavbarComponent} component The component to be set as the sole item in
+          * the left part of the Navbar.
+          */
+        setLeft(component: INavbarComponent): void;
+        /**
+          * Sets the left part of the Navbar.
+          * @param {Array<platui.INavbarComponent>} components An Array of components to be set as the left
+          * Navbar's items.
+          */
+        setLeft(components: Array<INavbarComponent>): void;
+        /**
+          * Sets the center part of the Navbar.
+          * @param {platui.INavbarComponent} component The component to be set as the sole item in
+          * the center part of the Navbar.
+          */
+        setCenter(component: INavbarComponent): void;
+        /**
+          * Sets the center part of the Navbar.
+          * @param {Array<platui.INavbarComponent>} components An Array of components to be set as the center
+          * Navbar's items.
+          */
+        setCenter(components: Array<INavbarComponent>): void;
+        /**
+          * Sets the right Navbar component's context.
+          * @param {platui.INavbarComponent} component The component to be set as the sole item in
+          * the right part of the Navbar.
+          */
+        setRight(component: INavbarComponent): void;
+        /**
+          * Sets the right part of the Navbar.
+          * @param {Array<platui.INavbarComponent>} components An Array of components to be set as the right
+          * Navbar's items.
+          */
+        setRight(components: Array<INavbarComponent>): void;
+        /**
+          * The defined action of the left part of the Navbar when tapped.
+          * @param {number} index The index of the action tapped.
+          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
+          */
+        leftAction(index: number, ev?: plat.ui.IGestureEvent): void;
+        /**
+          * The defined action of the center part of the Navbar when tapped.
+          * @param {number} index The index of the action tapped.
+          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
+          */
+        centerAction(index: number, ev?: plat.ui.IGestureEvent): void;
+        /**
+          * The defined action of the right part of the Navbar when tapped.
+          * @param {number} index The index of the action tapped.
+          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
+          */
+        rightAction(index: number, ev?: plat.ui.IGestureEvent): void;
+        /**
+          * Determines the nature of the passed in components and sets the context at the given position
+          * to the determined INavbarComponent(s).
+          * @param {string} position The part of the Navbar being set.
+          * @param {platui.INavbarComponent} component The INavbarComponent
+          * to set as the context.
+          */
+        protected _setComponent(position: string, component: INavbarComponent): void;
+        /**
+          * Determines the nature of the passed in components and sets the context at the given position
+          * to the determined INavbarComponent(s).
+          * @param {string} position The part of the Navbar being set.
+          * @param {Array<platui.INavbarComponent>} components The INavbarComponents
+          * to set as the context.
+          */
+        protected _setComponent(position: string, components: Array<INavbarComponent>): void;
+        /**
+          * Sets default component parameters and grabs custom actions from it.
+          * @param {platui.INavbarComponent} newComponent The new INavbarComponent
+          * to parse.
+          * @param {platui.INavbarComponent} oldComponent? The old INavbarComponent
+          * whose place is being taken.
+          */
+        protected _parseComponent(newComponent: INavbarComponent, oldComponent?: INavbarComponent): void;
+        /**
+          * Executes the proper action associated with a Navbar component.
+          * @param {string} position The part of the Navbar whose action is being executed.
+          * @param {any} property The indexing property. Will by default be an index into the component Array.
+          */
+        protected _executeAction(position: string, property: any): void;
+    }
+    /**
+      * The available options for the Navbar control.
+      */
+    interface INavbarOptions {
+        /**
+          * The position of the Navbar.
+          * Defaults to "top".
+          */
+        position?: string;
+    }
+    /**
+      * Defines the available bindings for a single component of the Navbar control.
+      */
+    interface INavbarComponent {
+        /**
+          * The content contained inside the component.
+          */
+        content?: string;
+        /**
+          * The action to perform when the component is tapped.
+          */
+        action?: () => any;
+        /**
+          * The set of custom actions whose key will be used as the function name and
+          * whose value is the action to perform.
+          */
+        customActions?: plat.IObject<() => any>;
+    }
+    interface INavbarProperties<T> {
+        [x: string]: T;
+        /**
+          * An association to the left part of the Navbar control.
+          */
+        left: T;
+        /**
+          * An association to the center part of the Navbar control.
+          */
+        center: T;
+        /**
+          * An association to the right part of the Navbar control.
+          */
+        right: T;
+    }
+    /**
+      * Defines the context type for the Navbar control.
+      */
+    interface INavbarContext extends INavbarProperties<INavbarComponent | Array<INavbarComponent>> {
+    }
 }
 
 declare module 'platypusui' {

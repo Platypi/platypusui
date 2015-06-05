@@ -1371,6 +1371,34 @@
 }
 
 #platui {
+    #Navbar {
+        #platui > #variables;
+    /// =========== Navbar Colors =========== ///
+
+        @background-color: @primary-color;
+        @color: @white;
+        
+    /// =========== Navbar Dimensions =========== ///
+    
+        @height: 4em;
+        @z-index: 100;
+        @left-percentage: 33.33333333%;
+        @center-percentage: 33.33333333%;
+        @right-percentage: 33.33333333%;
+        @padding: 0 2em;
+        @item-padding: 0.5em;
+        
+    /// =========== Navbar Properties =========== ///
+    
+        @border-top: none;
+        @border-right: none;
+        @border-bottom: none;
+        @border-left: none;
+        @box-shadow: 0px 0px 2px 1px lighten(@black, 10%);
+    }
+}
+
+#platui {
     #platui > #variables;
 
     #ProgressBar {
@@ -4071,6 +4099,82 @@
                     }
                 }
             }
+        }
+    }
+}
+
+/// =========== Radio Default Styles =========== ///
+
+.plat-navbar {
+    #platui > #mixins;
+    #platui > #Navbar;
+    position: absolute;
+    left: 0;
+    height: @height;
+    width: 100%;
+    background-color: @background-color;
+    color: @color;
+    padding: @padding;
+    border-top: @border-top;
+    border-right: @border-right;
+    border-bottom: @border-bottom;
+    border-left: @border-left;
+    z-index: @z-index;
+    .box-shadow(@box-shadow);
+    .box-sizing(border-box);
+    
+    &.plat-top {
+        top: 0;
+    }
+    
+    &.plat-bottom {
+        bottom: 0;
+    }
+    
+    .plat-navbar-left,
+    .plat-navbar-center,
+    .plat-navbar-right {
+        height: 100%;
+        float: left;
+        .box-sizing(border-box);
+    }
+    
+    .plat-navbar-items {
+        height: 100%;
+        .flexbox();
+        .align-items(center);
+        .box-sizing(border-box);
+    }
+    
+    .plat-navbar-item {
+        height: 100%;
+        padding: @item-padding;
+        .inline-flexbox();
+        .align-items(center);
+        .box-sizing(border-box);
+    }
+        
+    .plat-navbar-left {
+        width: @left-percentage;
+        
+        .plat-navbar-items {
+            .justify-content(flex-start);
+        }
+    }
+    
+    .plat-navbar-center {
+        width: @center-percentage;
+        
+        .plat-navbar-items {
+            .justify-content(center);
+        }
+    }
+    
+    .plat-navbar-right {
+        width: @right-percentage;
+        
+        .plat-navbar-items {
+            .justify-content(flex-end);
         }
     }
 }
