@@ -41,13 +41,16 @@ var __prefix = '$',
     __File = __Plat + 'file',
     __Carousel = __Plat + 'carousel',
     __Listview = __Plat + 'listview',
+    __Navbar = __Plat + 'navbar',
 
     /**
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
+    __Context = __Plat + __CONTEXT,
     __Checked = __Plat + 'checked',
     __ForEach = __Plat + 'foreach',
+    __Html = __Plat + 'html',
     __Bind = __Plat + 'bind',
     __Disabled = __Plat + 'disabled',
     __Readonly = __Plat + 'readonly',

@@ -1,0 +1,79 @@
+@import (reference) '../mixins/helpers.less';
+@import (reference) '../mixins/flexbox.less';
+@import (reference) 'navbar.variables.less';
+
+/// =========== Radio Default Styles =========== ///
+
+.plat-navbar {
+    #platui > #mixins;
+    #platui > #Navbar;
+    position: absolute;
+    left: 0;
+    height: @height;
+    width: 100%;
+    background-color: @background-color;
+    color: @color;
+    padding: @padding;
+    border-top: @border-top;
+    border-right: @border-right;
+    border-bottom: @border-bottom;
+    border-left: @border-left;
+    z-index: @z-index;
+    .box-shadow(@box-shadow);
+    .box-sizing(border-box);
+    
+    &.plat-top {
+        top: 0;
+    }
+    
+    &.plat-bottom {
+        bottom: 0;
+    }
+    
+    .plat-navbar-left,
+    .plat-navbar-center,
+    .plat-navbar-right {
+        height: 100%;
+        float: left;
+        .box-sizing(border-box);
+    }
+    
+    .plat-navbar-items {
+        height: 100%;
+        .flexbox();
+        .align-items(center);
+        .box-sizing(border-box);
+    }
+    
+    .plat-navbar-item {
+        height: 100%;
+        padding: @item-padding;
+        .inline-flexbox();
+        .align-items(center);
+        .box-sizing(border-box);
+    }
+        
+    .plat-navbar-left {
+        width: @left-percentage;
+        
+        .plat-navbar-items {
+            .justify-content(flex-start);
+        }
+    }
+    
+    .plat-navbar-center {
+        width: @center-percentage;
+        
+        .plat-navbar-items {
+            .justify-content(center);
+        }
+    }
+    
+    .plat-navbar-right {
+        width: @right-percentage;
+        
+        .plat-navbar-items {
+            .justify-content(flex-end);
+        }
+    }
+}

@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.8 (https://platypi.io)
+ * PlatypusUI v0.4.9 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -28,10 +28,10 @@ var platui;
     __CONTEXT = 'context', 
     /**
      */
-    __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', 
+    __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', __Navbar = __Plat + 'navbar', 
     /**
      */
-    __Hide = __Plat + 'hide', __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', 
+    __Hide = __Plat + 'hide', __Context = __Plat + __CONTEXT, __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', 
     /**
      */
     __listviewAliasOptions = {
@@ -6793,5 +6793,220 @@ var platui;
     })(plat.ui.TemplateControl);
     platui.Listview = Listview;
     plat.register.control(__Listview, Listview);
+    /**
+     * An ITemplateControl that acts as a global navigation bar that defines its own context.
+     */
+    var Navbar = (function (_super) {
+        __extends(Navbar, _super);
+        function Navbar() {
+            _super.apply(this, arguments);
+            /**
+             * The HTML template represented as a string.
+             */
+            this.templateString = '<div class="plat-navbar-left">\n' +
+                '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="left">\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="leftAction(@index)"></div>\n' +
+                '    </div>\n' +
+                '</div>\n' +
+                '<div class="plat-navbar-center">\n' +
+                '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="center">\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="centerAction(@index)"></div>\n' +
+                '    </div>\n' +
+                '</div>\n' +
+                '<div class="plat-navbar-right">\n' +
+                '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="right">\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="rightAction(@index)"></div>\n' +
+                '    </div>\n' +
+                '</div>\n';
+            /**
+             * The Navbar control's context.
+             */
+            this.context = {
+                left: [{
+                        content: '<span>left</span>',
+                        action: noop
+                    }],
+                center: [{
+                        content: '<span>center</span>',
+                        action: noop
+                    }],
+                right: [{
+                        content: '<span>right</span>',
+                        action: noop
+                    }]
+            };
+            /**
+             * Specifies that the Navbar defines it's own context.
+             */
+            this.hasOwnContext = true;
+            /**
+             * An object specifying whether a particular section of the Navbar
+             * has been overridden.
+             */
+            this._overrides = {
+                left: false,
+                center: false,
+                right: false
+            };
+        }
+        /**
+         * Sets the classes on the proper elements.
+         * @param {string} className? An optional, additional class name or class names to set on the control
+         * in addition to its standard set.
+         * @param {Element} element? The element to set the class name on. Should default to
+         * the control's element if not specified.
+         */
+        Navbar.prototype.setClasses = function (className, element) {
+            this.dom.addClass(element || this.element, __Navbar + ' ' + (className || ''));
+        };
+        /**
+         * Set the class name.
+         */
+        Navbar.prototype.initialize = function () {
+            this.setClasses();
+        };
+        /**
+         * Looks for and applies overwritten components.
+         */
+        Navbar.prototype.setTemplate = function () {
+            var isNull = this.utils.isNull, innerTemplate = this.innerTemplate;
+            if (isNull(innerTemplate)) {
+                return;
+            }
+            var doc = this._document, overrides = this._overrides, slice = Array.prototype.slice, appendChildren = this.dom.appendChildren, childNodes = slice.call(innerTemplate.childNodes), childNode, newNode, element = this.element, elementNodes = slice.call(element.children);
+            while (childNodes.length > 0) {
+                childNode = childNodes.shift();
+                if (childNode.nodeType !== Node.ELEMENT_NODE) {
+                    continue;
+                }
+                switch (childNode.nodeName.toLowerCase()) {
+                    case 'left':
+                        overrides.left = true;
+                        newNode = doc.createElement('div');
+                        newNode.className = __Navbar + '-left';
+                        newNode.setAttribute(__Context, 'left');
+                        element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[0]);
+                        break;
+                    case 'center':
+                        overrides.center = true;
+                        newNode = doc.createElement('div');
+                        newNode.className = __Navbar + '-center';
+                        newNode.setAttribute(__Context, 'center');
+                        element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[1]);
+                        break;
+                    case 'right':
+                        overrides.right = true;
+                        newNode = doc.createElement('div');
+                        newNode.className = __Navbar + '-right';
+                        newNode.setAttribute(__Context, 'right');
+                        element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[2]);
+                        break;
+                }
+            }
+        };
+        /**
+         * Initializes all options.
+         */
+        Navbar.prototype.loaded = function () {
+            var optionObj = this.options || {}, options = optionObj.value || {}, position = this.utils.isString(options.position) && options.position.toLowerCase() === 'bottom' ? '-bottom' : '-top';
+            this.dom.addClass(this.element, __Navbar + position);
+        };
+        Navbar.prototype.setLeft = function (components) {
+            this._setComponent('left', components);
+        };
+        Navbar.prototype.setCenter = function (components) {
+            this._setComponent('center', components);
+        };
+        Navbar.prototype.setRight = function (components) {
+            this._setComponent('right', components);
+        };
+        /**
+         * The defined action of the left part of the Navbar when tapped.
+         * @param {number} index The index of the action tapped.
+         * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
+         */
+        Navbar.prototype.leftAction = function (index, ev) {
+            this._executeAction('left', index);
+        };
+        /**
+         * The defined action of the center part of the Navbar when tapped.
+         * @param {number} index The index of the action tapped.
+         * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
+         */
+        Navbar.prototype.centerAction = function (index, ev) {
+            this._executeAction('center', index);
+        };
+        /**
+         * The defined action of the right part of the Navbar when tapped.
+         * @param {number} index The index of the action tapped.
+         * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
+         */
+        Navbar.prototype.rightAction = function (index, ev) {
+            this._executeAction('right', index);
+        };
+        Navbar.prototype._setComponent = function (position, components) {
+            var context = this.context;
+            if (!this.utils.isArray(components)) {
+                if (this._overrides[position]) {
+                    this._parseComponent(components);
+                    context[position] = components;
+                    return;
+                }
+                components = [components];
+            }
+            var curr = components.length;
+            while (curr-- > 0) {
+                this._parseComponent(components[curr], context[position][curr]);
+            }
+            context[position] = components;
+        };
+        /**
+         * Sets default component parameters and grabs custom actions from it.
+         * @param {platui.INavbarComponent} newComponent The new INavbarComponent
+         * to parse.
+         * @param {platui.INavbarComponent} oldComponent? The old INavbarComponent
+         * whose place is being taken.
+         */
+        Navbar.prototype._parseComponent = function (newComponent, oldComponent) {
+            var utils = this.utils, isObject = utils.isObject, oldComponentExists = isObject(oldComponent), customActions, keys, key, currKey;
+            if (oldComponentExists && !utils.isString(newComponent.content)) {
+                newComponent.content = oldComponent.content;
+            }
+            if (!utils.isFunction(newComponent.action)) {
+                newComponent.action = oldComponentExists ? oldComponent.action : noop;
+            }
+            customActions = newComponent.customActions;
+            if (isObject(customActions)) {
+                keys = Object.keys(customActions);
+                currKey = keys.length;
+                while (currKey-- > 0) {
+                    key = keys[currKey];
+                    this[key] = customActions[key];
+                }
+            }
+        };
+        /**
+         * Executes the proper action associated with a Navbar component.
+         * @param {string} position The part of the Navbar whose action is being executed.
+         * @param {any} property The indexing property. Will by default be an index into the component Array.
+         */
+        Navbar.prototype._executeAction = function (position, property) {
+            var utils = this.utils, component = this.context[position];
+            if (utils.isArray(component) && !utils.isNull(property)) {
+                component = component[property];
+            }
+            if (utils.isFunction(component.action)) {
+                component.action();
+                return;
+            }
+            this._log.debug('An action function is not defined for the component ' + component + '.');
+        };
+        Navbar._inject = {
+            _document: __Document
+        };
+        return Navbar;
+    })(plat.ui.TemplateControl);
+    platui.Navbar = Navbar;
+    plat.register.control(__Navbar, Navbar, null, true);
 })(platui || (platui = {}));
 module.exports = platui;

@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.8 (https://platypi.io) 
+ * PlatypusUI v0.4.9 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -3216,6 +3216,103 @@ h6 {
 }
 .plat-modal.modal-custom.modal-centered .plat-modal-container.plat-modal-transition.plat-up.plat-activate {
   bottom: 50%;
+}
+.plat-navbar {
+  position: absolute;
+  left: 0;
+  height: 4em;
+  width: 100%;
+  background-color: #2d97d2;
+  color: #ffffff;
+  padding: 0 2em;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+  z-index: 100;
+  -webkit-box-shadow: 0px 0px 2px 1px #1a1a1a;
+  box-shadow: 0px 0px 2px 1px #1a1a1a;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.plat-navbar.plat-top {
+  top: 0;
+}
+.plat-navbar.plat-bottom {
+  bottom: 0;
+}
+.plat-navbar .plat-navbar-left,
+.plat-navbar .plat-navbar-center,
+.plat-navbar .plat-navbar-right {
+  height: 100%;
+  float: left;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.plat-navbar .plat-navbar-items {
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.plat-navbar .plat-navbar-item {
+  height: 100%;
+  padding: 0.5em;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -moz-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.plat-navbar .plat-navbar-left {
+  width: 33.33333333%;
+}
+.plat-navbar .plat-navbar-left .plat-navbar-items {
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -moz-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+}
+.plat-navbar .plat-navbar-center {
+  width: 33.33333333%;
+}
+.plat-navbar .plat-navbar-center .plat-navbar-items {
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+.plat-navbar .plat-navbar-right {
+  width: 33.33333333%;
+}
+.plat-navbar .plat-navbar-right .plat-navbar-items {
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -moz-justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
 }
 .plat-modal.modal-prompt {
   background-color: rgba(0, 0, 0, 0.6);
