@@ -1,3 +1,6 @@
+[![npm version](https://badge.fury.io/js/platypusui.svg)](http://badge.fury.io/js/platypusui)
+[![Downloads](http://img.shields.io/npm/dm/platypusui.svg)](https://npmjs.org/package/platypusui)
+
 PlatypusUI
 ==========
 
