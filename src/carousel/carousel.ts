@@ -1436,18 +1436,25 @@ module platui {
             var itemNodes = this._itemNodes,
                 container = this._container,
                 nodeLength = itemNodes.length,
-                isNode = this.utils.isNode,
                 nodeToInsert: Node;
-
-            if (nodeLength > 1) {
-                nodeToInsert = itemNodes[this._nextIndex];
-                if (isNode(nodeToInsert)) {
-                    container.insertBefore(nodeToInsert, null);
+                
+            if (nodeLength <= 1) {
+                if (this._isInfinite) {
+                    this._cloneForInfinite(-length);
+                    return;
                 }
-                this._outerEnd = true;
-
+            } else {
+                var isNode = this.utils.isNode;
+                if (!this._outerEnd) {
+                    nodeToInsert = itemNodes[this._nextIndex];
+                    if (isNode(nodeToInsert)) {
+                        container.insertBefore(nodeToInsert, null);
+                    }
+                    this._outerEnd = true;
+                }
+                
                 if (nodeLength > 2) {
-                    if (this._isInfinite || this._index > 0) {
+                    if (!this._outerStart && (this._isInfinite || this._index > 0)) {
                         nodeToInsert = itemNodes[this._previousIndex];
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
@@ -1460,10 +1467,6 @@ module platui {
                 } else if (this._isInfinite) {
                     this._cloneForInfinite(-length);
                 }
-
-                return;
-            } else if (this._isInfinite) {
-                this._cloneForInfinite(-length);
             }
         }
 
@@ -2178,6 +2181,10 @@ module platui {
          */
         protected _appendItems(items: Array<Node>): void {
             this._itemNodes = this._itemNodes.concat(items);
+            if (!this._isInfinite && this._index >= this._itemNodes.length - 2) {
+                this._outerEnd = false;
+                this._setIndexWindow();
+            }
         }
 
         /**
