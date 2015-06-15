@@ -1212,14 +1212,12 @@ module platui {
                 }
             }
 
+            move = move.bind(this);
             var promises = <Array<plat.async.IThenable<boolean>>>[],
                 removeListeners = this._removeListeners,
                 constant = this._goToIntervalConstant,
-                interval = 0;
-
-            move = move.bind(this);
-            while (--diff > 0) {
-                promises.push(new _Promise<any>((resolve): void => {
+                interval = 0,
+                mover = (resolve: (value: any) => any): void => {
                     var remove = defer((): void => {
                         var removeIndex = removeListeners.indexOf(remove);
                         if (removeIndex !== -1) {
@@ -1229,7 +1227,10 @@ module platui {
                         resolve(move());
                     }, interval += Math.round(constant / diff));
                     removeListeners.push(remove);
-                }));
+                };
+
+            while (--diff > 0) {
+                promises.push(new _Promise<any>(mover));
             }
 
             promises.push(move());
