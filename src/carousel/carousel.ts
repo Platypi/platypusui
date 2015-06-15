@@ -699,7 +699,6 @@ module platui {
                 this._index = 0;
                 this._initializeIndex(index === null ? setIndex : index);
                 this._addEventListeners();
-                this.observeArray(this._verifyLength);
                 this._loaded = true;
             };
 
@@ -738,7 +737,7 @@ module platui {
                 }
 
                 return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
-                    if (!(this._outerStart && this._outerEnd)) {
+                    if (!this._outerEnd) {
                         this._initializeOuterNodes();
                     }
 
@@ -794,7 +793,7 @@ module platui {
                 }
 
                 return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
-                    if (!(this._outerStart && this._outerEnd)) {
+                    if (!this._outerStart) {
                         this._initializeOuterNodes();
                     }
 
@@ -874,7 +873,7 @@ module platui {
                     }
 
                     return this._Promise.resolve(true);
-                } else if (index === this._nextIndex) {
+                } else if (index - oldIndex > 0 && index === this._nextIndex) {
                     return this.goToNext();
                 } else if (index === this._previousIndex) {
                     return this.goToPrevious();
@@ -1041,7 +1040,8 @@ module platui {
 
             if (utils.isNull(index)) {
                 if (firstTime === true) {
-                    this.inputChanged((this._index = 0), index);
+                    this._index = 0;
+                    this.inputChanged(0, index);
                     return;
                 }
             } else if (!utils.isNumber(index)) {
@@ -1050,6 +1050,11 @@ module platui {
                     this._log.debug(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.');
                     return;
                 }
+            } else if (index < 0) {
+                this._index = 0;
+                this.inputChanged(0, index);
+                this._initializeIndex(0);
+                return;
             }
 
             if (!this._loaded) {
@@ -1057,7 +1062,7 @@ module platui {
                 return;
             }
 
-            this.goToIndex(index);
+            this.goToIndex(index, firstTime === true);
         }
 
         /**
@@ -1089,37 +1094,26 @@ module platui {
          * @returns {void}
          */
         protected _verifyLength(): void {
-            this._Promise.all(this._addQueue).then((): void => {
-                var context = this.context,
-                    index = this._index;
+            var context = this.context,
+                index = this._index;
 
-                if (!this.utils.isArray(context) || context.length === 0) {
-                    if (!this.utils.isUndefined(index)) {
-                        this.inputChanged((this._index = undefined), index);
-                    }
-                    this._container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
-                    this._removeEventListeners();
-                    this._checkArrows();
-                    return;
+            if (!this.utils.isArray(context) || context.length === 0) {
+                if (!this.utils.isUndefined(index)) {
+                    this.inputChanged((this._index = undefined), index);
                 }
-
-                // if no remove listeners exist we know that we had previously removed them.
-                if (this._removeListeners.length === 0) {
-                    this._addEventListeners();
-                    this._initializeIndex(0);
-                    this.inputChanged(0, index);
-
-                    return;
-                }
-
-                var maxIndex = context.length - 1;
-                if (maxIndex < 2) {
-                    this._initializeIndex(index > maxIndex ? maxIndex : index);
-                    this.inputChanged(this._index, index);
-                } else if (index > maxIndex) {
-                    this.goToIndex(maxIndex);
-                }
-            });
+                this._container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                this._removeEventListeners();
+                this._checkArrows();
+                return;
+            }
+            
+            var maxIndex = context.length - 1;
+            if (maxIndex < 2) {
+                this._initializeIndex(index > maxIndex ? maxIndex : index);
+                this.inputChanged(this._index, index);
+            } else if (index > maxIndex) {
+                this.goToIndex(maxIndex);
+            }
         }
 
         /**
@@ -1267,15 +1261,17 @@ module platui {
          * @returns {void}
          */
         protected _handleNext(index: number, length: number): void {
-            var isInfinite = this._isInfinite;
-            if (isInfinite && this.utils.isNode(this._postClonedNode)) {
+            var isInfinite = this._isInfinite,
+                itemNodes = this._itemNodes,
+                nodeLength = itemNodes.length,
+                isNode = this.utils.isNode;
+                
+            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
 
-            var itemNodes = this._itemNodes,
-                container = this._container;
-
+            var container = this._container;
             if (this._outerStart) {
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
@@ -1289,7 +1285,7 @@ module platui {
 
             this._setIndexWindow();
 
-            if (!(isInfinite || index < itemNodes.length - 1)) {
+            if (!(isInfinite || index < nodeLength - 1)) {
                 return;
             }
 
@@ -1311,17 +1307,19 @@ module platui {
          * @returns {void}
          */
         protected _handlePrevious(index: number, length: number): void {
-            var isInfinite = this._isInfinite;
-            if (isInfinite && this.utils.isNode(this._preClonedNode)) {
+            var isInfinite = this._isInfinite,
+                itemNodes = this._itemNodes,
+                nodeLength = itemNodes.length,
+                isNode = this.utils.isNode;
+                
+            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
 
-            var itemNodes = this._itemNodes,
-                container = this._container;
-
+            var container = this._container;
             if (this._outerEnd) {
-                if (isInfinite || index < itemNodes.length - 2) {
+                if (isInfinite || index < nodeLength - 2) {
                     this.dom.insertBefore(itemNodes[this._nextIndex], Array.prototype.slice.call(container.childNodes, -3));
                 }
             } else {
@@ -1353,6 +1351,7 @@ module platui {
          */
         protected _clearInnerNodes(): boolean {
             this._removeClones();
+            this._outerStart = this._outerEnd = false;
 
             var itemNodes = this._itemNodes;
             if (itemNodes.length === 0) {
@@ -1361,14 +1360,30 @@ module platui {
 
             var childNodes: Array<Node> = Array.prototype.slice.call(this._container.childNodes),
                 insertBefore = this.dom.insertBefore;
-
+                
             switch (childNodes.length) {
                 case 9:
-                    insertBefore(itemNodes[this._previousIndex], childNodes.slice(0, 3));
+                    insertBefore(itemNodes[this._previousIndex], childNodes.splice(0, 3));
+                    insertBefore(itemNodes[this._nextIndex], childNodes.splice(-3, 3));
+                    insertBefore(itemNodes[this._index], childNodes);
+                    break;
                 case 6:
-                    insertBefore(itemNodes[this._nextIndex], childNodes.slice(-3));
+                    var next = this._nextIndex,
+                        index = this._index;
+                        
+                    if (next < 0 || next === index) {
+                        insertBefore(itemNodes[this._index], childNodes.splice(-3, 3));
+                        var i = index === 0 ? this._previousIndex + 1 : index - 1;
+                        insertBefore(itemNodes[i], childNodes);
+                        break;
+                    }
+                    
+                    insertBefore(itemNodes[next], childNodes.splice(-3, 3));
+                    insertBefore(itemNodes[index], childNodes);
+                    break;
                 case 3:
-                    insertBefore(itemNodes[this._index], childNodes.slice(0, 3));
+                    insertBefore(itemNodes[this._index], childNodes);
+                    break;
             }
 
             return true;
@@ -1404,7 +1419,6 @@ module platui {
             }
 
             var container = this._container;
-
             container.insertBefore(this._itemNodes[index], null);
             container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
             // access property to force a repaint
@@ -1436,34 +1450,37 @@ module platui {
             var itemNodes = this._itemNodes,
                 container = this._container,
                 nodeLength = itemNodes.length,
-                isNode = this.utils.isNode,
                 nodeToInsert: Node;
-
-            if (nodeLength > 1) {
-                nodeToInsert = itemNodes[this._nextIndex];
-                if (isNode(nodeToInsert)) {
-                    container.insertBefore(nodeToInsert, null);
+                
+            if (nodeLength <= 1) {
+                if (this._isInfinite) {
+                    this._cloneForInfinite(-length);
+                    return;
                 }
-                this._outerEnd = true;
-
+            } else {
+                var isNode = this.utils.isNode;
+                if (!this._outerEnd) {
+                    nodeToInsert = itemNodes[this._nextIndex];
+                    if (isNode(nodeToInsert)) {
+                        container.insertBefore(nodeToInsert, null);
+                        this._outerEnd = true;
+                    }
+                }
+                
                 if (nodeLength > 2) {
-                    if (this._isInfinite || this._index > 0) {
+                    if (!this._outerStart && (this._isInfinite || this._index > 0)) {
                         nodeToInsert = itemNodes[this._previousIndex];
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
                             container.style[<any>this._transform] = this._calculateStaticTranslation(-length);
                             // access property to force a repaint
                             container.offsetWidth;
+                            this._outerStart = true;
                         }
-                        this._outerStart = true;
                     }
                 } else if (this._isInfinite) {
                     this._cloneForInfinite(-length);
                 }
-
-                return;
-            } else if (this._isInfinite) {
-                this._cloneForInfinite(-length);
             }
         }
 
@@ -1514,7 +1531,7 @@ module platui {
                 this._log.debug('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.');
                 this._loaded = false;
                 return;
-                });
+            });
 
             addQueue.push(addPromise);
 
@@ -1602,18 +1619,29 @@ module platui {
             if (!this.utils.isArray(context) || context.length === 0) {
                 return;
             }
-
-            var container = this._container,
-                preClone = this._preClonedNode = <HTMLElement>container.lastElementChild.cloneNode(true),
-                postClone = this._postClonedNode = <HTMLElement>container.firstElementChild.cloneNode(true);
-
-            container.insertBefore(preClone, container.firstChild);
-            container.insertBefore(postClone, null);
-            container.style[<any>this._transform] = this._calculateStaticTranslation(length);
-            // access property to force a repaint
-            container.offsetWidth;
-
-            this._outerStart = this._outerEnd = true;
+            
+            var outerStart = this._outerStart,
+                outerEnd = this._outerEnd;
+                
+            if (outerStart && outerEnd) {
+                return;
+            }
+            
+            var container = this._container;
+            if (!outerEnd) {
+                var postClone = this._postClonedNode = <HTMLElement>container.firstElementChild.cloneNode(true);
+                container.insertBefore(postClone, null);
+                this._outerEnd = true;
+            }
+            
+            if (!outerStart) {
+                var preClone = this._preClonedNode = <HTMLElement>container.lastElementChild.cloneNode(true);
+                container.insertBefore(preClone, container.firstChild);
+                container.style[<any>this._transform] = this._calculateStaticTranslation(length);
+                // access property to force a repaint
+                container.offsetWidth;
+                this._outerStart = true;
+            }
         }
 
         /**
@@ -1640,6 +1668,8 @@ module platui {
             if (isNode(postClone) && container.contains(postClone)) {
                 container.removeChild(postClone);
             }
+            
+            this._preClonedNode = this._postClonedNode = null;
         }
 
         /**
@@ -2178,6 +2208,22 @@ module platui {
          */
         protected _appendItems(items: Array<Node>): void {
             this._itemNodes = this._itemNodes.concat(items);
+            
+            if (this._loaded) {
+                // if no remove listeners exist we know that we had previously removed them.
+                if (this._removeListeners.length === 0) {
+                    this._addEventListeners();
+                    this._initializeIndex(0);
+                    this.inputChanged(0, index);
+    
+                    return;
+                }
+                
+                var index = this._index;
+                if (index >= this._itemNodes.length - 2) {
+                    this._initializeIndex(index);
+                }
+            }
         }
 
         /**
@@ -2206,6 +2252,7 @@ module platui {
             }
 
             this._updateResource(controls.length - 1);
+            this._verifyLength();
         }
 
         /**
