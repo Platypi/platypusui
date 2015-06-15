@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.9 (https://platypi.io) 
+ * PlatypusUI v0.4.10 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1582,10 +1582,12 @@
     [plat-control="plat-viewport"] {
         position: relative;
         .fill();
+        .box-sizing(border-box);
 
         & > *:only-child {
             position: relative;
             .fill();
+            .box-sizing(border-box);
         }
     }
 

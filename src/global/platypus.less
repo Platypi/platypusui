@@ -18,10 +18,12 @@
     [plat-control="plat-viewport"] {
         position: relative;
         .fill();
+        .box-sizing(border-box);
 
         & > *:only-child {
             position: relative;
             .fill();
+            .box-sizing(border-box);
         }
     }
 

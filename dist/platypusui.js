@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.9 (https://platypi.io)
+ * PlatypusUI v0.4.10 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -4190,7 +4190,6 @@ var platui;
                 _this._index = 0;
                 _this._initializeIndex(index === null ? setIndex : index);
                 _this._addEventListeners();
-                _this.observeArray(_this._verifyLength);
                 _this._loaded = true;
             };
             this._init();
@@ -4214,7 +4213,7 @@ var platui;
                     return _this.goToIndex(_this._nextIndex, true);
                 }
                 return _this._cancelCurrentAnimations().then(function () {
-                    if (!(_this._outerStart && _this._outerEnd)) {
+                    if (!_this._outerEnd) {
                         _this._initializeOuterNodes();
                     }
                     var animationOptions = {};
@@ -4253,7 +4252,7 @@ var platui;
                     return _this.goToIndex(_this._previousIndex, true);
                 }
                 return _this._cancelCurrentAnimations().then(function () {
-                    if (!(_this._outerStart && _this._outerEnd)) {
+                    if (!_this._outerStart) {
                         _this._initializeOuterNodes();
                     }
                     var animationOptions = {};
@@ -4319,7 +4318,7 @@ var platui;
                     }
                     return _this._Promise.resolve(true);
                 }
-                else if (index === _this._nextIndex) {
+                else if (index - oldIndex > 0 && index === _this._nextIndex) {
                     return _this.goToNext();
                 }
                 else if (index === _this._previousIndex) {
@@ -4409,7 +4408,8 @@ var platui;
             var utils = this.utils;
             if (utils.isNull(index)) {
                 if (firstTime === true) {
-                    this.inputChanged((this._index = 0), index);
+                    this._index = 0;
+                    this.inputChanged(0, index);
                     return;
                 }
             }
@@ -4420,11 +4420,17 @@ var platui;
                     return;
                 }
             }
+            else if (index < 0) {
+                this._index = 0;
+                this.inputChanged(0, index);
+                this._initializeIndex(0);
+                return;
+            }
             if (!this._loaded) {
                 this._index = index;
                 return;
             }
-            this.goToIndex(index);
+            this.goToIndex(index, firstTime === true);
         };
         /**
          * Resets the position of the Carousel to its current state.
@@ -4438,34 +4444,24 @@ var platui;
          * Verifies that the current length of the context aligns with the position of the Carousel.
          */
         Carousel.prototype._verifyLength = function () {
-            var _this = this;
-            this._Promise.all(this._addQueue).then(function () {
-                var context = _this.context, index = _this._index;
-                if (!_this.utils.isArray(context) || context.length === 0) {
-                    if (!_this.utils.isUndefined(index)) {
-                        _this.inputChanged((_this._index = undefined), index);
-                    }
-                    _this._container.style[_this._transform] = _this._calculateStaticTranslation(-_this._currentOffset);
-                    _this._removeEventListeners();
-                    _this._checkArrows();
-                    return;
+            var context = this.context, index = this._index;
+            if (!this.utils.isArray(context) || context.length === 0) {
+                if (!this.utils.isUndefined(index)) {
+                    this.inputChanged((this._index = undefined), index);
                 }
-                // if no remove listeners exist we know that we had previously removed them. 
-                if (_this._removeListeners.length === 0) {
-                    _this._addEventListeners();
-                    _this._initializeIndex(0);
-                    _this.inputChanged(0, index);
-                    return;
-                }
-                var maxIndex = context.length - 1;
-                if (maxIndex < 2) {
-                    _this._initializeIndex(index > maxIndex ? maxIndex : index);
-                    _this.inputChanged(_this._index, index);
-                }
-                else if (index > maxIndex) {
-                    _this.goToIndex(maxIndex);
-                }
-            });
+                this._container.style[this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                this._removeEventListeners();
+                this._checkArrows();
+                return;
+            }
+            var maxIndex = context.length - 1;
+            if (maxIndex < 2) {
+                this._initializeIndex(index > maxIndex ? maxIndex : index);
+                this.inputChanged(this._index, index);
+            }
+            else if (index > maxIndex) {
+                this.goToIndex(maxIndex);
+            }
         };
         /**
          * Sets the previous and next indices in relation to item nodes according to the current index.
@@ -4566,12 +4562,12 @@ var platui;
          * @param {number} length The length to statically transition back to.
          */
         Carousel.prototype._handleNext = function (index, length) {
-            var isInfinite = this._isInfinite;
-            if (isInfinite && this.utils.isNode(this._postClonedNode)) {
+            var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
+            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
-            var itemNodes = this._itemNodes, container = this._container;
+            var container = this._container;
             if (this._outerStart) {
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
@@ -4584,7 +4580,7 @@ var platui;
                 this._outerStart = true;
             }
             this._setIndexWindow();
-            if (!(isInfinite || index < itemNodes.length - 1)) {
+            if (!(isInfinite || index < nodeLength - 1)) {
                 return;
             }
             container.insertBefore(itemNodes[this._nextIndex], null);
@@ -4595,14 +4591,14 @@ var platui;
          * @param {number} length The length to statically transition back to.
          */
         Carousel.prototype._handlePrevious = function (index, length) {
-            var isInfinite = this._isInfinite;
-            if (isInfinite && this.utils.isNode(this._preClonedNode)) {
+            var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
+            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
-            var itemNodes = this._itemNodes, container = this._container;
+            var container = this._container;
             if (this._outerEnd) {
-                if (isInfinite || index < itemNodes.length - 2) {
+                if (isInfinite || index < nodeLength - 2) {
                     this.dom.insertBefore(itemNodes[this._nextIndex], Array.prototype.slice.call(container.childNodes, -3));
                 }
             }
@@ -4623,6 +4619,7 @@ var platui;
          */
         Carousel.prototype._clearInnerNodes = function () {
             this._removeClones();
+            this._outerStart = this._outerEnd = false;
             var itemNodes = this._itemNodes;
             if (itemNodes.length === 0) {
                 return false;
@@ -4630,11 +4627,24 @@ var platui;
             var childNodes = Array.prototype.slice.call(this._container.childNodes), insertBefore = this.dom.insertBefore;
             switch (childNodes.length) {
                 case 9:
-                    insertBefore(itemNodes[this._previousIndex], childNodes.slice(0, 3));
+                    insertBefore(itemNodes[this._previousIndex], childNodes.splice(0, 3));
+                    insertBefore(itemNodes[this._nextIndex], childNodes.splice(-3, 3));
+                    insertBefore(itemNodes[this._index], childNodes);
+                    break;
                 case 6:
-                    insertBefore(itemNodes[this._nextIndex], childNodes.slice(-3));
+                    var next = this._nextIndex, index = this._index;
+                    if (next < 0 || next === index) {
+                        insertBefore(itemNodes[this._index], childNodes.splice(-3, 3));
+                        var i = index === 0 ? this._previousIndex + 1 : index - 1;
+                        insertBefore(itemNodes[i], childNodes);
+                        break;
+                    }
+                    insertBefore(itemNodes[next], childNodes.splice(-3, 3));
+                    insertBefore(itemNodes[index], childNodes);
+                    break;
                 case 3:
-                    insertBefore(itemNodes[this._index], childNodes.slice(0, 3));
+                    insertBefore(itemNodes[this._index], childNodes);
+                    break;
             }
             return true;
         };
@@ -4673,32 +4683,37 @@ var platui;
                 this._outerStart = this._outerEnd = false;
                 return;
             }
-            var itemNodes = this._itemNodes, container = this._container, nodeLength = itemNodes.length, isNode = this.utils.isNode, nodeToInsert;
-            if (nodeLength > 1) {
-                nodeToInsert = itemNodes[this._nextIndex];
-                if (isNode(nodeToInsert)) {
-                    container.insertBefore(nodeToInsert, null);
+            var itemNodes = this._itemNodes, container = this._container, nodeLength = itemNodes.length, nodeToInsert;
+            if (nodeLength <= 1) {
+                if (this._isInfinite) {
+                    this._cloneForInfinite(-length);
+                    return;
                 }
-                this._outerEnd = true;
+            }
+            else {
+                var isNode = this.utils.isNode;
+                if (!this._outerEnd) {
+                    nodeToInsert = itemNodes[this._nextIndex];
+                    if (isNode(nodeToInsert)) {
+                        container.insertBefore(nodeToInsert, null);
+                        this._outerEnd = true;
+                    }
+                }
                 if (nodeLength > 2) {
-                    if (this._isInfinite || this._index > 0) {
+                    if (!this._outerStart && (this._isInfinite || this._index > 0)) {
                         nodeToInsert = itemNodes[this._previousIndex];
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
                             container.style[this._transform] = this._calculateStaticTranslation(-length);
                             // access property to force a repaint 
                             container.offsetWidth;
+                            this._outerStart = true;
                         }
-                        this._outerStart = true;
                     }
                 }
                 else if (this._isInfinite) {
                     this._cloneForInfinite(-length);
                 }
-                return;
-            }
-            else if (this._isInfinite) {
-                this._cloneForInfinite(-length);
             }
         };
         /**
@@ -4778,13 +4793,24 @@ var platui;
             if (!this.utils.isArray(context) || context.length === 0) {
                 return;
             }
-            var container = this._container, preClone = this._preClonedNode = container.lastElementChild.cloneNode(true), postClone = this._postClonedNode = container.firstElementChild.cloneNode(true);
-            container.insertBefore(preClone, container.firstChild);
-            container.insertBefore(postClone, null);
-            container.style[this._transform] = this._calculateStaticTranslation(length);
-            // access property to force a repaint 
-            container.offsetWidth;
-            this._outerStart = this._outerEnd = true;
+            var outerStart = this._outerStart, outerEnd = this._outerEnd;
+            if (outerStart && outerEnd) {
+                return;
+            }
+            var container = this._container;
+            if (!outerEnd) {
+                var postClone = this._postClonedNode = container.firstElementChild.cloneNode(true);
+                container.insertBefore(postClone, null);
+                this._outerEnd = true;
+            }
+            if (!outerStart) {
+                var preClone = this._preClonedNode = container.lastElementChild.cloneNode(true);
+                container.insertBefore(preClone, container.firstChild);
+                container.style[this._transform] = this._calculateStaticTranslation(length);
+                // access property to force a repaint 
+                container.offsetWidth;
+                this._outerStart = true;
+            }
         };
         /**
          * Removes the clones for infinite scrolling.
@@ -4797,6 +4823,7 @@ var platui;
             if (isNode(postClone) && container.contains(postClone)) {
                 container.removeChild(postClone);
             }
+            this._preClonedNode = this._postClonedNode = null;
         };
         /**
          * Adds all necessary elements and event listeners to setup auto scroll.
@@ -5133,6 +5160,19 @@ var platui;
          */
         Carousel.prototype._appendItems = function (items) {
             this._itemNodes = this._itemNodes.concat(items);
+            if (this._loaded) {
+                // if no remove listeners exist we know that we had previously removed them. 
+                if (this._removeListeners.length === 0) {
+                    this._addEventListeners();
+                    this._initializeIndex(0);
+                    this.inputChanged(0, index);
+                    return;
+                }
+                var index = this._index;
+                if (index >= this._itemNodes.length - 2) {
+                    this._initializeIndex(index);
+                }
+            }
         };
         /**
          * Removes items from the control's element.
@@ -5146,6 +5186,7 @@ var platui;
                 itemNodes.pop();
             }
             this._updateResource(controls.length - 1);
+            this._verifyLength();
         };
         /**
          * Cancels the current animation.
