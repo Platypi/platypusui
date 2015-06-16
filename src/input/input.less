@@ -96,6 +96,13 @@
                 cursor: pointer;
             }
         }
+            
+        input[disabled],
+        input:disabled {
+            & + .plat-input-action {
+                display: none;
+            }
+        }
     }
     
     &.input-no-action {
