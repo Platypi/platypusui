@@ -1108,12 +1108,12 @@ module platui {
             }
             
             var maxIndex = context.length - 1;
-            if (maxIndex < 2) {
-                this._initializeIndex(index > maxIndex ? maxIndex : index);
-                this.inputChanged(this._index, index);
-            } else if (index > maxIndex) {
+            if (index > maxIndex) {
                 this.goToIndex(maxIndex);
+                return;
             }
+            
+            this._checkArrows();
         }
 
         /**
@@ -1267,7 +1267,7 @@ module platui {
                 nodeLength = itemNodes.length,
                 isNode = this.utils.isNode;
                 
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -1313,7 +1313,7 @@ module platui {
                 nodeLength = itemNodes.length,
                 isNode = this.utils.isNode;
                 
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
