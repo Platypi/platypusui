@@ -1066,10 +1066,8 @@ module platui {
          */
         protected _createGroupTemplate(): plat.async.IThenable<void> {
             var _document = this._document,
-                options = this.options.value,
                 bindableTemplates = this.bindableTemplates,
                 groupHeaderTemplate = this._groupHeaderTemplate,
-                groupHeader = this._templates[groupHeaderTemplate],
                 listviewGroup = __Listview + '-group',
                 group = _document.createElement('div'),
                 itemContainer = _document.createElement('div'),
@@ -1108,21 +1106,17 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
          */
         protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.IThenable<void> {
-            var context = this.context,
-                initialIndex = index,
-                max = +(index + numberOfGroups);
-
-            var promises = <Array<plat.async.IThenable<DocumentFragment>>>[],
-                fragment: DocumentFragment,
-                i: number;
-
+            var initialIndex = index,
+                max = +(index + numberOfGroups),
+                promises = <Array<plat.async.IThenable<DocumentFragment>>>[];
+                
             while (index < max) {
                 promises.push(this._bindGroup(index++));
             }
 
             return this._Promise.all(promises).then((fragments): void => {
                 var length = fragments.length;
-                for (i = 0; i < length; ++i) {
+                for (var i = 0; i < length; ++i) {
                     this._addGroup(i + initialIndex, fragments[i], i < animateItems);
                 }
             });
@@ -2257,7 +2251,6 @@ module platui {
                 _document = this._document,
                 validGroupTemplate = !this.utils.isNull(groupHeaderTemplate),
                 childNodes: Array<Node> = slice.call(this.innerTemplate.childNodes),
-                length = childNodes.length,
                 itemClass = __Plat + 'item',
                 groupClass = __Plat + 'header',
                 childNode: Node,
@@ -2446,7 +2439,6 @@ module platui {
                 return;
             } else if (this._animate) {
                 if (addQueue.length === 0) {
-                    var animationQueue = opGroup.animationQueue;
                     addQueue = addQueue.concat([this._animateItems(0, 1, __Leave, opGroup, 'clone', true)]);
                 }
             }
@@ -2522,8 +2514,7 @@ module platui {
             var removeCount = change.removed.length,
                 animationQueue = opGroup.animationQueue;
             if (addCount > removeCount) {
-                var _Promise = this._Promise,
-                    itemAddCount = addCount - removeCount,
+                var itemAddCount = addCount - removeCount,
                     animationCount: number;
 
                 if (utils.isFunction(this._templateSelector)) {
@@ -2972,7 +2963,6 @@ module platui {
 
             if (parentChain.length > 0) {
                 var curr = parentChain.pop(),
-                    currStyle = curr.style,
                     temp: HTMLElement;
 
                 while (parentChain.length > 0) {
@@ -3096,7 +3086,6 @@ module platui {
 
             if (parentChain.length > 0) {
                 var curr = parentChain.pop(),
-                    currStyle = curr.style,
                     temp: HTMLElement;
 
                 while (parentChain.length > 0) {
