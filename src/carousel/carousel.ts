@@ -1108,12 +1108,12 @@ module platui {
             }
             
             var maxIndex = context.length - 1;
-            if (maxIndex < 2) {
-                this._initializeIndex(index > maxIndex ? maxIndex : index);
-                this.inputChanged(this._index, index);
-            } else if (index > maxIndex) {
+            if (index > maxIndex) {
                 this.goToIndex(maxIndex);
+                return;
             }
+            
+            this._checkArrows();
         }
 
         /**
@@ -1212,14 +1212,12 @@ module platui {
                 }
             }
 
+            move = move.bind(this);
             var promises = <Array<plat.async.IThenable<boolean>>>[],
                 removeListeners = this._removeListeners,
                 constant = this._goToIntervalConstant,
-                interval = 0;
-
-            move = move.bind(this);
-            while (--diff > 0) {
-                promises.push(new _Promise<any>((resolve): void => {
+                interval = 0,
+                mover = (resolve: (value: any) => any): void => {
                     var remove = defer((): void => {
                         var removeIndex = removeListeners.indexOf(remove);
                         if (removeIndex !== -1) {
@@ -1229,7 +1227,10 @@ module platui {
                         resolve(move());
                     }, interval += Math.round(constant / diff));
                     removeListeners.push(remove);
-                }));
+                };
+
+            while (--diff > 0) {
+                promises.push(new _Promise<any>(mover));
             }
 
             promises.push(move());
@@ -1266,7 +1267,7 @@ module platui {
                 nodeLength = itemNodes.length,
                 isNode = this.utils.isNode;
                 
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -1312,7 +1313,7 @@ module platui {
                 nodeLength = itemNodes.length,
                 isNode = this.utils.isNode;
                 
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }

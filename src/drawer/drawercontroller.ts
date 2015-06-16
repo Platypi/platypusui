@@ -1476,9 +1476,10 @@ module platui {
                         var _utils = this.utils,
                             isString = _utils.isString,
                             isUndefined = _utils.isUndefined,
-                            drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{},
-                            drawerElement = this._drawerElement = drawer.element;
-
+                            drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{};
+                        
+                        this._drawerElement = drawer.element;
+                        
                         if (!isString(position)) {
                             if (isString(drawerArg.position)) {
                                 position = drawerArg.position;
@@ -1718,7 +1719,6 @@ module platui {
 
                 if (overflow !== 'hidden') {
                     var computedParentStyle = _window.getComputedStyle(parent),
-                        computedOverflow = computedParentStyle.overflow,
                         computedDirectionalOverflow: string,
                         key: string;
 
@@ -1757,8 +1757,7 @@ module platui {
          * @returns {number} The max offset to translate.
          */
         protected _getOffset(): number {
-            var drawerElement = this._drawerElement,
-                hasAttribute = drawerElement.hasAttribute(__Hide);
+            var drawerElement = this._drawerElement;
 
             if (drawerElement.hasAttribute(__Hide)) {
                 drawerElement.removeAttribute(__Hide);

@@ -1409,7 +1409,6 @@ module platui {
 
             if (parentChain.length > 0) {
                 var curr = parentChain.pop(),
-                    currStyle = curr.style,
                     temp: HTMLElement;
 
                 while (parentChain.length > 0) {
