@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.10 (https://platypi.io)
+ * PlatypusUI v0.4.11 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1571,7 +1571,8 @@ var platui;
             var _this = this;
             var useContext = this._useContext, eventRemover = this.on(__DrawerFoundEvent + '_' + id, function (event, drawerArg) {
                 eventRemover();
-                var _utils = _this.utils, isString = _utils.isString, isUndefined = _utils.isUndefined, drawer = (_this._drawer = drawerArg.control) || {}, drawerElement = _this._drawerElement = drawer.element;
+                var _utils = _this.utils, isString = _utils.isString, isUndefined = _utils.isUndefined, drawer = (_this._drawer = drawerArg.control) || {};
+                _this._drawerElement = drawer.element;
                 if (!isString(position)) {
                     if (isString(drawerArg.position)) {
                         position = drawerArg.position;
@@ -1730,7 +1731,7 @@ var platui;
             if (isNode(parent)) {
                 var parentStyle = parent.style, overflow = parentStyle.overflow;
                 if (overflow !== 'hidden') {
-                    var computedParentStyle = _window.getComputedStyle(parent), computedOverflow = computedParentStyle.overflow, computedDirectionalOverflow, key;
+                    var computedParentStyle = _window.getComputedStyle(parent), computedDirectionalOverflow, key;
                     if (this._isVertical) {
                         key = 'overflowY';
                         computedDirectionalOverflow = computedParentStyle.overflowY;
@@ -1755,7 +1756,7 @@ var platui;
          * Sets the max offset to translate the corresponding Drawer.
          */
         DrawerController.prototype._getOffset = function () {
-            var drawerElement = this._drawerElement, hasAttribute = drawerElement.hasAttribute(__Hide);
+            var drawerElement = this._drawerElement;
             if (drawerElement.hasAttribute(__Hide)) {
                 drawerElement.removeAttribute(__Hide);
                 var offset = this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
@@ -2503,7 +2504,7 @@ var platui;
                 parentChain.push(shallowCopy);
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -3198,7 +3199,7 @@ var platui;
                 parentChain.push(shallowCopy);
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -4455,13 +4456,11 @@ var platui;
                 return;
             }
             var maxIndex = context.length - 1;
-            if (maxIndex < 2) {
-                this._initializeIndex(index > maxIndex ? maxIndex : index);
-                this.inputChanged(this._index, index);
-            }
-            else if (index > maxIndex) {
+            if (index > maxIndex) {
                 this.goToIndex(maxIndex);
+                return;
             }
+            this._checkArrows();
         };
         /**
          * Sets the previous and next indices in relation to item nodes according to the current index.
@@ -4530,19 +4529,19 @@ var platui;
                     }
                 }
             }
-            var promises = [], removeListeners = this._removeListeners, constant = this._goToIntervalConstant, interval = 0;
             move = move.bind(this);
+            var promises = [], removeListeners = this._removeListeners, constant = this._goToIntervalConstant, interval = 0, mover = function (resolve) {
+                var remove = defer(function () {
+                    var removeIndex = removeListeners.indexOf(remove);
+                    if (removeIndex !== -1) {
+                        removeListeners.splice(removeIndex, 1);
+                    }
+                    resolve(move());
+                }, interval += Math.round(constant / diff));
+                removeListeners.push(remove);
+            };
             while (--diff > 0) {
-                promises.push(new _Promise(function (resolve) {
-                    var remove = defer(function () {
-                        var removeIndex = removeListeners.indexOf(remove);
-                        if (removeIndex !== -1) {
-                            removeListeners.splice(removeIndex, 1);
-                        }
-                        resolve(move());
-                    }, interval += Math.round(constant / diff));
-                    removeListeners.push(remove);
-                }));
+                promises.push(new _Promise(mover));
             }
             promises.push(move());
             return _Promise.all(promises).then(function (results) {
@@ -4563,7 +4562,7 @@ var platui;
          */
         Carousel.prototype._handleNext = function (index, length) {
             var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -4592,7 +4591,7 @@ var platui;
          */
         Carousel.prototype._handlePrevious = function (index, length) {
             var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -5513,7 +5512,7 @@ var platui;
          */
         Listview.prototype._createGroupTemplate = function () {
             var _this = this;
-            var _document = this._document, options = this.options.value, bindableTemplates = this.bindableTemplates, groupHeaderTemplate = this._groupHeaderTemplate, groupHeader = this._templates[groupHeaderTemplate], listviewGroup = __Listview + '-group', group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
+            var _document = this._document, bindableTemplates = this.bindableTemplates, groupHeaderTemplate = this._groupHeaderTemplate, listviewGroup = __Listview + '-group', group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
             group.className = listviewGroup;
             itemContainer.className = __Listview + '-items';
             if (this.utils.isString(groupHeaderTemplate)) {
@@ -5537,14 +5536,13 @@ var platui;
          */
         Listview.prototype._addGroups = function (numberOfGroups, index, animateItems) {
             var _this = this;
-            var context = this.context, initialIndex = index, max = +(index + numberOfGroups);
-            var promises = [], fragment, i;
+            var initialIndex = index, max = +(index + numberOfGroups), promises = [];
             while (index < max) {
                 promises.push(this._bindGroup(index++));
             }
             return this._Promise.all(promises).then(function (fragments) {
                 var length = fragments.length;
-                for (i = 0; i < length; ++i) {
+                for (var i = 0; i < length; ++i) {
                     _this._addGroup(i + initialIndex, fragments[i], i < animateItems);
                 }
             });
@@ -6297,7 +6295,7 @@ var platui;
          * @param {string} groupHeaderTemplate? The normalized group header template name from the options.
          */
         Listview.prototype._parseInnerTemplate = function (itemTemplate, groupHeaderTemplate) {
-            var templates = this._templates, slice = Array.prototype.slice, appendChildren = this.dom.appendChildren, _document = this._document, validGroupTemplate = !this.utils.isNull(groupHeaderTemplate), childNodes = slice.call(this.innerTemplate.childNodes), length = childNodes.length, itemClass = __Plat + 'item', groupClass = __Plat + 'header', childNode, templateName, container;
+            var templates = this._templates, slice = Array.prototype.slice, appendChildren = this.dom.appendChildren, _document = this._document, validGroupTemplate = !this.utils.isNull(groupHeaderTemplate), childNodes = slice.call(this.innerTemplate.childNodes), itemClass = __Plat + 'item', groupClass = __Plat + 'header', childNode, templateName, container;
             while (childNodes.length > 0) {
                 childNode = childNodes.pop();
                 if (childNode.nodeType !== Node.ELEMENT_NODE) {
@@ -6406,7 +6404,6 @@ var platui;
             }
             else if (this._animate) {
                 if (addQueue.length === 0) {
-                    var animationQueue = opGroup.animationQueue;
                     addQueue = addQueue.concat([this._animateItems(0, 1, __Leave, opGroup, 'clone', true)]);
                 }
             }
@@ -6459,7 +6456,7 @@ var platui;
             }
             var removeCount = change.removed.length, animationQueue = opGroup.animationQueue;
             if (addCount > removeCount) {
-                var _Promise = this._Promise, itemAddCount = addCount - removeCount, animationCount;
+                var itemAddCount = addCount - removeCount, animationCount;
                 if (utils.isFunction(this._templateSelector)) {
                     if (utils.isNull(change.index)) {
                         this.rerender(opGroup);
@@ -6731,7 +6728,7 @@ var platui;
                 }
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -6807,7 +6804,7 @@ var platui;
                 }
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
