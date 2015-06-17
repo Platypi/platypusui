@@ -621,7 +621,7 @@ module platui {
          * or setting custom events in your html.
          * e.g.
          * navbar.setCenter({
-         *  html: '<plat-input plat-keyup="onKeyUp"></plat-input>',
+         *  content: '<plat-input plat-keyup="onKeyUp"></plat-input>',
          *  customActions: {
          *      onKeyUp: (ev: KeyboardEvent) => {
          *          // handle event
