@@ -19,14 +19,17 @@
     border-bottom: @border-bottom;
     border-left: @border-left;
     z-index: @z-index;
-    .box-shadow(@box-shadow);
     .box-sizing(border-box);
     
-    &.plat-top {
+    &:not(.no-navbar-shadow) {
+        .box-shadow(@box-shadow);
+    }
+    
+    &.plat-navbar-top {
         top: 0;
     }
     
-    &.plat-bottom {
+    &.plat-navbar-bottom {
         bottom: 0;
     }
     
