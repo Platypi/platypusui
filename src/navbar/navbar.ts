@@ -360,13 +360,13 @@ module platui {
          * @description
          * The defined action of the left part of the {@link platui.Navbar|Navbar} when tapped.
          * 
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          * 
          * @returns {void}
          */
-        leftAction(index: number, ev?: plat.ui.IGestureEvent): void {
-            this._executeAction('left', index);
+        leftAction(index?: number, ev?: plat.ui.IGestureEvent): void {
+            this._executeAction(ev, 'left', index);
         }
         
         /**
@@ -378,13 +378,13 @@ module platui {
          * @description
          * The defined action of the center part of the {@link platui.Navbar|Navbar} when tapped.
          * 
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          * 
          * @returns {void}
          */
-        centerAction(index: number, ev?: plat.ui.IGestureEvent): void {
-            this._executeAction('center', index);
+        centerAction(index?: number, ev?: plat.ui.IGestureEvent): void {
+            this._executeAction(ev, 'center', index);
         }
         
         /**
@@ -396,13 +396,13 @@ module platui {
          * @description
          * The defined action of the right part of the {@link platui.Navbar|Navbar} when tapped.
          * 
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          * 
          * @returns {void}
          */
-        rightAction(index: number, ev?: plat.ui.IGestureEvent): void {
-            this._executeAction('right', index);
+        rightAction(index?: number, ev?: plat.ui.IGestureEvent): void {
+            this._executeAction(ev, 'right', index);
         }
         
         /**
@@ -514,12 +514,13 @@ module platui {
          * @description
          * Executes the proper action associated with a {@link platui.Navbar|Navbar} component.
          * 
+         * @param {plat.ui.IGestureEvent} ev The executed event.
          * @param {string} position The part of the {@link platui.Navbar|Navbar} whose action is being executed.
-         * @param {any} property The indexing property. Will by default be an index into the component Array.
+         * @param {any} property? The indexing property. Will by default be an index into the component Array.
          * 
          * @returns {void}
          */
-        protected _executeAction(position: string, property: any): void {
+        protected _executeAction(ev: plat.ui.IGestureEvent, position: string, property?: any): void {
             var utils = this.utils,
                 component: INavbarComponent = this.context[position];
                 
@@ -528,7 +529,7 @@ module platui {
             }
             
             if (utils.isFunction(component.action)) {
-                component.action();
+                component.action(ev);
                 return;
             }
             
@@ -597,12 +598,12 @@ module platui {
          * @kind property
          * @access public
          * 
-         * @type {() => any}
+         * @type {(ev?: plat.ui.IGestureEvent) => any}
          * 
          * @description
          * The action to perform when the component is tapped.
          */
-        action?: () => any;
+        action?: (ev?: plat.ui.IGestureEvent) => any;
         
         /**
          * @name customActions
