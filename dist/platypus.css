@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.11 (https://platypi.io) 
+ * PlatypusUI v0.4.12 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1377,7 +1377,7 @@ h6 {
   position: absolute;
   background-color: transparent;
   overflow: hidden;
-  z-index: 9999;
+  z-index: 999999;
   width: 100%;
   height: 100%;
   padding: 0;
@@ -2455,6 +2455,10 @@ h6 {
   min-width: 20px;
   cursor: pointer;
 }
+.plat-input .plat-input-container input[disabled] + .plat-input-action,
+.plat-input .plat-input-container input:disabled + .plat-input-action {
+  display: none;
+}
 .plat-input.input-no-action .plat-input-container .plat-input-action {
   display: none;
 }
@@ -3236,16 +3240,18 @@ h6 {
   border-bottom: none;
   border-left: none;
   z-index: 100;
-  -webkit-box-shadow: 0px 0px 2px 1px #1a1a1a;
-  box-shadow: 0px 0px 2px 1px #1a1a1a;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.plat-navbar.plat-top {
+.plat-navbar:not(.no-navbar-shadow) {
+  -webkit-box-shadow: 0px 0px 2px 1px #1a1a1a;
+  box-shadow: 0px 0px 2px 1px #1a1a1a;
+}
+.plat-navbar.plat-navbar-top {
   top: 0;
 }
-.plat-navbar.plat-bottom {
+.plat-navbar.plat-navbar-bottom {
   bottom: 0;
 }
 .plat-navbar .plat-navbar-left,
