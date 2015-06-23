@@ -1757,16 +1757,18 @@ module platui {
          * @returns {number} The max offset to translate.
          */
         protected _getOffset(): number {
-            var drawerElement = this._drawerElement;
+            var drawerElement = this._drawerElement,
+                offset: number;
 
             if (drawerElement.hasAttribute(__Hide)) {
                 drawerElement.removeAttribute(__Hide);
-                var offset = this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
+                offset = this._isVertical ? drawerElement.clientHeight : drawerElement.clientWidth;
                 drawerElement.setAttribute(__Hide, '');
-                return offset;
+            } else {
+                offset = this._isVertical ? drawerElement.clientHeight : drawerElement.clientWidth;
             }
 
-            return this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
+            return offset;
         }
     }
 

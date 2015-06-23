@@ -31,17 +31,17 @@ module platui {
         templateString: string =
         '<div class="plat-navbar-left">\n' + 
         '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="left">\n' + 
-        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="leftAction(@index)"></div>\n' +
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="leftAction(@index)"></div>\n' +
         '    </div>\n' +
         '</div>\n' +
         '<div class="plat-navbar-center">\n' + 
         '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="center">\n' + 
-        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="centerAction(@index)"></div>\n' +
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="centerAction(@index)"></div>\n' +
         '    </div>\n' +
         '</div>\n' +
         '<div class="plat-navbar-right">\n' + 
         '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="right">\n' + 
-        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="rightAction(@index)"></div>\n' +
+        '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="rightAction(@index)"></div>\n' +
         '    </div>\n' +
         '</div>\n';
         
@@ -71,15 +71,15 @@ module platui {
          */
         context: INavbarContext = {
             left: [{
-                content: '<span>left</span>',
+                content: '',
                 action: noop
             }],
             center: [{
-                content: '<span>center</span>',
+                content: '',
                 action: noop
             }],
             right: [{
-                content: '<span>right</span>',
+                content: '',
                 action: noop
             }]
         };
@@ -486,7 +486,7 @@ module platui {
                 key: string,
                 currKey: number;
                 
-            if (oldComponentExists && !utils.isString(newComponent.content)) {
+            if (oldComponentExists && utils.isUndefined(newComponent.content)) {
                 newComponent.content = oldComponent.content;
             }
                 

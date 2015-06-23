@@ -9,9 +9,16 @@
 
         @manipulated-viewport-background-color: @white;
 
+    /// =========== Listview Properties =========== ///
+    
+        @horizontal-scroll-padding: 15px;
+
     /// =========== Listview Animations =========== ///
 
         @refresh-transition: all 200ms;
+        @enter-init: {
+          opacity: 0;  
+        };
         @enter-animation-name: LISTVIEW_ITEM_ENTER;
         @enter-animation-duration: 300ms;
         @enter-animation: @enter-animation-name @enter-animation-duration;

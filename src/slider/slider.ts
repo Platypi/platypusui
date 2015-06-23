@@ -765,11 +765,11 @@ module platui {
 
             if (this._isVertical) {
                 this._lengthProperty = 'height';
-                this._maxOffset = el.offsetHeight;
+                this._maxOffset = el.clientHeight;
                 this._sliderOffset = el.offsetTop;
             } else {
                 this._lengthProperty = 'width';
-                this._maxOffset = el.offsetWidth;
+                this._maxOffset = el.clientWidth;
                 this._sliderOffset = el.offsetLeft;
             }
 
