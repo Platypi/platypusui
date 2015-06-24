@@ -294,7 +294,7 @@ module platui {
          * @description
          * A function for removing the swipe open event listener.
          */
-        protected _removeSwipeOpen: plat.IRemoveListener;
+        protected _removeSwipeToggle: plat.IRemoveListener;
 
         /**
          * @name _removePrimaryTrack
@@ -634,7 +634,8 @@ module platui {
                     }
                 }
             }, 25);
-
+            
+            this._drawerElement.setAttribute(__Hide, '');
             this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
         }
 
@@ -920,8 +921,6 @@ module platui {
 
             this._isOpen = true;
 
-            drawerElement.removeAttribute(__Hide);
-
             if (wasClosed) {
                 this.dom.addClass(rootElement, __Drawer + '-open ' + this._directionalTransitionPrep);
                 this._addEventIntercepts();
@@ -980,7 +979,6 @@ module platui {
                     return;
                 }
 
-                drawerElement.setAttribute(__Hide, '');
                 dom.removeClass(rootElement, this._directionalTransitionPrep);
             });
         }
@@ -1063,7 +1061,7 @@ module platui {
         }
 
         /**
-         * @name _addSwipeOpen
+         * @name _addSwipeToggle
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
@@ -1073,11 +1071,21 @@ module platui {
          * 
          * @returns {void}
          */
-        protected _addSwipeOpen(): void {
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], (): void => {
-                this._hasSwiped = true;
-                this.open();
-            }, false);
+        protected _addSwipeToggle(): void {
+            var element = this.element,
+                removeSwipeOpen = this.addEventListener(element, __$swipe + __transitionNegate[this._position], (): void => {
+                    this._hasSwiped = true;
+                    this.open();
+                }, false),
+                removeSwipeClose = this.addEventListener(element, __$swipe + this._position, (): void => {
+                    this._hasSwiped = true;
+                    this.close();
+                }, false);
+            
+            this._removeSwipeToggle = (): void => {
+                removeSwipeOpen();
+                removeSwipeClose();
+            };
         }
 
         /**
@@ -1099,20 +1107,20 @@ module platui {
         }
 
         /**
-         * @name _addTapOpen
+         * @name _addTapToggle
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
          * 
          * @description
-         * Adds tap close event to the controller element.
+         * Adds tap toggle event to the controller element.
          * 
          * @returns {void}
          */
-        protected _addTapOpen(): void {
+        protected _addTapToggle(): void {
             this._removeTap = this.addEventListener(this.element, __$tap, (): void => {
                 this._hasTapped = true;
-                this.open();
+                this.toggle();
             }, false);
         }
 
@@ -1155,11 +1163,11 @@ module platui {
             // this._removeEventListeners();
 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
-                this._addTapOpen();
+                this._addTapToggle();
             }
 
             if (this._isSwipe = (types.indexOf('swipe') !== -1)) {
-                this._addSwipeOpen();
+                this._addSwipeToggle();
             }
 
             if (this._isTrack = (types.indexOf('track') !== -1)) {
@@ -1226,9 +1234,9 @@ module platui {
                 }
             }
 
-            if (this._isSwipe && isFunction(this._removeSwipeOpen)) {
-                this._removeSwipeOpen();
-                this._removeSwipeOpen = null;
+            if (this._isSwipe && isFunction(this._removeSwipeToggle)) {
+                this._removeSwipeToggle();
+                this._removeSwipeToggle = null;
             }
         }
 
@@ -1283,7 +1291,6 @@ module platui {
                 return;
             }
 
-            this._drawerElement.removeAttribute(__Hide);
             this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
         }
 
@@ -1329,7 +1336,6 @@ module platui {
                     this.reset();
                 }
             } else if (!this._isOpen) {
-                this._drawerElement.setAttribute(__Hide, '');
                 this.dom.removeClass(this._rootElement, this._directionalTransitionPrep);
             }
         }
@@ -1476,9 +1482,8 @@ module platui {
                         var _utils = this.utils,
                             isString = _utils.isString,
                             isUndefined = _utils.isUndefined,
-                            drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{};
-                        
-                        this._drawerElement = drawer.element;
+                            drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{},
+                            drawerElement = this._drawerElement = drawer.element;
                         
                         if (!isString(position)) {
                             if (isString(drawerArg.position)) {
@@ -1491,6 +1496,7 @@ module platui {
                             }
                         }
 
+                        drawerElement.removeAttribute(__Hide);
                         if (!this._controllerIsValid(position.toLowerCase())) {
                             return;
                         }
@@ -1757,18 +1763,7 @@ module platui {
          * @returns {number} The max offset to translate.
          */
         protected _getOffset(): number {
-            var drawerElement = this._drawerElement,
-                offset: number;
-
-            if (drawerElement.hasAttribute(__Hide)) {
-                drawerElement.removeAttribute(__Hide);
-                offset = this._isVertical ? drawerElement.clientHeight : drawerElement.clientWidth;
-                drawerElement.setAttribute(__Hide, '');
-            } else {
-                offset = this._isVertical ? drawerElement.clientHeight : drawerElement.clientWidth;
-            }
-
-            return offset;
+            return this._isVertical ? this._drawerElement.clientHeight : this._drawerElement.clientWidth;
         }
     }
 
