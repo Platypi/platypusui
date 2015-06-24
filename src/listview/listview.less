@@ -162,28 +162,42 @@
     &.plat-horizontal {
         .plat-listview-viewport {
             .plat-scroll-container {
+                padding-bottom: @horizontal-scroll-padding;
                 .scroll(x);
 
                 .plat-container {
                     .flexbox();
-                    .flex-direction(row);
-                    .flex-wrap(nowrap);
-                    .align-items(stretch);
-
-                    .plat-listview-group {
-                        height: 100%;
-                        .flex(0 0 auto);
-
-                        .plat-listview-items {
-                            .flexbox();
-                            .flex-direction(column);
-                            .flex-wrap(wrap);
-                            .align-content(flex-start);
-                            .fill();
-
-                            .plat-item {
-                                .flex(0 0 auto);
+                    
+                    &.plat-grouped {
+                        .flex-direction(row);
+                        .flex-wrap(nowrap);
+                        .align-items(stretch);
+                        
+                        .plat-listview-group {
+                            height: 100%;
+                            .flex(0 0 auto);
+    
+                            .plat-listview-items {
+                                .flexbox();
+                                .flex-direction(column);
+                                .flex-wrap(wrap);
+                                .align-content(flex-start);
+                                .fill();
+    
+                                & > * {
+                                    .flex(0 0 auto);
+                                }
                             }
+                        }
+                    }
+                    
+                    &:not(.plat-grouped) {
+                        .flex-direction(column);
+                        .flex-wrap(wrap);
+                        .align-content(flex-start);
+                        
+                        & > * {
+                            .flex(0 0 auto);
                         }
                     }
 
@@ -220,10 +234,11 @@
             .plat-scroll-container {
                 .plat-container {
                     .plat-enter-init {
-                        &.plat-item,
-                        &.plat-listview-group {
-                            .animation(@enter-animation);
-                        }
+                        @enter-init();
+                    }
+                    
+                    .plat-enter {
+                        .animation(@enter-animation);
                     }
                 }
             }
@@ -233,10 +248,7 @@
             .plat-scroll-container {
                 .plat-container {
                     .plat-leave {
-                        &.plat-item,
-                        &.plat-listview-group {
-                            .animation(@leave-animation);
-                        }
+                        .animation(@leave-animation);
                     }
                 }
             }

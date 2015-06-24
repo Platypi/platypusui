@@ -1197,11 +1197,11 @@ module platui {
             if (this._isVertical) {
                 this._lengthProperty = 'height';
                 this._positionProperty = this._reversed ? 'top' : 'bottom';
-                this._maxOffset = el.offsetHeight;
+                this._maxOffset = el.clientHeight;
             } else {
                 this._lengthProperty = 'width';
                 this._positionProperty = this._reversed ? 'right' : 'left';
-                this._maxOffset = el.offsetWidth;
+                this._maxOffset = el.clientWidth;
             }
 
             if (!(isNode || this._maxOffset)) {

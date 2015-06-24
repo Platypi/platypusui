@@ -150,7 +150,7 @@ module platui {
             }
 
             var barElement = this._barElement,
-                barMax = barElement.parentElement.offsetWidth;
+                barMax = barElement.parentElement.clientWidth;
             if (!barMax) {
                 return;
             }

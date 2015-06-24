@@ -256,7 +256,7 @@ module platui {
          * An object containing the node names of the {@link platui.Listview|Listview's} defined templates and 
          * their corresponding template node.
          */
-        protected _templates: plat.IObject<HTMLElement> = {};
+        protected _templates: plat.IObject<Node> = {};
 
         /**
          * @name _isVertical
@@ -290,12 +290,12 @@ module platui {
          * @kind property
          * @access protected
          * 
-         * @type {(item: any, index: number) => string|plat.async.IPromise}
+         * @type {(item: any, index: number, group?: string) => string|plat.async.IPromise}
          * 
          * @description
          * The selector function used to obtain the template key for each item.
          */
-        protected _templateSelector: (item: any, index: number) => any;
+        protected _templateSelector: (item: any, index: number, group?: string) => any;
 
         /**
          * @name _templateSelectorPromise
@@ -581,7 +581,7 @@ module platui {
         protected _groups: plat.IObject<IGroupHash>;
 
         /**
-         * @name _groupHeaderTemplate
+         * @name _headerTemplate
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -591,10 +591,10 @@ module platui {
          * @description
          * The normalized node name of the group header template.
          */
-        protected _groupHeaderTemplate: string;
+        protected _headerTemplate: string;
 
         /**
-         * @name _groupHeaderTemplatePromise
+         * @name _headerTemplatePromise
          * @memberof platui.Listview
          * @kind property
          * @access protected
@@ -604,7 +604,7 @@ module platui {
          * @description
          * A promise that resolves when the group template has been created.
          */
-        protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
+        protected _headerTemplatePromise: plat.async.IThenable<void>;
 
         /**
          * @name _cloneAttempts
@@ -803,8 +803,8 @@ module platui {
             }
 
             var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate),
-                groupHeaderTemplate = options.groupHeaderTemplate,
-                normalizedGroupTemplate = isString(groupHeaderTemplate) ? this._normalizeTemplateName(groupHeaderTemplate) : null;
+                headerTemplate = options.headerTemplate,
+                normalizedGroupTemplate = isString(headerTemplate) ? this._normalizeTemplateName(headerTemplate) : null;
 
             this._parseInnerTemplate(normalizedItemTemplate, normalizedGroupTemplate);
             this._determineTemplates(itemTemplate, normalizedItemTemplate, normalizedGroupTemplate);
@@ -1001,30 +1001,31 @@ module platui {
          * @param {string} itemTemplate The pre-normalized property for indicating either the item template or the 
          * item template selector.
          * @param {string} itemTemplateKey The normalized property for indicating the item template.
-         * @param {string} groupHeaderTemplate The property for indicating the group header template.
+         * @param {string} headerTemplate The property for indicating the group header template.
          * 
          * @returns {void}
          */
-        protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, groupHeaderTemplate: string): void {
+        protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, headerTemplate: string): void {
             var utils = this.utils,
                 bindableTemplates = this.bindableTemplates,
                 templates = this._templates,
-                template: HTMLElement;
+                template: Node;
 
-            if (utils.isString(groupHeaderTemplate)) {
+            if (utils.isString(headerTemplate)) {
                 this._isGrouped = true;
+                this.dom.addClass(this._container, __Plat + 'grouped');
 
-                template = templates[groupHeaderTemplate];
+                template = templates[headerTemplate];
                 if (utils.isNode(template)) {
-                    this._groupHeaderTemplate = groupHeaderTemplate;
-                    this.bindableTemplates.add(groupHeaderTemplate, template);
-                    delete templates[groupHeaderTemplate];
+                    this._headerTemplate = headerTemplate;
+                    this.bindableTemplates.add(headerTemplate, template);
+                    delete templates[headerTemplate];
                 } else {
-                    this._log.debug(__Listview + ' group header template "' + groupHeaderTemplate +
+                    this._log.debug(__Listview + ' group header template "' + headerTemplate +
                         '" was not a template defined in the DOM.');
                 }
 
-                this._groupHeaderTemplatePromise = this._createGroupTemplate();
+                this._headerTemplatePromise = this._createGroupTemplate();
             }
 
             template = templates[itemTemplateKey];
@@ -1039,6 +1040,7 @@ module platui {
             if (!utils.isFunction(controlProperty.value)) {
                 this._log.debug(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.');
+                return;
             }
 
             this._templateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
@@ -1067,7 +1069,7 @@ module platui {
         protected _createGroupTemplate(): plat.async.IThenable<void> {
             var _document = this._document,
                 bindableTemplates = this.bindableTemplates,
-                groupHeaderTemplate = this._groupHeaderTemplate,
+                headerTemplate = this._headerTemplate,
                 listviewGroup = __Listview + '-group',
                 group = _document.createElement('div'),
                 itemContainer = _document.createElement('div'),
@@ -1075,8 +1077,8 @@ module platui {
 
             group.className = listviewGroup;
             itemContainer.className = __Listview + '-items';
-            if (this.utils.isString(groupHeaderTemplate)) {
-                headerPromise = bindableTemplates.templates[groupHeaderTemplate].then((headerTemplate): void => {
+            if (this.utils.isString(headerTemplate)) {
+                headerPromise = bindableTemplates.templates[headerTemplate].then((headerTemplate): void => {
                     group.insertBefore(headerTemplate.cloneNode(true), null);
                 });
             }
@@ -1187,22 +1189,27 @@ module platui {
 
             this._createItems(0, (group.items || []).length, groupHash, 0);
             if (animate) {
-                var animationQueue = this._defaultGroup.animationQueue;
-                animationQueue.push({
-                    animation: this._animator.enter(fragment, __Enter, this._container).then((): void => {
-                        animationQueue.shift();
-                        if (!this._isVertical) {
-                            // set height for flexbox container
-                            this._setItemContainerHeight(itemContainer);
-                        }
-                    }),
-                    op: null
-                });
+                var animationQueue = this._defaultGroup.animationQueue,
+                    animation = {
+                        animation: this._animator.enter(fragment, __Enter, this._container).then((): void => {
+                            var index = animationQueue.indexOf(animation);
+                            if (index > -1) {
+                                animationQueue.splice(index, 1);
+                            }
+                            
+                            if (!this._isVertical) {
+                                // set height for flexbox container
+                                this._setItemContainerHeight(itemContainer, true);
+                            }
+                        }),
+                        op: <string>null
+                    };
+                animationQueue.push(animation);
             } else {
                 this._container.insertBefore(fragment, null);
                 if (!this._isVertical) {
                     // set height for flexbox container
-                    this._setItemContainerHeight(itemContainer);
+                    this._setItemContainerHeight(itemContainer, true);
                 }
             }
         }
@@ -1243,40 +1250,62 @@ module platui {
         protected _createItems(index: number, count: number, group: IGroupHash, animateItems: number): void {
             var utils = this.utils,
                 opGroup = group || this._defaultGroup,
-                control = opGroup.control;
+                control = opGroup.control,
+                isVertical = this._isVertical,
+                isControl = this === control;
 
-            if (this._isGrouped && this === control) {
-                this._groupHeaderTemplatePromise.then((): void => {
-                    this._addGroups(count, index, animateItems);
-                }).then(null, (error): void => {
-                    this._log.debug(this.type + ' error: ' + error);
-                });
-
-                return;
+            if (isControl) {
+                if (this._isGrouped) {
+                    this._headerTemplatePromise.then((): void => {
+                        this._addGroups(count, index, animateItems);
+                    }).then(null, (error): void => {
+                        this._log.debug(this.type + ' error: ' + error);
+                    });
+                    
+                    return;
+                } else if (!isVertical) {
+                    this._setItemContainerHeight(opGroup.itemContainer, false);
+                }
             }
 
-            var addQueue = opGroup.addQueue;
-            if (utils.isFunction(this._templateSelector)) {
-                var promises: Array<plat.async.IThenable<void>> = [];
-                opGroup.itemCount += count;
-
-                for (var i = 0; i < count; ++i, ++index) {
-                    promises.push(this._renderUsingFunction(index, opGroup, i < animateItems));
-                }
-
-                var itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises).then((): void => {
+            var addQueue = opGroup.addQueue,
+                postLoad = (): void => {
                     var indexOf = addQueue.indexOf(addPromise);
                     if (indexOf !== -1) {
                         addQueue.splice(indexOf, 1);
                     }
-
-                    if (!this._isVertical) {
-                        this._setItemContainerWidth(opGroup.itemContainer);
+                    
+                    if (isControl) {
+                        return;
                     }
-                });
+                    
+                    opGroup.element.removeAttribute(__Hide);
+                    if (isVertical) {
+                        return;
+                    }
+                    
+                    this._setItemContainerWidth(opGroup.itemContainer);
+                },
+                onError = (error: Error): void => {
+                    this._log.debug(this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
+                };
+                
+            if (utils.isFunction(this._templateSelector)) {
+                var promises: Array<plat.async.IThenable<any>> = [];
+                opGroup.itemCount += count;
 
+                for (var i = 0; i < count; ++i, ++index) {
+                    promises.push(this._renderUsingFunction(index, opGroup));
+                }
+
+                var itemsLoaded = this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises)
+                .then((nodes: Array<any>): void => {
+                    var length = nodes.length;
+                    for (var ii = 0; ii < length; ++ii) {
+                        this._appendRenderedItem(nodes[ii], opGroup, ii < animateItems);
+                    }
+                }).then(postLoad, onError);
                 addQueue.push(itemsLoaded);
-                this.itemsLoaded = itemsLoaded;
                 return;
             }
 
@@ -1288,17 +1317,7 @@ module platui {
             this._disposeFromIndex(index, opGroup);
             opGroup.itemCount += count;
             
-            var addPromise = this._addItems(index, count, opGroup, animateItems).then((): void => {
-                var index = addQueue.indexOf(addPromise);
-                if (index !== -1) {
-                    addQueue.splice(index, 1);
-                }
-
-                if (!this._isVertical) {
-                    this._setItemContainerWidth(opGroup.itemContainer);
-                }
-            });
-
+            var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
             addQueue.push(addPromise);
         }
 
@@ -1387,17 +1406,17 @@ module platui {
          * 
          * @param {number} index The starting index to render.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * @param {boolean} animate? Whether or not to animate the new items.
          * 
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
-        protected _renderUsingFunction(index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void> {
+        protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.IThenable<any> {
             var _Promise = this._Promise,
                 utils = this.utils,
                 opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 identifier: any,
-                context: any;
+                context: any,
+                groupName: string;
 
             if (this === control) {
                 identifier = index;
@@ -1405,10 +1424,11 @@ module platui {
             } else {
                 identifier = 'items.' + index;
                 context = control.context.items;
+                groupName = opGroup.name;
             }
 
             return _Promise.resolve(this._templateSelectorPromise).then((): plat.async.IThenable<any> => {
-                return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(context[index], index));
+                return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(context[index], index, groupName));
             }).then((selectedTemplate): plat.async.IThenable<any> => {
                 var bindableTemplates = control.bindableTemplates,
                     templates = bindableTemplates.templates,
@@ -1435,27 +1455,58 @@ module platui {
 
                     templateKeys[index] = key;
                     return bindableTemplates.bind(key, identifier, this._getAliases(context, index));
-                } else if (controlExists) {
-                    this._TemplateControlFactory.dispose(controls[index]);
+                } else {
+                    this._log.debug(this.type + ' template "' + selectedTemplate + '" was not found.');
+                    if (controlExists) {
+                        this._TemplateControlFactory.dispose(controls[index]);
+                    }
                 }
-            }).then((node): void => {
-                if (utils.isNull(node) || utils.isArray(node)) {
-                    return;
-                } else if (animate === true) {
-                    var animationQueue = opGroup.animationQueue;
-                    animationQueue.push({
-                        animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then((): void => {
-                            animationQueue.shift();
-                        }),
-                        op: null
-                    });
-                    return;
-                }
-
-                opGroup.itemContainer.insertBefore(node, null);
-            }).then(null, (error): void => {
-                this._log.debug(this.type + ' error: ' + error);
             });
+        }
+        
+        /**
+         * @name _appendRenderedItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Appends the rendered item from the defined render function.
+         * 
+         * @param {any} node The node to place into the item container if available.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * @param {boolean} animate? Whether or not to animate the new item.
+         * 
+         * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
+         */
+        protected _appendRenderedItem(node: any, group?: IGroupHash, animate?: boolean): void {
+            var utils = this.utils,
+                opGroup = group || this._defaultGroup;
+                
+            if (utils.isNull(node) || utils.isArray(node)) {
+                    return;
+            } else if (animate === true) {
+                var animationQueue = opGroup.animationQueue,
+                    animation = {
+                        animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then((): void => {
+                            var animationIndex = animationQueue.indexOf(animation);
+                            if (animationIndex === -1) {
+                                return;
+                            }
+                            
+                            animationQueue.splice(animationIndex, 1);
+                        }),
+                        op: <string>null
+                    };
+                animationQueue.push(animation);
+            } else {
+                opGroup.itemContainer.insertBefore(node, null);
+            }
+            
+            if (utils.isFunction(this.__resolveFn)) {
+                this.__resolveFn();
+                this.__resolveFn = null;
+            }
         }
 
         /**
@@ -1570,13 +1621,19 @@ module platui {
                 return;
             }
 
-            var animationQueue = group.animationQueue;
-            animationQueue.push({
-                animation: this._animator.enter(item, __Enter, group.itemContainer).then((): void => {
-                    animationQueue.shift();
-                }),
-                op: null
-            });
+            var animationQueue = group.animationQueue,
+                animation = {
+                    animation: this._animator.enter(item, __Enter, group.itemContainer).then((): void => {
+                        var index = animationQueue.indexOf(animation);
+                        if (index === -1) {
+                            return;
+                        }
+                        
+                        animationQueue.splice(index, 1);
+                    }),
+                    op: <string>null
+                };
+            animationQueue.push(animation);
         }
 
         /**
@@ -1590,20 +1647,32 @@ module platui {
          * 
          * @param {number} index The index to start disposing from.
          * @param {number} numberOfItems The number of items to remove.
-         * @param {plat.ui.TemplateControl} control The control whose child controls we are to remove.
+         * @param {platui.IGroupHash} group The group for which we're disposing items.
          * 
          * @returns {void}
          */
-        protected _removeItems(index: number, numberOfItems: number, control: plat.ui.TemplateControl): void {
+        protected _removeItems(index: number, numberOfItems: number, group: IGroupHash): void {
             var dispose = this._TemplateControlFactory.dispose,
+                control = group.control,
                 controls = <Array<plat.ui.TemplateControl>>control.controls,
-                last = index + numberOfItems;
+                last = index + numberOfItems,
+                controlDisposed = last > index;
 
             while (last-- > index) {
                 dispose(controls[last]);
             }
 
             this._updateResource(controls.length - 1, control);
+            
+            if (this === control) {
+                return;
+            } else if (controlDisposed && !this._isVertical) {
+                this._resetItemContainerWidth(group.itemContainer);
+            }
+            
+            if (controls.length === 0) {
+                group.element.setAttribute(__Hide, '');
+            }
         }
 
         /**
@@ -1621,11 +1690,25 @@ module platui {
          * @returns {void}
          */
         protected _disposeFromIndex(index: number, group?: IGroupHash): void {
-            var controls = <Array<plat.ui.TemplateControl>>(group || this._defaultGroup).control.controls,
-                dispose = this._TemplateControlFactory.dispose;
+            var opGroup = group || this._defaultGroup,
+                control = opGroup.control,
+                controls = <Array<plat.ui.TemplateControl>>control.controls,
+                dispose = this._TemplateControlFactory.dispose,
+                last = controls.length,
+                controlDisposed = last > index;
 
-            for (var i = controls.length - 1; i >= index; --i) {
-                dispose(controls[i]);
+            while (last-- > index) {
+                dispose(controls[last]);
+            }
+            
+            if (this === control) {
+                return;
+            } else if (controlDisposed && !this._isVertical) {
+                this._resetItemContainerWidth(opGroup.itemContainer);
+            }
+            
+            if (controls.length === 0) {
+                group.element.setAttribute(__Hide, '');
             }
         }
 
@@ -2240,22 +2323,20 @@ module platui {
          * Clones and parses thes innerTemplate and creates the templates object.
          * 
          * @param {string} itemTemplate The normalized item template name from the options.
-         * @param {string} groupHeaderTemplate? The normalized group header template name from the options.
+         * @param {string} headerTemplate? The normalized group header template name from the options.
          * 
          * @returns {void}
          */
-        protected _parseInnerTemplate(itemTemplate: string, groupHeaderTemplate?: string): void {
+        protected _parseInnerTemplate(itemTemplate: string, headerTemplate?: string): void {
             var templates = this._templates,
                 slice = Array.prototype.slice,
                 appendChildren = this.dom.appendChildren,
                 _document = this._document,
-                validGroupTemplate = !this.utils.isNull(groupHeaderTemplate),
+                validGroupTemplate = !this.utils.isNull(headerTemplate),
                 childNodes: Array<Node> = slice.call(this.innerTemplate.childNodes),
-                itemClass = __Plat + 'item',
-                groupClass = __Plat + 'header',
                 childNode: Node,
                 templateName: string,
-                container: HTMLElement;
+                container: Node;
 
             while (childNodes.length > 0) {
                 childNode = childNodes.pop();
@@ -2264,15 +2345,14 @@ module platui {
                 }
 
                 templateName = this._normalizeTemplateName(childNode.nodeName);
-                if (validGroupTemplate && templateName === groupHeaderTemplate) {
+                if (validGroupTemplate && templateName === headerTemplate) {
                     container = _document.createElement('div');
-                    container.className = groupClass;
+                    (<HTMLElement>container).className = __Plat + 'header';
                 } else {
-                    container = _document.createElement('div');
-                    container.className = itemClass;
+                    container = _document.createDocumentFragment();
                 }
 
-                container = <HTMLElement>appendChildren(childNode.childNodes, container);
+                appendChildren(childNode.childNodes, container);
                 templates[templateName] = container;
             }
         }
@@ -2375,11 +2455,11 @@ module platui {
             this._Promise.all(addQueue).then((): plat.async.IThenable<void> => {
                 if (this._animate) {
                     this._animateItems(start, 1, __Leave, opGroup, 'leave', false).then((): void => {
-                        this._removeItems(removeIndex, 1, opGroup.control);
+                        this._removeItems(removeIndex, 1, opGroup);
                     });
                     return;
                 }
-                this._removeItems(removeIndex, 1, opGroup.control);
+                this._removeItems(removeIndex, 1, opGroup);
             });
         }
 
@@ -2449,7 +2529,7 @@ module platui {
             }
 
             this._Promise.all(addQueue).then((): void => {
-                this._removeItems(removeIndex, 1, opGroup.control);
+                this._removeItems(removeIndex, 1, opGroup);
             });
         }
 
@@ -2505,7 +2585,7 @@ module platui {
                     }
 
                     this._Promise.all(addQueue).then((): void => {
-                        this._removeItems(currentLength - itemCount, itemCount, control);
+                        this._removeItems(currentLength - itemCount, itemCount, opGroup);
                     });
                 }
                 return;
@@ -2564,7 +2644,7 @@ module platui {
                         this._animateItems(change.index, addCount, __Enter, opGroup, null,
                             animLength > 0 && animationQueue[animLength - 1].op === 'clone');
                     }
-                    this._removeItems(currentLength - deleteCount, deleteCount, control);
+                    this._removeItems(currentLength - deleteCount, deleteCount, opGroup);
                 });
             }
         }
@@ -2589,17 +2669,64 @@ module platui {
          */
         protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string,
             cancel: boolean): plat.async.IThenable<void> {
-            // block length === 3 (one element node and two comment nodes)
-            var blockLength = 3,
-                start = startIndex * blockLength;
             switch (animationOp) {
                 case 'clone':
-                    return this._handleClonedContainerAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+                    return this._handleClonedContainerAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), 
+                        key, group, cancel === true);
                 case 'leave':
-                    return this._handleLeave(start, numberOfItems * blockLength + start, key, group);
+                    return this._handleLeave(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group);
                 default:
-                    return this._handleSimpleAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+                    return this._handleSimpleAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group, cancel === true);
             }
+        }
+        
+        /**
+         * @name _getAnimatedNodes
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Translates the items to be animated into the nodes to be animated.
+         * 
+         * @param {number} startIndex The starting index of items to animate.
+         * @param {number} numberOfItems The number of consecutive items to animate.
+         * @param {IGroupHash} group The group performing the animation.
+         * 
+         * @returns {Array<Node>} An Array of the nodes to be animated.
+         */
+        protected _getAnimatedNodes(startIndex: number, numberOfItems: number, group: IGroupHash): Array<Node> {
+            if (this._isGrouped && group === this._defaultGroup) {
+                // we are animating a group so block length === 3 (one element node and two comment nodes)
+                var blockLength = 3,
+                    start = startIndex * blockLength;
+                    
+                return Array.prototype.slice.call(group.itemContainer.childNodes, start, numberOfItems * blockLength + start);
+            }
+            
+            var utils = this.utils,
+                isNode = utils.isNode,
+                nodes: Array<Node> = Array.prototype.slice.call(group.itemContainer.childNodes),
+                endIndex = startIndex + numberOfItems - 1,
+                controls = <Array<plat.ui.TemplateControl>>group.control.controls;
+            
+            if (controls.length <= endIndex) {
+                endIndex = controls.length - 1;
+            }
+            
+            var startNode = controls[startIndex].startNode,
+                endNode = controls[endIndex].endNode;
+            if (!(isNode(startNode) && isNode(endNode))) {
+                return [];
+            }
+            
+            var startNodeIndex = nodes.indexOf(startNode),
+                endNodeIndex = nodes.indexOf(endNode);
+            if (startNodeIndex === -1 || endNodeIndex === -1) {
+                return [];
+            }
+            
+            return nodes.slice(startNodeIndex, endNodeIndex + 1);
         }
 
         /**
@@ -2611,28 +2738,32 @@ module platui {
          * @description
          * Handles a simple animation of a block of elements.
          * 
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          * 
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete.
          */
-        protected _handleSimpleAnimation(startNode: number, endNode: number, key: string, group: IGroupHash,
-            cancel: boolean): plat.async.IThenable<void> {
-            var container = group.itemContainer,
-                slice = Array.prototype.slice,
-                nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
-
+        protected _handleSimpleAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void> {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
 
-            var animationQueue = group.animationQueue,
+            var container = group.itemContainer,
+                animationQueue = group.animationQueue,
                 animationCreation = this._animator.create(nodes, key),
+                animation = {
+                    animation: animationPromise,
+                    op: <string>null
+                },
                 animationPromise = animationCreation.current.then((): void => {
-                    animationQueue.shift();
+                    var index = animationQueue.indexOf(animation);
+                    if (index === -1) {
+                        return;
+                    }
+                    
+                    animationQueue.splice(index, 1);
                 }),
                 callback = (): plat.ui.animations.IAnimationThenable<any> => {
                     animationCreation.previous.then((): void => {
@@ -2643,11 +2774,11 @@ module platui {
 
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
-                animationQueue.push({ animation: animationPromise, op: null });
+                animationQueue.push(animation);
                 return cancelPromise;
             }
 
-            animationQueue.push({ animation: animationPromise, op: null });
+            animationQueue.push(animation);
             return callback();
         }
 
@@ -2660,34 +2791,36 @@ module platui {
          * @description
          * Handles a simple animation of a block of elements.
          * 
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * 
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both  
          * the cloned item has been removed and the original item has been put back.
          */
-        protected _handleLeave(startNode: number, endNode: number, key: string, group: IGroupHash): plat.async.IThenable<void> {
-            var container = group.itemContainer,
-                slice = Array.prototype.slice,
-                nodes: Array<Node> = slice.call(container.childNodes, startNode, endNode);
-
+        protected _handleLeave(nodes: Array<Node>, key: string, group: IGroupHash): plat.async.IThenable<void> {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
 
-            var animationQueue = group.animationQueue,
-                animation = this._animator.leave(nodes, key).then((): void => {
-                    animationQueue.shift();
-                });
+            var container = group.itemContainer,
+                animationQueue = group.animationQueue,
+                animationPromise = this._animator.leave(nodes, key).then((): void => {
+                    var index = animationQueue.indexOf(animation);
+                    if (index === -1) {
+                        return;
+                    }
+                    
+                    animationQueue.splice(index, 1);
+                }),
+                animation = {
+                    animation: animationPromise,
+                    op: 'leave'
+                };
 
-            animationQueue.push({
-                animation: animation,
-                op: 'leave'
-            });
+            animationQueue.push(animation);
 
-            return animation;
+            return animationPromise;
         }
 
         /**
@@ -2699,8 +2832,7 @@ module platui {
          * @description
          * Handles a simple animation of a block of elements.
          * 
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
@@ -2708,33 +2840,37 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both  
          * the cloned container has been removed and the original container has been put back.
          */
-        protected _handleClonedContainerAnimation(startNode: number, endNode: number, key: string, group: IGroupHash,
+        protected _handleClonedContainerAnimation(nodes: Array<Node>, key: string, group: IGroupHash, 
             cancel: boolean): plat.async.IThenable<void> {
-            var container = group.itemContainer,
-                clonedContainer = container.cloneNode(true),
-                slice = Array.prototype.slice,
-                nodes: Array<Node> = slice.call(clonedContainer.childNodes, startNode, endNode);
-
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
 
-            var parentNode: Node,
+            var container = group.itemContainer,
+                clonedContainer = container.cloneNode(true),
+                parentNode: Node,
                 animationQueue = group.animationQueue,
                 isNull = this.utils.isNull,
                 animationCreation = this._animator.create(nodes, key),
                 animationPromise = animationCreation.current.then((): void => {
-                    animationQueue.shift();
+                    var index = animationQueue.indexOf(animation);
+                    if (index > -1) {
+                        animationQueue.splice(index, 1);
+                    }
+                    
                     if (isNull(parentNode)) {
                         return;
                     }
 
                     parentNode.replaceChild(container, clonedContainer);
                 }),
+                animation = {
+                    animation: animationPromise,
+                    op: 'clone'
+                },
                 callback = (): plat.async.IThenable<void> => {
                     parentNode = container.parentNode;
                     if (isNull(parentNode) || animationPromise.isCanceled()) {
-                        animationQueue.shift();
                         return animationPromise;
                     }
 
@@ -2747,11 +2883,11 @@ module platui {
 
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
-                animationQueue.push({ animation: animationPromise, op: 'clone' });
+                animationQueue.push(animation);
                 return cancelPromise;
             }
 
-            animationQueue.push({ animation: animationPromise, op: 'clone' });
+            animationQueue.push(animation);
             return callback();
         }
 
@@ -2869,18 +3005,46 @@ module platui {
          * Sets the width of a group's item container.
          *
          * @param {HTMLElement} element The element to set the width on.
+         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
          *
          * @returns {void}
          */
-        protected _setItemContainerWidth(element: HTMLElement): void {
+        protected _setItemContainerWidth(element: HTMLElement, immediate?: boolean): void {
             var width = element.scrollWidth;
 
             if (!width) {
-                this._setItemContainerWidthWithClone(element);
+                this._setItemContainerWidthWithClone(element, immediate);
+                return;
+            }
+            
+            var setter = (): void => {
+                element.style.width = width + 'px';
+            };
+            
+            if (immediate === true) {
+                setter();
                 return;
             }
 
-            element.style.width = width + 'px';
+            this.utils.requestAnimationFrame(setter);
+        }
+        
+        /**
+         * @name _resetItemContainerWidth
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Resets the width of a group's item container.
+         *
+         * @param {HTMLElement} element The element to reset the width on.
+         *
+         * @returns {void}
+         */
+        protected _resetItemContainerWidth(element: HTMLElement): void {
+            element.style.width = '';
+            this._setItemContainerWidth(element, true);
         }
 
         /**
@@ -2892,13 +3056,15 @@ module platui {
          * @description
          * Creates a clone of the group container and uses it to find width values.
          *
-         * @param {HTMLElement} item The element having its height set.
+         * @param {HTMLElement} item The element having its width set.
+         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
          *
          * @returns {void}
          */
-        protected _setItemContainerWidthWithClone(item: HTMLElement): void {
+        protected _setItemContainerWidthWithClone(item: HTMLElement, immediate?: boolean): void {
             var body = this._document.body,
                 parent = item.parentElement,
+                utils = this.utils,
                 element = <HTMLElement>parent.lastElementChild;
 
             if (!body.contains(parent)) {
@@ -2911,7 +3077,7 @@ module platui {
                     return;
                 }
 
-                this.utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
+                utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
                 return;
             }
 
@@ -2927,7 +3093,7 @@ module platui {
                 dependencyProperty = 'width',
                 codependentProperty = 'height',
                 important = 'important',
-                isNull = this.utils.isNull,
+                isNull = utils.isNull,
                 dependencyValue: string;
 
             shallowCopy.id = '';
@@ -2952,7 +3118,7 @@ module platui {
                         // if we go all the way up to <html> the body may currently be hidden.
                         this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                             'hidden. Please do not set the body\'s display to none.');
-                        this.utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
+                        utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
                         return;
                     }
                     shallowCopy = <HTMLElement>element.cloneNode(false);
@@ -2979,8 +3145,20 @@ module platui {
             shallowStyle.setProperty(codependentProperty, computedStyle.height, important);
             shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            item.style.width = clone.scrollWidth + 'px';
+            
+            var setWidth = clone.scrollWidth + 'px',
+                setter = (): void => {
+                    item.style.width = setWidth;
+                };
+
             body.removeChild(shallowCopy);
+            
+            if (immediate === true) {
+                setter();
+                return;
+            }
+            
+            utils.requestAnimationFrame(setter);
         }
 
         /**
@@ -2993,20 +3171,31 @@ module platui {
          * Sets the height of a group's item container.
          *
          * @param {HTMLElement} element The element to set the height on.
+         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
          *
          * @returns {void}
          */
-        protected _setItemContainerHeight(element: HTMLElement): void {
+        protected _setItemContainerHeight(element: HTMLElement, withHeader: boolean): void {
             var parent = element.parentElement,
                 parentHeight = parent.offsetHeight,
-                headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
-
-            if (!(parentHeight && headerHeight)) {
-                this._setItemContainerHeightWithClone(element);
+                headerHeight = 0;
+                
+            if (!parentHeight) {
+                this._setItemContainerHeightWithClone(element, withHeader);
                 return;
             }
+            
+            if (withHeader === true) {
+                headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
+                if (!headerHeight) {
+                    this._setItemContainerHeightWithClone(element, withHeader);
+                    return;
+                }
+            }
 
-            element.style.height = (parentHeight - headerHeight - 15) + 'px';
+            this.utils.requestAnimationFrame((): void => {
+                element.style.height = (parentHeight - headerHeight) + 'px';
+            });
         }
 
         /**
@@ -3019,10 +3208,11 @@ module platui {
          * Creates a clone of the group container and uses it to find height values.
          *
          * @param {HTMLElement} item The element having its height set.
+         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
          *
          * @returns {void}
          */
-        protected _setItemContainerHeightWithClone(item: HTMLElement): void {
+        protected _setItemContainerHeightWithClone(item: HTMLElement, withHeader: boolean): void {
             var body = this._document.body,
                 parent = item.parentElement,
                 element = <HTMLElement>parent.firstElementChild;
@@ -3101,8 +3291,11 @@ module platui {
             shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
             shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            item.style.height = (parentClone.offsetHeight - clone.offsetHeight - 15) + 'px';
+            var setHeight = withHeader === true ? (parentClone.offsetHeight - clone.offsetHeight) + 'px' : clone.offsetHeight + 'px';
             body.removeChild(shallowCopy);
+            this.utils.requestAnimationFrame((): void => {
+                item.style.height = setHeight;
+            });
         }
     }
 
@@ -3112,6 +3305,8 @@ module platui {
      * @name IListviewOptions
      * @memberof platui
      * @kind interface
+     * 
+     * @extends {plat.ui.controls.IForEachOptions}
      * 
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Listview|Listview} control.
@@ -3128,18 +3323,6 @@ module platui {
          * Used to specify alternative alias tokens for the built-in {@link platui.Listview|Listview} aliases.
          */
         aliases?: IListviewAliasOptions;
-
-        /**
-         * @name animate
-         * @memberof plat.ui.controls.IListviewOptions
-         * @kind property
-         * 
-         * @type {boolean}
-         * 
-         * @description
-         * Will animate the Array mutations if set to true.
-         */
-        animate?: boolean;
 
         /**
          * @name orientation
@@ -3165,7 +3348,7 @@ module platui {
          * @kind property
          * @access public
          * 
-         * @type {string|(item?: any, index?: number) => string}
+         * @type {string|(item: any, index: number, group?: string) => string}
          * 
          * @description
          * The node name of the desired item template or a defined item template selector function.
@@ -3173,7 +3356,7 @@ module platui {
         itemTemplate?: any;
 
         /**
-         * @name groupHeaderTemplate
+         * @name headerTemplate
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
@@ -3181,9 +3364,9 @@ module platui {
          * @type {string}
          * 
          * @description
-         * The node name of the desired group template or a defined group template selector function.
+         * The node name of the desired group header template.
          */
-        groupHeaderTemplate?: any;
+        headerTemplate?: any;
 
         /**
          * @name loading
@@ -3403,7 +3586,7 @@ module platui {
          * The group name.
          * 
          * @remarks
-         * Will be available in the groupHeaderTemplate as @group.
+         * Will be available in the headerTemplate as "group".
          */
         group: string;
 
@@ -3426,7 +3609,7 @@ module platui {
      * @memberof platui
      * @kind interface
      * 
-     * @extends {plat.IObject<string>}
+     * @extends {plat.ui.controls.IForEachAliasOptions}
      * 
      * @description
      * The alias tokens for the {@link plat.ui.controls.IListviewOptions|Listview options} object for the 
