@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.12 (https://platypi.io) 
+ * PlatypusUI v0.4.13 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -920,13 +920,6 @@
             align-content: @position;
         }
 
-        .align-content(@position) {
-            -webkit-align-content: @position;
-            -moz-align-content: @position;
-            -ms-align-content: @position;
-            align-content: @position;
-        }
-
         .align-self(@position) when (@position = flex-start) {
             -webkit-align-self: @position;
             -moz-align-self: @position;
@@ -1288,9 +1281,16 @@
 
         @manipulated-viewport-background-color: @white;
 
+    /// =========== Listview Properties =========== ///
+    
+        @horizontal-scroll-padding: 15px;
+
     /// =========== Listview Animations =========== ///
 
         @refresh-transition: all 200ms;
+        @enter-init: {
+          opacity: 0;  
+        };
         @enter-animation-name: LISTVIEW_ITEM_ENTER;
         @enter-animation-duration: 300ms;
         @enter-animation: @enter-animation-name @enter-animation-duration;
@@ -1382,14 +1382,15 @@
     
         @height: 4em;
         @z-index: 100;
-        @left-percentage: 33.33333333%;
-        @center-percentage: 33.33333333%;
-        @right-percentage: 33.33333333%;
+        @left-percentage: 100% / 3;
+        @center-percentage: 100% / 3;
+        @right-percentage: 100% / 3;
         @padding: 0 2em;
         @item-padding: 0.5em;
         
     /// =========== Navbar Properties =========== ///
     
+        @font-size: 125%;
         @border-top: none;
         @border-right: none;
         @border-bottom: none;
@@ -3113,7 +3114,7 @@
     #grid {
 	    @base-percent: 100%;
 	    @num-columns: 12;
-	    @column-padding: 10px;
+	    @column-padding: 5px;
     }
 }
 
@@ -3164,7 +3165,6 @@
     [class*='col-'],
     [class*='col-']:after,
     [class*='col-']:before {
-        #platui;
 	    margin: 0;
 	    padding: 0;
         #platui > #mixins > .box-sizing(border-box);
@@ -3671,28 +3671,42 @@
     &.plat-horizontal {
         .plat-listview-viewport {
             .plat-scroll-container {
+                padding-bottom: @horizontal-scroll-padding;
                 .scroll(x);
 
                 .plat-container {
                     .flexbox();
-                    .flex-direction(row);
-                    .flex-wrap(nowrap);
-                    .align-items(stretch);
-
-                    .plat-listview-group {
-                        height: 100%;
-                        .flex(0 0 auto);
-
-                        .plat-listview-items {
-                            .flexbox();
-                            .flex-direction(column);
-                            .flex-wrap(wrap);
-                            .align-content(flex-start);
-                            .fill();
-
-                            .plat-item {
-                                .flex(0 0 auto);
+                    
+                    &.plat-grouped {
+                        .flex-direction(row);
+                        .flex-wrap(nowrap);
+                        .align-items(stretch);
+                        
+                        .plat-listview-group {
+                            height: 100%;
+                            .flex(0 0 auto);
+    
+                            .plat-listview-items {
+                                .flexbox();
+                                .flex-direction(column);
+                                .flex-wrap(wrap);
+                                .align-content(flex-start);
+                                .fill();
+    
+                                & > * {
+                                    .flex(0 0 auto);
+                                }
                             }
+                        }
+                    }
+                    
+                    &:not(.plat-grouped) {
+                        .flex-direction(column);
+                        .flex-wrap(wrap);
+                        .align-content(flex-start);
+                        
+                        & > * {
+                            .flex(0 0 auto);
                         }
                     }
 
@@ -3729,10 +3743,11 @@
             .plat-scroll-container {
                 .plat-container {
                     .plat-enter-init {
-                        &.plat-item,
-                        &.plat-listview-group {
-                            .animation(@enter-animation);
-                        }
+                        @enter-init();
+                    }
+                    
+                    .plat-enter {
+                        .animation(@enter-animation);
                     }
                 }
             }
@@ -3742,10 +3757,7 @@
             .plat-scroll-container {
                 .plat-container {
                     .plat-leave {
-                        &.plat-item,
-                        &.plat-listview-group {
-                            .animation(@leave-animation);
-                        }
+                        .animation(@leave-animation);
                     }
                 }
             }
@@ -4148,6 +4160,7 @@
     .plat-navbar-right {
         height: 100%;
         float: left;
+        font-size: @font-size;
         .box-sizing(border-box);
     }
     

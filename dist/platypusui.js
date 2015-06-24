@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.12 (https://platypi.io)
+ * PlatypusUI v0.4.13 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -665,7 +665,7 @@ var platui;
                 this._log.debug('The context of a "' + this.type + '" control must be a number between 0 and 1.');
                 return;
             }
-            var barElement = this._barElement, barMax = barElement.parentElement.offsetWidth;
+            var barElement = this._barElement, barMax = barElement.parentElement.clientWidth;
             if (!barMax) {
                 return;
             }
@@ -1058,6 +1058,7 @@ var platui;
                     }
                 }
             }, 25);
+            this._drawerElement.setAttribute(__Hide, '');
             this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
         };
         /**
@@ -1230,7 +1231,6 @@ var platui;
                     return this._animator.resolve();
             }
             this._isOpen = true;
-            drawerElement.removeAttribute(__Hide);
             if (wasClosed) {
                 this.dom.addClass(rootElement, __Drawer + '-open ' + this._directionalTransitionPrep);
                 this._addEventIntercepts();
@@ -1269,7 +1269,6 @@ var platui;
                 if (_this._isOpen) {
                     return;
                 }
-                drawerElement.setAttribute(__Hide, '');
                 dom.removeClass(rootElement, _this._directionalTransitionPrep);
             });
         };
@@ -1321,12 +1320,19 @@ var platui;
         /**
          * Adds swipe events to the controller element.
          */
-        DrawerController.prototype._addSwipeOpen = function () {
+        DrawerController.prototype._addSwipeToggle = function () {
             var _this = this;
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], function () {
+            var element = this.element, removeSwipeOpen = this.addEventListener(element, __$swipe + __transitionNegate[this._position], function () {
                 _this._hasSwiped = true;
                 _this.open();
+            }, false), removeSwipeClose = this.addEventListener(element, __$swipe + this._position, function () {
+                _this._hasSwiped = true;
+                _this.close();
             }, false);
+            this._removeSwipeToggle = function () {
+                removeSwipeOpen();
+                removeSwipeClose();
+            };
         };
         /**
          * Adds swipe close event to the root element.
@@ -1339,13 +1345,13 @@ var platui;
             }, false);
         };
         /**
-         * Adds tap close event to the controller element.
+         * Adds tap toggle event to the controller element.
          */
-        DrawerController.prototype._addTapOpen = function () {
+        DrawerController.prototype._addTapToggle = function () {
             var _this = this;
             this._removeTap = this.addEventListener(this.element, __$tap, function () {
                 _this._hasTapped = true;
-                _this.open();
+                _this.toggle();
             }, false);
         };
         /**
@@ -1366,10 +1372,10 @@ var platui;
             // remove event listeners here first if we want to later be able to dynamically change position of drawer. 
             // this._removeEventListeners(); 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
-                this._addTapOpen();
+                this._addTapToggle();
             }
             if (this._isSwipe = (types.indexOf('swipe') !== -1)) {
-                this._addSwipeOpen();
+                this._addSwipeToggle();
             }
             if (this._isTrack = (types.indexOf('track') !== -1)) {
                 var trackFn = this._track, trackDirection;
@@ -1417,9 +1423,9 @@ var platui;
                     this._removeSecondaryTrack = null;
                 }
             }
-            if (this._isSwipe && isFunction(this._removeSwipeOpen)) {
-                this._removeSwipeOpen();
-                this._removeSwipeOpen = null;
+            if (this._isSwipe && isFunction(this._removeSwipeToggle)) {
+                this._removeSwipeToggle();
+                this._removeSwipeToggle = null;
             }
         };
         /**
@@ -1449,7 +1455,6 @@ var platui;
             if (this._isOpen) {
                 return;
             }
-            this._drawerElement.removeAttribute(__Hide);
             this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
         };
         /**
@@ -1482,7 +1487,6 @@ var platui;
                 }
             }
             else if (!this._isOpen) {
-                this._drawerElement.setAttribute(__Hide, '');
                 this.dom.removeClass(this._rootElement, this._directionalTransitionPrep);
             }
         };
@@ -1571,8 +1575,7 @@ var platui;
             var _this = this;
             var useContext = this._useContext, eventRemover = this.on(__DrawerFoundEvent + '_' + id, function (event, drawerArg) {
                 eventRemover();
-                var _utils = _this.utils, isString = _utils.isString, isUndefined = _utils.isUndefined, drawer = (_this._drawer = drawerArg.control) || {};
-                _this._drawerElement = drawer.element;
+                var _utils = _this.utils, isString = _utils.isString, isUndefined = _utils.isUndefined, drawer = (_this._drawer = drawerArg.control) || {}, drawerElement = _this._drawerElement = drawer.element;
                 if (!isString(position)) {
                     if (isString(drawerArg.position)) {
                         position = drawerArg.position;
@@ -1584,6 +1587,7 @@ var platui;
                         return;
                     }
                 }
+                drawerElement.removeAttribute(__Hide);
                 if (!_this._controllerIsValid(position.toLowerCase())) {
                     return;
                 }
@@ -1756,14 +1760,7 @@ var platui;
          * Sets the max offset to translate the corresponding Drawer.
          */
         DrawerController.prototype._getOffset = function () {
-            var drawerElement = this._drawerElement;
-            if (drawerElement.hasAttribute(__Hide)) {
-                drawerElement.removeAttribute(__Hide);
-                var offset = this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
-                drawerElement.setAttribute(__Hide, '');
-                return offset;
-            }
-            return this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
+            return this._isVertical ? this._drawerElement.clientHeight : this._drawerElement.clientWidth;
         };
         DrawerController._inject = {
             _document: __Document,
@@ -2367,12 +2364,12 @@ var platui;
             var isNode = this.utils.isNode(element), el = isNode ? element : this._slider.parentElement;
             if (this._isVertical) {
                 this._lengthProperty = 'height';
-                this._maxOffset = el.offsetHeight;
+                this._maxOffset = el.clientHeight;
                 this._sliderOffset = el.offsetTop;
             }
             else {
                 this._lengthProperty = 'width';
-                this._maxOffset = el.offsetWidth;
+                this._maxOffset = el.clientWidth;
                 this._sliderOffset = el.offsetLeft;
             }
             if (!(isNode || this._maxOffset)) {
@@ -3071,12 +3068,12 @@ var platui;
             if (this._isVertical) {
                 this._lengthProperty = 'height';
                 this._positionProperty = this._reversed ? 'top' : 'bottom';
-                this._maxOffset = el.offsetHeight;
+                this._maxOffset = el.clientHeight;
             }
             else {
                 this._lengthProperty = 'width';
                 this._positionProperty = this._reversed ? 'right' : 'left';
-                this._maxOffset = el.offsetWidth;
+                this._maxOffset = el.clientWidth;
             }
             if (!(isNode || this._maxOffset)) {
                 this._setOffsetWithClone(this._lengthProperty);
@@ -5358,7 +5355,7 @@ var platui;
                 this._log.debug('No item template or item template selector specified for ' + this.type + '.');
                 return;
             }
-            var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate), groupHeaderTemplate = options.groupHeaderTemplate, normalizedGroupTemplate = isString(groupHeaderTemplate) ? this._normalizeTemplateName(groupHeaderTemplate) : null;
+            var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate), headerTemplate = options.headerTemplate, normalizedGroupTemplate = isString(headerTemplate) ? this._normalizeTemplateName(headerTemplate) : null;
             this._parseInnerTemplate(normalizedItemTemplate, normalizedGroupTemplate);
             this._determineTemplates(itemTemplate, normalizedItemTemplate, normalizedGroupTemplate);
             this._defaultGroup = {
@@ -5468,23 +5465,24 @@ var platui;
          * @param {string} itemTemplate The pre-normalized property for indicating either the item template or the
          * item template selector.
          * @param {string} itemTemplateKey The normalized property for indicating the item template.
-         * @param {string} groupHeaderTemplate The property for indicating the group header template.
+         * @param {string} headerTemplate The property for indicating the group header template.
          */
-        Listview.prototype._determineTemplates = function (itemTemplate, itemTemplateKey, groupHeaderTemplate) {
+        Listview.prototype._determineTemplates = function (itemTemplate, itemTemplateKey, headerTemplate) {
             var utils = this.utils, bindableTemplates = this.bindableTemplates, templates = this._templates, template;
-            if (utils.isString(groupHeaderTemplate)) {
+            if (utils.isString(headerTemplate)) {
                 this._isGrouped = true;
-                template = templates[groupHeaderTemplate];
+                this.dom.addClass(this._container, __Plat + 'grouped');
+                template = templates[headerTemplate];
                 if (utils.isNode(template)) {
-                    this._groupHeaderTemplate = groupHeaderTemplate;
-                    this.bindableTemplates.add(groupHeaderTemplate, template);
-                    delete templates[groupHeaderTemplate];
+                    this._headerTemplate = headerTemplate;
+                    this.bindableTemplates.add(headerTemplate, template);
+                    delete templates[headerTemplate];
                 }
                 else {
-                    this._log.debug(__Listview + ' group header template "' + groupHeaderTemplate +
+                    this._log.debug(__Listview + ' group header template "' + headerTemplate +
                         '" was not a template defined in the DOM.');
                 }
-                this._groupHeaderTemplatePromise = this._createGroupTemplate();
+                this._headerTemplatePromise = this._createGroupTemplate();
             }
             template = templates[itemTemplateKey];
             if (utils.isNode(template)) {
@@ -5497,6 +5495,7 @@ var platui;
             if (!utils.isFunction(controlProperty.value)) {
                 this._log.debug(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.');
+                return;
             }
             this._templateSelector = controlProperty.value.bind(controlProperty.control);
             this._templateSelectorKeys = {};
@@ -5512,11 +5511,11 @@ var platui;
          */
         Listview.prototype._createGroupTemplate = function () {
             var _this = this;
-            var _document = this._document, bindableTemplates = this.bindableTemplates, groupHeaderTemplate = this._groupHeaderTemplate, listviewGroup = __Listview + '-group', group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
+            var _document = this._document, bindableTemplates = this.bindableTemplates, headerTemplate = this._headerTemplate, listviewGroup = __Listview + '-group', group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
             group.className = listviewGroup;
             itemContainer.className = __Listview + '-items';
-            if (this.utils.isString(groupHeaderTemplate)) {
-                headerPromise = bindableTemplates.templates[groupHeaderTemplate].then(function (headerTemplate) {
+            if (this.utils.isString(headerTemplate)) {
+                headerPromise = bindableTemplates.templates[headerTemplate].then(function (headerTemplate) {
                     group.insertBefore(headerTemplate.cloneNode(true), null);
                 });
             }
@@ -5588,23 +5587,26 @@ var platui;
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
             this._createItems(0, (group.items || []).length, groupHash, 0);
             if (animate) {
-                var animationQueue = this._defaultGroup.animationQueue;
-                animationQueue.push({
+                var animationQueue = this._defaultGroup.animationQueue, animation = {
                     animation: this._animator.enter(fragment, __Enter, this._container).then(function () {
-                        animationQueue.shift();
+                        var index = animationQueue.indexOf(animation);
+                        if (index > -1) {
+                            animationQueue.splice(index, 1);
+                        }
                         if (!_this._isVertical) {
                             // set height for flexbox container 
-                            _this._setItemContainerHeight(itemContainer);
+                            _this._setItemContainerHeight(itemContainer, true);
                         }
                     }),
                     op: null
-                });
+                };
+                animationQueue.push(animation);
             }
             else {
                 this._container.insertBefore(fragment, null);
                 if (!this._isVertical) {
                     // set height for flexbox container 
-                    this._setItemContainerHeight(itemContainer);
+                    this._setItemContainerHeight(itemContainer, true);
                 }
             }
         };
@@ -5624,33 +5626,50 @@ var platui;
          */
         Listview.prototype._createItems = function (index, count, group, animateItems) {
             var _this = this;
-            var utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control;
-            if (this._isGrouped && this === control) {
-                this._groupHeaderTemplatePromise.then(function () {
-                    _this._addGroups(count, index, animateItems);
-                }).then(null, function (error) {
-                    _this._log.debug(_this.type + ' error: ' + error);
-                });
-                return;
+            var utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control, isVertical = this._isVertical, isControl = this === control;
+            if (isControl) {
+                if (this._isGrouped) {
+                    this._headerTemplatePromise.then(function () {
+                        _this._addGroups(count, index, animateItems);
+                    }).then(null, function (error) {
+                        _this._log.debug(_this.type + ' error: ' + error);
+                    });
+                    return;
+                }
+                else if (!isVertical) {
+                    this._setItemContainerHeight(opGroup.itemContainer, false);
+                }
             }
-            var addQueue = opGroup.addQueue;
+            var addQueue = opGroup.addQueue, postLoad = function () {
+                var indexOf = addQueue.indexOf(addPromise);
+                if (indexOf !== -1) {
+                    addQueue.splice(indexOf, 1);
+                }
+                if (isControl) {
+                    return;
+                }
+                opGroup.element.removeAttribute(__Hide);
+                if (isVertical) {
+                    return;
+                }
+                _this._setItemContainerWidth(opGroup.itemContainer);
+            }, onError = function (error) {
+                _this._log.debug(_this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
+            };
             if (utils.isFunction(this._templateSelector)) {
                 var promises = [];
                 opGroup.itemCount += count;
                 for (var i = 0; i < count; ++i, ++index) {
-                    promises.push(this._renderUsingFunction(index, opGroup, i < animateItems));
+                    promises.push(this._renderUsingFunction(index, opGroup));
                 }
-                var itemsLoaded = this._Promise.all(promises).then(function () {
-                    var indexOf = addQueue.indexOf(addPromise);
-                    if (indexOf !== -1) {
-                        addQueue.splice(indexOf, 1);
+                var itemsLoaded = this.itemsLoaded = this._Promise.all(promises)
+                    .then(function (nodes) {
+                    var length = nodes.length;
+                    for (var ii = 0; ii < length; ++ii) {
+                        _this._appendRenderedItem(nodes[ii], opGroup, ii < animateItems);
                     }
-                    if (!_this._isVertical) {
-                        _this._setItemContainerWidth(opGroup.itemContainer);
-                    }
-                });
+                }).then(postLoad, onError);
                 addQueue.push(itemsLoaded);
-                this.itemsLoaded = itemsLoaded;
                 return;
             }
             var key = this._itemTemplate;
@@ -5659,15 +5678,7 @@ var platui;
             }
             this._disposeFromIndex(index, opGroup);
             opGroup.itemCount += count;
-            var addPromise = this._addItems(index, count, opGroup, animateItems).then(function () {
-                var index = addQueue.indexOf(addPromise);
-                if (index !== -1) {
-                    addQueue.splice(index, 1);
-                }
-                if (!_this._isVertical) {
-                    _this._setItemContainerWidth(opGroup.itemContainer);
-                }
-            });
+            var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
             addQueue.push(addPromise);
         };
         /**
@@ -5727,11 +5738,10 @@ var platui;
          * rendering will stop.
          * @param {number} index The starting index to render.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * @param {boolean} animate? Whether or not to animate the new items.
          */
-        Listview.prototype._renderUsingFunction = function (index, group, animate) {
+        Listview.prototype._renderUsingFunction = function (index, group) {
             var _this = this;
-            var _Promise = this._Promise, utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control, identifier, context;
+            var _Promise = this._Promise, utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control, identifier, context, groupName;
             if (this === control) {
                 identifier = index;
                 context = this.context;
@@ -5739,9 +5749,10 @@ var platui;
             else {
                 identifier = 'items.' + index;
                 context = control.context.items;
+                groupName = opGroup.name;
             }
             return _Promise.resolve(this._templateSelectorPromise).then(function () {
-                return _this._templateSelectorPromise = _Promise.resolve(_this._templateSelector(context[index], index));
+                return _this._templateSelectorPromise = _Promise.resolve(_this._templateSelector(context[index], index, groupName));
             }).then(function (selectedTemplate) {
                 var bindableTemplates = control.bindableTemplates, templates = bindableTemplates.templates, controls = control.controls, key = _this._normalizeTemplateName(selectedTemplate), name = opGroup.name, templateKeys = _this._templateSelectorKeys[name], controlExists = index < controls.length;
                 if (utils.isUndefined(templateKeys)) {
@@ -5758,27 +5769,45 @@ var platui;
                     templateKeys[index] = key;
                     return bindableTemplates.bind(key, identifier, _this._getAliases(context, index));
                 }
-                else if (controlExists) {
-                    _this._TemplateControlFactory.dispose(controls[index]);
+                else {
+                    _this._log.debug(_this.type + ' template "' + selectedTemplate + '" was not found.');
+                    if (controlExists) {
+                        _this._TemplateControlFactory.dispose(controls[index]);
+                    }
                 }
-            }).then(function (node) {
-                if (utils.isNull(node) || utils.isArray(node)) {
-                    return;
-                }
-                else if (animate === true) {
-                    var animationQueue = opGroup.animationQueue;
-                    animationQueue.push({
-                        animation: _this._animator.enter(node, __Enter, opGroup.itemContainer).then(function () {
-                            animationQueue.shift();
-                        }),
-                        op: null
-                    });
-                    return;
-                }
-                opGroup.itemContainer.insertBefore(node, null);
-            }).then(null, function (error) {
-                _this._log.debug(_this.type + ' error: ' + error);
             });
+        };
+        /**
+         * Appends the rendered item from the defined render function.
+         * @param {any} node The node to place into the item container if available.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * @param {boolean} animate? Whether or not to animate the new item.
+         */
+        Listview.prototype._appendRenderedItem = function (node, group, animate) {
+            var utils = this.utils, opGroup = group || this._defaultGroup;
+            if (utils.isNull(node) || utils.isArray(node)) {
+                return;
+            }
+            else if (animate === true) {
+                var animationQueue = opGroup.animationQueue, animation = {
+                    animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then(function () {
+                        var animationIndex = animationQueue.indexOf(animation);
+                        if (animationIndex === -1) {
+                            return;
+                        }
+                        animationQueue.splice(animationIndex, 1);
+                    }),
+                    op: null
+                };
+                animationQueue.push(animation);
+            }
+            else {
+                opGroup.itemContainer.insertBefore(node, null);
+            }
+            if (utils.isFunction(this.__resolveFn)) {
+                this.__resolveFn();
+                this.__resolveFn = null;
+            }
         };
         /**
          * Updates the control's children resource objects when
@@ -5842,26 +5871,39 @@ var platui;
             if (!this.utils.isNode(item)) {
                 return;
             }
-            var animationQueue = group.animationQueue;
-            animationQueue.push({
+            var animationQueue = group.animationQueue, animation = {
                 animation: this._animator.enter(item, __Enter, group.itemContainer).then(function () {
-                    animationQueue.shift();
+                    var index = animationQueue.indexOf(animation);
+                    if (index === -1) {
+                        return;
+                    }
+                    animationQueue.splice(index, 1);
                 }),
                 op: null
-            });
+            };
+            animationQueue.push(animation);
         };
         /**
          * Removes items from the control's element.
          * @param {number} index The index to start disposing from.
          * @param {number} numberOfItems The number of items to remove.
-         * @param {plat.ui.TemplateControl} control The control whose child controls we are to remove.
+         * @param {platui.IGroupHash} group The group for which we're disposing items.
          */
-        Listview.prototype._removeItems = function (index, numberOfItems, control) {
-            var dispose = this._TemplateControlFactory.dispose, controls = control.controls, last = index + numberOfItems;
+        Listview.prototype._removeItems = function (index, numberOfItems, group) {
+            var dispose = this._TemplateControlFactory.dispose, control = group.control, controls = control.controls, last = index + numberOfItems, controlDisposed = last > index;
             while (last-- > index) {
                 dispose(controls[last]);
             }
             this._updateResource(controls.length - 1, control);
+            if (this === control) {
+                return;
+            }
+            else if (controlDisposed && !this._isVertical) {
+                this._resetItemContainerWidth(group.itemContainer);
+            }
+            if (controls.length === 0) {
+                group.element.setAttribute(__Hide, '');
+            }
         };
         /**
          * Dispose of the controls and DOM starting at a given index.
@@ -5869,9 +5911,18 @@ var platui;
          * @param {platui.IGroupHash} group? The group for which we're disposing items.
          */
         Listview.prototype._disposeFromIndex = function (index, group) {
-            var controls = (group || this._defaultGroup).control.controls, dispose = this._TemplateControlFactory.dispose;
-            for (var i = controls.length - 1; i >= index; --i) {
-                dispose(controls[i]);
+            var opGroup = group || this._defaultGroup, control = opGroup.control, controls = control.controls, dispose = this._TemplateControlFactory.dispose, last = controls.length, controlDisposed = last > index;
+            while (last-- > index) {
+                dispose(controls[last]);
+            }
+            if (this === control) {
+                return;
+            }
+            else if (controlDisposed && !this._isVertical) {
+                this._resetItemContainerWidth(opGroup.itemContainer);
+            }
+            if (controls.length === 0) {
+                group.element.setAttribute(__Hide, '');
             }
         };
         /**
@@ -6292,25 +6343,24 @@ var platui;
         /**
          * Clones and parses thes innerTemplate and creates the templates object.
          * @param {string} itemTemplate The normalized item template name from the options.
-         * @param {string} groupHeaderTemplate? The normalized group header template name from the options.
+         * @param {string} headerTemplate? The normalized group header template name from the options.
          */
-        Listview.prototype._parseInnerTemplate = function (itemTemplate, groupHeaderTemplate) {
-            var templates = this._templates, slice = Array.prototype.slice, appendChildren = this.dom.appendChildren, _document = this._document, validGroupTemplate = !this.utils.isNull(groupHeaderTemplate), childNodes = slice.call(this.innerTemplate.childNodes), itemClass = __Plat + 'item', groupClass = __Plat + 'header', childNode, templateName, container;
+        Listview.prototype._parseInnerTemplate = function (itemTemplate, headerTemplate) {
+            var templates = this._templates, slice = Array.prototype.slice, appendChildren = this.dom.appendChildren, _document = this._document, validGroupTemplate = !this.utils.isNull(headerTemplate), childNodes = slice.call(this.innerTemplate.childNodes), childNode, templateName, container;
             while (childNodes.length > 0) {
                 childNode = childNodes.pop();
                 if (childNode.nodeType !== Node.ELEMENT_NODE) {
                     continue;
                 }
                 templateName = this._normalizeTemplateName(childNode.nodeName);
-                if (validGroupTemplate && templateName === groupHeaderTemplate) {
+                if (validGroupTemplate && templateName === headerTemplate) {
                     container = _document.createElement('div');
-                    container.className = groupClass;
+                    container.className = __Plat + 'header';
                 }
                 else {
-                    container = _document.createElement('div');
-                    container.className = itemClass;
+                    container = _document.createDocumentFragment();
                 }
-                container = appendChildren(childNode.childNodes, container);
+                appendChildren(childNode.childNodes, container);
                 templates[templateName] = container;
             }
         };
@@ -6367,11 +6417,11 @@ var platui;
             this._Promise.all(addQueue).then(function () {
                 if (_this._animate) {
                     _this._animateItems(start, 1, __Leave, opGroup, 'leave', false).then(function () {
-                        _this._removeItems(removeIndex, 1, opGroup.control);
+                        _this._removeItems(removeIndex, 1, opGroup);
                     });
                     return;
                 }
-                _this._removeItems(removeIndex, 1, opGroup.control);
+                _this._removeItems(removeIndex, 1, opGroup);
             });
         };
         /**
@@ -6412,7 +6462,7 @@ var platui;
                 opGroup.itemCount--;
             }
             this._Promise.all(addQueue).then(function () {
-                _this._removeItems(removeIndex, 1, opGroup.control);
+                _this._removeItems(removeIndex, 1, opGroup);
             });
         };
         /**
@@ -6449,7 +6499,7 @@ var platui;
                         opGroup.itemCount = 0;
                     }
                     this._Promise.all(addQueue).then(function () {
-                        _this._removeItems(currentLength - itemCount, itemCount, control);
+                        _this._removeItems(currentLength - itemCount, itemCount, opGroup);
                     });
                 }
                 return;
@@ -6497,7 +6547,7 @@ var platui;
                         var animLength = animationQueue.length;
                         _this._animateItems(change.index, addCount, __Enter, opGroup, null, animLength > 0 && animationQueue[animLength - 1].op === 'clone');
                     }
-                    _this._removeItems(currentLength - deleteCount, deleteCount, control);
+                    _this._removeItems(currentLength - deleteCount, deleteCount, opGroup);
                 });
             }
         };
@@ -6511,32 +6561,61 @@ var platui;
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          */
         Listview.prototype._animateItems = function (startIndex, numberOfItems, key, group, animationOp, cancel) {
-            // block length === 3 (one element node and two comment nodes) 
-            var blockLength = 3, start = startIndex * blockLength;
             switch (animationOp) {
                 case 'clone':
-                    return this._handleClonedContainerAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+                    return this._handleClonedContainerAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group, cancel === true);
                 case 'leave':
-                    return this._handleLeave(start, numberOfItems * blockLength + start, key, group);
+                    return this._handleLeave(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group);
                 default:
-                    return this._handleSimpleAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+                    return this._handleSimpleAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group, cancel === true);
             }
         };
         /**
+         * Translates the items to be animated into the nodes to be animated.
+         * @param {number} startIndex The starting index of items to animate.
+         * @param {number} numberOfItems The number of consecutive items to animate.
+         * @param {IGroupHash} group The group performing the animation.
+         */
+        Listview.prototype._getAnimatedNodes = function (startIndex, numberOfItems, group) {
+            if (this._isGrouped && group === this._defaultGroup) {
+                // we are animating a group so block length === 3 (one element node and two comment nodes) 
+                var blockLength = 3, start = startIndex * blockLength;
+                return Array.prototype.slice.call(group.itemContainer.childNodes, start, numberOfItems * blockLength + start);
+            }
+            var utils = this.utils, isNode = utils.isNode, nodes = Array.prototype.slice.call(group.itemContainer.childNodes), endIndex = startIndex + numberOfItems - 1, controls = group.control.controls;
+            if (controls.length <= endIndex) {
+                endIndex = controls.length - 1;
+            }
+            var startNode = controls[startIndex].startNode, endNode = controls[endIndex].endNode;
+            if (!(isNode(startNode) && isNode(endNode))) {
+                return [];
+            }
+            var startNodeIndex = nodes.indexOf(startNode), endNodeIndex = nodes.indexOf(endNode);
+            if (startNodeIndex === -1 || endNodeIndex === -1) {
+                return [];
+            }
+            return nodes.slice(startNodeIndex, endNodeIndex + 1);
+        };
+        /**
          * Handles a simple animation of a block of elements.
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          */
-        Listview.prototype._handleSimpleAnimation = function (startNode, endNode, key, group, cancel) {
-            var container = group.itemContainer, slice = Array.prototype.slice, nodes = slice.call(container.childNodes, startNode, endNode);
+        Listview.prototype._handleSimpleAnimation = function (nodes, key, group, cancel) {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var animationQueue = group.animationQueue, animationCreation = this._animator.create(nodes, key), animationPromise = animationCreation.current.then(function () {
-                animationQueue.shift();
+            var container = group.itemContainer, animationQueue = group.animationQueue, animationCreation = this._animator.create(nodes, key), animation = {
+                animation: animationPromise,
+                op: null
+            }, animationPromise = animationCreation.current.then(function () {
+                var index = animationQueue.indexOf(animation);
+                if (index === -1) {
+                    return;
+                }
+                animationQueue.splice(index, 1);
             }), callback = function () {
                 animationCreation.previous.then(function () {
                     animationPromise.start();
@@ -6545,56 +6624,61 @@ var platui;
             };
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
-                animationQueue.push({ animation: animationPromise, op: null });
+                animationQueue.push(animation);
                 return cancelPromise;
             }
-            animationQueue.push({ animation: animationPromise, op: null });
+            animationQueue.push(animation);
             return callback();
         };
         /**
          * Handles a simple animation of a block of elements.
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          */
-        Listview.prototype._handleLeave = function (startNode, endNode, key, group) {
-            var container = group.itemContainer, slice = Array.prototype.slice, nodes = slice.call(container.childNodes, startNode, endNode);
+        Listview.prototype._handleLeave = function (nodes, key, group) {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var animationQueue = group.animationQueue, animation = this._animator.leave(nodes, key).then(function () {
-                animationQueue.shift();
-            });
-            animationQueue.push({
-                animation: animation,
+            var container = group.itemContainer, animationQueue = group.animationQueue, animationPromise = this._animator.leave(nodes, key).then(function () {
+                var index = animationQueue.indexOf(animation);
+                if (index === -1) {
+                    return;
+                }
+                animationQueue.splice(index, 1);
+            }), animation = {
+                animation: animationPromise,
                 op: 'leave'
-            });
-            return animation;
+            };
+            animationQueue.push(animation);
+            return animationPromise;
         };
         /**
          * Handles a simple animation of a block of elements.
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          */
-        Listview.prototype._handleClonedContainerAnimation = function (startNode, endNode, key, group, cancel) {
-            var container = group.itemContainer, clonedContainer = container.cloneNode(true), slice = Array.prototype.slice, nodes = slice.call(clonedContainer.childNodes, startNode, endNode);
+        Listview.prototype._handleClonedContainerAnimation = function (nodes, key, group, cancel) {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var parentNode, animationQueue = group.animationQueue, isNull = this.utils.isNull, animationCreation = this._animator.create(nodes, key), animationPromise = animationCreation.current.then(function () {
-                animationQueue.shift();
+            var container = group.itemContainer, clonedContainer = container.cloneNode(true), parentNode, animationQueue = group.animationQueue, isNull = this.utils.isNull, animationCreation = this._animator.create(nodes, key), animationPromise = animationCreation.current.then(function () {
+                var index = animationQueue.indexOf(animation);
+                if (index > -1) {
+                    animationQueue.splice(index, 1);
+                }
                 if (isNull(parentNode)) {
                     return;
                 }
                 parentNode.replaceChild(container, clonedContainer);
-            }), callback = function () {
+            }), animation = {
+                animation: animationPromise,
+                op: 'clone'
+            }, callback = function () {
                 parentNode = container.parentNode;
                 if (isNull(parentNode) || animationPromise.isCanceled()) {
-                    animationQueue.shift();
                     return animationPromise;
                 }
                 parentNode.replaceChild(clonedContainer, container);
@@ -6605,10 +6689,10 @@ var platui;
             };
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
-                animationQueue.push({ animation: animationPromise, op: 'clone' });
+                animationQueue.push(animation);
                 return cancelPromise;
             }
-            animationQueue.push({ animation: animationPromise, op: 'clone' });
+            animationQueue.push(animation);
             return callback();
         };
         /**
@@ -6669,21 +6753,38 @@ var platui;
         /**
          * Sets the width of a group's item container.
          * @param {HTMLElement} element The element to set the width on.
+         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
          */
-        Listview.prototype._setItemContainerWidth = function (element) {
+        Listview.prototype._setItemContainerWidth = function (element, immediate) {
             var width = element.scrollWidth;
             if (!width) {
-                this._setItemContainerWidthWithClone(element);
+                this._setItemContainerWidthWithClone(element, immediate);
                 return;
             }
-            element.style.width = width + 'px';
+            var setter = function () {
+                element.style.width = width + 'px';
+            };
+            if (immediate === true) {
+                setter();
+                return;
+            }
+            this.utils.requestAnimationFrame(setter);
+        };
+        /**
+         * Resets the width of a group's item container.
+         * @param {HTMLElement} element The element to reset the width on.
+         */
+        Listview.prototype._resetItemContainerWidth = function (element) {
+            element.style.width = '';
+            this._setItemContainerWidth(element, true);
         };
         /**
          * Creates a clone of the group container and uses it to find width values.
-         * @param {HTMLElement} item The element having its height set.
+         * @param {HTMLElement} item The element having its width set.
+         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
          */
-        Listview.prototype._setItemContainerWidthWithClone = function (item) {
-            var body = this._document.body, parent = item.parentElement, element = parent.lastElementChild;
+        Listview.prototype._setItemContainerWidthWithClone = function (item, immediate) {
+            var body = this._document.body, parent = item.parentElement, utils = this.utils, element = parent.lastElementChild;
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
@@ -6693,11 +6794,11 @@ var platui;
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
-                this.utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
+                utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
                 return;
             }
             this._cloneAttempts = 0;
-            var parentClone = parent.cloneNode(true), clone = parentClone.lastElementChild, regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, dependencyProperty = 'width', codependentProperty = 'height', important = 'important', isNull = this.utils.isNull, dependencyValue;
+            var parentClone = parent.cloneNode(true), clone = parentClone.lastElementChild, regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, dependencyProperty = 'width', codependentProperty = 'height', important = 'important', isNull = utils.isNull, dependencyValue;
             shallowCopy.id = '';
             if (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
@@ -6719,7 +6820,7 @@ var platui;
                         // if we go all the way up to <html> the body may currently be hidden. 
                         this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                             'hidden. Please do not set the body\'s display to none.');
-                        this.utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
+                        utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
                         return;
                     }
                     shallowCopy = element.cloneNode(false);
@@ -6741,26 +6842,44 @@ var platui;
             shallowStyle.setProperty(codependentProperty, computedStyle.height, important);
             shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            item.style.width = clone.scrollWidth + 'px';
+            var setWidth = clone.scrollWidth + 'px', setter = function () {
+                item.style.width = setWidth;
+            };
             body.removeChild(shallowCopy);
+            if (immediate === true) {
+                setter();
+                return;
+            }
+            utils.requestAnimationFrame(setter);
         };
         /**
          * Sets the height of a group's item container.
          * @param {HTMLElement} element The element to set the height on.
+         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
          */
-        Listview.prototype._setItemContainerHeight = function (element) {
-            var parent = element.parentElement, parentHeight = parent.offsetHeight, headerHeight = parent.firstElementChild.offsetHeight;
-            if (!(parentHeight && headerHeight)) {
-                this._setItemContainerHeightWithClone(element);
+        Listview.prototype._setItemContainerHeight = function (element, withHeader) {
+            var parent = element.parentElement, parentHeight = parent.offsetHeight, headerHeight = 0;
+            if (!parentHeight) {
+                this._setItemContainerHeightWithClone(element, withHeader);
                 return;
             }
-            element.style.height = (parentHeight - headerHeight - 15) + 'px';
+            if (withHeader === true) {
+                headerHeight = parent.firstElementChild.offsetHeight;
+                if (!headerHeight) {
+                    this._setItemContainerHeightWithClone(element, withHeader);
+                    return;
+                }
+            }
+            this.utils.requestAnimationFrame(function () {
+                element.style.height = (parentHeight - headerHeight) + 'px';
+            });
         };
         /**
          * Creates a clone of the group container and uses it to find height values.
          * @param {HTMLElement} item The element having its height set.
+         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
          */
-        Listview.prototype._setItemContainerHeightWithClone = function (item) {
+        Listview.prototype._setItemContainerHeightWithClone = function (item, withHeader) {
             var body = this._document.body, parent = item.parentElement, element = parent.firstElementChild;
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
@@ -6816,8 +6935,11 @@ var platui;
             shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
             shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            item.style.height = (parentClone.offsetHeight - clone.offsetHeight - 15) + 'px';
+            var setHeight = withHeader === true ? (parentClone.offsetHeight - clone.offsetHeight) + 'px' : clone.offsetHeight + 'px';
             body.removeChild(shallowCopy);
+            this.utils.requestAnimationFrame(function () {
+                item.style.height = setHeight;
+            });
         };
         Listview._inject = {
             _document: __Document,
@@ -6843,17 +6965,17 @@ var platui;
              */
             this.templateString = '<div class="plat-navbar-left">\n' +
                 '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="left">\n' +
-                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="leftAction(@index)"></div>\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="leftAction(@index)"></div>\n' +
                 '    </div>\n' +
                 '</div>\n' +
                 '<div class="plat-navbar-center">\n' +
                 '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="center">\n' +
-                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="centerAction(@index)"></div>\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="centerAction(@index)"></div>\n' +
                 '    </div>\n' +
                 '</div>\n' +
                 '<div class="plat-navbar-right">\n' +
                 '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="right">\n' +
-                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="rightAction(@index)"></div>\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="rightAction(@index)"></div>\n' +
                 '    </div>\n' +
                 '</div>\n';
             /**
@@ -6861,15 +6983,15 @@ var platui;
              */
             this.context = {
                 left: [{
-                        content: '<span>left</span>',
+                        content: '',
                         action: noop
                     }],
                 center: [{
-                        content: '<span>center</span>',
+                        content: '',
                         action: noop
                     }],
                 right: [{
-                        content: '<span>right</span>',
+                        content: '',
                         action: noop
                     }]
             };
@@ -6960,27 +7082,27 @@ var platui;
         };
         /**
          * The defined action of the left part of the Navbar when tapped.
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          */
         Navbar.prototype.leftAction = function (index, ev) {
-            this._executeAction('left', index);
+            this._executeAction(ev, 'left', index);
         };
         /**
          * The defined action of the center part of the Navbar when tapped.
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          */
         Navbar.prototype.centerAction = function (index, ev) {
-            this._executeAction('center', index);
+            this._executeAction(ev, 'center', index);
         };
         /**
          * The defined action of the right part of the Navbar when tapped.
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          */
         Navbar.prototype.rightAction = function (index, ev) {
-            this._executeAction('right', index);
+            this._executeAction(ev, 'right', index);
         };
         Navbar.prototype._setComponent = function (position, components) {
             var context = this.context;
@@ -7007,7 +7129,7 @@ var platui;
          */
         Navbar.prototype._parseComponent = function (newComponent, oldComponent) {
             var utils = this.utils, isObject = utils.isObject, oldComponentExists = isObject(oldComponent), customActions, keys, key, currKey;
-            if (oldComponentExists && !utils.isString(newComponent.content)) {
+            if (oldComponentExists && utils.isUndefined(newComponent.content)) {
                 newComponent.content = oldComponent.content;
             }
             if (!utils.isFunction(newComponent.action)) {
@@ -7025,16 +7147,17 @@ var platui;
         };
         /**
          * Executes the proper action associated with a Navbar component.
+         * @param {plat.ui.IGestureEvent} ev The executed event.
          * @param {string} position The part of the Navbar whose action is being executed.
-         * @param {any} property The indexing property. Will by default be an index into the component Array.
+         * @param {any} property? The indexing property. Will by default be an index into the component Array.
          */
-        Navbar.prototype._executeAction = function (position, property) {
+        Navbar.prototype._executeAction = function (ev, position, property) {
             var utils = this.utils, component = this.context[position];
             if (utils.isArray(component) && !utils.isNull(property)) {
                 component = component[property];
             }
             if (utils.isFunction(component.action)) {
-                component.action();
+                component.action(ev);
                 return;
             }
             this._log.debug('An action function is not defined for the component ' + component + '.');
