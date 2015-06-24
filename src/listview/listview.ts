@@ -1285,19 +1285,27 @@ module platui {
                     }
                     
                     this._setItemContainerWidth(opGroup.itemContainer);
+                },
+                onError = (error: Error): void => {
+                    this._log.debug(this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
                 };
                 
             if (utils.isFunction(this._templateSelector)) {
-                var promises: Array<plat.async.IThenable<void>> = [];
+                var promises: Array<plat.async.IThenable<any>> = [];
                 opGroup.itemCount += count;
 
                 for (var i = 0; i < count; ++i, ++index) {
-                    promises.push(this._renderUsingFunction(index, opGroup, i < animateItems));
+                    promises.push(this._renderUsingFunction(index, opGroup));
                 }
 
-                var itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises).then(postLoad);
+                var itemsLoaded = this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises)
+                .then((nodes: Array<any>): void => {
+                    var length = nodes.length;
+                    for (var ii = 0; ii < length; ++ii) {
+                        this._appendRenderedItem(nodes[ii], opGroup, ii < animateItems);
+                    }
+                }).then(postLoad, onError);
                 addQueue.push(itemsLoaded);
-                this.itemsLoaded = itemsLoaded;
                 return;
             }
 
@@ -1309,7 +1317,7 @@ module platui {
             this._disposeFromIndex(index, opGroup);
             opGroup.itemCount += count;
             
-            var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad);
+            var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
             addQueue.push(addPromise);
         }
 
@@ -1398,11 +1406,10 @@ module platui {
          * 
          * @param {number} index The starting index to render.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * @param {boolean} animate? Whether or not to animate the new items.
          * 
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
-        protected _renderUsingFunction(index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void> {
+        protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.IThenable<any> {
             var _Promise = this._Promise,
                 utils = this.utils,
                 opGroup = group || this._defaultGroup,
@@ -1454,30 +1461,52 @@ module platui {
                         this._TemplateControlFactory.dispose(controls[index]);
                     }
                 }
-            }).then((node): void => {
-                if (utils.isNull(node) || utils.isArray(node)) {
-                    return;
-                } else if (animate === true) {
-                    var animationQueue = opGroup.animationQueue,
-                        animation = {
-                            animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then((): void => {
-                                var animationIndex = animationQueue.indexOf(animation);
-                                if (animationIndex === -1) {
-                                    return;
-                                }
-                                
-                                animationQueue.splice(animationIndex, 1);
-                            }),
-                            op: <string>null
-                        };
-                    animationQueue.push(animation);
-                    return;
-                }
-
-                opGroup.itemContainer.insertBefore(node, null);
-            }).then(null, (error): void => {
-                this._log.debug(this.type + ' error: ' + error);
             });
+        }
+        
+        /**
+         * @name _appendRenderedItem
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Appends the rendered item from the defined render function.
+         * 
+         * @param {any} node The node to place into the item container if available.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * @param {boolean} animate? Whether or not to animate the new item.
+         * 
+         * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
+         */
+        protected _appendRenderedItem(node: any, group?: IGroupHash, animate?: boolean): void {
+            var utils = this.utils,
+                opGroup = group || this._defaultGroup;
+                
+            if (utils.isNull(node) || utils.isArray(node)) {
+                    return;
+            } else if (animate === true) {
+                var animationQueue = opGroup.animationQueue,
+                    animation = {
+                        animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then((): void => {
+                            var animationIndex = animationQueue.indexOf(animation);
+                            if (animationIndex === -1) {
+                                return;
+                            }
+                            
+                            animationQueue.splice(animationIndex, 1);
+                        }),
+                        op: <string>null
+                    };
+                animationQueue.push(animation);
+            } else {
+                opGroup.itemContainer.insertBefore(node, null);
+            }
+            
+            if (utils.isFunction(this.__resolveFn)) {
+                this.__resolveFn();
+                this.__resolveFn = null;
+            }
         }
 
         /**
