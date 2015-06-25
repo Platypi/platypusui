@@ -15,13 +15,15 @@
 
     /// =========== Listview Animations =========== ///
 
-        @refresh-transition: transform 200ms;
-        @enter-init: {
-          opacity: 0;  
-        };
+        @refresh-transition-time: 200ms;
+        
         @enter-animation-name: LISTVIEW_ITEM_ENTER;
         @enter-animation-duration: 300ms;
         @enter-animation: @enter-animation-name @enter-animation-duration;
+        @enter-init: {
+          opacity: 0;  
+        };
+        
         @leave-animation-name: LISTVIEW_ITEM_LEAVE;
         @leave-animation-duration: 300ms;
         @leave-animation: @leave-animation-name @leave-animation-duration;
