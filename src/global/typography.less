@@ -90,21 +90,61 @@
     h1 {
         .headings();
         margin: @typography-margin 0 (@typography-margin / 1.25);
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin / 1.25;
+        }
     }
 
     h2, h3, h4 {
         .headings();
         margin: (@typography-margin * 1.25) 0 @typography-margin;
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.25;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin;
+        }
     }
 
     h5, h6 {
         .headings();
         margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.5;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin * 1.25;
+        }
     }
 
     p {
         padding: 0;
         margin: (@typography-margin * 1.5) 0;
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.5;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin * 1.5;
+        }
     }
 
     /// Phone
