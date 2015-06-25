@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.13 (https://platypi.io) 
+ * PlatypusUI v0.4.14 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1190,7 +1190,7 @@
 
     /// ============ Carousel Transition ============ ///
 
-        @transition: all 300ms;
+        @transition: transform 300ms;
     }
 }
 
@@ -1231,7 +1231,7 @@
         
     /// =========== Drawer Transition =========== ///
 
-        @transition: all 300ms ease-out;
+        @transition: transform 300ms ease-out;
     }
 }
 
@@ -1287,7 +1287,7 @@
 
     /// =========== Listview Animations =========== ///
 
-        @refresh-transition: all 200ms;
+        @refresh-transition: transform 200ms;
         @enter-init: {
           opacity: 0;  
         };
@@ -1559,7 +1559,7 @@
     /// ============= Toggle Transition ============= ///
 
         @transition-time: 250ms;
-        @transition: all @transition-time;
+        @transition: ~'background-color @{transition-time}, border-color @{transition-time}';
         @knob-transition: left @transition-time;
     }
 }
@@ -1911,21 +1911,61 @@
     h1 {
         .headings();
         margin: @typography-margin 0 (@typography-margin / 1.25);
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin / 1.25;
+        }
     }
 
     h2, h3, h4 {
         .headings();
         margin: (@typography-margin * 1.25) 0 @typography-margin;
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.25;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin;
+        }
     }
 
     h5, h6 {
         .headings();
         margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.5;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin * 1.25;
+        }
     }
 
     p {
         padding: 0;
         margin: (@typography-margin * 1.5) 0;
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.5;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin * 1.5;
+        }
     }
 
     /// Phone

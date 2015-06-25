@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.13 (https://platypi.io) 
+ * PlatypusUI v0.4.14 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -284,6 +284,14 @@ h1 {
   font-weight: 600;
   margin: 0.67em 0 0.536em;
 }
+h1.no-collapse-top {
+  margin-top: 0;
+  padding-top: 0.67em;
+}
+h1.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0.536em;
+}
 h2,
 h3,
 h4 {
@@ -291,15 +299,45 @@ h4 {
   font-weight: 600;
   margin: 0.8375em 0 0.67em;
 }
+h2.no-collapse-top,
+h3.no-collapse-top,
+h4.no-collapse-top {
+  margin-top: 0;
+  padding-top: 0.8375em;
+}
+h2.no-collapse-bottom,
+h3.no-collapse-bottom,
+h4.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0.67em;
+}
 h5,
 h6 {
   padding: 0;
   font-weight: 600;
   margin: 1.005em 0 0.8375em;
 }
+h5.no-collapse-top,
+h6.no-collapse-top {
+  margin-top: 0;
+  padding-top: 1.005em;
+}
+h5.no-collapse-bottom,
+h6.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0.8375em;
+}
 p {
   padding: 0;
   margin: 1.005em 0;
+}
+p.no-collapse-top {
+  margin-top: 0;
+  padding-top: 1.005em;
+}
+p.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 1.005em;
 }
 p {
   font-size: 16px;
@@ -1064,9 +1102,9 @@ h6 {
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-transition: all 300ms;
-  -moz-transition: all 300ms;
-  transition: all 300ms;
+  -webkit-transition: transform 300ms;
+  -moz-transition: transform 300ms;
+  transition: transform 300ms;
 }
 .plat-carousel .plat-carousel-viewport .plat-back-arrow,
 .plat-carousel .plat-carousel-viewport .plat-forward-arrow {
@@ -1406,9 +1444,9 @@ h6 {
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-transition: all 300ms ease-out;
-  -moz-transition: all 300ms ease-out;
-  transition: all 300ms ease-out;
+  -webkit-transition: transform 300ms ease-out;
+  -moz-transition: transform 300ms ease-out;
+  transition: transform 300ms ease-out;
 }
 .plat-file {
   -webkit-box-sizing: border-box;
@@ -2593,9 +2631,9 @@ h6 {
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-transition: all 200ms;
-  -moz-transition: all 200ms;
-  transition: all 200ms;
+  -webkit-transition: transform 200ms;
+  -moz-transition: transform 200ms;
+  transition: transform 200ms;
 }
 .plat-listview .plat-refresh,
 .plat-listview .plat-incremental {
@@ -4194,9 +4232,9 @@ h6 {
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  transition: all 250ms;
+  -webkit-transition: background-color 250ms, border-color 250ms;
+  -moz-transition: background-color 250ms, border-color 250ms;
+  transition: background-color 250ms, border-color 250ms;
 }
 .plat-toggle .plat-toggle-container .plat-knob {
   position: absolute;
