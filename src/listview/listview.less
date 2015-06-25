@@ -95,8 +95,9 @@
         }
             
         &.plat-transition-init {
-            .translateZ(0);
-            .transition(@refresh-transition);
+            -webkit-transition: -webkit-transform @refresh-transition-time;
+            -moz-transition: -moz-transform @refresh-transition-time;
+            transition: transform @refresh-transition-time;
         }
     }
 
