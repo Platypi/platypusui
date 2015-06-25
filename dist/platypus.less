@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.14 (https://platypi.io) 
+ * PlatypusUI v0.4.15 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1190,7 +1190,7 @@
 
     /// ============ Carousel Transition ============ ///
 
-        @transition: transform 300ms;
+        @transition-time: 300ms;
     }
 }
 
@@ -1231,7 +1231,8 @@
         
     /// =========== Drawer Transition =========== ///
 
-        @transition: transform 300ms ease-out;
+        @transition-time: 300ms;
+        @transition-function: ease-out;
     }
 }
 
@@ -1287,13 +1288,15 @@
 
     /// =========== Listview Animations =========== ///
 
-        @refresh-transition: transform 200ms;
-        @enter-init: {
-          opacity: 0;  
-        };
+        @refresh-transition-time: 200ms;
+        
         @enter-animation-name: LISTVIEW_ITEM_ENTER;
         @enter-animation-duration: 300ms;
         @enter-animation: @enter-animation-name @enter-animation-duration;
+        @enter-init: {
+          opacity: 0;  
+        };
+        
         @leave-animation-name: LISTVIEW_ITEM_LEAVE;
         @leave-animation-duration: 300ms;
         @leave-animation: @leave-animation-name @leave-animation-duration;
@@ -2447,8 +2450,9 @@
             }
 
             &.plat-transition-init {
-                .translateZ(0);
-                .transition(@transition);
+                -webkit-transition: -webkit-transform @transition-time;
+                -moz-transition: -moz-transform @transition-time;
+                transition: transform @transition-time;
             }
         }
 
@@ -2789,8 +2793,9 @@
     }
 
     &.plat-transition-init {
-        .translateZ(0);
-        .transition(@transition);
+        -webkit-transition: -webkit-transform @transition-time @transition-function;
+        -moz-transition: -moz-transform @transition-time @transition-function;
+        transition: transform @transition-time @transition-function;
     }
 }
 
@@ -3644,8 +3649,9 @@
         }
             
         &.plat-transition-init {
-            .translateZ(0);
-            .transition(@refresh-transition);
+            -webkit-transition: -webkit-transform @refresh-transition-time;
+            -moz-transition: -moz-transform @refresh-transition-time;
+            transition: transform @refresh-transition-time;
         }
     }
 
