@@ -26,7 +26,7 @@
     /// ============= Toggle Transition ============= ///
 
         @transition-time: 250ms;
-        @transition: all @transition-time;
+        @transition: ~'background-color @{transition-time}, border-color @{transition-time}';
         @knob-transition: left @transition-time;
     }
 }
