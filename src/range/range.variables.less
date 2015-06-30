@@ -2,6 +2,12 @@
 
 #platui {
     #Range {
+        #dependencies {
+            @transition-time: 300ms;
+        }
+
+        #platui > #Range > #dependencies;
+
     /// ================= Range Size ================== ///
 
         @thickness: 0.5em;
@@ -13,8 +19,8 @@
         @knob-border-size: 1px;
 
     /// =============== Range Transitions =============== ///
-    
-        @horizontal-transition: width 300ms;
-        @vertical-transition: height 300ms;
+
+        @horizontal-transition: width @transition-time;
+        @vertical-transition: height @transition-time;
     }
 }

@@ -2,7 +2,13 @@
 
 #platui {
     #Carousel {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @padding: 5px;
+        }
+
+        #platui > #Carousel > #dependencies;
+
     /// =========== Carousel Colors =========== ///
 
         @background-color: @transparent;
@@ -11,11 +17,9 @@
         @arrow-color: fadeout(@white, 50%);
         @arrow-active-color: @white;
 
-        
     /// ============ Carousel Size ============ ///
 
         @border-size: 1px;
-        @padding: 5px;
         @padding-left: @padding;
         @padding-right: @padding;
         @padding-top: @padding;

@@ -3,31 +3,35 @@
 
 #platui {
     #Listview {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @enter-animation-name: LISTVIEW_ITEM_ENTER;
+            @enter-animation-duration: 300ms;
+            @leave-animation-name: LISTVIEW_ITEM_LEAVE;
+            @leave-animation-duration: 300ms;
+        }
+
+        #platui > #Listview > #dependencies;
 
     /// =========== Listview Colors =========== ///
 
         @manipulated-viewport-background-color: @white;
 
     /// =========== Listview Properties =========== ///
-    
+
         @horizontal-scroll-padding: 15px;
 
     /// =========== Listview Animations =========== ///
 
         @refresh-transition-time: 200ms;
-        
-        @enter-animation-name: LISTVIEW_ITEM_ENTER;
-        @enter-animation-duration: 300ms;
-        @enter-animation: @enter-animation-name @enter-animation-duration;
+
         @enter-init: {
-          opacity: 0;  
+          opacity: 0;
         };
-        
-        @leave-animation-name: LISTVIEW_ITEM_LEAVE;
-        @leave-animation-duration: 300ms;
+
+        @enter-animation: @enter-animation-name @enter-animation-duration;
         @leave-animation: @leave-animation-name @leave-animation-duration;
-        
+
     /// =========== Listview Animation Mixins =========== ///
 
         .enter(@name) {

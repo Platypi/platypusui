@@ -3,15 +3,20 @@
 @import (reference) '../../animations/animations.variables.less';
 
 #platui {
-    #platui > #variables;
-
     #ProgressRing {
+        #dependencies {
+            #platui > #variables;
+            @color: @primary-color;
+            @animation-name: PLAT-SPIN;
+        }
+
+        #platui > #ProgressRing > #dependencies;
+
     /// =========== Progress Ring Colors =========== ///
 
-        @ring-color: @primary-color;
-        @fill-color: fade(@ring-color, 75%);
-        @unfilled-color: fade(@ring-color, 10%);
-        
+        @fill-color: fade(@color, 75%);
+        @unfilled-color: fade(@color, 10%);
+
     /// =========== Progress Ring Sizes =========== ///
 
         @diameter: 3em;
@@ -19,9 +24,8 @@
 
     /// =========== Progress Ring Animation =========== ///
 
-        @animation-name: PLAT-SPIN;
         @spin-frequency: 600ms;
-        
+
     /// =========== Progress Ring Animation Mixins =========== ///
 
         .spin() {
