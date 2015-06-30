@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.15 (https://platypi.io)
+ * PlatypusUI v0.4.16 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -4196,80 +4196,13 @@ var platui;
          * Advances the position of the Carousel to the next state.
          */
         Carousel.prototype.goToNext = function () {
-            var _this = this;
-            return this._Promise.all(this._addQueue).then(function () {
-                var index = _this._index, reset = false;
-                if ((index >= _this._itemNodes.length - 1) && !(reset = _this._isInfinite)) {
-                    if (_this._isAuto && !_this._isPaused) {
-                        _this.pause();
-                        _this._selfPause = true;
-                    }
-                    return _this._Promise.resolve(false);
-                }
-                var length = _this._getLength();
-                if (!length) {
-                    return _this.goToIndex(_this._nextIndex, true);
-                }
-                return _this._cancelCurrentAnimations().then(function () {
-                    if (!_this._outerEnd) {
-                        _this._initializeOuterNodes();
-                    }
-                    var animationOptions = {};
-                    animationOptions[_this._transform] = _this._calculateStaticTranslation(-length);
-                    var animation = _this._initiateAnimation({ properties: animationOptions }), nextIndex;
-                    if (reset) {
-                        _this._index = nextIndex = 0;
-                    }
-                    else {
-                        nextIndex = ++_this._index;
-                    }
-                    _this.inputChanged(_this._index, index);
-                    return animation.then(function () {
-                        _this._handleNext(nextIndex, length);
-                        _this._checkArrows();
-                        return true;
-                    });
-                });
-            });
+            return this._goToNext(false);
         };
         /**
          * Changes the position of the Carousel to the previous state.
          */
         Carousel.prototype.goToPrevious = function () {
-            var _this = this;
-            return this._Promise.all(this._addQueue).then(function () {
-                var index = _this._index, reset = false;
-                if (index <= 0 && !(reset = _this._isInfinite)) {
-                    return _this._Promise.resolve(false);
-                }
-                else if (_this._selfPause) {
-                    _this.resume();
-                }
-                var length = _this._getLength();
-                if (!length) {
-                    return _this.goToIndex(_this._previousIndex, true);
-                }
-                return _this._cancelCurrentAnimations().then(function () {
-                    if (!_this._outerStart) {
-                        _this._initializeOuterNodes();
-                    }
-                    var animationOptions = {};
-                    animationOptions[_this._transform] = _this._calculateStaticTranslation(length);
-                    var animation = _this._initiateAnimation({ properties: animationOptions }), previousIndex;
-                    if (reset) {
-                        _this._index = previousIndex = _this._itemNodes.length - 1;
-                    }
-                    else {
-                        previousIndex = --_this._index;
-                    }
-                    _this.inputChanged(_this._index, index);
-                    return animation.then(function () {
-                        _this._handlePrevious(previousIndex, -length);
-                        _this._checkArrows();
-                        return true;
-                    });
-                });
-            });
+            return this._goToPrevious(false);
         };
         /**
          * Changes the position of the Carousel to the state
@@ -4278,52 +4211,7 @@ var platui;
          * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
          */
         Carousel.prototype.goToIndex = function (index, direct) {
-            var _this = this;
-            return this._Promise.all(this._addQueue).then(function () {
-                var oldIndex = _this._index;
-                if (_this.utils.isUndefined(oldIndex)) {
-                    _this._initializeIndex(0);
-                    _this.inputChanged(_this._index, index);
-                    if (!_this._isInfinite) {
-                        if (index < _this.context.length - 1) {
-                            if (_this._selfPause) {
-                                _this.resume();
-                            }
-                        }
-                        else if (_this._isAuto && !_this._isPaused) {
-                            _this.pause();
-                            _this._selfPause = true;
-                        }
-                    }
-                    return _this._Promise.resolve(true);
-                }
-                else if (index === oldIndex) {
-                    return _this._Promise.resolve(false);
-                }
-                else if (direct === true) {
-                    _this._initializeIndex(index);
-                    _this.inputChanged(_this._index, index);
-                    if (!_this._isInfinite) {
-                        if (index < _this.context.length - 1) {
-                            if (_this._selfPause) {
-                                _this.resume();
-                            }
-                        }
-                        else if (_this._isAuto && !_this._isPaused) {
-                            _this.pause();
-                            _this._selfPause = true;
-                        }
-                    }
-                    return _this._Promise.resolve(true);
-                }
-                else if (index - oldIndex > 0 && index === _this._nextIndex) {
-                    return _this.goToNext();
-                }
-                else if (index === _this._previousIndex) {
-                    return _this.goToPrevious();
-                }
-                return _this._goToIndex(index);
-            });
+            return this._goToIndex(index, false, direct);
         };
         /**
          * Stops auto scrolling if auto scrolling is enabled.
@@ -4428,7 +4316,7 @@ var platui;
                 this._index = index;
                 return;
             }
-            this.goToIndex(index, firstTime === true);
+            this._goToIndex(index, true, firstTime === true);
         };
         /**
          * Resets the position of the Carousel to its current state.
@@ -4487,11 +4375,152 @@ var platui;
             }
         };
         /**
+         * Advances the position of the Carousel to the next state.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         */
+        Carousel.prototype._goToNext = function (inputChanged) {
+            var _this = this;
+            return this._Promise.all(this._addQueue).then(function () {
+                var index = _this._index, reset = false;
+                if ((index >= _this._itemNodes.length - 1) && !(reset = _this._isInfinite)) {
+                    if (_this._isAuto && !_this._isPaused) {
+                        _this.pause();
+                        _this._selfPause = true;
+                    }
+                    return _this._Promise.resolve(false);
+                }
+                var length = _this._getLength();
+                if (!length) {
+                    return _this.goToIndex(_this._nextIndex, true);
+                }
+                return _this._cancelCurrentAnimations().then(function () {
+                    if (!_this._outerEnd) {
+                        _this._initializeOuterNodes();
+                    }
+                    var animationOptions = {};
+                    animationOptions[_this._transform] = _this._calculateStaticTranslation(-length);
+                    var animation = _this._initiateAnimation({ properties: animationOptions }), nextIndex;
+                    if (reset) {
+                        _this._index = nextIndex = 0;
+                    }
+                    else {
+                        nextIndex = ++_this._index;
+                    }
+                    if (!inputChanged) {
+                        _this.inputChanged(_this._index, index);
+                    }
+                    return animation.then(function () {
+                        _this._handleNext(nextIndex, length);
+                        _this._checkArrows();
+                        return true;
+                    });
+                });
+            });
+        };
+        /**
+         * Changes the position of the Carousel to the previous state.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         */
+        Carousel.prototype._goToPrevious = function (inputChanged) {
+            var _this = this;
+            return this._Promise.all(this._addQueue).then(function () {
+                var index = _this._index, reset = false;
+                if (index <= 0 && !(reset = _this._isInfinite)) {
+                    return _this._Promise.resolve(false);
+                }
+                else if (_this._selfPause) {
+                    _this.resume();
+                }
+                var length = _this._getLength();
+                if (!length) {
+                    return _this.goToIndex(_this._previousIndex, true);
+                }
+                return _this._cancelCurrentAnimations().then(function () {
+                    if (!_this._outerStart) {
+                        _this._initializeOuterNodes();
+                    }
+                    var animationOptions = {};
+                    animationOptions[_this._transform] = _this._calculateStaticTranslation(length);
+                    var animation = _this._initiateAnimation({ properties: animationOptions }), previousIndex;
+                    if (reset) {
+                        _this._index = previousIndex = _this._itemNodes.length - 1;
+                    }
+                    else {
+                        previousIndex = --_this._index;
+                    }
+                    if (!inputChanged) {
+                        _this.inputChanged(_this._index, index);
+                    }
+                    return animation.then(function () {
+                        _this._handlePrevious(previousIndex, -length);
+                        _this._checkArrows();
+                        return true;
+                    });
+                });
+            });
+        };
+        /**
          * Changes the position of the Carousel to the state
          * specified by the input index.
          * @param {number} index The new index of the Carousel.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
          */
-        Carousel.prototype._goToIndex = function (index) {
+        Carousel.prototype._goToIndex = function (index, inputChanged, direct) {
+            var _this = this;
+            return this._Promise.all(this._addQueue).then(function () {
+                var oldIndex = _this._index;
+                if (_this.utils.isUndefined(oldIndex)) {
+                    _this._initializeIndex(0);
+                    _this.inputChanged(_this._index, index);
+                    if (!_this._isInfinite) {
+                        if (index < _this.context.length - 1) {
+                            if (_this._selfPause) {
+                                _this.resume();
+                            }
+                        }
+                        else if (_this._isAuto && !_this._isPaused) {
+                            _this.pause();
+                            _this._selfPause = true;
+                        }
+                    }
+                    return _this._Promise.resolve(true);
+                }
+                else if (index === oldIndex) {
+                    return _this._Promise.resolve(false);
+                }
+                else if (direct === true) {
+                    _this._initializeIndex(index);
+                    _this.inputChanged(_this._index, index);
+                    if (!_this._isInfinite) {
+                        if (index < _this.context.length - 1) {
+                            if (_this._selfPause) {
+                                _this.resume();
+                            }
+                        }
+                        else if (_this._isAuto && !_this._isPaused) {
+                            _this.pause();
+                            _this._selfPause = true;
+                        }
+                    }
+                    return _this._Promise.resolve(true);
+                }
+                else if (index - oldIndex > 0 && index === _this._nextIndex) {
+                    return _this._goToNext(inputChanged);
+                }
+                else if (index === _this._previousIndex) {
+                    return _this._goToPrevious(inputChanged);
+                }
+                return _this._handleGoToIndex(index, inputChanged);
+            });
+        };
+        /**
+         * Changes the position of the Carousel to the state
+         * specified by the input index.
+         * @param {number} index The new index of the Carousel.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         */
+        Carousel.prototype._handleGoToIndex = function (index, inputChanged) {
             var oldIndex = this._index;
             if (index === oldIndex || index < 0 || index >= this.context.length) {
                 return this._Promise.resolve(false);
@@ -4505,23 +4534,23 @@ var platui;
             }
             var _Promise = this._Promise, defer = this.utils.defer, move, diff, reverseDiff;
             if (index > oldIndex) {
-                move = this.goToNext;
+                move = this._goToNext;
                 diff = index - oldIndex;
                 if (this._isInfinite) {
                     reverseDiff = this._itemNodes.length - index + oldIndex;
                     if (reverseDiff < diff) {
-                        move = this.goToPrevious;
+                        move = this._goToPrevious;
                         diff = reverseDiff;
                     }
                 }
             }
             else {
-                move = this.goToPrevious;
+                move = this._goToPrevious;
                 diff = oldIndex - index;
                 if (this._isInfinite) {
                     reverseDiff = this._itemNodes.length - oldIndex + index;
                     if (reverseDiff < diff) {
-                        move = this.goToNext;
+                        move = this._goToNext;
                         diff = reverseDiff;
                     }
                 }
@@ -4533,14 +4562,14 @@ var platui;
                     if (removeIndex !== -1) {
                         removeListeners.splice(removeIndex, 1);
                     }
-                    resolve(move());
+                    resolve(move(inputChanged));
                 }, interval += Math.round(constant / diff));
                 removeListeners.push(remove);
             };
             while (--diff > 0) {
                 promises.push(new _Promise(mover));
             }
-            promises.push(move());
+            promises.push(move(inputChanged));
             return _Promise.all(promises).then(function (results) {
                 var result = false;
                 while (results.length > 0) {
@@ -4568,8 +4597,7 @@ var platui;
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
                     container.style[this._transform] = this._calculateStaticTranslation(length);
-                    // access property to force a repaint 
-                    container.offsetWidth;
+                    this._forceRepaint(container);
                 }
             }
             else {
@@ -4607,8 +4635,7 @@ var platui;
             }
             container.insertBefore(itemNodes[this._previousIndex], container.firstChild);
             container.style[this._transform] = this._calculateStaticTranslation(length);
-            // access property to force a repaint 
-            container.offsetWidth;
+            this._forceRepaint(container);
         };
         /**
          * Clears all the inner nodes of the control.
@@ -4630,9 +4657,8 @@ var platui;
                 case 6:
                     var next = this._nextIndex, index = this._index;
                     if (next < 0 || next === index) {
-                        insertBefore(itemNodes[this._index], childNodes.splice(-3, 3));
-                        var i = index === 0 ? this._previousIndex + 1 : index - 1;
-                        insertBefore(itemNodes[i], childNodes);
+                        insertBefore(itemNodes[index], childNodes.splice(-3, 3));
+                        insertBefore(itemNodes[index === 0 ? this._previousIndex + 1 : index - 1], childNodes);
                         break;
                     }
                     insertBefore(itemNodes[next], childNodes.splice(-3, 3));
@@ -4664,8 +4690,7 @@ var platui;
             var container = this._container;
             container.insertBefore(this._itemNodes[index], null);
             container.style[this._transform] = this._calculateStaticTranslation(-this._currentOffset);
-            // access property to force a repaint 
-            container.offsetWidth;
+            this._forceRepaint(container);
             this._initializeOuterNodes();
             this._checkArrows();
             return true;
@@ -4701,8 +4726,7 @@ var platui;
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
                             container.style[this._transform] = this._calculateStaticTranslation(-length);
-                            // access property to force a repaint 
-                            container.offsetWidth;
+                            this._forceRepaint(container);
                             this._outerStart = true;
                         }
                     }
@@ -4803,8 +4827,7 @@ var platui;
                 var preClone = this._preClonedNode = container.lastElementChild.cloneNode(true);
                 container.insertBefore(preClone, container.firstChild);
                 container.style[this._transform] = this._calculateStaticTranslation(length);
-                // access property to force a repaint 
-                container.offsetWidth;
+                this._forceRepaint(container);
                 this._outerStart = true;
             }
         };
@@ -5192,6 +5215,20 @@ var platui;
                 return this._Promise.resolve();
             }
             return this._animationThenable.cancel();
+        };
+        /**
+         * Forces a repaint / reflow.
+         * @param {HTMLElement} element The element to force the repaint / reflow on.
+         */
+        Carousel.prototype._forceRepaint = function (element) {
+            var style = element.style, display = style.display, none = 'none';
+            if (style.display === none) {
+                element.offsetWidth;
+                return;
+            }
+            style.display = none;
+            element.offsetWidth;
+            style.display = display;
         };
         Carousel._inject = {
             _document: __Document,

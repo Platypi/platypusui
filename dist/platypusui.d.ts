@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.4.15 (https://platypi.io)
+  * PlatypusUI v0.4.16 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -2315,11 +2315,30 @@ declare module platui {
           */
         protected _setIndexWindow(): void;
         /**
+          * Advances the position of the Carousel to the next state.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          */
+        protected _goToNext(inputChanged: boolean): plat.async.IThenable<boolean>;
+        /**
+          * Changes the position of the Carousel to the previous state.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          */
+        protected _goToPrevious(inputChanged: boolean): plat.async.IThenable<boolean>;
+        /**
           * Changes the position of the Carousel to the state
           * specified by the input index.
           * @param {number} index The new index of the Carousel.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
           */
-        protected _goToIndex(index: number): plat.async.IThenable<boolean>;
+        protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.IThenable<boolean>;
+        /**
+          * Changes the position of the Carousel to the state
+          * specified by the input index.
+          * @param {number} index The new index of the Carousel.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          */
+        protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.IThenable<boolean>;
         /**
           * Handles swapping and translating nodes for a "next" operation.
           * @param {number} index The new index at the time of the animation.
@@ -2463,6 +2482,11 @@ declare module platui {
           * Cancels the current animation.
           */
         protected _cancelCurrentAnimations(): plat.async.IThenable<any>;
+        /**
+          * Forces a repaint / reflow.
+          * @param {HTMLElement} element The element to force the repaint / reflow on.
+          */
+        protected _forceRepaint(element: HTMLElement): void;
     }
     /**
       * The available options for the Carousel control.

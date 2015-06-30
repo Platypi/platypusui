@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.15 (https://platypi.io) 
+ * PlatypusUI v0.4.16 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -4308,6 +4308,10 @@ h6 {
 .plat-toggle.toggle-secondary .plat-toggle-container.plat-slide {
   background-color: #a283a5;
   border-color: #97749a;
+}
+.plat-toggle.toggle-success .plat-toggle-container.plat-slide {
+  background-color: #8fcbb5;
+  border-color: #7ec3a9;
 }
 .plat-toggle.toggle-danger .plat-toggle-container.plat-slide {
   background-color: #ef716f;

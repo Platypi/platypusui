@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.15 (https://platypi.io) 
+ * PlatypusUI v0.4.16 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1167,7 +1167,13 @@
 
 #platui {
     #Carousel {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @padding: 5px;
+        }
+
+        #platui > #Carousel > #dependencies;
+
     /// =========== Carousel Colors =========== ///
 
         @background-color: @transparent;
@@ -1179,7 +1185,6 @@
     /// ============ Carousel Size ============ ///
 
         @border-size: 1px;
-        @padding: 5px;
         @padding-left: @padding;
         @padding-right: @padding;
         @padding-top: @padding;
@@ -1211,7 +1216,13 @@
 
 #platui {
     #Drawer {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @length-default: 80%;
+        }
+
+        #platui > #Drawer > #dependencies;
+
     /// =========== Drawer Colors =========== ///
 
         @color: @white;
@@ -1220,7 +1231,6 @@
 
     /// =========== Drawer Lengths =========== ///
 
-        @length-default: 80%;
         @length-left: @length-default;
         @length-right: @length-default;
         @length-top: @length-default;
@@ -1228,7 +1238,7 @@
         @shadow-offset: 2px;
         @shadow-blur: 10px;
         @shadow-spread: 0px;
-        
+
     /// =========== Drawer Transition =========== ///
 
         @transition-time: 300ms;
@@ -1254,21 +1264,26 @@
 
 #platui {
     #Input {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @border-color: @neutral-color;
+            @primary-border-bottom-width: 2px;
+            @secondary-border-width: 2px;
+        }
+
+        #platui > #Input > #dependencies;
+
     /// ============== Input Colors =============== ///
 
         @text-color: @text-grey;
-        @border-color: @neutral-color;
         @action-color: @border-color;
         @placeholder-color: @neutral-color;
 
     /// =============== Input Sizes =============== ///
-    
+
         @default-height: 2.5em;
         @default-width: 18em;
-        @primary-border-bottom-width: 2px;
         @primary-border-bottom: @primary-border-bottom-width solid @border-color;
-        @secondary-border-width: 2px;
         @secondary-border: @secondary-border-width solid @border-color;
         @secondary-border-radius: 4px;
     }
@@ -1276,31 +1291,35 @@
 
 #platui {
     #Listview {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @enter-animation-name: LISTVIEW_ITEM_ENTER;
+            @enter-animation-duration: 300ms;
+            @leave-animation-name: LISTVIEW_ITEM_LEAVE;
+            @leave-animation-duration: 300ms;
+        }
+
+        #platui > #Listview > #dependencies;
 
     /// =========== Listview Colors =========== ///
 
         @manipulated-viewport-background-color: @white;
 
     /// =========== Listview Properties =========== ///
-    
+
         @horizontal-scroll-padding: 15px;
 
     /// =========== Listview Animations =========== ///
 
         @refresh-transition-time: 200ms;
-        
-        @enter-animation-name: LISTVIEW_ITEM_ENTER;
-        @enter-animation-duration: 300ms;
-        @enter-animation: @enter-animation-name @enter-animation-duration;
+
         @enter-init: {
-          opacity: 0;  
+          opacity: 0;
         };
-        
-        @leave-animation-name: LISTVIEW_ITEM_LEAVE;
-        @leave-animation-duration: 300ms;
+
+        @enter-animation: @enter-animation-name @enter-animation-duration;
         @leave-animation: @leave-animation-name @leave-animation-duration;
-        
+
     /// =========== Listview Animation Mixins =========== ///
 
         .enter(@name) {
@@ -1331,7 +1350,14 @@
 
 #platui {
     #Modal {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+	       @prompt-body-color: @pale-grey;
+           @transition-time: 500ms;
+        }
+
+        #platui > #Modal > #dependencies;
+
     /// =========== Modal Colors =========== ///
 
         @color: @default-font-color;
@@ -1343,7 +1369,7 @@
             @height: 50%;
             @y-offset: 0%;
         }
-    
+
         #custom-width {
             @width: 50%;
             @x-offset: 0%;
@@ -1355,19 +1381,18 @@
             @x-offset: 0%;
             @y-offset: 0%;
         }
-        
+
     /// =========== Modal Transitions =========== ///
 
-        @left-transition: right 500ms;
-        @right-transition: left 500ms;
-        @up-transition: bottom 500ms;
-        @down-transition: top 500ms;
+        @left-transition: right @transition-time;
+        @right-transition: left @transition-time;
+        @up-transition: bottom @transition-time;
+        @down-transition: top @transition-time;
         @fade-transition: opacity 300ms;
 
     /// =========== Modal Prompt =========== ///
 
 	    @prompt-top: 20%;
-	    @prompt-body-color: @pale-grey;
 	    @prompt-accent-color: darken(@prompt-body-color, 4%);
 	    @prompt-border-radius: 8px;
     }
@@ -1403,14 +1428,14 @@
 }
 
 #platui {
-    #platui > #variables;
-
     #ProgressBar {
+        #platui > #variables;
+        
     /// =========== Progress Bar Colors =========== ///
 
         @border-color: @neutral-color;
         @fill-color: @primary-color;
-        
+
     /// =========== Progress Bar Properties =========== ///
 
         @height: 8px;
@@ -1423,15 +1448,20 @@
 }
 
 #platui {
-    #platui > #variables;
-
     #ProgressRing {
+        #dependencies {
+            #platui > #variables;
+            @color: @primary-color;
+            @animation-name: PLAT-SPIN;
+        }
+
+        #platui > #ProgressRing > #dependencies;
+
     /// =========== Progress Ring Colors =========== ///
 
-        @ring-color: @primary-color;
-        @fill-color: fade(@ring-color, 75%);
-        @unfilled-color: fade(@ring-color, 10%);
-        
+        @fill-color: fade(@color, 75%);
+        @unfilled-color: fade(@color, 10%);
+
     /// =========== Progress Ring Sizes =========== ///
 
         @diameter: 3em;
@@ -1439,9 +1469,8 @@
 
     /// =========== Progress Ring Animation =========== ///
 
-        @animation-name: PLAT-SPIN;
         @spin-frequency: 600ms;
-        
+
     /// =========== Progress Ring Animation Mixins =========== ///
 
         .spin() {
@@ -1461,15 +1490,20 @@
 
 #platui {
     #Radio {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @checked-border-color: @primary-color;
+        }
+
+        #platui > #Radio > #dependencies;
+
     /// =========== Radio Colors =========== ///
 
         @background-color: @transparent;
         @border-color: @grey;
-        @checked-border-color: @primary-color;
         @mark-color: @checked-border-color;
         @mark-padding-color: @transparent;
-        
+
     /// =========== Radio Size =========== ///
 
         @diameter: 1em;
@@ -1480,6 +1514,12 @@
 
 #platui {
     #Range {
+        #dependencies {
+            @transition-time: 300ms;
+        }
+
+        #platui > #Range > #dependencies;
+
     /// ================= Range Size ================== ///
 
         @thickness: 0.5em;
@@ -1491,24 +1531,29 @@
         @knob-border-size: 1px;
 
     /// =============== Range Transitions =============== ///
-    
-        @horizontal-transition: width 300ms;
-        @vertical-transition: height 300ms;
+
+        @horizontal-transition: width @transition-time;
+        @vertical-transition: height @transition-time;
     }
 }
 
 #platui {
     #Select {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @border-color: @neutral-color-light;
+            @border-width: 1px;
+        }
+
+        #platui > #Select > #dependencies;
+
     /// =========== Select Colors =========== ///
 
         @background-color: @transparent;
         @color: @default-font-color;
-        @border-color: @neutral-color-light;
 
     /// =========== Select Sizes =========== ///
 
-        @border-width: 1px;
         @border-radius: 2px;
 
     /// =========== Select Properties =========== ///
@@ -1519,49 +1564,62 @@
 
 #platui {
     #Slider {
-    /// ================= Slider Size ================== ///    
+        #dependencies {
+            @transition-time: 300ms;
+        }
+
+        #platui > #Slider > #dependencies;
+        
+    /// ================= Slider Size ================== ///
 
         @thickness: 0.5em;
         @fill-border-radius: 4px;
 
-    /// ================= Slider Knob Properties ================== ///    
-    
+    /// ================= Slider Knob Properties ================== ///
+
         @knob-diameter: 1.6em;
         @knob-border-size: 1px;
 
-    /// ============== Slider Transitions =============== ///    
+    /// ============== Slider Transitions =============== ///
 
-        @horizontal-transition: width 300ms;
-        @vertical-transition: height 300ms;
+        @horizontal-transition: width @transition-time;
+        @vertical-transition: height @transition-time;
     }
 }
 
 #platui {
     #Toggle {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @color-off: @neutral-color-light;
+            @color-on: @success-color;
+            @transition-time: 250ms;
+        }
+
+        #platui > #Toggle > #dependencies;
+
     /// =========== Toggle Colors =========== ///
 
-        @border-color: darken(@neutral-color-light, 3%);
-        @background-color-off: @neutral-color-light;
-        @background-color-on: @success-color;
-        @border-color-on: darken(@background-color-on, 5%);
-        @toggle-thin-color: lighten(@pale-grey, 10%);
+        @background-color-off: @color-off;
+        @border-color-off: darken(@color-off, 3%);
+        @background-color-on: @color-on;
+        @border-color-on: darken(@color-on, 5%);
+        @toggle-thin-color-off: @neutral-color-dark;
 
     /// ============ Toggle Size ============ ///
-    
+
         @width: 3.25em;
         @ratio: 1/2;
         @toggle-thin-ratio: 1/4;
 
     /// ========== Toggle Knob Properties ========== ///
 
-        @knob-diameter: @width * @ratio;
         @knob-border-color: darken(@pale-grey, 5%);
         @knob-border-size: 1px;
+        @toggle-thin-knob-color: lighten(@pale-grey, 10%);
 
     /// ============= Toggle Transition ============= ///
 
-        @transition-time: 250ms;
         @transition: ~'background-color @{transition-time}, border-color @{transition-time}';
         @knob-transition: left @transition-time;
     }
@@ -5000,7 +5058,7 @@
         #platui > #Toggle;
         @height: @width * @ratio;
         @toggle-thin-height: @width * @toggle-thin-ratio;
-        @knob-radius: @knob-diameter / 2;
+        @knob-radius: @height / 2;
         @half-thin-height: @toggle-thin-height / 2;
     }
 }
@@ -5022,7 +5080,7 @@
         overflow: hidden;
         background-color: @background-color-off;
         border: 1px solid;
-        border-color: @border-color;
+        border-color: @border-color-off;
         .border-radius(@height);
         .box-sizing(content-box);
         .translateZ(0);
@@ -5032,10 +5090,10 @@
             position: absolute;
             top: 0;
             left: 0;
-            height: @knob-diameter;
-            width: @knob-diameter;
+            height: @height;
+            width: @height;
             background-color: @white;
-            .border-radius(@knob-diameter);
+            .border-radius(@height);
             .box-shadow(inset -1px 0px 3px 0px @pale-grey);
             .box-sizing(border-box);
             .translateZ(0);
@@ -5047,7 +5105,7 @@
             background-color: @background-color-on;
 
             .plat-knob {
-                left: @width - @knob-diameter;
+                left: @width - @height;
                 .box-shadow(inset 1px -2px 3px 0px @pale-grey);
             }
         }
@@ -5071,13 +5129,13 @@
         .plat-toggle-container {
             height: @toggle-thin-height;
             overflow: visible;
-            background-color: @neutral-color-dark;
+            background-color: @toggle-thin-color-off;
             border: none;
 
             .plat-knob {
                 top: @half-thin-height - @knob-radius;
-                background-color: @toggle-thin-color;
-                border: 1px solid darken(@toggle-thin-color, 10%);
+                background-color: @toggle-thin-knob-color;
+                border: 1px solid darken(@toggle-thin-knob-color, 10%);
                 .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
             }
 
@@ -5104,6 +5162,13 @@
         .plat-toggle-container.plat-slide {
             background-color: @secondary-color;
             border-color: darken(@secondary-color, 5%);
+        }
+    }
+
+    &.toggle-success {
+        .plat-toggle-container.plat-slide {
+            background-color: @success-color;
+            border-color: darken(@success-color, 5%);
         }
     }
 
