@@ -2,7 +2,13 @@
 
 #platui {
     #Drawer {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @length-default: 80%;
+        }
+
+        #platui > #Drawer > #dependencies;
+
     /// =========== Drawer Colors =========== ///
 
         @color: @white;
@@ -11,7 +17,6 @@
 
     /// =========== Drawer Lengths =========== ///
 
-        @length-default: 80%;
         @length-left: @length-default;
         @length-right: @length-default;
         @length-top: @length-default;
@@ -19,7 +24,7 @@
         @shadow-offset: 2px;
         @shadow-blur: 10px;
         @shadow-spread: 0px;
-        
+
     /// =========== Drawer Transition =========== ///
 
         @transition-time: 300ms;

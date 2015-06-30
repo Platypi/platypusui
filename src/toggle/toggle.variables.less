@@ -4,19 +4,13 @@
     #Toggle {
         #dependencies {
             #platui > #variables;
-        
-        /// =========== Toggle Colors =========== ///
-
             @color-off: @neutral-color-light;
             @color-on: @success-color;
-            
-        /// ============= Toggle Transition ============= ///
-        
             @transition-time: 250ms;
         }
-        
+
         #platui > #Toggle > #dependencies;
-        
+
     /// =========== Toggle Colors =========== ///
 
         @background-color-off: @color-off;
@@ -24,9 +18,9 @@
         @background-color-on: @color-on;
         @border-color-on: darken(@color-on, 5%);
         @toggle-thin-color-off: @neutral-color-dark;
-    
+
     /// ============ Toggle Size ============ ///
-    
+
         @width: 3.25em;
         @ratio: 1/2;
         @toggle-thin-ratio: 1/4;

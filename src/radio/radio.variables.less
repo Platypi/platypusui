@@ -2,15 +2,20 @@
 
 #platui {
     #Radio {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @checked-border-color: @primary-color;
+        }
+
+        #platui > #Radio > #dependencies;
+
     /// =========== Radio Colors =========== ///
 
         @background-color: @transparent;
         @border-color: @grey;
-        @checked-border-color: @primary-color;
         @mark-color: @checked-border-color;
         @mark-padding-color: @transparent;
-        
+
     /// =========== Radio Size =========== ///
 
         @diameter: 1em;

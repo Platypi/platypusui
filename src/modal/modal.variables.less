@@ -2,7 +2,14 @@
 
 #platui {
     #Modal {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+	       @prompt-body-color: @pale-grey;
+           @transition-time: 500ms;
+        }
+
+        #platui > #Modal > #dependencies;
+
     /// =========== Modal Colors =========== ///
 
         @color: @default-font-color;
@@ -14,7 +21,7 @@
             @height: 50%;
             @y-offset: 0%;
         }
-    
+
         #custom-width {
             @width: 50%;
             @x-offset: 0%;
@@ -26,19 +33,18 @@
             @x-offset: 0%;
             @y-offset: 0%;
         }
-        
+
     /// =========== Modal Transitions =========== ///
 
-        @left-transition: right 500ms;
-        @right-transition: left 500ms;
-        @up-transition: bottom 500ms;
-        @down-transition: top 500ms;
+        @left-transition: right @transition-time;
+        @right-transition: left @transition-time;
+        @up-transition: bottom @transition-time;
+        @down-transition: top @transition-time;
         @fade-transition: opacity 300ms;
 
     /// =========== Modal Prompt =========== ///
 
 	    @prompt-top: 20%;
-	    @prompt-body-color: @pale-grey;
 	    @prompt-accent-color: darken(@prompt-body-color, 4%);
 	    @prompt-border-radius: 8px;
     }
