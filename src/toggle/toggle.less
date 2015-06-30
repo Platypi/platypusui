@@ -10,7 +10,7 @@
         #platui > #Toggle;
         @height: @width * @ratio;
         @toggle-thin-height: @width * @toggle-thin-ratio;
-        @knob-radius: @knob-diameter / 2;
+        @knob-radius: @height / 2;
         @half-thin-height: @toggle-thin-height / 2;
     }
 }
@@ -32,7 +32,7 @@
         overflow: hidden;
         background-color: @background-color-off;
         border: 1px solid;
-        border-color: @border-color;
+        border-color: @border-color-off;
         .border-radius(@height);
         .box-sizing(content-box);
         .translateZ(0);
@@ -42,10 +42,10 @@
             position: absolute;
             top: 0;
             left: 0;
-            height: @knob-diameter;
-            width: @knob-diameter;
+            height: @height;
+            width: @height;
             background-color: @white;
-            .border-radius(@knob-diameter);
+            .border-radius(@height);
             .box-shadow(inset -1px 0px 3px 0px @pale-grey);
             .box-sizing(border-box);
             .translateZ(0);
@@ -57,7 +57,7 @@
             background-color: @background-color-on;
 
             .plat-knob {
-                left: @width - @knob-diameter;
+                left: @width - @height;
                 .box-shadow(inset 1px -2px 3px 0px @pale-grey);
             }
         }
@@ -81,13 +81,13 @@
         .plat-toggle-container {
             height: @toggle-thin-height;
             overflow: visible;
-            background-color: @neutral-color-dark;
+            background-color: @toggle-thin-color-off;
             border: none;
 
             .plat-knob {
                 top: @half-thin-height - @knob-radius;
-                background-color: @toggle-thin-color;
-                border: 1px solid darken(@toggle-thin-color, 10%);
+                background-color: @toggle-thin-knob-color;
+                border: 1px solid darken(@toggle-thin-knob-color, 10%);
                 .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
             }
 
@@ -114,6 +114,13 @@
         .plat-toggle-container.plat-slide {
             background-color: @secondary-color;
             border-color: darken(@secondary-color, 5%);
+        }
+    }
+
+    &.toggle-success {
+        .plat-toggle-container.plat-slide {
+            background-color: @success-color;
+            border-color: darken(@success-color, 5%);
         }
     }
 

@@ -562,6 +562,19 @@ module platui {
          * when the goToIndex function is called and is not direct.
          */
         protected _goToIntervalConstant: number = 125;
+        
+        /**
+         * @name _android44orBelow
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         * 
+         * @type {boolean}
+         * 
+         * @description
+         * Whether or not we're on Android 4.4.x or below.
+         */
+        protected _android44orBelow: boolean = !this.utils.isUndefined(this._compat.ANDROID) && Math.floor(this._compat.ANDROID / 10) <= 44;
 
         /**
          * @name setClasses
@@ -718,50 +731,7 @@ module platui {
          * reached and the animation is complete. The promise resolves with true if successful.
          */
         goToNext(): plat.async.IThenable<boolean> {
-            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
-                var index = this._index,
-                    reset = false;
-
-                if ((index >= this._itemNodes.length - 1) && !(reset = this._isInfinite)) {
-                    if (this._isAuto && !this._isPaused) {
-                        this.pause();
-                        this._selfPause = true;
-                    }
-
-                    return this._Promise.resolve(false);
-                }
-
-                var length = this._getLength();
-                if (!length) {
-                    return this.goToIndex(this._nextIndex, true);
-                }
-
-                return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
-                    if (!this._outerEnd) {
-                        this._initializeOuterNodes();
-                    }
-
-                    var animationOptions: plat.IObject<string> = {};
-                    animationOptions[this._transform] = this._calculateStaticTranslation(-length);
-
-                    var animation = this._initiateAnimation({ properties: animationOptions }),
-                        nextIndex: number;
-
-                    if (reset) {
-                        this._index = nextIndex = 0;
-                    } else {
-                        nextIndex = ++this._index;
-                    }
-
-                    this.inputChanged(this._index, index);
-
-                    return animation.then((): boolean => {
-                        this._handleNext(nextIndex, length);
-                        this._checkArrows();
-                        return true;
-                    });
-                });
-            });
+            return this._goToNext(false);
         }
 
         /**
@@ -777,47 +747,7 @@ module platui {
          * reached and the animation is complete. The promise resolves with true if successful.
          */
         goToPrevious(): plat.async.IThenable<boolean> {
-            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
-                var index = this._index,
-                    reset = false;
-
-                if (index <= 0 && !(reset = this._isInfinite)) {
-                    return this._Promise.resolve(false);
-                } else if (this._selfPause) {
-                    this.resume();
-                }
-
-                var length = this._getLength();
-                if (!length) {
-                    return this.goToIndex(this._previousIndex, true);
-                }
-
-                return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
-                    if (!this._outerStart) {
-                        this._initializeOuterNodes();
-                    }
-
-                    var animationOptions: plat.IObject<string> = {};
-                    animationOptions[this._transform] = this._calculateStaticTranslation(length);
-
-                    var animation = this._initiateAnimation({ properties: animationOptions }),
-                        previousIndex: number;
-
-                    if (reset) {
-                        this._index = previousIndex = this._itemNodes.length - 1;
-                    } else {
-                        previousIndex = --this._index;
-                    }
-
-                    this.inputChanged(this._index, index);
-
-                    return animation.then((): boolean => {
-                        this._handlePrevious(previousIndex, -length);
-                        this._checkArrows();
-                        return true;
-                    });
-                });
-            });
+            return this._goToPrevious(false);
         }
 
         /**
@@ -837,50 +767,7 @@ module platui {
          * reached and the animation is complete. The promise resolves with true if successful.
          */
         goToIndex(index: number, direct?: boolean): plat.async.IThenable<boolean> {
-            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
-                var oldIndex = this._index;
-                if (this.utils.isUndefined(oldIndex)) {
-                    this._initializeIndex(0);
-                    this.inputChanged(this._index, index);
-
-                    if (!this._isInfinite) {
-                        if (index < this.context.length - 1) {
-                            if (this._selfPause) {
-                                this.resume();
-                            }
-                        } else if (this._isAuto && !this._isPaused) {
-                            this.pause();
-                            this._selfPause = true;
-                        }
-                    }
-
-                    return this._Promise.resolve(true);
-                } else if (index === oldIndex) {
-                    return this._Promise.resolve(false);
-                } else if (direct === true) {
-                    this._initializeIndex(index);
-                    this.inputChanged(this._index, index);
-
-                    if (!this._isInfinite) {
-                        if (index < this.context.length - 1) {
-                            if (this._selfPause) {
-                                this.resume();
-                            }
-                        } else if (this._isAuto && !this._isPaused) {
-                            this.pause();
-                            this._selfPause = true;
-                        }
-                    }
-
-                    return this._Promise.resolve(true);
-                } else if (index - oldIndex > 0 && index === this._nextIndex) {
-                    return this.goToNext();
-                } else if (index === this._previousIndex) {
-                    return this.goToPrevious();
-                }
-
-                return this._goToIndex(index);
-            });
+            return this._goToIndex(index, false, direct);
         }
 
         /**
@@ -1062,7 +949,7 @@ module platui {
                 return;
             }
 
-            this.goToIndex(index, firstTime === true);
+            this._goToIndex(index, true, firstTime === true);
         }
 
         /**
@@ -1150,7 +1037,130 @@ module platui {
                 this._nextIndex = index + 1;
             }
         }
+        
+        /**
+         * @name _goToNext
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Advances the position of the {@link platui.Carousel|Carousel} to the next state.
+         * 
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * 
+         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the next index has been reached. 
+         * Resolves with true if successful.
+         */
+        protected _goToNext(inputChanged: boolean): plat.async.IThenable<boolean> {
+            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
+                var index = this._index,
+                    reset = false;
 
+                if ((index >= this._itemNodes.length - 1) && !(reset = this._isInfinite)) {
+                    if (this._isAuto && !this._isPaused) {
+                        this.pause();
+                        this._selfPause = true;
+                    }
+
+                    return this._Promise.resolve(false);
+                }
+
+                var length = this._getLength();
+                if (!length) {
+                    return this.goToIndex(this._nextIndex, true);
+                }
+
+                return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+                    if (!this._outerEnd) {
+                        this._initializeOuterNodes();
+                    }
+
+                    var animationOptions: plat.IObject<string> = {};
+                    animationOptions[this._transform] = this._calculateStaticTranslation(-length);
+
+                    var animation = this._initiateAnimation({ properties: animationOptions }),
+                        nextIndex: number;
+
+                    if (reset) {
+                        this._index = nextIndex = 0;
+                    } else {
+                        nextIndex = ++this._index;
+                    }
+                    
+                    if (!inputChanged) {
+                        this.inputChanged(this._index, index);
+                    }
+
+                    return animation.then((): boolean => {
+                        this._handleNext(nextIndex, length);
+                        this._checkArrows();
+                        return true;
+                    });
+                });
+            });
+        }
+
+        /**
+         * @name _goToPrevious
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Changes the position of the {@link platui.Carousel|Carousel} to the previous state.
+         * 
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * 
+         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the previous index has been 
+         * reached and the animation is complete. The promise resolves with true if successful.
+         */
+        protected _goToPrevious(inputChanged: boolean): plat.async.IThenable<boolean> {
+            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
+                var index = this._index,
+                    reset = false;
+
+                if (index <= 0 && !(reset = this._isInfinite)) {
+                    return this._Promise.resolve(false);
+                } else if (this._selfPause) {
+                    this.resume();
+                }
+
+                var length = this._getLength();
+                if (!length) {
+                    return this.goToIndex(this._previousIndex, true);
+                }
+
+                return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+                    if (!this._outerStart) {
+                        this._initializeOuterNodes();
+                    }
+
+                    var animationOptions: plat.IObject<string> = {};
+                    animationOptions[this._transform] = this._calculateStaticTranslation(length);
+
+                    var animation = this._initiateAnimation({ properties: animationOptions }),
+                        previousIndex: number;
+
+                    if (reset) {
+                        this._index = previousIndex = this._itemNodes.length - 1;
+                    } else {
+                        previousIndex = --this._index;
+                    }
+                    
+                    if (!inputChanged) {
+                        this.inputChanged(this._index, index);
+                    }
+
+                    return animation.then((): boolean => {
+                        this._handlePrevious(previousIndex, -length);
+                        this._checkArrows();
+                        return true;
+                    });
+                });
+            });
+        }
+        
         /**
          * @name _goToIndex
          * @memberof platui.Carousel
@@ -1162,11 +1172,76 @@ module platui {
          * specified by the input index.
          * 
          * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
+         * 
+         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the index has been 
+         * reached and the animation is complete. The promise resolves with true if successful.
+         */
+        protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.IThenable<boolean> {
+            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
+                var oldIndex = this._index;
+                if (this.utils.isUndefined(oldIndex)) {
+                    this._initializeIndex(0);
+                    this.inputChanged(this._index, index);
+
+                    if (!this._isInfinite) {
+                        if (index < this.context.length - 1) {
+                            if (this._selfPause) {
+                                this.resume();
+                            }
+                        } else if (this._isAuto && !this._isPaused) {
+                            this.pause();
+                            this._selfPause = true;
+                        }
+                    }
+
+                    return this._Promise.resolve(true);
+                } else if (index === oldIndex) {
+                    return this._Promise.resolve(false);
+                } else if (direct === true) {
+                    this._initializeIndex(index);
+                    this.inputChanged(this._index, index);
+
+                    if (!this._isInfinite) {
+                        if (index < this.context.length - 1) {
+                            if (this._selfPause) {
+                                this.resume();
+                            }
+                        } else if (this._isAuto && !this._isPaused) {
+                            this.pause();
+                            this._selfPause = true;
+                        }
+                    }
+
+                    return this._Promise.resolve(true);
+                } else if (index - oldIndex > 0 && index === this._nextIndex) {
+                    return this._goToNext(inputChanged);
+                } else if (index === this._previousIndex) {
+                    return this._goToPrevious(inputChanged);
+                }
+
+                return this._handleGoToIndex(index, inputChanged);
+            });
+        }
+
+        /**
+         * @name _handleGoToIndex
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Changes the position of the {@link platui.Carousel|Carousel} to the state 
+         * specified by the input index.
+         * 
+         * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          * 
          * @returns {plat.async.IThenable<boolean>} A promise that resolves when the index has been reached. 
          * Resolves with true if successful.
          */
-        protected _goToIndex(index: number): plat.async.IThenable<boolean> {
+        protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.IThenable<boolean> {
             var oldIndex = this._index;
 
             if (index === oldIndex || index < 0 || index >= this.context.length) {
@@ -1182,31 +1257,31 @@ module platui {
 
             var _Promise = this._Promise,
                 defer = this.utils.defer,
-                move: () => plat.async.IThenable<boolean>,
+                move: (inputChanged: boolean) => plat.async.IThenable<boolean>,
                 diff: number,
                 reverseDiff: number;
 
             if (index > oldIndex) {
-                move = this.goToNext;
+                move = this._goToNext;
                 diff = index - oldIndex;
 
                 if (this._isInfinite) {
                     reverseDiff = this._itemNodes.length - index + oldIndex;
 
                     if (reverseDiff < diff) {
-                        move = this.goToPrevious;
+                        move = this._goToPrevious;
                         diff = reverseDiff;
                     }
                 }
             } else {
-                move = this.goToPrevious;
+                move = this._goToPrevious;
                 diff = oldIndex - index;
 
                 if (this._isInfinite) {
                     reverseDiff = this._itemNodes.length - oldIndex + index;
 
                     if (reverseDiff < diff) {
-                        move = this.goToNext;
+                        move = this._goToNext;
                         diff = reverseDiff;
                     }
                 }
@@ -1224,7 +1299,7 @@ module platui {
                             removeListeners.splice(removeIndex, 1);
                         }
 
-                        resolve(move());
+                        resolve(move(inputChanged));
                     }, interval += Math.round(constant / diff));
                     removeListeners.push(remove);
                 };
@@ -1233,7 +1308,7 @@ module platui {
                 promises.push(new _Promise<any>(mover));
             }
 
-            promises.push(move());
+            promises.push(move(inputChanged));
             return _Promise.all(promises).then((results): boolean => {
                 var result = false;
                 while (results.length > 0) {
@@ -1277,8 +1352,7 @@ module platui {
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
                     container.style[<any>this._transform] = this._calculateStaticTranslation(length);
-                    // access property to force a repaint
-                    container.offsetWidth;
+                    this._forceRepaint(container);
                 }
             } else {
                 this._outerStart = true;
@@ -1335,8 +1409,7 @@ module platui {
 
             container.insertBefore(itemNodes[this._previousIndex], container.firstChild);
             container.style[<any>this._transform] = this._calculateStaticTranslation(length);
-            // access property to force a repaint
-            container.offsetWidth;
+            this._forceRepaint(container);
         }
 
         /**
@@ -1373,9 +1446,8 @@ module platui {
                         index = this._index;
                         
                     if (next < 0 || next === index) {
-                        insertBefore(itemNodes[this._index], childNodes.splice(-3, 3));
-                        var i = index === 0 ? this._previousIndex + 1 : index - 1;
-                        insertBefore(itemNodes[i], childNodes);
+                        insertBefore(itemNodes[index], childNodes.splice(-3, 3));
+                        insertBefore(itemNodes[index === 0 ? this._previousIndex + 1 : index - 1], childNodes);
                         break;
                     }
                     
@@ -1422,8 +1494,7 @@ module platui {
             var container = this._container;
             container.insertBefore(this._itemNodes[index], null);
             container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
-            // access property to force a repaint
-            container.offsetWidth;
+            this._forceRepaint(container);
 
             this._initializeOuterNodes();
             this._checkArrows();
@@ -1474,8 +1545,7 @@ module platui {
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
                             container.style[<any>this._transform] = this._calculateStaticTranslation(-length);
-                            // access property to force a repaint
-                            container.offsetWidth;
+                            this._forceRepaint(container);
                             this._outerStart = true;
                         }
                     }
@@ -1639,8 +1709,7 @@ module platui {
                 var preClone = this._preClonedNode = <HTMLElement>container.lastElementChild.cloneNode(true);
                 container.insertBefore(preClone, container.firstChild);
                 container.style[<any>this._transform] = this._calculateStaticTranslation(length);
-                // access property to force a repaint
-                container.offsetWidth;
+                this._forceRepaint(container);
                 this._outerStart = true;
             }
         }
@@ -2273,6 +2342,33 @@ module platui {
             }
 
             return this._animationThenable.cancel();
+        }
+        
+        /**
+         * @name _forceRepaint
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         * 
+         * @description
+         * Forces a repaint / reflow.
+         * 
+         * @param {HTMLElement} element The element to force the repaint / reflow on.
+         * 
+         * @returns {void}
+         */
+        protected _forceRepaint(element: HTMLElement): void {
+            if (!this._android44orBelow) {
+                element.offsetWidth;
+                return;
+            }
+            
+            var style = element.style,
+                display = style.display;
+                
+            style.display = display === 'none' ? '' : 'none';
+            element.offsetWidth;
+            style.display = display;
         }
     }
 
