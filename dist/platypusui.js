@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.16 (https://platypi.io)
+ * PlatypusUI v0.4.17 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1049,14 +1049,16 @@ var platui;
                     return;
                 }
                 _this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + _this._directionalTransitionPrep);
-                if (_utils.isObject(storedStyle)) {
-                    var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
-                    rootElementStyle.position = storedStyle.position;
-                    rootElementStyle.zIndex = storedStyle.zIndex;
-                    if (_utils.isObject(overflow) && _utils.isNode(parent)) {
-                        parent.style[overflow.key] = overflow.value;
-                    }
+                if (!_utils.isObject(storedStyle)) {
+                    return;
                 }
+                var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
+                rootElementStyle.position = storedStyle.position;
+                rootElementStyle.zIndex = storedStyle.zIndex;
+                if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+                    parent.style[overflow.key] = overflow.value;
+                }
+                delete drawer.storedProperties;
             }, 25);
             this._drawerElement.setAttribute(__Hide, '');
             this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
