@@ -5,9 +5,9 @@ module platui {
      * @name DrawerController
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {plat.ui.BindControl}
-     * 
+     *
      * @description
      * An {@link plat.ui.BindControl|BindControl} that manipulates and controls a global drawer.
      */
@@ -25,9 +25,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.observable.IObservableProperty<platui.IDrawerOptions>}
-         * 
+         *
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
@@ -38,9 +38,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.Compat}
-         * 
+         *
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
@@ -51,9 +51,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Window}
-         * 
+         *
          * @description
          * Reference to the Window injectable.
          */
@@ -64,9 +64,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Document}
-         * 
+         *
          * @description
          * Reference to the Document injectable.
          */
@@ -77,9 +77,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.animations.IAnimator}
-         * 
+         *
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
@@ -90,9 +90,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.async.IPromise}
-         * 
+         *
          * @description
          * Reference to the {@link plat.async.IPromise|IPromise} injectable.
          */
@@ -103,11 +103,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The position of the global {@link platui.Drawer|Drawer} associated 
+         * The position of the global {@link platui.Drawer|Drawer} associated
          * with this control.
          */
         protected _position: string;
@@ -117,11 +117,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
-         * The HTMLElement of the global {@link platui.Drawer|Drawer} associated 
+         * The HTMLElement of the global {@link platui.Drawer|Drawer} associated
          * with this control.
          */
         protected _drawerElement: HTMLElement;
@@ -131,11 +131,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {platui.Drawer}
-         * 
+         *
          * @description
-         * The global {@link platui.Drawer|Drawer} associated 
+         * The global {@link platui.Drawer|Drawer} associated
          * with this control.
          */
         protected _drawer: Drawer;
@@ -145,9 +145,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The current browser's CSS3 transform property.
          */
@@ -158,9 +158,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The value of the inline transform property prior to the Drawer manipulating it.
          */
@@ -171,9 +171,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.IPoint}
-         * 
+         *
          * @description
          * The last touch start recorded.
          */
@@ -184,9 +184,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the user has swiped.
          */
@@ -197,9 +197,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the user has tapped.
          */
@@ -210,9 +210,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the {@link platui.Drawer|Drawer} is open.
          */
@@ -223,9 +223,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the {@link platui.Drawer|Drawer} is elastic.
          */
@@ -236,9 +236,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * An enum denoting the current touch state of the user.
          */
@@ -249,9 +249,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the corresponding {@link platui.Drawer|Drawer} is vertical or horizontal.
          */
@@ -262,9 +262,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not to use this control's inherited context.
          */
@@ -275,9 +275,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function for removing the tap event listener.
          */
@@ -288,9 +288,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function for removing the swipe open event listener.
          */
@@ -301,9 +301,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function for removing the primary track (open) event listener.
          */
@@ -314,9 +314,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function for removing the secondary track (close) event listener.
          */
@@ -327,9 +327,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function for removing the tap event listener on the open {@link platui.Drawer|Drawer}.
          */
@@ -340,9 +340,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function for removing the swipe event listeners on the open {@link platui.Drawer|Drawer}.
          */
@@ -353,9 +353,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function for removing the swipe event listeners on the open {@link platui.Drawer|Drawer}.
          */
@@ -366,11 +366,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
-         * A function for removing the listener for responding to other {@link platui.DrawerController|DrawerControllers} 
+         * A function for removing the listener for responding to other {@link platui.DrawerController|DrawerControllers}
          * being disposed.
          */
         protected _disposeRemover: plat.IRemoveListener = noop;
@@ -380,9 +380,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The root element to translate.
          */
@@ -393,9 +393,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * An HTMLElement to eat clicks when the {@link platui.Drawer|Drawer} is open.
          */
@@ -406,11 +406,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The type of {@link platui.Drawer|Drawer} 
+         * The type of {@link platui.Drawer|Drawer}
          * (i.e. the method by which the {@link platui.Drawer|Drawer} opens and closes).
          */
         protected _type: string;
@@ -420,9 +420,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * A URL that points to the HTML template.
          */
@@ -433,9 +433,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * A class name that is used to set styling based on the transition direction.
          */
@@ -446,11 +446,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a tap 
+         * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a tap
          * for opening and closing.
          */
         protected _isTap: boolean;
@@ -460,11 +460,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a swipe 
+         * A value specifying whether the {@link platui.Drawer|Drawer} is waiting for a swipe
          * for opening and closing.
          */
         protected _isSwipe: boolean;
@@ -474,11 +474,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * A value specifying whether the {@link platui.Drawer|Drawer} is being tracked 
+         * A value specifying whether the {@link platui.Drawer|Drawer} is being tracked
          * for opening and closing.
          */
         protected _isTrack: boolean;
@@ -488,9 +488,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function to remove the toggle delay if present.
          */
@@ -501,11 +501,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.animations.IAnimationThenable<void>}
-         * 
+         *
          * @description
-         * The most recent animation thenable. Used to cancel the current animation if another needs 
+         * The most recent animation thenable. Used to cancel the current animation if another needs
          * to begin.
          */
         protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
@@ -515,9 +515,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the this control has been paired with a corresponding {@link platui.Drawer|Drawer}.
          */
@@ -528,9 +528,9 @@ module platui {
          * @memberof platui.DrawerController
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * A bound value that may have come through prior to initialization.
          */
@@ -541,10 +541,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the class name on the element.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -556,10 +556,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Initialize the track events on the element.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
@@ -580,12 +580,12 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * Remove the transition classes off the root element and reset the position and 
-         * zIndex properties if modified and only if this is the last {@link platui.DrawerController|DrawerController}  
+         * Remove the transition classes off the root element and reset the position and
+         * zIndex properties if modified and only if this is the last {@link platui.DrawerController|DrawerController}
          * referencing this {@link platui.Drawer|Drawer}.
-         * 
+         *
          * @returns {void}
          */
         dispose(): void {
@@ -622,19 +622,23 @@ module platui {
 
                 this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
 
-                if (_utils.isObject(storedStyle)) {
-                    var rootElementStyle = rootElement.style,
-                        parent = rootElement.parentElement,
-                        overflow = storedStyle.parentOverflow;
-
-                    rootElementStyle.position = storedStyle.position;
-                    rootElementStyle.zIndex = storedStyle.zIndex;
-                    if (_utils.isObject(overflow) && _utils.isNode(parent)) {
-                        parent.style[<any>overflow.key] = overflow.value;
-                    }
+                if (!_utils.isObject(storedStyle)) {
+                    return;
                 }
+                
+                var rootElementStyle = rootElement.style,
+                    parent = rootElement.parentElement,
+                    overflow = storedStyle.parentOverflow;
+
+                rootElementStyle.position = storedStyle.position;
+                rootElementStyle.zIndex = storedStyle.zIndex;
+                if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+                    parent.style[<any>overflow.key] = overflow.value;
+                }
+
+                delete drawer.storedProperties;
             }, 25);
-            
+
             this._drawerElement.setAttribute(__Hide, '');
             this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
         }
@@ -644,11 +648,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that resolves 
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         open(): plat.async.IThenable<void> {
@@ -684,11 +688,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that resolves 
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         close(): plat.async.IThenable<void> {
@@ -724,11 +728,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that resolves 
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
         toggle(): plat.async.IThenable<void> {
@@ -744,11 +748,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that resolves 
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
          */
         reset(): plat.async.IThenable<void> {
@@ -764,10 +768,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Indicates whether the {@link platui.Drawer|Drawer} is currently open.
-         * 
+         *
          * @returns {boolean} Whether or not the {@link platui.Drawer|Drawer} is currently open.
          */
         isOpen(): boolean {
@@ -779,14 +783,14 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * Binds the added HTML template to this control's inherited context and 
+         * Binds the added HTML template to this control's inherited context and
          * places the node into the {@link platui.Drawer|Drawer}.
-         * 
+         *
          * @param {string} name The template name to bind.
          * @param {Node} node The node to add as a bindable template.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been bound and inserted.
          */
         bindTemplate(name: string, node: Node): plat.async.IThenable<void> {
@@ -807,7 +811,7 @@ module platui {
          * @kind function
          * @access public
          * @virtual
-         * 
+         *
          * @description
          * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
@@ -826,15 +830,15 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable property is set externally.
-         * 
+         *
          * @param {boolean} drawerState The new value of the control's state.
          * @param {boolean} oldValue The old value of the bindable control state.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
-         * 
+         *
          * @returns {void}
          */
         protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
@@ -882,11 +886,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that resolves 
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         protected _open(): plat.async.IThenable<void> {
@@ -942,11 +946,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that resolves 
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         protected _close(): plat.async.IThenable<void> {
@@ -988,11 +992,11 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Adds a click eater and all event listeners to the click eater when tracking 
+         * Adds a click eater and all event listeners to the click eater when tracking
          * and closing an open {@link platui.Drawer|Drawer}.
-         * 
+         *
          * @returns {void}
          */
         protected _addEventIntercepts(): void {
@@ -1034,10 +1038,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Removes the click eater and all event intercepts on the click eater when closing an open {@link platui.Drawer|Drawer}.
-         * 
+         *
          * @returns {void}
          */
         protected _removeEventIntercepts(): void {
@@ -1065,10 +1069,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds swipe events to the controller element.
-         * 
+         *
          * @returns {void}
          */
         protected _addSwipeToggle(): void {
@@ -1081,7 +1085,7 @@ module platui {
                     this._hasSwiped = true;
                     this.close();
                 }, false);
-            
+
             this._removeSwipeToggle = (): void => {
                 removeSwipeOpen();
                 removeSwipeClose();
@@ -1093,10 +1097,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds swipe close event to the root element.
-         * 
+         *
          * @returns {void}
          */
         protected _addSwipeClose(): void {
@@ -1111,10 +1115,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds tap toggle event to the controller element.
-         * 
+         *
          * @returns {void}
          */
         protected _addTapToggle(): void {
@@ -1129,10 +1133,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds tap close event to the root element.
-         * 
+         *
          * @returns {void}
          */
         protected _addTapClose(): void {
@@ -1147,10 +1151,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds primary and secondary tracking events to the {@link platui.DrawerController|DrawerController} element.
-         * 
+         *
          * @returns {void}
          */
         protected _addEventListeners(): void {
@@ -1208,10 +1212,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Removes all event listeners.
-         * 
+         *
          * @returns {void}
          */
         protected _removeEventListeners(): void {
@@ -1245,12 +1249,12 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Log when the user touches the {@link platui.DrawerController|DrawerController}.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The touch event.
-         * 
+         *
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
@@ -1270,13 +1274,13 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Indicates touch is in progress and sets the initial touch point 
+         * Indicates touch is in progress and sets the initial touch point
          * when the user touches the {@link platui.DrawerController|DrawerController}.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The touch event.
-         * 
+         *
          * @returns {void}
          */
         protected _initTouch(ev: plat.ui.IGestureEvent): void {
@@ -1299,12 +1303,12 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The $touchend and $trackend event handler.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The touch event.
-         * 
+         *
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
@@ -1345,13 +1349,13 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * The $track event handler. Used for tracking only horizontal or vertical tracking motions  
+         * The $track event handler. Used for tracking only horizontal or vertical tracking motions
          * depending on the defined position.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
-         * 
+         *
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
@@ -1369,13 +1373,13 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Checks to make sure the user has been tracking in the right direction to 
+         * Checks to make sure the user has been tracking in the right direction to
          * toggle.
-         * 
+         *
          * @param {number} distanceMoved The distance the user's pointer has moved.
-         * 
+         *
          * @returns {boolean} Whether or not the user was tracking in the right direction.
          */
         protected _isRightDirection(distanceMoved: number): boolean {
@@ -1396,12 +1400,12 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates the translation value for setting the transform value.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
-         * 
+         *
          * @returns {string} The translation value.
          */
         protected _calculateTranslation(ev: plat.ui.IGestureEvent): string {
@@ -1434,14 +1438,14 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Checks for elasticity and potentially readjusts the user's 
+         * Checks for elasticity and potentially readjusts the user's
          * distance moved.
-         * 
+         *
          * @param {number} maxOffset The maximum distance the corresponding {@link platui.Drawer|Drawer} can translate.
          * @param {number} delta The distance the user's finger moved.
-         * 
+         *
          * @returns {number} The potentially recalcuated distance moved.
          */
         protected _checkElasticity(maxOffset: number, delta: number): number {
@@ -1464,13 +1468,13 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Initializes and dispatches pub sub events.
-         * 
+         *
          * @param {string} id The ID of this {@link platui.DrawerController|DrawerController} if used.
          * @param {string} position The position of the {@link platui.Drawer|Drawer}.
-         * 
+         *
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string): void {
@@ -1484,7 +1488,7 @@ module platui {
                             isUndefined = _utils.isUndefined,
                             drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{},
                             drawerElement = this._drawerElement = drawer.element;
-                        
+
                         if (!isString(position)) {
                             if (isString(drawerArg.position)) {
                                 position = drawerArg.position;
@@ -1543,10 +1547,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Checks the pre-initialized value and handles accordingly.
-         * 
+         *
          * @returns {void}
          */
         protected _checkPreInit(): void {
@@ -1564,13 +1568,13 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Determines the proper HTML template, binds it, and inserts it if needed.
-         * 
-         * @param {Node} fragment? A Node to insert as the {@link platui.Drawer|Drawer's} HTML template 
+         *
+         * @param {Node} fragment? A Node to insert as the {@link platui.Drawer|Drawer's} HTML template
          * if no templateUrl is present on this {@link platui.DrawerController|DrawerController}.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been determined.
          */
         protected _determineTemplate(fragment?: Node): plat.async.IThenable<void> {
@@ -1592,10 +1596,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Obtains the current browser's transform property value.
-         * 
+         *
          * @returns {void}
          */
         protected _setTransform(): void {
@@ -1617,12 +1621,12 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Checks if this control has all valid properties.
-         * 
+         *
          * @param {string} position The position of the {@link platui.Drawer|Drawer}.
-         * 
+         *
          * @returns {boolean} Whether or not this control is valid.
          */
         protected _controllerIsValid(position: string): boolean {
@@ -1673,10 +1677,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Obtains the root element to translate.
-         * 
+         *
          * @returns {HTMLElement} The root element.
          */
         protected _getRootElement(): HTMLElement {
@@ -1756,10 +1760,10 @@ module platui {
          * @memberof platui.DrawerController
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the max offset to translate the corresponding {@link platui.Drawer|Drawer}.
-         * 
+         *
          * @returns {number} The max offset to translate.
          */
         protected _getOffset(): number {
@@ -1773,9 +1777,9 @@ module platui {
      * @name IDrawerControllerOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @extends {platui.IDrawerOptions}
-     * 
+     *
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.DrawerController|DrawerController} control.
      */
@@ -1785,11 +1789,11 @@ module platui {
          * @memberof platui.IDrawerOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * A boolean value stating whether to use the {@link platui.DrawerController|DrawerController's} context instead of the default 
+         * A boolean value stating whether to use the {@link platui.DrawerController|DrawerController's} context instead of the default
          * {@link platui.Drawer|Drawer's} context.
          */
         useContext?: boolean;
@@ -1799,18 +1803,18 @@ module platui {
          * @memberof platui.IDrawerControllerOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * Specifies how the {@link platui.Drawer|Drawer} should open. Multiple types can be combined by making it space delimited. 
+         * Specifies how the {@link platui.Drawer|Drawer} should open. Multiple types can be combined by making it space delimited.
          * It's default behavior is "tap track".
-         * 
+         *
          * @remarks
          * "tap": The drawer opens when the controller is tapped.
          * "track": The drawer opens when the controller is dragged.
          * "swipe": The drawer opens when the controller is swiped.
-         * default: The drawer opens either when the controller is tapped or the 
+         * default: The drawer opens either when the controller is tapped or the
          * controller is tracked.
          */
         type?: string;
@@ -1820,11 +1824,11 @@ module platui {
      * @name IDrawerControllerHandshakeEvent
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @extends {platui.IHandshakeEvent}
-     * 
+     *
      * @description
-     * An interface for the {@link platui.DrawerController|DrawerController's} event object used during the 
+     * An interface for the {@link platui.DrawerController|DrawerController's} event object used during the
      * {@link platui.Drawer|Drawer} / {@link platui.DrawerController|DrawerController} handshake.
      */
     export interface IDrawerControllerHandshakeEvent extends IHandshakeEvent {
@@ -1833,11 +1837,11 @@ module platui {
          * @memberof platui.IDrawerHandshakeEvent
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The position of the {@link platui.Drawer|Drawer}. 
+         * The position of the {@link platui.Drawer|Drawer}.
          */
         position: string;
         /**
@@ -1845,9 +1849,9 @@ module platui {
          * @memberof platui.IDrawerHandshakeEvent
          * @kind property
          * @access public
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * A boolean value stating whether to use the {@link platui.DrawerController|DrawerController's} context or not.
          */

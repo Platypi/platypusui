@@ -8,13 +8,13 @@
             <button plat-tap="addListItem">add</button>
             <button plat-tap="popListItem">pop</button>
             <div class="demo-item">
-                <plat-listview style="height: 100px;" plat-context="groupedlistview" 
+                <plat-listview style="height: 100px;" plat-context="groupedlistview"
                                plat-options="{
                                    orientation: 'horizontal',
                                    itemTemplate: 'listview-template',
                                    headerTemplate: 'listview-header',
-                                   onRefresh: 'refresh', 
-                                   loading: 'incremental', 
+                                   onRefresh: 'refresh',
+                                   loading: 'incremental',
                                    onItemsRequested: 'refresh'
                                }">
                     <listview-header>
@@ -125,7 +125,7 @@
                     <plat-checkbox plat-bind="checks.CSS">CSS</plat-checkbox>
                 </div>
                 <div class="demo-item-inline">
-                    <plat-checkbox plat-bind="checks.JavaScript">JavaScript</plat-checkbox>
+                    <plat-checkbox plat-options="{ mark: 'x' }" plat-bind="checks.JavaScript">JavaScript</plat-checkbox>
                 </div>
             </div>
             <p>Colors</p>
@@ -158,7 +158,7 @@
                     <plat-checkbox class="checkbox-square checkbox-success" checked>Carrier Pigeon</plat-checkbox>
                 </div>
                 <div class="demo-item-inline">
-                    <plat-checkbox class="checkbox-square" checked>Signal Lamp</plat-checkbox>
+                    <plat-checkbox plat-options="{ mark: 'x' }" class="checkbox-square" checked>Signal Lamp</plat-checkbox>
                 </div>
             </div>
             <p>Radios</p>
@@ -171,7 +171,7 @@
             <div class="demo-item">
                 <plat-radio plat-bind="text">Definitely interested</plat-radio>
             </div>
-            
+
             <!-- Sliders -->
             <h4>Ranges</h4>
             <p>Slider</p>
@@ -222,7 +222,7 @@
             <div class="demo-item">
                 <plat-toggle class="toggle-thin toggle-square toggle-primary"></plat-toggle>
                 <plat-toggle class="toggle-thin"></plat-toggle>
-            </div> 
+            </div>
         </div>
     </div>
 
@@ -271,7 +271,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Progress Bars -->
     <div class="demo-area">
         <h2 class="demo-heading">Progress Bars</h2>
