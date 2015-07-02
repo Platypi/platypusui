@@ -362,20 +362,6 @@ module platui {
         protected _openTrackRemover: plat.IRemoveListener;
 
         /**
-         * @name _disposeRemover
-         * @memberof platui.DrawerController
-         * @kind property
-         * @access protected
-         *
-         * @type {plat.IRemoveListener}
-         *
-         * @description
-         * A function for removing the listener for responding to other {@link platui.DrawerController|DrawerControllers}
-         * being disposed.
-         */
-        protected _disposeRemover: plat.IRemoveListener = noop;
-
-        /**
          * @name _rootElement
          * @memberof platui.DrawerController
          * @kind property
@@ -603,44 +589,26 @@ module platui {
             }
 
             var storedStyle = drawer.storedProperties,
-                rootElement = this._rootElement,
-                disposeRootElement = true;
+                rootElement = this._rootElement;
 
-            this._disposeRemover();
-            this.on(__DrawerControllerDisposingFound, (ev: plat.events.DispatchEvent, otherRoot: HTMLElement): void => {
-                if (!disposeRootElement) {
-                    return;
-                }
+            this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
 
-                disposeRootElement = rootElement !== otherRoot;
-            });
+            if (!_utils.isObject(storedStyle)) {
+                return;
+            }
 
-            _utils.defer((): void => {
-                if (!disposeRootElement) {
-                    return;
-                }
+            var rootElementStyle = rootElement.style,
+                parent = rootElement.parentElement,
+                overflow = storedStyle.parentOverflow;
 
-                this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+            rootElementStyle.position = storedStyle.position;
+            rootElementStyle.zIndex = storedStyle.zIndex;
+            if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+                parent.style[<any>overflow.key] = overflow.value;
+            }
 
-                if (!_utils.isObject(storedStyle)) {
-                    return;
-                }
-                
-                var rootElementStyle = rootElement.style,
-                    parent = rootElement.parentElement,
-                    overflow = storedStyle.parentOverflow;
-
-                rootElementStyle.position = storedStyle.position;
-                rootElementStyle.zIndex = storedStyle.zIndex;
-                if (_utils.isObject(overflow) && _utils.isNode(parent)) {
-                    parent.style[<any>overflow.key] = overflow.value;
-                }
-
-                delete drawer.storedProperties;
-            }, 25);
-
+            delete drawer.storedProperties;
             this._drawerElement.setAttribute(__Hide, '');
-            this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
         }
 
         /**
@@ -1664,10 +1632,6 @@ module platui {
             this._clickEater.className = 'plat-clickeater';
             this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
-
-            this._disposeRemover = this.on(__DrawerControllerDisposing, (): void => {
-                this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
-            });
 
             return true;
         }
