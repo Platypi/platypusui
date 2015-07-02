@@ -92,8 +92,6 @@ var __prefix = '$',
     __DrawerControllerInitEvent = '__platDrawerControllerInit',
     __DrawerControllerFetchEvent = '__platDrawerControllerFetch',
     __DrawerFoundEvent = '__platDrawerFound',
-    __DrawerControllerDisposing = '__platDrawerControllerDisposing',
-    __DrawerControllerDisposingFound = '__platDrawerControllerDisposingFound',
 
     /**
      * Misc
@@ -124,9 +122,9 @@ module platui {
      * @name IUiControl
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
-     * An interface a control should implement if they plan on using 
+     * An interface a control should implement if they plan on using
      * class based CSS to style the UI.
      */
     export interface IUiControl {
@@ -135,15 +133,15 @@ module platui {
          * @memberof platui.IUIControl
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(classNames?: any, element?: Element): void;
@@ -153,7 +151,7 @@ module platui {
      * @name IFormControl
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * An interface a control should implement if validation is necessary.
      */
@@ -163,10 +161,10 @@ module platui {
          * @memberof platui.IFormControl
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * A function to validate user input.
-         * 
+         *
          * @returns {boolean} Whether or not the user input is valid.
          */
         validate(): boolean;
@@ -176,7 +174,7 @@ module platui {
      * @name IValuePoint
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * Describes a point with x and y coordinates and an associated value.
      */
@@ -186,7 +184,7 @@ module platui {
          * @memberof platui.IValuePoint
          * @kind property
          * @access public
-         * 
+         *
          * @description
          * A value associated with the given point.
          */
