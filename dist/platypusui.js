@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.17 (https://platypi.io)
+ * PlatypusUI v0.4.18 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -47,7 +47,7 @@ var platui;
     __Transition = __Plat + 'transition', __Enter = __Plat + 'enter', __Leave = __Plat + 'leave', 
     /**
      */
-    __$tap = '$tap', __$touchstart = '$touchstart', __$touchend = '$touchend', __$touchcancel = '$touchcancel', __$swipe = '$swipe', __$track = '$track', __$trackend = '$trackend', __ButtonPrefix = '__plat-button-', __RadioPrefix = '__plat-radio-', __DrawerControllerInitEvent = '__platDrawerControllerInit', __DrawerControllerFetchEvent = '__platDrawerControllerFetch', __DrawerFoundEvent = '__platDrawerFound', __DrawerControllerDisposing = '__platDrawerControllerDisposing', __DrawerControllerDisposingFound = '__platDrawerControllerDisposingFound', 
+    __$tap = '$tap', __$touchstart = '$touchstart', __$touchend = '$touchend', __$touchcancel = '$touchcancel', __$swipe = '$swipe', __$track = '$track', __$trackend = '$trackend', __ButtonPrefix = '__plat-button-', __RadioPrefix = '__plat-radio-', __DrawerControllerInitEvent = '__platDrawerControllerInit', __DrawerControllerFetchEvent = '__platDrawerControllerFetch', __DrawerFoundEvent = '__platDrawerFound', 
     /**
      */
     __Reversed = '-reversed', __LITERAL_RESOURCE = 'literal', __transitionNegate = {
@@ -990,11 +990,6 @@ var platui;
              */
             this._isVertical = false;
             /**
-             * A function for removing the listener for responding to other DrawerControllers
-             * being disposed.
-             */
-            this._disposeRemover = noop;
-            /**
              * Whether or not the this control has been paired with a corresponding Drawer.
              */
             this._isInitialized = false;
@@ -1026,7 +1021,6 @@ var platui;
          * referencing this Drawer.
          */
         DrawerController.prototype.dispose = function () {
-            var _this = this;
             _super.prototype.dispose.call(this);
             var _utils = this.utils, drawer = this._drawer;
             if (_utils.isNull(drawer)) {
@@ -1036,32 +1030,19 @@ var platui;
             if (drawer.controllerCount() > 0) {
                 return;
             }
-            var storedStyle = drawer.storedProperties, rootElement = this._rootElement, disposeRootElement = true;
-            this._disposeRemover();
-            this.on(__DrawerControllerDisposingFound, function (ev, otherRoot) {
-                if (!disposeRootElement) {
-                    return;
-                }
-                disposeRootElement = rootElement !== otherRoot;
-            });
-            _utils.defer(function () {
-                if (!disposeRootElement) {
-                    return;
-                }
-                _this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + _this._directionalTransitionPrep);
-                if (!_utils.isObject(storedStyle)) {
-                    return;
-                }
-                var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
-                rootElementStyle.position = storedStyle.position;
-                rootElementStyle.zIndex = storedStyle.zIndex;
-                if (_utils.isObject(overflow) && _utils.isNode(parent)) {
-                    parent.style[overflow.key] = overflow.value;
-                }
-                delete drawer.storedProperties;
-            }, 25);
+            var storedStyle = drawer.storedProperties, rootElement = this._rootElement;
+            this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+            if (!_utils.isObject(storedStyle)) {
+                return;
+            }
+            var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
+            rootElementStyle.position = storedStyle.position;
+            rootElementStyle.zIndex = storedStyle.zIndex;
+            if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+                parent.style[overflow.key] = overflow.value;
+            }
+            delete drawer.storedProperties;
             this._drawerElement.setAttribute(__Hide, '');
-            this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
         };
         /**
          * Opens the Drawer.
@@ -1675,7 +1656,6 @@ var platui;
          * @param {string} position The position of the Drawer.
          */
         DrawerController.prototype._controllerIsValid = function (position) {
-            var _this = this;
             var isNull = this.utils.isNull;
             if (isNull(this._drawerElement)) {
                 this._log.debug('Could not find a corresponding control such as "' + __Drawer +
@@ -1706,9 +1686,6 @@ var platui;
             this._clickEater.className = 'plat-clickeater';
             this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
-            this._disposeRemover = this.on(__DrawerControllerDisposing, function () {
-                _this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
-            });
             return true;
         };
         /**

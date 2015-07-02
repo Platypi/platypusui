@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.4.17 (https://platypi.io)
+  * PlatypusUI v0.4.18 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -692,11 +692,6 @@ declare module platui {
           * A function for removing the swipe event listeners on the open Drawer.
           */
         protected _openTrackRemover: plat.IRemoveListener;
-        /**
-          * A function for removing the listener for responding to other DrawerControllers
-          * being disposed.
-          */
-        protected _disposeRemover: plat.IRemoveListener;
         /**
           * The root element to translate.
           */
