@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.18 (https://platypi.io) 
+ * PlatypusUI v0.4.19 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -167,7 +167,7 @@
 
             @-moz-keyframes @name {
                 .frames(@moz);
-            }               
+            }
 
             @keyframes @name {
                 .frames(@vanilla);
@@ -201,21 +201,21 @@
                 & when (@direction = in) {
                     & when (@from = left) {
                         from {
-                            padding-left: -100%;
+                            left: -100%;
                         }
                     } & when (@from = right) {
                         from {
-                            padding-left: 100%;
+                            left: 100%;
                         }
                     }
                 } & when (@direction = out) {
                     & when (@from = left) {
                         to {
-                            padding-left: -100%;
+                            left: -100%;
                         }
                     } & when (@from = right) {
                         to {
-                            padding-left: 100%;
+                            left: 100%;
                         }
                     }
                 }
@@ -228,12 +228,12 @@
                 & when (@direction = in) {
                     & when (@from-to = left) {
                         0% {
-                            padding-left: -100%;
+                            left: -100%;
                             opacity: 0;
                         }
                     } & when (@from-to = right) {
                         0% {
-                            padding-left: 100%;
+                            left: 100%;
                             opacity: 0;
                         }
                     }
@@ -263,12 +263,12 @@
                         opacity: 0.1;
                     } & when (@from-to = left) {
                         100% {
-                            padding-left: -100%;
+                            left: -100%;
                             opacity: 0;
                         }
                     } & when (@from-to = right) {
                         100% {
-                            padding-left: 100%;
+                            left: 100%;
                             opacity: 0;
                         }
                     }
@@ -1405,19 +1405,19 @@
 
         @background-color: @primary-color;
         @color: @white;
-        
+
     /// =========== Navbar Dimensions =========== ///
-    
+
         @height: 4em;
         @z-index: 100;
         @left-percentage: 100% / 3;
         @center-percentage: 100% / 3;
         @right-percentage: 100% / 3;
-        @padding: 0 2em;
-        @item-padding: 0.5em;
-        
+        @padding: 0;
+        @item-padding: 0 1.5em;
+
     /// =========== Navbar Properties =========== ///
-    
+
         @font-size: 125%;
         @border-top: none;
         @border-right: none;
@@ -1646,8 +1646,11 @@
         .fill();
         .box-sizing(border-box);
 
-        & > *:only-child {
-            position: relative;
+        & > .plat-viewcontrol {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
             .fill();
             .box-sizing(border-box);
         }
@@ -1710,15 +1713,15 @@
 	    display: none;
     }
 
-    img { 
+    img {
         border: 0;
     }
 
-    svg:not(:root) { 
+    svg:not(:root) {
         overflow: hidden;
     }
 
-    figure { 
+    figure {
         margin: 1em 40px;
     }
 
@@ -1727,7 +1730,7 @@
 	    height: 0;
     }
 
-    pre { 
+    pre {
         overflow: auto;
     }
 

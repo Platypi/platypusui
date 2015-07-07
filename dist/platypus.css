@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.18 (https://platypi.io) 
+ * PlatypusUI v0.4.19 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -29,8 +29,11 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-[plat-control="plat-viewport"] > *:only-child {
-  position: relative;
+[plat-control="plat-viewport"] > .plat-viewcontrol {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
   padding: 0;
@@ -505,37 +508,37 @@ h6 {
 }
 @-webkit-keyframes SLIDE_IN {
   from {
-    padding-left: 100%;
+    left: 100%;
   }
 }
 @-moz-keyframes SLIDE_IN {
   from {
-    padding-left: 100%;
+    left: 100%;
   }
 }
 @keyframes SLIDE_IN {
   from {
-    padding-left: 100%;
+    left: 100%;
   }
 }
 @-webkit-keyframes SLIDE_OUT {
   to {
-    padding-left: -100%;
+    left: -100%;
   }
 }
 @-moz-keyframes SLIDE_OUT {
   to {
-    padding-left: -100%;
+    left: -100%;
   }
 }
 @keyframes SLIDE_OUT {
   to {
-    padding-left: -100%;
+    left: -100%;
   }
 }
 @-webkit-keyframes SLIDE_IN_FADE_IN {
   0% {
-    padding-left: 100%;
+    left: 100%;
     opacity: 0;
   }
   25% {
@@ -553,7 +556,7 @@ h6 {
 }
 @-moz-keyframes SLIDE_IN_FADE_IN {
   0% {
-    padding-left: 100%;
+    left: 100%;
     opacity: 0;
   }
   25% {
@@ -571,7 +574,7 @@ h6 {
 }
 @keyframes SLIDE_IN_FADE_IN {
   0% {
-    padding-left: 100%;
+    left: 100%;
     opacity: 0;
   }
   25% {
@@ -601,7 +604,7 @@ h6 {
     opacity: 0.1;
   }
   100% {
-    padding-left: -100%;
+    left: -100%;
     opacity: 0;
   }
 }
@@ -619,7 +622,7 @@ h6 {
     opacity: 0.1;
   }
   100% {
-    padding-left: -100%;
+    left: -100%;
     opacity: 0;
   }
 }
@@ -637,7 +640,7 @@ h6 {
     opacity: 0.1;
   }
   100% {
-    padding-left: -100%;
+    left: -100%;
     opacity: 0;
   }
 }
@@ -3287,7 +3290,7 @@ h6 {
   width: 100%;
   background-color: #2d97d2;
   color: #ffffff;
-  padding: 0 2em;
+  padding: 0;
   border-top: none;
   border-right: none;
   border-bottom: none;
@@ -3335,7 +3338,7 @@ h6 {
 }
 .plat-navbar .plat-navbar-item {
   height: 100%;
-  padding: 0.5em;
+  padding: 0 1.5em;
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -moz-inline-flex;
