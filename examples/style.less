@@ -7,14 +7,12 @@ body {
 .content-container {
     #platui > #mixins;
     #platui > #variables;
-    background-color: @white;
     .fill();
     .scroll();
-    
-    .top-viewport {
-        #platui > #Navbar;
-        padding-top: @height;
-    }
+    .box-sizing(border-box);
+    background-color: @white;
+    #platui > #Navbar;
+    padding-top: @height;
 }
 
 .container {
@@ -105,7 +103,7 @@ body {
 .device {
     background-color: #f6f6f6;
     border: 1px solid #f0f0f0;
-    position: relative; 
+    position: relative;
 }
 
 .iPhone5 {
@@ -129,7 +127,7 @@ body {
     text-decoration: inherit;
     text-transform: none;
     line-height: normal;
-    
+
     &::before {
         content: "\e816";
     }
