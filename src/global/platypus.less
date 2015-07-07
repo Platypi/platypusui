@@ -20,8 +20,10 @@
         .fill();
         .box-sizing(border-box);
 
-        & > *:only-child {
-            position: relative;
+        & > .plat-viewcontrol {
+            position: absolute;
+            background-color: @white;
+            z-index: 0;
             .fill();
             .box-sizing(border-box);
         }
@@ -84,15 +86,15 @@
 	    display: none;
     }
 
-    img { 
+    img {
         border: 0;
     }
 
-    svg:not(:root) { 
+    svg:not(:root) {
         overflow: hidden;
     }
 
-    figure { 
+    figure {
         margin: 1em 40px;
     }
 
@@ -101,7 +103,7 @@
 	    height: 0;
     }
 
-    pre { 
+    pre {
         overflow: auto;
     }
 
