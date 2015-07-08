@@ -20,14 +20,25 @@
         .fill();
         .box-sizing(border-box);
 
-        & > .plat-viewcontrol {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 0;
-            .fill();
-            .box-sizing(border-box);
+        &:not(.plat-viewport-animate) {
+            & > .plat-viewcontrol {
+                position: relative;
+                .fill();
+                .box-sizing(border-box);
+            }
         }
+
+        &.plat-viewport-animate {
+            & > .plat-viewcontrol {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 0;
+                .fill();
+                .box-sizing(border-box);
+            }
+        }
+
     }
 
     .plat-hide,
