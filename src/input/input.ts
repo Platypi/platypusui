@@ -5,12 +5,12 @@ module platui {
      * @name Input
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl, platui.IFormControl}
-     * 
+     *
      * @description
-     * An {@link plat.ui.BindControl|BindControl} that standardizes and styles 
+     * An {@link plat.ui.BindControl|BindControl} that standardizes and styles
      * an HTML input element of various types.
      */
     export class Input extends plat.ui.BindControl implements IUiControl, IFormControl {
@@ -24,9 +24,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -44,22 +44,35 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.observable.IObservableProperty<platui.IInputOptions>}
-         * 
+         *
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<IInputOptions>;
 
         /**
+         * @name value
+         * @memberof platui.Input
+         * @kind property
+         * @access public
+         *
+         * @type {string}
+         *
+         * @description
+         * The current value.
+         */
+        value: string = '';
+
+        /**
          * @name _compat
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.Compat}
-         * 
+         *
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
@@ -70,9 +83,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.expressions.IRegex}
-         * 
+         *
          * @description
          * Reference to the {@link plat.expressions.Regex|Regex} injectable.
          */
@@ -83,9 +96,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTMLElement for the control's optional image.
          */
@@ -96,9 +109,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLInputElement}
-         * 
+         *
          * @description
          * The HTMLInputElement for control input.
          */
@@ -109,9 +122,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTMLElement for the control's action.
          */
@@ -122,9 +135,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The control's type (e.g. - "email").
          */
@@ -135,24 +148,37 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
-         * @type {string}
-         * 
+         *
+         * @type {RegExp}
+         *
          * @description
-         * A regular expression string to regulate what text is allowed to be entered.
+         * A regular expression string to regulate what text is allowed to be entered on input.
          */
         protected _pattern: RegExp;
+
+        /**
+         * @name _validation
+         * @memberof platui.Input
+         * @kind property
+         * @access protected
+         *
+         * @type {RegExp}
+         *
+         * @description
+         * A regular expression string used to validate input upon calling the "validate" function.
+         */
+        protected _validation: RegExp;
 
         /**
          * @name _typeChar
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The control's type character (e.g. - an "x" to delete 
+         * The control's type character (e.g. - an "x" to delete
          * input text).
          */
         protected _typeChar: string;
@@ -162,9 +188,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {EventListener}
-         * 
+         *
          * @description
          * A function to handle the type event.
          */
@@ -175,9 +201,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {() => void}
-         * 
+         *
          * @description
          * A function to check the current action state and handle accordingly.
          */
@@ -188,9 +214,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the user is currently touching the screen.
          */
@@ -201,9 +227,9 @@ module platui {
          * @memberof platui.Input
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the user is currently in the process of performing the {@link platui.Input|Input's} action.
          */
@@ -214,15 +240,15 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
@@ -234,10 +260,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set the class name.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -249,10 +275,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set all HTMLElement references and potential attribute controls.
-         * 
+         *
          * @returns {void}
          */
         setTemplate(): void {
@@ -308,10 +334,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set the style and initialize the action.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
@@ -319,7 +345,10 @@ module platui {
                 options = optionObj.value || <IInputOptions>{},
                 element = this.element,
                 inputType = this._type = this.attributes['type'] || options.type || 'text',
-                pattern = options.pattern;
+                pattern = options.pattern,
+                validation = options.validation,
+                utils = this.utils,
+                isString = utils.isString;
 
             // in case of cloning
             this._imageElement = this._imageElement || <HTMLElement>element.firstElementChild.firstElementChild;
@@ -332,12 +361,20 @@ module platui {
             }, false);
             this._actionElement = <HTMLElement>actionContainer.firstElementChild;
 
-            if (!this.utils.isEmpty(pattern)) {
+            if (isString(pattern) && pattern !== '') {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
                 }
 
                 this._pattern = new RegExp(pattern);
+            }
+
+            if (isString(validation) && validation !== '') {
+                if (validation[0] === '/' && validation[validation.length - 1] === '/') {
+                    validation = validation.slice(1, -1);
+                }
+
+                this._validation = new RegExp(validation);
             }
 
             this._initializeType();
@@ -348,16 +385,16 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * A function to validate the user's input. For action="email" it returns 
-         * true if the email can be a valid email address. For all other 
+         * A function to validate the user's input. For action="email" it returns
+         * true if the email can be a valid email address. For all other
          * actions it returns true if the input is not empty.
-         * 
+         *
          * @returns {boolean} Whether or not the user's input is valid.
          */
         validate(): boolean {
-            return this._pattern.test(this._inputElement.value);
+            return this._validation.test(this._inputElement.value);
         }
 
         /**
@@ -365,10 +402,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Clears the user's input.
-         * 
+         *
          * @returns {void}
          */
         clear(): void {
@@ -380,7 +417,8 @@ module platui {
             }
 
             var actionElement = this._actionElement;
-            this.inputChanged((inputElement.value = ''), value);
+            inputElement.value = this.value = '';
+            this.inputChanged(this.value, value);
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
         }
@@ -390,10 +428,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Focuses the input.
-         * 
+         *
          * @returns {void}
          */
         focus(): void {
@@ -405,29 +443,14 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Blurs the input.
-         * 
+         *
          * @returns {void}
          */
         blur(): void {
             this._inputElement.blur();
-        }
-
-        /**
-         * @name value
-         * @memberof platui.Input
-         * @kind function
-         * @access public
-         * 
-         * @description
-         * Returns the current value of {@link platui.Input|Input} control.
-         * 
-         * @returns {string} The current value of the {@link platui.Input|Input} control.
-         */
-        value(): string {
-            return this._inputElement.value;
         }
 
         /**
@@ -436,7 +459,7 @@ module platui {
          * @kind function
          * @access public
          * @virtual
-         * 
+         *
          * @description
          * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
@@ -455,15 +478,15 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable text is set externally.
-         * 
+         *
          * @param {string} newValue The new value of the bindable text.
          * @param {string} oldValue The old value of the bindable text.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
-         * 
+         *
          * @returns {void}
          */
         protected _setBoundProperty(newValue: string, oldValue: string, identifier: void, firstTime?: boolean): void {
@@ -489,10 +512,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Initializes the type.
-         * 
+         *
          * @returns {void}
          */
         protected _initializeType(): void {
@@ -503,17 +526,21 @@ module platui {
             switch (inputType) {
                 case 'text':
                     this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
                 case 'email':
-                    this._pattern = this._pattern || this._regex.validateEmail;
+                    this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._regex.validateEmail;
                     this._actionHandler = this._checkEmail.bind(this);
                     this._typeHandler = this._handleEmail;
                     break;
                 case 'password':
                     var hidePassword = this._handlePasswordHide;
+
                     this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkPassword.bind(this);
                     this._typeHandler = this._handlePasswordShow;
                     this.addEventListener(actionElement, __$touchend, hidePassword);
@@ -523,11 +550,13 @@ module platui {
                 case 'tel':
                 case 'telephone':
                     this._pattern = this._pattern || this._regex.validateTelephone;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
                 case 'number':
                     this._pattern = this._pattern || /^[0-9\.,]*$/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     inputType = 'tel';
@@ -556,6 +585,7 @@ module platui {
                         '. Defaulting to type="text".');
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
@@ -572,12 +602,12 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds all event listeners to the input and action element.
-         * 
+         *
          * @param {string} event The primary action element's event.
-         * 
+         *
          * @returns {void}
          */
         protected _addEventListeners(event: string): void {
@@ -590,7 +620,7 @@ module platui {
             this.addEventListener(actionElement, __$touchend, actionEnd, false);
             this.addEventListener(actionElement, __$trackend, actionEnd, false);
             this.addEventListener(input, 'focus', (): void => {
-                if (input.value === '') {
+                if (this.value === '') {
                     return;
                 }
                 actionElement.removeAttribute(__Hide);
@@ -609,10 +639,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds a text event listener to the input element.
-         * 
+         *
          * @returns {void}
          */
         protected _addTextEventListener(): void {
@@ -660,6 +690,14 @@ module platui {
                         return;
                     }
 
+                    var pattern = this._pattern,
+                        char = ev.char;
+
+                    if (!(pattern.test(char) && pattern.test(input.value + char))) {
+                        ev.preventDefault();
+                        return;
+                    }
+
                     postponedEventListener();
                 }, false);
                 this.addEventListener(input, 'cut', postponedEventListener, false);
@@ -674,10 +712,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Clears the user's input and focuses the input element.
-         * 
+         *
          * @returns {void}
          */
         protected _erase(): void {
@@ -690,11 +728,11 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * The action handler for the "password" type when showing the 
+         * The action handler for the "password" type when showing the
          * password text.
-         * 
+         *
          * @returns {void}
          */
         protected _handlePasswordShow(): void {
@@ -707,11 +745,11 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * The action handler for the "password" type when hiding the 
+         * The action handler for the "password" type when hiding the
          * password text.
-         * 
+         *
          * @returns {void}
          */
         protected _handlePasswordHide(): void {
@@ -730,10 +768,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The action handler for the "email" type.
-         * 
+         *
          * @returns {void}
          */
         protected _handleEmail(): void {
@@ -741,7 +779,8 @@ module platui {
                 value = inputElement.value,
                 char = this._typeChar;
 
-            this.inputChanged((inputElement.value = (char === 'x' ? '' : value + char)), value);
+            inputElement.value = this.value = char === 'x' ? '' : value + char;
+            this.inputChanged(this.value, value);
             this._checkEmail();
             inputElement.focus();
         }
@@ -751,20 +790,20 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Checks the current state of the default action and handles accordingly.
-         * 
+         *
          * @returns {void}
          */
         protected _checkText(): void {
             var char = this._typeChar;
 
             if (char === 'x') {
-                if (this._inputElement.value === '') {
+                if (this.value === '') {
                     this._typeChar = '';
                 }
-            } else if (this._inputElement.value !== '') {
+            } else if (this.value !== '') {
                 this._typeChar = 'x';
             }
 
@@ -786,20 +825,20 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Checks the current state of the password action and handles accordingly.
-         * 
+         *
          * @returns {void}
          */
         protected _checkPassword(): void {
             var char = this._typeChar;
 
             if (char === '?') {
-                if (this._inputElement.value === '') {
+                if (this.value === '') {
                     this._typeChar = '';
                 }
-            } else if (this._inputElement.value !== '') {
+            } else if (this.value !== '') {
                 this._typeChar = '?';
             }
 
@@ -821,10 +860,10 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Checks the current state of the "email" action and handles accordingly.
-         * 
+         *
          * @returns {void}
          */
         protected _checkEmail(): void {
@@ -884,28 +923,24 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The event handler upon user text input.
-         * 
+         *
          * @returns {void}
          */
         protected _onInput(): void {
             var inputElement = this._inputElement,
-                value = inputElement.value;
-            switch (this._type) {
-                case 'tel':
-                case 'number':
-                    var last = value.length - 1;
-                    if (last >= 0 && (!this._pattern.test(value[last]) ||
-                        !(last === 0 || this._type !== 'tel' || value[last] !== '+'))) {
-                        value = inputElement.value = value.slice(0, -1);
-                    }
-                default:
-                    this.inputChanged(value);
-                    break;
+                value = this._stripInput(inputElement.value);
+
+            inputElement.value = value;
+
+            if (value === this.value) {
+                return;
             }
 
+            this.value = inputElement.value;
+            this.inputChanged(this.value);
             this._actionHandler();
         }
 
@@ -914,66 +949,57 @@ module platui {
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The event handler upon bound text being changed.
-         * 
+         *
          * @param {string} newValue The new value of the bound text.
-         * 
+         *
          * @returns {void}
          */
         protected _onInputChanged(newValue: string): void {
             var inputElement = this._inputElement;
-            switch (this._type) {
-                case 'tel':
-                case 'number':
-                    var last = newValue.length - 1;
-                    if (last >= 0 && (!this._pattern.test(newValue[last]) ||
-                        !(last === 0 || this._type !== 'tel' || newValue[last] !== '+'))) {
-                        newValue = inputElement.value = newValue.slice(0, -1);
-                        this.inputChanged(newValue);
-                        break;
-                    }
-                default:
-                    inputElement.value = newValue;
-                    break;
-            }
+
+            newValue = this._stripInput(newValue);
+            inputElement.value = newValue;
+            this.value = inputElement.value;
 
             this._actionHandler();
         }
 
         /**
-         * @name _checkInput
+         * @name _stripInput
          * @memberof platui.Input
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Check the initial input and delete if it does not match the pattern.
-         * 
-         * @param {string} value The value to check as input to the HTMLInputElement.
-         * 
-         * @returns {void}
+         * Parses the input and strips it of characters that don't fit its pattern.
+         *
+         * @param {string} value The current value to parse.
+         *
+         * @returns {string} The final value after its been stripped by the pattern.
          */
-        protected _checkInput(value: string): void {
-            switch (this._type) {
-                case 'tel':
-                case 'number':
-                    if (this._pattern.test(value)) {
-                        this._inputElement.value = value;
+        protected _stripInput(value:  string): string {
+            var newValue = '',
+                revert = newValue,
+                char: string,
+                pattern = this._pattern,
+                length = value.length;
+
+            for (var i = 0; i < length; ++i) {
+                char = value[i];
+                if (pattern.test(char)) {
+                    newValue += char;
+                    if (pattern.test(newValue)) {
+                        revert = newValue;
                     } else {
-                        this._log.debug(this.type + '\'s value does not satisfy either ' +
-                            'the given pattern or type. The value will be reset to "".');
-                        this.inputChanged((this._inputElement.value = ''), value);
+                        newValue = revert;
                     }
-                    break;
-                default:
-                    this._inputElement.value = value;
-                    break;
+                }
             }
 
-            this._actionHandler();
-            this._actionElement.setAttribute(__Hide, '');
+            return newValue;
         }
     }
 
@@ -983,7 +1009,7 @@ module platui {
      * @name IInputOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Input|Input} control.
      */
@@ -993,13 +1019,13 @@ module platui {
          * @memberof platui.IInputOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The type of the {@link platui.Input|Input} control. 
-         * Defaults to "text".
-         * 
+         * The type of the {@link platui.Input|Input} control.
+         * The default value is "text".
+         *
          * @remarks
          * - "text"
          * - "password"
@@ -1014,12 +1040,25 @@ module platui {
          * @memberof platui.IInputOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * A regular expression string to regulate what text is allowed to be entered.
+         * A regular expression string to regulate what text is allowed to be entered during input.
          */
         pattern?: string;
+
+        /**
+         * @name validation
+         * @memberof platui.IInputOptions
+         * @kind property
+         * @access public
+         *
+         * @type {string}
+         *
+         * @description
+         * A regular expression string used to validate input upon calling the "validate" function.
+         */
+        validation?: string;
     }
 }

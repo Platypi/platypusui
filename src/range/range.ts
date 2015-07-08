@@ -5,12 +5,12 @@ module platui {
      * @name Range
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
-     * 
+     *
      * @description
-     * A {@link plat.ui.BindControl|BindControl} that allows for a lower and upper value, 
+     * A {@link plat.ui.BindControl|BindControl} that allows for a lower and upper value,
      * thus creating a variable range of included values.
      */
     export class Range extends plat.ui.BindControl implements IUiControl {
@@ -25,9 +25,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -44,9 +44,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.observable.IObservableProperty<platui.IRangeOptions>}
-         * 
+         *
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
@@ -57,9 +57,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current lower value of the {@link platui.Range|Range}.
          */
@@ -70,9 +70,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current upper value of the {@link platui.Range|Range}.
          */
@@ -83,9 +83,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The min value of the {@link platui.Range|Range}.
          */
@@ -96,9 +96,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The max value of the {@link platui.Range|Range}.
          */
@@ -109,9 +109,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Window}
-         * 
+         *
          * @description
          * Reference to the Window injectable.
          */
@@ -122,9 +122,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Document}
-         * 
+         *
          * @description
          * Reference to the Document injectable.
          */
@@ -135,9 +135,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.animations.IAnimator}
-         * 
+         *
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
@@ -148,9 +148,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTMLElement representing the slider element.
          */
@@ -161,9 +161,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTMLElement representing the lower knob.
          */
@@ -174,9 +174,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTMLElement representing the second knob of the {@link platui.Range|Range}.
          */
@@ -187,9 +187,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.IPoint}
-         * 
+         *
          * @description
          * The last touch start recorded.
          */
@@ -200,9 +200,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The maximum slider element offset.
          */
@@ -213,9 +213,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The slider element's pixel based increment value.
          */
@@ -226,9 +226,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * Denotes the incremental step value of the {@link platui.Range|Range's} value property.
          */
@@ -239,9 +239,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the control is vertical or horizontal.
          */
@@ -252,9 +252,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the upper and lower knobs have been _reversed.
          */
@@ -265,9 +265,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current lower knob offset.
          */
@@ -278,9 +278,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current upper knob offset.
          */
@@ -291,9 +291,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The lower identifier for setting the value of the bound object.
          */
@@ -304,9 +304,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The upper identifier for setting the value of the bound object.
          */
@@ -317,9 +317,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * Denotes whether we're using height or width as the length of the sliding element.
          */
@@ -330,9 +330,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * Denotes whether we're using left, right, top, or bottom as the position of the sliding element.
          */
@@ -343,9 +343,9 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * An enum denoting the current touch state of the user.
          */
@@ -356,11 +356,11 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
-         * The current number of times we checked to see if the element was placed into the DOM. 
+         * The current number of times we checked to see if the element was placed into the DOM.
          * Used for determining max offset width.
          */
         protected _cloneAttempts: number = 0;
@@ -370,11 +370,11 @@ module platui {
          * @memberof platui.Range
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * The max number of times we'll check to see if the element was placed into the DOM.
          * Used for determining max offset width.
          */
         protected _maxCloneAttempts: number = 25;
@@ -384,15 +384,15 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
@@ -404,10 +404,10 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set the proper classes for the control.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -419,10 +419,10 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Determine the button type and apply the proper classes.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
@@ -482,13 +482,13 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * Sets the lower value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * Sets the lower value of the {@link platui.Range|Range}. If an invalid value is passed in
          * nothing will happen.
-         * 
+         *
          * @param {number} value The value to set the {@link platui.Range|Range} to.
-         * 
+         *
          * @returns {void}
          */
         setLower(value: number): void {
@@ -500,13 +500,13 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * Sets the upper value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * Sets the upper value of the {@link platui.Range|Range}. If an invalid value is passed in
          * nothing will happen.
-         * 
+         *
          * @param {number} value The value to set the {@link platui.Range|Range} to.
-         * 
+         *
          * @returns {void}
          */
         setUpper(value: number): void {
@@ -519,7 +519,7 @@ module platui {
          * @kind function
          * @access public
          * @virtual
-         * 
+         *
          * @description
          * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
@@ -539,15 +539,15 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable lower value is set externally.
-         * 
+         *
          * @param {number} newValue The new lower value.
          * @param {number} oldValue The old value of the bindable index.
          * @param {string} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
-         * 
+         *
          * @returns {void}
          */
         protected _setLowerBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
@@ -563,15 +563,15 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable upper value is set externally.
-         * 
+         *
          * @param {number} newValue The new upper value.
          * @param {number} oldValue The old value of the bindable index.
          * @param {string} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
-         * 
+         *
          * @returns {void}
          */
         protected _setUpperBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
@@ -587,14 +587,14 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Sets the lower value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * Sets the lower value of the {@link platui.Range|Range}. If an invalid value is passed in
          * nothing will happen.
-         * 
+         *
          * @param {number} value The value to set the {@link platui.Range|Range} to.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
-         * 
+         *
          * @returns {void}
          */
         protected _setLower(value: number, propertyChanged: boolean): void {
@@ -624,14 +624,14 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Sets the uppper value of the {@link platui.Range|Range}. If an invalid value is passed in 
+         * Sets the uppper value of the {@link platui.Range|Range}. If an invalid value is passed in
          * nothing will happen.
-         * 
+         *
          * @param {number} value The value to set the {@link platui.Range|Range} to.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
-         * 
+         *
          * @returns {void}
          */
         protected _setUpper(value: number, propertyChanged: boolean): void {
@@ -661,10 +661,10 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Initialize the proper tracking events.
-         * 
+         *
          * @returns {void}
          */
         protected _initializeEvents(): void {
@@ -707,12 +707,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Log the first touch.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The touch event object.
-         * 
+         *
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
@@ -747,12 +747,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Set the new slider element offset.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $trackend event object.
-         * 
+         *
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
@@ -794,13 +794,13 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the designated knob element's offset to the given value.
-         * 
+         *
          * @param {number} offset The new offset.
          * @param {boolean} isLower Whether we're setting the lower or upper knob.
-         * 
+         *
          * @returns {number} The new upper offset.
          */
         protected _setOffset(offset: number, isLower: boolean): number {
@@ -823,12 +823,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Track the lower knob movement.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track event object.
-         * 
+         *
          * @returns {void}
          */
         protected _trackLower(ev: plat.ui.IGestureEvent): void {
@@ -878,12 +878,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Track the upper knob movement.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track event object.
-         * 
+         *
          * @returns {void}
          */
         protected _trackUpper(ev: plat.ui.IGestureEvent): void {
@@ -933,14 +933,14 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Positions the slider element and adjusts it's length to account 
+         * Positions the slider element and adjusts it's length to account
          * for lower knob movement.
-         * 
+         *
          * @param {number} position The new position of the lower knob.
          * @param {number} value? The new value to set if specified.
-         * 
+         *
          * @returns {void}
          */
         protected _positionLower(position: number, value?: number): void {
@@ -962,14 +962,14 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Positions the slider element and adjusts it's length to account 
+         * Positions the slider element and adjusts it's length to account
          * for upper knob movement.
-         * 
+         *
          * @param {number} position The new position of the upper knob.
          * @param {number} value? The new value to set if specified.
-         * 
+         *
          * @returns {void}
          */
         protected _positionUpper(position: number, value?: number): void {
@@ -989,14 +989,14 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Positions the slider element and adjusts it's length to account 
+         * Positions the slider element and adjusts it's length to account
          * for synchronized knob movement.
-         * 
+         *
          * @param {number} position The new position of the knobs.
          * @param {number} value? The new value to set if specified.
-         * 
+         *
          * @returns {void}
          */
         protected _positionTogether(position: number, value?: number): void {
@@ -1019,12 +1019,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates the current value based on knob position and slider element width.
-         * 
+         *
          * @param {number} width The current width of the slider element.
-         * 
+         *
          * @returns {number} The current value of the {link platui.Range|Range}.
          */
         protected _calculateValue(width: number): number {
@@ -1037,13 +1037,13 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates the new offset of the slider element based on the old offset and the distance moved.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track or $trackend event object.
          * @param {boolean} isLower Whether the current knob is the lower or the upper knob.
-         * 
+         *
          * @returns {number} The current position of the knob in pixels.
          */
         protected _calculateOffset(ev: plat.ui.IGestureEvent, isLower: boolean): number {
@@ -1064,12 +1064,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates knob position based on current value.
-         * 
+         *
          * @param {number} value The current value of the {link platui.Range|Range}.
-         * 
+         *
          * @returns {number} The current position of the knob in pixels.
          */
         protected _calculateKnobPosition(value: number): number {
@@ -1081,15 +1081,15 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the lower value of the {@link platui.Range|Range}.
-         * 
+         *
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
          * @param {boolean} trigger Whether or not to trigger the 'input' event.
-         * 
+         *
          * @returns {void}
          */
         protected _setLowerValue(newValue: number, setKnob: boolean, propertyChanged: boolean, trigger: boolean): void {
@@ -1124,15 +1124,15 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the value of the {@link platui.Range|Range}.
-         * 
+         *
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
          * @param {boolean} trigger Whether or not to trigger the 'input' event.
-         * 
+         *
          * @returns {void}
          */
         protected _setUpperValue(newValue: number, setKnob: boolean, propertyChanged: boolean, trigger: boolean): void {
@@ -1167,10 +1167,10 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the increment for sliding the {link platui.Range|Range}.
-         * 
+         *
          * @returns {number} The slider element's increment value.
          */
         protected _setIncrement(): number {
@@ -1182,12 +1182,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the properties to use for length and position and sets the max length of the sliding element.
-         * 
+         *
          * @param {HTMLElement} element? The element to base the length off of.
-         * 
+         *
          * @returns {void}
          */
         protected _setPositionAndLength(element?: HTMLElement): void {
@@ -1217,13 +1217,13 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Animates and sets the knob position.
-         * 
-         * @param {number} value? The value to use to calculate the knob position. If no value is 
+         *
+         * @param {number} value? The value to use to calculate the knob position. If no value is
          * specified, the current {@link platui.Range|Range's} value will be used.
-         * 
+         *
          * @returns {void}
          */
         protected _setLowerKnobPosition(value?: number): void {
@@ -1250,13 +1250,13 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Animates and sets the knob position.
-         * 
-         * @param {number} value? The value to use to calculate the knob position. If no value is 
+         *
+         * @param {number} value? The value to use to calculate the knob position. If no value is
          * specified, the current {@link platui.Range|Range's} value will be used.
-         * 
+         *
          * @returns {void}
          */
         protected _setUpperKnobPosition(value?: number): void {
@@ -1279,10 +1279,10 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Fires an inputChanged event with the new bound value.
-         * 
+         *
          * @returns {void}
          */
         protected _fireChange(): void {
@@ -1297,12 +1297,12 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Triggers an event starting from this control's element.
-         * 
+         *
          * @param {string} event The event name to trigger.
-         * 
+         *
          * @returns {void}
          */
         protected _trigger(event: string): void {
@@ -1316,13 +1316,13 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Checks the orientation of the control and ensures it is valid. 
+         * Checks the orientation of the control and ensures it is valid.
          * Will default to "horizontal" if invalid.
-         * 
+         *
          * @param {string} orientation The element to base the length off of.
-         * 
+         *
          * @returns {string} The orientation to be used.
          */
         protected _validateOrientation(orientation: string): string {
@@ -1349,7 +1349,7 @@ module platui {
          * @memberof platui.Range
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Creates a clone of this element and uses it to find the max offset.
          *
@@ -1439,7 +1439,7 @@ module platui {
      * @name IRangeOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Range|Range} control.
      */
@@ -1449,13 +1449,13 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The orientation of the {@link platui.Range|Range}. 
-         * Defaults to "horizontal".
-         * 
+         * The orientation of the {@link platui.Range|Range}.
+         * The default value is "horizontal".
+         *
          * @remarks
          * - "horizontal" - horizontal control.
          * - "vertical" - vertical control.
@@ -1467,11 +1467,11 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * Whether or not the upper and lower knobs of the {@link platui.Range|Range} are reversed. 
+         * Whether or not the upper and lower knobs of the {@link platui.Range|Range} are reversed.
          * Defaults to false.
          */
         reverse?: boolean;
@@ -1481,9 +1481,9 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The lower set value of the {@link platui.Range|Range}.
          */
@@ -1494,9 +1494,9 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The upper set value of the {@link platui.Range|Range}.
          */
@@ -1507,11 +1507,11 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
-         * The min value of the {@link platui.Range|Range}.
+         * The minimum value of the {@link platui.Range|Range}.
          */
         min?: number;
 
@@ -1520,11 +1520,11 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
-         * The max value of the {@link platui.Range|Range}.
+         * The maximum value of the {@link platui.Range|Range}.
          */
         max?: number;
 
@@ -1533,9 +1533,9 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The incremental step value of the {@link platui.Range|Range}.
          */
@@ -1546,24 +1546,24 @@ module platui {
          * @memberof platui.IRangeOptions
          * @kind property
          * @access public
-         * 
-         * @type {{ lower: string; upper: string; }}
-         * 
+         *
+         * @type {platui.IRangeIdentifiers<string>}
+         *
          * @description
-         * The identifiers that will label the lower and upper values set 
-         * on the bound object (e.g. if bound to an object `foo: { low: number; high: number; }` 
+         * The identifiers that will label the lower and upper values set
+         * on the bound object (e.g. if bound to an object `foo: { low: number; high: number; }`
          * this identifiers object should be `{ lower: 'low', upper: 'high' }`).
          */
-        identifiers?: { lower: string; upper: string; };
+        identifiers?: IRangeIdentifiers<string>;
     }
 
     /**
      * @name IRangePoint
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @extends {platui.IValuePoint}
-     * 
+     *
      * @description
      * A point representing a potential knob position.
      */
@@ -1573,9 +1573,9 @@ module platui {
          * @memberof platui.IKnobPosition
          * @kind property
          * @access public
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The target element located at the x-y coordinate.
          */
@@ -1583,39 +1583,51 @@ module platui {
     }
 
     /**
-     * @name IRangeBinding
+     * @name IRangeIdentifiers
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
-     * Defines the expected bound object of the {@link platui.Range|Range} control 
-     * (e.g. using {@link plat.controls.Bind|Bind}.
+     * Defines an object describing expected identifiers for a {@link platui.Range|Range} control.
+     *
+     * @typeparam {any} T The type of each value in the object.
      */
-    export interface IRangeBinding {
+    export interface IRangeIdentifiers<T> {
         /**
          * @name lower
          * @memberof platui.IRangeBinding
          * @kind property
          * @access public
-         * 
-         * @type {number}
-         * 
+         *
+         * @type {T}
+         *
          * @description
          * The lower set value of the {@link platui.Range|Range} control.
          */
-        lower: number;
+        lower: T;
 
         /**
          * @name lower
          * @memberof platui.IRangeBinding
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The upper set value of the {@link platui.Range|Range} control.
          */
-        upper: number;
+        upper: T;
     }
+
+    /**
+     * @name IRangeBinding
+     * @memberof platui
+     * @kind interface
+     *
+     * @description
+     * Defines the expected bound object of the {@link platui.Range|Range} control
+     * (e.g. using {@link plat.controls.Bind|Bind}.
+     */
+    export interface IRangeBinding extends IRangeIdentifiers<number> { }
 }

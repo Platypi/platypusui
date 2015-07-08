@@ -5,9 +5,9 @@ module platui {
      * @name Checkbox
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {platui.Toggle}
-     * 
+     *
      * @description
      * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes the HTML5 checkbox.
      */
@@ -21,9 +21,9 @@ module platui {
          * @memberof platui.Checkbox
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -37,9 +37,9 @@ module platui {
          * @memberof platui.Checkbox
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.observable.IObservableProperty<platui.ICheckboxOptions>}
-         * 
+         *
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
@@ -50,9 +50,9 @@ module platui {
          * @memberof platui.Checkbox
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Document}
-         * 
+         *
          * @description
          * Reference to the Document injectable.
          */
@@ -63,9 +63,9 @@ module platui {
          * @memberof platui.Checkbox
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the target type has been set already or not.
          */
@@ -76,15 +76,15 @@ module platui {
          * @memberof platui.Checkbox
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
@@ -96,10 +96,10 @@ module platui {
          * @memberof platui.Checkbox
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Adds the inner template to the DOM making sure to wrap text nodes in spans.
-         * 
+         *
          * @returns {void}
          */
         setTemplate(): void {
@@ -137,11 +137,11 @@ module platui {
          * @memberof platui.Checkbox
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * Checks for checked attributes and handles them accordingly. Also, 
+         * Checks for checked attributes and handles them accordingly. Also,
          * initializes the mark and adds a listener for the tap event.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
@@ -178,13 +178,13 @@ module platui {
          * @memberof platui.Checkbox
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * A function for checking "checked" attributes and handling them accordingly.
-         * 
+         *
          * @param {any} newValue The newValue of the attribute to convert.
          * @param {any} oldValue? The oldValue of the attribute to convert.
-         * 
+         *
          * @returns {void}
          */
         protected _convertChecked(): void {
@@ -205,14 +205,14 @@ module platui {
          * @memberof platui.Checkbox
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * A function for handling the attribute value conversion for updating the 
+         * A function for handling the attribute value conversion for updating the
          * bound property.
-         * 
+         *
          * @param {any} newValue The newValue of the attribute to convert.
          * @param {any} oldValue? The oldValue of the attribute to convert.
-         * 
+         *
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
@@ -231,13 +231,13 @@ module platui {
          * @memberof platui.Checkbox
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * A function to activate the given element by toggling the 
+         * A function to activate the given element by toggling the
          * class specified as the target type.
-         * 
+         *
          * @param {Element} element The element to activate.
-         * 
+         *
          * @returns {void}
          */
         protected _activate(element: Element): void {
@@ -256,7 +256,7 @@ module platui {
      * @name ICheckboxOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Checkbox|Checkbox} control.
      */
@@ -266,13 +266,13 @@ module platui {
          * @memberof platui.ICheckboxOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The type of mark to place inside the {@link platui.Checkbox|Checkbox}. 
-         * Defaults to "check".
-         * 
+         * The type of mark to place inside the {@link platui.Checkbox|Checkbox}.
+         * The default value is "check".
+         *
          * @remarks
          * - "check"
          * - "x"

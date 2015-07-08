@@ -5,10 +5,10 @@ module platui {
      * @name Modal
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
-     * 
+     *
      * @description
      * An {@link plat.ui.BindControl|BindControl} for showing a templated and animated overlay.
      */
@@ -25,9 +25,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -38,9 +38,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.observable.IObservableProperty<platui.IModalOptions>}
-         * 
+         *
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
@@ -51,9 +51,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Window}
-         * 
+         *
          * @description
          * Reference to the Window injectable.
          */
@@ -64,9 +64,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Document}
-         * 
+         *
          * @description
          * Reference to the Document injectable.
          */
@@ -77,9 +77,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.Compat}
-         * 
+         *
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
@@ -90,9 +90,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.async.IPromise}
-         * 
+         *
          * @description
          * Reference to the {@link plat.async.IPromise|IPromise} injectable.
          */
@@ -103,9 +103,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTML element representing the content of the modal.
          */
@@ -116,9 +116,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the modal is currently visible.
          */
@@ -129,9 +129,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The browser's "transitionend" event.
          */
@@ -142,9 +142,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function to stop listening to scroll events.
          */
@@ -155,9 +155,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current scroll position of the modal.
          */
@@ -168,9 +168,9 @@ module platui {
          * @memberof platui.Modal
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IObject<boolean>}
-         * 
+         *
          * @description
          * A hash for validating available transitions.
          */
@@ -187,15 +187,15 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
@@ -207,10 +207,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Check for templateUrl and set if needed then hide the control.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -226,10 +226,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Add the innerTemplate to the control's element.
-         * 
+         *
          * @returns {void}
          */
         setTemplate(): void {
@@ -252,10 +252,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Check for a transition and initialize it if necessary.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
@@ -291,10 +291,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Clean up the auto scroll.
-         * 
+         *
          * @returns {void}
          */
         dispose(): void {
@@ -307,10 +307,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Shows the {@link platui.Modal|Modal}.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
         show(): plat.async.IThenable<void> {
@@ -329,10 +329,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Hides the {@link platui.Modal|Modal}.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
         hide(): plat.async.IThenable<void> {
@@ -351,10 +351,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Toggles the visibility of the {@link platui.Modal|Modal}.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is toggled.
          */
         toggle(): plat.async.IThenable<void> {
@@ -370,11 +370,11 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Whether or not the {@link platui.Modal|Modal} is currently visible.
-         * 
-         * @returns {boolean} True if the {@link platui.Modal|Modal} is currently open 
+         *
+         * @returns {boolean} True if the {@link platui.Modal|Modal} is currently open
          * and visible, false otherwise.
          */
         isVisible(): boolean {
@@ -387,7 +387,7 @@ module platui {
          * @kind function
          * @access public
          * @virtual
-         * 
+         *
          * @description
          * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
@@ -406,15 +406,15 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable property is set externally.
-         * 
+         *
          * @param {boolean} modalState The new value of the control state.
          * @param {boolean} oldValue The old value of the control state.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
-         * 
+         *
          * @returns {void}
          */
         protected _setBoundProperty(modalState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
@@ -449,10 +449,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Shows the {@link platui.Modal|Modal}.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
         protected _show(): plat.async.IThenable<void> {
@@ -485,12 +485,12 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Aligns the control to the top of the viewport.
-         * 
+         *
          * @param {Event} ev? The scroll event object.
-         * 
+         *
          * @returns {void}
          */
         protected _alignModal(ev?: Event): void {
@@ -522,10 +522,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Hides the {@link platui.Modal|Modal}.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
         protected _hide(): plat.async.IThenable<void> {
@@ -560,11 +560,11 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Adds the innerTemplate to {@link plat.ui.BindableTemplates|BindableTemplates}, binds it, 
+         * Adds the innerTemplate to {@link plat.ui.BindableTemplates|BindableTemplates}, binds it,
          * and adds it to the DOM.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
         protected _bindInnerTemplate(): plat.async.IThenable<void> {
@@ -586,11 +586,11 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Removes itself from the DOM and inserts itself into the body to work with 
+         * Removes itself from the DOM and inserts itself into the body to work with
          * absolute positioning.
-         * 
+         *
          * @returns {void}
          */
         protected _injectElement(): void {
@@ -610,10 +610,10 @@ module platui {
          * @memberof platui.Modal
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Listens for the transition to end and hides the element after it is finished.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
         protected _addHideOnTransitionEnd(): plat.async.IThenable<void> {
@@ -634,7 +634,7 @@ module platui {
      * @name IModalOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Modal|Modal} control.
      */
@@ -644,13 +644,13 @@ module platui {
          * @memberof platui.IModalOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The transition type/direction the {@link platui.Modal|Modal} will enter with. 
-         * Defaults to "none".
-         * 
+         * The transition type/direction the {@link platui.Modal|Modal} will enter with.
+         * The default value is "none".
+         *
          * @remarks
          * - "none"
          * - "left"
@@ -666,13 +666,13 @@ module platui {
          * @memberof platui.IModalOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The url of the {@link platui.Modal|Modal's} intended template if not using 
+         * The url of the {@link platui.Modal|Modal's} intended template if not using
          * innerHTML.
-         * 
+         *
          * @remarks
          * This URL must be a static string and cannot be a bound item on a parent control's context.
          */

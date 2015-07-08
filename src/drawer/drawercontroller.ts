@@ -1772,7 +1772,7 @@ module platui {
          *
          * @description
          * Specifies how the {@link platui.Drawer|Drawer} should open. Multiple types can be combined by making it space delimited.
-         * It's default behavior is "tap track".
+         * The default behavior is "tap track".
          *
          * @remarks
          * "tap": The drawer opens when the controller is tapped.
