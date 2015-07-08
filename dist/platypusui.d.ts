@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.4.20 (https://platypi.io)
+  * PlatypusUI v0.5.0 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -88,6 +88,21 @@ declare module platui {
           * Determine the button style and apply the proper classes.
           */
         loaded(): void;
+        /**
+          * A function that allows this control to observe both the bound property itself as well as
+          * potential child properties if being bound to an object.
+          * @param {plat.observable.IImplementTwoWayBinding} binder The control that facilitates the
+          * databinding.
+          */
+        observeProperties(binder: plat.observable.IImplementTwoWayBinding): void;
+        /**
+          * The function called when the bindable property is set externally.
+          * @param {string} newValue The new value of the bindable property.
+          * @param {string} oldValue The old value of the bindable property.
+          * @param {string} identifier The identifier of the property being observed.
+          * @param {boolean} firstTime? A boolean value indicating whether this is the first time its being set.
+          */
+        protected _setBoundProperty(newValue: string, oldValue: string, identifier: string, firstTime?: boolean): void;
         /**
           * Add event listeners for selection.
           */
@@ -245,7 +260,7 @@ declare module platui {
     interface ICheckboxOptions {
         /**
           * The type of mark to place inside the Checkbox.
-          * Defaults to "check".
+          * The default value is "check".
           */
         mark?: string;
     }
@@ -531,11 +546,12 @@ declare module platui {
     interface IDrawerOptions {
         /**
           * The unique ID of the Drawer / DrawerController pair.
+          * Useful when multiple Drawers exist in an app.
           */
         id?: string;
         /**
           * The position of the Drawer.
-          * Defaults to "left".
+          * The default value is "left".
           */
         position?: string;
         /**
@@ -543,7 +559,7 @@ declare module platui {
           */
         templateUrl?: string;
         /**
-          * Whether the Drawer has an elastic effect while sliding.
+          * Whether the Drawer has an elastic effect while tracking open.
           * Defaults to false.
           */
         elastic?: boolean;
@@ -927,7 +943,7 @@ declare module platui {
         useContext?: boolean;
         /**
           * Specifies how the Drawer should open. Multiple types can be combined by making it space delimited.
-          * It's default behavior is "tap track".
+          * The default behavior is "tap track".
           */
         type?: string;
     }
@@ -1087,7 +1103,7 @@ declare module platui {
     interface IModalOptions {
         /**
           * The transition type/direction the Modal will enter with.
-          * Defaults to "none".
+          * The default value is "none".
           */
         transition?: string;
         /**
@@ -1332,11 +1348,11 @@ declare module platui {
           */
         value?: number;
         /**
-          * The min value of the Slider.
+          * The minimum value of the Slider.
           */
         min?: number;
         /**
-          * The max value of the Slider.
+          * The maximum value of the Slider.
           */
         max?: number;
         /**
@@ -1656,7 +1672,7 @@ declare module platui {
     interface IRangeOptions {
         /**
           * The orientation of the Range.
-          * Defaults to "horizontal".
+          * The default value is "horizontal".
           */
         orientation?: string;
         /**
@@ -1673,11 +1689,11 @@ declare module platui {
           */
         upper?: number;
         /**
-          * The min value of the Range.
+          * The minimum value of the Range.
           */
         min?: number;
         /**
-          * The max value of the Range.
+          * The maximum value of the Range.
           */
         max?: number;
         /**
@@ -1689,10 +1705,7 @@ declare module platui {
           * on the bound object (e.g. if bound to an object `foo: { low: number; high: number; }`
           * this identifiers object should be `{ lower: 'low', upper: 'high' }`).
           */
-        identifiers?: {
-            lower: string;
-            upper: string;
-        };
+        identifiers?: IRangeIdentifiers<string>;
     }
     /**
       * A point representing a potential knob position.
@@ -1704,18 +1717,23 @@ declare module platui {
         target?: HTMLElement;
     }
     /**
-      * Defines the expected bound object of the Range control
-      * (e.g. using Bind.
+      * Defines an object describing expected identifiers for a Range control.
       */
-    interface IRangeBinding {
+    interface IRangeIdentifiers<T> {
         /**
           * The lower set value of the Range control.
           */
-        lower: number;
+        lower: T;
         /**
           * The upper set value of the Range control.
           */
-        upper: number;
+        upper: T;
+    }
+    /**
+      * Defines the expected bound object of the Range control
+      * (e.g. using Bind.
+      */
+    interface IRangeBinding extends IRangeIdentifiers<number> {
     }
     /**
       * An ITemplateControl that allows for data-binding a select box and adds
@@ -1773,6 +1791,10 @@ declare module platui {
           */
         options: plat.observable.IObservableProperty<IInputOptions>;
         /**
+          * The current value.
+          */
+        value: string;
+        /**
           * Reference to the Compat injectable.
           */
         protected _compat: plat.Compat;
@@ -1797,9 +1819,13 @@ declare module platui {
           */
         protected _type: string;
         /**
-          * A regular expression string to regulate what text is allowed to be entered.
+          * A regular expression string to regulate what text is allowed to be entered on input.
           */
         protected _pattern: RegExp;
+        /**
+          * A regular expression string used to validate input upon calling the "validate" function.
+          */
+        protected _validation: RegExp;
         /**
           * The control's type character (e.g. - an "x" to delete
           * input text).
@@ -1859,10 +1885,6 @@ declare module platui {
           * Blurs the input.
           */
         blur(): void;
-        /**
-          * Returns the current value of Input control.
-          */
-        value(): string;
         /**
           * A function that allows this control to observe both the bound property itself as well as
           * potential child properties if being bound to an object.
@@ -1931,10 +1953,10 @@ declare module platui {
           */
         protected _onInputChanged(newValue: string): void;
         /**
-          * Check the initial input and delete if it does not match the pattern.
-          * @param {string} value The value to check as input to the HTMLInputElement.
+          * Parses the input and strips it of characters that don't fit its pattern.
+          * @param {string} value The current value to parse.
           */
-        protected _checkInput(value: string): void;
+        protected _stripInput(value: string): string;
     }
     /**
       * The available options for the Input control.
@@ -1942,13 +1964,17 @@ declare module platui {
     interface IInputOptions {
         /**
           * The type of the Input control.
-          * Defaults to "text".
+          * The default value is "text".
           */
         type?: string;
         /**
-          * A regular expression string to regulate what text is allowed to be entered.
+          * A regular expression string to regulate what text is allowed to be entered during input.
           */
         pattern?: string;
+        /**
+          * A regular expression string used to validate input upon calling the "validate" function.
+          */
+        validation?: string;
     }
     /**
       * An BindControl that standardizes and styles
@@ -2489,12 +2515,12 @@ declare module platui {
     interface ICarouselOptions {
         /**
           * Specifies how the Carousel should change. Multiple types can be combined by making it space delimited.
-          * It's default behavior is "track swipe".
+          * The default behavior is "track swipe".
           */
         type?: string;
         /**
           * The swipe direction of the Carousel.
-          * Defaults to "horizontal".
+          * The default value is "horizontal".
           */
         orientation?: string;
         /**
@@ -2513,7 +2539,7 @@ declare module platui {
           */
         suspend?: number;
         /**
-          * Enables infinite scrolling.
+          * Enables infinite scrolling when set to true.
           */
         infinite?: boolean;
     }
@@ -3116,7 +3142,7 @@ declare module platui {
         aliases?: IListviewAliasOptions;
         /**
           * The orientation (scroll direction) of the Listview.
-          * Defaults to "vertical".
+          * The default value is "vertical".
           */
         orientation?: string;
         /**
@@ -3126,13 +3152,13 @@ declare module platui {
         /**
           * The node name of the desired group header template.
           */
-        headerTemplate?: any;
+        headerTemplate?: string;
         /**
           * Indicates a special type of loading. Available options are "infinite" or "incremental".
           */
         loading?: string;
         /**
-          * The function that will be called when more items are being requested to add to the list.
+          * The name of the function that will be called when more items are being requested to add to the list.
           */
         onItemsRequested?: string;
         /**
@@ -3356,7 +3382,7 @@ declare module platui {
     interface INavbarOptions {
         /**
           * The position of the Navbar.
-          * Defaults to "top".
+          * The default value is "top".
           */
         position?: string;
     }
