@@ -4,13 +4,13 @@
 #platui {
     #Listview {
         #dependencies {
-            #platui > #variables;
             @enter-animation-name: LISTVIEW_ITEM_ENTER;
             @enter-animation-duration: 300ms;
             @leave-animation-name: LISTVIEW_ITEM_LEAVE;
             @leave-animation-duration: 300ms;
         }
 
+        #platui > #variables;
         #platui > #Listview > #dependencies;
 
     /// =========== Listview Colors =========== ///

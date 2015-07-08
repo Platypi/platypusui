@@ -5,10 +5,10 @@ module platui {
      * @name Slider
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
-     * 
+     *
      * @description
      * An {@link plat.ui.BindControl|BindControl} that standardizes an HTML5 input[type="range"].
      */
@@ -24,9 +24,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -42,9 +42,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.observable.IObservableProperty<platui.ISliderOptions>}
-         * 
+         *
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
@@ -55,9 +55,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current value of the {@link platui.Slider|Slider}.
          */
@@ -68,9 +68,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The min value of the {@link platui.Slider|Slider}.
          */
@@ -81,9 +81,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The max value of the {@link platui.Slider|Slider}.
          */
@@ -94,9 +94,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Window}
-         * 
+         *
          * @description
          * Reference to the Window injectable.
          */
@@ -107,9 +107,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Document}
-         * 
+         *
          * @description
          * Reference to the Document injectable.
          */
@@ -120,9 +120,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.animations.IAnimator}
-         * 
+         *
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
@@ -133,9 +133,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTMLElement representing the slider.
          */
@@ -146,9 +146,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The HTMLElement representing the knob.
          */
@@ -159,9 +159,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {platui.IValuePoint}
-         * 
+         *
          * @description
          * The last touch start recorded.
          */
@@ -172,9 +172,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The maximum slider offset.
          */
@@ -185,9 +185,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The slider's offset left.
          */
@@ -198,9 +198,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The slider's pixel based increment value.
          */
@@ -211,9 +211,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * Denotes the incremental step value of the {@link platui.Slider|Slider's} value property.
          */
@@ -224,9 +224,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the control is vertical or horizontal.
          */
@@ -237,9 +237,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the min and max positions have been reversed.
          */
@@ -250,9 +250,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current knob offset.
          */
@@ -263,9 +263,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * An enum denoting the current touch state of the user.
          */
@@ -276,9 +276,9 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * Denotes whether we're using height or width as the length of the slider.
          */
@@ -289,11 +289,11 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
-         * The current number of times we checked to see if the element was placed into the DOM. 
+         * The current number of times we checked to see if the element was placed into the DOM.
          * Used for determining max offset width.
          */
         protected _cloneAttempts: number = 0;
@@ -303,11 +303,11 @@ module platui {
          * @memberof platui.Slider
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * The max number of times we'll check to see if the element was placed into the DOM.
          * Used for determining max offset width.
          */
         protected _maxCloneAttempts: number = 25;
@@ -317,15 +317,15 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
@@ -337,10 +337,10 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set the proper classes for the control.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -352,10 +352,10 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Determine the button type and apply the proper classes.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
@@ -401,13 +401,13 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * Set the value of the {@link platui.Slider|Slider}. If an invalid value is passed in 
+         * Set the value of the {@link platui.Slider|Slider}. If an invalid value is passed in
          * nothing will happen.
-         * 
+         *
          * @param {number} value The value to set the {@link platui.Slider|Slider} to.
-         * 
+         *
          * @returns {void}
          */
         setValue(value: number): void {
@@ -420,7 +420,7 @@ module platui {
          * @kind function
          * @access public
          * @virtual
-         * 
+         *
          * @description
          * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
@@ -439,15 +439,15 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable value is set externally.
-         * 
+         *
          * @param {number} newValue The new value of the bindable value.
          * @param {number} oldValue The old value of the bindable index.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
-         * 
+         *
          * @returns {void}
          */
         protected _setBoundProperty(newValue: number, oldValue: number, identifier: void, firstTime?: boolean): void {
@@ -464,13 +464,13 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the value of the {@link platui.Slider|Slider}.
-         * 
+         *
          * @param {number} value The value to set.
          * @param {boolean} propertyChanged Whether or not we need to fire a propertyChanged event.
-         * 
+         *
          * @returns {void}
          */
         protected _setValue(value: number, propertyChanged: boolean): void {
@@ -493,10 +493,10 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Initialize the proper tracking events.
-         * 
+         *
          * @returns {void}
          */
         protected _initializeEvents(): void {
@@ -530,12 +530,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Log the first touch.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The touch event object.
-         * 
+         *
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
@@ -585,12 +585,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Set the new slider offset.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $trackend event object.
-         * 
+         *
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
@@ -628,12 +628,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Track the knob movement.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track event object.
-         * 
+         *
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
@@ -651,13 +651,13 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Set the {@link platui.Slider|Slider's} knob position and corresponding value.
-         * 
-         * @param {number} position The position value to set the knob to prior to 
+         *
+         * @param {number} position The position value to set the knob to prior to
          * normalization.
-         * 
+         *
          * @returns {number} The normalized position value.
          */
         protected _setSliderProperties(position: number): number {
@@ -691,12 +691,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates the current value based on knob position and slider width.
-         * 
+         *
          * @param {number} width The current width of the slider.
-         * 
+         *
          * @returns {number} The current value of the {link platui.Slider|Slider}.
          */
         protected _calculateValue(width: number): number {
@@ -709,12 +709,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates knob position based on current value.
-         * 
+         *
          * @param {number} value The current value of the {link platui.Slider|Slider}.
-         * 
+         *
          * @returns {number} The current position of the knob in pixels.
          */
         protected _calculateKnobPosition(value: number): number {
@@ -726,12 +726,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates the new offset of the slider based on the old offset and the distance moved.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track or $trackend event object.
-         * 
+         *
          * @returns {number} The current position of the knob in pixels.
          */
         protected _calculateOffset(ev: plat.ui.IGestureEvent): number {
@@ -751,12 +751,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the property to use for length and sets the max length of the slider.
-         * 
+         *
          * @param {HTMLElement} element? The element to use to obtain the max length.
-         * 
+         *
          * @returns {void}
          */
         protected _setLength(element?: HTMLElement): void {
@@ -786,10 +786,10 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the increment for sliding the {link platui.Slider|Slider}.
-         * 
+         *
          * @returns {number} The slider's increment value.
          */
         protected _setIncrement(): number {
@@ -801,14 +801,14 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the value of the {@link platui.Slider|Slider}.
-         * 
+         *
          * @param {number} newValue The new value to set.
          * @param {boolean} setKnob Whether or not we need to set the knob position.
          * @param {boolean} propertyChanged Whether or not we need to fire a propertyChanged event.
-         * 
+         *
          * @returns {void}
          */
         protected _setValueProperty(newValue: number, setKnob: boolean, propertyChanged: boolean): void {
@@ -841,13 +841,13 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Animates and sets the knob position.
-         * 
-         * @param {number} value? The value to use to calculate the knob position. If no value is 
+         *
+         * @param {number} value? The value to use to calculate the knob position. If no value is
          * specified, the current {@link platui.Slider|Slider's} value will be used.
-         * 
+         *
          * @returns {void}
          */
         protected _setKnob(value?: number): void {
@@ -870,12 +870,12 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Triggers an event starting from this control's element.
-         * 
+         *
          * @param {string} event The event name to trigger.
-         * 
+         *
          * @returns {void}
          */
         protected _trigger(event: string): void {
@@ -889,13 +889,13 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Checks the orientation of the control and ensures it is valid. 
+         * Checks the orientation of the control and ensures it is valid.
          * Will default to "horizontal" if invalid.
-         * 
+         *
          * @param {string} orientation The element to base the length off of.
-         * 
+         *
          * @returns {string} The orientation to be used.
          */
         protected _validateOrientation(orientation: string): string {
@@ -922,7 +922,7 @@ module platui {
          * @memberof platui.Slider
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Creates a clone of this element and uses it to find the max offset.
          *
@@ -1011,7 +1011,7 @@ module platui {
      * @name ISliderOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Slider|Slider} control.
      */
@@ -1021,13 +1021,13 @@ module platui {
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The orientation of the {@link platui.Slider|Slider}. 
+         * The orientation of the {@link platui.Slider|Slider}.
          * Defaults to "horizontal".
-         * 
+         *
          * @remarks
          * - "horizontal" - horizontal control.
          * - "vertical" - vertical control.
@@ -1039,11 +1039,11 @@ module platui {
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * Whether or not the min and max positions are reversed. 
+         * Whether or not the min and max positions are reversed.
          * Defaults to false.
          */
         reverse?: boolean;
@@ -1053,9 +1053,9 @@ module platui {
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current value of the {@link platui.Slider|Slider}.
          */
@@ -1066,11 +1066,11 @@ module platui {
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
-         * The min value of the {@link platui.Slider|Slider}.
+         * The minimum value of the {@link platui.Slider|Slider}.
          */
         min?: number;
 
@@ -1079,11 +1079,11 @@ module platui {
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
-         * The max value of the {@link platui.Slider|Slider}.
+         * The maximum value of the {@link platui.Slider|Slider}.
          */
         max?: number;
 
@@ -1092,9 +1092,9 @@ module platui {
          * @memberof platui.ISliderOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The incremental step value of the {@link platui.Slider|Slider}.
          */

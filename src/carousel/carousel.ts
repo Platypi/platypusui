@@ -2381,7 +2381,7 @@ module platui {
          *
          * @description
          * Specifies how the {@link platui.Carousel|Carousel} should change. Multiple types can be combined by making it space delimited.
-         * It's default behavior is "track swipe".
+         * The default behavior is "track swipe".
          *
          * @remarks
          * "tap": The carousel changes when the markers are tapped.
@@ -2402,7 +2402,7 @@ module platui {
          *
          * @description
          * The swipe direction of the {@link platui.Carousel|Carousel}.
-         * Defaults to "horizontal".
+         * The default value is "horizontal".
          *
          * @remarks
          * - "horizontal" - horizontal control.
@@ -2461,7 +2461,7 @@ module platui {
          * @type {boolean}
          *
          * @description
-         * Enables infinite scrolling.
+         * Enables infinite scrolling when set to true.
          */
         infinite?: boolean;
     }

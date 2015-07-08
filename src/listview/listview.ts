@@ -5,11 +5,11 @@ module platui {
      * @name Listview
      * @memberof platui
      * @kind class
-     * 
+     *
      * @implements {platui.IUIControl}
-     * 
+     *
      * @description
-     * An {@link plat.ui.ITemplateControl|ITemplateControl} for creating a complex list of items with 
+     * An {@link plat.ui.ITemplateControl|ITemplateControl} for creating a complex list of items with
      * extensive functionality.
      */
     export class Listview extends plat.ui.TemplateControl implements IUiControl {
@@ -27,9 +27,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -45,9 +45,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.observable.IObservableProperty<platui.IListviewOptions>}
-         * 
+         *
          * @description
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
@@ -58,9 +58,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access public
-         * 
+         *
          * @type {Array<any>}
-         * 
+         *
          * @description
          * The required context of the control (must be of type Array).
          */
@@ -71,9 +71,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access public
-         * 
+         *
          * @type {Array<plat.ui.TemplateControl>}
-         * 
+         *
          * @description
          * The child controls of the control. All will be of type {@link plat.ui.TemplateControl|TemplateControl}.
          */
@@ -84,9 +84,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.async.IThenable<void>}
-         * 
+         *
          * @description
          * A Promise that fulfills when the items are loaded.
          */
@@ -97,9 +97,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access public
-         * 
+         *
          * @type {Window}
-         * 
+         *
          * @description
          * Reference to the Window injectable.
          */
@@ -110,9 +110,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Document}
-         * 
+         *
          * @description
          * Reference to the Document injectable.
          */
@@ -123,9 +123,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.animations.Animator}
-         * 
+         *
          * @description
          * Reference to the {@link plat.ui.animations.Animator|Animator} injectable.
          */
@@ -136,9 +136,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.async.IPromise}
-         * 
+         *
          * @description
          * Reference to the {@link plat.async.IPromise|IPromise} injectable.
          */
@@ -149,9 +149,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.Compat}
-         * 
+         *
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
@@ -162,9 +162,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.ITemplateControlFactory}
-         * 
+         *
          * @description
          * Reference to the {@link plat.ui.ITemplateControlFactory|ITemplateControlFactory} injectable.
          */
@@ -175,13 +175,13 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.controls.IForEachAliasOptions}
-         * 
+         *
          * @description
-         * Used to hold the alias tokens for the built-in aliases. You 
-         * can overwrite these with the {@link platui.IListviewOptions|options} for 
-         * the {@link platui.Listview|Listview} control. 
+         * Used to hold the alias tokens for the built-in aliases. You
+         * can overwrite these with the {@link platui.IListviewOptions|options} for
+         * the {@link platui.Listview|Listview} control.
          */
         protected _aliases: IListviewAliasOptions = {
             index: __listviewAliasOptions.index,
@@ -197,9 +197,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The container to which items will be added.
          */
@@ -210,9 +210,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not to animate Array mutations.
          */
@@ -223,9 +223,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * An element wrapping the scrollable container to be used for pull-to-refresh.
          */
@@ -236,9 +236,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * An element wrapping the item container for scrolling purposes.
          */
@@ -249,11 +249,11 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IObject<HTMLElement>}
-         * 
+         *
          * @description
-         * An object containing the node names of the {@link platui.Listview|Listview's} defined templates and 
+         * An object containing the node names of the {@link platui.Listview|Listview's} defined templates and
          * their corresponding template node.
          */
         protected _templates: plat.IObject<Node> = {};
@@ -263,9 +263,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the control is vertical or horizontal.
          */
@@ -276,9 +276,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The normalized node name / item template key if a single item template is being used.
          */
@@ -289,9 +289,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {(item: any, index: number, group?: string) => string|plat.async.IPromise}
-         * 
+         *
          * @description
          * The selector function used to obtain the template key for each item.
          */
@@ -302,9 +302,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.async.IThenable<any>}
-         * 
+         *
          * @description
          * A promise that denotes that items are currently being rendered.
          */
@@ -315,9 +315,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IObject<plat.IObject<string>>}
-         * 
+         *
          * @description
          * An object containing template keys of groups associated with an index.
          */
@@ -328,9 +328,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the user is currently performing a load operation.
          */
@@ -341,15 +341,15 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * Denotes how the items in the list should load. Infinite scrolling will call a function whenever more items 
-         * are being requested due to the list being 80% scrolled. Returning false will end all item requests. 
-         * Returning a promise will pause all other item requests until the promise resolves. Incremental loading 
-         * will call a function whenever more items are being requested due to the user requesting more items by 
-         * pulling past the end of the list. Returning false will end all item requests. 
+         * Denotes how the items in the list should load. Infinite scrolling will call a function whenever more items
+         * are being requested due to the list being 80% scrolled. Returning false will end all item requests.
+         * Returning a promise will pause all other item requests until the promise resolves. Incremental loading
+         * will call a function whenever more items are being requested due to the user requesting more items by
+         * pulling past the end of the list. Returning false will end all item requests.
          * Returning a promise will pause all other item requests until the promise resolves.
          */
         protected _loading: string;
@@ -359,9 +359,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {() => any}
-         * 
+         *
          * @description
          * A function that will be called when more items should be added to the list (e.g. - "infinite" and "incremental" loading).
          */
@@ -372,13 +372,13 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
-         * The progress ring used to indicate the loading of items. If the "loading" option is set to "infinite" it is an 
-         * infinite scrolling progress ring that is shown when a promise is returned from the _requestItems function and 
-         * the infiniteScrollingRing option is not set to false. If the "loading" option is set to "incremental" it is a 
+         * The progress ring used to indicate the loading of items. If the "loading" option is set to "infinite" it is an
+         * infinite scrolling progress ring that is shown when a promise is returned from the _requestItems function and
+         * the infiniteScrollingRing option is not set to false. If the "loading" option is set to "incremental" it is a
          * progress ring that is shown when the user scrolls past the bottom of the list.
          */
         protected _loadingProgressRing: HTMLElement;
@@ -388,9 +388,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current scroll position of the container.
          */
@@ -401,9 +401,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.IRemoveListener}
-         * 
+         *
          * @description
          * A function that removes the scroll event listener.
          */
@@ -414,9 +414,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the user is currently performing a refresh operation.
          */
@@ -427,11 +427,11 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {() => any}
-         * 
+         *
          * @description
-         * A function that is called when the user pulls the list to refresh its content. 
+         * A function that is called when the user pulls the list to refresh its content.
          * A promise can be returned.
          */
         protected _refresh: () => any;
@@ -441,9 +441,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * A loading ring that is shown when the user pulls the list to refresh its contents.
          */
@@ -454,9 +454,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * An enumeration value signifying the current touch state.
          */
@@ -467,9 +467,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether the user is tracking in a fashion that attempts to refresh the list.
          */
@@ -480,9 +480,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.IPoint}
-         * 
+         *
          * @description
          * The last touch start recorded.
          */
@@ -493,9 +493,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The current browser's CSS3 transform property.
          */
@@ -506,9 +506,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The value of the inline transform property prior to the Drawer manipulating it.
          */
@@ -519,11 +519,11 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.ui.animations.IAnimationThenable<void>}
-         * 
+         *
          * @description
-         * The most recent touch animation thenable. Used to cancel the current animation if another needs 
+         * The most recent touch animation thenable. Used to cancel the current animation if another needs
          * to begin.
          */
         protected _touchAnimationThenable: plat.ui.animations.IAnimationThenable<void>;
@@ -533,9 +533,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {RegExp}
-         * 
+         *
          * @description
          * A regular expression for normalizing a node name by removing potential special characters.
          */
@@ -546,9 +546,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the select is grouped.
          */
@@ -559,9 +559,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {platui.IGroupHash}
-         * 
+         *
          * @description
          * The default group which refers to this control itself.
          */
@@ -572,9 +572,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.IObject<platui.IGroupHash>}
-         * 
+         *
          * @description
          * An object that keeps track of unique groups.
          */
@@ -585,9 +585,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The normalized node name of the group header template.
          */
@@ -598,9 +598,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.async.IThenable<void>}
-         * 
+         *
          * @description
          * A promise that resolves when the group template has been created.
          */
@@ -611,11 +611,11 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
-         * The current number of times we checked to see if the element was placed into the DOM. 
+         * The current number of times we checked to see if the element was placed into the DOM.
          * Used for determining height.
          */
         protected _cloneAttempts: number = 0;
@@ -625,11 +625,11 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access protected
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * The max number of times we'll check to see if the element was placed into the DOM. 
+         * The max number of times we'll check to see if the element was placed into the DOM.
          * Used for determining height.
          */
         protected _maxCloneAttempts: number = 25;
@@ -639,9 +639,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access private
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * Whether or not the main Array listener has been set.
          */
@@ -652,9 +652,9 @@ module platui {
          * @memberof platui.Listview
          * @kind property
          * @access private
-         * 
+         *
          * @type {() => void}
-         * 
+         *
          * @description
          * The resolve function for the itemsLoaded promise.
          */
@@ -665,10 +665,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * The constructor for a {@link platui.Listview|Listview}. Creates the itemsLoaded promise.
-         * 
+         *
          * @returns {platui.Listview} A {@link platui.Listview|Listview} instance.
          */
         constructor() {
@@ -683,15 +683,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
@@ -703,10 +703,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Check for templateUrl and set if needed.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -722,10 +722,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Parse the innerTemplate and add it to the control's element.
-         * 
+         *
          * @returns {void}
          */
         setTemplate(): void {
@@ -745,14 +745,14 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
-         * Re-syncs the {@link platui.Listview|Listview} child controls and DOM with the new 
+         * Re-syncs the {@link platui.Listview|Listview} child controls and DOM with the new
          * array.
-         * 
+         *
          * @param {Array<any>} newValue? The new Array
          * @param {Array<any>} oldValue? The old Array
-         * 
+         *
          * @returns {void}
          */
         contextChanged(newValue?: Array<any>, oldValue?: Array<any>): void {
@@ -774,10 +774,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Determine item templates and kick off rendering.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
@@ -855,10 +855,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Removes any potentially held memory.
-         * 
+         *
          * @returns {void}
          */
         dispose(): void {
@@ -870,15 +870,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Blow out the DOM starting at the index, determine how to render, and render the count accordingly.
-         * 
+         *
          * @param {number} index? The starting index to render. If not specified, it will start at currentCount.
-         * @param {number} count? The number of items to render. If not specified, the whole context 
+         * @param {number} count? The number of items to render. If not specified, the whole context
          * from the specified index will be rendered.
          * @param {platui.IGroupHash} group? The group we're rendering.
-         * 
+         *
          * @returns {void}
          */
         render(index?: number, count?: number, group?: IGroupHash): void {
@@ -902,12 +902,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Blow out all the DOM, determine how to render, and render accordingly.
-         * 
+         *
          * @param {platui.IGroupHash} group? The group we're rerendering.
-         * 
+         *
          * @returns {void}
          */
         rerender(group?: IGroupHash): void {
@@ -919,15 +919,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Re-syncs the {@link platui.Listview|Listview} child items and DOM with the new items 
+         * Re-syncs the {@link platui.Listview|Listview} child items and DOM with the new items
          * array.
-         * 
+         *
          * @param {string} groupName The group name of the currently changing Array.
          * @param {any} newValue? The new child array of items
          * @param {any} oldValue? The old child array of items
-         * 
+         *
          * @returns {void}
          */
         protected _childContextChanged(groupName: string, newValue?: Array<any>, oldValue?: Array<any>): void {
@@ -942,10 +942,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets a listener for the changes to the array.
-         * 
+         *
          * @returns {void}
          */
         protected _setListener(): void {
@@ -960,10 +960,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the alias tokens to use for all the items in the {@link platui.Listview|Listview} context array.
-         * 
+         *
          * @returns {void}
          */
         protected _setAliases(): void {
@@ -994,15 +994,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Determine the proper item template or method of item template selection.
-         * 
-         * @param {string} itemTemplate The pre-normalized property for indicating either the item template or the 
+         *
+         * @param {string} itemTemplate The pre-normalized property for indicating either the item template or the
          * item template selector.
          * @param {string} itemTemplateKey The normalized property for indicating the item template.
          * @param {string} headerTemplate The property for indicating the group header template.
-         * 
+         *
          * @returns {void}
          */
         protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, headerTemplate: string): void {
@@ -1059,11 +1059,11 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Construct the group template and add it to bindable templates.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that resolves when 
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves when
          * the group template has been added to bindable templates.
          */
         protected _createGroupTemplate(): plat.async.IThenable<void> {
@@ -1096,22 +1096,22 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Adds new groups to the control's element when items are added to 
+         * Adds new groups to the control's element when items are added to
          * the context.
-         * 
+         *
          * @param {number} numberOfGroups The number of groups to add.
          * @param {number} index The point in the array to start adding groups.
          * @param {number} animateItems The number of groups to animate.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
          */
         protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.IThenable<void> {
             var initialIndex = index,
                 max = +(index + numberOfGroups),
                 promises = <Array<plat.async.IThenable<DocumentFragment>>>[];
-                
+
             while (index < max) {
                 promises.push(this._bindGroup(index++));
             }
@@ -1129,14 +1129,14 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds new group to the control's element.
-         * 
+         *
          * @param {number} index The index of the group.
          * @param {DocumentFragment} fragment The group fragment to add to the DOM.
          * @param {boolean} animate Whether or not to animate the group.
-         * 
+         *
          * @returns {void}
          */
         protected _addGroup(index: number, fragment: DocumentFragment, animate: boolean): void {
@@ -1196,7 +1196,7 @@ module platui {
                             if (index > -1) {
                                 animationQueue.splice(index, 1);
                             }
-                            
+
                             if (!this._isVertical) {
                                 // set height for flexbox container
                                 this._setItemContainerHeight(itemContainer, true);
@@ -1219,12 +1219,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handle binding of a single group.
-         * 
+         *
          * @param {number} index The index of the group in context.
-         * 
+         *
          * @returns {plat.async.IThenable<DocumentFragment>}
          */
         protected _bindGroup(index: number): plat.async.IThenable<DocumentFragment> {
@@ -1236,15 +1236,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Creates a specified number of items.
-         * 
+         *
          * @param {number} index The index to start creating items.
          * @param {number} count The number of items to create.
          * @param {platui.IGroupHash} group The group for which we're creating items.
          * @param {number} animateItems The number of items to animate.
-         * 
+         *
          * @returns {void}
          */
         protected _createItems(index: number, count: number, group: IGroupHash, animateItems: number): void {
@@ -1261,7 +1261,7 @@ module platui {
                     }).then(null, (error): void => {
                         this._log.debug(this.type + ' error: ' + error);
                     });
-                    
+
                     return;
                 } else if (!isVertical) {
                     this._setItemContainerHeight(opGroup.itemContainer, false);
@@ -1274,22 +1274,22 @@ module platui {
                     if (indexOf !== -1) {
                         addQueue.splice(indexOf, 1);
                     }
-                    
+
                     if (isControl) {
                         return;
                     }
-                    
+
                     opGroup.element.removeAttribute(__Hide);
                     if (isVertical) {
                         return;
                     }
-                    
+
                     this._setItemContainerWidth(opGroup.itemContainer);
                 },
                 onError = (error: Error): void => {
                     this._log.debug(this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
                 };
-                
+
             if (utils.isFunction(this._templateSelector)) {
                 var promises: Array<plat.async.IThenable<any>> = [];
                 opGroup.itemCount += count;
@@ -1316,7 +1316,7 @@ module platui {
 
             this._disposeFromIndex(index, opGroup);
             opGroup.itemCount += count;
-            
+
             var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
             addQueue.push(addPromise);
         }
@@ -1326,16 +1326,16 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Adds new items to the control's element when items are added to 
+         * Adds new items to the control's element when items are added to
          * the array.
-         * 
+         *
          * @param {number} index The point in the array to start adding items.
          * @param {number} numberOfItems The number of items to add.
          * @param {platui.IGroupHash} group The group that we're performing this operation on.
          * @param {number} animateItems The number of items to animate.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} The itemsLoaded promise.
          */
         protected _addItems(index: number, numberOfItems: number, group: IGroupHash, animateItems: number): plat.async.IThenable<void> {
@@ -1398,15 +1398,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Render items using a defined render function starting at a given index and continuing 
-         * through for a set number of items. If undefined or null is returned from the function, 
+         * Render items using a defined render function starting at a given index and continuing
+         * through for a set number of items. If undefined or null is returned from the function,
          * rendering will stop.
-         * 
+         *
          * @param {number} index The starting index to render.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
+         *
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
         protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.IThenable<any> {
@@ -1463,26 +1463,26 @@ module platui {
                 }
             });
         }
-        
+
         /**
          * @name _appendRenderedItem
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Appends the rendered item from the defined render function.
-         * 
+         *
          * @param {any} node The node to place into the item container if available.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * @param {boolean} animate? Whether or not to animate the new item.
-         * 
+         *
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
         protected _appendRenderedItem(node: any, group?: IGroupHash, animate?: boolean): void {
             var utils = this.utils,
                 opGroup = group || this._defaultGroup;
-                
+
             if (utils.isNull(node) || utils.isArray(node)) {
                     return;
             } else if (animate === true) {
@@ -1493,7 +1493,7 @@ module platui {
                             if (animationIndex === -1) {
                                 return;
                             }
-                            
+
                             animationQueue.splice(animationIndex, 1);
                         }),
                         op: <string>null
@@ -1502,7 +1502,7 @@ module platui {
             } else {
                 opGroup.itemContainer.insertBefore(node, null);
             }
-            
+
             if (utils.isFunction(this.__resolveFn)) {
                 this.__resolveFn();
                 this.__resolveFn = null;
@@ -1514,15 +1514,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Updates the control's children resource objects when 
+         * Updates the control's children resource objects when
          * the array changes.
-         * 
+         *
          * @param {number} index? The index to begin updating.
          * @param {number} count? The number of resources to update.
          * @param {plat.ui.TemplateControl} control The control whose resources are to be updated.
-         * 
+         *
          * @returns {void}
          */
         protected _updateResource(index: number, control: plat.ui.TemplateControl): void {
@@ -1539,15 +1539,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Returns a resource alias object for an item in the array. The 
-         * resource object contains index:number, even:boolean, odd:boolean, 
+         * Returns a resource alias object for an item in the array. The
+         * resource object contains index:number, even:boolean, odd:boolean,
          * first:boolean, and last:boolean.
-         * 
+         *
          * @param {any} context The context to get the aliases for.
          * @param {number} index The index used to create the resource aliases.
-         * 
+         *
          * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
          */
         protected _getAliases(context: any, index: number): plat.IObject<plat.ui.IResource> {
@@ -1589,13 +1589,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds an Array of items to the element without animating.
-         * 
+         *
          * @param {Array<Node>} items The Array of items to add.
          * @param {Element} container THe container to add the items to.
-         * 
+         *
          * @returns {void}
          */
         protected _appendItems(items: Array<Node>, container: Element): void {
@@ -1607,13 +1607,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds an item to the control's element animating its elements.
-         * 
+         *
          * @param {DocumentFragment} item The HTML fragment representing a single item.
          * @param {platui.IGroupHash} group The group items are being added to.
-         * 
+         *
          * @returns {void}
          */
         protected _appendAnimatedItem(item: DocumentFragment, group: IGroupHash): void {
@@ -1628,7 +1628,7 @@ module platui {
                         if (index === -1) {
                             return;
                         }
-                        
+
                         animationQueue.splice(index, 1);
                     }),
                     op: <string>null
@@ -1641,14 +1641,14 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Removes items from the control's element.
-         * 
+         *
          * @param {number} index The index to start disposing from.
          * @param {number} numberOfItems The number of items to remove.
          * @param {platui.IGroupHash} group The group for which we're disposing items.
-         * 
+         *
          * @returns {void}
          */
         protected _removeItems(index: number, numberOfItems: number, group: IGroupHash): void {
@@ -1663,13 +1663,13 @@ module platui {
             }
 
             this._updateResource(controls.length - 1, control);
-            
+
             if (this === control) {
                 return;
             } else if (controlDisposed && !this._isVertical) {
                 this._resetItemContainerWidth(group.itemContainer);
             }
-            
+
             if (controls.length === 0) {
                 group.element.setAttribute(__Hide, '');
             }
@@ -1680,13 +1680,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Dispose of the controls and DOM starting at a given index.
-         * 
+         *
          * @param {number} index The starting index to dispose.
          * @param {platui.IGroupHash} group? The group for which we're disposing items.
-         * 
+         *
          * @returns {void}
          */
         protected _disposeFromIndex(index: number, group?: IGroupHash): void {
@@ -1700,13 +1700,13 @@ module platui {
             while (last-- > index) {
                 dispose(controls[last]);
             }
-            
+
             if (this === control) {
                 return;
             } else if (controlDisposed && !this._isVertical) {
                 this._resetItemContainerWidth(opGroup.itemContainer);
             }
-            
+
             if (controls.length === 0) {
                 group.element.setAttribute(__Hide, '');
             }
@@ -1717,13 +1717,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Find and determine the proper loading function.
-         * 
+         *
          * @param {string} requestItems The property for indicating the function for requesting more items.
          * @param {boolean} hideRing? Whether or not to hide the progress ring for "incremental" loading.
-         * 
+         *
          * @returns {void}
          */
         protected _determineLoading(requestItems: string, showRing: boolean): void {
@@ -1768,12 +1768,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The scroll event listener.
-         * 
+         *
          * @param {Event} ev The scroll event object.
-         * 
+         *
          * @returns {void}
          */
         protected _onScroll(ev?: Event): void {
@@ -1800,10 +1800,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Checks if the scrolling has hit the proper threshold and requests more items if it has.
-         * 
+         *
          * @returns {void}
          */
         protected _handleScroll(): void {
@@ -1852,12 +1852,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Find and determine the pull-to-refresh function.
-         * 
+         *
          * @param {string} pullRefresh The property for indicating the pull-to-refresh function.
-         * 
+         *
          * @returns {void}
          */
         protected _initializeRefresh(refresh: string): void {
@@ -1881,13 +1881,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Initializes the proper tracking events.
-         * 
+         *
          * @param {boolean} loading Whether or not to initialize the loading tracking events.
          * @param {boolean} refresh Whether or not to initialize the refresh tracking events.
-         * 
+         *
          * @returns {void}
          */
         protected _initializeTracking(loading: boolean, refresh: boolean): void {
@@ -1939,12 +1939,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The touch start event listener for when looking for a refresh.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $touchstart event object.
-         * 
+         *
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
@@ -1982,12 +1982,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The touch end event listener for when looking for an incremental load.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $touchend event object.
-         * 
+         *
          * @returns {void}
          */
         protected _touchEndLoad(ev: plat.ui.IGestureEvent): void {
@@ -2026,12 +2026,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The touch end event listener for when looking for a refresh.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $touchend event object.
-         * 
+         *
          * @returns {void}
          */
         protected _touchEndRefresh(ev: plat.ui.IGestureEvent): void {
@@ -2056,13 +2056,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * A common touch end event listener for both refresh and incremental loading.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $touchend event object.
          * @param {boolean} refreshing Whether this translation is for refresh or incremental loading.
-         * 
+         *
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent, refreshing: boolean): void {
@@ -2135,12 +2135,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The tracking event listener for looking for a load.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
-         * 
+         *
          * @returns {void}
          */
         protected _trackLoad(ev: plat.ui.IGestureEvent): void {
@@ -2183,12 +2183,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The tracking event listener for looking for a refresh.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
-         * 
+         *
          * @returns {void}
          */
         protected _trackRefresh(ev: plat.ui.IGestureEvent): void {
@@ -2216,13 +2216,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles the translation of the viewport while tracking.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $track[direction] event object.
          * @param {boolean} refreshing Whether this translation is for refresh or incremental loading.
-         * 
+         *
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent, refreshing: boolean): void {
@@ -2242,13 +2242,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Calculates the translation value for setting the transform value during tracking.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The $tracking event.
          * @param {boolean} refreshing Whether this translation is for refresh or incremental loading.
-         * 
+         *
          * @returns {string} The translation value.
          */
         protected _calculateTranslation(ev: plat.ui.IGestureEvent, refreshing: boolean): string {
@@ -2292,10 +2292,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Obtains the current browser's transform property value.
-         * 
+         *
          * @returns {void}
          */
         protected _setTransform(): void {
@@ -2318,13 +2318,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Clones and parses thes innerTemplate and creates the templates object.
-         * 
+         *
          * @param {string} itemTemplate The normalized item template name from the options.
          * @param {string} headerTemplate? The normalized group header template name from the options.
-         * 
+         *
          * @returns {void}
          */
         protected _parseInnerTemplate(itemTemplate: string, headerTemplate?: string): void {
@@ -2362,13 +2362,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Receives an event when a method has been called on an array and maps the array 
+         * Receives an event when a method has been called on an array and maps the array
          * method to its associated method handler.
-         * 
+         *
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
-         * 
+         *
          * @returns {void}
          */
         protected _executeEvent(changes: Array<plat.observable.IArrayChanges<any>>): void {
@@ -2383,13 +2383,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Adds new group to the control's element.
-         * 
+         *
          * @param {string} groupName The group name of the currently changing Array.
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
-         * 
+         *
          * @returns {void}
          */
         protected _executeChildEvent(groupName: string, changes: Array<plat.observable.IArrayChanges<any>>): void {
@@ -2409,13 +2409,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * First checks if the push will do anything, then handles items being pushed into the array.
-         * 
+         *
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
+         *
          * @returns {void}
          */
         protected _push(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
@@ -2429,13 +2429,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles items being popped off the array.
-         * 
+         *
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
+         *
          * @returns {void}
          */
         protected _pop(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
@@ -2468,13 +2468,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles items being unshifted into the array.
-         * 
+         *
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
+         *
          * @returns {void}
          */
         protected _unshift(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
@@ -2502,13 +2502,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles items being shifted off the array.
-         * 
+         *
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
+         *
          * @returns {void}
          */
         protected _shift(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
@@ -2538,13 +2538,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles adding/removing items when an array is spliced.
-         * 
+         *
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * 
+         *
          * @returns {void}
          */
         protected _splice(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
@@ -2574,7 +2574,7 @@ module platui {
                         }
                         return;
                     }
-                    
+
                     // itemCount will be negative
                     this._createItems(currentLength, -itemCount, opGroup, 0);
                 } else if (currentLength > newLength) {
@@ -2654,24 +2654,24 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Animates the indicated items.
-         * 
+         *
          * @param {number} startIndex The starting index of items to animate.
          * @param {number} numberOfItems The number of consecutive items to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {string} animationOp Denotes animation operation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
-         * 
+         *
          * @returns {plat.ui.async.IThenable<void>} A promise that resolves when all animations are complete.
          */
         protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string,
             cancel: boolean): plat.async.IThenable<void> {
             switch (animationOp) {
                 case 'clone':
-                    return this._handleClonedContainerAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), 
+                    return this._handleClonedContainerAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group),
                         key, group, cancel === true);
                 case 'leave':
                     return this._handleLeave(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group);
@@ -2679,20 +2679,20 @@ module platui {
                     return this._handleSimpleAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group, cancel === true);
             }
         }
-        
+
         /**
          * @name _getAnimatedNodes
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Translates the items to be animated into the nodes to be animated.
-         * 
+         *
          * @param {number} startIndex The starting index of items to animate.
          * @param {number} numberOfItems The number of consecutive items to animate.
          * @param {IGroupHash} group The group performing the animation.
-         * 
+         *
          * @returns {Array<Node>} An Array of the nodes to be animated.
          */
         protected _getAnimatedNodes(startIndex: number, numberOfItems: number, group: IGroupHash): Array<Node> {
@@ -2700,32 +2700,32 @@ module platui {
                 // we are animating a group so block length === 3 (one element node and two comment nodes)
                 var blockLength = 3,
                     start = startIndex * blockLength;
-                    
+
                 return Array.prototype.slice.call(group.itemContainer.childNodes, start, numberOfItems * blockLength + start);
             }
-            
+
             var utils = this.utils,
                 isNode = utils.isNode,
                 nodes: Array<Node> = Array.prototype.slice.call(group.itemContainer.childNodes),
                 endIndex = startIndex + numberOfItems - 1,
                 controls = <Array<plat.ui.TemplateControl>>group.control.controls;
-            
+
             if (controls.length <= endIndex) {
                 endIndex = controls.length - 1;
             }
-            
+
             var startNode = controls[startIndex].startNode,
                 endNode = controls[endIndex].endNode;
             if (!(isNode(startNode) && isNode(endNode))) {
                 return [];
             }
-            
+
             var startNodeIndex = nodes.indexOf(startNode),
                 endNodeIndex = nodes.indexOf(endNode);
             if (startNodeIndex === -1 || endNodeIndex === -1) {
                 return [];
             }
-            
+
             return nodes.slice(startNodeIndex, endNodeIndex + 1);
         }
 
@@ -2734,15 +2734,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles a simple animation of a block of elements.
-         * 
+         *
          * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
-         * 
+         *
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete.
          */
         protected _handleSimpleAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void> {
@@ -2762,7 +2762,7 @@ module platui {
                     if (index === -1) {
                         return;
                     }
-                    
+
                     animationQueue.splice(index, 1);
                 }),
                 callback = (): plat.ui.animations.IAnimationThenable<any> => {
@@ -2787,15 +2787,15 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles a simple animation of a block of elements.
-         * 
+         *
          * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both  
+         *
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both
          * the cloned item has been removed and the original item has been put back.
          */
         protected _handleLeave(nodes: Array<Node>, key: string, group: IGroupHash): plat.async.IThenable<void> {
@@ -2810,7 +2810,7 @@ module platui {
                     if (index === -1) {
                         return;
                     }
-                    
+
                     animationQueue.splice(index, 1);
                 }),
                 animation = {
@@ -2828,19 +2828,19 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Handles a simple animation of a block of elements.
-         * 
+         *
          * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
-         * 
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both  
+         *
+         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both
          * the cloned container has been removed and the original container has been put back.
          */
-        protected _handleClonedContainerAnimation(nodes: Array<Node>, key: string, group: IGroupHash, 
+        protected _handleClonedContainerAnimation(nodes: Array<Node>, key: string, group: IGroupHash,
             cancel: boolean): plat.async.IThenable<void> {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
@@ -2857,7 +2857,7 @@ module platui {
                     if (index > -1) {
                         animationQueue.splice(index, 1);
                     }
-                    
+
                     if (isNull(parentNode)) {
                         return;
                     }
@@ -2896,13 +2896,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Cancels all current animations.
-         * 
+         *
          * @param {platui.IGroupHash} The object representing the current group.
-         * 
-         * @returns {plat.async.IThenable<any>} A promise that resolves when 
+         *
+         * @returns {plat.async.IThenable<any>} A promise that resolves when
          * all current animations have been canceled.
          */
         protected _cancelCurrentAnimations(group?: IGroupHash): plat.async.IThenable<any> {
@@ -2922,12 +2922,12 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Normalizes template names by removing special characters.
-         * 
+         *
          * @param {string} templateName The name to normalize.
-         * 
+         *
          * @returns {string} The normalized template name.
          */
         protected _normalizeTemplateName(templateName: string): string {
@@ -2941,10 +2941,10 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access private
-         * 
+         *
          * @description
          * Creates a progress ring element.
-         * 
+         *
          * @returns {HTMLElement} The progress ring element.
          */
         protected _generateProgressRing(): HTMLElement {
@@ -2967,13 +2967,13 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * Checks the orientation of the control and ensures it is valid. 
+         * Checks the orientation of the control and ensures it is valid.
          * Will default to "horizontal" if invalid.
-         * 
+         *
          * @param {string} orientation The element to base the length off of.
-         * 
+         *
          * @returns {string} The orientation to be used.
          */
         protected _validateOrientation(orientation: string): string {
@@ -3000,7 +3000,7 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the width of a group's item container.
          *
@@ -3016,11 +3016,11 @@ module platui {
                 this._setItemContainerWidthWithClone(element, immediate);
                 return;
             }
-            
+
             var setter = (): void => {
                 element.style.width = width + 'px';
             };
-            
+
             if (immediate === true) {
                 setter();
                 return;
@@ -3028,13 +3028,13 @@ module platui {
 
             this.utils.requestAnimationFrame(setter);
         }
-        
+
         /**
          * @name _resetItemContainerWidth
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Resets the width of a group's item container.
          *
@@ -3052,7 +3052,7 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Creates a clone of the group container and uses it to find width values.
          *
@@ -3145,19 +3145,19 @@ module platui {
             shallowStyle.setProperty(codependentProperty, computedStyle.height, important);
             shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            
+
             var setWidth = clone.scrollWidth + 'px',
                 setter = (): void => {
                     item.style.width = setWidth;
                 };
 
             body.removeChild(shallowCopy);
-            
+
             if (immediate === true) {
                 setter();
                 return;
             }
-            
+
             utils.requestAnimationFrame(setter);
         }
 
@@ -3166,7 +3166,7 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Sets the height of a group's item container.
          *
@@ -3179,12 +3179,12 @@ module platui {
             var parent = element.parentElement,
                 parentHeight = parent.offsetHeight,
                 headerHeight = 0;
-                
+
             if (!parentHeight) {
                 this._setItemContainerHeightWithClone(element, withHeader);
                 return;
             }
-            
+
             if (withHeader === true) {
                 headerHeight = (<HTMLElement>parent.firstElementChild).offsetHeight;
                 if (!headerHeight) {
@@ -3203,7 +3203,7 @@ module platui {
          * @memberof platui.Listview
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Creates a clone of the group container and uses it to find height values.
          *
@@ -3305,9 +3305,9 @@ module platui {
      * @name IListviewOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @extends {plat.ui.controls.IForEachOptions}
-     * 
+     *
      * @description
      * The available {@link plat.controls.Options|options} for the {@link platui.Listview|Listview} control.
      */
@@ -3316,9 +3316,9 @@ module platui {
          * @name aliases
          * @memberof plat.ui.controls.IListviewOptions
          * @kind property
-         * 
+         *
          * @type {platui.IListviewAliasOptions}
-         * 
+         *
          * @description
          * Used to specify alternative alias tokens for the built-in {@link platui.Listview|Listview} aliases.
          */
@@ -3329,13 +3329,13 @@ module platui {
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The orientation (scroll direction) of the {@link platui.Listview|Listview}. 
-         * Defaults to "vertical".
-         * 
+         * The orientation (scroll direction) of the {@link platui.Listview|Listview}.
+         * The default value is "vertical".
+         *
          * @remarks
          * - "vertical"
          * - "horizontal"
@@ -3347,9 +3347,9 @@ module platui {
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string|(item: any, index: number, group?: string) => string}
-         * 
+         *
          * @description
          * The node name of the desired item template or a defined item template selector function.
          */
@@ -3360,29 +3360,29 @@ module platui {
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The node name of the desired group header template.
          */
-        headerTemplate?: any;
+        headerTemplate?: string;
 
         /**
          * @name loading
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * Indicates a special type of loading. Available options are "infinite" or "incremental".
-         * 
+         *
          * @remarks
-         * - "infinite" - denotes infinite scrolling where items are continuously requested when the user scrolls the container 
+         * - "infinite" - denotes infinite scrolling where items are continuously requested when the user scrolls the container
          * past 80% to add to the list until false is returned from the function.
-         * - "incremental" - denotes giving the user the ability to pull the list when its fully scrolled to indicate adding more items. 
+         * - "incremental" - denotes giving the user the ability to pull the list when its fully scrolled to indicate adding more items.
          * Returning false indicates no more items.
          */
         loading?: string;
@@ -3392,11 +3392,11 @@ module platui {
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The function that will be called when more items are being requested to add to the list.
+         * The name of the function that will be called when more items are being requested to add to the list.
          */
         onItemsRequested?: string;
 
@@ -3405,11 +3405,11 @@ module platui {
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
-         * Whether or not to show an infinite scrolling progress ring whenever the loading type is set to 
+         * Whether or not to show an infinite scrolling progress ring whenever the loading type is set to
          * "infinite" and a promise is returned from the onItemsRequested function. Defaults to true.
          */
         infiniteProgress?: boolean;
@@ -3419,13 +3419,13 @@ module platui {
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
-         * The url of the {@link platui.Listview|Listview's} intended template if not using 
+         * The url of the {@link platui.Listview|Listview's} intended template if not using
          * innerHTML.
-         * 
+         *
          * @remarks
          * This URL must be a static string and cannot be a bound item on a parent control's context.
          */
@@ -3436,15 +3436,15 @@ module platui {
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The function that will be called when the user pulls to refresh.
-         * 
+         *
          * @remarks
-         * When the {@link platui.Listview|Listview's} orientation is vertical the motion will 
-         * be to pull down when the list is scrolled all the way to the top, when horizontal the motion 
+         * When the {@link platui.Listview|Listview's} orientation is vertical the motion will
+         * be to pull down when the list is scrolled all the way to the top, when horizontal the motion
          * will be to pull right when the list is scrolled all the way to the left.
          */
         onRefresh?: string;
@@ -3454,7 +3454,7 @@ module platui {
      * @name IGroupHash
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
      * Defines the properties for the {@link platui.Listview|Listview's} grouping hash.
      */
@@ -3464,9 +3464,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The name of the group.
          */
@@ -3477,9 +3477,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The index of the group.
          */
@@ -3490,9 +3490,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The primary group element.
          */
@@ -3503,9 +3503,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {HTMLElement}
-         * 
+         *
          * @description
          * The group's item container.
          */
@@ -3516,9 +3516,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {plat.ui.TemplateControl}
-         * 
+         *
          * @description
          * The control associated with this group.
          */
@@ -3529,9 +3529,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {Array<plat.async.IThenable<void>>}
-         * 
+         *
          * @description
          * An Array of promises denoting items being added to this group.
          */
@@ -3542,9 +3542,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {number}
-         * 
+         *
          * @description
          * The current number of synchronous items in the group.
          */
@@ -3555,9 +3555,9 @@ module platui {
          * @memberof platui.IGroupHash
          * @kind property
          * @access public
-         * 
+         *
          * @type {Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>}
-         * 
+         *
          * @description
          * A queue of objects representing current animations and their operation for this group.
          */
@@ -3568,9 +3568,9 @@ module platui {
      * @name IListviewGroup
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @description
-     * Defines the necessary key-value pairs for a {@link platui.Listview|Listview} group that makes up 
+     * Defines the necessary key-value pairs for a {@link platui.Listview|Listview} group that makes up
      * a grouped {@link platui.Listview|Listview's} context.
      */
     export interface IListviewGroup {
@@ -3579,12 +3579,12 @@ module platui {
          * @memberof platui.IListviewGroup
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The group name.
-         * 
+         *
          * @remarks
          * Will be available in the headerTemplate as "group".
          */
@@ -3595,9 +3595,9 @@ module platui {
          * @memberof platui.IListviewGroup
          * @kind property
          * @access public
-         * 
+         *
          * @type {Array<any>}
-         * 
+         *
          * @description
          * The items contained in each group.
          */
@@ -3608,11 +3608,11 @@ module platui {
      * @name IListviewAliasOptions
      * @memberof platui
      * @kind interface
-     * 
+     *
      * @extends {plat.ui.controls.IForEachAliasOptions}
-     * 
+     *
      * @description
-     * The alias tokens for the {@link plat.ui.controls.IListviewOptions|Listview options} object for the 
+     * The alias tokens for the {@link plat.ui.controls.IListviewOptions|Listview options} object for the
      * {@link platui.Listview|Listview} control.
      */
     export interface IListviewAliasOptions extends plat.ui.controls.IForEachAliasOptions {
@@ -3621,12 +3621,12 @@ module platui {
          * @memberof platui.IListviewAliasOptions
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The group name of the current group.
-         * 
+         *
          * @remarks
          * Only can be used in grouped {@link platui.Listview|Listviews}.
          */
