@@ -1,9 +1,10 @@
 {
   "name": "platypusui",
-  "version": "0.4.19",
+  "version": "0.4.20",
   "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
   "main": "dist/platypusui.js",
   "devDependencies": {
+    "concurrently": "latest",
     "glob": "latest",
     "grunt": "latest",
     "grunt-cli": "latest",
@@ -26,18 +27,18 @@
   },
   "scripts": {
     "prepublish": "npm run deploy",
-    "build-all": "npm run build-examples && npm run build-src",
-    "build-examples": "tsc -p build/tsc/examples",
-    "build-src": "tsc -p build/tsc/src",
-    "clean-all": "npm run clean-examples && npm run clean-src",
-    "clean-examples": "rimraf -p examples/app.*",
-    "clean-src": "rimraf -p dist/*",
+    "build:all": "npm run build:examples && npm run build:src",
+    "build:examples": "tsc -p build/tsc/examples",
+    "build:src": "tsc -p build/tsc/src",
+    "clean:all": "npm run clean:examples && npm run clean:src",
+    "clean:examples": "rimraf -p examples/app.*",
+    "clean:src": "rimraf -p dist/*",
     "deploy": "grunt",
-    "examples": "npm run less-examples && npm run build-examples && npm run server-examples",
-    "less-examples": "grunt lessCompile:examples",
-    "server-examples": "http-server -p 3000",
-    "watch-examples": "tsc -p build/tsc/examples/watch",
-    "watch-src": "tsc -p build/tsc/src/watch"
+    "start": "concurrent -r \"npm run less:examples\" \"npm run watch:examples\" \"npm run server:examples\"",
+    "less:examples": "grunt lessCompile:examples",
+    "server:examples": "http-server -p 3000",
+    "watch:examples": "npm run build:examples -- -w",
+    "watch:src": "npm run build:src -- -w"
   },
   "keywords": [
     "platypi",
