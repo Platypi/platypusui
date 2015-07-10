@@ -931,9 +931,12 @@ module platui {
          */
         protected _onInput(): void {
             var inputElement = this._inputElement,
-                value = this._stripInput(inputElement.value);
+                value = inputElement.value,
+                strippedValue = this._stripInput(inputElement.value);
 
-            inputElement.value = value;
+            if (value !== strippedValue) {
+                value = inputElement.value = strippedValue;
+            }
 
             if (value === this.value) {
                 return;
