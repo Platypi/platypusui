@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.5.0 (https://platypi.io)
+ * PlatypusUI v0.5.1 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -3727,8 +3727,10 @@ var platui;
          * The event handler upon user text input.
          */
         Input.prototype._onInput = function () {
-            var inputElement = this._inputElement, value = this._stripInput(inputElement.value);
-            inputElement.value = value;
+            var inputElement = this._inputElement, value = inputElement.value, strippedValue = this._stripInput(inputElement.value);
+            if (value !== strippedValue) {
+                value = inputElement.value = strippedValue;
+            }
             if (value === this.value) {
                 return;
             }
