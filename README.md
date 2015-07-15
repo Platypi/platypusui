@@ -1,5 +1,7 @@
 [![npm version](https://badge.fury.io/js/platypusui.svg)](http://badge.fury.io/js/platypusui)
 [![Downloads](http://img.shields.io/npm/dm/platypusui.svg)](https://npmjs.org/package/platypusui)
+[![Dependency Status](https://david-dm.org/Platypi/platypusui.svg)](https://david-dm.org/Platypi/platypusui)
+[![devDependency Status](https://david-dm.org/Platypi/platypusui/dev-status.svg)](https://david-dm.org/Platypi/platypusui#info=devDependencies)
 
 PlatypusUI
 ==========
@@ -16,9 +18,9 @@ You can use either `npm` or `bower` to install the packaged version of PlatypusU
 npm install platypusui --save
 ```
 
-The packaged version of this library works in CommonJS and on window, so if you are using 
-[Browserify](https://github.com/substack/node-browserify) or other CommonJS 
-module loaders you can use `require('platypusui')`. If you want to use `platui` on 
+The packaged version of this library works in CommonJS and on window, so if you are using
+[Browserify](https://github.com/substack/node-browserify) or other CommonJS
+module loaders you can use `require('platypusui')`. If you want to use `platui` on
 `window`, you can include it in your `index.html`:
 
 ```html
@@ -33,8 +35,8 @@ module loaders you can use `require('platypusui')`. If you want to use `platui` 
 bower install platypusui --save
 ```
 
-The packaged version of this library works with CommonJS and on window, so if you are using a CommonJS 
-loader, you can use `require('/bower_components/platypusui/platypusui')`. If you want 
+The packaged version of this library works with CommonJS and on window, so if you are using a CommonJS
+loader, you can use `require('/bower_components/platypusui/platypusui')`. If you want
 to use `platui` on `window`, you can include it in your `index.html`:
 
 ```html
@@ -45,9 +47,9 @@ to use `platui` on `window`, you can include it in your `index.html`:
 
 ## Use with TypeScript
 
-The packaged version of this library includes two declaration files, as well as the source `.ts` file. You 
-can use the `.ts` file if you want to modify it (e.g. compile it for AMD). If you are 
-using `platui` on the window, you will want to reference the `platypusui-node.d.ts` 
+The packaged version of this library includes two declaration files, as well as the source `.ts` file. You
+can use the `.ts` file if you want to modify it (e.g. compile it for AMD). If you are
+using `platui` on the window, you will want to reference the `platypusui-node.d.ts`
 declaration file:
 
 ```ts
@@ -61,7 +63,7 @@ or
 ```
 
 ## Use with LESS
-The packaged version of this library includes a single platypus.less file. We recommend using a single 
+The packaged version of this library includes a single platypus.less file. We recommend using a single
 LESS file to import all of your other LESS files, including platypus.less.
 
 ```less
@@ -74,7 +76,7 @@ or
 @import "/bower_components/platypusui/platypus.less";
 ```
 
-All of the `platui` variables and mixins are namespaced. The primary namespace is `#platui`. To overwrite 
+All of the `platui` variables and mixins are namespaced. The primary namespace is `#platui`. To overwrite
 a variable such as `@primary-color` simply re-declare the variable in the proper namespace.
 
 ```less
@@ -87,7 +89,7 @@ a variable such as `@primary-color` simply re-declare the variable in the proper
 
 ## Recommendations
 
-It is recommended that you use a CommonJS module loader with PlatypusUI in favor of 
+It is recommended that you use a CommonJS module loader with PlatypusUI in favor of
 using `window.platui`.
 
 ## Documentation
