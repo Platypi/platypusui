@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.4.10 (https://platypi.io)
+  * PlatypusUI v0.5.1 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -88,6 +88,21 @@ declare module platui {
           * Determine the button style and apply the proper classes.
           */
         loaded(): void;
+        /**
+          * A function that allows this control to observe both the bound property itself as well as
+          * potential child properties if being bound to an object.
+          * @param {plat.observable.IImplementTwoWayBinding} binder The control that facilitates the
+          * databinding.
+          */
+        observeProperties(binder: plat.observable.IImplementTwoWayBinding): void;
+        /**
+          * The function called when the bindable property is set externally.
+          * @param {string} newValue The new value of the bindable property.
+          * @param {string} oldValue The old value of the bindable property.
+          * @param {string} identifier The identifier of the property being observed.
+          * @param {boolean} firstTime? A boolean value indicating whether this is the first time its being set.
+          */
+        protected _setBoundProperty(newValue: string, oldValue: string, identifier: string, firstTime?: boolean): void;
         /**
           * Add event listeners for selection.
           */
@@ -245,7 +260,7 @@ declare module platui {
     interface ICheckboxOptions {
         /**
           * The type of mark to place inside the Checkbox.
-          * Defaults to "check".
+          * The default value is "check".
           */
         mark?: string;
     }
@@ -531,11 +546,12 @@ declare module platui {
     interface IDrawerOptions {
         /**
           * The unique ID of the Drawer / DrawerController pair.
+          * Useful when multiple Drawers exist in an app.
           */
         id?: string;
         /**
           * The position of the Drawer.
-          * Defaults to "left".
+          * The default value is "left".
           */
         position?: string;
         /**
@@ -543,7 +559,7 @@ declare module platui {
           */
         templateUrl?: string;
         /**
-          * Whether the Drawer has an elastic effect while sliding.
+          * Whether the Drawer has an elastic effect while tracking open.
           * Defaults to false.
           */
         elastic?: boolean;
@@ -671,7 +687,7 @@ declare module platui {
         /**
           * A function for removing the swipe open event listener.
           */
-        protected _removeSwipeOpen: plat.IRemoveListener;
+        protected _removeSwipeToggle: plat.IRemoveListener;
         /**
           * A function for removing the primary track (open) event listener.
           */
@@ -692,11 +708,6 @@ declare module platui {
           * A function for removing the swipe event listeners on the open Drawer.
           */
         protected _openTrackRemover: plat.IRemoveListener;
-        /**
-          * A function for removing the listener for responding to other DrawerControllers
-          * being disposed.
-          */
-        protected _disposeRemover: plat.IRemoveListener;
         /**
           * The root element to translate.
           */
@@ -826,15 +837,15 @@ declare module platui {
         /**
           * Adds swipe events to the controller element.
           */
-        protected _addSwipeOpen(): void;
+        protected _addSwipeToggle(): void;
         /**
           * Adds swipe close event to the root element.
           */
         protected _addSwipeClose(): void;
         /**
-          * Adds tap close event to the controller element.
+          * Adds tap toggle event to the controller element.
           */
-        protected _addTapOpen(): void;
+        protected _addTapToggle(): void;
         /**
           * Adds tap close event to the root element.
           */
@@ -932,7 +943,7 @@ declare module platui {
         useContext?: boolean;
         /**
           * Specifies how the Drawer should open. Multiple types can be combined by making it space delimited.
-          * It's default behavior is "tap track".
+          * The default behavior is "tap track".
           */
         type?: string;
     }
@@ -1092,7 +1103,7 @@ declare module platui {
     interface IModalOptions {
         /**
           * The transition type/direction the Modal will enter with.
-          * Defaults to "none".
+          * The default value is "none".
           */
         transition?: string;
         /**
@@ -1337,11 +1348,11 @@ declare module platui {
           */
         value?: number;
         /**
-          * The min value of the Slider.
+          * The minimum value of the Slider.
           */
         min?: number;
         /**
-          * The max value of the Slider.
+          * The maximum value of the Slider.
           */
         max?: number;
         /**
@@ -1661,7 +1672,7 @@ declare module platui {
     interface IRangeOptions {
         /**
           * The orientation of the Range.
-          * Defaults to "horizontal".
+          * The default value is "horizontal".
           */
         orientation?: string;
         /**
@@ -1678,11 +1689,11 @@ declare module platui {
           */
         upper?: number;
         /**
-          * The min value of the Range.
+          * The minimum value of the Range.
           */
         min?: number;
         /**
-          * The max value of the Range.
+          * The maximum value of the Range.
           */
         max?: number;
         /**
@@ -1694,10 +1705,7 @@ declare module platui {
           * on the bound object (e.g. if bound to an object `foo: { low: number; high: number; }`
           * this identifiers object should be `{ lower: 'low', upper: 'high' }`).
           */
-        identifiers?: {
-            lower: string;
-            upper: string;
-        };
+        identifiers?: IRangeIdentifiers<string>;
     }
     /**
       * A point representing a potential knob position.
@@ -1709,18 +1717,23 @@ declare module platui {
         target?: HTMLElement;
     }
     /**
-      * Defines the expected bound object of the Range control
-      * (e.g. using Bind.
+      * Defines an object describing expected identifiers for a Range control.
       */
-    interface IRangeBinding {
+    interface IRangeIdentifiers<T> {
         /**
           * The lower set value of the Range control.
           */
-        lower: number;
+        lower: T;
         /**
           * The upper set value of the Range control.
           */
-        upper: number;
+        upper: T;
+    }
+    /**
+      * Defines the expected bound object of the Range control
+      * (e.g. using Bind.
+      */
+    interface IRangeBinding extends IRangeIdentifiers<number> {
     }
     /**
       * An ITemplateControl that allows for data-binding a select box and adds
@@ -1778,6 +1791,10 @@ declare module platui {
           */
         options: plat.observable.IObservableProperty<IInputOptions>;
         /**
+          * The current value.
+          */
+        value: string;
+        /**
           * Reference to the Compat injectable.
           */
         protected _compat: plat.Compat;
@@ -1802,9 +1819,13 @@ declare module platui {
           */
         protected _type: string;
         /**
-          * A regular expression string to regulate what text is allowed to be entered.
+          * A regular expression string to regulate what text is allowed to be entered on input.
           */
         protected _pattern: RegExp;
+        /**
+          * A regular expression string used to validate input upon calling the "validate" function.
+          */
+        protected _validation: RegExp;
         /**
           * The control's type character (e.g. - an "x" to delete
           * input text).
@@ -1864,10 +1885,6 @@ declare module platui {
           * Blurs the input.
           */
         blur(): void;
-        /**
-          * Returns the current value of Input control.
-          */
-        value(): string;
         /**
           * A function that allows this control to observe both the bound property itself as well as
           * potential child properties if being bound to an object.
@@ -1936,10 +1953,10 @@ declare module platui {
           */
         protected _onInputChanged(newValue: string): void;
         /**
-          * Check the initial input and delete if it does not match the pattern.
-          * @param {string} value The value to check as input to the HTMLInputElement.
+          * Parses the input and strips it of characters that don't fit its pattern.
+          * @param {string} value The current value to parse.
           */
-        protected _checkInput(value: string): void;
+        protected _stripInput(value: string): string;
     }
     /**
       * The available options for the Input control.
@@ -1947,13 +1964,17 @@ declare module platui {
     interface IInputOptions {
         /**
           * The type of the Input control.
-          * Defaults to "text".
+          * The default value is "text".
           */
         type?: string;
         /**
-          * A regular expression string to regulate what text is allowed to be entered.
+          * A regular expression string to regulate what text is allowed to be entered during input.
           */
         pattern?: string;
+        /**
+          * A regular expression string used to validate input upon calling the "validate" function.
+          */
+        validation?: string;
     }
     /**
       * An BindControl that standardizes and styles
@@ -2315,11 +2336,30 @@ declare module platui {
           */
         protected _setIndexWindow(): void;
         /**
+          * Advances the position of the Carousel to the next state.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          */
+        protected _goToNext(inputChanged: boolean): plat.async.IThenable<boolean>;
+        /**
+          * Changes the position of the Carousel to the previous state.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          */
+        protected _goToPrevious(inputChanged: boolean): plat.async.IThenable<boolean>;
+        /**
           * Changes the position of the Carousel to the state
           * specified by the input index.
           * @param {number} index The new index of the Carousel.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
           */
-        protected _goToIndex(index: number): plat.async.IThenable<boolean>;
+        protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.IThenable<boolean>;
+        /**
+          * Changes the position of the Carousel to the state
+          * specified by the input index.
+          * @param {number} index The new index of the Carousel.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          */
+        protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.IThenable<boolean>;
         /**
           * Handles swapping and translating nodes for a "next" operation.
           * @param {number} index The new index at the time of the animation.
@@ -2463,6 +2503,11 @@ declare module platui {
           * Cancels the current animation.
           */
         protected _cancelCurrentAnimations(): plat.async.IThenable<any>;
+        /**
+          * Forces a repaint / reflow.
+          * @param {HTMLElement} element The element to force the repaint / reflow on.
+          */
+        protected _forceRepaint(element: HTMLElement): void;
     }
     /**
       * The available options for the Carousel control.
@@ -2470,12 +2515,12 @@ declare module platui {
     interface ICarouselOptions {
         /**
           * Specifies how the Carousel should change. Multiple types can be combined by making it space delimited.
-          * It's default behavior is "track swipe".
+          * The default behavior is "track swipe".
           */
         type?: string;
         /**
           * The swipe direction of the Carousel.
-          * Defaults to "horizontal".
+          * The default value is "horizontal".
           */
         orientation?: string;
         /**
@@ -2494,7 +2539,7 @@ declare module platui {
           */
         suspend?: number;
         /**
-          * Enables infinite scrolling.
+          * Enables infinite scrolling when set to true.
           */
         infinite?: boolean;
     }
@@ -2574,7 +2619,7 @@ declare module platui {
           * An object containing the node names of the Listview's defined templates and
           * their corresponding template node.
           */
-        protected _templates: plat.IObject<HTMLElement>;
+        protected _templates: plat.IObject<Node>;
         /**
           * Whether the control is vertical or horizontal.
           */
@@ -2586,7 +2631,7 @@ declare module platui {
         /**
           * The selector function used to obtain the template key for each item.
           */
-        protected _templateSelector: (item: any, index: number) => any;
+        protected _templateSelector: (item: any, index: number, group?: string) => any;
         /**
           * A promise that denotes that items are currently being rendered.
           */
@@ -2684,11 +2729,11 @@ declare module platui {
         /**
           * The normalized node name of the group header template.
           */
-        protected _groupHeaderTemplate: string;
+        protected _headerTemplate: string;
         /**
           * A promise that resolves when the group template has been created.
           */
-        protected _groupHeaderTemplatePromise: plat.async.IThenable<void>;
+        protected _headerTemplatePromise: plat.async.IThenable<void>;
         /**
           * The current number of times we checked to see if the element was placed into the DOM.
           * Used for determining height.
@@ -2776,9 +2821,9 @@ declare module platui {
           * @param {string} itemTemplate The pre-normalized property for indicating either the item template or the
           * item template selector.
           * @param {string} itemTemplateKey The normalized property for indicating the item template.
-          * @param {string} groupHeaderTemplate The property for indicating the group header template.
+          * @param {string} headerTemplate The property for indicating the group header template.
           */
-        protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, groupHeaderTemplate: string): void;
+        protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, headerTemplate: string): void;
         /**
           * Construct the group template and add it to bindable templates.
           */
@@ -2826,9 +2871,15 @@ declare module platui {
           * rendering will stop.
           * @param {number} index The starting index to render.
           * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-          * @param {boolean} animate? Whether or not to animate the new items.
           */
-        protected _renderUsingFunction(index: number, group?: IGroupHash, animate?: boolean): plat.async.IThenable<void>;
+        protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.IThenable<any>;
+        /**
+          * Appends the rendered item from the defined render function.
+          * @param {any} node The node to place into the item container if available.
+          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+          * @param {boolean} animate? Whether or not to animate the new item.
+          */
+        protected _appendRenderedItem(node: any, group?: IGroupHash, animate?: boolean): void;
         /**
           * Updates the control's children resource objects when
           * the array changes.
@@ -2861,9 +2912,9 @@ declare module platui {
           * Removes items from the control's element.
           * @param {number} index The index to start disposing from.
           * @param {number} numberOfItems The number of items to remove.
-          * @param {plat.ui.TemplateControl} control The control whose child controls we are to remove.
+          * @param {platui.IGroupHash} group The group for which we're disposing items.
           */
-        protected _removeItems(index: number, numberOfItems: number, control: plat.ui.TemplateControl): void;
+        protected _removeItems(index: number, numberOfItems: number, group: IGroupHash): void;
         /**
           * Dispose of the controls and DOM starting at a given index.
           * @param {number} index The starting index to dispose.
@@ -2946,9 +2997,9 @@ declare module platui {
         /**
           * Clones and parses thes innerTemplate and creates the templates object.
           * @param {string} itemTemplate The normalized item template name from the options.
-          * @param {string} groupHeaderTemplate? The normalized group header template name from the options.
+          * @param {string} headerTemplate? The normalized group header template name from the options.
           */
-        protected _parseInnerTemplate(itemTemplate: string, groupHeaderTemplate?: string): void;
+        protected _parseInnerTemplate(itemTemplate: string, headerTemplate?: string): void;
         /**
           * Receives an event when a method has been called on an array and maps the array
           * method to its associated method handler.
@@ -3002,31 +3053,35 @@ declare module platui {
           */
         protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string, cancel: boolean): plat.async.IThenable<void>;
         /**
+          * Translates the items to be animated into the nodes to be animated.
+          * @param {number} startIndex The starting index of items to animate.
+          * @param {number} numberOfItems The number of consecutive items to animate.
+          * @param {IGroupHash} group The group performing the animation.
+          */
+        protected _getAnimatedNodes(startIndex: number, numberOfItems: number, group: IGroupHash): Array<Node>;
+        /**
           * Handles a simple animation of a block of elements.
-          * @param {number} startNode The starting childNode of the ForEach to animate.
-          * @param {number} endNode The ending childNode of the ForEach to animate.
+          * @param {Array<Node>} nodes The Array of nodes to animate.
           * @param {string} key The animation key/type.
           * @param {IGroupHash} group The group performing the animation.
           * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
           */
-        protected _handleSimpleAnimation(startNode: number, endNode: number, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void>;
+        protected _handleSimpleAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void>;
         /**
           * Handles a simple animation of a block of elements.
-          * @param {number} startNode The starting childNode of the ForEach to animate.
-          * @param {number} endNode The ending childNode of the ForEach to animate.
+          * @param {Array<Node>} nodes The Array of nodes to animate.
           * @param {string} key The animation key/type.
           * @param {IGroupHash} group The group performing the animation.
           */
-        protected _handleLeave(startNode: number, endNode: number, key: string, group: IGroupHash): plat.async.IThenable<void>;
+        protected _handleLeave(nodes: Array<Node>, key: string, group: IGroupHash): plat.async.IThenable<void>;
         /**
           * Handles a simple animation of a block of elements.
-          * @param {number} startNode The starting childNode of the ForEach to animate.
-          * @param {number} endNode The ending childNode of the ForEach to animate.
+          * @param {Array<Node>} nodes The Array of nodes to animate.
           * @param {string} key The animation key/type.
           * @param {IGroupHash} group The group performing the animation.
           * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
           */
-        protected _handleClonedContainerAnimation(startNode: number, endNode: number, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void>;
+        protected _handleClonedContainerAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void>;
         /**
           * Cancels all current animations.
           * @param {platui.IGroupHash} The object representing the current group.
@@ -3050,23 +3105,32 @@ declare module platui {
         /**
           * Sets the width of a group's item container.
           * @param {HTMLElement} element The element to set the width on.
+          * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
           */
-        protected _setItemContainerWidth(element: HTMLElement): void;
+        protected _setItemContainerWidth(element: HTMLElement, immediate?: boolean): void;
+        /**
+          * Resets the width of a group's item container.
+          * @param {HTMLElement} element The element to reset the width on.
+          */
+        protected _resetItemContainerWidth(element: HTMLElement): void;
         /**
           * Creates a clone of the group container and uses it to find width values.
-          * @param {HTMLElement} item The element having its height set.
+          * @param {HTMLElement} item The element having its width set.
+          * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
           */
-        protected _setItemContainerWidthWithClone(item: HTMLElement): void;
+        protected _setItemContainerWidthWithClone(item: HTMLElement, immediate?: boolean): void;
         /**
           * Sets the height of a group's item container.
           * @param {HTMLElement} element The element to set the height on.
+          * @param {boolean} withHeader Whether the header should be included in the calculation or not.
           */
-        protected _setItemContainerHeight(element: HTMLElement): void;
+        protected _setItemContainerHeight(element: HTMLElement, withHeader: boolean): void;
         /**
           * Creates a clone of the group container and uses it to find height values.
           * @param {HTMLElement} item The element having its height set.
+          * @param {boolean} withHeader Whether the header should be included in the calculation or not.
           */
-        protected _setItemContainerHeightWithClone(item: HTMLElement): void;
+        protected _setItemContainerHeightWithClone(item: HTMLElement, withHeader: boolean): void;
     }
     /**
       * The available options for the Listview control.
@@ -3077,12 +3141,8 @@ declare module platui {
           */
         aliases?: IListviewAliasOptions;
         /**
-          * Will animate the Array mutations if set to true.
-          */
-        animate?: boolean;
-        /**
           * The orientation (scroll direction) of the Listview.
-          * Defaults to "vertical".
+          * The default value is "vertical".
           */
         orientation?: string;
         /**
@@ -3090,15 +3150,15 @@ declare module platui {
           */
         itemTemplate?: any;
         /**
-          * The node name of the desired group template or a defined group template selector function.
+          * The node name of the desired group header template.
           */
-        groupHeaderTemplate?: any;
+        headerTemplate?: string;
         /**
           * Indicates a special type of loading. Available options are "infinite" or "incremental".
           */
         loading?: string;
         /**
-          * The function that will be called when more items are being requested to add to the list.
+          * The name of the function that will be called when more items are being requested to add to the list.
           */
         onItemsRequested?: string;
         /**
@@ -3268,22 +3328,22 @@ declare module platui {
         setRight(components: Array<INavbarComponent>): void;
         /**
           * The defined action of the left part of the Navbar when tapped.
-          * @param {number} index The index of the action tapped.
+          * @param {number} index? The index of the action tapped.
           * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
           */
-        leftAction(index: number, ev?: plat.ui.IGestureEvent): void;
+        leftAction(index?: number, ev?: plat.ui.IGestureEvent): void;
         /**
           * The defined action of the center part of the Navbar when tapped.
-          * @param {number} index The index of the action tapped.
+          * @param {number} index? The index of the action tapped.
           * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
           */
-        centerAction(index: number, ev?: plat.ui.IGestureEvent): void;
+        centerAction(index?: number, ev?: plat.ui.IGestureEvent): void;
         /**
           * The defined action of the right part of the Navbar when tapped.
-          * @param {number} index The index of the action tapped.
+          * @param {number} index? The index of the action tapped.
           * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
           */
-        rightAction(index: number, ev?: plat.ui.IGestureEvent): void;
+        rightAction(index?: number, ev?: plat.ui.IGestureEvent): void;
         /**
           * Determines the nature of the passed in components and sets the context at the given position
           * to the determined INavbarComponent(s).
@@ -3310,10 +3370,11 @@ declare module platui {
         protected _parseComponent(newComponent: INavbarComponent, oldComponent?: INavbarComponent): void;
         /**
           * Executes the proper action associated with a Navbar component.
+          * @param {plat.ui.IGestureEvent} ev The executed event.
           * @param {string} position The part of the Navbar whose action is being executed.
-          * @param {any} property The indexing property. Will by default be an index into the component Array.
+          * @param {any} property? The indexing property. Will by default be an index into the component Array.
           */
-        protected _executeAction(position: string, property: any): void;
+        protected _executeAction(ev: plat.ui.IGestureEvent, position: string, property?: any): void;
     }
     /**
       * The available options for the Navbar control.
@@ -3321,7 +3382,7 @@ declare module platui {
     interface INavbarOptions {
         /**
           * The position of the Navbar.
-          * Defaults to "top".
+          * The default value is "top".
           */
         position?: string;
     }
@@ -3336,7 +3397,7 @@ declare module platui {
         /**
           * The action to perform when the component is tapped.
           */
-        action?: () => any;
+        action?: (ev?: plat.ui.IGestureEvent) => any;
         /**
           * The set of custom actions whose key will be used as the function name and
           * whose value is the action to perform.

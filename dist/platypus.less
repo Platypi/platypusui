@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.10 (https://platypi.io) 
+ * PlatypusUI v0.5.1 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -167,7 +167,7 @@
 
             @-moz-keyframes @name {
                 .frames(@moz);
-            }               
+            }
 
             @keyframes @name {
                 .frames(@vanilla);
@@ -201,21 +201,21 @@
                 & when (@direction = in) {
                     & when (@from = left) {
                         from {
-                            padding-left: -100%;
+                            left: -100%;
                         }
                     } & when (@from = right) {
                         from {
-                            padding-left: 100%;
+                            left: 100%;
                         }
                     }
                 } & when (@direction = out) {
                     & when (@from = left) {
                         to {
-                            padding-left: -100%;
+                            left: -100%;
                         }
                     } & when (@from = right) {
                         to {
-                            padding-left: 100%;
+                            left: 100%;
                         }
                     }
                 }
@@ -228,12 +228,12 @@
                 & when (@direction = in) {
                     & when (@from-to = left) {
                         0% {
-                            padding-left: -100%;
+                            left: -100%;
                             opacity: 0;
                         }
                     } & when (@from-to = right) {
                         0% {
-                            padding-left: 100%;
+                            left: 100%;
                             opacity: 0;
                         }
                     }
@@ -263,12 +263,12 @@
                         opacity: 0.1;
                     } & when (@from-to = left) {
                         100% {
-                            padding-left: -100%;
+                            left: -100%;
                             opacity: 0;
                         }
                     } & when (@from-to = right) {
                         100% {
-                            padding-left: 100%;
+                            left: 100%;
                             opacity: 0;
                         }
                     }
@@ -920,13 +920,6 @@
             align-content: @position;
         }
 
-        .align-content(@position) {
-            -webkit-align-content: @position;
-            -moz-align-content: @position;
-            -ms-align-content: @position;
-            align-content: @position;
-        }
-
         .align-self(@position) when (@position = flex-start) {
             -webkit-align-self: @position;
             -moz-align-self: @position;
@@ -1163,7 +1156,9 @@
 #platui {
     #Button {
         #platui > #variables;
+
     /// ============= Button Sizes ============== ///
+    
         @border-size: 1px;
         @button-font-size: 0.9em;
         @border-radius: @global-border-radius;
@@ -1174,7 +1169,13 @@
 
 #platui {
     #Carousel {
+        #dependencies {
+            @padding: 5px;
+        }
+
         #platui > #variables;
+        #platui > #Carousel > #dependencies;
+
     /// =========== Carousel Colors =========== ///
 
         @background-color: @transparent;
@@ -1186,7 +1187,6 @@
     /// ============ Carousel Size ============ ///
 
         @border-size: 1px;
-        @padding: 5px;
         @padding-left: @padding;
         @padding-right: @padding;
         @padding-top: @padding;
@@ -1197,13 +1197,14 @@
 
     /// ============ Carousel Transition ============ ///
 
-        @transition: all 300ms;
+        @transition-time: 300ms;
     }
 }
 
 #platui {
     #Checkbox {
         #platui > #variables;
+        
     /// =========== Checkbox Colors =========== ///
 
         @background-color: @transparent;
@@ -1218,7 +1219,13 @@
 
 #platui {
     #Drawer {
+        #dependencies {
+            @length-default: 80%;
+        }
+
         #platui > #variables;
+        #platui > #Drawer > #dependencies;
+
     /// =========== Drawer Colors =========== ///
 
         @color: @white;
@@ -1227,7 +1234,6 @@
 
     /// =========== Drawer Lengths =========== ///
 
-        @length-default: 80%;
         @length-left: @length-default;
         @length-right: @length-default;
         @length-top: @length-default;
@@ -1235,23 +1241,25 @@
         @shadow-offset: 2px;
         @shadow-blur: 10px;
         @shadow-spread: 0px;
-        
+
     /// =========== Drawer Transition =========== ///
 
-        @transition: all 300ms ease-out;
+        @transition-time: 300ms;
+        @transition-function: ease-out;
     }
 }
 
 #platui {
     #File {
         #platui > #variables;
+        
     /// ============== File Colors =============== ///
 
         @text-color: @text-grey;
         @input-border-color: @neutral-color;
 
     /// =============== File Sizes =============== ///
-    
+
         @default-height: 2.5em;
         @default-input-width: 10em;
         @border-radius: 4px;
@@ -1260,21 +1268,26 @@
 
 #platui {
     #Input {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @border-color: @neutral-color;
+            @primary-border-bottom-width: 2px;
+            @secondary-border-width: 2px;
+        }
+
+        #platui > #Input > #dependencies;
+
     /// ============== Input Colors =============== ///
 
         @text-color: @text-grey;
-        @border-color: @neutral-color;
         @action-color: @border-color;
         @placeholder-color: @neutral-color;
 
     /// =============== Input Sizes =============== ///
-    
+
         @default-height: 2.5em;
         @default-width: 18em;
-        @primary-border-bottom-width: 2px;
         @primary-border-bottom: @primary-border-bottom-width solid @border-color;
-        @secondary-border-width: 2px;
         @secondary-border: @secondary-border-width solid @border-color;
         @secondary-border-radius: 4px;
     }
@@ -1282,22 +1295,35 @@
 
 #platui {
     #Listview {
+        #dependencies {
+            @enter-animation-name: LISTVIEW_ITEM_ENTER;
+            @enter-animation-duration: 300ms;
+            @leave-animation-name: LISTVIEW_ITEM_LEAVE;
+            @leave-animation-duration: 300ms;
+        }
+
         #platui > #variables;
+        #platui > #Listview > #dependencies;
 
     /// =========== Listview Colors =========== ///
 
         @manipulated-viewport-background-color: @white;
 
+    /// =========== Listview Properties =========== ///
+
+        @horizontal-scroll-padding: 15px;
+
     /// =========== Listview Animations =========== ///
 
-        @refresh-transition: all 200ms;
-        @enter-animation-name: LISTVIEW_ITEM_ENTER;
-        @enter-animation-duration: 300ms;
+        @refresh-transition-time: 200ms;
+
+        @enter-init: {
+          opacity: 0;
+        };
+
         @enter-animation: @enter-animation-name @enter-animation-duration;
-        @leave-animation-name: LISTVIEW_ITEM_LEAVE;
-        @leave-animation-duration: 300ms;
         @leave-animation: @leave-animation-name @leave-animation-duration;
-        
+
     /// =========== Listview Animation Mixins =========== ///
 
         .enter(@name) {
@@ -1328,7 +1354,14 @@
 
 #platui {
     #Modal {
-        #platui > #variables;
+        #dependencies {
+           #platui > #variables;
+	       @prompt-body-color: @pale-grey;
+           @transition-time: 500ms;
+        }
+
+        #platui > #Modal > #dependencies;
+
     /// =========== Modal Colors =========== ///
 
         @color: @default-font-color;
@@ -1340,7 +1373,7 @@
             @height: 50%;
             @y-offset: 0%;
         }
-    
+
         #custom-width {
             @width: 50%;
             @x-offset: 0%;
@@ -1352,19 +1385,18 @@
             @x-offset: 0%;
             @y-offset: 0%;
         }
-        
+
     /// =========== Modal Transitions =========== ///
 
-        @left-transition: right 500ms;
-        @right-transition: left 500ms;
-        @up-transition: bottom 500ms;
-        @down-transition: top 500ms;
+        @left-transition: right @transition-time;
+        @right-transition: left @transition-time;
+        @up-transition: bottom @transition-time;
+        @down-transition: top @transition-time;
         @fade-transition: opacity 300ms;
 
     /// =========== Modal Prompt =========== ///
 
 	    @prompt-top: 20%;
-	    @prompt-body-color: @pale-grey;
 	    @prompt-accent-color: darken(@prompt-body-color, 4%);
 	    @prompt-border-radius: 8px;
     }
@@ -1377,19 +1409,20 @@
 
         @background-color: @primary-color;
         @color: @white;
-        
+
     /// =========== Navbar Dimensions =========== ///
-    
+
         @height: 4em;
         @z-index: 100;
-        @left-percentage: 33.33333333%;
-        @center-percentage: 33.33333333%;
-        @right-percentage: 33.33333333%;
-        @padding: 0 2em;
-        @item-padding: 0.5em;
-        
+        @left-percentage: 100% / 3;
+        @center-percentage: 100% / 3;
+        @right-percentage: 100% / 3;
+        @padding: 0;
+        @item-padding: 0 1.5em;
+
     /// =========== Navbar Properties =========== ///
-    
+
+        @font-size: 125%;
         @border-top: none;
         @border-right: none;
         @border-bottom: none;
@@ -1399,14 +1432,14 @@
 }
 
 #platui {
-    #platui > #variables;
-
     #ProgressBar {
+        #platui > #variables;
+        
     /// =========== Progress Bar Colors =========== ///
 
         @border-color: @neutral-color;
         @fill-color: @primary-color;
-        
+
     /// =========== Progress Bar Properties =========== ///
 
         @height: 8px;
@@ -1419,15 +1452,20 @@
 }
 
 #platui {
-    #platui > #variables;
-
     #ProgressRing {
+        #dependencies {
+            #platui > #variables;
+            @color: @primary-color;
+            @animation-name: PLAT-SPIN;
+        }
+
+        #platui > #ProgressRing > #dependencies;
+
     /// =========== Progress Ring Colors =========== ///
 
-        @ring-color: @primary-color;
-        @fill-color: fade(@ring-color, 75%);
-        @unfilled-color: fade(@ring-color, 10%);
-        
+        @fill-color: fade(@color, 75%);
+        @unfilled-color: fade(@color, 10%);
+
     /// =========== Progress Ring Sizes =========== ///
 
         @diameter: 3em;
@@ -1435,9 +1473,8 @@
 
     /// =========== Progress Ring Animation =========== ///
 
-        @animation-name: PLAT-SPIN;
         @spin-frequency: 600ms;
-        
+
     /// =========== Progress Ring Animation Mixins =========== ///
 
         .spin() {
@@ -1457,15 +1494,20 @@
 
 #platui {
     #Radio {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @checked-border-color: @primary-color;
+        }
+
+        #platui > #Radio > #dependencies;
+
     /// =========== Radio Colors =========== ///
 
         @background-color: @transparent;
         @border-color: @grey;
-        @checked-border-color: @primary-color;
         @mark-color: @checked-border-color;
         @mark-padding-color: @transparent;
-        
+
     /// =========== Radio Size =========== ///
 
         @diameter: 1em;
@@ -1476,6 +1518,12 @@
 
 #platui {
     #Range {
+        #dependencies {
+            @transition-time: 300ms;
+        }
+
+        #platui > #Range > #dependencies;
+
     /// ================= Range Size ================== ///
 
         @thickness: 0.5em;
@@ -1487,24 +1535,29 @@
         @knob-border-size: 1px;
 
     /// =============== Range Transitions =============== ///
-    
-        @horizontal-transition: width 300ms;
-        @vertical-transition: height 300ms;
+
+        @horizontal-transition: width @transition-time;
+        @vertical-transition: height @transition-time;
     }
 }
 
 #platui {
     #Select {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @border-color: @neutral-color-light;
+            @border-width: 1px;
+        }
+
+        #platui > #Select > #dependencies;
+
     /// =========== Select Colors =========== ///
 
         @background-color: @transparent;
         @color: @default-font-color;
-        @border-color: @neutral-color-light;
 
     /// =========== Select Sizes =========== ///
 
-        @border-width: 1px;
         @border-radius: 2px;
 
     /// =========== Select Properties =========== ///
@@ -1515,50 +1568,63 @@
 
 #platui {
     #Slider {
-    /// ================= Slider Size ================== ///    
+        #dependencies {
+            @transition-time: 300ms;
+        }
+
+        #platui > #Slider > #dependencies;
+
+    /// ================= Slider Size ================== ///
 
         @thickness: 0.5em;
         @fill-border-radius: 4px;
 
-    /// ================= Slider Knob Properties ================== ///    
-    
+    /// ================= Slider Knob Properties ================== ///
+
         @knob-diameter: 1.6em;
         @knob-border-size: 1px;
 
-    /// ============== Slider Transitions =============== ///    
+    /// ============== Slider Transitions =============== ///
 
-        @horizontal-transition: width 300ms;
-        @vertical-transition: height 300ms;
+        @horizontal-transition: width @transition-time;
+        @vertical-transition: height @transition-time;
     }
 }
 
 #platui {
     #Toggle {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @color-off: @neutral-color-light;
+            @color-on: @success-color;
+            @transition-time: 250ms;
+        }
+
+        #platui > #Toggle > #dependencies;
+
     /// =========== Toggle Colors =========== ///
 
-        @border-color: darken(@neutral-color-light, 3%);
-        @background-color-off: @neutral-color-light;
-        @background-color-on: @success-color;
-        @border-color-on: darken(@background-color-on, 5%);
-        @toggle-thin-color: lighten(@pale-grey, 10%);
+        @background-color-off: @color-off;
+        @border-color-off: darken(@color-off, 3%);
+        @background-color-on: @color-on;
+        @border-color-on: darken(@color-on, 5%);
+        @toggle-thin-color-off: @neutral-color-dark;
 
     /// ============ Toggle Size ============ ///
-    
+
         @width: 3.25em;
         @ratio: 1/2;
         @toggle-thin-ratio: 1/4;
 
     /// ========== Toggle Knob Properties ========== ///
 
-        @knob-diameter: @width * @ratio;
         @knob-border-color: darken(@pale-grey, 5%);
         @knob-border-size: 1px;
+        @toggle-thin-knob-color: lighten(@pale-grey, 10%);
 
     /// ============= Toggle Transition ============= ///
 
-        @transition-time: 250ms;
-        @transition: all @transition-time;
+        @transition: ~'background-color @{transition-time}, border-color @{transition-time}';
         @knob-transition: left @transition-time;
     }
 }
@@ -1584,11 +1650,25 @@
         .fill();
         .box-sizing(border-box);
 
-        & > *:only-child {
-            position: relative;
-            .fill();
-            .box-sizing(border-box);
+        &:not(.plat-viewport-animate) {
+            & > .plat-viewcontrol {
+                position: relative;
+                .fill();
+                .box-sizing(border-box);
+            }
         }
+
+        &.plat-viewport-animate {
+            & > .plat-viewcontrol {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 0;
+                .fill();
+                .box-sizing(border-box);
+            }
+        }
+
     }
 
     .plat-hide,
@@ -1648,15 +1728,15 @@
 	    display: none;
     }
 
-    img { 
+    img {
         border: 0;
     }
 
-    svg:not(:root) { 
+    svg:not(:root) {
         overflow: hidden;
     }
 
-    figure { 
+    figure {
         margin: 1em 40px;
     }
 
@@ -1665,7 +1745,7 @@
 	    height: 0;
     }
 
-    pre { 
+    pre {
         overflow: auto;
     }
 
@@ -1910,21 +1990,61 @@
     h1 {
         .headings();
         margin: @typography-margin 0 (@typography-margin / 1.25);
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin / 1.25;
+        }
     }
 
     h2, h3, h4 {
         .headings();
         margin: (@typography-margin * 1.25) 0 @typography-margin;
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.25;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin;
+        }
     }
 
     h5, h6 {
         .headings();
         margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.5;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin * 1.25;
+        }
     }
 
     p {
         padding: 0;
         margin: (@typography-margin * 1.5) 0;
+        
+        &.no-collapse-top {
+            margin-top: 0;
+            padding-top: @typography-margin * 1.5;
+        }
+        
+        &.no-collapse-bottom {
+            margin-bottom: 0;
+            padding-bottom: @typography-margin * 1.5;
+        }
     }
 
     /// Phone
@@ -2406,8 +2526,9 @@
             }
 
             &.plat-transition-init {
-                .translateZ(0);
-                .transition(@transition);
+                -webkit-transition: -webkit-transform @transition-time;
+                -moz-transition: -moz-transform @transition-time;
+                transition: transform @transition-time;
             }
         }
 
@@ -2572,8 +2693,8 @@
         &.plat-x {
             .plat-mark::before,
             .plat-mark::after {
-                left: 17.5%;
-                top: 48.5%;
+                left: 18%;
+                top: 48%;
                 width: @diameter / 1.5;
             }
 
@@ -2724,7 +2845,7 @@
                 position: absolute;
                 background-color: transparent;
                 overflow: hidden;
-                z-index: 9999;
+                z-index: 999999;
                 .fill();
                 .touch-action(none);
             }
@@ -2748,8 +2869,9 @@
     }
 
     &.plat-transition-init {
-        .translateZ(0);
-        .transition(@transition);
+        -webkit-transition: -webkit-transform @transition-time @transition-function;
+        -moz-transition: -moz-transform @transition-time @transition-function;
+        transition: transform @transition-time @transition-function;
     }
 }
 
@@ -3113,7 +3235,7 @@
     #grid {
 	    @base-percent: 100%;
 	    @num-columns: 12;
-	    @column-padding: 10px;
+	    @column-padding: 5px;
     }
 }
 
@@ -3164,7 +3286,6 @@
     [class*='col-'],
     [class*='col-']:after,
     [class*='col-']:before {
-        #platui;
 	    margin: 0;
 	    padding: 0;
         #platui > #mixins > .box-sizing(border-box);
@@ -3187,7 +3308,7 @@
     }
 
 /// ======= Grid Column Generation ======== ///
-	
+
 	/// Phone
 	.generate-full-width-cols(@phablet-alias);
 	.generate-full-width-cols(@tablet-alias);
@@ -3198,8 +3319,6 @@
 
 	/// Phablet
 	.media-phablet({
-		.generate-full-width-cols(@tablet-alias);
-		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@phablet-alias);
 		.generate-offset-cols(@phablet-alias);
 		.generate-shiftable-cols(@phablet-alias);
@@ -3207,7 +3326,6 @@
 
 	/// Tablet
 	.media-tablet({
-		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@tablet-alias);
 		.generate-offset-cols(@tablet-alias);
 		.generate-shiftable-cols(@tablet-alias);
@@ -3216,7 +3334,7 @@
 	/// Desktop
 	.media-desktop({
 		.generate-partial-width-cols(@desktop-alias);
-		.generate-offset-cols(@desktop-alias);	
+		.generate-offset-cols(@desktop-alias);
 		.generate-shiftable-cols(@desktop-alias);
 	});
 }
@@ -3380,6 +3498,13 @@
                 display: inline-block;
                 min-width: 20px;
                 cursor: pointer;
+            }
+        }
+            
+        input[disabled],
+        input:disabled {
+            & + .plat-input-action {
+                display: none;
             }
         }
     }
@@ -3597,8 +3722,9 @@
         }
             
         &.plat-transition-init {
-            .translateZ(0);
-            .transition(@refresh-transition);
+            -webkit-transition: -webkit-transform @refresh-transition-time;
+            -moz-transition: -moz-transform @refresh-transition-time;
+            transition: transform @refresh-transition-time;
         }
     }
 
@@ -3664,28 +3790,42 @@
     &.plat-horizontal {
         .plat-listview-viewport {
             .plat-scroll-container {
+                padding-bottom: @horizontal-scroll-padding;
                 .scroll(x);
 
                 .plat-container {
                     .flexbox();
-                    .flex-direction(row);
-                    .flex-wrap(nowrap);
-                    .align-items(stretch);
-
-                    .plat-listview-group {
-                        height: 100%;
-                        .flex(0 0 auto);
-
-                        .plat-listview-items {
-                            .flexbox();
-                            .flex-direction(column);
-                            .flex-wrap(wrap);
-                            .align-content(flex-start);
-                            .fill();
-
-                            .plat-item {
-                                .flex(0 0 auto);
+                    
+                    &.plat-grouped {
+                        .flex-direction(row);
+                        .flex-wrap(nowrap);
+                        .align-items(stretch);
+                        
+                        .plat-listview-group {
+                            height: 100%;
+                            .flex(0 0 auto);
+    
+                            .plat-listview-items {
+                                .flexbox();
+                                .flex-direction(column);
+                                .flex-wrap(wrap);
+                                .align-content(flex-start);
+                                .fill();
+    
+                                & > * {
+                                    .flex(0 0 auto);
+                                }
                             }
+                        }
+                    }
+                    
+                    &:not(.plat-grouped) {
+                        .flex-direction(column);
+                        .flex-wrap(wrap);
+                        .align-content(flex-start);
+                        
+                        & > * {
+                            .flex(0 0 auto);
                         }
                     }
 
@@ -3722,10 +3862,11 @@
             .plat-scroll-container {
                 .plat-container {
                     .plat-enter-init {
-                        &.plat-item,
-                        &.plat-listview-group {
-                            .animation(@enter-animation);
-                        }
+                        @enter-init();
+                    }
+                    
+                    .plat-enter {
+                        .animation(@enter-animation);
                     }
                 }
             }
@@ -3735,10 +3876,7 @@
             .plat-scroll-container {
                 .plat-container {
                     .plat-leave {
-                        &.plat-item,
-                        &.plat-listview-group {
-                            .animation(@leave-animation);
-                        }
+                        .animation(@leave-animation);
                     }
                 }
             }
@@ -4122,14 +4260,17 @@
     border-bottom: @border-bottom;
     border-left: @border-left;
     z-index: @z-index;
-    .box-shadow(@box-shadow);
     .box-sizing(border-box);
     
-    &.plat-top {
+    &:not(.no-navbar-shadow) {
+        .box-shadow(@box-shadow);
+    }
+    
+    &.plat-navbar-top {
         top: 0;
     }
     
-    &.plat-bottom {
+    &.plat-navbar-bottom {
         bottom: 0;
     }
     
@@ -4138,6 +4279,7 @@
     .plat-navbar-right {
         height: 100%;
         float: left;
+        font-size: @font-size;
         .box-sizing(border-box);
     }
     
@@ -4931,7 +5073,7 @@
         #platui > #Toggle;
         @height: @width * @ratio;
         @toggle-thin-height: @width * @toggle-thin-ratio;
-        @knob-radius: @knob-diameter / 2;
+        @knob-radius: @height / 2;
         @half-thin-height: @toggle-thin-height / 2;
     }
 }
@@ -4953,7 +5095,7 @@
         overflow: hidden;
         background-color: @background-color-off;
         border: 1px solid;
-        border-color: @border-color;
+        border-color: @border-color-off;
         .border-radius(@height);
         .box-sizing(content-box);
         .translateZ(0);
@@ -4963,10 +5105,10 @@
             position: absolute;
             top: 0;
             left: 0;
-            height: @knob-diameter;
-            width: @knob-diameter;
+            height: @height;
+            width: @height;
             background-color: @white;
-            .border-radius(@knob-diameter);
+            .border-radius(@height);
             .box-shadow(inset -1px 0px 3px 0px @pale-grey);
             .box-sizing(border-box);
             .translateZ(0);
@@ -4978,7 +5120,7 @@
             background-color: @background-color-on;
 
             .plat-knob {
-                left: @width - @knob-diameter;
+                left: @width - @height;
                 .box-shadow(inset 1px -2px 3px 0px @pale-grey);
             }
         }
@@ -5002,13 +5144,13 @@
         .plat-toggle-container {
             height: @toggle-thin-height;
             overflow: visible;
-            background-color: @neutral-color-dark;
+            background-color: @toggle-thin-color-off;
             border: none;
 
             .plat-knob {
                 top: @half-thin-height - @knob-radius;
-                background-color: @toggle-thin-color;
-                border: 1px solid darken(@toggle-thin-color, 10%);
+                background-color: @toggle-thin-knob-color;
+                border: 1px solid darken(@toggle-thin-knob-color, 10%);
                 .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
             }
 
@@ -5035,6 +5177,13 @@
         .plat-toggle-container.plat-slide {
             background-color: @secondary-color;
             border-color: darken(@secondary-color, 5%);
+        }
+    }
+
+    &.toggle-success {
+        .plat-toggle-container.plat-slide {
+            background-color: @success-color;
+            border-color: darken(@success-color, 5%);
         }
     }
 

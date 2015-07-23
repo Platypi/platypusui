@@ -1,4 +1,4 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.4.10 (https://platypi.io)
+ * PlatypusUI v0.5.1 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -47,7 +47,7 @@ var platui;
     __Transition = __Plat + 'transition', __Enter = __Plat + 'enter', __Leave = __Plat + 'leave', 
     /**
      */
-    __$tap = '$tap', __$touchstart = '$touchstart', __$touchend = '$touchend', __$touchcancel = '$touchcancel', __$swipe = '$swipe', __$track = '$track', __$trackend = '$trackend', __ButtonPrefix = '__plat-button-', __RadioPrefix = '__plat-radio-', __DrawerControllerInitEvent = '__platDrawerControllerInit', __DrawerControllerFetchEvent = '__platDrawerControllerFetch', __DrawerFoundEvent = '__platDrawerFound', __DrawerControllerDisposing = '__platDrawerControllerDisposing', __DrawerControllerDisposingFound = '__platDrawerControllerDisposingFound', 
+    __$tap = '$tap', __$touchstart = '$touchstart', __$touchend = '$touchend', __$touchcancel = '$touchcancel', __$swipe = '$swipe', __$track = '$track', __$trackend = '$trackend', __ButtonPrefix = '__plat-button-', __RadioPrefix = '__plat-radio-', __DrawerControllerInitEvent = '__platDrawerControllerInit', __DrawerControllerFetchEvent = '__platDrawerControllerFetch', __DrawerFoundEvent = '__platDrawerFound', 
     /**
      */
     __Reversed = '-reversed', __LITERAL_RESOURCE = 'literal', __transitionNegate = {
@@ -139,6 +139,28 @@ var platui;
                 this._onTap();
             }
             this._addEventListeners();
+        };
+        /**
+         * A function that allows this control to observe both the bound property itself as well as
+         * potential child properties if being bound to an object.
+         * @param {plat.observable.IImplementTwoWayBinding} binder The control that facilitates the
+         * databinding.
+         */
+        Button.prototype.observeProperties = function (binder) {
+            binder.observeProperty(this._setBoundProperty);
+        };
+        /**
+         * The function called when the bindable property is set externally.
+         * @param {string} newValue The new value of the bindable property.
+         * @param {string} oldValue The old value of the bindable property.
+         * @param {string} identifier The identifier of the property being observed.
+         * @param {boolean} firstTime? A boolean value indicating whether this is the first time its being set.
+         */
+        Button.prototype._setBoundProperty = function (newValue, oldValue, identifier, firstTime) {
+            if (!this.utils.isString(newValue) || newValue !== this.element.textContent) {
+                return;
+            }
+            this._onTap();
         };
         /**
          * Add event listeners for selection.
@@ -665,7 +687,7 @@ var platui;
                 this._log.debug('The context of a "' + this.type + '" control must be a number between 0 and 1.');
                 return;
             }
-            var barElement = this._barElement, barMax = barElement.parentElement.offsetWidth;
+            var barElement = this._barElement, barMax = barElement.parentElement.clientWidth;
             if (!barMax) {
                 return;
             }
@@ -990,11 +1012,6 @@ var platui;
              */
             this._isVertical = false;
             /**
-             * A function for removing the listener for responding to other DrawerControllers
-             * being disposed.
-             */
-            this._disposeRemover = noop;
-            /**
              * Whether or not the this control has been paired with a corresponding Drawer.
              */
             this._isInitialized = false;
@@ -1026,7 +1043,6 @@ var platui;
          * referencing this Drawer.
          */
         DrawerController.prototype.dispose = function () {
-            var _this = this;
             _super.prototype.dispose.call(this);
             var _utils = this.utils, drawer = this._drawer;
             if (_utils.isNull(drawer)) {
@@ -1036,29 +1052,19 @@ var platui;
             if (drawer.controllerCount() > 0) {
                 return;
             }
-            var storedStyle = drawer.storedProperties, rootElement = this._rootElement, disposeRootElement = true;
-            this._disposeRemover();
-            this.on(__DrawerControllerDisposingFound, function (ev, otherRoot) {
-                if (!disposeRootElement) {
-                    return;
-                }
-                disposeRootElement = rootElement !== otherRoot;
-            });
-            _utils.defer(function () {
-                if (!disposeRootElement) {
-                    return;
-                }
-                _this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + _this._directionalTransitionPrep);
-                if (_utils.isObject(storedStyle)) {
-                    var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
-                    rootElementStyle.position = storedStyle.position;
-                    rootElementStyle.zIndex = storedStyle.zIndex;
-                    if (_utils.isObject(overflow) && _utils.isNode(parent)) {
-                        parent.style[overflow.key] = overflow.value;
-                    }
-                }
-            }, 25);
-            this.dispatchEvent(__DrawerControllerDisposing, plat.events.EventManager.DIRECT);
+            var storedStyle = drawer.storedProperties, rootElement = this._rootElement;
+            this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+            if (!_utils.isObject(storedStyle)) {
+                return;
+            }
+            var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
+            rootElementStyle.position = storedStyle.position;
+            rootElementStyle.zIndex = storedStyle.zIndex;
+            if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+                parent.style[overflow.key] = overflow.value;
+            }
+            delete drawer.storedProperties;
+            this._drawerElement.setAttribute(__Hide, '');
         };
         /**
          * Opens the Drawer.
@@ -1230,7 +1236,6 @@ var platui;
                     return this._animator.resolve();
             }
             this._isOpen = true;
-            drawerElement.removeAttribute(__Hide);
             if (wasClosed) {
                 this.dom.addClass(rootElement, __Drawer + '-open ' + this._directionalTransitionPrep);
                 this._addEventIntercepts();
@@ -1269,7 +1274,6 @@ var platui;
                 if (_this._isOpen) {
                     return;
                 }
-                drawerElement.setAttribute(__Hide, '');
                 dom.removeClass(rootElement, _this._directionalTransitionPrep);
             });
         };
@@ -1321,12 +1325,19 @@ var platui;
         /**
          * Adds swipe events to the controller element.
          */
-        DrawerController.prototype._addSwipeOpen = function () {
+        DrawerController.prototype._addSwipeToggle = function () {
             var _this = this;
-            this._removeSwipeOpen = this.addEventListener(this.element, __$swipe + __transitionNegate[this._position], function () {
+            var element = this.element, removeSwipeOpen = this.addEventListener(element, __$swipe + __transitionNegate[this._position], function () {
                 _this._hasSwiped = true;
                 _this.open();
+            }, false), removeSwipeClose = this.addEventListener(element, __$swipe + this._position, function () {
+                _this._hasSwiped = true;
+                _this.close();
             }, false);
+            this._removeSwipeToggle = function () {
+                removeSwipeOpen();
+                removeSwipeClose();
+            };
         };
         /**
          * Adds swipe close event to the root element.
@@ -1339,13 +1350,13 @@ var platui;
             }, false);
         };
         /**
-         * Adds tap close event to the controller element.
+         * Adds tap toggle event to the controller element.
          */
-        DrawerController.prototype._addTapOpen = function () {
+        DrawerController.prototype._addTapToggle = function () {
             var _this = this;
             this._removeTap = this.addEventListener(this.element, __$tap, function () {
                 _this._hasTapped = true;
-                _this.open();
+                _this.toggle();
             }, false);
         };
         /**
@@ -1366,10 +1377,10 @@ var platui;
             // remove event listeners here first if we want to later be able to dynamically change position of drawer. 
             // this._removeEventListeners(); 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
-                this._addTapOpen();
+                this._addTapToggle();
             }
             if (this._isSwipe = (types.indexOf('swipe') !== -1)) {
-                this._addSwipeOpen();
+                this._addSwipeToggle();
             }
             if (this._isTrack = (types.indexOf('track') !== -1)) {
                 var trackFn = this._track, trackDirection;
@@ -1417,9 +1428,9 @@ var platui;
                     this._removeSecondaryTrack = null;
                 }
             }
-            if (this._isSwipe && isFunction(this._removeSwipeOpen)) {
-                this._removeSwipeOpen();
-                this._removeSwipeOpen = null;
+            if (this._isSwipe && isFunction(this._removeSwipeToggle)) {
+                this._removeSwipeToggle();
+                this._removeSwipeToggle = null;
             }
         };
         /**
@@ -1449,7 +1460,6 @@ var platui;
             if (this._isOpen) {
                 return;
             }
-            this._drawerElement.removeAttribute(__Hide);
             this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
         };
         /**
@@ -1482,7 +1492,6 @@ var platui;
                 }
             }
             else if (!this._isOpen) {
-                this._drawerElement.setAttribute(__Hide, '');
                 this.dom.removeClass(this._rootElement, this._directionalTransitionPrep);
             }
         };
@@ -1583,6 +1592,7 @@ var platui;
                         return;
                     }
                 }
+                drawerElement.removeAttribute(__Hide);
                 if (!_this._controllerIsValid(position.toLowerCase())) {
                     return;
                 }
@@ -1668,7 +1678,6 @@ var platui;
          * @param {string} position The position of the Drawer.
          */
         DrawerController.prototype._controllerIsValid = function (position) {
-            var _this = this;
             var isNull = this.utils.isNull;
             if (isNull(this._drawerElement)) {
                 this._log.debug('Could not find a corresponding control such as "' + __Drawer +
@@ -1699,9 +1708,6 @@ var platui;
             this._clickEater.className = 'plat-clickeater';
             this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
             this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
-            this._disposeRemover = this.on(__DrawerControllerDisposing, function () {
-                _this.dispatchEvent(__DrawerControllerDisposingFound, plat.events.EventManager.DIRECT, rootElement);
-            });
             return true;
         };
         /**
@@ -1730,7 +1736,7 @@ var platui;
             if (isNode(parent)) {
                 var parentStyle = parent.style, overflow = parentStyle.overflow;
                 if (overflow !== 'hidden') {
-                    var computedParentStyle = _window.getComputedStyle(parent), computedOverflow = computedParentStyle.overflow, computedDirectionalOverflow, key;
+                    var computedParentStyle = _window.getComputedStyle(parent), computedDirectionalOverflow, key;
                     if (this._isVertical) {
                         key = 'overflowY';
                         computedDirectionalOverflow = computedParentStyle.overflowY;
@@ -1755,14 +1761,7 @@ var platui;
          * Sets the max offset to translate the corresponding Drawer.
          */
         DrawerController.prototype._getOffset = function () {
-            var drawerElement = this._drawerElement, hasAttribute = drawerElement.hasAttribute(__Hide);
-            if (drawerElement.hasAttribute(__Hide)) {
-                drawerElement.removeAttribute(__Hide);
-                var offset = this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
-                drawerElement.setAttribute(__Hide, '');
-                return offset;
-            }
-            return this._isVertical ? drawerElement.offsetHeight : drawerElement.offsetWidth;
+            return this._isVertical ? this._drawerElement.clientHeight : this._drawerElement.clientWidth;
         };
         DrawerController._inject = {
             _document: __Document,
@@ -2366,12 +2365,12 @@ var platui;
             var isNode = this.utils.isNode(element), el = isNode ? element : this._slider.parentElement;
             if (this._isVertical) {
                 this._lengthProperty = 'height';
-                this._maxOffset = el.offsetHeight;
+                this._maxOffset = el.clientHeight;
                 this._sliderOffset = el.offsetTop;
             }
             else {
                 this._lengthProperty = 'width';
-                this._maxOffset = el.offsetWidth;
+                this._maxOffset = el.clientWidth;
                 this._sliderOffset = el.offsetLeft;
             }
             if (!(isNode || this._maxOffset)) {
@@ -2503,7 +2502,7 @@ var platui;
                 parentChain.push(shallowCopy);
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -3070,12 +3069,12 @@ var platui;
             if (this._isVertical) {
                 this._lengthProperty = 'height';
                 this._positionProperty = this._reversed ? 'top' : 'bottom';
-                this._maxOffset = el.offsetHeight;
+                this._maxOffset = el.clientHeight;
             }
             else {
                 this._lengthProperty = 'width';
                 this._positionProperty = this._reversed ? 'right' : 'left';
-                this._maxOffset = el.offsetWidth;
+                this._maxOffset = el.clientWidth;
             }
             if (!(isNode || this._maxOffset)) {
                 this._setOffsetWithClone(this._lengthProperty);
@@ -3198,7 +3197,7 @@ var platui;
                 parentChain.push(shallowCopy);
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -3275,6 +3274,10 @@ var platui;
                 '    </span>\n' +
                 '</div>\n';
             /**
+             * The current value.
+             */
+            this.value = '';
+            /**
              * Whether the user is currently touching the screen.
              */
             this._inTouch = false;
@@ -3339,7 +3342,7 @@ var platui;
          */
         Input.prototype.loaded = function () {
             var _this = this;
-            var optionObj = this.options || {}, options = optionObj.value || {}, element = this.element, inputType = this._type = this.attributes['type'] || options.type || 'text', pattern = options.pattern;
+            var optionObj = this.options || {}, options = optionObj.value || {}, element = this.element, inputType = this._type = this.attributes['type'] || options.type || 'text', pattern = options.pattern, validation = options.validation, utils = this.utils, isString = utils.isString;
             // in case of cloning 
             this._imageElement = this._imageElement || element.firstElementChild.firstElementChild;
             this._inputElement = this._inputElement || this._imageElement.nextElementSibling;
@@ -3349,11 +3352,17 @@ var platui;
                 _this._inputElement.focus();
             }, false);
             this._actionElement = actionContainer.firstElementChild;
-            if (!this.utils.isEmpty(pattern)) {
+            if (isString(pattern) && pattern !== '') {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
                 }
                 this._pattern = new RegExp(pattern);
+            }
+            if (isString(validation) && validation !== '') {
+                if (validation[0] === '/' && validation[validation.length - 1] === '/') {
+                    validation = validation.slice(1, -1);
+                }
+                this._validation = new RegExp(validation);
             }
             this._initializeType();
         };
@@ -3363,7 +3372,7 @@ var platui;
          * actions it returns true if the input is not empty.
          */
         Input.prototype.validate = function () {
-            return this._pattern.test(this._inputElement.value);
+            return this._validation.test(this._inputElement.value);
         };
         /**
          * Clears the user's input.
@@ -3374,7 +3383,8 @@ var platui;
                 return;
             }
             var actionElement = this._actionElement;
-            this.inputChanged((inputElement.value = ''), value);
+            inputElement.value = this.value = '';
+            this.inputChanged(this.value, value);
             actionElement.textContent = this._typeChar = '';
             actionElement.setAttribute(__Hide, '');
         };
@@ -3389,12 +3399,6 @@ var platui;
          */
         Input.prototype.blur = function () {
             this._inputElement.blur();
-        };
-        /**
-         * Returns the current value of Input control.
-         */
-        Input.prototype.value = function () {
-            return this._inputElement.value;
         };
         /**
          * A function that allows this control to observe both the bound property itself as well as
@@ -3436,17 +3440,20 @@ var platui;
             switch (inputType) {
                 case 'text':
                     this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
                 case 'email':
-                    this._pattern = this._pattern || this._regex.validateEmail;
+                    this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._regex.validateEmail;
                     this._actionHandler = this._checkEmail.bind(this);
                     this._typeHandler = this._handleEmail;
                     break;
                 case 'password':
                     var hidePassword = this._handlePasswordHide;
                     this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkPassword.bind(this);
                     this._typeHandler = this._handlePasswordShow;
                     this.addEventListener(actionElement, __$touchend, hidePassword);
@@ -3456,11 +3463,13 @@ var platui;
                 case 'tel':
                 case 'telephone':
                     this._pattern = this._pattern || this._regex.validateTelephone;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
                 case 'number':
                     this._pattern = this._pattern || /^[0-9\.,]*$/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     inputType = 'tel';
@@ -3489,6 +3498,7 @@ var platui;
                         '. Defaulting to type="text".');
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
+                    this._validation = this._validation || this._pattern;
                     this._actionHandler = this._checkText.bind(this);
                     this._typeHandler = this._erase;
                     break;
@@ -3510,7 +3520,7 @@ var platui;
             this.addEventListener(actionElement, __$touchend, actionEnd, false);
             this.addEventListener(actionElement, __$trackend, actionEnd, false);
             this.addEventListener(input, 'focus', function () {
-                if (input.value === '') {
+                if (_this.value === '') {
                     return;
                 }
                 actionElement.removeAttribute(__Hide);
@@ -3561,6 +3571,11 @@ var platui;
                         (key > 32 && key < 41)) {
                         return;
                     }
+                    var pattern = _this._pattern, char = ev.char;
+                    if (!(pattern.test(char) && pattern.test(input.value + char))) {
+                        ev.preventDefault();
+                        return;
+                    }
                     postponedEventListener();
                 }, false);
                 this.addEventListener(input, 'cut', postponedEventListener, false);
@@ -3601,7 +3616,8 @@ var platui;
          */
         Input.prototype._handleEmail = function () {
             var inputElement = this._inputElement, value = inputElement.value, char = this._typeChar;
-            this.inputChanged((inputElement.value = (char === 'x' ? '' : value + char)), value);
+            inputElement.value = this.value = char === 'x' ? '' : value + char;
+            this.inputChanged(this.value, value);
             this._checkEmail();
             inputElement.focus();
         };
@@ -3611,11 +3627,11 @@ var platui;
         Input.prototype._checkText = function () {
             var char = this._typeChar;
             if (char === 'x') {
-                if (this._inputElement.value === '') {
+                if (this.value === '') {
                     this._typeChar = '';
                 }
             }
-            else if (this._inputElement.value !== '') {
+            else if (this.value !== '') {
                 this._typeChar = 'x';
             }
             var newChar = this._typeChar;
@@ -3635,11 +3651,11 @@ var platui;
         Input.prototype._checkPassword = function () {
             var char = this._typeChar;
             if (char === '?') {
-                if (this._inputElement.value === '') {
+                if (this.value === '') {
                     this._typeChar = '';
                 }
             }
-            else if (this._inputElement.value !== '') {
+            else if (this.value !== '') {
                 this._typeChar = '?';
             }
             var newChar = this._typeChar;
@@ -3711,19 +3727,15 @@ var platui;
          * The event handler upon user text input.
          */
         Input.prototype._onInput = function () {
-            var inputElement = this._inputElement, value = inputElement.value;
-            switch (this._type) {
-                case 'tel':
-                case 'number':
-                    var last = value.length - 1;
-                    if (last >= 0 && (!this._pattern.test(value[last]) ||
-                        !(last === 0 || this._type !== 'tel' || value[last] !== '+'))) {
-                        value = inputElement.value = value.slice(0, -1);
-                    }
-                default:
-                    this.inputChanged(value);
-                    break;
+            var inputElement = this._inputElement, value = inputElement.value, strippedValue = this._stripInput(inputElement.value);
+            if (value !== strippedValue) {
+                value = inputElement.value = strippedValue;
             }
+            if (value === this.value) {
+                return;
+            }
+            this.value = inputElement.value;
+            this.inputChanged(this.value);
             this._actionHandler();
         };
         /**
@@ -3732,45 +3744,30 @@ var platui;
          */
         Input.prototype._onInputChanged = function (newValue) {
             var inputElement = this._inputElement;
-            switch (this._type) {
-                case 'tel':
-                case 'number':
-                    var last = newValue.length - 1;
-                    if (last >= 0 && (!this._pattern.test(newValue[last]) ||
-                        !(last === 0 || this._type !== 'tel' || newValue[last] !== '+'))) {
-                        newValue = inputElement.value = newValue.slice(0, -1);
-                        this.inputChanged(newValue);
-                        break;
-                    }
-                default:
-                    inputElement.value = newValue;
-                    break;
-            }
+            newValue = this._stripInput(newValue);
+            inputElement.value = newValue;
+            this.value = inputElement.value;
             this._actionHandler();
         };
         /**
-         * Check the initial input and delete if it does not match the pattern.
-         * @param {string} value The value to check as input to the HTMLInputElement.
+         * Parses the input and strips it of characters that don't fit its pattern.
+         * @param {string} value The current value to parse.
          */
-        Input.prototype._checkInput = function (value) {
-            switch (this._type) {
-                case 'tel':
-                case 'number':
-                    if (this._pattern.test(value)) {
-                        this._inputElement.value = value;
+        Input.prototype._stripInput = function (value) {
+            var newValue = '', revert = newValue, char, pattern = this._pattern, length = value.length;
+            for (var i = 0; i < length; ++i) {
+                char = value[i];
+                if (pattern.test(char)) {
+                    newValue += char;
+                    if (pattern.test(newValue)) {
+                        revert = newValue;
                     }
                     else {
-                        this._log.debug(this.type + '\'s value does not satisfy either ' +
-                            'the given pattern or type. The value will be reset to "".');
-                        this.inputChanged((this._inputElement.value = ''), value);
+                        newValue = revert;
                     }
-                    break;
-                default:
-                    this._inputElement.value = value;
-                    break;
+                }
             }
-            this._actionHandler();
-            this._actionElement.setAttribute(__Hide, '');
+            return newValue;
         };
         Input._inject = {
             _compat: __Compat,
@@ -4198,80 +4195,13 @@ var platui;
          * Advances the position of the Carousel to the next state.
          */
         Carousel.prototype.goToNext = function () {
-            var _this = this;
-            return this._Promise.all(this._addQueue).then(function () {
-                var index = _this._index, reset = false;
-                if ((index >= _this._itemNodes.length - 1) && !(reset = _this._isInfinite)) {
-                    if (_this._isAuto && !_this._isPaused) {
-                        _this.pause();
-                        _this._selfPause = true;
-                    }
-                    return _this._Promise.resolve(false);
-                }
-                var length = _this._getLength();
-                if (!length) {
-                    return _this.goToIndex(_this._nextIndex, true);
-                }
-                return _this._cancelCurrentAnimations().then(function () {
-                    if (!_this._outerEnd) {
-                        _this._initializeOuterNodes();
-                    }
-                    var animationOptions = {};
-                    animationOptions[_this._transform] = _this._calculateStaticTranslation(-length);
-                    var animation = _this._initiateAnimation({ properties: animationOptions }), nextIndex;
-                    if (reset) {
-                        _this._index = nextIndex = 0;
-                    }
-                    else {
-                        nextIndex = ++_this._index;
-                    }
-                    _this.inputChanged(_this._index, index);
-                    return animation.then(function () {
-                        _this._handleNext(nextIndex, length);
-                        _this._checkArrows();
-                        return true;
-                    });
-                });
-            });
+            return this._goToNext(false);
         };
         /**
          * Changes the position of the Carousel to the previous state.
          */
         Carousel.prototype.goToPrevious = function () {
-            var _this = this;
-            return this._Promise.all(this._addQueue).then(function () {
-                var index = _this._index, reset = false;
-                if (index <= 0 && !(reset = _this._isInfinite)) {
-                    return _this._Promise.resolve(false);
-                }
-                else if (_this._selfPause) {
-                    _this.resume();
-                }
-                var length = _this._getLength();
-                if (!length) {
-                    return _this.goToIndex(_this._previousIndex, true);
-                }
-                return _this._cancelCurrentAnimations().then(function () {
-                    if (!_this._outerStart) {
-                        _this._initializeOuterNodes();
-                    }
-                    var animationOptions = {};
-                    animationOptions[_this._transform] = _this._calculateStaticTranslation(length);
-                    var animation = _this._initiateAnimation({ properties: animationOptions }), previousIndex;
-                    if (reset) {
-                        _this._index = previousIndex = _this._itemNodes.length - 1;
-                    }
-                    else {
-                        previousIndex = --_this._index;
-                    }
-                    _this.inputChanged(_this._index, index);
-                    return animation.then(function () {
-                        _this._handlePrevious(previousIndex, -length);
-                        _this._checkArrows();
-                        return true;
-                    });
-                });
-            });
+            return this._goToPrevious(false);
         };
         /**
          * Changes the position of the Carousel to the state
@@ -4280,52 +4210,7 @@ var platui;
          * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
          */
         Carousel.prototype.goToIndex = function (index, direct) {
-            var _this = this;
-            return this._Promise.all(this._addQueue).then(function () {
-                var oldIndex = _this._index;
-                if (_this.utils.isUndefined(oldIndex)) {
-                    _this._initializeIndex(0);
-                    _this.inputChanged(_this._index, index);
-                    if (!_this._isInfinite) {
-                        if (index < _this.context.length - 1) {
-                            if (_this._selfPause) {
-                                _this.resume();
-                            }
-                        }
-                        else if (_this._isAuto && !_this._isPaused) {
-                            _this.pause();
-                            _this._selfPause = true;
-                        }
-                    }
-                    return _this._Promise.resolve(true);
-                }
-                else if (index === oldIndex) {
-                    return _this._Promise.resolve(false);
-                }
-                else if (direct === true) {
-                    _this._initializeIndex(index);
-                    _this.inputChanged(_this._index, index);
-                    if (!_this._isInfinite) {
-                        if (index < _this.context.length - 1) {
-                            if (_this._selfPause) {
-                                _this.resume();
-                            }
-                        }
-                        else if (_this._isAuto && !_this._isPaused) {
-                            _this.pause();
-                            _this._selfPause = true;
-                        }
-                    }
-                    return _this._Promise.resolve(true);
-                }
-                else if (index - oldIndex > 0 && index === _this._nextIndex) {
-                    return _this.goToNext();
-                }
-                else if (index === _this._previousIndex) {
-                    return _this.goToPrevious();
-                }
-                return _this._goToIndex(index);
-            });
+            return this._goToIndex(index, false, direct);
         };
         /**
          * Stops auto scrolling if auto scrolling is enabled.
@@ -4430,7 +4315,7 @@ var platui;
                 this._index = index;
                 return;
             }
-            this.goToIndex(index, firstTime === true);
+            this._goToIndex(index, true, firstTime === true);
         };
         /**
          * Resets the position of the Carousel to its current state.
@@ -4455,13 +4340,11 @@ var platui;
                 return;
             }
             var maxIndex = context.length - 1;
-            if (maxIndex < 2) {
-                this._initializeIndex(index > maxIndex ? maxIndex : index);
-                this.inputChanged(this._index, index);
-            }
-            else if (index > maxIndex) {
+            if (index > maxIndex) {
                 this.goToIndex(maxIndex);
+                return;
             }
+            this._checkArrows();
         };
         /**
          * Sets the previous and next indices in relation to item nodes according to the current index.
@@ -4491,11 +4374,152 @@ var platui;
             }
         };
         /**
+         * Advances the position of the Carousel to the next state.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         */
+        Carousel.prototype._goToNext = function (inputChanged) {
+            var _this = this;
+            return this._Promise.all(this._addQueue).then(function () {
+                var index = _this._index, reset = false;
+                if ((index >= _this._itemNodes.length - 1) && !(reset = _this._isInfinite)) {
+                    if (_this._isAuto && !_this._isPaused) {
+                        _this.pause();
+                        _this._selfPause = true;
+                    }
+                    return _this._Promise.resolve(false);
+                }
+                var length = _this._getLength();
+                if (!length) {
+                    return _this.goToIndex(_this._nextIndex, true);
+                }
+                return _this._cancelCurrentAnimations().then(function () {
+                    if (!_this._outerEnd) {
+                        _this._initializeOuterNodes();
+                    }
+                    var animationOptions = {};
+                    animationOptions[_this._transform] = _this._calculateStaticTranslation(-length);
+                    var animation = _this._initiateAnimation({ properties: animationOptions }), nextIndex;
+                    if (reset) {
+                        _this._index = nextIndex = 0;
+                    }
+                    else {
+                        nextIndex = ++_this._index;
+                    }
+                    if (!inputChanged) {
+                        _this.inputChanged(_this._index, index);
+                    }
+                    return animation.then(function () {
+                        _this._handleNext(nextIndex, length);
+                        _this._checkArrows();
+                        return true;
+                    });
+                });
+            });
+        };
+        /**
+         * Changes the position of the Carousel to the previous state.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         */
+        Carousel.prototype._goToPrevious = function (inputChanged) {
+            var _this = this;
+            return this._Promise.all(this._addQueue).then(function () {
+                var index = _this._index, reset = false;
+                if (index <= 0 && !(reset = _this._isInfinite)) {
+                    return _this._Promise.resolve(false);
+                }
+                else if (_this._selfPause) {
+                    _this.resume();
+                }
+                var length = _this._getLength();
+                if (!length) {
+                    return _this.goToIndex(_this._previousIndex, true);
+                }
+                return _this._cancelCurrentAnimations().then(function () {
+                    if (!_this._outerStart) {
+                        _this._initializeOuterNodes();
+                    }
+                    var animationOptions = {};
+                    animationOptions[_this._transform] = _this._calculateStaticTranslation(length);
+                    var animation = _this._initiateAnimation({ properties: animationOptions }), previousIndex;
+                    if (reset) {
+                        _this._index = previousIndex = _this._itemNodes.length - 1;
+                    }
+                    else {
+                        previousIndex = --_this._index;
+                    }
+                    if (!inputChanged) {
+                        _this.inputChanged(_this._index, index);
+                    }
+                    return animation.then(function () {
+                        _this._handlePrevious(previousIndex, -length);
+                        _this._checkArrows();
+                        return true;
+                    });
+                });
+            });
+        };
+        /**
          * Changes the position of the Carousel to the state
          * specified by the input index.
          * @param {number} index The new index of the Carousel.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
          */
-        Carousel.prototype._goToIndex = function (index) {
+        Carousel.prototype._goToIndex = function (index, inputChanged, direct) {
+            var _this = this;
+            return this._Promise.all(this._addQueue).then(function () {
+                var oldIndex = _this._index;
+                if (_this.utils.isUndefined(oldIndex)) {
+                    _this._initializeIndex(0);
+                    _this.inputChanged(_this._index, index);
+                    if (!_this._isInfinite) {
+                        if (index < _this.context.length - 1) {
+                            if (_this._selfPause) {
+                                _this.resume();
+                            }
+                        }
+                        else if (_this._isAuto && !_this._isPaused) {
+                            _this.pause();
+                            _this._selfPause = true;
+                        }
+                    }
+                    return _this._Promise.resolve(true);
+                }
+                else if (index === oldIndex) {
+                    return _this._Promise.resolve(false);
+                }
+                else if (direct === true) {
+                    _this._initializeIndex(index);
+                    _this.inputChanged(_this._index, index);
+                    if (!_this._isInfinite) {
+                        if (index < _this.context.length - 1) {
+                            if (_this._selfPause) {
+                                _this.resume();
+                            }
+                        }
+                        else if (_this._isAuto && !_this._isPaused) {
+                            _this.pause();
+                            _this._selfPause = true;
+                        }
+                    }
+                    return _this._Promise.resolve(true);
+                }
+                else if (index - oldIndex > 0 && index === _this._nextIndex) {
+                    return _this._goToNext(inputChanged);
+                }
+                else if (index === _this._previousIndex) {
+                    return _this._goToPrevious(inputChanged);
+                }
+                return _this._handleGoToIndex(index, inputChanged);
+            });
+        };
+        /**
+         * Changes the position of the Carousel to the state
+         * specified by the input index.
+         * @param {number} index The new index of the Carousel.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         */
+        Carousel.prototype._handleGoToIndex = function (index, inputChanged) {
             var oldIndex = this._index;
             if (index === oldIndex || index < 0 || index >= this.context.length) {
                 return this._Promise.resolve(false);
@@ -4509,42 +4533,42 @@ var platui;
             }
             var _Promise = this._Promise, defer = this.utils.defer, move, diff, reverseDiff;
             if (index > oldIndex) {
-                move = this.goToNext;
+                move = this._goToNext;
                 diff = index - oldIndex;
                 if (this._isInfinite) {
                     reverseDiff = this._itemNodes.length - index + oldIndex;
                     if (reverseDiff < diff) {
-                        move = this.goToPrevious;
+                        move = this._goToPrevious;
                         diff = reverseDiff;
                     }
                 }
             }
             else {
-                move = this.goToPrevious;
+                move = this._goToPrevious;
                 diff = oldIndex - index;
                 if (this._isInfinite) {
                     reverseDiff = this._itemNodes.length - oldIndex + index;
                     if (reverseDiff < diff) {
-                        move = this.goToNext;
+                        move = this._goToNext;
                         diff = reverseDiff;
                     }
                 }
             }
-            var promises = [], removeListeners = this._removeListeners, constant = this._goToIntervalConstant, interval = 0;
             move = move.bind(this);
+            var promises = [], removeListeners = this._removeListeners, constant = this._goToIntervalConstant, interval = 0, mover = function (resolve) {
+                var remove = defer(function () {
+                    var removeIndex = removeListeners.indexOf(remove);
+                    if (removeIndex !== -1) {
+                        removeListeners.splice(removeIndex, 1);
+                    }
+                    resolve(move(inputChanged));
+                }, interval += Math.round(constant / diff));
+                removeListeners.push(remove);
+            };
             while (--diff > 0) {
-                promises.push(new _Promise(function (resolve) {
-                    var remove = defer(function () {
-                        var removeIndex = removeListeners.indexOf(remove);
-                        if (removeIndex !== -1) {
-                            removeListeners.splice(removeIndex, 1);
-                        }
-                        resolve(move());
-                    }, interval += Math.round(constant / diff));
-                    removeListeners.push(remove);
-                }));
+                promises.push(new _Promise(mover));
             }
-            promises.push(move());
+            promises.push(move(inputChanged));
             return _Promise.all(promises).then(function (results) {
                 var result = false;
                 while (results.length > 0) {
@@ -4563,7 +4587,7 @@ var platui;
          */
         Carousel.prototype._handleNext = function (index, length) {
             var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -4572,8 +4596,7 @@ var platui;
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
                     container.style[this._transform] = this._calculateStaticTranslation(length);
-                    // access property to force a repaint 
-                    container.offsetWidth;
+                    this._forceRepaint(container);
                 }
             }
             else {
@@ -4592,7 +4615,7 @@ var platui;
          */
         Carousel.prototype._handlePrevious = function (index, length) {
             var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
-            if (isInfinite && (isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -4611,8 +4634,7 @@ var platui;
             }
             container.insertBefore(itemNodes[this._previousIndex], container.firstChild);
             container.style[this._transform] = this._calculateStaticTranslation(length);
-            // access property to force a repaint 
-            container.offsetWidth;
+            this._forceRepaint(container);
         };
         /**
          * Clears all the inner nodes of the control.
@@ -4634,9 +4656,8 @@ var platui;
                 case 6:
                     var next = this._nextIndex, index = this._index;
                     if (next < 0 || next === index) {
-                        insertBefore(itemNodes[this._index], childNodes.splice(-3, 3));
-                        var i = index === 0 ? this._previousIndex + 1 : index - 1;
-                        insertBefore(itemNodes[i], childNodes);
+                        insertBefore(itemNodes[index], childNodes.splice(-3, 3));
+                        insertBefore(itemNodes[index === 0 ? this._previousIndex + 1 : index - 1], childNodes);
                         break;
                     }
                     insertBefore(itemNodes[next], childNodes.splice(-3, 3));
@@ -4668,8 +4689,7 @@ var platui;
             var container = this._container;
             container.insertBefore(this._itemNodes[index], null);
             container.style[this._transform] = this._calculateStaticTranslation(-this._currentOffset);
-            // access property to force a repaint 
-            container.offsetWidth;
+            this._forceRepaint(container);
             this._initializeOuterNodes();
             this._checkArrows();
             return true;
@@ -4705,8 +4725,7 @@ var platui;
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
                             container.style[this._transform] = this._calculateStaticTranslation(-length);
-                            // access property to force a repaint 
-                            container.offsetWidth;
+                            this._forceRepaint(container);
                             this._outerStart = true;
                         }
                     }
@@ -4807,8 +4826,7 @@ var platui;
                 var preClone = this._preClonedNode = container.lastElementChild.cloneNode(true);
                 container.insertBefore(preClone, container.firstChild);
                 container.style[this._transform] = this._calculateStaticTranslation(length);
-                // access property to force a repaint 
-                container.offsetWidth;
+                this._forceRepaint(container);
                 this._outerStart = true;
             }
         };
@@ -5197,6 +5215,20 @@ var platui;
             }
             return this._animationThenable.cancel();
         };
+        /**
+         * Forces a repaint / reflow.
+         * @param {HTMLElement} element The element to force the repaint / reflow on.
+         */
+        Carousel.prototype._forceRepaint = function (element) {
+            var style = element.style, display = style.display, none = 'none';
+            if (style.display === none) {
+                element.offsetWidth;
+                return;
+            }
+            style.display = none;
+            element.offsetWidth;
+            style.display = display;
+        };
         Carousel._inject = {
             _document: __Document,
             _window: __Window,
@@ -5359,7 +5391,7 @@ var platui;
                 this._log.debug('No item template or item template selector specified for ' + this.type + '.');
                 return;
             }
-            var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate), groupHeaderTemplate = options.groupHeaderTemplate, normalizedGroupTemplate = isString(groupHeaderTemplate) ? this._normalizeTemplateName(groupHeaderTemplate) : null;
+            var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate), headerTemplate = options.headerTemplate, normalizedGroupTemplate = isString(headerTemplate) ? this._normalizeTemplateName(headerTemplate) : null;
             this._parseInnerTemplate(normalizedItemTemplate, normalizedGroupTemplate);
             this._determineTemplates(itemTemplate, normalizedItemTemplate, normalizedGroupTemplate);
             this._defaultGroup = {
@@ -5469,23 +5501,24 @@ var platui;
          * @param {string} itemTemplate The pre-normalized property for indicating either the item template or the
          * item template selector.
          * @param {string} itemTemplateKey The normalized property for indicating the item template.
-         * @param {string} groupHeaderTemplate The property for indicating the group header template.
+         * @param {string} headerTemplate The property for indicating the group header template.
          */
-        Listview.prototype._determineTemplates = function (itemTemplate, itemTemplateKey, groupHeaderTemplate) {
+        Listview.prototype._determineTemplates = function (itemTemplate, itemTemplateKey, headerTemplate) {
             var utils = this.utils, bindableTemplates = this.bindableTemplates, templates = this._templates, template;
-            if (utils.isString(groupHeaderTemplate)) {
+            if (utils.isString(headerTemplate)) {
                 this._isGrouped = true;
-                template = templates[groupHeaderTemplate];
+                this.dom.addClass(this._container, __Plat + 'grouped');
+                template = templates[headerTemplate];
                 if (utils.isNode(template)) {
-                    this._groupHeaderTemplate = groupHeaderTemplate;
-                    this.bindableTemplates.add(groupHeaderTemplate, template);
-                    delete templates[groupHeaderTemplate];
+                    this._headerTemplate = headerTemplate;
+                    this.bindableTemplates.add(headerTemplate, template);
+                    delete templates[headerTemplate];
                 }
                 else {
-                    this._log.debug(__Listview + ' group header template "' + groupHeaderTemplate +
+                    this._log.debug(__Listview + ' group header template "' + headerTemplate +
                         '" was not a template defined in the DOM.');
                 }
-                this._groupHeaderTemplatePromise = this._createGroupTemplate();
+                this._headerTemplatePromise = this._createGroupTemplate();
             }
             template = templates[itemTemplateKey];
             if (utils.isNode(template)) {
@@ -5498,6 +5531,7 @@ var platui;
             if (!utils.isFunction(controlProperty.value)) {
                 this._log.debug(__Listview + ' item template "' + itemTemplate +
                     '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.');
+                return;
             }
             this._templateSelector = controlProperty.value.bind(controlProperty.control);
             this._templateSelectorKeys = {};
@@ -5513,11 +5547,11 @@ var platui;
          */
         Listview.prototype._createGroupTemplate = function () {
             var _this = this;
-            var _document = this._document, options = this.options.value, bindableTemplates = this.bindableTemplates, groupHeaderTemplate = this._groupHeaderTemplate, groupHeader = this._templates[groupHeaderTemplate], listviewGroup = __Listview + '-group', group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
+            var _document = this._document, bindableTemplates = this.bindableTemplates, headerTemplate = this._headerTemplate, listviewGroup = __Listview + '-group', group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
             group.className = listviewGroup;
             itemContainer.className = __Listview + '-items';
-            if (this.utils.isString(groupHeaderTemplate)) {
-                headerPromise = bindableTemplates.templates[groupHeaderTemplate].then(function (headerTemplate) {
+            if (this.utils.isString(headerTemplate)) {
+                headerPromise = bindableTemplates.templates[headerTemplate].then(function (headerTemplate) {
                     group.insertBefore(headerTemplate.cloneNode(true), null);
                 });
             }
@@ -5537,14 +5571,13 @@ var platui;
          */
         Listview.prototype._addGroups = function (numberOfGroups, index, animateItems) {
             var _this = this;
-            var context = this.context, initialIndex = index, max = +(index + numberOfGroups);
-            var promises = [], fragment, i;
+            var initialIndex = index, max = +(index + numberOfGroups), promises = [];
             while (index < max) {
                 promises.push(this._bindGroup(index++));
             }
             return this._Promise.all(promises).then(function (fragments) {
                 var length = fragments.length;
-                for (i = 0; i < length; ++i) {
+                for (var i = 0; i < length; ++i) {
                     _this._addGroup(i + initialIndex, fragments[i], i < animateItems);
                 }
             });
@@ -5590,23 +5623,26 @@ var platui;
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
             this._createItems(0, (group.items || []).length, groupHash, 0);
             if (animate) {
-                var animationQueue = this._defaultGroup.animationQueue;
-                animationQueue.push({
+                var animationQueue = this._defaultGroup.animationQueue, animation = {
                     animation: this._animator.enter(fragment, __Enter, this._container).then(function () {
-                        animationQueue.shift();
+                        var index = animationQueue.indexOf(animation);
+                        if (index > -1) {
+                            animationQueue.splice(index, 1);
+                        }
                         if (!_this._isVertical) {
                             // set height for flexbox container 
-                            _this._setItemContainerHeight(itemContainer);
+                            _this._setItemContainerHeight(itemContainer, true);
                         }
                     }),
                     op: null
-                });
+                };
+                animationQueue.push(animation);
             }
             else {
                 this._container.insertBefore(fragment, null);
                 if (!this._isVertical) {
                     // set height for flexbox container 
-                    this._setItemContainerHeight(itemContainer);
+                    this._setItemContainerHeight(itemContainer, true);
                 }
             }
         };
@@ -5626,33 +5662,50 @@ var platui;
          */
         Listview.prototype._createItems = function (index, count, group, animateItems) {
             var _this = this;
-            var utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control;
-            if (this._isGrouped && this === control) {
-                this._groupHeaderTemplatePromise.then(function () {
-                    _this._addGroups(count, index, animateItems);
-                }).then(null, function (error) {
-                    _this._log.debug(_this.type + ' error: ' + error);
-                });
-                return;
+            var utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control, isVertical = this._isVertical, isControl = this === control;
+            if (isControl) {
+                if (this._isGrouped) {
+                    this._headerTemplatePromise.then(function () {
+                        _this._addGroups(count, index, animateItems);
+                    }).then(null, function (error) {
+                        _this._log.debug(_this.type + ' error: ' + error);
+                    });
+                    return;
+                }
+                else if (!isVertical) {
+                    this._setItemContainerHeight(opGroup.itemContainer, false);
+                }
             }
-            var addQueue = opGroup.addQueue;
+            var addQueue = opGroup.addQueue, postLoad = function () {
+                var indexOf = addQueue.indexOf(addPromise);
+                if (indexOf !== -1) {
+                    addQueue.splice(indexOf, 1);
+                }
+                if (isControl) {
+                    return;
+                }
+                opGroup.element.removeAttribute(__Hide);
+                if (isVertical) {
+                    return;
+                }
+                _this._setItemContainerWidth(opGroup.itemContainer);
+            }, onError = function (error) {
+                _this._log.debug(_this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
+            };
             if (utils.isFunction(this._templateSelector)) {
                 var promises = [];
                 opGroup.itemCount += count;
                 for (var i = 0; i < count; ++i, ++index) {
-                    promises.push(this._renderUsingFunction(index, opGroup, i < animateItems));
+                    promises.push(this._renderUsingFunction(index, opGroup));
                 }
-                var itemsLoaded = this._Promise.all(promises).then(function () {
-                    var indexOf = addQueue.indexOf(addPromise);
-                    if (indexOf !== -1) {
-                        addQueue.splice(indexOf, 1);
+                var itemsLoaded = this.itemsLoaded = this._Promise.all(promises)
+                    .then(function (nodes) {
+                    var length = nodes.length;
+                    for (var ii = 0; ii < length; ++ii) {
+                        _this._appendRenderedItem(nodes[ii], opGroup, ii < animateItems);
                     }
-                    if (!_this._isVertical) {
-                        _this._setItemContainerWidth(opGroup.itemContainer);
-                    }
-                });
+                }).then(postLoad, onError);
                 addQueue.push(itemsLoaded);
-                this.itemsLoaded = itemsLoaded;
                 return;
             }
             var key = this._itemTemplate;
@@ -5661,15 +5714,7 @@ var platui;
             }
             this._disposeFromIndex(index, opGroup);
             opGroup.itemCount += count;
-            var addPromise = this._addItems(index, count, opGroup, animateItems).then(function () {
-                var index = addQueue.indexOf(addPromise);
-                if (index !== -1) {
-                    addQueue.splice(index, 1);
-                }
-                if (!_this._isVertical) {
-                    _this._setItemContainerWidth(opGroup.itemContainer);
-                }
-            });
+            var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
             addQueue.push(addPromise);
         };
         /**
@@ -5729,11 +5774,10 @@ var platui;
          * rendering will stop.
          * @param {number} index The starting index to render.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
-         * @param {boolean} animate? Whether or not to animate the new items.
          */
-        Listview.prototype._renderUsingFunction = function (index, group, animate) {
+        Listview.prototype._renderUsingFunction = function (index, group) {
             var _this = this;
-            var _Promise = this._Promise, utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control, identifier, context;
+            var _Promise = this._Promise, utils = this.utils, opGroup = group || this._defaultGroup, control = opGroup.control, identifier, context, groupName;
             if (this === control) {
                 identifier = index;
                 context = this.context;
@@ -5741,9 +5785,10 @@ var platui;
             else {
                 identifier = 'items.' + index;
                 context = control.context.items;
+                groupName = opGroup.name;
             }
             return _Promise.resolve(this._templateSelectorPromise).then(function () {
-                return _this._templateSelectorPromise = _Promise.resolve(_this._templateSelector(context[index], index));
+                return _this._templateSelectorPromise = _Promise.resolve(_this._templateSelector(context[index], index, groupName));
             }).then(function (selectedTemplate) {
                 var bindableTemplates = control.bindableTemplates, templates = bindableTemplates.templates, controls = control.controls, key = _this._normalizeTemplateName(selectedTemplate), name = opGroup.name, templateKeys = _this._templateSelectorKeys[name], controlExists = index < controls.length;
                 if (utils.isUndefined(templateKeys)) {
@@ -5760,27 +5805,45 @@ var platui;
                     templateKeys[index] = key;
                     return bindableTemplates.bind(key, identifier, _this._getAliases(context, index));
                 }
-                else if (controlExists) {
-                    _this._TemplateControlFactory.dispose(controls[index]);
+                else {
+                    _this._log.debug(_this.type + ' template "' + selectedTemplate + '" was not found.');
+                    if (controlExists) {
+                        _this._TemplateControlFactory.dispose(controls[index]);
+                    }
                 }
-            }).then(function (node) {
-                if (utils.isNull(node) || utils.isArray(node)) {
-                    return;
-                }
-                else if (animate === true) {
-                    var animationQueue = opGroup.animationQueue;
-                    animationQueue.push({
-                        animation: _this._animator.enter(node, __Enter, opGroup.itemContainer).then(function () {
-                            animationQueue.shift();
-                        }),
-                        op: null
-                    });
-                    return;
-                }
-                opGroup.itemContainer.insertBefore(node, null);
-            }).then(null, function (error) {
-                _this._log.debug(_this.type + ' error: ' + error);
             });
+        };
+        /**
+         * Appends the rendered item from the defined render function.
+         * @param {any} node The node to place into the item container if available.
+         * @param {platui.IGroupHash} group? The group that we're performing this operation on.
+         * @param {boolean} animate? Whether or not to animate the new item.
+         */
+        Listview.prototype._appendRenderedItem = function (node, group, animate) {
+            var utils = this.utils, opGroup = group || this._defaultGroup;
+            if (utils.isNull(node) || utils.isArray(node)) {
+                return;
+            }
+            else if (animate === true) {
+                var animationQueue = opGroup.animationQueue, animation = {
+                    animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then(function () {
+                        var animationIndex = animationQueue.indexOf(animation);
+                        if (animationIndex === -1) {
+                            return;
+                        }
+                        animationQueue.splice(animationIndex, 1);
+                    }),
+                    op: null
+                };
+                animationQueue.push(animation);
+            }
+            else {
+                opGroup.itemContainer.insertBefore(node, null);
+            }
+            if (utils.isFunction(this.__resolveFn)) {
+                this.__resolveFn();
+                this.__resolveFn = null;
+            }
         };
         /**
          * Updates the control's children resource objects when
@@ -5844,26 +5907,39 @@ var platui;
             if (!this.utils.isNode(item)) {
                 return;
             }
-            var animationQueue = group.animationQueue;
-            animationQueue.push({
+            var animationQueue = group.animationQueue, animation = {
                 animation: this._animator.enter(item, __Enter, group.itemContainer).then(function () {
-                    animationQueue.shift();
+                    var index = animationQueue.indexOf(animation);
+                    if (index === -1) {
+                        return;
+                    }
+                    animationQueue.splice(index, 1);
                 }),
                 op: null
-            });
+            };
+            animationQueue.push(animation);
         };
         /**
          * Removes items from the control's element.
          * @param {number} index The index to start disposing from.
          * @param {number} numberOfItems The number of items to remove.
-         * @param {plat.ui.TemplateControl} control The control whose child controls we are to remove.
+         * @param {platui.IGroupHash} group The group for which we're disposing items.
          */
-        Listview.prototype._removeItems = function (index, numberOfItems, control) {
-            var dispose = this._TemplateControlFactory.dispose, controls = control.controls, last = index + numberOfItems;
+        Listview.prototype._removeItems = function (index, numberOfItems, group) {
+            var dispose = this._TemplateControlFactory.dispose, control = group.control, controls = control.controls, last = index + numberOfItems, controlDisposed = last > index;
             while (last-- > index) {
                 dispose(controls[last]);
             }
             this._updateResource(controls.length - 1, control);
+            if (this === control) {
+                return;
+            }
+            else if (controlDisposed && !this._isVertical) {
+                this._resetItemContainerWidth(group.itemContainer);
+            }
+            if (controls.length === 0) {
+                group.element.setAttribute(__Hide, '');
+            }
         };
         /**
          * Dispose of the controls and DOM starting at a given index.
@@ -5871,9 +5947,18 @@ var platui;
          * @param {platui.IGroupHash} group? The group for which we're disposing items.
          */
         Listview.prototype._disposeFromIndex = function (index, group) {
-            var controls = (group || this._defaultGroup).control.controls, dispose = this._TemplateControlFactory.dispose;
-            for (var i = controls.length - 1; i >= index; --i) {
-                dispose(controls[i]);
+            var opGroup = group || this._defaultGroup, control = opGroup.control, controls = control.controls, dispose = this._TemplateControlFactory.dispose, last = controls.length, controlDisposed = last > index;
+            while (last-- > index) {
+                dispose(controls[last]);
+            }
+            if (this === control) {
+                return;
+            }
+            else if (controlDisposed && !this._isVertical) {
+                this._resetItemContainerWidth(opGroup.itemContainer);
+            }
+            if (controls.length === 0) {
+                group.element.setAttribute(__Hide, '');
             }
         };
         /**
@@ -6294,25 +6379,24 @@ var platui;
         /**
          * Clones and parses thes innerTemplate and creates the templates object.
          * @param {string} itemTemplate The normalized item template name from the options.
-         * @param {string} groupHeaderTemplate? The normalized group header template name from the options.
+         * @param {string} headerTemplate? The normalized group header template name from the options.
          */
-        Listview.prototype._parseInnerTemplate = function (itemTemplate, groupHeaderTemplate) {
-            var templates = this._templates, slice = Array.prototype.slice, appendChildren = this.dom.appendChildren, _document = this._document, validGroupTemplate = !this.utils.isNull(groupHeaderTemplate), childNodes = slice.call(this.innerTemplate.childNodes), length = childNodes.length, itemClass = __Plat + 'item', groupClass = __Plat + 'header', childNode, templateName, container;
+        Listview.prototype._parseInnerTemplate = function (itemTemplate, headerTemplate) {
+            var templates = this._templates, slice = Array.prototype.slice, appendChildren = this.dom.appendChildren, _document = this._document, validGroupTemplate = !this.utils.isNull(headerTemplate), childNodes = slice.call(this.innerTemplate.childNodes), childNode, templateName, container;
             while (childNodes.length > 0) {
                 childNode = childNodes.pop();
                 if (childNode.nodeType !== Node.ELEMENT_NODE) {
                     continue;
                 }
                 templateName = this._normalizeTemplateName(childNode.nodeName);
-                if (validGroupTemplate && templateName === groupHeaderTemplate) {
+                if (validGroupTemplate && templateName === headerTemplate) {
                     container = _document.createElement('div');
-                    container.className = groupClass;
+                    container.className = __Plat + 'header';
                 }
                 else {
-                    container = _document.createElement('div');
-                    container.className = itemClass;
+                    container = _document.createDocumentFragment();
                 }
-                container = appendChildren(childNode.childNodes, container);
+                appendChildren(childNode.childNodes, container);
                 templates[templateName] = container;
             }
         };
@@ -6369,11 +6453,11 @@ var platui;
             this._Promise.all(addQueue).then(function () {
                 if (_this._animate) {
                     _this._animateItems(start, 1, __Leave, opGroup, 'leave', false).then(function () {
-                        _this._removeItems(removeIndex, 1, opGroup.control);
+                        _this._removeItems(removeIndex, 1, opGroup);
                     });
                     return;
                 }
-                _this._removeItems(removeIndex, 1, opGroup.control);
+                _this._removeItems(removeIndex, 1, opGroup);
             });
         };
         /**
@@ -6406,7 +6490,6 @@ var platui;
             }
             else if (this._animate) {
                 if (addQueue.length === 0) {
-                    var animationQueue = opGroup.animationQueue;
                     addQueue = addQueue.concat([this._animateItems(0, 1, __Leave, opGroup, 'clone', true)]);
                 }
             }
@@ -6415,7 +6498,7 @@ var platui;
                 opGroup.itemCount--;
             }
             this._Promise.all(addQueue).then(function () {
-                _this._removeItems(removeIndex, 1, opGroup.control);
+                _this._removeItems(removeIndex, 1, opGroup);
             });
         };
         /**
@@ -6452,14 +6535,14 @@ var platui;
                         opGroup.itemCount = 0;
                     }
                     this._Promise.all(addQueue).then(function () {
-                        _this._removeItems(currentLength - itemCount, itemCount, control);
+                        _this._removeItems(currentLength - itemCount, itemCount, opGroup);
                     });
                 }
                 return;
             }
             var removeCount = change.removed.length, animationQueue = opGroup.animationQueue;
             if (addCount > removeCount) {
-                var _Promise = this._Promise, itemAddCount = addCount - removeCount, animationCount;
+                var itemAddCount = addCount - removeCount, animationCount;
                 if (utils.isFunction(this._templateSelector)) {
                     if (utils.isNull(change.index)) {
                         this.rerender(opGroup);
@@ -6500,7 +6583,7 @@ var platui;
                         var animLength = animationQueue.length;
                         _this._animateItems(change.index, addCount, __Enter, opGroup, null, animLength > 0 && animationQueue[animLength - 1].op === 'clone');
                     }
-                    _this._removeItems(currentLength - deleteCount, deleteCount, control);
+                    _this._removeItems(currentLength - deleteCount, deleteCount, opGroup);
                 });
             }
         };
@@ -6514,32 +6597,61 @@ var platui;
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          */
         Listview.prototype._animateItems = function (startIndex, numberOfItems, key, group, animationOp, cancel) {
-            // block length === 3 (one element node and two comment nodes) 
-            var blockLength = 3, start = startIndex * blockLength;
             switch (animationOp) {
                 case 'clone':
-                    return this._handleClonedContainerAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+                    return this._handleClonedContainerAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group, cancel === true);
                 case 'leave':
-                    return this._handleLeave(start, numberOfItems * blockLength + start, key, group);
+                    return this._handleLeave(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group);
                 default:
-                    return this._handleSimpleAnimation(start, numberOfItems * blockLength + start, key, group, cancel === true);
+                    return this._handleSimpleAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group), key, group, cancel === true);
             }
         };
         /**
+         * Translates the items to be animated into the nodes to be animated.
+         * @param {number} startIndex The starting index of items to animate.
+         * @param {number} numberOfItems The number of consecutive items to animate.
+         * @param {IGroupHash} group The group performing the animation.
+         */
+        Listview.prototype._getAnimatedNodes = function (startIndex, numberOfItems, group) {
+            if (this._isGrouped && group === this._defaultGroup) {
+                // we are animating a group so block length === 3 (one element node and two comment nodes) 
+                var blockLength = 3, start = startIndex * blockLength;
+                return Array.prototype.slice.call(group.itemContainer.childNodes, start, numberOfItems * blockLength + start);
+            }
+            var utils = this.utils, isNode = utils.isNode, nodes = Array.prototype.slice.call(group.itemContainer.childNodes), endIndex = startIndex + numberOfItems - 1, controls = group.control.controls;
+            if (controls.length <= endIndex) {
+                endIndex = controls.length - 1;
+            }
+            var startNode = controls[startIndex].startNode, endNode = controls[endIndex].endNode;
+            if (!(isNode(startNode) && isNode(endNode))) {
+                return [];
+            }
+            var startNodeIndex = nodes.indexOf(startNode), endNodeIndex = nodes.indexOf(endNode);
+            if (startNodeIndex === -1 || endNodeIndex === -1) {
+                return [];
+            }
+            return nodes.slice(startNodeIndex, endNodeIndex + 1);
+        };
+        /**
          * Handles a simple animation of a block of elements.
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          */
-        Listview.prototype._handleSimpleAnimation = function (startNode, endNode, key, group, cancel) {
-            var container = group.itemContainer, slice = Array.prototype.slice, nodes = slice.call(container.childNodes, startNode, endNode);
+        Listview.prototype._handleSimpleAnimation = function (nodes, key, group, cancel) {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var animationQueue = group.animationQueue, animationCreation = this._animator.create(nodes, key), animationPromise = animationCreation.current.then(function () {
-                animationQueue.shift();
+            var container = group.itemContainer, animationQueue = group.animationQueue, animationCreation = this._animator.create(nodes, key), animation = {
+                animation: animationPromise,
+                op: null
+            }, animationPromise = animationCreation.current.then(function () {
+                var index = animationQueue.indexOf(animation);
+                if (index === -1) {
+                    return;
+                }
+                animationQueue.splice(index, 1);
             }), callback = function () {
                 animationCreation.previous.then(function () {
                     animationPromise.start();
@@ -6548,56 +6660,61 @@ var platui;
             };
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
-                animationQueue.push({ animation: animationPromise, op: null });
+                animationQueue.push(animation);
                 return cancelPromise;
             }
-            animationQueue.push({ animation: animationPromise, op: null });
+            animationQueue.push(animation);
             return callback();
         };
         /**
          * Handles a simple animation of a block of elements.
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          */
-        Listview.prototype._handleLeave = function (startNode, endNode, key, group) {
-            var container = group.itemContainer, slice = Array.prototype.slice, nodes = slice.call(container.childNodes, startNode, endNode);
+        Listview.prototype._handleLeave = function (nodes, key, group) {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var animationQueue = group.animationQueue, animation = this._animator.leave(nodes, key).then(function () {
-                animationQueue.shift();
-            });
-            animationQueue.push({
-                animation: animation,
+            var container = group.itemContainer, animationQueue = group.animationQueue, animationPromise = this._animator.leave(nodes, key).then(function () {
+                var index = animationQueue.indexOf(animation);
+                if (index === -1) {
+                    return;
+                }
+                animationQueue.splice(index, 1);
+            }), animation = {
+                animation: animationPromise,
                 op: 'leave'
-            });
-            return animation;
+            };
+            animationQueue.push(animation);
+            return animationPromise;
         };
         /**
          * Handles a simple animation of a block of elements.
-         * @param {number} startNode The starting childNode of the ForEach to animate.
-         * @param {number} endNode The ending childNode of the ForEach to animate.
+         * @param {Array<Node>} nodes The Array of nodes to animate.
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          */
-        Listview.prototype._handleClonedContainerAnimation = function (startNode, endNode, key, group, cancel) {
-            var container = group.itemContainer, clonedContainer = container.cloneNode(true), slice = Array.prototype.slice, nodes = slice.call(clonedContainer.childNodes, startNode, endNode);
+        Listview.prototype._handleClonedContainerAnimation = function (nodes, key, group, cancel) {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var parentNode, animationQueue = group.animationQueue, isNull = this.utils.isNull, animationCreation = this._animator.create(nodes, key), animationPromise = animationCreation.current.then(function () {
-                animationQueue.shift();
+            var container = group.itemContainer, clonedContainer = container.cloneNode(true), parentNode, animationQueue = group.animationQueue, isNull = this.utils.isNull, animationCreation = this._animator.create(nodes, key), animationPromise = animationCreation.current.then(function () {
+                var index = animationQueue.indexOf(animation);
+                if (index > -1) {
+                    animationQueue.splice(index, 1);
+                }
                 if (isNull(parentNode)) {
                     return;
                 }
                 parentNode.replaceChild(container, clonedContainer);
-            }), callback = function () {
+            }), animation = {
+                animation: animationPromise,
+                op: 'clone'
+            }, callback = function () {
                 parentNode = container.parentNode;
                 if (isNull(parentNode) || animationPromise.isCanceled()) {
-                    animationQueue.shift();
                     return animationPromise;
                 }
                 parentNode.replaceChild(clonedContainer, container);
@@ -6608,10 +6725,10 @@ var platui;
             };
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
-                animationQueue.push({ animation: animationPromise, op: 'clone' });
+                animationQueue.push(animation);
                 return cancelPromise;
             }
-            animationQueue.push({ animation: animationPromise, op: 'clone' });
+            animationQueue.push(animation);
             return callback();
         };
         /**
@@ -6672,21 +6789,38 @@ var platui;
         /**
          * Sets the width of a group's item container.
          * @param {HTMLElement} element The element to set the width on.
+         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
          */
-        Listview.prototype._setItemContainerWidth = function (element) {
+        Listview.prototype._setItemContainerWidth = function (element, immediate) {
             var width = element.scrollWidth;
             if (!width) {
-                this._setItemContainerWidthWithClone(element);
+                this._setItemContainerWidthWithClone(element, immediate);
                 return;
             }
-            element.style.width = width + 'px';
+            var setter = function () {
+                element.style.width = width + 'px';
+            };
+            if (immediate === true) {
+                setter();
+                return;
+            }
+            this.utils.requestAnimationFrame(setter);
+        };
+        /**
+         * Resets the width of a group's item container.
+         * @param {HTMLElement} element The element to reset the width on.
+         */
+        Listview.prototype._resetItemContainerWidth = function (element) {
+            element.style.width = '';
+            this._setItemContainerWidth(element, true);
         };
         /**
          * Creates a clone of the group container and uses it to find width values.
-         * @param {HTMLElement} item The element having its height set.
+         * @param {HTMLElement} item The element having its width set.
+         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
          */
-        Listview.prototype._setItemContainerWidthWithClone = function (item) {
-            var body = this._document.body, parent = item.parentElement, element = parent.lastElementChild;
+        Listview.prototype._setItemContainerWidthWithClone = function (item, immediate) {
+            var body = this._document.body, parent = item.parentElement, utils = this.utils, element = parent.lastElementChild;
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
                 if (cloneAttempts === this._maxCloneAttempts) {
@@ -6696,11 +6830,11 @@ var platui;
                     this._TemplateControlFactory.dispose(this);
                     return;
                 }
-                this.utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
+                utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
                 return;
             }
             this._cloneAttempts = 0;
-            var parentClone = parent.cloneNode(true), clone = parentClone.lastElementChild, regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, dependencyProperty = 'width', codependentProperty = 'height', important = 'important', isNull = this.utils.isNull, dependencyValue;
+            var parentClone = parent.cloneNode(true), clone = parentClone.lastElementChild, regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, dependencyProperty = 'width', codependentProperty = 'height', important = 'important', isNull = utils.isNull, dependencyValue;
             shallowCopy.id = '';
             if (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
                 if (computedStyle.display === 'none') {
@@ -6722,7 +6856,7 @@ var platui;
                         // if we go all the way up to <html> the body may currently be hidden. 
                         this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
                             'hidden. Please do not set the body\'s display to none.');
-                        this.utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
+                        utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
                         return;
                     }
                     shallowCopy = element.cloneNode(false);
@@ -6731,7 +6865,7 @@ var platui;
                 }
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -6744,26 +6878,44 @@ var platui;
             shallowStyle.setProperty(codependentProperty, computedStyle.height, important);
             shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            item.style.width = clone.scrollWidth + 'px';
+            var setWidth = clone.scrollWidth + 'px', setter = function () {
+                item.style.width = setWidth;
+            };
             body.removeChild(shallowCopy);
+            if (immediate === true) {
+                setter();
+                return;
+            }
+            utils.requestAnimationFrame(setter);
         };
         /**
          * Sets the height of a group's item container.
          * @param {HTMLElement} element The element to set the height on.
+         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
          */
-        Listview.prototype._setItemContainerHeight = function (element) {
-            var parent = element.parentElement, parentHeight = parent.offsetHeight, headerHeight = parent.firstElementChild.offsetHeight;
-            if (!(parentHeight && headerHeight)) {
-                this._setItemContainerHeightWithClone(element);
+        Listview.prototype._setItemContainerHeight = function (element, withHeader) {
+            var parent = element.parentElement, parentHeight = parent.offsetHeight, headerHeight = 0;
+            if (!parentHeight) {
+                this._setItemContainerHeightWithClone(element, withHeader);
                 return;
             }
-            element.style.height = (parentHeight - headerHeight - 15) + 'px';
+            if (withHeader === true) {
+                headerHeight = parent.firstElementChild.offsetHeight;
+                if (!headerHeight) {
+                    this._setItemContainerHeightWithClone(element, withHeader);
+                    return;
+                }
+            }
+            this.utils.requestAnimationFrame(function () {
+                element.style.height = (parentHeight - headerHeight) + 'px';
+            });
         };
         /**
          * Creates a clone of the group container and uses it to find height values.
          * @param {HTMLElement} item The element having its height set.
+         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
          */
-        Listview.prototype._setItemContainerHeightWithClone = function (item) {
+        Listview.prototype._setItemContainerHeightWithClone = function (item, withHeader) {
             var body = this._document.body, parent = item.parentElement, element = parent.firstElementChild;
             if (!body.contains(parent)) {
                 var cloneAttempts = ++this._cloneAttempts;
@@ -6807,7 +6959,7 @@ var platui;
                 }
             }
             if (parentChain.length > 0) {
-                var curr = parentChain.pop(), currStyle = curr.style, temp;
+                var curr = parentChain.pop(), temp;
                 while (parentChain.length > 0) {
                     temp = parentChain.pop();
                     curr.insertBefore(temp, null);
@@ -6819,8 +6971,11 @@ var platui;
             shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
             shallowStyle.setProperty('visibility', 'hidden', important);
             body.appendChild(shallowCopy);
-            item.style.height = (parentClone.offsetHeight - clone.offsetHeight - 15) + 'px';
+            var setHeight = withHeader === true ? (parentClone.offsetHeight - clone.offsetHeight) + 'px' : clone.offsetHeight + 'px';
             body.removeChild(shallowCopy);
+            this.utils.requestAnimationFrame(function () {
+                item.style.height = setHeight;
+            });
         };
         Listview._inject = {
             _document: __Document,
@@ -6846,17 +7001,17 @@ var platui;
              */
             this.templateString = '<div class="plat-navbar-left">\n' +
                 '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="left">\n' +
-                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="leftAction(@index)"></div>\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="leftAction(@index)"></div>\n' +
                 '    </div>\n' +
                 '</div>\n' +
                 '<div class="plat-navbar-center">\n' +
                 '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="center">\n' +
-                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="centerAction(@index)"></div>\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="centerAction(@index)"></div>\n' +
                 '    </div>\n' +
                 '</div>\n' +
                 '<div class="plat-navbar-right">\n' +
                 '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="right">\n' +
-                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-context="content" plat-tap="rightAction(@index)"></div>\n' +
+                '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="rightAction(@index)"></div>\n' +
                 '    </div>\n' +
                 '</div>\n';
             /**
@@ -6864,15 +7019,15 @@ var platui;
              */
             this.context = {
                 left: [{
-                        content: '<span>left</span>',
+                        content: '',
                         action: noop
                     }],
                 center: [{
-                        content: '<span>center</span>',
+                        content: '',
                         action: noop
                     }],
                 right: [{
-                        content: '<span>right</span>',
+                        content: '',
                         action: noop
                     }]
             };
@@ -6963,27 +7118,27 @@ var platui;
         };
         /**
          * The defined action of the left part of the Navbar when tapped.
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          */
         Navbar.prototype.leftAction = function (index, ev) {
-            this._executeAction('left', index);
+            this._executeAction(ev, 'left', index);
         };
         /**
          * The defined action of the center part of the Navbar when tapped.
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          */
         Navbar.prototype.centerAction = function (index, ev) {
-            this._executeAction('center', index);
+            this._executeAction(ev, 'center', index);
         };
         /**
          * The defined action of the right part of the Navbar when tapped.
-         * @param {number} index The index of the action tapped.
+         * @param {number} index? The index of the action tapped.
          * @param {plat.ui.IGestureEvent} ev? The "$tap" event.
          */
         Navbar.prototype.rightAction = function (index, ev) {
-            this._executeAction('right', index);
+            this._executeAction(ev, 'right', index);
         };
         Navbar.prototype._setComponent = function (position, components) {
             var context = this.context;
@@ -7010,7 +7165,7 @@ var platui;
          */
         Navbar.prototype._parseComponent = function (newComponent, oldComponent) {
             var utils = this.utils, isObject = utils.isObject, oldComponentExists = isObject(oldComponent), customActions, keys, key, currKey;
-            if (oldComponentExists && !utils.isString(newComponent.content)) {
+            if (oldComponentExists && utils.isUndefined(newComponent.content)) {
                 newComponent.content = oldComponent.content;
             }
             if (!utils.isFunction(newComponent.action)) {
@@ -7028,16 +7183,17 @@ var platui;
         };
         /**
          * Executes the proper action associated with a Navbar component.
+         * @param {plat.ui.IGestureEvent} ev The executed event.
          * @param {string} position The part of the Navbar whose action is being executed.
-         * @param {any} property The indexing property. Will by default be an index into the component Array.
+         * @param {any} property? The indexing property. Will by default be an index into the component Array.
          */
-        Navbar.prototype._executeAction = function (position, property) {
+        Navbar.prototype._executeAction = function (ev, position, property) {
             var utils = this.utils, component = this.context[position];
             if (utils.isArray(component) && !utils.isNull(property)) {
                 component = component[property];
             }
             if (utils.isFunction(component.action)) {
-                component.action();
+                component.action(ev);
                 return;
             }
             this._log.debug('An action function is not defined for the component ' + component + '.');

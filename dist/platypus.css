@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.4.10 (https://platypi.io) 
+ * PlatypusUI v0.5.1 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -29,8 +29,21 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-[plat-control="plat-viewport"] > *:only-child {
+[plat-control="plat-viewport"]:not(.plat-viewport-animate) > .plat-viewcontrol {
   position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+[plat-control="plat-viewport"].plat-viewport-animate > .plat-viewcontrol {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
   width: 100%;
   height: 100%;
   padding: 0;
@@ -284,6 +297,14 @@ h1 {
   font-weight: 600;
   margin: 0.67em 0 0.536em;
 }
+h1.no-collapse-top {
+  margin-top: 0;
+  padding-top: 0.67em;
+}
+h1.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0.536em;
+}
 h2,
 h3,
 h4 {
@@ -291,15 +312,45 @@ h4 {
   font-weight: 600;
   margin: 0.8375em 0 0.67em;
 }
+h2.no-collapse-top,
+h3.no-collapse-top,
+h4.no-collapse-top {
+  margin-top: 0;
+  padding-top: 0.8375em;
+}
+h2.no-collapse-bottom,
+h3.no-collapse-bottom,
+h4.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0.67em;
+}
 h5,
 h6 {
   padding: 0;
   font-weight: 600;
   margin: 1.005em 0 0.8375em;
 }
+h5.no-collapse-top,
+h6.no-collapse-top {
+  margin-top: 0;
+  padding-top: 1.005em;
+}
+h5.no-collapse-bottom,
+h6.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0.8375em;
+}
 p {
   padding: 0;
   margin: 1.005em 0;
+}
+p.no-collapse-top {
+  margin-top: 0;
+  padding-top: 1.005em;
+}
+p.no-collapse-bottom {
+  margin-bottom: 0;
+  padding-bottom: 1.005em;
 }
 p {
   font-size: 16px;
@@ -467,37 +518,37 @@ h6 {
 }
 @-webkit-keyframes SLIDE_IN {
   from {
-    padding-left: 100%;
+    left: 100%;
   }
 }
 @-moz-keyframes SLIDE_IN {
   from {
-    padding-left: 100%;
+    left: 100%;
   }
 }
 @keyframes SLIDE_IN {
   from {
-    padding-left: 100%;
+    left: 100%;
   }
 }
 @-webkit-keyframes SLIDE_OUT {
   to {
-    padding-left: -100%;
+    left: -100%;
   }
 }
 @-moz-keyframes SLIDE_OUT {
   to {
-    padding-left: -100%;
+    left: -100%;
   }
 }
 @keyframes SLIDE_OUT {
   to {
-    padding-left: -100%;
+    left: -100%;
   }
 }
 @-webkit-keyframes SLIDE_IN_FADE_IN {
   0% {
-    padding-left: 100%;
+    left: 100%;
     opacity: 0;
   }
   25% {
@@ -515,7 +566,7 @@ h6 {
 }
 @-moz-keyframes SLIDE_IN_FADE_IN {
   0% {
-    padding-left: 100%;
+    left: 100%;
     opacity: 0;
   }
   25% {
@@ -533,7 +584,7 @@ h6 {
 }
 @keyframes SLIDE_IN_FADE_IN {
   0% {
-    padding-left: 100%;
+    left: 100%;
     opacity: 0;
   }
   25% {
@@ -563,7 +614,7 @@ h6 {
     opacity: 0.1;
   }
   100% {
-    padding-left: -100%;
+    left: -100%;
     opacity: 0;
   }
 }
@@ -581,7 +632,7 @@ h6 {
     opacity: 0.1;
   }
   100% {
-    padding-left: -100%;
+    left: -100%;
     opacity: 0;
   }
 }
@@ -599,7 +650,7 @@ h6 {
     opacity: 0.1;
   }
   100% {
-    padding-left: -100%;
+    left: -100%;
     opacity: 0;
   }
 }
@@ -1060,13 +1111,9 @@ h6 {
   box-sizing: border-box;
 }
 .plat-carousel .plat-carousel-viewport .plat-carousel-container.plat-transition-init {
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-transition: all 300ms;
-  -moz-transition: all 300ms;
-  transition: all 300ms;
+  -webkit-transition: -webkit-transform 300ms;
+  -moz-transition: -moz-transform 300ms;
+  transition: transform 300ms;
 }
 .plat-carousel .plat-carousel-viewport .plat-back-arrow,
 .plat-carousel .plat-carousel-viewport .plat-forward-arrow {
@@ -1255,8 +1302,8 @@ h6 {
 }
 .plat-checkbox .plat-checkbox-container.plat-x .plat-mark::before,
 .plat-checkbox .plat-checkbox-container.plat-x .plat-mark::after {
-  left: 17.5%;
-  top: 48.5%;
+  left: 18%;
+  top: 48%;
   width: 0.86666667em;
 }
 .plat-checkbox .plat-checkbox-container.plat-x .plat-mark::before {
@@ -1377,7 +1424,7 @@ h6 {
   position: absolute;
   background-color: transparent;
   overflow: hidden;
-  z-index: 9999;
+  z-index: 999999;
   width: 100%;
   height: 100%;
   padding: 0;
@@ -1402,13 +1449,9 @@ h6 {
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.7);
 }
 .plat-drawer-transition-prep.plat-transition-init {
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-transition: all 300ms ease-out;
-  -moz-transition: all 300ms ease-out;
-  transition: all 300ms ease-out;
+  -webkit-transition: -webkit-transform 300ms ease-out;
+  -moz-transition: -moz-transform 300ms ease-out;
+  transition: transform 300ms ease-out;
 }
 .plat-file {
   -webkit-box-sizing: border-box;
@@ -1700,10 +1743,10 @@ h6 {
 [class*='col-'] {
   position: relative;
   float: left;
-  padding: 10px;
+  padding: 5px;
 }
 [class*='col-']:last-of-type {
-  padding-right: 10px;
+  padding-right: 5px;
 }
 .row:after {
   content: "";
@@ -1864,12 +1907,6 @@ h6 {
   right: 8.33333333%;
 }
 @media all and (min-width: 500px) {
-  [class*="col-tab"] {
-    width: 100%;
-  }
-  [class*="col-dsk"] {
-    width: 100%;
-  }
   .col-phb-12 {
     width: 100%;
   }
@@ -2016,9 +2053,6 @@ h6 {
   }
 }
 @media all and (min-width: 700px) {
-  [class*="col-dsk"] {
-    width: 100%;
-  }
   .col-tab-12 {
     width: 100%;
   }
@@ -2455,6 +2489,10 @@ h6 {
   min-width: 20px;
   cursor: pointer;
 }
+.plat-input .plat-input-container input[disabled] + .plat-input-action,
+.plat-input .plat-input-container input:disabled + .plat-input-action {
+  display: none;
+}
 .plat-input.input-no-action .plat-input-container .plat-input-action {
   display: none;
 }
@@ -2585,13 +2623,9 @@ h6 {
   touch-action: none;
 }
 .plat-listview .plat-listview-viewport.plat-transition-init {
-  -webkit-transform: translateZ(0);
-  -moz-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-transition: all 200ms;
-  -moz-transition: all 200ms;
-  transition: all 200ms;
+  -webkit-transition: -webkit-transform 200ms;
+  -moz-transition: -moz-transform 200ms;
+  transition: transform 200ms;
 }
 .plat-listview .plat-refresh,
 .plat-listview .plat-incremental {
@@ -2690,6 +2724,7 @@ h6 {
   bottom: 0;
 }
 .plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container {
+  padding-bottom: 15px;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -2700,6 +2735,8 @@ h6 {
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+}
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped {
   -webkit-box-direction: normal;
   -webkit-box-orient: horizontal;
   -webkit-flex-direction: row;
@@ -2716,7 +2753,7 @@ h6 {
   -ms-flex-align: stretch;
   align-items: stretch;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container .plat-listview-group {
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped .plat-listview-group {
   height: 100%;
   -webkit-box-flex: 0 0 auto;
   -webkit-flex: 0 0 auto;
@@ -2725,7 +2762,7 @@ h6 {
   -ms-flex: 0 0 auto;
   flex: 0 0 auto;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container .plat-listview-group .plat-listview-items {
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped .plat-listview-group .plat-listview-items {
   display: -webkit-box;
   display: -webkit-flex;
   display: -moz-flex;
@@ -2741,17 +2778,40 @@ h6 {
   -moz-flex-wrap: wrap;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
-  -ms-flex-line-pack: start;
   -webkit-align-content: flex-start;
   -moz-align-content: flex-start;
-  -ms-align-content: flex-start;
+  -ms-flex-line-pack: start;
   align-content: flex-start;
   width: 100%;
   height: 100%;
   padding: 0;
   margin: 0;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container .plat-listview-group .plat-listview-items .plat-item {
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped .plat-listview-group .plat-listview-items > * {
+  -webkit-box-flex: 0 0 auto;
+  -webkit-flex: 0 0 auto;
+  -moz-box-flex: 0 0 auto;
+  -moz-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container:not(.plat-grouped) {
+  -webkit-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-align-content: flex-start;
+  -moz-align-content: flex-start;
+  -ms-flex-line-pack: start;
+  align-content: flex-start;
+}
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container:not(.plat-grouped) > * {
   -webkit-box-flex: 0 0 auto;
   -webkit-flex: 0 0 auto;
   -moz-box-flex: 0 0 auto;
@@ -2805,14 +2865,15 @@ h6 {
 .plat-listview.plat-horizontal .plat-incremental {
   right: 0;
 }
-.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-enter-init.plat-item,
-.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-enter-init.plat-listview-group {
+.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-enter-init {
+  opacity: 0;
+}
+.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-enter {
   -webkit-animation: LISTVIEW_ITEM_ENTER 300ms;
   -moz-animation: LISTVIEW_ITEM_ENTER 300ms;
   animation: LISTVIEW_ITEM_ENTER 300ms;
 }
-.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-leave.plat-item,
-.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-leave.plat-listview-group {
+.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-leave {
   -webkit-animation: LISTVIEW_ITEM_LEAVE 300ms;
   -moz-animation: LISTVIEW_ITEM_LEAVE 300ms;
   animation: LISTVIEW_ITEM_LEAVE 300ms;
@@ -3230,22 +3291,24 @@ h6 {
   width: 100%;
   background-color: #2d97d2;
   color: #ffffff;
-  padding: 0 2em;
+  padding: 0;
   border-top: none;
   border-right: none;
   border-bottom: none;
   border-left: none;
   z-index: 100;
-  -webkit-box-shadow: 0px 0px 2px 1px #1a1a1a;
-  box-shadow: 0px 0px 2px 1px #1a1a1a;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-.plat-navbar.plat-top {
+.plat-navbar:not(.no-navbar-shadow) {
+  -webkit-box-shadow: 0px 0px 2px 1px #1a1a1a;
+  box-shadow: 0px 0px 2px 1px #1a1a1a;
+}
+.plat-navbar.plat-navbar-top {
   top: 0;
 }
-.plat-navbar.plat-bottom {
+.plat-navbar.plat-navbar-bottom {
   bottom: 0;
 }
 .plat-navbar .plat-navbar-left,
@@ -3253,6 +3316,7 @@ h6 {
 .plat-navbar .plat-navbar-right {
   height: 100%;
   float: left;
+  font-size: 125%;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -3275,7 +3339,7 @@ h6 {
 }
 .plat-navbar .plat-navbar-item {
   height: 100%;
-  padding: 0.5em;
+  padding: 0 1.5em;
   display: -webkit-inline-box;
   display: -webkit-inline-flex;
   display: -moz-inline-flex;
@@ -4160,9 +4224,9 @@ h6 {
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  transition: all 250ms;
+  -webkit-transition: background-color 250ms, border-color 250ms;
+  -moz-transition: background-color 250ms, border-color 250ms;
+  transition: background-color 250ms, border-color 250ms;
 }
 .plat-toggle .plat-toggle-container .plat-knob {
   position: absolute;
@@ -4248,6 +4312,10 @@ h6 {
 .plat-toggle.toggle-secondary .plat-toggle-container.plat-slide {
   background-color: #a283a5;
   border-color: #97749a;
+}
+.plat-toggle.toggle-success .plat-toggle-container.plat-slide {
+  background-color: #8fcbb5;
+  border-color: #7ec3a9;
 }
 .plat-toggle.toggle-danger .plat-toggle-container.plat-slide {
   background-color: #ef716f;
