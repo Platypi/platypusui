@@ -1,6 +1,6 @@
 {
   "name": "platypusui",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
   "main": "dist/platypusui.js",
   "devDependencies": {
@@ -20,6 +20,7 @@
     "http-server": "latest",
     "load-grunt-tasks": "latest",
     "lodash": "latest",
+    "nodemon": "latest",
     "platypus": "latest",
     "rimraf": "latest",
     "tsd": "latest",
@@ -34,10 +35,11 @@
     "clean:examples": "rimraf -p examples/app.*",
     "clean:src": "rimraf -p dist/*",
     "deploy": "grunt",
-    "start": "concurrent -r \"npm run less:examples\" \"npm run watch:examples\" \"npm run server:examples\"",
+    "start": "concurrent -r \"npm run watch:less\" \"npm run watch:examples\" \"npm run server:examples\"",
     "less:examples": "grunt lessCompile:examples",
     "server:examples": "http-server -p 3000",
     "watch:examples": "npm run build:examples -- -w",
+    "watch:less": "nodemon -q -w src -e less -x npm run less:examples",
     "watch:src": "npm run build:src -- -w"
   },
   "keywords": [

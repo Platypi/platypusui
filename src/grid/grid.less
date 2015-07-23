@@ -36,7 +36,7 @@
     }
 
 /// ======= Grid Column Generation ======== ///
-	
+
 	/// Phone
 	.generate-full-width-cols(@phablet-alias);
 	.generate-full-width-cols(@tablet-alias);
@@ -47,8 +47,6 @@
 
 	/// Phablet
 	.media-phablet({
-		.generate-full-width-cols(@tablet-alias);
-		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@phablet-alias);
 		.generate-offset-cols(@phablet-alias);
 		.generate-shiftable-cols(@phablet-alias);
@@ -56,7 +54,6 @@
 
 	/// Tablet
 	.media-tablet({
-		.generate-full-width-cols(@desktop-alias);
 		.generate-partial-width-cols(@tablet-alias);
 		.generate-offset-cols(@tablet-alias);
 		.generate-shiftable-cols(@tablet-alias);
@@ -65,7 +62,7 @@
 	/// Desktop
 	.media-desktop({
 		.generate-partial-width-cols(@desktop-alias);
-		.generate-offset-cols(@desktop-alias);	
+		.generate-offset-cols(@desktop-alias);
 		.generate-shiftable-cols(@desktop-alias);
 	});
 }
