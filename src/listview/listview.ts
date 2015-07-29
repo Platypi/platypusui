@@ -656,7 +656,7 @@ module platui {
          * @type {() => void}
          *
          * @description
-         * The resolve function for the itemsLoaded promise.
+         * The resolve function for the itemsLoaded Promise.
          */
         private __resolveFn: () => void;
 
@@ -667,7 +667,7 @@ module platui {
          * @access public
          *
          * @description
-         * The constructor for a {@link platui.Listview|Listview}. Creates the itemsLoaded promise.
+         * The constructor for a {@link platui.Listview|Listview}. Creates the itemsLoaded Promise.
          *
          * @returns {platui.Listview} A {@link platui.Listview|Listview} instance.
          */
