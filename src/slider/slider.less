@@ -26,9 +26,8 @@
     height: 100%;
     margin: 0;
     .user-select();
-    .touch-action(none);
     .box-sizing(border-box);
-    
+
     .plat-slider-container {
         position: relative;
         background-color: @neutral-color-light;
@@ -66,6 +65,7 @@
     &.plat-horizontal-reversed {
         height: @knob-diameter;
         padding: 0 @knob-radius;
+        .touch-action(pan-y);
 
         .plat-slider-container {
             top: 50%;
@@ -117,6 +117,7 @@
     &.plat-vertical-reversed {
         width: @knob-diameter;
         padding: @knob-radius 0;
+        .touch-action(pan-x);
 
         .plat-slider-container {
             left: 50%;

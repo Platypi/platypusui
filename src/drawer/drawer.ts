@@ -217,7 +217,7 @@ module platui {
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to open.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
 
             return controller.open();
@@ -240,7 +240,7 @@ module platui {
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to close.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
 
             return controller.close();
@@ -263,7 +263,7 @@ module platui {
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to toggle.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
 
             return controller.toggle();
@@ -286,7 +286,7 @@ module platui {
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to reset.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
 
             return controller.reset();
@@ -639,7 +639,7 @@ module platui {
          * @type {boolean}
          *
          * @description
-         * Whether the {@link platui.Drawer|Drawer} has an elastic effect while tracking open. 
+         * Whether the {@link platui.Drawer|Drawer} has an elastic effect while tracking open.
          * Defaults to false.
          */
         elastic?: boolean;

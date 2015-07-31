@@ -656,7 +656,7 @@ module platui {
          * @type {() => void}
          *
          * @description
-         * The resolve function for the itemsLoaded promise.
+         * The resolve function for the itemsLoaded Promise.
          */
         private __resolveFn: () => void;
 
@@ -667,7 +667,7 @@ module platui {
          * @access public
          *
          * @description
-         * The constructor for a {@link platui.Listview|Listview}. Creates the itemsLoaded promise.
+         * The constructor for a {@link platui.Listview|Listview}. Creates the itemsLoaded Promise.
          *
          * @returns {platui.Listview} A {@link platui.Listview|Listview} instance.
          */
@@ -1739,11 +1739,30 @@ module platui {
             var progressRingContainer: HTMLElement;
             switch (this._loading) {
                 case 'infinite':
-                    this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._onScroll, false);
+                    var ready = true,
+                        removeScroll: plat.IRemoveListener,
+                        removeRequest: plat.IRemoveListener = noop;
+
+                    removeScroll = this.addEventListener(this._scrollContainer, 'scroll', (): void => {
+                        if (!ready) {
+                            return;
+                        }
+
+                        ready = false;
+                        removeRequest = this.utils.requestAnimationFrame((): void => {
+                            ready = true;
+                            this._handleScroll();
+                        });
+                    }, false);
+
+                    this._removeScroll = (): void => {
+                        removeRequest();
+                        removeScroll();
+                    };
 
                     if (showRing) {
                         progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                        progressRingContainer.className = 'plat-infinite';
+                        progressRingContainer.className = __Plat + 'infinite';
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
 
@@ -1753,7 +1772,7 @@ module platui {
                     break;
                 case 'incremental':
                     progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                    progressRingContainer.className = 'plat-incremental';
+                    progressRingContainer.className = __Plat + 'incremental';
                     progressRingContainer.setAttribute(__Hide, '');
                     progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     this.element.insertBefore(progressRingContainer, null);
@@ -1772,11 +1791,9 @@ module platui {
          * @description
          * The scroll event listener.
          *
-         * @param {Event} ev The scroll event object.
-         *
          * @returns {void}
          */
-        protected _onScroll(ev?: Event): void {
+        protected _onScroll(): void {
             var scrollContainer = this._scrollContainer,
                 scrollPos = this._scrollPosition,
                 scrollPosition = this._isVertical ?
@@ -1870,7 +1887,7 @@ module platui {
 
             this._refresh = (<Function>controlProperty.value).bind(controlProperty.control);
             var progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
-            progressRingContainer.className = 'plat-refresh';
+            progressRingContainer.className = __Plat + 'refresh';
             progressRingContainer.setAttribute(__Hide, '');
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
             this.element.insertBefore(progressRingContainer, null);
@@ -2953,11 +2970,11 @@ module platui {
                 container = _document.createElement('div'),
                 ring = _document.createElement('div');
 
-            ring.className = 'plat-animated-ring';
+            ring.className = __Plat + 'animated-ring';
             container.insertBefore(ring, null);
-            container.className = 'plat-progress-container';
+            container.className = __Plat + 'progress-container';
             control.insertBefore(container, null);
-            control.className = 'plat-ring';
+            control.className = __Plat + 'ring';
 
             return control;
         }

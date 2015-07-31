@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.5.2 (https://platypi.io) 
+ * PlatypusUI v0.5.3 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -2495,7 +2495,6 @@
     min-height: 50px;
     .fill();
     .user-select();
-    .touch-action(none);
     .box-sizing(border-box);
 
     .plat-carousel-viewport {
@@ -2578,6 +2577,8 @@
     }
 
     &.plat-horizontal {
+        .touch-action(pan-y);
+
         .plat-carousel-viewport {
             .plat-carousel-container {
                 .plat-carousel-item {
@@ -2603,6 +2604,8 @@
     }
 
     &.plat-vertical {
+        .touch-action(pan-x);
+
         .plat-carousel-viewport {
             .plat-carousel-container {
                 .plat-carousel-item {
@@ -2774,7 +2777,14 @@
 .plat-drawer-controller {
     #platui > #mixins;
     .user-select();
-    .touch-action(none);
+
+    &.plat-horizontal {
+        .touch-action(pan-y);
+    }
+
+    &.plat-vertical {
+        .touch-action(pan-x);
+    }
 }
 
 /// =========== Drawer Default Styles =========== ///
@@ -2831,24 +2841,21 @@
     #platui > #Drawer;
     -webkit-backface-visibility: hidden;
     -webkit-perspective: none;
-    
+
     &.plat-drawer-transition-right,
     &.plat-drawer-transition-left,
     &.plat-drawer-transition-top,
     &.plat-drawer-transition-bottom {
-        overflow: hidden;
         .user-select(none);
         .touch-action(none);
 
-        &.plat-drawer-open {
-            .plat-clickeater {
-                position: absolute;
-                background-color: transparent;
-                overflow: hidden;
-                z-index: 999999;
-                .fill();
-                .touch-action(none);
-            }
+        .plat-clickeater {
+            position: absolute;
+            background-color: transparent;
+            overflow: hidden;
+            z-index: 999999;
+            .fill();
+            .touch-action(none);
         }
     }
 
@@ -4609,9 +4616,8 @@
     height: 100%;
     margin: 0;
     .user-select();
-    .touch-action(none);
     .box-sizing(border-box);
-    
+
     .plat-range-container {
         position: relative;
         background-color: @neutral-color-light;
@@ -4643,11 +4649,12 @@
             }
         }
     }
-    
+
     &.plat-horizontal,
     &.plat-horizontal-reversed {
         height: @knob-diameter;
         padding: 0 @knob-radius;
+        .touch-action(pan-y);
 
         .plat-range-container {
             top: 50%;
@@ -4700,6 +4707,7 @@
     &.plat-vertical-reversed {
         width: @knob-diameter;
         padding: @knob-radius 0;
+        .touch-action(pan-x);
 
         .plat-range-container {
             left: 50%;
@@ -4768,7 +4776,7 @@
             }
         }
     }
-        
+
     &.range-success {
         .plat-range-container {
             .plat-range-track {
@@ -4879,9 +4887,8 @@
     height: 100%;
     margin: 0;
     .user-select();
-    .touch-action(none);
     .box-sizing(border-box);
-    
+
     .plat-slider-container {
         position: relative;
         background-color: @neutral-color-light;
@@ -4919,6 +4926,7 @@
     &.plat-horizontal-reversed {
         height: @knob-diameter;
         padding: 0 @knob-radius;
+        .touch-action(pan-y);
 
         .plat-slider-container {
             top: 50%;
@@ -4970,6 +4978,7 @@
     &.plat-vertical-reversed {
         width: @knob-diameter;
         padding: @knob-radius 0;
+        .touch-action(pan-x);
 
         .plat-slider-container {
             left: 50%;

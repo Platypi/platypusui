@@ -47,6 +47,20 @@ module platui {
         options: plat.observable.IObservableProperty<IModalOptions>;
 
         /**
+         * @name modalLoaded
+         * @memberof platui.Modal
+         * @kind property
+         * @access public
+         *
+         * @type {plat.async.IThenable<void>}
+         *
+         * @description
+         * A Promise that fulfills when the modal is loaded and rejects if the {@link platui.Modal|Modal}
+         * gets disposed before it loads content.
+         */
+        modalLoaded: plat.async.IThenable<void>;
+
+        /**
          * @name _window
          * @memberof platui.Modal
          * @kind property
@@ -183,6 +197,51 @@ module platui {
         };
 
         /**
+         * @name __resolveFn
+         * @memberof platui.Modal
+         * @kind property
+         * @access private
+         *
+         * @type {() => void}
+         *
+         * @description
+         * The resolve function for the modalLoaded Promise.
+         */
+        private __resolveFn: () => void;
+
+        /**
+         * @name __rejectFn
+         * @memberof platui.Modal
+         * @kind property
+         * @access private
+         *
+         * @type {() => void}
+         *
+         * @description
+         * The reject function for the modalLoaded Promise.
+         */
+        private __rejectFn: () => void;
+
+        /**
+         * @name constructor
+         * @memberof platui.Modal
+         * @kind function
+         * @access public
+         *
+         * @description
+         * The constructor for a {@link platui.Listview|Listview}. Creates the modalLoaded Promise.
+         *
+         * @returns {platui.Modal} A {@link platui.Modal|Modal} instance.
+         */
+        constructor() {
+            super();
+            this.modalLoaded = new this._Promise<void>((resolve, reject): void => {
+                this.__resolveFn = resolve;
+                this.__rejectFn = reject;
+            });
+        }
+
+        /**
          * @name setClasses
          * @memberof platui.Modal
          * @kind function
@@ -300,6 +359,11 @@ module platui {
         dispose(): void {
             super.dispose();
             this._scrollRemover();
+
+            if (this.utils.isFunction(this.__rejectFn)) {
+                this.__rejectFn();
+                this.__rejectFn = this.__resolveFn = null;
+            }
         }
 
         /**
@@ -577,6 +641,12 @@ module platui {
 
             return bindableTemplates.bind(modal).then((template): plat.async.IThenable<void> => {
                 this._container.insertBefore(template, null);
+
+                if (this.utils.isFunction(this.__resolveFn)) {
+                    this.__resolveFn();
+                    this.__resolveFn = this.__rejectFn = null;
+                }
+
                 return this._show();
             });
         }
