@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.5.2 (https://platypi.io)
+  * PlatypusUI v0.5.3 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -2940,9 +2940,8 @@ declare module platui {
         protected _determineLoading(requestItems: string, showRing: boolean): void;
         /**
           * The scroll event listener.
-          * @param {Event} ev The scroll event object.
           */
-        protected _onScroll(ev?: Event): void;
+        protected _onScroll(): void;
         /**
           * Checks if the scrolling has hit the proper threshold and requests more items if it has.
           */

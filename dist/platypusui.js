@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.5.2 (https://platypi.io)
+ * PlatypusUI v0.5.3 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1277,6 +1277,7 @@ var platui;
          * Adds a click eater when tracking and closing an open Drawer.
          */
         DrawerController.prototype._addClickEater = function () {
+            var _this = this;
             var clickEater = this._clickEater, style = clickEater.style, rootElement = this._rootElement;
             if (rootElement.contains(clickEater)) {
                 return;
@@ -1286,12 +1287,24 @@ var platui;
             style.left = rootElement.scrollLeft + 'px';
             rootElement.insertBefore(clickEater, null);
             this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
-            this._removeClickEaterListener = this.addEventListener(rootElement, 'scroll', function () {
-                var style = clickEater.style;
-                // align clickEater to fill the rootElement 
-                style.top = rootElement.scrollTop + 'px';
-                style.left = rootElement.scrollLeft + 'px';
+            var removeScroll, removeRequest = noop, ready = true;
+            removeScroll = this.addEventListener(rootElement, 'scroll', function () {
+                if (!ready) {
+                    return;
+                }
+                ready = false;
+                removeRequest = _this.utils.requestAnimationFrame(function () {
+                    var style = clickEater.style;
+                    ready = true;
+                    // align clickEater to fill the rootElement 
+                    style.top = rootElement.scrollTop + 'px';
+                    style.left = rootElement.scrollLeft + 'px';
+                });
             });
+            this._removeClickEaterListener = function () {
+                removeRequest();
+                removeScroll();
+            };
         };
         /**
          * Removes the click eater after closing an open Drawer.
@@ -6017,7 +6030,21 @@ var platui;
             var progressRingContainer;
             switch (this._loading) {
                 case 'infinite':
-                    this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._onScroll, false);
+                    var ready = true, removeScroll, removeRequest = noop;
+                    removeScroll = this.addEventListener(this._scrollContainer, 'scroll', function () {
+                        if (!ready) {
+                            return;
+                        }
+                        ready = false;
+                        removeRequest = _this.utils.requestAnimationFrame(function () {
+                            ready = true;
+                            _this._handleScroll();
+                        });
+                    }, false);
+                    this._removeScroll = function () {
+                        removeRequest();
+                        removeScroll();
+                    };
                     if (showRing) {
                         progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
                         progressRingContainer.className = __Plat + 'infinite';
@@ -6040,9 +6067,8 @@ var platui;
         };
         /**
          * The scroll event listener.
-         * @param {Event} ev The scroll event object.
          */
-        Listview.prototype._onScroll = function (ev) {
+        Listview.prototype._onScroll = function () {
             var scrollContainer = this._scrollContainer, scrollPos = this._scrollPosition, scrollPosition = this._isVertical ?
                 scrollContainer.scrollTop + scrollContainer.offsetHeight :
                 scrollContainer.scrollLeft + scrollContainer.offsetWidth;
