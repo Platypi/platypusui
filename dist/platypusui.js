@@ -1,4 +1,4 @@
-var __extends = (this && this.__extends) || function (d, b) {
+var __extends = this.__extends || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -768,7 +768,7 @@ var platui;
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to open.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
             return controller.open();
         };
@@ -780,7 +780,7 @@ var platui;
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to close.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
             return controller.close();
         };
@@ -792,7 +792,7 @@ var platui;
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to toggle.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
             return controller.toggle();
         };
@@ -804,7 +804,7 @@ var platui;
             if (this.utils.isNull(controller)) {
                 this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
                     this.type + ' attempting to reset.');
-                return this._Promise.resolve(null);
+                return this._Promise.resolve();
             }
             return controller.reset();
         };
@@ -1012,6 +1012,14 @@ var platui;
              */
             this._isVertical = false;
             /**
+             * A function for removing the click eater scroll listening event.
+             */
+            this._removeClickEaterListener = noop;
+            /**
+             * A function to remove the toggle delay if present.
+             */
+            this._toggleDelay = noop;
+            /**
              * Whether or not the this control has been paired with a corresponding Drawer.
              */
             this._isInitialized = false;
@@ -1044,6 +1052,7 @@ var platui;
          */
         DrawerController.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
+            this._removeClickEater();
             var _utils = this.utils, drawer = this._drawer;
             if (_utils.isNull(drawer)) {
                 return;
@@ -1053,7 +1062,7 @@ var platui;
                 return;
             }
             var storedStyle = drawer.storedProperties, rootElement = this._rootElement;
-            this.dom.removeClass(rootElement, __Drawer + '-open plat-drawer-transition-prep ' + this._directionalTransitionPrep);
+            this.dom.removeClass(rootElement, __Drawer + '-transition-prep ' + this._directionalTransitionPrep);
             if (!_utils.isObject(storedStyle)) {
                 return;
             }
@@ -1071,21 +1080,17 @@ var platui;
          */
         DrawerController.prototype.open = function () {
             var _this = this;
-            var wasClosed = !this._isOpen, _utils = this.utils;
-            if (_utils.isFunction(this._toggleDelay)) {
-                this._toggleDelay();
-            }
+            var wasClosed = !this._isOpen, utils = this.utils;
+            this._toggleDelay();
             var promise = new this._Promise(function (resolve) {
-                _this._toggleDelay = _utils.requestAnimationFrame(function () {
-                    _this._touchState = 0;
-                    _this._toggleDelay = null;
+                _this._toggleDelay = utils.requestAnimationFrame(function () {
                     _this._open().then(resolve);
                 });
             });
-            if (wasClosed) {
+            if (!wasClosed) {
                 var drawer = this._drawer;
                 this.inputChanged(true);
-                if (!_utils.isNull(drawer)) {
+                if (!utils.isNull(drawer)) {
                     drawer.inputChanged(true);
                 }
             }
@@ -1096,21 +1101,17 @@ var platui;
          */
         DrawerController.prototype.close = function () {
             var _this = this;
-            var wasOpen = this._isOpen, _utils = this.utils;
-            if (_utils.isFunction(this._toggleDelay)) {
-                this._toggleDelay();
-            }
+            var wasOpen = this._isOpen, utils = this.utils;
+            this._toggleDelay();
             var promise = new this._Promise(function (resolve) {
-                _this._toggleDelay = _utils.requestAnimationFrame(function () {
-                    _this._touchState = 0;
-                    _this._toggleDelay = null;
+                _this._toggleDelay = utils.requestAnimationFrame(function () {
                     _this._close().then(resolve);
                 });
             });
             if (wasOpen) {
                 var drawer = this._drawer;
                 this.inputChanged(false);
-                if (!_utils.isNull(drawer)) {
+                if (!utils.isNull(drawer)) {
                     drawer.inputChanged(false);
                 }
             }
@@ -1190,17 +1191,15 @@ var platui;
                     if (this._isOpen) {
                         return;
                     }
+                    this._toggleDelay();
                     this._toggleDelay = _utils.requestAnimationFrame(function () {
-                        _this._touchState = 0;
-                        _this._toggleDelay = null;
                         _this._open();
                     });
                     return;
                 }
                 if (this._isOpen) {
+                    this._toggleDelay();
                     this._toggleDelay = _utils.requestAnimationFrame(function () {
-                        _this._touchState = 0;
-                        _this._toggleDelay = null;
                         _this._close();
                     });
                 }
@@ -1214,9 +1213,9 @@ var platui;
          */
         DrawerController.prototype._open = function () {
             var _this = this;
-            var rootElement = this._rootElement, drawerElement = this._drawerElement, _utils = this.utils, isNode = _utils.isNode, wasClosed = !this._isOpen, offset = this._getOffset();
-            if (!(offset && isNode(rootElement) && isNode(drawerElement))) {
-                return this._Promise.resolve(null);
+            var rootElement = this._rootElement, isNode = this.utils.isNode, wasClosed = !this._isOpen, offset = this._getOffset();
+            if (!(offset && isNode(rootElement) && isNode(this._drawerElement))) {
+                return this._Promise.resolve();
             }
             var translation;
             switch (this._position) {
@@ -1233,15 +1232,12 @@ var platui;
                     translation = 'translate3d(0,' + (-offset) + 'px,0)';
                     break;
                 default:
-                    return this._animator.resolve();
+                    return this._Promise.resolve();
             }
             this._isOpen = true;
+            this.dom.addClass(rootElement, this._directionalTransitionPrep);
             if (wasClosed) {
-                this.dom.addClass(rootElement, __Drawer + '-open ' + this._directionalTransitionPrep);
-                this._addEventIntercepts();
-            }
-            else {
-                this.dom.addClass(rootElement, this._directionalTransitionPrep);
+                this._addClickEater();
             }
             var animationOptions = {};
             animationOptions[this._transform] = translation;
@@ -1249,6 +1245,7 @@ var platui;
                 properties: animationOptions
             }).then(function () {
                 _this._animationThenable = null;
+                _this._drawerElement.removeEventListener('selectstart', _this._preventDefault, false);
             });
         };
         /**
@@ -1256,71 +1253,54 @@ var platui;
          */
         DrawerController.prototype._close = function () {
             var _this = this;
-            var rootElement = this._rootElement, drawerElement = this._drawerElement, dom = this.dom, _utils = this.utils, isNode = _utils.isNode;
-            if (this._isOpen) {
-                this._removeEventIntercepts();
-                dom.removeClass(rootElement, __Drawer + '-open');
-            }
+            var rootElement = this._rootElement, isNode = this.utils.isNode;
             this._isOpen = false;
-            if (!(isNode(rootElement) && isNode(drawerElement))) {
-                return this._Promise.resolve(null);
+            if (!(isNode(rootElement) && isNode(this._drawerElement))) {
+                return this._Promise.resolve();
             }
-            var animationOptions = {}, transform = this._transform;
-            animationOptions[transform] = this._preTransform;
+            var animationOptions = {};
+            animationOptions[this._transform] = this._preTransform;
             return this._animationThenable = this._animator.animate(rootElement, __Transition, {
                 properties: animationOptions
             }).then(function () {
                 _this._animationThenable = null;
+                _this._drawerElement.removeEventListener('selectstart', _this._preventDefault, false);
                 if (_this._isOpen) {
                     return;
                 }
-                dom.removeClass(rootElement, _this._directionalTransitionPrep);
+                else if (_this._touchState < 2) {
+                    _this._removeClickEater();
+                }
             });
         };
         /**
-         * Adds a click eater and all event listeners to the click eater when tracking
-         * and closing an open Drawer.
+         * Adds a click eater when tracking and closing an open Drawer.
          */
-        DrawerController.prototype._addEventIntercepts = function () {
+        DrawerController.prototype._addClickEater = function () {
             var clickEater = this._clickEater, style = clickEater.style, rootElement = this._rootElement;
+            if (rootElement.contains(clickEater)) {
+                return;
+            }
             // align clickEater to fill the rootElement 
             style.top = rootElement.scrollTop + 'px';
             style.left = rootElement.scrollLeft + 'px';
             rootElement.insertBefore(clickEater, null);
-            if (this._isTap) {
-                this._addTapClose();
-            }
-            if (this._isSwipe) {
-                this._addSwipeClose();
-            }
-            if (this._isTrack) {
-                var touchStartRemover = this.addEventListener(clickEater, __$touchstart, this._touchStart, false), trackRemover = this.addEventListener(clickEater, __$track, this._track, false), touchEnd = this._touchEnd, trackEndRemover = this.addEventListener(clickEater, __$trackend, touchEnd, false), touchEndRemover = this.addEventListener(clickEater, __$touchend, touchEnd, false);
-                this._openTrackRemover = function () {
-                    touchStartRemover();
-                    trackRemover();
-                    trackEndRemover();
-                    touchEndRemover();
-                };
-            }
+            this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
+            this._removeClickEaterListener = this.addEventListener(rootElement, 'scroll', function () {
+                var style = clickEater.style;
+                // align clickEater to fill the rootElement 
+                style.top = rootElement.scrollTop + 'px';
+                style.left = rootElement.scrollLeft + 'px';
+            });
         };
         /**
-         * Removes the click eater and all event intercepts on the click eater when closing an open Drawer.
+         * Removes the click eater after closing an open Drawer.
          */
-        DrawerController.prototype._removeEventIntercepts = function () {
-            this._rootElement.removeChild(this._clickEater);
-            var isFunction = this.utils.isFunction;
-            if (this._isTap && isFunction(this._openTapRemover)) {
-                this._openTapRemover();
-                this._openTapRemover = null;
-            }
-            if (this._isTrack && isFunction(this._openTrackRemover)) {
-                this._openTrackRemover();
-                this._openTrackRemover = null;
-            }
-            if (this._isSwipe && isFunction(this._openSwipeRemover)) {
-                this._openSwipeRemover();
-                this._openSwipeRemover = null;
-            }
+        DrawerController.prototype._removeClickEater = function () {
+            var rootElement = this._rootElement;
+            this._removeClickEaterListener();
+            rootElement.removeChild(this._clickEater);
+            this.dom.removeClass(rootElement, this._directionalTransitionPrep);
         };
         /**
          * Adds swipe events to the controller element.
@@ -1378,12 +1358,14 @@ var platui;
             // this._removeEventListeners(); 
             if (this._isTap = (types.indexOf('tap') !== -1)) {
                 this._addTapToggle();
+                this._addTapClose();
             }
             if (this._isSwipe = (types.indexOf('swipe') !== -1)) {
                 this._addSwipeToggle();
+                this._addSwipeClose();
             }
             if (this._isTrack = (types.indexOf('track') !== -1)) {
-                var trackFn = this._track, trackDirection;
+                var trackFn = this._track, trackDirection, clickEater = this._clickEater;
                 switch (position) {
                     case 'left':
                     case 'right':
@@ -1398,14 +1380,24 @@ var platui;
                     default:
                         return;
                 }
-                this._removePrimaryTrack = this.addEventListener(element, __$track + __transitionNegate[trackDirection], trackFn, false);
-                this._removeSecondaryTrack = this.addEventListener(element, __$track + trackDirection, trackFn, false);
+                var primaryTrack = __$track + __transitionNegate[trackDirection], secondaryTrack = __$track + trackDirection, removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false), removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false), openTrackPrimaryRemover = this.addEventListener(clickEater, primaryTrack, trackFn, false), openTrackSecondaryRemover = this.addEventListener(clickEater, secondaryTrack, trackFn, false);
+                this._removeTrack = function () {
+                    removePrimaryTrack();
+                    removeSecondaryTrack();
+                };
+                this._openTrackRemover = function () {
+                    openTrackPrimaryRemover();
+                    openTrackSecondaryRemover();
+                };
                 if (isNull(this._lastTouch)) {
-                    var touchEnd = this._touchEnd;
+                    var touchStart = this._touchStart, touchEnd = this._touchEnd;
                     this._lastTouch = { x: 0, y: 0 };
-                    this.addEventListener(element, __$touchstart, this._touchStart, false);
+                    this.addEventListener(element, __$touchstart, touchStart, false);
                     this.addEventListener(element, __$touchend, touchEnd, false);
                     this.addEventListener(element, __$trackend, touchEnd, false);
+                    this.addEventListener(clickEater, __$touchstart, touchStart, false);
+                    this.addEventListener(clickEater, __$trackend, touchEnd, false);
+                    this.addEventListener(clickEater, __$touchend, touchEnd, false);
                 }
             }
         };
@@ -1414,23 +1406,35 @@ var platui;
          */
         DrawerController.prototype._removeEventListeners = function () {
             var isFunction = this.utils.isFunction;
-            if (this._isTap && isFunction(this._removeTap)) {
-                this._removeTap();
-                this._removeTap = null;
+            if (this._isTap) {
+                if (isFunction(this._removeTap)) {
+                    this._removeTap();
+                    this._removeTap = null;
+                }
+                if (isFunction(this._openTapRemover)) {
+                    this._openTapRemover();
+                    this._openTapRemover = null;
+                }
             }
             if (this._isTrack) {
-                if (isFunction(this._removePrimaryTrack)) {
-                    this._removePrimaryTrack();
-                    this._removePrimaryTrack = null;
+                if (isFunction(this._removeTrack)) {
+                    this._removeTrack();
+                    this._removeTrack = null;
                 }
-                if (isFunction(this._removeSecondaryTrack)) {
-                    this._removeSecondaryTrack();
-                    this._removeSecondaryTrack = null;
+                if (isFunction(this._openTrackRemover)) {
+                    this._openTrackRemover();
+                    this._openTrackRemover = null;
                 }
             }
-            if (this._isSwipe && isFunction(this._removeSwipeToggle)) {
-                this._removeSwipeToggle();
-                this._removeSwipeToggle = null;
+            if (this._isSwipe) {
+                if (isFunction(this._removeSwipeToggle)) {
+                    this._removeSwipeToggle();
+                    this._removeSwipeToggle = null;
+                }
+                if (isFunction(this._openSwipeRemover)) {
+                    this._openSwipeRemover();
+                    this._openSwipeRemover = null;
+                }
             }
         };
         /**
@@ -1441,39 +1445,23 @@ var platui;
             if (this._touchState === 1) {
                 return;
             }
-            if (!this.utils.isNull(this._animationThenable)) {
-                this._animationThenable.cancel();
-            }
-            this._initTouch(ev);
-        };
-        /**
-         * Indicates touch is in progress and sets the initial touch point
-         * when the user touches the DrawerController.
-         * @param {plat.ui.IGestureEvent} ev The touch event.
-         */
-        DrawerController.prototype._initTouch = function (ev) {
             this._touchState = 1;
             this._lastTouch = {
                 x: ev.clientX,
                 y: ev.clientY
             };
-            if (this._isOpen) {
-                return;
-            }
-            this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
         };
         /**
          * The $touchend and $trackend event handler.
          * @param {plat.ui.IGestureEvent} ev The touch event.
          */
         DrawerController.prototype._touchEnd = function (ev) {
-            var noTouch = this._touchState !== 1, hasSwiped = this._hasSwiped, hasTapped = this._hasTapped;
+            var noTouch = this._touchState === 0, hasSwiped = this._hasSwiped, hasTapped = this._hasTapped;
             this._hasSwiped = this._hasTapped = false;
+            this._touchState = 0;
             if (hasTapped || noTouch || hasSwiped) {
-                this._touchState = 0;
                 return;
             }
-            this._touchState = 2;
             var distanceMoved = this._isVertical ? ev.clientY - this._lastTouch.y : ev.clientX - this._lastTouch.x;
             if (this._isRightDirection(distanceMoved)) {
                 var offset = this._getOffset();
@@ -1492,7 +1480,7 @@ var platui;
                 }
             }
             else if (!this._isOpen) {
-                this.dom.removeClass(this._rootElement, this._directionalTransitionPrep);
+                this._removeClickEater();
             }
         };
         /**
@@ -1502,12 +1490,33 @@ var platui;
          */
         DrawerController.prototype._track = function (ev) {
             var _this = this;
-            if (this._touchState === 0) {
+            var touchState = this._touchState;
+            if (touchState === 0) {
                 return;
+            }
+            else if (touchState === 1) {
+                if (!this.utils.isNull(this._animationThenable)) {
+                    this._animationThenable.cancel().then(function () {
+                        _this._addClickEater();
+                        if (_this.utils.isNode(_this._drawerElement)) {
+                            _this._drawerElement.addEventListener('selectstart', _this._preventDefault, false);
+                        }
+                    });
+                }
+                else {
+                    this._addClickEater();
+                    if (this.utils.isNode(this._drawerElement)) {
+                        this._drawerElement.addEventListener('selectstart', this._preventDefault, false);
+                    }
+                }
+                this._touchState = 2;
             }
             this.utils.requestAnimationFrame(function () {
                 _this._rootElement.style[_this._transform] = _this._calculateTranslation(ev);
             });
+        };
+        DrawerController.prototype._preventDefault = function (ev) {
+            ev.preventDefault();
         };
         /**
          * Checks to make sure the user has been tracking in the right direction to
@@ -1533,20 +1542,32 @@ var platui;
         DrawerController.prototype._calculateTranslation = function (ev) {
             var offset = this._getOffset(), distanceMoved;
             if (!offset) {
-                return 'translate3d(0,0,0)';
+                return this._preTransform;
             }
             switch (this._position) {
                 case 'left':
                     distanceMoved = this._checkElasticity(offset, ev.clientX - this._lastTouch.x);
+                    if (distanceMoved === 0) {
+                        return this._preTransform;
+                    }
                     return 'translate3d(' + distanceMoved + 'px,0,0)';
                 case 'right':
                     distanceMoved = this._checkElasticity(offset, this._lastTouch.x - ev.clientX);
+                    if (distanceMoved === 0) {
+                        return this._preTransform;
+                    }
                     return 'translate3d(' + (-distanceMoved) + 'px,0,0)';
                 case 'top':
                     distanceMoved = this._checkElasticity(offset, ev.clientY - this._lastTouch.y);
+                    if (distanceMoved === 0) {
+                        return this._preTransform;
+                    }
                     return 'translate3d(0,' + distanceMoved + 'px,0)';
                 case 'bottom':
                     distanceMoved = this._checkElasticity(offset, this._lastTouch.y - ev.clientY);
+                    if (distanceMoved === 0) {
+                        return this._preTransform;
+                    }
                     return 'translate3d(0,' + (-distanceMoved) + 'px,0)';
                 default:
                     return this._preTransform;
@@ -1631,13 +1652,13 @@ var platui;
          */
         DrawerController.prototype._checkPreInit = function () {
             var _this = this;
-            if (this._preInitializedValue) {
-                this._toggleDelay = this.utils.postpone(function () {
-                    _this._touchState = 0;
-                    _this._toggleDelay = null;
-                    _this._open();
-                });
+            if (!this._preInitializedValue) {
+                return;
             }
+            this._toggleDelay();
+            this._toggleDelay = this.utils.requestAnimationFrame(function () {
+                _this._open();
+            });
         };
         /**
          * Determines the proper HTML template, binds it, and inserts it if needed.
@@ -1704,10 +1725,12 @@ var platui;
                     '" in a hierarchy above the corresponding control such as "' + __Drawer + '."');
                 return false;
             }
+            var dom = this.dom;
+            dom.addClass(rootElement, __Drawer + '-transition-prep');
+            dom.addClass(this.element, (this._isVertical ? __Plat + 'vertical' : __Plat + 'horizontal'));
+            this._directionalTransitionPrep = __Drawer + '-transition-' + position;
             this._clickEater = this._document.createElement('div');
-            this._clickEater.className = 'plat-clickeater';
-            this.dom.addClass(rootElement, 'plat-drawer-transition-prep');
-            this._directionalTransitionPrep = 'plat-drawer-transition-' + position;
+            this._clickEater.className = __Plat + 'clickeater';
             return true;
         };
         /**
@@ -1779,8 +1802,12 @@ var platui;
      */
     var Modal = (function (_super) {
         __extends(Modal, _super);
+        /**
+         * The constructor for a Listview. Creates the modalLoaded Promise.
+         */
         function Modal() {
-            _super.apply(this, arguments);
+            var _this = this;
+            _super.call(this);
             /**
              * The HTML template represented as a string.
              */
@@ -1807,6 +1834,10 @@ var platui;
                 right: true,
                 fade: true
             };
+            this.modalLoaded = new this._Promise(function (resolve, reject) {
+                _this.__resolveFn = resolve;
+                _this.__rejectFn = reject;
+            });
         }
         /**
          * Sets the classes on the proper elements.
@@ -1869,6 +1900,10 @@ var platui;
         Modal.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
             this._scrollRemover();
+            if (this.utils.isFunction(this.__rejectFn)) {
+                this.__rejectFn();
+                this.__rejectFn = this.__resolveFn = null;
+            }
         };
         /**
          * Shows the Modal.
@@ -2024,6 +2059,10 @@ var platui;
             this.innerTemplate = null;
             return bindableTemplates.bind(modal).then(function (template) {
                 _this._container.insertBefore(template, null);
+                if (_this.utils.isFunction(_this.__resolveFn)) {
+                    _this.__resolveFn();
+                    _this.__resolveFn = _this.__rejectFn = null;
+                }
                 return _this._show();
             });
         };
@@ -4159,7 +4198,7 @@ var platui;
          */
         Carousel.prototype.setTemplate = function () {
             var itemContainer = this._document.createElement('div');
-            itemContainer.className = 'plat-carousel-item';
+            itemContainer.className = __Carousel + '-item';
             itemContainer.appendChild(this.innerTemplate);
             this.bindableTemplates.add('item', itemContainer);
         };
@@ -5246,7 +5285,7 @@ var platui;
     var Listview = (function (_super) {
         __extends(Listview, _super);
         /**
-         * The constructor for a Listview. Creates the itemsLoaded promise.
+         * The constructor for a Listview. Creates the itemsLoaded Promise.
          */
         function Listview() {
             var _this = this;
@@ -5981,7 +6020,7 @@ var platui;
                     this._removeScroll = this.addEventListener(this._scrollContainer, 'scroll', this._onScroll, false);
                     if (showRing) {
                         progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                        progressRingContainer.className = 'plat-infinite';
+                        progressRingContainer.className = __Plat + 'infinite';
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
                     this.itemsLoaded.then(function () {
@@ -5990,7 +6029,7 @@ var platui;
                     break;
                 case 'incremental':
                     progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                    progressRingContainer.className = 'plat-incremental';
+                    progressRingContainer.className = __Plat + 'incremental';
                     progressRingContainer.setAttribute(__Hide, '');
                     progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     this.element.insertBefore(progressRingContainer, null);
@@ -6068,7 +6107,7 @@ var platui;
             }
             this._refresh = controlProperty.value.bind(controlProperty.control);
             var progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
-            progressRingContainer.className = 'plat-refresh';
+            progressRingContainer.className = __Plat + 'refresh';
             progressRingContainer.setAttribute(__Hide, '');
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
             this.element.insertBefore(progressRingContainer, null);
@@ -6756,11 +6795,11 @@ var platui;
          */
         Listview.prototype._generateProgressRing = function () {
             var _document = this._document, control = _document.createElement('div'), container = _document.createElement('div'), ring = _document.createElement('div');
-            ring.className = 'plat-animated-ring';
+            ring.className = __Plat + 'animated-ring';
             container.insertBefore(ring, null);
-            container.className = 'plat-progress-container';
+            container.className = __Plat + 'progress-container';
             control.insertBefore(container, null);
-            control.className = 'plat-ring';
+            control.className = __Plat + 'ring';
             return control;
         };
         /**

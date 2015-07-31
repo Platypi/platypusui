@@ -689,13 +689,9 @@ declare module platui {
           */
         protected _removeSwipeToggle: plat.IRemoveListener;
         /**
-          * A function for removing the primary track (open) event listener.
+          * A function for removing the primary tracking event listeners.
           */
-        protected _removePrimaryTrack: plat.IRemoveListener;
-        /**
-          * A function for removing the secondary track (close) event listener.
-          */
-        protected _removeSecondaryTrack: plat.IRemoveListener;
+        protected _removeTrack: plat.IRemoveListener;
         /**
           * A function for removing the tap event listener on the open Drawer.
           */
@@ -716,6 +712,10 @@ declare module platui {
           * An HTMLElement to eat clicks when the Drawer is open.
           */
         protected _clickEater: HTMLElement;
+        /**
+          * A function for removing the click eater scroll listening event.
+          */
+        protected _removeClickEaterListener: plat.IRemoveListener;
         /**
           * The type of Drawer
           * (i.e. the method by which the Drawer opens and closes).
@@ -826,14 +826,13 @@ declare module platui {
           */
         protected _close(): plat.async.IThenable<void>;
         /**
-          * Adds a click eater and all event listeners to the click eater when tracking
-          * and closing an open Drawer.
+          * Adds a click eater when tracking and closing an open Drawer.
           */
-        protected _addEventIntercepts(): void;
+        protected _addClickEater(): void;
         /**
-          * Removes the click eater and all event intercepts on the click eater when closing an open Drawer.
+          * Removes the click eater after closing an open Drawer.
           */
-        protected _removeEventIntercepts(): void;
+        protected _removeClickEater(): void;
         /**
           * Adds swipe events to the controller element.
           */
@@ -864,12 +863,6 @@ declare module platui {
           */
         protected _touchStart(ev: plat.ui.IGestureEvent): void;
         /**
-          * Indicates touch is in progress and sets the initial touch point
-          * when the user touches the DrawerController.
-          * @param {plat.ui.IGestureEvent} ev The touch event.
-          */
-        protected _initTouch(ev: plat.ui.IGestureEvent): void;
-        /**
           * The $touchend and $trackend event handler.
           * @param {plat.ui.IGestureEvent} ev The touch event.
           */
@@ -880,6 +873,7 @@ declare module platui {
           * @param {plat.ui.IGestureEvent} ev The $tracking event.
           */
         protected _track(ev: plat.ui.IGestureEvent): void;
+        protected _preventDefault(ev: Event): void;
         /**
           * Checks to make sure the user has been tracking in the right direction to
           * toggle.
@@ -975,6 +969,11 @@ declare module platui {
           */
         options: plat.observable.IObservableProperty<IModalOptions>;
         /**
+          * A Promise that fulfills when the modal is loaded and rejects if the Modal
+          * gets disposed before it loads content.
+          */
+        modalLoaded: plat.async.IThenable<void>;
+        /**
           * Reference to the Window injectable.
           */
         protected _window: Window;
@@ -1014,6 +1013,18 @@ declare module platui {
           * A hash for validating available transitions.
           */
         protected _transitionHash: plat.IObject<boolean>;
+        /**
+          * The resolve function for the modalLoaded Promise.
+          */
+        private __resolveFn;
+        /**
+          * The reject function for the modalLoaded Promise.
+          */
+        private __rejectFn;
+        /**
+          * The constructor for a Listview. Creates the modalLoaded Promise.
+          */
+        constructor();
         /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
@@ -2749,11 +2760,11 @@ declare module platui {
           */
         private __listenerSet;
         /**
-          * The resolve function for the itemsLoaded promise.
+          * The resolve function for the itemsLoaded Promise.
           */
         private __resolveFn;
         /**
-          * The constructor for a Listview. Creates the itemsLoaded promise.
+          * The constructor for a Listview. Creates the itemsLoaded Promise.
           */
         constructor();
         /**

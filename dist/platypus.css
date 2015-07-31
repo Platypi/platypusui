@@ -1066,8 +1066,6 @@ h6 {
   -ms-user-select: none;
   -khtml-user-select: none;
   user-select: none;
-  -ms-touch-action: none;
-  touch-action: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -1183,6 +1181,10 @@ h6 {
 .plat-carousel .plat-carousel-viewport .plat-forward-arrow:hover {
   color: #ffffff;
 }
+.plat-carousel.plat-horizontal {
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+}
 .plat-carousel.plat-horizontal .plat-carousel-viewport .plat-carousel-container .plat-carousel-item {
   display: inline-block;
 }
@@ -1197,6 +1199,10 @@ h6 {
 }
 .plat-carousel.plat-horizontal .plat-carousel-viewport .plat-forward-arrow {
   right: 0;
+}
+.plat-carousel.plat-vertical {
+  -ms-touch-action: pan-x;
+  touch-action: pan-x;
 }
 .plat-carousel.plat-vertical .plat-carousel-viewport .plat-carousel-container .plat-carousel-item {
   display: block;
@@ -1359,8 +1365,14 @@ h6 {
   -ms-user-select: none;
   -khtml-user-select: none;
   user-select: none;
-  -ms-touch-action: none;
-  touch-action: none;
+}
+.plat-drawer-controller.plat-horizontal {
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+}
+.plat-drawer-controller.plat-vertical {
+  -ms-touch-action: pan-x;
+  touch-action: pan-x;
 }
 .plat-drawer {
   position: absolute;
@@ -1408,7 +1420,6 @@ h6 {
 .plat-drawer-transition-prep.plat-drawer-transition-left,
 .plat-drawer-transition-prep.plat-drawer-transition-top,
 .plat-drawer-transition-prep.plat-drawer-transition-bottom {
-  overflow: hidden;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -1417,10 +1428,10 @@ h6 {
   -ms-touch-action: none;
   touch-action: none;
 }
-.plat-drawer-transition-prep.plat-drawer-transition-right.plat-drawer-open .plat-clickeater,
-.plat-drawer-transition-prep.plat-drawer-transition-left.plat-drawer-open .plat-clickeater,
-.plat-drawer-transition-prep.plat-drawer-transition-top.plat-drawer-open .plat-clickeater,
-.plat-drawer-transition-prep.plat-drawer-transition-bottom.plat-drawer-open .plat-clickeater {
+.plat-drawer-transition-prep.plat-drawer-transition-right .plat-clickeater,
+.plat-drawer-transition-prep.plat-drawer-transition-left .plat-clickeater,
+.plat-drawer-transition-prep.plat-drawer-transition-top .plat-clickeater,
+.plat-drawer-transition-prep.plat-drawer-transition-bottom .plat-clickeater {
   position: absolute;
   background-color: transparent;
   overflow: hidden;
@@ -3708,8 +3719,6 @@ h6 {
   -ms-user-select: none;
   -khtml-user-select: none;
   user-select: none;
-  -ms-touch-action: none;
-  touch-action: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -3780,6 +3789,8 @@ h6 {
 .plat-range.plat-horizontal-reversed {
   height: 1.6em;
   padding: 0 0.8em;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
 }
 .plat-range.plat-horizontal .plat-range-container,
 .plat-range.plat-horizontal-reversed .plat-range-container {
@@ -3841,6 +3852,8 @@ h6 {
 .plat-range.plat-vertical-reversed {
   width: 1.6em;
   padding: 0.8em 0;
+  -ms-touch-action: pan-x;
+  touch-action: pan-x;
 }
 .plat-range.plat-vertical .plat-range-container,
 .plat-range.plat-vertical-reversed .plat-range-container {
@@ -3987,8 +4000,6 @@ h6 {
   -ms-user-select: none;
   -khtml-user-select: none;
   user-select: none;
-  -ms-touch-action: none;
-  touch-action: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -4058,6 +4069,8 @@ h6 {
 .plat-slider.plat-horizontal-reversed {
   height: 1.6em;
   padding: 0 0.8em;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
 }
 .plat-slider.plat-horizontal .plat-slider-container,
 .plat-slider.plat-horizontal-reversed .plat-slider-container {
@@ -4115,6 +4128,8 @@ h6 {
 .plat-slider.plat-vertical-reversed {
   width: 1.6em;
   padding: 0.8em 0;
+  -ms-touch-action: pan-x;
+  touch-action: pan-x;
 }
 .plat-slider.plat-vertical .plat-slider-container,
 .plat-slider.plat-vertical-reversed .plat-slider-container {

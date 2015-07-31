@@ -15,7 +15,6 @@
     min-height: 50px;
     .fill();
     .user-select();
-    .touch-action(none);
     .box-sizing(border-box);
 
     .plat-carousel-viewport {
@@ -98,6 +97,8 @@
     }
 
     &.plat-horizontal {
+        .touch-action(pan-y);
+
         .plat-carousel-viewport {
             .plat-carousel-container {
                 .plat-carousel-item {
@@ -123,6 +124,8 @@
     }
 
     &.plat-vertical {
+        .touch-action(pan-x);
+
         .plat-carousel-viewport {
             .plat-carousel-container {
                 .plat-carousel-item {

@@ -647,7 +647,7 @@ module platui {
          */
         setTemplate(): void {
             var itemContainer = this._document.createElement('div');
-            itemContainer.className = 'plat-carousel-item';
+            itemContainer.className = __Carousel + '-item';
             itemContainer.appendChild(this.innerTemplate);
             this.bindableTemplates.add('item', itemContainer);
         }

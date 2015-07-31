@@ -9,7 +9,14 @@
 .plat-drawer-controller {
     #platui > #mixins;
     .user-select();
-    .touch-action(none);
+
+    &.plat-horizontal {
+        .touch-action(pan-y);
+    }
+
+    &.plat-vertical {
+        .touch-action(pan-x);
+    }
 }
 
 /// =========== Drawer Default Styles =========== ///
@@ -66,24 +73,21 @@
     #platui > #Drawer;
     -webkit-backface-visibility: hidden;
     -webkit-perspective: none;
-    
+
     &.plat-drawer-transition-right,
     &.plat-drawer-transition-left,
     &.plat-drawer-transition-top,
     &.plat-drawer-transition-bottom {
-        overflow: hidden;
         .user-select(none);
         .touch-action(none);
 
-        &.plat-drawer-open {
-            .plat-clickeater {
-                position: absolute;
-                background-color: transparent;
-                overflow: hidden;
-                z-index: 999999;
-                .fill();
-                .touch-action(none);
-            }
+        .plat-clickeater {
+            position: absolute;
+            background-color: transparent;
+            overflow: hidden;
+            z-index: 999999;
+            .fill();
+            .touch-action(none);
         }
     }
 
