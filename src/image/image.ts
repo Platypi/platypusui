@@ -237,6 +237,9 @@ module platui {
                         element.style.backgroundImage = 'url("' + url + '")';
                         element.removeChild(img);
                     } else {
+                        dom.removeClass(img, imageLoadClass);
+                        element.removeChild(loader);
+
                         if (img.clientHeight < element.clientHeight) {
                             dom.addClass(img, __Plat + 'center-vertical');
                         } else {
@@ -248,11 +251,7 @@ module platui {
                         } else {
                             dom.removeClass(img, __Plat + 'center-horizontal');
                         }
-
-                        dom.removeClass(img, imageLoadClass);
                     }
-
-                    element.removeChild(loader);
                 });
             };
 
