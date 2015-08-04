@@ -1,0 +1,22 @@
+@import (reference) '../global/variables.less';
+
+#platui {
+    #Image {
+        #dependencies {
+            #platui > #variables;
+            @loader-color: @primary-color;
+        }
+
+        #platui > #Image > #dependencies;
+
+    /// =========== Progress Ring Colors =========== ///
+
+        @loader-fill-color: fade(@loader-color, 75%);
+        @loader-unfilled-color: fade(@loader-color, 10%);
+
+    /// =========== Progress Ring Sizes =========== ///
+
+        @loader-diameter: 3em;
+        @loader-thickness: @loader-diameter / 10;
+    }
+}
