@@ -577,10 +577,19 @@ module platui {
         dispose(): void {
             super.dispose();
 
-            this._removeClickEater();
-
             var _utils = this.utils,
-                drawer = this._drawer;
+                drawer = this._drawer,
+                rootElement = this._rootElement,
+                clickEater = this._clickEater;
+
+            if (!_utils.isNode(rootElement)) {
+                return;
+            }
+
+            if (_utils.isNode(clickEater) && rootElement.contains(clickEater)) {
+                this._removeClickEater();
+            }
+
             if (_utils.isNull(drawer)) {
                 return;
             }
@@ -590,11 +599,9 @@ module platui {
                 return;
             }
 
-            var storedStyle = drawer.storedProperties,
-                rootElement = this._rootElement;
+            this.dom.removeClass(rootElement, __Drawer + '-root ' + this._directionalTransitionPrep);
 
-            this.dom.removeClass(rootElement, __Drawer + '-transition-prep ' + this._directionalTransitionPrep);
-
+            var storedStyle = drawer.storedProperties;
             if (!_utils.isObject(storedStyle)) {
                 return;
             }

@@ -14,6 +14,7 @@ var __prefix = '$',
     __Animator = __prefix + 'Animator',
     __DomEventInstance = __prefix + 'DomEventInstance',
     __TemplateControlFactory = __prefix + 'TemplateControlFactory',
+    __NodeManagerStatic = __prefix + 'NodeManagerStatic',
 
     /**
      * Constants
@@ -42,6 +43,7 @@ var __prefix = '$',
     __Carousel = __Plat + 'carousel',
     __Listview = __Plat + 'listview',
     __Navbar = __Plat + 'navbar',
+    __Image = __Plat + 'image',
 
     /**
      * Referenced Controls / Vars
@@ -57,6 +59,7 @@ var __prefix = '$',
     __CamelContext = __PlatPrefix + 'Context',
     __CamelChecked = __PlatPrefix + 'Checked',
     __CamelBind = __PlatPrefix + 'Bind',
+    __CamelSrc = __PlatPrefix + 'Src',
 
     /**
      * Listview aliases
@@ -104,6 +107,7 @@ var __prefix = '$',
         up: 'down',
         down: 'up'
     },
+    __src = 'src',
     noop = (): void => { };
 /* tslint:enable:no-unused-variable */
 

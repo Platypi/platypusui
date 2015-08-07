@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.5.3 (https://platypi.io)
+ * PlatypusUI v0.5.4 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -22,16 +22,16 @@ var platui;
     /* tslint:disable:no-unused-variable */
     /*
      */
-    var __prefix = '$', __Promise = __prefix + 'Promise', __Compat = __prefix + 'Compat', __Regex = __prefix + 'Regex', __Window = __prefix + 'Window', __Document = __prefix + 'Document', __Utils = __prefix + 'Utils', __Animator = __prefix + 'Animator', __DomEventInstance = __prefix + 'DomEventInstance', __TemplateControlFactory = __prefix + 'TemplateControlFactory', 
+    var __prefix = '$', __Promise = __prefix + 'Promise', __Compat = __prefix + 'Compat', __Regex = __prefix + 'Regex', __Window = __prefix + 'Window', __Document = __prefix + 'Document', __Utils = __prefix + 'Utils', __Animator = __prefix + 'Animator', __DomEventInstance = __prefix + 'DomEventInstance', __TemplateControlFactory = __prefix + 'TemplateControlFactory', __NodeManagerStatic = __prefix + 'NodeManagerStatic', 
     /**
      */
     __CONTEXT = 'context', 
     /**
      */
-    __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', __Navbar = __Plat + 'navbar', 
+    __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', __Navbar = __Plat + 'navbar', __Image = __Plat + 'image', 
     /**
      */
-    __Hide = __Plat + 'hide', __Context = __Plat + __CONTEXT, __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', 
+    __Hide = __Plat + 'hide', __Context = __Plat + __CONTEXT, __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', __CamelSrc = __PlatPrefix + 'Src', 
     /**
      */
     __listviewAliasOptions = {
@@ -55,7 +55,7 @@ var platui;
         left: 'right',
         up: 'down',
         down: 'up'
-    }, noop = function () { };
+    }, __src = 'src', noop = function () { };
     /* tslint:enable:no-unused-variable */
     if (typeof window !== 'undefined') {
         if (typeof window.platui === 'undefined') {
@@ -1052,8 +1052,13 @@ var platui;
          */
         DrawerController.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
-            this._removeClickEater();
-            var _utils = this.utils, drawer = this._drawer;
+            var _utils = this.utils, drawer = this._drawer, rootElement = this._rootElement, clickEater = this._clickEater;
+            if (!_utils.isNode(rootElement)) {
+                return;
+            }
+            if (_utils.isNode(clickEater) && rootElement.contains(clickEater)) {
+                this._removeClickEater();
+            }
             if (_utils.isNull(drawer)) {
                 return;
             }
@@ -1061,8 +1066,8 @@ var platui;
             if (drawer.controllerCount() > 0) {
                 return;
             }
-            var storedStyle = drawer.storedProperties, rootElement = this._rootElement;
-            this.dom.removeClass(rootElement, __Drawer + '-transition-prep ' + this._directionalTransitionPrep);
+            this.dom.removeClass(rootElement, __Drawer + '-root ' + this._directionalTransitionPrep);
+            var storedStyle = drawer.storedProperties;
             if (!_utils.isObject(storedStyle)) {
                 return;
             }
