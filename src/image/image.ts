@@ -15,6 +15,7 @@ module platui {
     export class Image extends plat.ui.TemplateControl implements IUiControl {
         protected static _inject: any = {
             _compat: __Compat,
+            _window: __Window,
             _document: __Document,
             _NodeManagerStatic: __NodeManagerStatic
         };
@@ -62,6 +63,19 @@ module platui {
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
         protected _compat: plat.Compat;
+
+        /**
+         * @name _window
+         * @memberof platui.Image
+         * @kind property
+         * @access protected
+         *
+         * @type {Window}
+         *
+         * @description
+         * Reference to the Window injectable.
+         */
+        protected _window: Window;
 
         /**
          * @name _document
@@ -182,7 +196,13 @@ module platui {
                 options = this.options,
                 url: string;
 
-            this._loader = <HTMLElement>element.firstElementChild;
+            if (isString(url = attributes[__CamelSrc])) {
+                attributes.observe(this._setSrc, __CamelSrc);
+            } else if (isString(url = attributes[__src])) {
+                attributes.observe(this._setSrc, __src);
+            } else {
+                return;
+            }
 
             if (isObject(options) && isObject(options.value)) {
                 this._isBackground = options.value.isBackground === true;
@@ -192,12 +212,48 @@ module platui {
                 this.dom.addClass(element, __Plat + 'background');
             }
 
-            if (isString(url = attributes[__CamelSrc])) {
-                attributes.observe(this._setSrc, __CamelSrc);
-            } else if (isString(url = attributes[__src])) {
-                attributes.observe(this._setSrc, __src);
-            } else {
-                return;
+            var loader = this._loader = <HTMLElement>element.firstElementChild,
+                loaderRing = <HTMLElement>loader.firstElementChild.firstElementChild,
+                _window = this._window,
+                loaderStyle = _window.getComputedStyle(loader),
+                elStyle = _window.getComputedStyle(element),
+                numRegex = /[^0-9]/,
+                isNumber = this.utils.isNumber,
+                loaderHeight = Number(loaderStyle.height.replace(numRegex, '')),
+                loaderWidth = Number(loaderStyle.width.replace(numRegex, '')),
+                elHeight = Number(elStyle.height.replace(numRegex, '')),
+                elWidth = Number(elStyle.width.replace(numRegex, '')),
+                diameter: string;
+
+            if (!isNumber(loaderHeight)) {
+                loaderHeight = 0;
+            }
+
+            if (!isNumber(elHeight)) {
+                elHeight = 0;
+            }
+
+            if (!isNumber(loaderWidth)) {
+                loaderWidth = 0;
+            }
+
+            if (!isNumber(elWidth)) {
+                elWidth = 0;
+            }
+
+            if (elHeight < loaderHeight || elWidth < loaderWidth) {
+                if (elHeight > 0 && elHeight < elWidth) {
+                    diameter = elHeight + 'px';
+                } else if (elWidth > 0) {
+                    diameter = elWidth + 'px';
+                }
+            } else if (loaderHeight < elHeight) {
+                this.dom.addClass(loader, __Plat + 'center-vertical');
+            }
+
+            if (!this.utils.isUndefined(diameter)) {
+                var style = loader.style;
+                style.height = style.width = loaderRing.style.borderRadius = diameter;
             }
 
             if (this._NodeManagerStatic.hasMarkup(url)) {
@@ -236,21 +292,49 @@ module platui {
                     if (this._isBackground) {
                         element.style.backgroundImage = 'url("' + url + '")';
                         element.removeChild(img);
-                    } else {
-                        dom.removeClass(img, imageLoadClass);
                         element.removeChild(loader);
+                        return;
+                    }
 
-                        if (img.clientHeight < element.clientHeight) {
-                            dom.addClass(img, __Plat + 'center-vertical');
-                        } else {
-                            dom.removeClass(img, __Plat + 'center-vertical');
-                        }
+                    dom.removeClass(img, imageLoadClass);
+                    element.removeChild(loader);
 
-                        if (img.clientWidth < element.clientWidth) {
-                            dom.addClass(img, __Plat + 'center-horizontal');
-                        } else {
-                            dom.removeClass(img, __Plat + 'center-horizontal');
-                        }
+                    var _window = this._window,
+                        numRegex = /[^0-9]/,
+                        isNumber = this.utils.isNumber,
+                        imgStyle = _window.getComputedStyle(img),
+                        elStyle = _window.getComputedStyle(element),
+                        imgHeight = Number(imgStyle.height.replace(numRegex, '')),
+                        elHeight = Number(elStyle.height.replace(numRegex, '')),
+                        imgWidth = Number(imgStyle.width.replace(numRegex, '')),
+                        elWidth = Number(elStyle.width.replace(numRegex, ''));
+
+                    if (!isNumber(imgHeight)) {
+                        imgHeight = 0;
+                    }
+
+                    if (!isNumber(elHeight)) {
+                        elHeight = 0;
+                    }
+
+                    if (!isNumber(imgWidth)) {
+                        imgWidth = 0;
+                    }
+
+                    if (!isNumber(elWidth)) {
+                        elWidth = 0;
+                    }
+
+                    if (imgHeight < elHeight) {
+                        dom.addClass(img, __Plat + 'center-vertical');
+                    } else {
+                        dom.removeClass(img, __Plat + 'center-vertical');
+                    }
+
+                    if (imgWidth < elWidth) {
+                        dom.addClass(img, __Plat + 'center-horizontal');
+                    } else {
+                        dom.removeClass(img, __Plat + 'center-horizontal');
                     }
                 });
             };

@@ -4,39 +4,65 @@
 
 /// =========== Progress Ring Default Styles =========== ///
 
-.plat-ring {
+.plat-ring(@prop: undefined; @value: undefined) {
     #platui > #mixins;
-    #platui > #ProgressRing;
-    display: inline-block;
-    width: @diameter;
-    height: @diameter;
-    .box-sizing(border-box);
 
-    .plat-progress-container {
-        display: inline-block;
-        position: relative;
-        overflow: hidden;
-        .fill();
-        .box-sizing(border-box);
-
-        .plat-animated-ring {
-            width: 100%;
-            height: 100%;
-            border-left: @thickness solid @fill-color;
-            border-bottom: @thickness solid @unfilled-color;
-            border-right: @thickness solid @unfilled-color;
-            border-top: @thickness solid @unfilled-color;
-            .border-radius(@diameter);
-            .animate(@animation-name; @spin-frequency; linear; 0s; infinite);
-            .box-sizing(border-box);
+    & when (@prop = undefined), (@value = undefined) {
+        width: @diameter;
+        height: @diameter;
+        border-left: @thickness solid @fill-color;
+        border-top: @thickness solid @unfilled-color;
+        border-right: @thickness solid @unfilled-color;
+        border-bottom: @thickness solid @unfilled-color;
+        .animate(@animation-name; @spin-frequency; linear; 0s; infinite);
+    }
+    & when (@prop = color) {
+        @unfilled-color: fade(@value, 10%);
+        border-left-color: fade(@value, 80%);
+        border-top-color: @unfilled-color;
+        border-right-color: @unfilled-color;
+        border-bottom-color: @unfilled-color;
+    }
+    & when (@prop = animation-name) {
+        .animation-name(@value);
+    }
+    & when (@prop = fill-color) {
+        &.plat-ring {
+            border-left-color: @value;
         }
+    }
+    & when (@prop = unfilled-color) {
+        border-top-color: @value;
+        border-right-color: @value;
+        border-bottom-color: @value;
+    }
+    & when (@prop = diameter) {
+        width: @value;
+        height: @value;
+    }
+    & when (@prop = thickness) {
+        border-width: @value;
+    }
+    & when (@prop = spin-frequency) {
+        .animation-duration(@value);
     }
 }
 
-/// =========== Progress Ring Animation =========== ///
+/// =========== Progress Ring Declaration and Animation =========== ///
 
 & {
     #platui > #ProgressRing;
+
+    .plat-ring {
+        #platui > #mixins;
+        .plat-ring();
+
+        display: inline-block;
+        position: relative;
+        .border-radius(50%);
+        .box-sizing(border-box);
+        .translateZ(0);
+    }
+
     .spin();
 }
-

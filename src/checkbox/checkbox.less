@@ -3,142 +3,238 @@
 @import (reference) '../mixins/flexbox.less';
 @import (reference) 'checkbox.variables.less';
 
-/// =========== Default Checkbox =========== ///
+/// =========== Checkbox Declaration =========== ///
 
-.plat-checkbox {
+& {
     #platui > #variables;
     #platui > #mixins;
     #platui > #Checkbox;
-    cursor: pointer;
-    .flex-vertical-center(true);
-    .box-sizing(border-box);
 
-    & > span {
-        line-height: @diameter;
+    .plat-checkbox {
+        .flex-vertical-center(true);
+        .box-sizing(border-box);
+        cursor: pointer;
 
-        &:first-of-type {
-            padding-left: 0.4em;
+        & > span {
+            line-height: @diameter;
+
+            &:first-of-type {
+                padding-left: 0.4em;
+            }
         }
-    }
 
-    .plat-checkbox-container {
-        position: relative;
-        display: inline-block;
-        width: @diameter;
-        height: @diameter;
-        background-color: @background-color;
-        overflow: hidden;
-        border: 1px solid @border-color;
-        .flex(0 0 @diameter);
-        .border-radius(@diameter);
-        .box-sizing(content-box);
+        .plat-checkbox-container {
+            .flex(0 0 @diameter);
+            .border-radius(50%);
+            .box-sizing(content-box);
+            position: relative;
+            display: inline-block;
+            width: @diameter;
+            height: @diameter;
+            background-color: @background-color;
+            overflow: hidden;
+            border: 1px solid @border-color;
 
-/// ============ Checkmark Symbol ============ ///
+    /// ============ Checkmark Symbol ============ ///
 
-        &.plat-check,
-        &.plat-x {
-            background-color: @border-color;
+            &.plat-check,
+            &.plat-x {
+                background-color: @border-color;
 
-            .plat-mark::before,
-            .plat-mark::after {
-                content: "";
-                position: absolute;
-                height: 2px;
-                background-color: @white;
+                .plat-mark::before,
+                .plat-mark::after {
+                    .border-radius(2px);
+                    content: "";
+                    position: absolute;
+                    height: 2px;
+                    background-color: @white;
+                }
+            }
+
+            &.plat-check {
+                .plat-mark::before {
+                    .rotate(45deg);
+                    left: 13%;
+                    top: 55%;
+                    width: @diameter / 2.6;
+                }
+
+                .plat-mark::after {
+                    .rotate(-45deg);
+                    left: 34%;
+                    top: 47%;
+                    width: @diameter / 1.7;
+                }
+            }
+
+            &.plat-x {
+                .plat-mark::before,
+                .plat-mark::after {
+                    left: 18%;
+                    top: 48%;
+                    width: @diameter / 1.5;
+                }
+
+                .plat-mark::before {
+                    .rotate(45deg);
+                }
+
+                .plat-mark::after {
+                    .rotate(-45deg);
+                }
+            }
+        }
+
+    /// ============ Checkmark Square ============ ///
+
+        &.checkbox-square {
+            .plat-checkbox-container {
                 .border-radius(2px);
             }
         }
 
-        &.plat-check {
-            .plat-mark::before {
-                left: 13%;
-                top: 55%;
-                width: @diameter / 2.6;
-                .rotate(45deg);
-            }
+    /// ============ Checkmark Colors ============ ///
 
-            .plat-mark::after {
-                left: 34%;
-                top: 47%;
-                width: @diameter / 1.7;
-                .rotate(-45deg);
+        &.checkbox-primary {
+            .plat-checkbox-container {
+                &.plat-check,
+                &.plat-x {
+                    border-color: @primary-color;
+                    background-color: @primary-color;
+                }
             }
         }
 
-        &.plat-x {
-            .plat-mark::before,
-            .plat-mark::after {
-                left: 18%;
-                top: 48%;
-                width: @diameter / 1.5;
-            }
-
-            .plat-mark::before {
-                .rotate(45deg);
-            }
-
-            .plat-mark::after {
-                .rotate(-45deg);
+        &.checkbox-secondary {
+            .plat-checkbox-container {
+                &.plat-check,
+                &.plat-x {
+                    border-color: @secondary-color;
+                    background-color: @secondary-color;
+                }
             }
         }
-    }
 
-/// ============ Checkmark Square ============ ///
-
-    &.checkbox-square {
-        .plat-checkbox-container {
-            .border-radius(2px);
-        }
-    }
-
-/// ============ Checkmark Colors ============ ///
-
-    &.checkbox-primary {
-        .plat-checkbox-container {
-            &.plat-check,
-            &.plat-x {
-                border-color: @primary-color;
-                background-color: @primary-color;
+        &.checkbox-success {
+            .plat-checkbox-container {
+                &.plat-check,
+                &.plat-x {
+                    border-color: @success-color;
+                    background-color: @success-color;
+                }
             }
         }
-    }
 
-    &.checkbox-secondary {
-        .plat-checkbox-container {
-            &.plat-check,
-            &.plat-x {
-                border-color: @secondary-color;
-                background-color: @secondary-color;
+        &.checkbox-caution {
+            .plat-checkbox-container {
+                &.plat-check,
+                &.plat-x {
+                    border-color: @caution-color;
+                    background-color: @caution-color;
+                }
+            }
+        }
+
+        &.checkbox-danger {
+            .plat-checkbox-container {
+                &.plat-check,
+                &.plat-x {
+                    border-color: @danger-color;
+                    background-color: @danger-color;
+                }
             }
         }
     }
+}
 
-    &.checkbox-success {
-        .plat-checkbox-container {
-            &.plat-check,
-            &.plat-x {
-                border-color: @success-color;
-                background-color: @success-color;
+/// =========== Checkbox Variable Styles =========== ///
+
+.plat-checkbox(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (@value = undefined) {
+        &.plat-checkbox {
+            & > span {
+                line-height: @diameter;
+            }
+
+            .plat-checkbox-container {
+                .flex(0 0 @diameter);
+                width: @diameter;
+                height: @diameter;
+                background-color: @background-color;
+                border-color: @border-color;
+
+                &.plat-check,
+                &.plat-x {
+                    background-color: @border-color;
+                }
+
+                &.plat-check {
+                    .plat-mark::before {
+                        width: @diameter / 2.6;
+                    }
+
+                    .plat-mark::after {
+                        width: @diameter / 1.7;
+                    }
+                }
+
+                &.plat-x {
+                    .plat-mark::before,
+                    .plat-mark::after {
+                        width: @diameter / 1.5;
+                    }
+                }
             }
         }
     }
-
-    &.checkbox-caution {
-        .plat-checkbox-container {
-            &.plat-check,
-            &.plat-x {
-                border-color: @caution-color;
-                background-color: @caution-color;
+    & when (@prop = background-color) {
+        &.plat-checkbox {
+            .plat-checkbox-container {
+                background-color: @value;
             }
         }
     }
+    & when (@prop = border-color) {
+        &.plat-checkbox {
+            .plat-checkbox-container {
+                border-color: @value;
 
-    &.checkbox-danger {
-        .plat-checkbox-container {
-            &.plat-check,
-            &.plat-x {
-                border-color: @danger-color;
-                background-color: @danger-color;
+                &.plat-check,
+                &.plat-x {
+                    background-color: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = diameter) {
+        &.plat-checkbox {
+            & > span {
+                line-height: @value;
+            }
+
+            .plat-checkbox-container {
+                .flex(0 0 @value);
+                width: @value;
+                height: @value;
+
+                &.plat-check {
+                    .plat-mark::before {
+                        width: @value / 2.6;
+                    }
+
+                    .plat-mark::after {
+                        width: @value / 1.7;
+                    }
+                }
+
+                &.plat-x {
+                    .plat-mark::before,
+                    .plat-mark::after {
+                        width: @value / 1.5;
+                    }
+                }
             }
         }
     }

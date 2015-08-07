@@ -73,7 +73,8 @@ module app {
                 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
                 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
                 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
-            ]
+            ],
+            url: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTnPq66xNWUQvfFqdlFnsrU4TfR_dASliyI1avXHzRZ6FieE88n'
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
@@ -101,6 +102,9 @@ module app {
             //        ];
             //    }, 2000);
             //}, 2000);
+            setTimeout(() => {
+                this.context.url = 'https://upload.wikimedia.org/wikipedia/commons/3/3d/LARGE_elevation.jpg';
+            }, 2000);
         }
 
         initNavbar() {

@@ -14,251 +14,425 @@
             & when (@orientation = vertical) {
                 height: 2.5em;
                 width: 100%;
-            } 
+            }
             & when (@orientation = horizontal) {
                 height: 100%;
                 width: 2.5em;
             }
 
             .plat-ring {
+                position: absolute;
                 height: 2em;
                 width: 2em;
-                position: absolute;
+                border-left-width: 0.2em;
+                border-bottom-width: 0.2em;
+                border-right-width: 0.2em;
+                border-top-width: 0.2em;
 
                 & when (@orientation = vertical) {
+                    .translate-accelerate(-50%;0);
                     margin-top: 0.25em;
                     margin-bottom: 0.25em;
                     left: 50%;
-                    .translate-accelerate(-50%;0);
-                } 
+                }
                 & when (@orientation = horizontal) {
+                    .translate-accelerate(0;-50%);
                     margin-left: 0.25em;
                     margin-right: 0.25em;
                     top: 50%;
-                    .translate-accelerate(0;-50%);
-                }
-
-                .plat-progress-container {
-                    .plat-animated-ring {
-                        .border-radius(2em);
-                    }
                 }
             }
         }
     }
 }
 
-/// =========== Listview Default Styles =========== ///
+/// =========== Listview Declarations =========== ///
 
-.plat-listview {
+& {
     #platui > #mixins;
     #platui > #Listview;
     #platui > #__Listview;
-    .fill();
-    .box-sizing(border-box);
-    position: relative;
-    min-height: 50px;
-    overflow: hidden;
 
-    .plat-listview-viewport {
+    .plat-listview {
         .fill();
         .box-sizing(border-box);
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 1;
+        position: relative;
+        min-height: 50px;
         overflow: hidden;
-        
-        .plat-scroll-container {
+
+        .plat-listview-viewport {
             .fill();
             .box-sizing(border-box);
             position: absolute;
-            left: 0;
             top: 0;
-            -ms-overflow-style:-ms-autohiding-scrollbar;
+            left: 0;
+            z-index: 1;
+            overflow: hidden;
 
-            .plat-container {
+            .plat-scroll-container {
                 .fill();
                 .box-sizing(border-box);
+                position: absolute;
+                left: 0;
+                top: 0;
+                -ms-overflow-style: -ms-autohiding-scrollbar;
 
-                .plat-listview-group,
-                .plat-listview-group .plat-header,
-                .plat-listview-group .plat-listview-items {
+                .plat-container {
+                    .fill();
                     .box-sizing(border-box);
+
+                    .plat-listview-group,
+                    .plat-listview-group .plat-header,
+                    .plat-listview-group .plat-listview-items {
+                        .box-sizing(border-box);
+                    }
                 }
+            }
+
+            &.plat-manipulation-prep {
+                .touch-action(none);
+                background-color: @manipulated-viewport-background-color;
+            }
+
+            &.plat-transition-init {
+                -webkit-transition: -webkit-transform @refresh-transition-time;
+                -moz-transition: -moz-transform @refresh-transition-time;
+                transition: transform @refresh-transition-time;
             }
         }
 
-        &.plat-manipulation-prep {
-            background-color: @manipulated-viewport-background-color;
-            .touch-action(none);
-        }
-            
-        &.plat-transition-init {
-            -webkit-transition: -webkit-transform @refresh-transition-time;
-            -moz-transition: -moz-transform @refresh-transition-time;
-            transition: transform @refresh-transition-time;
-        }
-    }
+        .plat-refresh,
+        .plat-incremental {
+            position: absolute;
+            z-index: 0;
 
-    .plat-refresh,
-    .plat-incremental {
-        position: absolute;
-        z-index: 0;
-
-        .plat-ring {
-            .plat-progress-container {
-                .plat-animated-ring {
-                    .animation-play-state(paused);
-                }
-            }
-        }
-
-        &.plat-play {
             .plat-ring {
                 .plat-progress-container {
                     .plat-animated-ring {
-                        .animation-play-state(running);
+                        .animation-play-state(paused);
+                    }
+                }
+            }
+
+            &.plat-play {
+                .plat-ring {
+                    .plat-progress-container {
+                        .plat-animated-ring {
+                            .animation-play-state(running);
+                        }
                     }
                 }
             }
         }
-    }
 
-    &.plat-vertical {
-        .plat-listview-viewport {
-            .plat-scroll-container {
-                .scroll(y);
-
-                .plat-container {
-                    .plat-infinite {
-                        .plat-ring-constants();
-                        position: relative;
-                    }
-                }
-            }
-
-            &.plat-manipulation-prep {
+        &.plat-vertical {
+            .plat-listview-viewport {
                 .plat-scroll-container {
-                    overflow: hidden;
+                    .scroll(y);
+
+                    .plat-container {
+                        .plat-infinite {
+                            .plat-ring-constants();
+                            position: relative;
+                        }
+                    }
                 }
+
+                &.plat-manipulation-prep {
+                    .plat-scroll-container {
+                        overflow: hidden;
+                    }
+                }
+            }
+
+            .plat-refresh,
+            .plat-incremental {
+                .plat-ring-constants();
+                left: 0;
+            }
+
+            .plat-refresh {
+                top: 0;
+            }
+
+            .plat-incremental {
+                bottom: 0;
             }
         }
 
-        .plat-refresh,
-        .plat-incremental {
-            .plat-ring-constants();
-            left: 0;
-        }
+        &.plat-horizontal {
+            .plat-listview-viewport {
+                .plat-scroll-container {
+                    .scroll(x);
+                    padding-bottom: @horizontal-scroll-padding;
 
-        .plat-refresh {
-            top: 0;
-        }
+                    .plat-container {
+                        .flexbox();
 
-        .plat-incremental {
-            bottom: 0;
-        }
-    }
+                        &.plat-grouped {
+                            .flex-direction(row);
+                            .flex-wrap(nowrap);
+                            .align-items(stretch);
 
-    &.plat-horizontal {
-        .plat-listview-viewport {
-            .plat-scroll-container {
-                padding-bottom: @horizontal-scroll-padding;
-                .scroll(x);
+                            .plat-listview-group {
+                                .flex(0 0 auto);
+                                height: 100%;
 
-                .plat-container {
-                    .flexbox();
-                    
-                    &.plat-grouped {
-                        .flex-direction(row);
-                        .flex-wrap(nowrap);
-                        .align-items(stretch);
-                        
-                        .plat-listview-group {
-                            height: 100%;
-                            .flex(0 0 auto);
-    
-                            .plat-listview-items {
-                                .flexbox();
-                                .flex-direction(column);
-                                .flex-wrap(wrap);
-                                .align-content(flex-start);
-                                .fill();
-    
-                                & > * {
-                                    .flex(0 0 auto);
+                                .plat-listview-items {
+                                    .flexbox();
+                                    .flex-direction(column);
+                                    .flex-wrap(wrap);
+                                    .align-content(flex-start);
+                                    .fill();
+
+                                    & > * {
+                                        .flex(0 0 auto);
+                                    }
                                 }
                             }
                         }
-                    }
-                    
-                    &:not(.plat-grouped) {
-                        .flex-direction(column);
-                        .flex-wrap(wrap);
-                        .align-content(flex-start);
-                        
-                        & > * {
-                            .flex(0 0 auto);
+
+                        &:not(.plat-grouped) {
+                            .flex-direction(column);
+                            .flex-wrap(wrap);
+                            .align-content(flex-start);
+
+                            & > * {
+                                .flex(0 0 auto);
+                            }
+                        }
+
+                        .plat-infinite {
+                            position: relative;
                         }
                     }
+                }
 
-                    .plat-infinite {
-                        position: relative;
+                &.plat-manipulation-prep {
+                    .plat-scroll-container {
+                        overflow: hidden;
                     }
                 }
             }
 
-            &.plat-manipulation-prep {
+            .plat-refresh,
+            .plat-incremental {
+                .plat-ring-constants(horizontal);
+                top: 0;
+            }
+
+            .plat-refresh {
+                left: 0;
+            }
+
+            .plat-incremental {
+                right: 0;
+            }
+        }
+
+        &.plat-animated {
+            .plat-listview-viewport {
                 .plat-scroll-container {
-                    overflow: hidden;
-                }
-            }
-        }
+                    .plat-container {
+                        .plat-enter-init {
+                            @enter-init();
+                        }
 
-        .plat-refresh,
-        .plat-incremental {
-            .plat-ring-constants(horizontal);
-            top: 0;
-        }
+                        .plat-enter {
+                            .animation(@enter-animation);
+                        }
 
-        .plat-refresh {
-            left: 0;
-        }
-
-        .plat-incremental {
-            right: 0;
-        }
-    }
-
-    &.plat-animated {
-        .plat-listview-viewport {
-            .plat-scroll-container {
-                .plat-container {
-                    .plat-enter-init {
-                        @enter-init();
-                    }
-                    
-                    .plat-enter {
-                        .animation(@enter-animation);
-                    }
-                }
-            }
-        }
-        
-        .plat-listview-viewport {
-            .plat-scroll-container {
-                .plat-container {
-                    .plat-leave {
-                        .animation(@leave-animation);
+                        .plat-leave {
+                            .animation(@leave-animation);
+                        }
                     }
                 }
             }
         }
     }
-}
 
-& {
-    #platui > #Listview;
     .enter(@enter-animation-name);
     .leave(@leave-animation-name);
+}
+
+/// =========== Variable Listview Styles =========== ///
+
+.plat-listview(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (value = undefined) {
+        &.plat-listview {
+            .plat-listview-viewport {
+                &.plat-manipulation-prep {
+                    background-color: @manipulated-viewport-background-color;
+                }
+
+                &.plat-transition-init {
+                    .transition-duration(@refresh-transition-time);
+                }
+            }
+
+            &.plat-horizontal {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        padding-bottom: @horizontal-scroll-padding;
+                    }
+                }
+            }
+
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-enter-init {
+                                @enter-init();
+                            }
+
+                            .plat-enter {
+                                .animation(@enter-animation);
+                            }
+
+                            .plat-leave {
+                                .animation(@leave-animation);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = enter-animation-name) {
+        &.plat-listview {
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-enter {
+                                .animation-name(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = enter-animation-duration) {
+        &.plat-listview {
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-enter {
+                                .animation-duration(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = leave-animation-name) {
+        &.plat-listview {
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-leave {
+                                .animation-name(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = leave-animation-duration) {
+        &.plat-listview {
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-leave {
+                                .animation-duration(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = manipulated-viewport-background-color) {
+        &.plat-listview {
+            .plat-listview-viewport {
+                &.plat-manipulation-prep {
+                    background-color: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = horizontal-scroll-padding) {
+        &.plat-listview {
+            &.plat-horizontal {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        padding-bottom: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = refresh-transition-time) {
+        &.plat-listview {
+            .plat-listview-viewport {
+                &.plat-transition-init {
+                    .transition-duration(@value);
+                }
+            }
+        }
+    }
+    & when (@prop = enter-init) {
+        &.plat-listview {
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-enter-init {
+                                @value();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = enter-animation) {
+        &.plat-listview {
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-enter {
+                                .animation(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = leave-animation) {
+        &.plat-listview {
+            &.plat-animated {
+                .plat-listview-viewport {
+                    .plat-scroll-container {
+                        .plat-container {
+                            .plat-leave {
+                                .animation(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

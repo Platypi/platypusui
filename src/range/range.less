@@ -16,200 +16,202 @@
 
 /// ========== Range Default Style =========== ///
 
-.plat-range {
-    #platui > #variables;
-    #platui > #mixins;
-    #platui > #Range;
-    #platui > #__Range;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    .user-select();
-    .box-sizing(border-box);
-
-    .plat-range-container {
+.plat-range() {
+    .plat-range {
+        #platui > #variables;
+        #platui > #mixins;
+        #platui > #Range;
+        #platui > #__Range;
         position: relative;
-        background-color: @neutral-color-light;
-        overflow: visible;
-        .fill();
-        .border-radius(@fill-border-radius);
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        .user-select();
         .box-sizing(border-box);
-        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
 
-        .plat-range-track {
-            position: absolute;
-            background-color: @neutral-color-dark;
+        .plat-range-container {
+            position: relative;
+            background-color: @neutral-color-light;
             overflow: visible;
-            .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
+            .fill();
             .border-radius(@fill-border-radius);
             .box-sizing(border-box);
+            .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
 
-            .plat-lower-knob,
-            .plat-upper-knob {
+            .plat-range-track {
                 position: absolute;
-                width: @knob-diameter;
-                height: @knob-diameter;
-                background-color: lighten(@pale-grey, 10%);
-                border: @knob-border-size solid darken(@pale-grey, 5%);
-                cursor: pointer;
+                background-color: @neutral-color-dark;
+                overflow: visible;
+                .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
+                .border-radius(@fill-border-radius);
                 .box-sizing(border-box);
-                .border-radius(@knob-diameter / 2);
-                .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.25));
-            }
-        }
-    }
-
-    &.plat-horizontal,
-    &.plat-horizontal-reversed {
-        height: @knob-diameter;
-        padding: 0 @knob-radius;
-        .touch-action(pan-y);
-
-        .plat-range-container {
-            top: 50%;
-            height: @thickness;
-            .translate-accelerate(0;-@half-thickness);
-
-            .plat-range-track {
-                width: 100%;
-                height: 100%;
 
                 .plat-lower-knob,
                 .plat-upper-knob {
-                    top: @half-thickness;
-                    .translate-accelerate(0;-@knob-radius);
-                }
-
-                .plat-lower-knob {
-                    left: -@knob-radius;
-                }
-
-                .plat-upper-knob {
-                    right: -@knob-radius;
-                }
-
-                &.plat-transition-init {
-                    .translateZ(0);
-                    .transition(@horizontal-transition);
+                    position: absolute;
+                    width: @knob-diameter;
+                    height: @knob-diameter;
+                    background-color: lighten(@pale-grey, 10%);
+                    border: @knob-border-size solid darken(@pale-grey, 5%);
+                    cursor: pointer;
+                    .box-sizing(border-box);
+                    .border-radius(@knob-diameter / 2);
+                    .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.25));
                 }
             }
         }
-    }
 
-    &.plat-horizontal {
-        .plat-range-container {
-            .plat-range-track {
-                left: 0;
-            }
-        }
-    }
+        &.plat-horizontal,
+        &.plat-horizontal-reversed {
+            height: @knob-diameter;
+            padding: 0 @knob-radius;
+            .touch-action(pan-y);
 
-    &.plat-horizontal-reversed {
-        .plat-range-container {
-            .plat-range-track {
-                right: 0;
-            }
-        }
-    }
+            .plat-range-container {
+                top: 50%;
+                height: @thickness;
+                .translate-accelerate(0;-@half-thickness);
 
-    &.plat-vertical,
-    &.plat-vertical-reversed {
-        width: @knob-diameter;
-        padding: @knob-radius 0;
-        .touch-action(pan-x);
+                .plat-range-track {
+                    width: 100%;
+                    height: 100%;
 
-        .plat-range-container {
-            left: 50%;
-            top: @knob-radius;
-            width: @thickness;
-            .translate-accelerate(-@half-thickness;0);
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        top: @half-thickness;
+                        .translate-accelerate(0;-@knob-radius);
+                    }
 
-            .plat-range-track {
-                width: 100%;
-                height: 0;
+                    .plat-lower-knob {
+                        left: -@knob-radius;
+                    }
 
-                .plat-lower-knob,
-                .plat-upper-knob {
-                    left: @half-thickness;
-                    .translate-accelerate(-@knob-radius;0)
-                }
+                    .plat-upper-knob {
+                        right: -@knob-radius;
+                    }
 
-                .plat-lower-knob {
-                    bottom: -@knob-radius;
-                }
-
-                .plat-upper-knob {
-                    top: -@knob-radius;
-                }
-
-                &.plat-transition-init {
-                    .translateZ(0);
-                    .transition(@vertical-transition);
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(@horizontal-transition);
+                    }
                 }
             }
         }
-    }
 
-    &.plat-vertical {
-        .plat-range-container {
-            .plat-range-track {
-                bottom: 0;
+        &.plat-horizontal {
+            .plat-range-container {
+                .plat-range-track {
+                    left: 0;
+                }
             }
         }
-    }
 
-    &.plat-vertical-reversed {
-        .plat-range-container {
-            .plat-range-track {
-                top: 0;
+        &.plat-horizontal-reversed {
+            .plat-range-container {
+                .plat-range-track {
+                    right: 0;
+                }
             }
         }
-    }
 
-/// =========== Slider Color Options =========== ///
+        &.plat-vertical,
+        &.plat-vertical-reversed {
+            width: @knob-diameter;
+            padding: @knob-radius 0;
+            .touch-action(pan-x);
 
-    &.range-primary {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @primary-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
+            .plat-range-container {
+                left: 50%;
+                top: @knob-radius;
+                width: @thickness;
+                .translate-accelerate(-@half-thickness;0);
+
+                .plat-range-track {
+                    width: 100%;
+                    height: 0;
+
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        left: @half-thickness;
+                        .translate-accelerate(-@knob-radius;0)
+                    }
+
+                    .plat-lower-knob {
+                        bottom: -@knob-radius;
+                    }
+
+                    .plat-upper-knob {
+                        top: -@knob-radius;
+                    }
+
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(@vertical-transition);
+                    }
+                }
             }
         }
-    }
 
-    &.range-secondary {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @secondary-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
+        &.plat-vertical {
+            .plat-range-container {
+                .plat-range-track {
+                    bottom: 0;
+                }
             }
         }
-    }
 
-    &.range-success {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @success-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
+        &.plat-vertical-reversed {
+            .plat-range-container {
+                .plat-range-track {
+                    top: 0;
+                }
             }
         }
-    }
 
-    &.range-caution {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @caution-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
+    /// =========== Slider Color Options =========== ///
+
+        &.range-primary {
+            .plat-range-container {
+                .plat-range-track {
+                    background-color: @primary-color;
+                    .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
+                }
             }
         }
-    }
 
-    &.range-danger {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @danger-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
+        &.range-secondary {
+            .plat-range-container {
+                .plat-range-track {
+                    background-color: @secondary-color;
+                    .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
+                }
+            }
+        }
+
+        &.range-success {
+            .plat-range-container {
+                .plat-range-track {
+                    background-color: @success-color;
+                    .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
+                }
+            }
+        }
+
+        &.range-caution {
+            .plat-range-container {
+                .plat-range-track {
+                    background-color: @caution-color;
+                    .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
+                }
+            }
+        }
+
+        &.range-danger {
+            .plat-range-container {
+                .plat-range-track {
+                    background-color: @danger-color;
+                    .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
+                }
             }
         }
     }

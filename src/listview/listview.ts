@@ -2965,15 +2965,7 @@ module platui {
          * @returns {HTMLElement} The progress ring element.
          */
         protected _generateProgressRing(): HTMLElement {
-            var _document = this._document,
-                control = _document.createElement('div'),
-                container = _document.createElement('div'),
-                ring = _document.createElement('div');
-
-            ring.className = __Plat + 'animated-ring';
-            container.insertBefore(ring, null);
-            container.className = __Plat + 'progress-container';
-            control.insertBefore(container, null);
+            var control = this._document.createElement('div');
             control.className = __Plat + 'ring';
 
             return control;
