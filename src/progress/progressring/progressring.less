@@ -2,19 +2,43 @@
 @import (reference) '../../mixins/animations.less';
 @import (reference) 'progressring.variables.less';
 
-/// =========== Progress Ring Default Styles =========== ///
+/// =========== Progress Ring Declarations =========== ///
 
-.plat-ring(@prop: undefined; @value: undefined) {
+& {
     #platui > #mixins;
+    #platui > #ProgressRing;
 
-    & when (@prop = undefined), (@value = undefined) {
+    .plat-ring {
+        .border-radius(50%);
+        .box-sizing(border-box);
+        .translateZ(0);
+        .animate(@animation-name; @spin-frequency; linear; 0s; infinite);
+        display: inline-block;
+        position: relative;
         width: @diameter;
         height: @diameter;
         border-left: @thickness solid @fill-color;
         border-top: @thickness solid @unfilled-color;
         border-right: @thickness solid @unfilled-color;
         border-bottom: @thickness solid @unfilled-color;
+    }
+
+    .spin();
+}
+
+/// =========== Progress Ring Default Styles =========== ///
+
+.plat-ring(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (@value = undefined) {
         .animate(@animation-name; @spin-frequency; linear; 0s; infinite);
+        width: @diameter;
+        height: @diameter;
+        border-left: @thickness solid @fill-color;
+        border-top: @thickness solid @unfilled-color;
+        border-right: @thickness solid @unfilled-color;
+        border-bottom: @thickness solid @unfilled-color;
     }
     & when (@prop = color) {
         @unfilled-color: fade(@value, 10%);
@@ -46,23 +70,4 @@
     & when (@prop = spin-frequency) {
         .animation-duration(@value);
     }
-}
-
-/// =========== Progress Ring Declaration and Animation =========== ///
-
-& {
-    #platui > #ProgressRing;
-
-    .plat-ring {
-        #platui > #mixins;
-        .plat-ring();
-
-        display: inline-block;
-        position: relative;
-        .border-radius(50%);
-        .box-sizing(border-box);
-        .translateZ(0);
-    }
-
-    .spin();
 }

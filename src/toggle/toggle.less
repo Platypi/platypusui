@@ -10,131 +10,364 @@
         #platui > #Toggle;
         @height: @width * @ratio;
         @toggle-thin-height: @width * @toggle-thin-ratio;
-        @knob-radius: @height / 2;
         @half-thin-height: @toggle-thin-height / 2;
+        @toggle-thin-knob-radius: (@width * @toggle-thin-knob-ratio) / 2;
     }
 }
 
-/// ========== Toggle Default Style =========== ///
+/// ========== Toggle Declaration =========== ///
 
-.plat-toggle {
+& {
     #platui > #mixins;
-    #platui > #Toggle;
     #platui > #__Toggle;
-    display: inline-block;
-    cursor: pointer;
-    .box-sizing(border-box);
-    
-    .plat-toggle-container {
-        width: @width;
-        height: @height;
-        position: relative;
-        overflow: hidden;
-        background-color: @background-color-off;
-        border: 1px solid;
-        border-color: @border-color-off;
-        .border-radius(@height);
-        .box-sizing(content-box);
-        .translateZ(0);
-        .transition(@transition);
-        
-        .plat-knob {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: @height;
-            width: @height;
-            background-color: @white;
+
+    .plat-toggle {
+        .box-sizing(border-box);
+        display: inline-block;
+        cursor: pointer;
+
+        .plat-toggle-container {
             .border-radius(@height);
-            .box-shadow(inset -1px 0px 3px 0px @pale-grey);
-            .box-sizing(border-box);
+            .box-sizing(content-box);
             .translateZ(0);
-            .transition(@knob-transition);
-        }
-
-        &.plat-slide {
-            border-color: @border-color-on;
-            background-color: @background-color-on;
-
-            .plat-knob {
-                left: @width - @height;
-                .box-shadow(inset 1px -2px 3px 0px @pale-grey);
-            }
-        }
-    }
-
-/// ============== Toggle Square =============== ///
-
-    &.toggle-square {
-        .plat-toggle-container {
-            .border-radius(2px);
+            .transition(~'background-color @{transition-time}, border-color @{transition-time}');
+            width: @width;
+            height: @height;
+            position: relative;
+            overflow: hidden;
+            background-color: @background-color-off;
+            border: 1px solid @border-color-off;
 
             .plat-knob {
-                .border-radius(2px);
-            }
-        }
-    }
-
-/// =============== Toggle Thin ================ ///
-
-    &.toggle-thin {
-        .plat-toggle-container {
-            height: @toggle-thin-height;
-            overflow: visible;
-            background-color: @toggle-thin-color-off;
-            border: none;
-
-            .plat-knob {
-                top: @half-thin-height - @knob-radius;
-                background-color: @toggle-thin-knob-color;
-                border: 1px solid darken(@toggle-thin-knob-color, 10%);
-                .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+                .border-radius(50%);
+                .box-shadow(inset -1px 0px 3px 0px @pale-grey);
+                .box-sizing(border-box);
+                .translateZ(0);
+                .transition(left @transition-time);
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: @height;
+                width: @height;
+                background-color: @white;
             }
 
             &.plat-slide {
+                border-color: @border-color-on;
                 background-color: @background-color-on;
 
                 .plat-knob {
-                    .box-shadow(-2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+                    .box-shadow(inset 1px -2px 3px 0px @pale-grey);
+                    left: @width - @height;
+                }
+            }
+        }
+
+    /// ============== Toggle Square =============== ///
+
+        &.toggle-square {
+            .plat-toggle-container {
+                .border-radius(2px);
+
+                .plat-knob {
+                    .border-radius(2px);
+                }
+            }
+        }
+
+    /// =============== Toggle Thin ================ ///
+
+        &.toggle-thin {
+            .plat-toggle-container {
+                height: @toggle-thin-height;
+                overflow: visible;
+                background-color: @toggle-thin-color-off;
+                border: none;
+
+                .plat-knob {
+                    .box-shadow(2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+                    top: @half-thin-height - @toggle-thin-knob-radius;
+                    background-color: lighten(@pale-grey, 10%);
+                    border: 1px solid @pale-grey;
+                }
+
+                &.plat-slide {
+                    background-color: @background-color-on;
+
+                    .plat-knob {
+                        .box-shadow(-2px 1px 2px 0px rgba(50, 50, 50, 0.24));
+                    }
+                }
+            }
+        }
+
+    /// =========== Toggle Color Options =========== ///
+
+        &.toggle-primary {
+            .plat-toggle-container.plat-slide {
+                background-color: @primary-color;
+                border-color: darken(@primary-color, 5%);
+            }
+        }
+
+        &.toggle-secondary {
+            .plat-toggle-container.plat-slide {
+                background-color: @secondary-color;
+                border-color: darken(@secondary-color, 5%);
+            }
+        }
+
+        &.toggle-success {
+            .plat-toggle-container.plat-slide {
+                background-color: @success-color;
+                border-color: darken(@success-color, 5%);
+            }
+        }
+
+        &.toggle-danger {
+            .plat-toggle-container.plat-slide {
+                background-color: @danger-color;
+                border-color: darken(@danger-color, 5%);
+            }
+        }
+
+        &.toggle-caution {
+            .plat-toggle-container.plat-slide {
+                background-color: @caution-color;
+                border-color: darken(@caution-color, 5%);
+            }
+        }
+    }
+}
+
+/// ========== Variable Toggle Style =========== ///
+
+.plat-toggle(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (@value = undefined) {
+        @height: @width * @ratio;
+        @toggle-thin-height: @width * @toggle-thin-ratio;
+        @half-thin-height: @toggle-thin-height / 2;
+        @toggle-thin-knob-radius: (@width * @toggle-thin-knob-ratio) / 2;
+
+        &.plat-toggle {
+            .plat-toggle-container {
+                .border-radius(@height);
+                .transition(~'background-color @{transition-time}, border-color @{transition-time}');
+                width: @width;
+                height: @height;
+                background-color: @background-color-off;
+                border-color: @border-color-off;
+
+                .plat-knob {
+                    .transition-duration(@transition-time);
+                    height: @height;
+                    width: @height;
+                }
+
+                &.plat-slide {
+                    border-color: @border-color-on;
+                    background-color: @background-color-on;
+
+                    .plat-knob {
+                        left: @width - @height;
+                    }
+                }
+            }
+
+            &.toggle-thin {
+                .plat-toggle-container {
+                    height: @toggle-thin-height;
+                    background-color: @toggle-thin-color-off;
+
+                    .plat-knob {
+                        top: @half-thin-height - @toggle-thin-knob-radius;
+                    }
+
+                    &.plat-slide {
+                        background-color: @background-color-on;
+                    }
                 }
             }
         }
     }
-
-/// =========== Toggle Color Options =========== ///
-
-    &.toggle-primary {
-        .plat-toggle-container.plat-slide {
-            background-color: @primary-color;
-            border-color: darken(@primary-color, 5%);
+    & when (@prop = color-off) {
+        &.plat-toggle {
+            .plat-toggle-container {
+                background-color: @value;
+                border-color: darken(@value, 3%);
+            }
         }
     }
+    & when (@prop = color-on) {
+        &.plat-toggle {
+            .plat-toggle-container {
+                &.plat-slide {
+                    border-color: darken(@value, 5%);
+                    background-color: @value;
+                }
+            }
 
-    &.toggle-secondary {
-        .plat-toggle-container.plat-slide {
-            background-color: @secondary-color;
-            border-color: darken(@secondary-color, 5%);
+            &.toggle-thin {
+                .plat-toggle-container {
+                    &.plat-slide {
+                        background-color: @value;
+                    }
+                }
+            }
         }
     }
-
-    &.toggle-success {
-        .plat-toggle-container.plat-slide {
-            background-color: @success-color;
-            border-color: darken(@success-color, 5%);
+    & when (@prop = background-color-off) {
+        &.plat-toggle {
+            .plat-toggle-container {
+                background-color: @value;
+            }
         }
     }
-
-    &.toggle-danger {
-        .plat-toggle-container.plat-slide {
-            background-color: @danger-color;
-            border-color: darken(@danger-color, 5%);
+    & when (@prop = border-color-off) {
+        &.plat-toggle {
+            .plat-toggle-container {
+                border-color: @value;
+            }
         }
     }
+    & when (@prop = background-color-on) {
+        &.plat-toggle {
+            .plat-toggle-container {
+                &.plat-slide {
+                    background-color: @value;
+                }
+            }
 
-    &.toggle-caution {
-        .plat-toggle-container.plat-slide {
-            background-color: @caution-color;
-            border-color: darken(@caution-color, 5%);
+            &.toggle-thin {
+                .plat-toggle-container {
+                    &.plat-slide {
+                        background-color: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = border-color-on) {
+        &.plat-toggle {
+            .plat-toggle-container {
+                &.plat-slide {
+                    border-color: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = toggle-thin-color-off) {
+        &.plat-toggle {
+            &.toggle-thin {
+                .plat-toggle-container {
+                    background-color: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = width) {
+        #platui > #Toggle;
+        @height: @value * @ratio;
+        @toggle-thin-height: @value * @toggle-thin-ratio;
+        @half-thin-height: @toggle-thin-height / 2;
+        @toggle-thin-knob-radius: (@value * @toggle-thin-knob-ratio) / 2;
+
+        &.plat-toggle {
+            .plat-toggle-container {
+                .border-radius(@height);
+                width: @value;
+                height: @height;
+
+                .plat-knob {
+                    height: @height;
+                    width: @height;
+                }
+
+                &.plat-slide {
+                    .plat-knob {
+                        left: @value - @height;
+                    }
+                }
+            }
+
+            &.toggle-thin {
+                .plat-toggle-container {
+                    height: @toggle-thin-height;
+
+                    .plat-knob {
+                        top: @half-thin-height - @toggle-thin-knob-radius;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = ratio) {
+        #platui > #Toggle;
+        @height: @width * @value;
+
+        &.plat-toggle {
+            .plat-toggle-container {
+                .border-radius(@height);
+                height: @height;
+
+                .plat-knob {
+                    height: @height;
+                    width: @height;
+                }
+
+                &.plat-slide {
+                    .plat-knob {
+                        left: @width - @height;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = toggle-thin-ratio) {
+        #platui > #Toggle;
+        @toggle-thin-height: @width * @value;
+        @half-thin-height: @toggle-thin-height / 2;
+        @toggle-thin-knob-radius: (@width * @toggle-thin-knob-ratio) / 2;
+
+        &.plat-toggle {
+            &.toggle-thin {
+                .plat-toggle-container {
+                    height: @toggle-thin-height;
+
+                    .plat-knob {
+                        top: @half-thin-height - @toggle-thin-knob-radius;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = toggle-thin-knob-ratio) {
+        #platui > #Toggle;
+        @toggle-thin-height: @width * @toggle-thin-ratio;
+        @half-thin-height: @toggle-thin-height / 2;
+        @toggle-thin-knob-radius: (@width * @value) / 2;
+
+        &.plat-toggle {
+            &.toggle-thin {
+                .plat-toggle-container {
+                    .plat-knob {
+                        top: @half-thin-height - @toggle-thin-knob-radius;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = transition-time) {
+        &.plat-toggle {
+            .plat-toggle-container {
+                .transition(~'background-color @{value}, border-color @{value}');
+
+                .plat-knob {
+                    .transition-duration(@value);
+                }
+            }
         }
     }
 }

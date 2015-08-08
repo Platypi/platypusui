@@ -6,35 +6,34 @@
 /// =========== Progress Bar Declaration =========== ///
 
 & {
-    #platui > #variables;
     #platui > #mixins;
     #platui > #ProgressBar;
 
     .plat-progress {
-        width: 100%;
         .box-sizing(border-box);
+        width: 100%;
 
         .plat-progress-container {
+            .border-radius(@border-radius);
+            .box-sizing(content-box);
+            .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.13));
             position: relative;
             height: @height;
             width: 100%;
-            background-color: @neutral-color-light;
+            background-color: @unfilled-color;
             overflow: hidden;
             border: @border;
-            .border-radius(@height);
-            .box-sizing(content-box);
-            .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.13));
 
             .plat-animated-bar {
-                background-color: @neutral-color-dark;
-                width: 0;
-                height: @height;
-                .border-radius(@height / 2);
+                .border-radius(@fill-radius);
                 .box-sizing(content-box);
                 .translateZ(0);
+                background-color: @fill-color;
+                width: 0;
+                height: 100%;
 
                 &.plat-transition-init {
-                    .transition(width @transition-time linear);
+                    .transition(width @transition-time @transition-timing-function);
                 }
             }
         }
@@ -79,16 +78,86 @@
     & when (@prop = undefined), (@value = undefined) {
         &.plat-progress {
             .plat-progress-container {
+                .border-radius(@border-radius);
                 height: @height;
+                background-color: @unfilled-color;
                 border: @border;
-                .border-radius(@height);
 
                 .plat-animated-bar {
-                    height: @height;
-                    .border-radius(@height / 2);
+                    .border-radius(@fill-radius);
+                    background-color: @fill-color;
 
                     &.plat-transition-init {
                         .transition-duration(@transition-time);
+                        .transition-timing-function(@transition-timing-function);
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = fill-color) {
+        &.plat-progress {
+            .plat-progress-container {
+                .plat-animated-bar {
+                    background-color: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = unfilled-color) {
+        &.plat-progress {
+            .plat-progress-container {
+                background-color: @value;
+            }
+        }
+    }
+    & when (@prop = height) {
+        &.plat-progress {
+            .plat-progress-container {
+                height: @value;
+            }
+        }
+    }
+    & when (@prop = border) {
+        &.plat-progress {
+            .plat-progress-container {
+                border: @value;
+            }
+        }
+    }
+    & when (@prop = border-radius) {
+        &.plat-progress {
+            .plat-progress-container {
+                .border-radius(@value);
+            }
+        }
+    }
+    & when (@prop = fill-radius) {
+        &.plat-progress {
+            .plat-progress-container {
+                .plat-animated-bar {
+                    .border-radius(@value);
+                }
+            }
+        }
+    }
+    & when (@prop = transition-time) {
+        &.plat-progress {
+            .plat-progress-container {
+                .plat-animated-bar {
+                    &.plat-transition-init {
+                        .transition-duration(@value);
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = transition-timing-function) {
+        &.plat-progress {
+            .plat-progress-container {
+                .plat-animated-bar {
+                    &.plat-transition-init {
+                        .transition-timing-function(@value);
                     }
                 }
             }

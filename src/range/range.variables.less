@@ -2,16 +2,18 @@
 
 #platui {
     #Range {
-        #dependencies {
-            @transition-time: 300ms;
-        }
+        #platui > #variables;
 
-        #platui > #Range > #dependencies;
+    /// ================= Range Colors ================== ///
+
+        @fill-color: @neutral-color-dark;
+        @unfilled-color: @neutral-color-light;
+        @knob-base-color: @pale-grey;
 
     /// ================= Range Size ================== ///
 
         @thickness: 0.5em;
-        @fill-border-radius: 4px;
+        @border-radius: 4px;
 
     /// ================= Range Knob Properties ================== ///
 
@@ -20,7 +22,6 @@
 
     /// =============== Range Transitions =============== ///
 
-        @horizontal-transition: width @transition-time;
-        @vertical-transition: height @transition-time;
+        @transition-time: 300ms;
     }
 }

@@ -238,6 +238,8 @@
     #platui > #mixins;
 
     & when (@prop = undefined), (@value = undefined) {
+        @border-color-accent: darken(@border-color, 25%);
+
         &.plat-input {
             width: @width;
             height: @height;
@@ -271,7 +273,7 @@
                 .plat-input-action {
                     height: @height;
                     line-height: @height;
-                    color: darken(@border-color, 25%);
+                    color: @border-color-accent;
                 }
             }
 
@@ -281,7 +283,7 @@
                         border-bottom: @border-bottom;
 
                         &:focus {
-                            border-color: darken(@border-color, 25%);
+                            border-color: @border-color-accent;
                         }
                     }
                 }
