@@ -2,18 +2,18 @@
 @import (reference) '../mixins/transforms.less';
 @import (reference) 'image.variables.less';
 
-/// =========== Image Default Styles =========== ///
+/// =========== Image Declaration =========== ///
 
-.plat-image() {
+& {
     #platui > #mixins;
     #platui > #Image;
 
     &.plat-image {
+        .box-sizing(border-box);
         display: inline-block;
         position: relative;
         max-width: 100%;
         max-height: 100%;
-        .box-sizing(border-box);
 
         .plat-load-image {
             display: none;
@@ -46,21 +46,14 @@
         }
 
         .plat-ring {
-            #platui > #mixins;
+            .box-sizing(border-box);
             position: relative;
             margin: 0 auto;
             display: block;
-            width: @loader-default-diameter;
-            height: @loader-default-diameter;
-            border-left: @loader-thickness solid @loader-fill-color;
-            border-bottom: @loader-thickness solid @loader-unfilled-color;
-            border-right: @loader-thickness solid @loader-unfilled-color;
-            border-top: @loader-thickness solid @loader-unfilled-color;
-            .box-sizing(border-box);
 
             &.plat-center-vertical {
-                top: 50%;
                 .translate-accelerate(0;-50%);
+                top: 50%;
             }
         }
 
@@ -74,6 +67,7 @@
             background-color: #ececec;
 
             &::before {
+                .translate-accelerate(-50%;-50%);
                 content: "";
                 position: absolute;
                 width: 100%;
@@ -83,7 +77,6 @@
                 max-width: 200px;
                 top: 50%;
                 left: 50%;
-                .translate-accelerate(-50%;-50%);
                 background-repeat: no-repeat;
                 background-size: contain;
                 background-position: center;
@@ -93,10 +86,7 @@
     }
 }
 
-/// =========== Image Declaration =========== ///
+/// =========== Variable Image Styles =========== ///
 
-& {
-    #platui > #Image;
-    .plat-image();
-}
+.plat-image(@prop: undefined; @value: undefined) { }
 
