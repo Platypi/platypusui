@@ -32,7 +32,7 @@
             height: @diameter;
             overflow: hidden;
             background-color: @background-color;
-            border: @border-size solid @border-color;
+            border: @border-width solid @border-color;
 
             &.plat-bullet {
                 border-color: @checked-border-color;
@@ -67,7 +67,7 @@
                 width: @diameter;
                 height: @diameter;
                 background-color: @background-color;
-                border-width: @border-size;
+                border-width: @border-width;
                 border-color: @border-color;
 
                 &.plat-bullet {
@@ -153,7 +153,7 @@
             }
         }
     }
-    & when (@prop = border-size) {
+    & when (@prop = border-width) {
         &.plat-radio {
             .plat-radio-container {
                 border-width: @value;

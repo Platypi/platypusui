@@ -53,7 +53,7 @@
                     width: @knob-diameter;
                     height: @knob-diameter;
                     background-color: lighten(@knob-base-color, 10%);
-                    border: @knob-border-size solid darken(@knob-base-color, 5%);
+                    border: 1px solid darken(@knob-base-color, 5%);
                     cursor: pointer;
                 }
             }
@@ -238,7 +238,6 @@
                         width: @knob-diameter;
                         height: @knob-diameter;
                         background-color: lighten(@knob-base-color, 10%);
-                        border-width: @knob-border-size;
                         border-color: darken(@knob-base-color, 5%);
                     }
                 }
@@ -370,17 +369,6 @@
 
                 .plat-slider-track {
                     .border-radius(@value);
-                }
-            }
-        }
-    }
-    & when (@prop = knob-border-size) {
-        &.plat-slider {
-            .plat-slider-container {
-                .plat-slider-track {
-                    .plat-knob {
-                        border-width: @value;
-                    }
                 }
             }
         }

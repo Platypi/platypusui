@@ -54,7 +54,7 @@
                     width: @knob-diameter;
                     height: @knob-diameter;
                     background-color: lighten(@knob-base-color, 10%);
-                    border: @knob-border-size solid darken(@knob-base-color, 5%);
+                    border: 1px solid darken(@knob-base-color, 5%);
                     cursor: pointer;
                 }
             }
@@ -240,7 +240,6 @@
                         width: @knob-diameter;
                         height: @knob-diameter;
                         background-color: lighten(@knob-base-color, 10%);
-                        border-width: @knob-border-size;
                         border-color: darken(@knob-base-color, 5%);
                     }
                 }
@@ -349,18 +348,6 @@
 
                 .plat-range-track {
                     .border-radius(@value);
-                }
-            }
-        }
-    }
-    & when (@prop = knob-border-size) {
-        &.plat-range {
-            .plat-range-container {
-                .plat-range-track {
-                    .plat-lower-knob,
-                    .plat-upper-knob {
-                        border-width: @value;
-                    }
                 }
             }
         }

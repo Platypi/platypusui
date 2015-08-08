@@ -21,7 +21,7 @@
         background-color: @background-color;
         color: @color;
         outline: none;
-        border: @border-size solid @border-color;
+        border: @border-width solid @border-color;
         cursor: pointer;
         font-size: @button-font-size;
 
@@ -376,7 +376,7 @@
             padding: @padding-vertical @padding-horizontal;
             background-color: @background-color;
             color: @color;
-            border-width: @border-size;
+            border-width: @border-width;
             border-color: @border-color;
             font-size: @button-font-size;
 
@@ -453,7 +453,7 @@
             border-color: @value;
         }
     }
-    & when (@prop = border-size) {
+    & when (@prop = border-width) {
         &.plat-button,
         &.button {
             border-width: @value;

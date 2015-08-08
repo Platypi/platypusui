@@ -11,7 +11,7 @@
     .plat-file {
         .box-sizing(border-box);
         display: inline-block;
-        height: @default-height;
+        height: @height;
         cursor: text;
 
         .plat-file-container {
@@ -37,7 +37,7 @@
                 position: relative;
                 display: inline-block;
                 height: 100%;
-                width: @default-input-width;
+                width: @input-width;
                 left: 0;
                 bottom: 0;
                 padding: 0 0.25em;
@@ -356,13 +356,13 @@
 
     & when (@prop = undefined), (@value = undefined) {
         &.plat-file {
-            height: @default-height;
+            height: @height;
 
             .plat-file-container {
                 .plat-file-input {
                     .border-top-left-radius(@border-radius);
                     .border-bottom-left-radius(@border-radius);
-                    width: @default-input-width;
+                    width: @input-width;
                     background-color: @input-background-color;
                     color: @text-color;
                     border-color: @input-border-color;
@@ -474,12 +474,12 @@
             }
         }
     }
-    & when (@prop = default-height) {
+    & when (@prop = height) {
         &.plat-file {
             height: @value;
         }
     }
-    & when (@prop = default-input-width) {
+    & when (@prop = input-width) {
         &.plat-file {
             .plat-file-container {
                 .plat-file-input {

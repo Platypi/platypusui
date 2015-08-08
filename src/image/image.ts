@@ -31,12 +31,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString: string =
-        '<div class="plat-ring">\n' +
-        '    <div class="plat-progress-container">\n' +
-        '        <div class="plat-animated-ring"></div>\n' +
-        '    </div>\n' +
-        '</div>\n';
+        templateString: string = '<div class="plat-ring plat-image-ring"></div>\n';
 
         /**
          * @name options
