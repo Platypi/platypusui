@@ -19,4 +19,5 @@
 /// <reference path="carousel/carousel.ts" />
 /// <reference path="listview/listview.ts" />
 /// <reference path="navbar/navbar.ts" />
+/// <reference path="image/image.ts" />
 // ts-bundle-end
