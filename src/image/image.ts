@@ -208,7 +208,6 @@ module platui {
             }
 
             var loader = this._loader = <HTMLElement>element.firstElementChild,
-                loaderRing = <HTMLElement>loader.firstElementChild.firstElementChild,
                 _window = this._window,
                 loaderStyle = _window.getComputedStyle(loader),
                 elStyle = _window.getComputedStyle(element),
@@ -248,7 +247,7 @@ module platui {
 
             if (!this.utils.isUndefined(diameter)) {
                 var style = loader.style;
-                style.height = style.width = loaderRing.style.borderRadius = diameter;
+                style.height = style.width = diameter;
             }
 
             if (this._NodeManagerStatic.hasMarkup(url)) {
