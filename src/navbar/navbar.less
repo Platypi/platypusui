@@ -2,82 +2,220 @@
 @import (reference) '../mixins/flexbox.less';
 @import (reference) 'navbar.variables.less';
 
-/// =========== Radio Default Styles =========== ///
+/// =========== Navbar Declaration =========== ///
 
-.plat-navbar {
+& {
     #platui > #mixins;
     #platui > #Navbar;
-    position: absolute;
-    left: 0;
-    height: @height;
-    width: 100%;
-    background-color: @background-color;
-    color: @color;
-    padding: @padding;
-    border-top: @border-top;
-    border-right: @border-right;
-    border-bottom: @border-bottom;
-    border-left: @border-left;
-    z-index: @z-index;
-    .box-sizing(border-box);
-    
-    &:not(.no-navbar-shadow) {
-        .box-shadow(@box-shadow);
-    }
-    
-    &.plat-navbar-top {
-        top: 0;
-    }
-    
-    &.plat-navbar-bottom {
-        bottom: 0;
-    }
-    
-    .plat-navbar-left,
-    .plat-navbar-center,
-    .plat-navbar-right {
-        height: 100%;
-        float: left;
-        font-size: @font-size;
+
+    .plat-navbar {
         .box-sizing(border-box);
-    }
-    
-    .plat-navbar-items {
-        height: 100%;
-        .flexbox();
-        .align-items(center);
-        .box-sizing(border-box);
-    }
-    
-    .plat-navbar-item {
-        height: 100%;
-        padding: @item-padding;
-        .inline-flexbox();
-        .align-items(center);
-        .box-sizing(border-box);
-    }
-        
-    .plat-navbar-left {
-        width: @left-percentage;
-        
+        position: absolute;
+        left: 0;
+        height: @height;
+        width: 100%;
+        background-color: @background-color;
+        color: @color;
+        padding: @padding;
+        border-top: @border-top;
+        border-right: @border-right;
+        border-bottom: @border-bottom;
+        border-left: @border-left;
+        z-index: @z-index;
+
+        &:not(.no-navbar-shadow) {
+            .box-shadow(@box-shadow);
+        }
+
+        &.plat-navbar-top {
+            top: 0;
+        }
+
+        &.plat-navbar-bottom {
+            bottom: 0;
+        }
+
+        .plat-navbar-left,
+        .plat-navbar-center,
+        .plat-navbar-right {
+            .box-sizing(border-box);
+            height: 100%;
+            float: left;
+            font-size: @font-size;
+        }
+
         .plat-navbar-items {
-            .justify-content(flex-start);
+            .flexbox();
+            .align-items(center);
+            .box-sizing(border-box);
+            height: 100%;
+        }
+
+        .plat-navbar-item {
+            .inline-flexbox();
+            .align-items(center);
+            .box-sizing(border-box);
+            height: 100%;
+            padding: @item-padding;
+        }
+
+        .plat-navbar-left {
+            width: @left-percentage;
+
+            .plat-navbar-items {
+                .justify-content(flex-start);
+            }
+        }
+
+        .plat-navbar-center {
+            width: @center-percentage;
+
+            .plat-navbar-items {
+                .justify-content(center);
+            }
+        }
+
+        .plat-navbar-right {
+            width: @right-percentage;
+
+            .plat-navbar-items {
+                .justify-content(flex-end);
+            }
         }
     }
-    
-    .plat-navbar-center {
-        width: @center-percentage;
-        
-        .plat-navbar-items {
-            .justify-content(center);
+}
+
+/// =========== Variable Navbar Styles =========== ///
+
+.plat-navbar(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (@value = undefined) {
+        &.plat-navbar {
+            height: @height;
+            background-color: @background-color;
+            color: @color;
+            padding: @padding;
+            border-top: @border-top;
+            border-right: @border-right;
+            border-bottom: @border-bottom;
+            border-left: @border-left;
+            z-index: @z-index;
+
+            &:not(.no-navbar-shadow) {
+                .box-shadow(@box-shadow);
+            }
+
+            .plat-navbar-left,
+            .plat-navbar-center,
+            .plat-navbar-right {
+                font-size: @font-size;
+            }
+
+            .plat-navbar-item {
+                padding: @item-padding;
+            }
+
+            .plat-navbar-left {
+                width: @left-percentage;
+            }
+
+            .plat-navbar-center {
+                width: @center-percentage;
+            }
+
+            .plat-navbar-right {
+                width: @right-percentage;
+            }
         }
     }
-    
-    .plat-navbar-right {
-        width: @right-percentage;
-        
-        .plat-navbar-items {
-            .justify-content(flex-end);
+    & when (@prop = background-color) {
+        &.plat-navbar {
+            background-color: @value;
+        }
+    }
+    & when (@prop = color) {
+        &.plat-navbar {
+            color: @value;
+        }
+    }
+    & when (@prop = height) {
+        &.plat-navbar {
+            height: @value;
+        }
+    }
+    & when (@prop = z-index) {
+        &.plat-navbar {
+            z-index: @value;
+        }
+    }
+    & when (@prop = padding) {
+        &.plat-navbar {
+            padding: @value;
+        }
+    }
+    & when (@prop = border-top) {
+        &.plat-navbar {
+            border-top: @value;
+        }
+    }
+    & when (@prop = border-right) {
+        &.plat-navbar {
+            border-right: @value;
+        }
+    }
+    & when (@prop = border-bottom) {
+        &.plat-navbar {
+            border-bottom: @value;
+        }
+    }
+    & when (@prop = border-left) {
+        &.plat-navbar {
+            border-left: @value;
+        }
+    }
+    & when (@prop = left-percentage) {
+        &.plat-navbar {
+            .plat-navbar-left {
+                width: @value;
+            }
+        }
+    }
+    & when (@prop = center-percentage) {
+        &.plat-navbar {
+            .plat-navbar-center {
+                width: @value;
+            }
+        }
+    }
+    & when (@prop = right-percentage) {
+        &.plat-navbar {
+            .plat-navbar-right {
+                width: @value;
+            }
+        }
+    }
+    & when (@prop = item-padding) {
+        &.plat-navbar {
+            .plat-navbar-item {
+                padding: @value;
+            }
+        }
+    }
+    & when (@prop = font-size) {
+        &.plat-navbar {
+            .plat-navbar-left,
+            .plat-navbar-center,
+            .plat-navbar-right {
+                font-size: @value;
+            }
+        }
+    }
+    & when (@prop = box-shadow) {
+        &.plat-navbar {
+            &:not(.no-navbar-shadow) {
+                .box-shadow(@value);
+            }
         }
     }
 }

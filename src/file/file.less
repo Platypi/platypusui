@@ -2,358 +2,505 @@
 @import (reference) '../mixins/touch.less';
 @import (reference) 'file.variables.less';
 
-/// ============= Input Constants ============= ///
+/// =========== File Declaration =========== ///
 
-#platui {
-    #__File {
-        #platui > #variables;
-        @default-button-color: @white;
-        @default-button-background-color: @neutral-color;
+& {
+    #platui > #mixins;
+    #platui > #File;
+
+    .plat-file {
+        .box-sizing(border-box);
+        display: inline-block;
+        height: @default-height;
+        cursor: text;
+
+        .plat-file-container {
+            .box-sizing(border-box);
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            position: relative;
+
+            .plat-file-hidden {
+                visibility: hidden;
+                position: absolute;
+                top: 0;
+                left: -9999px;
+            }
+
+            .plat-file-input {
+                .box-sizing(border-box);
+                .border-top-left-radius(@border-radius);
+                .border-bottom-left-radius(@border-radius);
+                .border-top-right-radius(0px);
+                .border-bottom-right-radius(0px);
+                position: relative;
+                display: inline-block;
+                height: 100%;
+                width: @default-input-width;
+                left: 0;
+                bottom: 0;
+                padding: 0 0.25em;
+                text-align: right;
+                background-color: @input-background-color;
+                color: @text-color;
+                border: 1px solid @input-border-color;
+                border-right: none;
+                outline: none;
+                font: inherit;
+                -webkit-appearance: none;
+
+                &::-ms-clear,
+                &::-ms-reveal {
+                    display: none;
+                }
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+            }
+
+            .plat-file-button {
+                .border-top-left-radius(0px);
+                .border-bottom-left-radius(0px);
+                .border-top-right-radius(@border-radius);
+                .border-bottom-right-radius(@border-radius);
+                .webkit-touch-additions();
+                position: relative;
+                display: inline-block;
+                margin: 0;
+                height: 100%;
+                background-color: @button-background-color;
+                color: @button-color;
+                border: 0px solid @button-background-color;
+                outline: none;
+                font: inherit;
+                margin-left: -5px;
+
+                &:active {
+                    background-color: darken(@button-background-color, 10%);
+                }
+
+                &[disabled],
+                &:disabled {
+                    background-color: @button-background-color;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+
+        &.file-outline {
+            .plat-file-button {
+                border-color: @button-background-color;
+                color: @button-background-color;
+                border-width: 2px;
+
+                &:active {
+                    color: @white;
+                    background-color: @button-background-color;
+                }
+
+                &[disabled],
+                &:disabled {
+                    color: @button-background-color;
+                    background-color: transparent;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+        }
+
+        &.file-primary {
+            .plat-file-button {
+                background-color: @primary-color;
+                border-color: @primary-color-dark;
+
+                &:active {
+                    background-color: darken(@primary-color, 10%);
+                }
+
+                &[disabled],
+                &:disabled {
+                    background-color: @primary-color;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @primary-color;
+                    color: @primary-color;
+
+                    &:active {
+                        color: @white;
+                        background-color: @primary-color;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @primary-color;
+                        background-color: transparent;
+                        opacity: 0.5;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.file-secondary {
+            .plat-file-button {
+                background-color: @secondary-color;
+                border-color: @secondary-color-dark;
+
+                &:active {
+                    background-color: darken(@secondary-color, 10%);
+                }
+
+                &[disabled],
+                &:disabled {
+                    background-color: @secondary-color;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @secondary-color;
+                    color: @secondary-color;
+
+                    &:active {
+                        color: @white;
+                        background-color: @secondary-color;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @secondary-color;
+                        background-color: transparent;
+                        opacity: 0.5;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.file-neutral {
+            .plat-file-button {
+                background-color: @neutral-color;
+                border-color: @neutral-color-dark;
+
+                &:active {
+                    background-color: darken(@neutral-color, 10%);
+                }
+
+                &[disabled],
+                &:disabled {
+                    background-color: @neutral-color;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @neutral-color;
+                    color: @neutral-color;
+
+                    &:active {
+                        color: @white;
+                        background-color: @neutral-color;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @neutral-color;
+                        background-color: transparent;
+                        opacity: 0.5;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.file-success {
+            .plat-file-button {
+                background-color: @success-color;
+                border-color: @success-color-dark;
+
+                &:active {
+                    background-color: darken(@success-color, 10%);
+                }
+
+                &[disabled],
+                &:disabled {
+                    background-color: @success-color;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @success-color;
+                    color: @success-color;
+
+                    &:active {
+                        color: @white;
+                        background-color: @success-color;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @success-color;
+                        background-color: transparent;
+                        opacity: 0.5;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.file-danger {
+            .plat-file-button {
+                background-color: @danger-color;
+                border-color: @danger-color-dark;
+
+                &:active {
+                    background-color: darken(@danger-color, 10%);
+                }
+
+                &[disabled],
+                &:disabled {
+                    background-color: @danger-color;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @danger-color;
+                    color: @danger-color;
+
+                    &:active {
+                        color: @white;
+                        background-color: @danger-color;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @danger-color;
+                        background-color: transparent;
+                        opacity: 0.5;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.file-caution {
+            .plat-file-button {
+                background-color: @caution-color;
+                border-color: @caution-color-dark;
+
+                &:active {
+                    background-color: darken(@caution-color, 10%);
+                }
+
+                &[disabled],
+                &:disabled {
+                    background-color: @caution-color;
+                    opacity: 0.5;
+                    cursor: default;
+                }
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @caution-color;
+                    color: @caution-color;
+
+                    &:active {
+                        color: @white;
+                        background-color: @caution-color;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @caution-color;
+                        background-color: transparent;
+                        opacity: 0.5;
+                        cursor: default;
+                    }
+                }
+            }
+        }
+
+        &.file-outline {
+            .plat-file-button {
+                background-color: transparent;
+            }
+        }
     }
 }
 
-/// =========== Input Default Styles =========== ///
+/// =========== File Default Styles =========== ///
 
-.plat-file {
-    #platui > #variables;
+.plat-file(@prop: undefined; @value: undefined) {
     #platui > #mixins;
-    #platui > #File;
-    #platui > #__File;
-    .box-sizing(border-box);
-    display: inline-block;
-    height: @default-height;
-    cursor: text;
 
-    .plat-file-container {
-        .box-sizing(border-box);
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        position: relative;
+    & when (@prop = undefined), (@value = undefined) {
+        &.plat-file {
+            height: @default-height;
 
-        .plat-file-hidden {
-            visibility: hidden;
-            position: absolute;
-            top: 0;
-            left: -9999px;
-        }
-
-        .plat-file-input {
-            .box-sizing(border-box);
-            .border-top-left-radius(@border-radius);
-            .border-bottom-left-radius(@border-radius);
-            .border-top-right-radius(0px);
-            .border-bottom-right-radius(0px);
-            position: relative;
-            display: inline-block;
-            height: 100%;
-            width: @default-input-width;
-            left: 0;
-            bottom: 0;
-            padding: 0 0.25em;
-            text-align: right;
-            background-color: @transparent;
-            color: @text-color;
-            border: 1px solid @input-border-color;
-            border-right: none;
-            outline: none;
-            font: inherit;
-            -webkit-appearance: none;
-
-            &::-ms-clear,
-            &::-ms-reveal {
-                display: none;
-            }
-
-            &::-webkit-outer-spin-button,
-            &::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-        }
-
-        .plat-file-button {
-            .border-top-left-radius(0px);
-            .border-bottom-left-radius(0px);
-            .border-top-right-radius(@border-radius);
-            .border-bottom-right-radius(@border-radius);
-            .webkit-touch-additions();
-            position: relative;
-            display: inline-block;
-            margin: 0;
-            height: 100%;
-            background-color: @default-button-background-color;
-            color: @default-button-color;
-            border: 0px solid @default-button-background-color;
-            outline: none;
-            font: inherit;
-            margin-left: -5px;
-
-            &:active {
-                background-color: darken(@default-button-background-color, 10%);
-            }
-            
-            &[disabled],
-            &:disabled {
-                background-color: @default-button-background-color;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-    }
-    
-    &.file-outline {
-        .plat-file-button {
-            border-color: @default-button-background-color;
-            color: @default-button-background-color;
-            border-width: 2px;
-
-            &:active {
-                color: @white;
-                background-color: @default-button-background-color;
-            }
-            
-            &[disabled],
-            &:disabled {
-                color: @default-button-background-color;
-                background-color: transparent;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-    }
-
-    &.file-primary {
-        .plat-file-button {
-            background-color: @primary-color;
-            border-color: @primary-color-dark;
-        
-            &:active {
-                background-color: darken(@primary-color, 10%);
-            }
-        
-            &[disabled],
-            &:disabled {
-                background-color: @primary-color;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-        
-        &.file-outline {
-            .plat-file-button {
-                border-color: @primary-color;
-                color: @primary-color;
-
-                &:active {
-                    color: @white;
-                    background-color: @primary-color;
+            .plat-file-container {
+                .plat-file-input {
+                    .border-top-left-radius(@border-radius);
+                    .border-bottom-left-radius(@border-radius);
+                    width: @default-input-width;
+                    background-color: @input-background-color;
+                    color: @text-color;
+                    border-color: @input-border-color;
                 }
-        
-                &[disabled],
-                &:disabled {
-                    color: @primary-color;
-                    background-color: transparent;
-                    opacity: 0.5;
-                    cursor: default;
+
+                .plat-file-button {
+                    .border-top-right-radius(@border-radius);
+                    .border-bottom-right-radius(@border-radius);
+                    background-color: @button-background-color;
+                    color: @button-color;
+                    border-color: @button-background-color;
+
+                    &:active {
+                        background-color: darken(@button-background-color, 10%);
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        background-color: @button-background-color;
+                    }
+                }
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @button-background-color;
+                    color: @button-background-color;
+
+                    &:active {
+                        background-color: @button-background-color;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @button-background-color;
+                    }
                 }
             }
         }
     }
-
-    &.file-secondary {
-        .plat-file-button {
-            background-color: @secondary-color;
-            border-color: @secondary-color-dark;
-        
-            &:active {
-                background-color: darken(@secondary-color, 10%);
-            }
-        
-            &[disabled],
-            &:disabled {
-                background-color: @secondary-color;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-        
-        &.file-outline {
-            .plat-file-button {
-                border-color: @secondary-color;
-                color: @secondary-color;
-
-                &:active {
-                    color: @white;
-                    background-color: @secondary-color;
-                }
-        
-                &[disabled],
-                &:disabled {
-                    color: @secondary-color;
-                    background-color: transparent;
-                    opacity: 0.5;
-                    cursor: default;
+    & when (@prop = text-color) {
+        &.plat-file {
+            .plat-file-container {
+                .plat-file-input {
+                    color: @value;
                 }
             }
         }
     }
-
-    &.file-neutral {
-        .plat-file-button {
-            background-color: @neutral-color;
-            border-color: @neutral-color-dark;
-        
-            &:active {
-                background-color: darken(@neutral-color, 10%);
-            }
-        
-            &[disabled],
-            &:disabled {
-                background-color: @neutral-color;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-        
-        &.file-outline {
-            .plat-file-button {
-                border-color: @neutral-color;
-                color: @neutral-color;
-
-                &:active {
-                    color: @white;
-                    background-color: @neutral-color;
-                }
-        
-                &[disabled],
-                &:disabled {
-                    color: @neutral-color;
-                    background-color: transparent;
-                    opacity: 0.5;
-                    cursor: default;
+    & when (@prop = input-background-color) {
+        &.plat-file {
+            .plat-file-container {
+                .plat-file-input {
+                    background-color: @value;
                 }
             }
         }
     }
-
-    &.file-success {
-        .plat-file-button {
-            background-color: @success-color;
-            border-color: @success-color-dark;
-        
-            &:active {
-                background-color: darken(@success-color, 10%);
-            }
-        
-            &[disabled],
-            &:disabled {
-                background-color: @success-color;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-        
-        &.file-outline {
-            .plat-file-button {
-                border-color: @success-color;
-                color: @success-color;
-
-                &:active {
-                    color: @white;
-                    background-color: @success-color;
-                }
-        
-                &[disabled],
-                &:disabled {
-                    color: @success-color;
-                    background-color: transparent;
-                    opacity: 0.5;
-                    cursor: default;
+    & when (@prop = input-border-color) {
+        &.plat-file {
+            .plat-file-container {
+                .plat-file-input {
+                    border-color: @value;
                 }
             }
         }
     }
-
-    &.file-danger {
-        .plat-file-button {
-            background-color: @danger-color;
-            border-color: @danger-color-dark;
-        
-            &:active {
-                background-color: darken(@danger-color, 10%);
-            }
-        
-            &[disabled],
-            &:disabled {
-                background-color: @danger-color;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-        
-        &.file-outline {
-            .plat-file-button {
-                border-color: @danger-color;
-                color: @danger-color;
-
-                &:active {
-                    color: @white;
-                    background-color: @danger-color;
-                }
-        
-                &[disabled],
-                &:disabled {
-                    color: @danger-color;
-                    background-color: transparent;
-                    opacity: 0.5;
-                    cursor: default;
+    & when (@prop = button-color) {
+        &.plat-file {
+            .plat-file-container {
+                .plat-file-button {
+                    color: @value;
                 }
             }
         }
     }
+    & when (@prop = button-background-color) {
+        &.plat-file {
+            .plat-file-container {
+                .plat-file-button {
+                    background-color: @value;
+                    border-color: @value;
 
-    &.file-caution {
-        .plat-file-button {
-            background-color: @caution-color;
-            border-color: @caution-color-dark;
-        
-            &:active {
-                background-color: darken(@caution-color, 10%);
-            }
-        
-            &[disabled],
-            &:disabled {
-                background-color: @caution-color;
-                opacity: 0.5;
-                cursor: default;
-            }
-        }
-        
-        &.file-outline {
-            .plat-file-button {
-                border-color: @caution-color;
-                color: @caution-color;
+                    &:active {
+                        background-color: darken(@value, 10%);
+                    }
 
-                &:active {
-                    color: @white;
-                    background-color: @caution-color;
+                    &[disabled],
+                    &:disabled {
+                        background-color: @value;
+                    }
                 }
-        
-                &[disabled],
-                &:disabled {
-                    color: @caution-color;
-                    background-color: transparent;
-                    opacity: 0.5;
-                    cursor: default;
+            }
+
+            &.file-outline {
+                .plat-file-button {
+                    border-color: @value;
+                    color: @value;
+
+                    &:active {
+                        background-color: @value;
+                    }
+
+                    &[disabled],
+                    &:disabled {
+                        color: @value;
+                    }
                 }
             }
         }
     }
+    & when (@prop = default-height) {
+        &.plat-file {
+            height: @value;
+        }
+    }
+    & when (@prop = default-input-width) {
+        &.plat-file {
+            .plat-file-container {
+                .plat-file-input {
+                    width: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = border-radius) {
+        &.plat-file {
+            .plat-file-container {
+                .plat-file-input {
+                    .border-top-left-radius(@value);
+                    .border-bottom-left-radius(@value);
+                }
 
-    &.file-outline {
-        .plat-file-button {
-            background-color: transparent;
+                .plat-file-button {
+                    .border-top-right-radius(@value);
+                    .border-bottom-right-radius(@value);
+                }
+            }
         }
     }
 }

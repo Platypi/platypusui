@@ -4,148 +4,444 @@
 @import (reference) '../mixins/transitions.less';
 @import (reference) 'carousel.variables.less';
 
-/// =========== Carousel Default Styles =========== ///
+/// =========== Carousel Declaration =========== ///
 
-.plat-carousel {
-    #platui > #variables;
+& {
     #platui > #mixins;
     #platui > #Carousel;
-    position: relative;
-    display: inline-block;
-    min-height: 50px;
-    .fill();
-    .user-select();
-    .box-sizing(border-box);
 
-    .plat-carousel-viewport {
-        position: relative;
-        min-height: 50px;
-        overflow: hidden;
+    .plat-carousel {
         .fill();
+        .user-select();
         .box-sizing(border-box);
+        position: relative;
+        display: inline-block;
+        min-height: 50px;
 
-        .plat-carousel-container {
-            position: absolute;
-            left: 0;
-            top: 0;
-            min-height: 50px;
-            background-color: @background-color;
-            white-space: nowrap;
+        .plat-carousel-viewport {
             .fill();
             .box-sizing(border-box);
+            position: relative;
+            min-height: 50px;
+            overflow: hidden;
 
-            .plat-carousel-item {
-                width: 100%;
-                height: 100%;
-                padding-left: @padding-left;
-                padding-right: @padding-right;
-                padding-top: @padding-top;
-                padding-bottom: @padding-bottom;
+            .plat-carousel-container {
+                .fill();
                 .box-sizing(border-box);
-            }
-
-            &.plat-transition-init {
-                -webkit-transition: -webkit-transform @transition-time;
-                -moz-transition: -moz-transform @transition-time;
-                transition: transform @transition-time;
-            }
-        }
-
-        .plat-back-arrow,
-        .plat-forward-arrow {
-            position: absolute;
-            text-align: center;
-            color: @arrow-color;
-            cursor: pointer;
-            font-size: @arrow-font-size;
-            .box-sizing(border-box);
-
-            .plat-icon-arrow-down,
-            .plat-icon-arrow-up,
-            .plat-icon-arrow-left,
-            .plat-icon-arrow-right {
-                display: inline-block;
-                vertical-align: middle;
                 position: absolute;
-                height: 0.55em;
-                width: 100%;
                 left: 0;
-                top: 50%;
-                font-family: "platypus-icons";
-                font-weight: bold;
-                font-style: normal;
-                font-variant: normal;
-                font-size: inherit;
-                speak: none;
-                text-decoration: inherit;
-                text-transform: none;
-                line-height: normal;
-                .translate-accelerate(0;-50%);
-                .webkit-touch-additions();
-            }
+                top: 0;
+                min-height: 50px;
+                background-color: @background-color;
+                white-space: nowrap;
 
-            .plat-icon-arrow-down::before { content: "\e815"; }
-            .plat-icon-arrow-left::before { content: "\e816"; }
-            .plat-icon-arrow-right::before { content: "\e817"; }
-            .plat-icon-arrow-up::before { content: "\e818"; }
-
-            &:active,
-            &:hover {
-                color: @arrow-active-color;
-            }
-        }
-    }
-
-    &.plat-horizontal {
-        .touch-action(pan-y);
-
-        .plat-carousel-viewport {
-            .plat-carousel-container {
                 .plat-carousel-item {
+                    .box-sizing(border-box);
+                    width: 100%;
+                    height: 100%;
+                    padding-left: @padding-left;
+                    padding-right: @padding-right;
+                    padding-top: @padding-top;
+                    padding-bottom: @padding-bottom;
+                }
+
+                &.plat-transition-init {
+                    -webkit-transition: -webkit-transform @transition-time;
+                    -moz-transition: -moz-transform @transition-time;
+                    transition: transform @transition-time;
+                }
+            }
+
+            .plat-back-arrow,
+            .plat-forward-arrow {
+                .box-sizing(border-box);
+                position: absolute;
+                text-align: center;
+                color: @arrow-color;
+                cursor: pointer;
+                font-size: @arrow-font-size;
+
+                .plat-icon-arrow-down,
+                .plat-icon-arrow-up,
+                .plat-icon-arrow-left,
+                .plat-icon-arrow-right {
+                    .translate-accelerate(0;-50%);
+                    .webkit-touch-additions();
                     display: inline-block;
+                    vertical-align: middle;
+                    position: absolute;
+                    height: 0.55em;
+                    width: 100%;
+                    left: 0;
+                    top: 50%;
+                    font-family: @arrow-font-family;
+                    font-weight: @arrow-font-weight;
+                    font-style: normal;
+                    font-variant: normal;
+                    font-size: inherit;
+                    speak: none;
+                    text-decoration: inherit;
+                    text-transform: none;
+                    line-height: normal;
+                }
+
+                .plat-icon-arrow-down::before { content: @arrow-down; }
+                .plat-icon-arrow-left::before { content: @arrow-left; }
+                .plat-icon-arrow-right::before { content: @arrow-right; }
+                .plat-icon-arrow-up::before { content: @arrow-up; }
+
+                &:active,
+                &:hover {
+                    color: @arrow-active-color;
                 }
             }
+        }
 
-            .plat-back-arrow,
-            .plat-forward-arrow {
-                top: 0;
-                width: @arrow-width;
-                height: @arrow-length;
+        &.plat-horizontal {
+            .touch-action(pan-y);
+
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        display: inline-block;
+                    }
+                }
+
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    top: 0;
+                    width: @arrow-width;
+                    height: @arrow-length;
+                }
+
+                .plat-back-arrow {
+                    left: 0;
+                }
+
+                .plat-forward-arrow {
+                    right: 0;
+                }
             }
+        }
 
-            .plat-back-arrow {
-                left: 0;
-            }
+        &.plat-vertical {
+            .touch-action(pan-x);
 
-            .plat-forward-arrow {
-                right: 0;
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        display: block;
+                    }
+                }
+
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    left: 0;
+                    width: @arrow-length;
+                    height: @arrow-width;
+                }
+
+                .plat-back-arrow {
+                    top: 0;
+                }
+
+                .plat-forward-arrow {
+                    bottom: 0;
+                }
             }
         }
     }
+}
 
-    &.plat-vertical {
-        .touch-action(pan-x);
+/// =========== Variable Carousel Styles =========== ///
 
-        .plat-carousel-viewport {
-            .plat-carousel-container {
-                .plat-carousel-item {
-                    display: block;
+.plat-carousel(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (@value = undefined) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    background-color: @background-color;
+
+                    .plat-carousel-item {
+                        padding-left: @padding-left;
+                        padding-right: @padding-right;
+                        padding-top: @padding-top;
+                        padding-bottom: @padding-bottom;
+                    }
+
+                    &.plat-transition-init {
+                        .transition-duration(@transition-time);
+                    }
+                }
+
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    color: @arrow-color;
+                    font-size: @arrow-font-size;
+
+                    .plat-icon-arrow-down,
+                    .plat-icon-arrow-up,
+                    .plat-icon-arrow-left,
+                    .plat-icon-arrow-right {
+                        font-family: @arrow-font-family;
+                        font-weight: @arrow-font-weight;
+                    }
+
+                    .plat-icon-arrow-down::before { content: @arrow-down; }
+                    .plat-icon-arrow-left::before { content: @arrow-left; }
+                    .plat-icon-arrow-right::before { content: @arrow-right; }
+                    .plat-icon-arrow-up::before { content: @arrow-up; }
+
+                    &:active,
+                    &:hover {
+                        color: @arrow-active-color;
+                    }
                 }
             }
 
-            .plat-back-arrow,
-            .plat-forward-arrow {
-                left: 0;
-                width: @arrow-length;
-                height: @arrow-width;
+            &.plat-horizontal {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        width: @arrow-width;
+                        height: @arrow-length;
+                    }
+                }
             }
 
-            .plat-back-arrow {
-                top: 0;
+            &.plat-vertical {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        width: @arrow-length;
+                        height: @arrow-width;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = padding) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        padding-left: @value;
+                        padding-right: @value;
+                        padding-top: @value;
+                        padding-bottom: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = background-color) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    background-color: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-color) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    color: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-active-color) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    &:active,
+                    &:hover {
+                        color: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-font-size) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    font-size: @value;
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-font-family) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    .plat-icon-arrow-down,
+                    .plat-icon-arrow-up,
+                    .plat-icon-arrow-left,
+                    .plat-icon-arrow-right {
+                        font-family: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-font-weight) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    .plat-icon-arrow-down,
+                    .plat-icon-arrow-up,
+                    .plat-icon-arrow-left,
+                    .plat-icon-arrow-right {
+                        font-weight: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-down) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    .plat-icon-arrow-down::before { content: @value; }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-left) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    .plat-icon-arrow-left::before { content: @value; }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-right) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    .plat-icon-arrow-right::before { content: @value; }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-up) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    .plat-icon-arrow-up::before { content: @value; }
+                }
+            }
+        }
+    }
+    & when (@prop = padding-left) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        padding-left: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = padding-right) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        padding-right: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = padding-top) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        padding-top: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = padding-bottom) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        padding-bottom: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-length) {
+        &.plat-carousel {
+            &.plat-horizontal {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        height: @value;
+                    }
+                }
             }
 
-            .plat-forward-arrow {
-                bottom: 0;
+            &.plat-vertical {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        width: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = arrow-width) {
+        &.plat-carousel {
+            &.plat-horizontal {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        width: @value;
+                    }
+                }
+            }
+
+            &.plat-vertical {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        height: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = transition-time) {
+        &.plat-carousel {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    &.plat-transition-init {
+                        .transition-duration(@value);
+                    }
+                }
             }
         }
     }

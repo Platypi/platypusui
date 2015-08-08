@@ -14,202 +14,470 @@
     }
 }
 
-/// ========== Range Default Style =========== ///
+/// ============= Range Declaration ============= ///
 
-.plat-range {
-    #platui > #variables;
+& {
     #platui > #mixins;
-    #platui > #Range;
     #platui > #__Range;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    .user-select();
-    .box-sizing(border-box);
 
-    .plat-range-container {
-        position: relative;
-        background-color: @neutral-color-light;
-        overflow: visible;
-        .fill();
-        .border-radius(@fill-border-radius);
+    .plat-range {
+        .user-select();
         .box-sizing(border-box);
-        .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
+        position: relative;
+        width: 100%;
+        height: 100%;
+        margin: 0;
 
-        .plat-range-track {
-            position: absolute;
-            background-color: @neutral-color-dark;
-            overflow: visible;
-            .box-shadow(inset 0px 1px 1px 0px darken(@neutral-color-dark, 10%));
-            .border-radius(@fill-border-radius);
+        .plat-range-container {
+            .fill();
+            .border-radius(@border-radius);
             .box-sizing(border-box);
+            .box-shadow(inset 0px 1px 1px 0px rgba(0,0,0,0.15));
+            position: relative;
+            background-color: @unfilled-color;
+            overflow: visible;
 
-            .plat-lower-knob,
-            .plat-upper-knob {
-                position: absolute;
-                width: @knob-diameter;
-                height: @knob-diameter;
-                background-color: lighten(@pale-grey, 10%);
-                border: @knob-border-size solid darken(@pale-grey, 5%);
-                cursor: pointer;
+            .plat-range-track {
+                .box-shadow(inset 0px 1px 1px 0px darken(@fill-color, 10%));
+                .border-radius(@border-radius);
                 .box-sizing(border-box);
-                .border-radius(@knob-diameter / 2);
-                .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.25));
-            }
-        }
-    }
-
-    &.plat-horizontal,
-    &.plat-horizontal-reversed {
-        height: @knob-diameter;
-        padding: 0 @knob-radius;
-        .touch-action(pan-y);
-
-        .plat-range-container {
-            top: 50%;
-            height: @thickness;
-            .translate-accelerate(0;-@half-thickness);
-
-            .plat-range-track {
-                width: 100%;
-                height: 100%;
+                position: absolute;
+                background-color: @fill-color;
+                overflow: visible;
 
                 .plat-lower-knob,
                 .plat-upper-knob {
-                    top: @half-thickness;
-                    .translate-accelerate(0;-@knob-radius);
-                }
-
-                .plat-lower-knob {
-                    left: -@knob-radius;
-                }
-
-                .plat-upper-knob {
-                    right: -@knob-radius;
-                }
-
-                &.plat-transition-init {
-                    .translateZ(0);
-                    .transition(@horizontal-transition);
+                    .box-sizing(border-box);
+                    .border-radius(50%);
+                    .box-shadow(0px 1px 2px 0px rgba(50, 50, 50, 0.25));
+                    position: absolute;
+                    width: @knob-diameter;
+                    height: @knob-diameter;
+                    background-color: lighten(@knob-base-color, 10%);
+                    border: @knob-border-size solid darken(@knob-base-color, 5%);
+                    cursor: pointer;
                 }
             }
         }
-    }
 
-    &.plat-horizontal {
-        .plat-range-container {
-            .plat-range-track {
-                left: 0;
-            }
-        }
-    }
+        &.plat-horizontal,
+        &.plat-horizontal-reversed {
+            .touch-action(pan-y);
+            height: @knob-diameter;
+            padding: 0 @knob-radius;
 
-    &.plat-horizontal-reversed {
-        .plat-range-container {
-            .plat-range-track {
-                right: 0;
-            }
-        }
-    }
+            .plat-range-container {
+                .translate-accelerate(0;-@half-thickness);
+                top: 50%;
+                height: @thickness;
 
-    &.plat-vertical,
-    &.plat-vertical-reversed {
-        width: @knob-diameter;
-        padding: @knob-radius 0;
-        .touch-action(pan-x);
+                .plat-range-track {
+                    width: 100%;
+                    height: 100%;
 
-        .plat-range-container {
-            left: 50%;
-            top: @knob-radius;
-            width: @thickness;
-            .translate-accelerate(-@half-thickness;0);
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        .translate-accelerate(0;-@knob-radius);
+                        top: @half-thickness;
+                    }
 
-            .plat-range-track {
-                width: 100%;
-                height: 0;
+                    .plat-lower-knob {
+                        left: -@knob-radius;
+                    }
 
-                .plat-lower-knob,
-                .plat-upper-knob {
-                    left: @half-thickness;
-                    .translate-accelerate(-@knob-radius;0)
-                }
+                    .plat-upper-knob {
+                        right: -@knob-radius;
+                    }
 
-                .plat-lower-knob {
-                    bottom: -@knob-radius;
-                }
-
-                .plat-upper-knob {
-                    top: -@knob-radius;
-                }
-
-                &.plat-transition-init {
-                    .translateZ(0);
-                    .transition(@vertical-transition);
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(width @transition-time);
+                    }
                 }
             }
         }
-    }
 
-    &.plat-vertical {
-        .plat-range-container {
-            .plat-range-track {
-                bottom: 0;
+        &.plat-horizontal {
+            .plat-range-container {
+                .plat-range-track {
+                    left: 0;
+                }
+            }
+        }
+
+        &.plat-horizontal-reversed {
+            .plat-range-container {
+                .plat-range-track {
+                    right: 0;
+                }
+            }
+        }
+
+        &.plat-vertical,
+        &.plat-vertical-reversed {
+            .touch-action(pan-x);
+            width: @knob-diameter;
+            padding: @knob-radius 0;
+
+            .plat-range-container {
+                .translate-accelerate(-@half-thickness;0);
+                left: 50%;
+                top: @knob-radius;
+                width: @thickness;
+
+                .plat-range-track {
+                    width: 100%;
+                    height: 0;
+
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        .translate-accelerate(-@knob-radius;0);
+                        left: @half-thickness;
+                    }
+
+                    .plat-lower-knob {
+                        bottom: -@knob-radius;
+                    }
+
+                    .plat-upper-knob {
+                        top: -@knob-radius;
+                    }
+
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(height @transition-time);
+                    }
+                }
+            }
+        }
+
+        &.plat-vertical {
+            .plat-range-container {
+                .plat-range-track {
+                    bottom: 0;
+                }
+            }
+        }
+
+        &.plat-vertical-reversed {
+            .plat-range-container {
+                .plat-range-track {
+                    top: 0;
+                }
+            }
+        }
+
+    /// =========== Slider Color Options =========== ///
+
+        &.range-primary {
+            .plat-range-container {
+                .plat-range-track {
+                    .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
+                    background-color: @primary-color;
+                }
+            }
+        }
+
+        &.range-secondary {
+            .plat-range-container {
+                .plat-range-track {
+                    .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
+                    background-color: @secondary-color;
+                }
+            }
+        }
+
+        &.range-success {
+            .plat-range-container {
+                .plat-range-track {
+                    .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
+                    background-color: @success-color;
+                }
+            }
+        }
+
+        &.range-caution {
+            .plat-range-container {
+                .plat-range-track {
+                    .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
+                    background-color: @caution-color;
+                }
+            }
+        }
+
+        &.range-danger {
+            .plat-range-container {
+                .plat-range-track {
+                    .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
+                    background-color: @danger-color;
+                }
             }
         }
     }
+}
 
-    &.plat-vertical-reversed {
-        .plat-range-container {
-            .plat-range-track {
-                top: 0;
+/// ========== Variable Range Style =========== ///
+
+.plat-range(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (@value = undefined) {
+        @knob-radius: @knob-diameter / 2;
+        @half-thickness: @thickness / 2;
+
+        &.plat-range {
+            .plat-range-container {
+                .border-radius(@border-radius);
+                background-color: @unfilled-color;
+
+                .plat-range-track {
+                    .box-shadow(inset 0px 1px 1px 0px darken(@fill-color, 10%));
+                    .border-radius(@border-radius);
+                    background-color: @fill-color;
+
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        width: @knob-diameter;
+                        height: @knob-diameter;
+                        background-color: lighten(@knob-base-color, 10%);
+                        border-width: @knob-border-size;
+                        border-color: darken(@knob-base-color, 5%);
+                    }
+                }
+            }
+
+            &.plat-horizontal,
+            &.plat-horizontal-reversed {
+                height: @knob-diameter;
+                padding-left: @knob-radius;
+                padding-right: @knob-radius;
+
+                .plat-range-container {
+                    .translate-accelerate(0;-@half-thickness);
+                    height: @thickness;
+
+                    .plat-range-track {
+                        .plat-lower-knob,
+                        .plat-upper-knob {
+                            .translate-accelerate(0;-@knob-radius);
+                            top: @half-thickness;
+                        }
+
+                        .plat-lower-knob {
+                            left: -@knob-radius;
+                        }
+
+                        .plat-upper-knob {
+                            right: -@knob-radius;
+                        }
+
+                        &.plat-transition-init {
+                            .transition-duration(@transition-time);
+                        }
+                    }
+                }
+            }
+
+            &.plat-vertical,
+            &.plat-vertical-reversed {
+                width: @knob-diameter;
+                padding-top: @knob-radius;
+                padding-bottom: @knob-radius;
+
+                .plat-range-container {
+                    .translate-accelerate(-@half-thickness;0);
+                    top: @knob-radius;
+                    width: @thickness;
+
+                    .plat-range-track {
+                        .plat-lower-knob,
+                        .plat-upper-knob {
+                            .translate-accelerate(-@knob-radius;0);
+                            left: @half-thickness;
+                        }
+
+                        .plat-lower-knob {
+                            bottom: -@knob-radius;
+                        }
+
+                        .plat-upper-knob {
+                            top: -@knob-radius;
+                        }
+
+                        &.plat-transition-init {
+                            .transition-duration(@transition-time);
+                        }
+                    }
+                }
             }
         }
     }
-
-/// =========== Slider Color Options =========== ///
-
-    &.range-primary {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @primary-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@primary-color, 10%));
+    & when (@prop = fill-color) {
+        &.plat-range {
+            .plat-range-container {
+                .plat-range-track {
+                    .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                    background-color: @value;
+                }
             }
         }
     }
-
-    &.range-secondary {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @secondary-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@secondary-color, 10%));
+    & when (@prop = unfilled-color) {
+        &.plat-range {
+            .plat-range-container {
+                background-color: @value;
             }
         }
     }
-
-    &.range-success {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @success-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@success-color, 10%));
+    & when (@prop = knob-base-color) {
+        &.plat-range {
+            .plat-range-container {
+                .plat-range-track {
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        background-color: lighten(@value, 10%);
+                        border-color: darken(@value, 5%);
+                    }
+                }
             }
         }
     }
+    & when (@prop = border-radius) {
+        &.plat-range {
+            .plat-range-container {
+                .border-radius(@value);
 
-    &.range-caution {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @caution-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@caution-color, 10%));
+                .plat-range-track {
+                    .border-radius(@value);
+                }
             }
         }
     }
+    & when (@prop = knob-border-size) {
+        &.plat-range {
+            .plat-range-container {
+                .plat-range-track {
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        border-width: @value;
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = thickness) {
+        @half-thickness: @value / 2;
 
-    &.range-danger {
-        .plat-range-container {
-            .plat-range-track {
-                background-color: @danger-color;
-                .box-shadow(inset 0px 1px 1px 0px darken(@danger-color, 10%));
+        &.plat-range {
+            &.plat-horizontal,
+            &.plat-horizontal-reversed {
+                .plat-range-container {
+                    .translate-accelerate(0;-@half-thickness);
+                    height: @value;
+
+                    .plat-range-track {
+                        .plat-lower-knob,
+                        .plat-upper-knob {
+                            top: @half-thickness;
+                        }
+                    }
+                }
+            }
+
+            &.plat-vertical,
+            &.plat-vertical-reversed {
+                .plat-range-container {
+                    .translate-accelerate(-@half-thickness;0);
+                    width: @value;
+
+                    .plat-range-track {
+                        .plat-lower-knob,
+                        .plat-upper-knob {
+                            left: @half-thickness;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = knob-diameter) {
+        @knob-radius: @knob-diameter / 2;
+
+        &.plat-range {
+            .plat-range-container {
+                .plat-range-track {
+                    .plat-lower-knob,
+                    .plat-upper-knob {
+                        width: @value;
+                        height: @value;
+                    }
+                }
+            }
+
+            &.plat-horizontal,
+            &.plat-horizontal-reversed {
+                height: @value;
+                padding-left: @knob-radius;
+                padding-right: @knob-radius;
+
+                .plat-range-container {
+                    .plat-range-track {
+                        .plat-lower-knob,
+                        .plat-upper-knob {
+                            .translate-accelerate(0;-@knob-radius);
+                        }
+
+                        .plat-lower-knob {
+                            left: -@knob-radius;
+                        }
+
+                        .plat-upper-knob {
+                            right: -@knob-radius;
+                        }
+                    }
+                }
+            }
+
+            &.plat-vertical,
+            &.plat-vertical-reversed {
+                width: @value;
+                padding-top: @knob-radius;
+                padding-bottom: @knob-radius;
+
+                .plat-range-container {
+                    top: @knob-radius;
+
+                    .plat-range-track {
+                        .plat-lower-knob,
+                        .plat-upper-knob {
+                            .translate-accelerate(-@knob-radius;0);
+                        }
+
+                        .plat-lower-knob {
+                            bottom: -@knob-radius;
+                        }
+
+                        .plat-upper-knob {
+                            top: -@knob-radius;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = transition-time) {
+        &.plat-range {
+            &.plat-horizontal,
+            &.plat-horizontal-reversed,
+            &.plat-vertical,
+            &.plat-vertical-reversed {
+                .plat-range-container {
+                    .plat-range-track {
+                        &.plat-transition-init {
+                            .transition-duration(@value);
+                        }
+                    }
+                }
             }
         }
     }

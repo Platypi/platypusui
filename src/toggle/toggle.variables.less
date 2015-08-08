@@ -6,7 +6,6 @@
             #platui > #variables;
             @color-off: @neutral-color-light;
             @color-on: @success-color;
-            @transition-time: 250ms;
         }
 
         #platui > #Toggle > #dependencies;
@@ -24,16 +23,10 @@
         @width: 3.25em;
         @ratio: 1/2;
         @toggle-thin-ratio: 1/4;
-
-    /// ========== Toggle Knob Properties ========== ///
-
-        @knob-border-color: darken(@pale-grey, 5%);
-        @knob-border-size: 1px;
-        @toggle-thin-knob-color: lighten(@pale-grey, 10%);
+        @toggle-thin-knob-ratio: 1/2;
 
     /// ============= Toggle Transition ============= ///
 
-        @transition: ~'background-color @{transition-time}, border-color @{transition-time}';
-        @knob-transition: left @transition-time;
+        @transition-time: 250ms;
     }
 }

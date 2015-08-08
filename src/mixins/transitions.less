@@ -15,7 +15,7 @@
 
         .transition-all(@duration: 200ms; @function: ease; @delay: 0s) {
             #platui > #variables;
-            .transitionAll(all; @duration; @function; @delay; @webkit-moz-list);
+            .transition-all(@duration; @function; @delay; @webkit-moz-list);
         }
         .transition-all(@duration; @function; @delay; @vendor-list) {
             #platui > #__mixins > .vendor-loop(transition; all @duration @function @delay; @vendor-list);
@@ -47,9 +47,9 @@
 
         .transition-timing-function(@function: ease) {
             #platui > #variables;
-            .transition-timing-function(@function: ease; @webkit-moz-list);
+            .transition-timing-function(@function; @webkit-moz-list);
         }
-        .transition-timing-function(@function: ease; @vendor-list) {
+        .transition-timing-function(@function; @vendor-list) {
             #platui > #__mixins > .vendor-loop(transition-timing-function; @function; @vendor-list);
         }
     }

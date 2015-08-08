@@ -577,20 +577,21 @@ module platui {
         dispose(): void {
             super.dispose();
 
-            var _utils = this.utils,
+            var utils = this.utils,
+                isNode = utils.isNode,
                 drawer = this._drawer,
                 rootElement = this._rootElement,
                 clickEater = this._clickEater;
 
-            if (!_utils.isNode(rootElement)) {
+            if (!isNode(rootElement)) {
                 return;
             }
 
-            if (_utils.isNode(clickEater) && rootElement.contains(clickEater)) {
+            if (isNode(clickEater)) {
                 this._removeClickEater();
             }
 
-            if (_utils.isNull(drawer)) {
+            if (utils.isNull(drawer)) {
                 return;
             }
 
@@ -602,7 +603,7 @@ module platui {
             this.dom.removeClass(rootElement, __Drawer + '-root ' + this._directionalTransitionPrep);
 
             var storedStyle = drawer.storedProperties;
-            if (!_utils.isObject(storedStyle)) {
+            if (!utils.isObject(storedStyle)) {
                 return;
             }
 
@@ -612,7 +613,7 @@ module platui {
 
             rootElementStyle.position = storedStyle.position;
             rootElementStyle.zIndex = storedStyle.zIndex;
-            if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+            if (utils.isObject(overflow) && utils.isNode(parent)) {
                 parent.style[<any>overflow.key] = overflow.value;
             }
 
@@ -1010,9 +1011,15 @@ module platui {
          * @returns {void}
          */
         protected _removeClickEater(): void {
-            var rootElement = this._rootElement;
+            var rootElement = this._rootElement,
+                clickEater = this._clickEater;
+
             this._removeClickEaterListener();
-            rootElement.removeChild(this._clickEater);
+
+            if (rootElement.contains(clickEater)) {
+                rootElement.removeChild(clickEater);
+            }
+
             this.dom.removeClass(rootElement, this._directionalTransitionPrep);
         }
 
@@ -1653,7 +1660,7 @@ module platui {
             }
 
             var dom = this.dom;
-            dom.addClass(rootElement, __Drawer + '-transition-prep');
+            dom.addClass(rootElement, __Drawer + '-root');
             dom.addClass(this.element, (this._isVertical ? __Plat + 'vertical' : __Plat + 'horizontal'));
             this._directionalTransitionPrep = __Drawer + '-transition-' + position;
 
