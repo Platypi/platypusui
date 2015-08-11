@@ -606,9 +606,7 @@ var platui;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-progress-container">\n' +
-                '    <div class="plat-animated-ring"></div>\n' +
-                '</div>\n';
+            this.templateString = '<div class="plat-animated-ring"></div>';
         }
         /**
          * Sets the classes on the proper elements.
@@ -621,10 +619,39 @@ var platui;
             this.dom.addClass(element || this.element, __ProgressRing + ' ' + (className || ''));
         };
         /**
-         * Set the animation.
+         * Set the class name.
          */
         ProgressRing.prototype.initialize = function () {
             this.setClasses();
+        };
+        /**
+         * Set the animation.
+         */
+        ProgressRing.prototype.loaded = function () {
+            var options = this.options, utils = this.utils, isObject = utils.isObject, style = 0;
+            if (isObject(options) && isObject(options.value)) {
+                style = options.value.style;
+                if (!utils.isNumber(style)) {
+                    style = 0;
+                }
+            }
+            this.dom.addClass(this.element, __ProgressRing + '-' + style);
+            if (style === 0) {
+                return;
+            }
+            this._addAnimatedElements(style);
+        };
+        /**
+         * Adds any needed DOM for the animation.
+         */
+        ProgressRing.prototype._addAnimatedElements = function (style) {
+            var _document = plat.acquire(__Document), fragment = _document.createDocumentFragment(), count = style === 2 ? 12 : 4, div = 'div', classPrefix = __Plat + 'animated-child ' + __Plat + 'animated-child-', child;
+            for (var i = 0; i < count; ++i) {
+                child = _document.createElement(div);
+                child.className = classPrefix + i;
+                fragment.insertBefore(child, null);
+            }
+            this.element.firstElementChild.insertBefore(fragment, null);
         };
         return ProgressRing;
     })(plat.ui.TemplateControl);
@@ -691,10 +718,15 @@ var platui;
             if (!barMax) {
                 return;
             }
-            barElement.style.width = Math.ceil(barMax * value) + 'px';
+            return this._animator.animate(barElement, __Transition, {
+                properties: {
+                    width: Math.ceil(barMax * value) + 'px'
+                }
+            }).then(noop);
         };
         ProgressBar._inject = {
-            _window: __Window
+            _window: __Window,
+            _animator: __Animator
         };
         return ProgressBar;
     })(plat.ui.TemplateControl);
@@ -1052,14 +1084,14 @@ var platui;
          */
         DrawerController.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
-            var _utils = this.utils, drawer = this._drawer, rootElement = this._rootElement, clickEater = this._clickEater;
-            if (!_utils.isNode(rootElement)) {
+            var utils = this.utils, isNode = utils.isNode, drawer = this._drawer, rootElement = this._rootElement, clickEater = this._clickEater;
+            if (!isNode(rootElement)) {
                 return;
             }
-            if (_utils.isNode(clickEater) && rootElement.contains(clickEater)) {
+            if (isNode(clickEater)) {
                 this._removeClickEater();
             }
-            if (_utils.isNull(drawer)) {
+            if (utils.isNull(drawer)) {
                 return;
             }
             drawer.spliceController(this);
@@ -1068,13 +1100,13 @@ var platui;
             }
             this.dom.removeClass(rootElement, __Drawer + '-root ' + this._directionalTransitionPrep);
             var storedStyle = drawer.storedProperties;
-            if (!_utils.isObject(storedStyle)) {
+            if (!utils.isObject(storedStyle)) {
                 return;
             }
             var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
             rootElementStyle.position = storedStyle.position;
             rootElementStyle.zIndex = storedStyle.zIndex;
-            if (_utils.isObject(overflow) && _utils.isNode(parent)) {
+            if (utils.isObject(overflow) && utils.isNode(parent)) {
                 parent.style[overflow.key] = overflow.value;
             }
             delete drawer.storedProperties;
@@ -1315,9 +1347,11 @@ var platui;
          * Removes the click eater after closing an open Drawer.
          */
         DrawerController.prototype._removeClickEater = function () {
-            var rootElement = this._rootElement;
+            var rootElement = this._rootElement, clickEater = this._clickEater;
             this._removeClickEaterListener();
-            rootElement.removeChild(this._clickEater);
+            if (rootElement.contains(clickEater)) {
+                rootElement.removeChild(clickEater);
+            }
             this.dom.removeClass(rootElement, this._directionalTransitionPrep);
         };
         /**
@@ -1744,7 +1778,7 @@ var platui;
                 return false;
             }
             var dom = this.dom;
-            dom.addClass(rootElement, __Drawer + '-transition-prep');
+            dom.addClass(rootElement, __Drawer + '-root');
             dom.addClass(this.element, (this._isVertical ? __Plat + 'vertical' : __Plat + 'horizontal'));
             this._directionalTransitionPrep = __Drawer + '-transition-' + position;
             this._clickEater = this._document.createElement('div');
@@ -1802,7 +1836,7 @@ var platui;
          * Sets the max offset to translate the corresponding Drawer.
          */
         DrawerController.prototype._getOffset = function () {
-            return this._isVertical ? this._drawerElement.clientHeight : this._drawerElement.clientWidth;
+            return this._isVertical ? this._drawerElement.offsetHeight : this._drawerElement.offsetWidth;
         };
         DrawerController._inject = {
             _document: __Document,
@@ -6825,11 +6859,7 @@ var platui;
          * Creates a progress ring element.
          */
         Listview.prototype._generateProgressRing = function () {
-            var _document = this._document, control = _document.createElement('div'), container = _document.createElement('div'), ring = _document.createElement('div');
-            ring.className = __Plat + 'animated-ring';
-            container.insertBefore(ring, null);
-            container.className = __Plat + 'progress-container';
-            control.insertBefore(container, null);
+            var control = this._document.createElement('div');
             control.className = __Plat + 'ring';
             return control;
         };
@@ -7275,5 +7305,108 @@ var platui;
     })(plat.ui.TemplateControl);
     platui.Navbar = Navbar;
     plat.register.control(__Navbar, Navbar, null, true);
+    /**
+     * An TemplateControl that keeps track of a loading image.
+     */
+    var Image = (function (_super) {
+        __extends(Image, _super);
+        function Image() {
+            _super.apply(this, arguments);
+            /**
+             * The HTML template represented as a string.
+             */
+            this.templateString = '<div plat-control="' + __ProgressRing + '" class="plat-image-ring"></div>\n';
+            /**
+             * The image is a CSS background image. Defaults to false.
+             */
+            this._isBackground = false;
+            /**
+             * The HTMLImageElement use to source the image.
+             */
+            this._img = this._document.createElement('img');
+        }
+        /**
+         * Sets the classes on the proper elements.
+         * @param {string} className? An optional, additional class name or class names to set on the control
+         * in addition to its standard set.
+         * @param {Element} element? The element to set the class name on. Should default to
+         * the control's element if not specified.
+         */
+        Image.prototype.setClasses = function (className, element) {
+            this.dom.addClass(element || this.element, __Image + ' ' + (className || ''));
+        };
+        /**
+         * Set the class name.
+         */
+        Image.prototype.initialize = function () {
+            this.setClasses();
+        };
+        /**
+         * Set the style and initialize the action.
+         */
+        Image.prototype.loaded = function () {
+            var element = this.element, utils = this.utils, isString = utils.isString, isObject = utils.isObject, attributes = this.attributes, options = this.options, url;
+            if (isString(url = attributes[__CamelSrc])) {
+                attributes.observe(this._setSrc, __CamelSrc);
+            }
+            else if (isString(url = attributes[__src])) {
+                attributes.observe(this._setSrc, __src);
+            }
+            else {
+                return;
+            }
+            if (isObject(options) && isObject(options.value)) {
+                this._isBackground = options.value.isBackground === true;
+            }
+            if (this._isBackground) {
+                this.dom.addClass(element, __Plat + 'background');
+            }
+            this._loader = element.firstElementChild;
+            if (this._NodeManagerStatic.hasMarkup(url)) {
+                return;
+            }
+            this._setSrc(url);
+        };
+        /**
+         * Sets and sources the image to display.
+         * @param {string} url The source URL to display.
+         * @param {string} oldUrl? The old source URL that was being displayed.
+         */
+        Image.prototype._setSrc = function (url, oldUrl) {
+            var _this = this;
+            var img = this._img, element = this.element, dom = this.dom, imageLoadClass = __Plat + 'load-image', loader = this._loader;
+            dom.addClass(img, imageLoadClass);
+            img.src = url;
+            img.onload = function () {
+                _this.utils.requestAnimationFrame(function () {
+                    if (_this._isBackground) {
+                        element.style.backgroundImage = 'url("' + url + '")';
+                        element.removeChild(img);
+                        element.removeChild(loader);
+                        return;
+                    }
+                    dom.removeClass(img, imageLoadClass);
+                    element.removeChild(loader);
+                });
+            };
+            img.onerror = function () {
+                _this.utils.requestAnimationFrame(function () {
+                    dom.addClass(element, __Image + '-error');
+                    element.removeChild(img);
+                    element.removeChild(loader);
+                });
+            };
+            element.insertBefore(loader, null);
+            element.insertBefore(img, null);
+        };
+        Image._inject = {
+            _compat: __Compat,
+            _document: __Document,
+            _NodeManagerStatic: __NodeManagerStatic
+        };
+        return Image;
+    })(plat.ui.TemplateControl);
+    platui.Image = Image;
+    plat.register.control(__Image, Image);
 })(platui || (platui = {}));
 module.exports = platui;

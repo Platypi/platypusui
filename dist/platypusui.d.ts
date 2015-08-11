@@ -350,6 +350,10 @@ declare module platui {
           */
         templateString: string;
         /**
+          * The evaluated plat-options object.
+          */
+        options: plat.observable.IObservableProperty<IProgressRingOptions>;
+        /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
           * in addition to its standard set.
@@ -358,9 +362,26 @@ declare module platui {
           */
         setClasses(className?: string, element?: Element): void;
         /**
-          * Set the animation.
+          * Set the class name.
           */
         initialize(): void;
+        /**
+          * Set the animation.
+          */
+        loaded(): void;
+        /**
+          * Adds any needed DOM for the animation.
+          */
+        protected _addAnimatedElements(style: number): void;
+    }
+    /**
+      * The available options for the Navbar control.
+      */
+    interface IProgressRingOptions {
+        /**
+          * The loading ring style. Defaults to 0.
+          */
+        style?: number;
     }
     /**
       * An ITemplateControl for showing incremental progress.
@@ -375,6 +396,10 @@ declare module platui {
           * Reference to the Window injectable.
           */
         protected _window: Window;
+        /**
+          * Reference to the Animator injectable.
+          */
+        protected _animator: plat.ui.animations.Animator;
         /**
           * The animated bar element.
           */
@@ -404,7 +429,7 @@ declare module platui {
           * @param {number} value The decimal number between 0 and 1 to set as the
           * bar percentage (e.g. - 0.5 would be 50% complete).
           */
-        setProgress(value: number): void;
+        setProgress(value: number): plat.ui.animations.IAnimationThenable<void>;
     }
     /**
       * An BindControl that acts as a global drawer.
@@ -3433,6 +3458,76 @@ declare module platui {
       * Defines the context type for the Navbar control.
       */
     interface INavbarContext extends INavbarProperties<INavbarComponent | Array<INavbarComponent>> {
+    }
+    /**
+      * An TemplateControl that keeps track of a loading image.
+      */
+    class Image extends plat.ui.TemplateControl implements IUiControl {
+        protected static _inject: any;
+        /**
+          * The HTML template represented as a string.
+          */
+        templateString: string;
+        /**
+          * The evaluated plat-options object.
+          */
+        options: plat.observable.IObservableProperty<IImageOptions>;
+        /**
+          * Reference to the Compat injectable.
+          */
+        protected _compat: plat.Compat;
+        /**
+          * Reference to the Document injectable.
+          */
+        protected _document: Document;
+        /**
+          * Reference to the INodeManagerStatic injectable.
+          */
+        protected _NodeManagerStatic: plat.processing.INodeManagerStatic;
+        /**
+          * The loading progress element.
+          */
+        protected _loader: HTMLElement;
+        /**
+          * The image is a CSS background image. Defaults to false.
+          */
+        protected _isBackground: boolean;
+        /**
+          * The HTMLImageElement use to source the image.
+          */
+        protected _img: HTMLImageElement;
+        /**
+          * Sets the classes on the proper elements.
+          * @param {string} className? An optional, additional class name or class names to set on the control
+          * in addition to its standard set.
+          * @param {Element} element? The element to set the class name on. Should default to
+          * the control's element if not specified.
+          */
+        setClasses(className?: string, element?: Element): void;
+        /**
+          * Set the class name.
+          */
+        initialize(): void;
+        /**
+          * Set the style and initialize the action.
+          */
+        loaded(): void;
+        /**
+          * Sets and sources the image to display.
+          * @param {string} url The source URL to display.
+          * @param {string} oldUrl? The old source URL that was being displayed.
+          */
+        protected _setSrc(url: string, oldUrl?: string): void;
+    }
+    /**
+      * The available options for the Image control.
+      */
+    interface IImageOptions {
+        /**
+          * Whether the image being set is going to be a CSS background image or an HTML `<img>` tag.
+          * Defaults to false meaning an HTML `<img>` tag.
+          */
+        isBackground?: boolean;
     }
 }
 
