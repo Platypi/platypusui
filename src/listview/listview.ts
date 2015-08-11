@@ -661,6 +661,19 @@ module platui {
         private __resolveFn: () => void;
 
         /**
+         * @name __rejectFn
+         * @memberof platui.Listview
+         * @kind property
+         * @access private
+         *
+         * @type {() => void}
+         *
+         * @description
+         * The reject function for the modalLoaded Promise.
+         */
+        private __rejectFn: () => void;
+
+        /**
          * @name constructor
          * @memberof platui.Listview
          * @kind function
@@ -673,8 +686,9 @@ module platui {
          */
         constructor() {
             super();
-            this.itemsLoaded = new this._Promise<void>((resolve): void => {
+            this.itemsLoaded = new this._Promise<void>((resolve, reject): void => {
                 this.__resolveFn = resolve;
+                this.__rejectFn = reject;
             });
         }
 
@@ -862,7 +876,10 @@ module platui {
          * @returns {void}
          */
         dispose(): void {
-            this.__resolveFn = null;
+            if (this.utils.isFunction(this.__rejectFn)) {
+                this.__rejectFn();
+                this.__resolveFn = this.__rejectFn = null;
+            }
         }
 
         /**
@@ -1381,7 +1398,7 @@ module platui {
 
                     if (this.utils.isFunction(this.__resolveFn)) {
                         this.__resolveFn();
-                        this.__resolveFn = null;
+                        this.__resolveFn = this.__rejectFn = null;
                     }
                 }).catch((error: any): void => {
                     this.utils.postpone((): void => {
