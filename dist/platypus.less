@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.6.5 (https://platypi.io) 
+ * PlatypusUI v0.6.6 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1319,7 +1319,7 @@
             }
         }
 
-        /// ============== Variable Button Group Styles =============== ///
+    /// ============== Variable Button Group Styles =============== ///
 
         .plat-button-group(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -1338,7 +1338,7 @@
                     }
                 }
             }
-            & when (@prop = border-radius), (@value = border-radius) {
+            & when (@prop = border-radius) {
                 &.button-group {
                     & > .plat-button:nth-of-type(1),
                     & > .button:nth-of-type(1) {
@@ -1916,7 +1916,7 @@
             }
         }
 
-        /// =========== Drawer Controller Root Element Styles =========== ///
+    /// =========== Drawer Controller Root Element Styles =========== ///
 
         .plat-drawer-root(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -3311,6 +3311,7 @@
 #platui {
     #Navbar {
         #platui > #variables;
+        
     /// =========== Navbar Colors =========== ///
 
         @background-color: @primary-color;
@@ -3352,7 +3353,7 @@
                     border-left: @border-left;
                     z-index: @z-index;
 
-                    &:not(.no-navbar-shadow) {
+                    &:not(.navbar-no-shadow) {
                         .box-shadow(@box-shadow);
                     }
 
@@ -3491,7 +3492,7 @@
     /// =========== Progress Bar Transition =========== ///
 
         @transition-time: 0s;
-        @transition-timing-function: linear;
+        @transition-function: linear;
 
     /// =========== Variable Progress Bar Styles =========== ///
 
@@ -3512,7 +3513,7 @@
 
                             &.plat-transition-init {
                                 .transition-duration(@transition-time);
-                                .transition-timing-function(@transition-timing-function);
+                                .transition-timing-function(@transition-function);
                             }
                         }
                     }
@@ -3575,7 +3576,7 @@
                     }
                 }
             }
-            & when (@prop = transition-timing-function) {
+            & when (@prop = transition-function) {
                 &.plat-progress {
                     .plat-progress-container {
                         .plat-animated-bar {
@@ -3976,6 +3977,8 @@
             }
         }
 
+    /// =========== Variable Progress Ring 0 Styles =========== ///
+
         .plat-ring-0(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -4049,6 +4052,8 @@
                 }
             }
         }
+
+    /// =========== Variable Progress Ring 1 Styles =========== ///
 
         .plat-ring-1(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -4168,6 +4173,8 @@
                 }
             }
         }
+
+    /// =========== Variable Progress Ring 2 Styles =========== ///
 
         .plat-ring-2(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -8378,7 +8385,7 @@
                 height: 100%;
 
                 &.plat-transition-init {
-                    .transition(width @transition-time @transition-timing-function);
+                    .transition(width @transition-time @transition-function);
                 }
             }
         }
