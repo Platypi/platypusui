@@ -2982,8 +2982,13 @@ module platui {
          * @returns {HTMLElement} The progress ring element.
          */
         protected _generateProgressRing(): HTMLElement {
-            var control = this._document.createElement('div');
-            control.className = __Plat + 'ring';
+            var _document = this._document,
+                control = _document.createElement('div'),
+                ring = _document.createElement('div');
+
+            control.className = __Listview + '-ring ' + __Plat + 'ring ' + __Plat + 'ring-0';
+            ring.className = __Plat + 'animated-ring';
+            control.insertBefore(ring, null);
 
             return control;
         }

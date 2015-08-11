@@ -20,14 +20,9 @@
                 width: 2.5em;
             }
 
-            .plat-ring {
+            .plat-listview-ring {
+                #platui > #ProgressRing > .plat-ring(diameter; 2em);
                 position: absolute;
-                height: 2em;
-                width: 2em;
-                border-left-width: 0.2em;
-                border-bottom-width: 0.2em;
-                border-right-width: 0.2em;
-                border-top-width: 0.2em;
 
                 & when (@orientation = vertical) {
                     .translate-accelerate(-50%;0);
