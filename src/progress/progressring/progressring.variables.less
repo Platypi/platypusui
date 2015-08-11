@@ -18,7 +18,7 @@
 
         @spin-animation-name: PLAT-SPIN;
         @fade-delay-animation-name: PLAT-FADE-DELAY;
-        @spin-frequency: 650ms;
+        @spin-frequency: 750ms;
 
     /// =========== Progress Ring Animation Mixins =========== ///
 
@@ -397,10 +397,10 @@
                 @thickness: @diameter / 10;
 
                 &.plat-ring {
-                    width: @diameter;
-                    height: @diameter;
-
                     &.plat-ring-0 {
+                        width: @diameter;
+                        height: @diameter;
+
                         .plat-animated-ring {
                             .animation-name(@spin-animation-name);
                             .animation-duration(@spin-frequency);
@@ -432,10 +432,10 @@
                 @thickness: @value / 10;
 
                 &.plat-ring {
-                    width: @value;
-                    height: @value;
-
                     &.plat-ring-0 {
+                        width: @value;
+                        height: @value;
+
                         .plat-animated-ring {
                             border-width: @thickness;
                         }
@@ -469,10 +469,10 @@
                 @unfilled-color-1: fade(@color, 15%);
 
                 &.plat-ring {
-                    width: @diameter;
-                    height: @diameter;
-
                     &.plat-ring-1 {
+                        width: @diameter;
+                        height: @diameter;
+
                         .plat-animated-ring {
                             .animation-name(@spin-animation-name);
                             .animation-duration(@spin-frequency);
@@ -555,8 +555,10 @@
             }
             & when (@prop = diameter) {
                 &.plat-ring {
-                    width: @value;
-                    height: @value;
+                    &.plat-ring-1 {
+                        width: @value;
+                        height: @value;
+                    }
                 }
             }
             & when (@prop = spin-animation-name) {
@@ -587,10 +589,10 @@
                 @delay-step: @spin-frequency / 12;
 
                 &.plat-ring {
-                    width: @diameter;
-                    height: @diameter;
-
                     &.plat-ring-2 {
+                        width: @diameter;
+                        height: @diameter;
+
                         .plat-animated-ring {
                             .plat-animated-child {
                                 &::before {
@@ -686,8 +688,10 @@
             }
             & when (@prop = diameter) {
                 &.plat-ring {
-                    width: @value;
-                    height: @value;
+                    &.plat-ring-2 {
+                        width: @value;
+                        height: @value;
+                    }
                 }
             }
             & when (@prop = fade-delay-animation-name) {
