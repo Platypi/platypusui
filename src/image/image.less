@@ -8,7 +8,7 @@
     #platui > #mixins;
     #platui > #Image;
 
-    &.plat-image {
+    .plat-image {
         .box-sizing(border-box);
         display: inline-block;
         position: relative;
@@ -21,28 +21,10 @@
 
         img:not(.plat-load-image) {
             position: relative;
+            display: block;
+            margin: 0 auto;
             max-width: 100%;
             max-height: 100%;
-
-            &.plat-center-horizontal {
-                left: 50%;
-
-                &:not(.plat-center-vertical) {
-                    .translate-accelerate(-50%;0);
-                }
-            }
-
-            &.plat-center-vertical {
-                top: 50%;
-
-                &:not(.plat-center-horizontal) {
-                    .translate-accelerate(0;-50%);
-                }
-            }
-
-            &.plat-center-horizontal.plat-center-vertical {
-                .translate-accelerate(-50%;-50%);
-            }
         }
 
         .plat-ring.plat-image-ring {
@@ -50,21 +32,29 @@
             position: relative;
             margin: 0 auto;
             display: block;
-
-            &.plat-center-vertical {
-                .translate-accelerate(0;-50%);
-                top: 50%;
-            }
         }
 
         &.plat-background {
             background-repeat: no-repeat;
             background-size: contain;
-            background-position: center;
+        }
+
+        &.image-center {
+            img:not(.plat-load-image),
+            .plat-ring.plat-image-ring {
+                top: 50%;
+                .translate-accelerate(0;-50%);
+            }
+
+            &.plat-background {
+                background-position: center;
+            }
         }
 
         &.plat-image-error {
             background-color: #ececec;
+            min-height: 25px;
+            min-width: 25px;
 
             &::before {
                 .translate-accelerate(-50%;-50%);

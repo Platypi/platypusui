@@ -15,7 +15,6 @@ module platui {
     export class Image extends plat.ui.TemplateControl implements IUiControl {
         protected static _inject: any = {
             _compat: __Compat,
-            _window: __Window,
             _document: __Document,
             _NodeManagerStatic: __NodeManagerStatic
         };
@@ -31,7 +30,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString: string = '<div class="plat-ring plat-image-ring"></div>\n';
+        templateString: string = '<div plat-control="' + __ProgressRing + '" class="plat-image-ring"></div>\n';
 
         /**
          * @name options
@@ -58,19 +57,6 @@ module platui {
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
         protected _compat: plat.Compat;
-
-        /**
-         * @name _window
-         * @memberof platui.Image
-         * @kind property
-         * @access protected
-         *
-         * @type {Window}
-         *
-         * @description
-         * Reference to the Window injectable.
-         */
-        protected _window: Window;
 
         /**
          * @name _document
@@ -185,9 +171,10 @@ module platui {
          */
         loaded(): void {
             var element = this.element,
-                isString = this.utils.isString,
+                utils = this.utils,
+                isString = utils.isString,
+                isObject = utils.isObject,
                 attributes = this.attributes,
-                isObject = this.utils.isObject,
                 options = this.options,
                 url: string;
 
@@ -207,48 +194,7 @@ module platui {
                 this.dom.addClass(element, __Plat + 'background');
             }
 
-            var loader = this._loader = <HTMLElement>element.firstElementChild,
-                _window = this._window,
-                loaderStyle = _window.getComputedStyle(loader),
-                elStyle = _window.getComputedStyle(element),
-                numRegex = /[^0-9]/,
-                isNumber = this.utils.isNumber,
-                loaderHeight = Number(loaderStyle.height.replace(numRegex, '')),
-                loaderWidth = Number(loaderStyle.width.replace(numRegex, '')),
-                elHeight = Number(elStyle.height.replace(numRegex, '')),
-                elWidth = Number(elStyle.width.replace(numRegex, '')),
-                diameter: string;
-
-            if (!isNumber(loaderHeight)) {
-                loaderHeight = 0;
-            }
-
-            if (!isNumber(elHeight)) {
-                elHeight = 0;
-            }
-
-            if (!isNumber(loaderWidth)) {
-                loaderWidth = 0;
-            }
-
-            if (!isNumber(elWidth)) {
-                elWidth = 0;
-            }
-
-            if (elHeight < loaderHeight || elWidth < loaderWidth) {
-                if (elHeight > 0 && elHeight < elWidth) {
-                    diameter = elHeight + 'px';
-                } else if (elWidth > 0) {
-                    diameter = elWidth + 'px';
-                }
-            } else if (loaderHeight < elHeight) {
-                this.dom.addClass(loader, __Plat + 'center-vertical');
-            }
-
-            if (!this.utils.isUndefined(diameter)) {
-                var style = loader.style;
-                style.height = style.width = diameter;
-            }
+            this._loader = <HTMLElement>element.firstElementChild;
 
             if (this._NodeManagerStatic.hasMarkup(url)) {
                 return;
@@ -292,44 +238,6 @@ module platui {
 
                     dom.removeClass(img, imageLoadClass);
                     element.removeChild(loader);
-
-                    var _window = this._window,
-                        numRegex = /[^0-9]/,
-                        isNumber = this.utils.isNumber,
-                        imgStyle = _window.getComputedStyle(img),
-                        elStyle = _window.getComputedStyle(element),
-                        imgHeight = Number(imgStyle.height.replace(numRegex, '')),
-                        elHeight = Number(elStyle.height.replace(numRegex, '')),
-                        imgWidth = Number(imgStyle.width.replace(numRegex, '')),
-                        elWidth = Number(elStyle.width.replace(numRegex, ''));
-
-                    if (!isNumber(imgHeight)) {
-                        imgHeight = 0;
-                    }
-
-                    if (!isNumber(elHeight)) {
-                        elHeight = 0;
-                    }
-
-                    if (!isNumber(imgWidth)) {
-                        imgWidth = 0;
-                    }
-
-                    if (!isNumber(elWidth)) {
-                        elWidth = 0;
-                    }
-
-                    if (imgHeight < elHeight) {
-                        dom.addClass(img, __Plat + 'center-vertical');
-                    } else {
-                        dom.removeClass(img, __Plat + 'center-vertical');
-                    }
-
-                    if (imgWidth < elWidth) {
-                        dom.addClass(img, __Plat + 'center-horizontal');
-                    } else {
-                        dom.removeClass(img, __Plat + 'center-horizontal');
-                    }
                 });
             };
 

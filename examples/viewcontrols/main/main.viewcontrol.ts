@@ -74,36 +74,43 @@ module app {
                 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
                 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'
             ],
-            url: 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTnPq66xNWUQvfFqdlFnsrU4TfR_dASliyI1avXHzRZ6FieE88n'
+            url1: '',
+            url2: ''
         };
 
         text: plat.controls.INamedElement<HTMLElement, void>;
         password: plat.controls.INamedElement<HTMLElement, void>;
         modal1: plat.controls.INamedElement<Element, platui.Modal>;
         modal2: plat.controls.INamedElement<Element, platui.Modal>;
+        urls = [
+            'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTnPq66xNWUQvfFqdlFnsrU4TfR_dASliyI1avXHzRZ6FieE88n',
+            'https://upload.wikimedia.org/wikipedia/commons/3/3d/LARGE_elevation.jpg',
+            'http://i1.wp.com/static.web-backgrounds.net/uploads/2012/08/City_Landscape_Background.jpg',
+            'http://www.pageresource.com/wallpapers/wallpaper/blue-sky-abstrakt-windows-backgrounds.jpg'
+        ];
 
         protected navbar: platui.Navbar = plat.acquire(platui.Navbar);
 
         initialize() {
             this.initNavbar();
+            this.context.url1 = this.urls[0];
+            this.context.url2 = this.urls[this.urls.length - 1];
         }
 
         loaded() {
-            var context = this.context;
-            //setTimeout(() => {
-                //this.context.groupedlistview.push({ group: 'B', items: ['ballin', 'bark', 'basket'] });
-                //this.context.groupedlistview.push({ group: 'C', items: ['callin', 'cork', 'casket'] });
-                //this.context.groupedlistview[1].items.shift();
-                //this.context.groupedlistview.pop();
-            //    setTimeout(() => {
-            //        this.context.groupedlistview = [
-            //            { group: 'C', items: ['callin', 'cork', 'casket'] },
-            //            { group: 'B', items: ['ballin', 'bark', 'basket'] }
-            //        ];
-            //    }, 2000);
-            //}, 2000);
-            setTimeout(() => {
-                this.context.url = 'https://upload.wikimedia.org/wikipedia/commons/3/3d/LARGE_elevation.jpg';
+            var context = this.context,
+                i = 1;
+            setInterval(() => {
+                var urls = this.urls,
+                    lastIndex = urls.length - 1;
+
+                context.url1 = urls[i];
+                context.url2 = urls[lastIndex - i];
+                if (i === lastIndex) {
+                    i = 0;
+                } else {
+                    i++;
+                }
             }, 2000);
         }
 
@@ -130,16 +137,10 @@ module app {
         addListItem() {
             var listview = this.context.listview;
             this.context.groupedlistview[0].items.push('check');
-            //this.context.groupedlistview.push({ group: 'C', items: ['callin', 'cork', 'casket'] });
-            //listview.push(10);
-            //listview.push(listview[listview.length - 1] + 1);
-            //this.context.groupedlistview[0].items.push('aching');
-            //this.context.groupedlistview[0] = { group: 'C', items: ['callin', 'cork', 'casket'] };
         }
 
         popListItem() {
             this.context.listview.pop();
-            //this.context.groupedlistview[0].items.pop();
             this.context.groupedlistview[0].items.pop();
         }
 

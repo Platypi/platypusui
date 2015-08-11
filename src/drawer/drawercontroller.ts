@@ -1765,7 +1765,7 @@ module platui {
          * @returns {number} The max offset to translate.
          */
         protected _getOffset(): number {
-            return this._isVertical ? this._drawerElement.clientHeight : this._drawerElement.clientWidth;
+            return this._isVertical ? this._drawerElement.offsetHeight : this._drawerElement.offsetWidth;
         }
     }
 

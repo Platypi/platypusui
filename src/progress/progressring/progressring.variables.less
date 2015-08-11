@@ -4,32 +4,26 @@
 
 #platui {
     #ProgressRing {
-        #dependencies {
-            #platui > #variables;
-            @color: @primary-color;
-            @animation-name: PLAT-SPIN;
-        }
-
-        #platui > #ProgressRing > #dependencies;
+        #platui > #variables;
 
     /// =========== Progress Ring Colors =========== ///
 
-        @fill-color: fade(@color, 80%);
-        @unfilled-color: fade(@color, 10%);
+        @color: @primary-color;
 
     /// =========== Progress Ring Sizes =========== ///
 
         @diameter: 3em;
-        @thickness: @diameter / 10;
 
     /// =========== Progress Ring Animation =========== ///
 
-        @spin-frequency: 600ms;
+        @spin-animation-name: PLAT-SPIN;
+        @fade-delay-animation-name: PLAT-FADE-DELAY;
+        @spin-frequency: 650ms;
 
     /// =========== Progress Ring Animation Mixins =========== ///
 
-        .spin() {
-            #platui > #animations > .keyframes(@animation-name);
+        .spin(@name) {
+            #platui > #animations > .keyframes(@name);
             .frames(@prefix) {
                 #platui > #mixins;
                 from {
@@ -38,6 +32,14 @@
                 to {
                     .transform(rotate(359deg); @prefix);
                 }
+            }
+        }
+
+        .fade-delay(@name) {
+            #platui > #animations > .keyframes(@name);
+            .frames(@prefix) {
+                0%, 39%, 100% { opacity: 0; }
+                40% { opacity: 1; }
             }
         }
     }
