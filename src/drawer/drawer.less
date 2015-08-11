@@ -31,11 +31,11 @@
     .plat-drawer {
         .scroll();
         .box-sizing(border-box);
+        .backface-visibility(hidden);
         position: absolute;
         color: @color;
         z-index: 0;
         background-color: @background-color;
-        -webkit-backface-visibility: hidden;
 
         &.plat-left,
         &.plat-right {
@@ -78,8 +78,8 @@
     #platui > #Drawer;
 
     .plat-drawer-root {
-        -webkit-backface-visibility: hidden;
-        -webkit-perspective: none;
+        .backface-visibility(hidden);
+        .perspective(none);
 
         &.plat-drawer-transition-left,
         &.plat-drawer-transition-right,

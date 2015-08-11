@@ -15,20 +15,22 @@
         .box-sizing(border-box);
         .misc-webkit-touch();
         .user-select();
+        .backface-visibility(hidden);
+        .perspective(none);
         position: absolute;
         top: 0;
         left: 0;
         z-index: 999999;
-        -webkit-backface-visibility: hidden;
 
         .plat-modal-container {
             .fill();
             .scroll();
             .box-sizing(content-box);
+            .backface-visibility(hidden);
+            .perspective(none);
             position: absolute;
             background-color: @background-color;
             color: @color;
-            -webkit-backface-visibility: hidden;
 
             &.plat-no-transition,
             &.plat-modal-transition.plat-fade {
