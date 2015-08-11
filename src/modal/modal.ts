@@ -238,7 +238,7 @@ module platui {
             this.modalLoaded = new this._Promise<void>((resolve, reject): void => {
                 this.__resolveFn = resolve;
                 this.__rejectFn = reject;
-            });
+            }).catch(noop);
         }
 
         /**
