@@ -669,7 +669,7 @@ module platui {
          * @type {() => void}
          *
          * @description
-         * The reject function for the modalLoaded Promise.
+         * The reject function for the itemsLoaded Promise.
          */
         private __rejectFn: () => void;
 
@@ -689,7 +689,7 @@ module platui {
             this.itemsLoaded = new this._Promise<void>((resolve, reject): void => {
                 this.__resolveFn = resolve;
                 this.__rejectFn = reject;
-            });
+            }).catch(noop);
         }
 
         /**
