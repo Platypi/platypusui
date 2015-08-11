@@ -645,7 +645,7 @@ module platui {
                 });
             });
 
-            if (!wasClosed) {
+            if (wasClosed) {
                 var drawer = this._drawer;
 
                 this.inputChanged(true);
