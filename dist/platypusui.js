@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.6.3 (https://platypi.io)
+ * PlatypusUI v0.6.4 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -6863,8 +6863,10 @@ var platui;
          * Creates a progress ring element.
          */
         Listview.prototype._generateProgressRing = function () {
-            var control = this._document.createElement('div');
-            control.className = __Plat + 'ring';
+            var _document = this._document, control = _document.createElement('div'), ring = _document.createElement('div');
+            control.className = __Listview + '-ring ' + __Plat + 'ring ' + __Plat + 'ring-0';
+            ring.className = __Plat + 'animated-ring';
+            control.insertBefore(ring, null);
             return control;
         };
         /**
