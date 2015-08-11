@@ -2,25 +2,17 @@
 
 #platui {
     #Select {
-        #dependencies {
-            #platui > #variables;
-            @border-color: @neutral-color-light;
-            @border-width: 1px;
-        }
-
-        #platui > #Select > #dependencies;
+        #platui > #variables;
 
     /// =========== Select Colors =========== ///
 
         @background-color: @transparent;
         @color: @default-font-color;
+        @border-color: @neutral-color-light;
 
     /// =========== Select Sizes =========== ///
 
         @border-radius: 2px;
-
-    /// =========== Select Properties =========== ///
-
-        @border: @border-width solid @border-color;
+        @border-width: 1px;
     }
 }

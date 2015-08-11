@@ -3,19 +3,22 @@
 #platui {
     #ProgressBar {
         #platui > #variables;
-        
+
     /// =========== Progress Bar Colors =========== ///
 
-        @border-color: @neutral-color;
-        @fill-color: @primary-color;
+        @fill-color: @neutral-color-dark;
+        @unfilled-color: @neutral-color-light;
 
     /// =========== Progress Bar Properties =========== ///
 
         @height: 8px;
         @border: none;
+        @border-radius: 8px;
+        @fill-radius: 4px;
 
     /// =========== Progress Bar Transition =========== ///
 
-        @transition: none;
+        @transition-time: 0s;
+        @transition-timing-function: linear;
     }
 }

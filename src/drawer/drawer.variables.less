@@ -13,7 +13,6 @@
 
         @color: @white;
         @background-color: @neutral-color;
-        @shadow-color: fadeout(@black, 30%);
 
     /// =========== Drawer Lengths =========== ///
 
@@ -21,11 +20,15 @@
         @length-right: @length-default;
         @length-top: @length-default;
         @length-bottom: @length-default;
-        @shadow-offset: 2px;
-        @shadow-blur: 10px;
-        @shadow-spread: 0px;
 
-    /// =========== Drawer Transition =========== ///
+    /// =========== Drawer Root Shadow =========== ///
+
+        @shadow-left: -2px 0px 10px 0px fadeout(@black, 30%);
+        @shadow-right: 2px 0px 10px 0px fadeout(@black, 30%);
+        @shadow-top: 0px -2px 10px 0px fadeout(@black, 30%);
+        @shadow-bottom: 0px 2px 10px 0px fadeout(@black, 30%);
+
+    /// =========== Drawer Root Transition =========== ///
 
         @transition-time: 300ms;
         @transition-function: ease-out;

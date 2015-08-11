@@ -6,110 +6,276 @@
 
 /// =========== Drawer Controller Default Styles =========== ///
 
-.plat-drawer-controller {
+& {
     #platui > #mixins;
-    .user-select();
 
-    &.plat-horizontal {
-        .touch-action(pan-y);
-    }
+    .plat-drawer-controller {
+        .user-select();
 
-    &.plat-vertical {
-        .touch-action(pan-x);
+        &.plat-horizontal {
+            .touch-action(pan-y);
+        }
+
+        &.plat-vertical {
+            .touch-action(pan-x);
+        }
     }
 }
 
-/// =========== Drawer Default Styles =========== ///
+/// =========== Drawer Declaration =========== ///
 
-.plat-drawer {
-    #platui > #variables;
+& {
     #platui > #mixins;
     #platui > #Drawer;
-    position: absolute;
-    color: @color;
-    z-index: 0;
-    background-color: @background-color;
-    -webkit-backface-visibility: hidden;
-    .scroll();
-    .box-sizing(border-box);
 
-    &.plat-left,
-    &.plat-right {
-        height: 100%;
-        top: 0;
+    .plat-drawer {
+        .scroll();
+        .box-sizing(border-box);
+        .backface-visibility(hidden);
+        position: absolute;
+        color: @color;
+        z-index: 0;
+        background-color: @background-color;
+
+        &.plat-left,
+        &.plat-right {
+            height: 100%;
+            top: 0;
+        }
+
+        &.plat-top,
+        &.plat-bottom {
+            width: 100%;
+            left: 0;
+        }
+
+        &.plat-left {
+            width: @length-left;
+            left: 0;
+        }
+
+        &.plat-right {
+            width: @length-right;
+            right: 0;
+        }
+
+        &.plat-top {
+            height: @length-top;
+            top: 0;
+        }
+
+        &.plat-bottom {
+            height: @length-bottom;
+            bottom: 0;
+        }
     }
+}
 
-    &.plat-top,
-    &.plat-bottom {
-        width: 100%;
-        left: 0;
+/// =========== Drawer Controller Root Element Declaration =========== ///
+
+& {
+    #platui > #mixins;
+    #platui > #Drawer;
+
+    .plat-drawer-root {
+        .backface-visibility(hidden);
+        .perspective(none);
+
+        &.plat-drawer-transition-left,
+        &.plat-drawer-transition-right,
+        &.plat-drawer-transition-top,
+        &.plat-drawer-transition-bottom {
+            .user-select(none);
+            .touch-action(none);
+
+            .plat-clickeater {
+                .fill();
+                .touch-action(none);
+                position: absolute;
+                background-color: transparent;
+                overflow: hidden;
+                z-index: 999999;
+            }
+        }
+
+        &.plat-drawer-transition-left {
+            .box-shadow(@shadow-left);
+        }
+
+        &.plat-drawer-transition-right {
+            .box-shadow(@shadow-right);
+        }
+
+        &.plat-drawer-transition-top {
+            .box-shadow(@shadow-top);
+        }
+
+        &.plat-drawer-transition-bottom {
+            .box-shadow(@shadow-bottom);
+        }
+
+        &.plat-transition-init {
+            -webkit-transition: -webkit-transform @transition-time @transition-function;
+            -moz-transition: -moz-transform @transition-time @transition-function;
+            transition: transform @transition-time @transition-function;
+        }
     }
+}
 
-    &.plat-left {
-        width: @length-left;
-        left: 0;
+/// =========== Variable Drawer Styles =========== ///
+
+.plat-drawer(@prop: undefined; @value: undefined) {
+    & when (@prop = undefined), (@value = undefined) {
+        &.plat-drawer {
+            color: @color;
+            background-color: @background-color;
+
+            &.plat-left {
+                width: @length-left;
+            }
+
+            &.plat-right {
+                width: @length-right;
+            }
+
+            &.plat-top {
+                height: @length-top;
+            }
+
+            &.plat-bottom {
+                height: @length-bottom;
+            }
+        }
     }
+    & when (@prop = length-default) {
+        &.plat-drawer {
+            &.plat-left {
+                width: @value;
+            }
 
-    &.plat-right {
-        width: @length-right;
-        right: 0;
+            &.plat-right {
+                width: @value;
+            }
+
+            &.plat-top {
+                height: @value;
+            }
+
+            &.plat-bottom {
+                height: @value;
+            }
+        }
     }
-
-    &.plat-top {
-        height: @length-top;
-        top: 0;
+    & when (@prop = color) {
+        &.plat-drawer {
+            color: @value;
+        }
     }
-
-    &.plat-bottom {
-        height: @length-bottom;
-        bottom: 0;
+    & when (@prop = background-color) {
+        &.plat-drawer {
+            background-color: @value;
+        }
+    }
+    & when (@prop = length-left) {
+        &.plat-drawer {
+            &.plat-left {
+                width: @value;
+            }
+        }
+    }
+    & when (@prop = length-right) {
+        &.plat-drawer {
+            &.plat-right {
+                width: @value;
+            }
+        }
+    }
+    & when (@prop = length-top) {
+        &.plat-drawer {
+            &.plat-top {
+                height: @value;
+            }
+        }
+    }
+    & when (@prop = length-bottom) {
+        &.plat-drawer {
+            &.plat-bottom {
+                height: @value;
+            }
+        }
     }
 }
 
 /// =========== Drawer Controller Root Element Styles =========== ///
 
-.plat-drawer-transition-prep {
+.plat-drawer-root(@prop: undefined; @value: undefined) {
     #platui > #mixins;
-    #platui > #Drawer;
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: none;
 
-    &.plat-drawer-transition-right,
-    &.plat-drawer-transition-left,
-    &.plat-drawer-transition-top,
-    &.plat-drawer-transition-bottom {
-        .user-select(none);
-        .touch-action(none);
+    & when (@prop = undefined), (@value = undefined) {
+        &.plat-drawer-root {
+            &.plat-drawer-transition-left {
+                .box-shadow(@shadow-left);
+            }
 
-        .plat-clickeater {
-            position: absolute;
-            background-color: transparent;
-            overflow: hidden;
-            z-index: 999999;
-            .fill();
-            .touch-action(none);
+            &.plat-drawer-transition-right {
+                .box-shadow(@shadow-right);
+            }
+
+            &.plat-drawer-transition-top {
+                .box-shadow(@shadow-top);
+            }
+
+            &.plat-drawer-transition-bottom {
+                .box-shadow(@shadow-bottom);
+            }
+
+            &.plat-transition-init {
+                -webkit-transition: -webkit-transform @transition-time @transition-function;
+                -moz-transition: -moz-transform @transition-time @transition-function;
+                transition: transform @transition-time @transition-function;
+            }
         }
     }
-
-    &.plat-drawer-transition-left {
-        .box-shadow(-@shadow-offset 0px @shadow-blur @shadow-spread @shadow-color);
+    & when (@prop = shadow-left) {
+        &.plat-drawer-root {
+            &.plat-drawer-transition-left {
+                .box-shadow(@value);
+            }
+        }
     }
-
-    &.plat-drawer-transition-right {
-        .box-shadow(@shadow-offset 0px @shadow-blur @shadow-spread @shadow-color);
+    & when (@prop = shadow-right) {
+        &.plat-drawer-root {
+            &.plat-drawer-transition-right {
+                .box-shadow(@value);
+            }
+        }
     }
-
-    &.plat-drawer-transition-top {
-        .box-shadow(0px -@shadow-offset @shadow-blur @shadow-spread @shadow-color);
+    & when (@prop = shadow-top) {
+        &.plat-drawer-root {
+            &.plat-drawer-transition-top {
+                .box-shadow(@value);
+            }
+        }
     }
-
-    &.plat-drawer-transition-bottom {
-        .box-shadow(0px @shadow-offset @shadow-blur @shadow-spread @shadow-color);
+    & when (@prop = shadow-bottom) {
+        &.plat-drawer-root {
+            &.plat-drawer-transition-bottom {
+                .box-shadow(@value);
+            }
+        }
     }
-
-    &.plat-transition-init {
-        -webkit-transition: -webkit-transform @transition-time @transition-function;
-        -moz-transition: -moz-transform @transition-time @transition-function;
-        transition: transform @transition-time @transition-function;
+    & when (@prop = transition-time) {
+        &.plat-drawer-root {
+            &.plat-transition-init {
+                .transition-duration(@value);
+            }
+        }
+    }
+    & when (@prop = transition-function) {
+        &.plat-drawer-root {
+            &.plat-transition-init {
+                .transition-timing-function(@value);
+            }
+        }
     }
 }

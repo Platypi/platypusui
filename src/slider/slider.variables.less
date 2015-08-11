@@ -2,25 +2,25 @@
 
 #platui {
     #Slider {
-        #dependencies {
-            @transition-time: 300ms;
-        }
+        #platui > #variables;
 
-        #platui > #Slider > #dependencies;
+    /// ================= Slider Colors ================== ///
+
+        @fill-color: @neutral-color-dark;
+        @unfilled-color: @neutral-color-light;
+        @knob-base-color: @pale-grey;
 
     /// ================= Slider Size ================== ///
 
         @thickness: 0.5em;
-        @fill-border-radius: 4px;
+        @border-radius: 4px;
 
     /// ================= Slider Knob Properties ================== ///
 
         @knob-diameter: 1.6em;
-        @knob-border-size: 1px;
 
     /// ============== Slider Transitions =============== ///
 
-        @horizontal-transition: width @transition-time;
-        @vertical-transition: height @transition-time;
+        @transition-time: 300ms;
     }
 }

@@ -50,7 +50,7 @@
             .transform(skew(@deg, @deg2); @vendor-list);
         }
 
-        .perspective(@value: 1000) {
+        .perspective(@value: none) {
             #platui > #variables;
             .perspective(@value; @webkit-moz-ms-list);
         }
@@ -62,21 +62,35 @@
             .transform(translate(@x, @y));
         }
         .translate(@x; @y; @vendor-list) {
-            .transform(translate(@x, @y), @vendor-list);
+            .transform(translate(@x, @y); @vendor-list);
+        }
+
+        .translateX(@x) {
+            .transform(translateX(@x));
+        }
+        .translateX(@x; @vendor-list) {
+            .transform(translateX(@x); @vendor-list);
+        }
+
+        .translateY(@y) {
+            .transform(translateY(@y));
+        }
+        .translateY(@y; @vendor-list) {
+            .transform(translateY(@y); @vendor-list);
         }
 
         .translateZ(@z) {
             .transform(translateZ(@z));
         }
         .translateZ(@z; @vendor-list) {
-            .transform(translateZ(@z), @vendor-list);
+            .transform(translateZ(@z); @vendor-list);
         }
 
         .translate3d(@x; @y; @z) {
             .transform(translate3d(@x, @y, @z));
         }
         .translate3d(@x; @y; @z; @vendor-list) {
-            .transform(translate3d(@x, @y, @z), @vendor-list);
+            .transform(translate3d(@x, @y, @z); @vendor-list);
         }
 
         .translate-accelerate(@x; @y) {

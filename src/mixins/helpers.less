@@ -132,5 +132,15 @@
         .background-size(@args; @vendor-list) {
             #platui > #__mixins > .vendor-loop(background-size; @args; @vendor-list);
         }
+
+        /// Backface Visibility
+
+        .backface-visibility(@arg: visible) {
+            #platui > #variables;
+            .background-size(@arg; @webkit-list);
+        }
+        .backface-visibility(@arg; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(backface-visibility; @arg; @vendor-list);
+        }
     }
 }

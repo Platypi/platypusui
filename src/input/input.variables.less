@@ -5,8 +5,8 @@
         #dependencies {
             #platui > #variables;
             @border-color: @neutral-color;
-            @primary-border-bottom-width: 2px;
-            @secondary-border-width: 2px;
+            @border-bottom-width: 2px;
+            @outline-border-width: 2px;
         }
 
         #platui > #Input > #dependencies;
@@ -14,15 +14,15 @@
     /// ============== Input Colors =============== ///
 
         @text-color: @text-grey;
-        @action-color: @border-color;
+        @background-color: @transparent;
         @placeholder-color: @neutral-color;
 
     /// =============== Input Sizes =============== ///
 
-        @default-height: 2.5em;
-        @default-width: 18em;
-        @primary-border-bottom: @primary-border-bottom-width solid @border-color;
-        @secondary-border: @secondary-border-width solid @border-color;
-        @secondary-border-radius: 4px;
+        @height: 2.5em;
+        @width: 18em;
+        @border-bottom: @border-bottom-width solid @border-color;
+        @outline-border: @outline-border-width solid @border-color;
+        @outline-border-radius: 4px;
     }
 }

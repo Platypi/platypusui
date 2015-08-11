@@ -3,118 +3,289 @@
 @import (reference) '../mixins/flexbox.less';
 @import (reference) 'modal.variables.less';
 
-/// =========== Modal Popover Styles =========== ///
+/// =========== Modal Prompt Declaration =========== ///
 
-.plat-modal {
+& {
     #platui > #variables;
     #platui > #mixins;
     #platui > #Modal;
 
-    &.modal-prompt {
-        background-color: rgba(0,0,0,0.6);
+    .plat-modal {
+        &.modal-prompt {
+            background-color: rgba(0,0,0,0.6);
 
-        .plat-modal-container {
-            margin: 0 auto;
-            width: 80%;
-            max-width: 30em;
-            height: auto;
-            background-color: @white;
-            color: @text-grey;
-            .border-radius(@prompt-border-radius);
-            
-            &.plat-no-transition,
-            &.plat-modal-transition.plat-fade {
-                top: 20%;
-                left: 0;
-                right: 0;
-                margin-left: auto;
-                margin-right: auto;
-            }
-            
-            &.plat-modal-transition {
-                &.plat-up, &.plat-down {
+            .plat-modal-container {
+                .border-radius(@prompt-border-radius);
+                margin: 0 auto;
+                width: 80%;
+                max-width: 30em;
+                height: auto;
+                background-color: @white;
+                color: @text-grey;
+
+                &.plat-no-transition,
+                &.plat-modal-transition.plat-fade {
+                    top: @prompt-top;
                     left: 0;
                     right: 0;
                     margin-left: auto;
                     margin-right: auto;
                 }
 
-                &.plat-up {
-                    .transition(@down-transition);
-                    top: 100%;
-                    
-                    &.plat-activate {
-                        top: @prompt-top;
-                    }
-                }
-
-                &.plat-down {
-                    &.plat-activate {
-                        top: @prompt-top;
-                    }
-                }
-
-                &.plat-left,
-                &.plat-right {
-                    top: @prompt-top;
-
-                    &.plat-activate {
+                &.plat-modal-transition {
+                    &.plat-up, &.plat-down {
                         left: 0;
                         right: 0;
                         margin-left: auto;
                         margin-right: auto;
                     }
-                }
-            }
 
-            & .prompt-title {
-                padding: 1em 2em;
-                border-bottom: 1px solid @prompt-accent-color;
-                text-align: center;
-                font-size: 110%;
-            }
+                    &.plat-up {
+                        .transition(@down-transition);
+                        top: 100%;
 
-            & .prompt-body {
-                padding: 1em 2em;
-                text-align: center;
-                background-color: @prompt-body-color;
-            }
-
-            & .prompt-action {
-                text-align: center;
-                padding: 0 2em 1em;
-                background-color: @prompt-body-color;
-
-                &.button-group {
-                    padding-left: 0;
-                    padding-right: 0;
-                    padding-bottom: 0;
-                    width: 100%;
-                    .flexbox();
-
-                    & > button {
-                        height: 100%;
-                        padding-top: 1em;
-                        padding-bottom: 1em;
-                        font-size: 110%;
-                        border-width: 0;
-                        border-top: 2px solid @prompt-accent-color;
-                        background-color: transparent;
-                        color: lighten(@text-grey, 20%);
-                        .flex(1);
-
-                        &:last-child {
-                            border-left: 2px solid @prompt-accent-color;
-                        }
-
-                        &:hover {
-                            opacity: 1;
-                        }
-
-                        &.button-suggested {
-                            color: @text-grey;
+                        &.plat-activate {
+                            top: @prompt-top;
                         }
                     }
+
+                    &.plat-down {
+                        &.plat-activate {
+                            top: @prompt-top;
+                        }
+                    }
+
+                    &.plat-left,
+                    &.plat-right {
+                        top: @prompt-top;
+
+                        &.plat-activate {
+                            left: 0;
+                            right: 0;
+                            margin-left: auto;
+                            margin-right: auto;
+                        }
+                    }
+                }
+
+                & .prompt-title {
+                    padding: 1em 2em;
+                    border-bottom: 1px solid @prompt-accent-color;
+                    text-align: center;
+                    font-size: 110%;
+                }
+
+                & .prompt-body {
+                    padding: 1em 2em;
+                    text-align: center;
+                    background-color: @prompt-body-color;
+                }
+
+                & .prompt-action {
+                    text-align: center;
+                    padding: 0 2em 1em;
+                    background-color: @prompt-body-color;
+
+                    &.button-group {
+                        .flexbox();
+                        padding-left: 0;
+                        padding-right: 0;
+                        padding-bottom: 0;
+                        width: 100%;
+
+                        & > button {
+                            .flex(1);
+                            height: 100%;
+                            padding-top: 1em;
+                            padding-bottom: 1em;
+                            font-size: 110%;
+                            border-width: 0;
+                            border-top: 2px solid @prompt-accent-color;
+                            background-color: transparent;
+                            color: lighten(@text-grey, 20%);
+
+                            &:last-child {
+                                border-left: 2px solid @prompt-accent-color;
+                            }
+
+                            &:hover {
+                                opacity: 1;
+                            }
+
+                            &.button-suggested {
+                                color: @text-grey;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// =========== Variable Modal Prompt Styles =========== ///
+
+.plat-modal-prompt(@prop: undefined; @value: undefined) {
+    #platui > #mixins;
+
+    & when (@prop = undefined), (@value = undefined) {
+        &.plat-modal {
+            &.modal-prompt {
+                .plat-modal-container {
+                    .border-radius(@prompt-border-radius);
+
+                    &.plat-no-transition,
+                    &.plat-modal-transition.plat-fade {
+                        top: @prompt-top;
+                    }
+
+                    &.plat-modal-transition {
+                        &.plat-up {
+                            .transition(@down-transition);
+
+                            &.plat-activate {
+                                top: @prompt-top;
+                            }
+                        }
+
+                        &.plat-down {
+                            &.plat-activate {
+                                top: @prompt-top;
+                            }
+                        }
+
+                        &.plat-left,
+                        &.plat-right {
+                            top: @prompt-top;
+                        }
+                    }
+
+                    & .prompt-title {
+                        border-bottom-color: @prompt-accent-color;
+                    }
+
+                    & .prompt-body {
+                        background-color: @prompt-body-color;
+                    }
+
+                    & .prompt-action {
+                        background-color: @prompt-body-color;
+
+                        &.button-group {
+                            & > button {
+                                border-top-color: @prompt-accent-color;
+
+                                &:last-child {
+                                    border-left-color: @prompt-accent-color;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = prompt-body-color) {
+        &.plat-modal {
+            &.modal-prompt {
+                .plat-modal-container {
+                    & .prompt-title {
+                        border-bottom-color: darken(@value, 4%);
+                    }
+
+                    & .prompt-body {
+                        background-color: @value;
+                    }
+
+                    & .prompt-action {
+                        background-color: @value;
+
+                        &.button-group {
+                            & > button {
+                                border-top-color: darken(@value, 4%);
+
+                                &:last-child {
+                                    border-left-color: darken(@value, 4%);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = down-transition) {
+        &.plat-modal {
+            &.modal-prompt {
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-up {
+                            .transition(@value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = prompt-top) {
+        &.plat-modal {
+            &.modal-prompt {
+                .plat-modal-container {
+                    &.plat-no-transition,
+                    &.plat-modal-transition.plat-fade {
+                        top: @value;
+                    }
+
+                    &.plat-modal-transition {
+                        &.plat-up {
+                            &.plat-activate {
+                                top: @value;
+                            }
+                        }
+
+                        &.plat-down {
+                            &.plat-activate {
+                                top: @value;
+                            }
+                        }
+
+                        &.plat-left,
+                        &.plat-right {
+                            top: @value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = prompt-accent-color) {
+        &.plat-modal {
+            &.modal-prompt {
+                .plat-modal-container {
+                    & .prompt-title {
+                        border-bottom-color: @value;
+                    }
+
+                    & .prompt-action {
+                        &.button-group {
+                            & > button {
+                                border-top-color: @value;
+
+                                &:last-child {
+                                    border-left-color: @value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    & when (@prop = prompt-border-radius) {
+        &.plat-modal {
+            &.modal-prompt {
+                .plat-modal-container {
+                    .border-radius(@value);
                 }
             }
         }
