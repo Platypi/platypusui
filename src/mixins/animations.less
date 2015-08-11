@@ -5,12 +5,12 @@
     #mixins {
         /// Animations
 
-        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none; @state: running) {
+        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none) {
             #platui > #variables;
-            .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @state; @webkit-moz-list);
+            .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @webkit-moz-list);
         }
-        .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @state; @vendor-list) {
-            #platui > #__mixins > .vendor-loop(animation; @name @duration @function @delay @count @direction @mode @state; @vendor-list);
+        .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation; @name @duration @function @delay @count @direction @mode; @vendor-list);
         }
 
         .animation(@args) {
