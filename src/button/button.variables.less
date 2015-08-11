@@ -142,7 +142,7 @@
             }
         }
 
-        /// ============== Variable Button Group Styles =============== ///
+    /// ============== Variable Button Group Styles =============== ///
 
         .plat-button-group(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -161,7 +161,7 @@
                     }
                 }
             }
-            & when (@prop = border-radius), (@value = border-radius) {
+            & when (@prop = border-radius) {
                 &.button-group {
                     & > .plat-button:nth-of-type(1),
                     & > .button:nth-of-type(1) {

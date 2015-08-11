@@ -19,7 +19,7 @@
     /// =========== Progress Bar Transition =========== ///
 
         @transition-time: 0s;
-        @transition-timing-function: linear;
+        @transition-function: linear;
 
     /// =========== Variable Progress Bar Styles =========== ///
 
@@ -40,7 +40,7 @@
 
                             &.plat-transition-init {
                                 .transition-duration(@transition-time);
-                                .transition-timing-function(@transition-timing-function);
+                                .transition-timing-function(@transition-function);
                             }
                         }
                     }
@@ -103,7 +103,7 @@
                     }
                 }
             }
-            & when (@prop = transition-timing-function) {
+            & when (@prop = transition-function) {
                 &.plat-progress {
                     .plat-progress-container {
                         .plat-animated-bar {
