@@ -14,5 +14,59 @@
 
         @border-radius: 2px;
         @border-width: 1px;
+
+    /// =========== Variable Select Styles =========== ///
+
+        .plat-select(@prop: undefined; @value: undefined) {
+            #platui > #mixins;
+
+            & when (@prop = undefined), (@value = undefined) {
+                &.plat-select {
+                    .border-radius(@border-radius);
+                    color: @color;
+                    background-color: @background-color;
+                    border-width: @border-width;
+                    border-color: @border-color;
+
+                    &::-ms-value {
+                        color: @color;
+                        background-color: @background-color;
+                    }
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-select {
+                    background-color: @value;
+
+                    &::-ms-value {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = color) {
+                &.plat-select {
+                    color: @value;
+
+                    &::-ms-value {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-select {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-select {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-width) {
+                &.plat-select {
+                    border-width: @value;
+                }
+            }
+        }
     }
 }

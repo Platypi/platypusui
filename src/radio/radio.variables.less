@@ -21,5 +21,127 @@
         @diameter: 1em;
         @border-width: 1px;
         @mark-padding: 1px;
+
+    /// =========== Variable Radio Styles =========== ///
+
+        .plat-radio(@prop: undefined; @value: undefined) {
+            #platui > #mixins;
+
+            & when (@prop = undefined), (@value = undefined) {
+                &.plat-radio {
+                    & > span {
+                        line-height: @diameter;
+                    }
+
+                    .plat-radio-container {
+                        .flex(0 0 @diameter);
+                        width: @diameter;
+                        height: @diameter;
+                        background-color: @background-color;
+                        border-width: @border-width;
+                        border-color: @border-color;
+
+                        &.plat-bullet {
+                            border-color: @checked-border-color;
+
+                            .plat-mark {
+                                background-color: @mark-color;
+                                width: @diameter;
+                                height: @diameter;
+                                border-width: @mark-padding;
+                                border-color: @mark-padding-color;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = checked-border-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            border-color: @value;
+
+                            .plat-mark {
+                                background-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        border-color: @value;
+                    }
+                }
+            }
+            & when (@prop = mark-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            .plat-mark {
+                                background-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = mark-padding-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                &.plat-radio {
+                    & > span {
+                        line-height: @value;
+                    }
+
+                    .plat-radio-container {
+                        .flex(0 0 @value);
+                        width: @value;
+                        height: @value;
+
+                        &.plat-bullet {
+                            .plat-mark {
+                                width: @value;
+                                height: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-width) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        border-width: @value;
+                    }
+                }
+            }
+            & when (@prop = mark-padding) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
