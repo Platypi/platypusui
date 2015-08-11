@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.6.3 (https://platypi.io) 
+ * PlatypusUI v0.6.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -2744,14 +2744,8 @@ h6 {
   width: 100%;
   position: relative;
 }
-.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite .plat-ring {
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite .plat-listview-ring {
   position: absolute;
-  height: 2em;
-  width: 2em;
-  border-left-width: 0.2em;
-  border-bottom-width: 0.2em;
-  border-right-width: 0.2em;
-  border-top-width: 0.2em;
   -webkit-transform: translate(-50%, 0);
   -moz-transform: translate(-50%, 0);
   -ms-transform: translate(-50%, 0);
@@ -2763,6 +2757,13 @@ h6 {
   margin-top: 0.25em;
   margin-bottom: 0.25em;
   left: 50%;
+}
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite .plat-listview-ring.plat-ring {
+  width: 2em;
+  height: 2em;
+}
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
+  border-width: 0.2em;
 }
 .plat-listview.plat-vertical .plat-listview-viewport.plat-manipulation-prep .plat-scroll-container {
   overflow: hidden;
@@ -2773,15 +2774,9 @@ h6 {
   width: 100%;
   left: 0;
 }
-.plat-listview.plat-vertical .plat-refresh .plat-ring,
-.plat-listview.plat-vertical .plat-incremental .plat-ring {
+.plat-listview.plat-vertical .plat-refresh .plat-listview-ring,
+.plat-listview.plat-vertical .plat-incremental .plat-listview-ring {
   position: absolute;
-  height: 2em;
-  width: 2em;
-  border-left-width: 0.2em;
-  border-bottom-width: 0.2em;
-  border-right-width: 0.2em;
-  border-top-width: 0.2em;
   -webkit-transform: translate(-50%, 0);
   -moz-transform: translate(-50%, 0);
   -ms-transform: translate(-50%, 0);
@@ -2793,6 +2788,15 @@ h6 {
   margin-top: 0.25em;
   margin-bottom: 0.25em;
   left: 50%;
+}
+.plat-listview.plat-vertical .plat-refresh .plat-listview-ring.plat-ring,
+.plat-listview.plat-vertical .plat-incremental .plat-listview-ring.plat-ring {
+  width: 2em;
+  height: 2em;
+}
+.plat-listview.plat-vertical .plat-refresh .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring,
+.plat-listview.plat-vertical .plat-incremental .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
+  border-width: 0.2em;
 }
 .plat-listview.plat-vertical .plat-refresh {
   top: 0;
@@ -2908,15 +2912,9 @@ h6 {
   width: 2.5em;
   top: 0;
 }
-.plat-listview.plat-horizontal .plat-refresh .plat-ring,
-.plat-listview.plat-horizontal .plat-incremental .plat-ring {
+.plat-listview.plat-horizontal .plat-refresh .plat-listview-ring,
+.plat-listview.plat-horizontal .plat-incremental .plat-listview-ring {
   position: absolute;
-  height: 2em;
-  width: 2em;
-  border-left-width: 0.2em;
-  border-bottom-width: 0.2em;
-  border-right-width: 0.2em;
-  border-top-width: 0.2em;
   -webkit-transform: translate(0, -50%);
   -moz-transform: translate(0, -50%);
   -ms-transform: translate(0, -50%);
@@ -2928,6 +2926,15 @@ h6 {
   margin-left: 0.25em;
   margin-right: 0.25em;
   top: 50%;
+}
+.plat-listview.plat-horizontal .plat-refresh .plat-listview-ring.plat-ring,
+.plat-listview.plat-horizontal .plat-incremental .plat-listview-ring.plat-ring {
+  width: 2em;
+  height: 2em;
+}
+.plat-listview.plat-horizontal .plat-refresh .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring,
+.plat-listview.plat-horizontal .plat-incremental .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
+  border-width: 0.2em;
 }
 .plat-listview.plat-horizontal .plat-refresh {
   left: 0;
