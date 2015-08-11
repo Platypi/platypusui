@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.6.2 (https://platypi.io)
+ * PlatypusUI v0.6.3 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1889,7 +1889,7 @@ var platui;
             this.modalLoaded = new this._Promise(function (resolve, reject) {
                 _this.__resolveFn = resolve;
                 _this.__rejectFn = reject;
-            });
+            }).catch(noop);
         }
         /**
          * Sets the classes on the proper elements.
@@ -5418,9 +5418,10 @@ var platui;
              * Whether or not the main Array listener has been set.
              */
             this.__listenerSet = false;
-            this.itemsLoaded = new this._Promise(function (resolve) {
+            this.itemsLoaded = new this._Promise(function (resolve, reject) {
                 _this.__resolveFn = resolve;
-            });
+                _this.__rejectFn = reject;
+            }).catch(noop);
         }
         /**
          * Sets the classes on the proper elements.
@@ -5525,7 +5526,10 @@ var platui;
          * Removes any potentially held memory.
          */
         Listview.prototype.dispose = function () {
-            this.__resolveFn = null;
+            if (this.utils.isFunction(this.__rejectFn)) {
+                this.__rejectFn();
+                this.__resolveFn = this.__rejectFn = null;
+            }
         };
         /**
          * Blow out the DOM starting at the index, determine how to render, and render the count accordingly.
@@ -5849,7 +5853,7 @@ var platui;
                     _this._updateResource(initialIndex - 1, control);
                     if (_this.utils.isFunction(_this.__resolveFn)) {
                         _this.__resolveFn();
-                        _this.__resolveFn = null;
+                        _this.__resolveFn = _this.__rejectFn = null;
                     }
                 }).catch(function (error) {
                     _this.utils.postpone(function () {
