@@ -115,6 +115,32 @@ module platui {
         protected _preInitializedValue: boolean = false;
 
         /**
+         * @name __state
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         *
+         * @type {boolean}
+         *
+         * @description
+         * A private variable that tells the {@link platui.Drawer|Drawer} its last open or closed state.
+         */
+        private __state: boolean = false;
+
+        /**
+         * @name __status
+         * @memberof platui.DrawerController
+         * @kind property
+         * @access protected
+         *
+         * @type {boolean}
+         *
+         * @description
+         * A private variable that tells the {@link platui.Drawer|Drawer} its next open or closed state.
+         */
+        private __nextState: boolean = false;
+
+        /**
          * @name setClasses
          * @memberof platui.Drawer
          * @kind function
@@ -270,29 +296,6 @@ module platui {
         }
 
         /**
-         * @name reset
-         * @memberof platui.Drawer
-         * @kind function
-         * @access public
-         *
-         * @description
-         * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
-         *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
-         * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
-         */
-        reset(): plat.async.IThenable<void> {
-            var controller = this._controllers[0];
-            if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to reset.');
-                return this._Promise.resolve();
-            }
-
-            return controller.reset();
-        }
-
-        /**
          * @name isOpen
          * @memberof platui.Drawer
          * @kind function
@@ -374,10 +377,12 @@ module platui {
         spliceController(controller: DrawerController): void {
             var controllers = this._controllers,
                 index = controllers.indexOf(controller);
+
             if (index === -1) {
                 return;
             }
 
+            this.__state = this.__nextState = controllers[index].isOpen();
             controllers.splice(index, 1);
         }
 
@@ -433,6 +438,7 @@ module platui {
                 this._preInitializedValue = false;
 
                 if (_utils.isNull(controller)) {
+                    this.__nextState = drawerState;
                     return;
                 }
 
@@ -523,7 +529,9 @@ module platui {
                             received: true,
                             position: position,
                             template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
-                            elastic: isElastic
+                            elastic: isElastic,
+                            state: this.__state,
+                            nextState: this.__nextState
                         });
                     }
 
@@ -544,7 +552,9 @@ module platui {
                 received: false,
                 position: position,
                 template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
-                elastic: isElastic
+                elastic: isElastic,
+                state: this.__state,
+                nextState: this.__nextState
             });
         }
 
@@ -729,5 +739,29 @@ module platui {
          * Defaults to false.
          */
         elastic: boolean;
+        /**
+         * @name state
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         *
+         * @type {boolean}
+         *
+         * @description
+         * Whether the {@link platui.Drawer|Drawer} is open upon discovery.
+         */
+        state: boolean;
+        /**
+         * @name nextState
+         * @memberof platui.IDrawerHandshakeEvent
+         * @kind property
+         * @access public
+         *
+         * @type {boolean}
+         *
+         * @description
+         * Whether the {@link platui.Drawer|Drawer} should be open or closed upon discovery.
+         */
+        nextState: boolean;
     }
 }
