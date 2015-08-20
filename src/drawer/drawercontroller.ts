@@ -520,7 +520,7 @@ module platui {
          * @description
          * A bound value that may have come through prior to initialization.
          */
-        protected _preInitializedValue: boolean = false;
+        protected _preInitializedValue: boolean;
 
         /**
          * @name initialize
@@ -714,26 +714,6 @@ module platui {
         }
 
         /**
-         * @name reset
-         * @memberof platui.DrawerController
-         * @kind function
-         * @access public
-         *
-         * @description
-         * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
-         *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
-         * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
-         */
-        reset(): plat.async.IThenable<void> {
-            if (this._isOpen) {
-                return this.open();
-            }
-
-            return this.close();
-        }
-
-        /**
          * @name isOpen
          * @memberof platui.DrawerController
          * @kind function
@@ -812,13 +792,13 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
-            var _utils = this.utils;
-            if (firstTime === true && _utils.isNull(drawerState)) {
+            var utils = this.utils;
+            if (firstTime === true && utils.isNull(drawerState)) {
                 this.inputChanged(this._isOpen);
                 return;
             }
 
-            if (_utils.isBoolean(drawerState)) {
+            if (utils.isBoolean(drawerState)) {
                 if (!this._isInitialized) {
                     this._preInitializedValue = drawerState;
                     return;
@@ -830,7 +810,7 @@ module platui {
                     }
 
                     this._toggleDelay();
-                    this._toggleDelay = _utils.requestAnimationFrame((): void => {
+                    this._toggleDelay = utils.requestAnimationFrame((): void => {
                         this._open();
                     });
                     return;
@@ -838,7 +818,7 @@ module platui {
 
                 if (this._isOpen) {
                     this._toggleDelay();
-                    this._toggleDelay = _utils.requestAnimationFrame((): void => {
+                    this._toggleDelay = utils.requestAnimationFrame((): void => {
                         this._close();
                     });
                 }
@@ -859,16 +839,18 @@ module platui {
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
          *
+         * @param {boolean} reset? Whether the open is being called to reset the open state.
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        protected _open(): plat.async.IThenable<void> {
+        protected _open(reset?: boolean): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
                 isNode = this.utils.isNode,
-                wasClosed = !this._isOpen,
+                isOpen = this._isOpen,
                 offset = this._getOffset();
 
-            if (!(offset && isNode(rootElement) && isNode(this._drawerElement))) {
+            if ((isOpen && !reset) || !(offset && isNode(rootElement) && isNode(this._drawerElement))) {
                 return this._Promise.resolve();
             }
 
@@ -893,7 +875,7 @@ module platui {
             this._isOpen = true;
             this.dom.addClass(rootElement, this._directionalTransitionPrep);
 
-            if (wasClosed) {
+            if (!isOpen) {
                 this._addClickEater();
             }
 
@@ -917,18 +899,21 @@ module platui {
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
          *
+         * @param {boolean} reset? Whether the open is being called to reset the open state.
+         *
          * @returns {plat.async.IThenable<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        protected _close(): plat.async.IThenable<void> {
+        protected _close(reset?: boolean): plat.async.IThenable<void> {
             var rootElement = this._rootElement,
-                isNode = this.utils.isNode;
+                isNode = this.utils.isNode,
+                isClosed = !this._isOpen;
 
-            this._isOpen = false;
-
-            if (!(isNode(rootElement) && isNode(this._drawerElement))) {
+            if ((isClosed && !reset) || !(isNode(rootElement) && isNode(this._drawerElement))) {
                 return this._Promise.resolve();
             }
+
+            this._isOpen = false;
 
             var animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._preTransform;
@@ -944,6 +929,26 @@ module platui {
                     this._removeClickEater();
                 }
             });
+        }
+
+        /**
+         * @name _reset
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
+         *
+         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
+         */
+        protected _reset(): plat.async.IThenable<void> {
+            if (this._isOpen) {
+                return this._open(true);
+            }
+
+            return this._close(true);
         }
 
         /**
@@ -1299,10 +1304,10 @@ module platui {
                     return;
                 }
 
-                this.reset();
+                this._reset();
             } else if (this._isElastic) {
                 if (Math.abs(distanceMoved) > 0) {
-                    this.reset();
+                    this._reset();
                 }
             } else if (!this._isOpen) {
                 this._removeClickEater();
@@ -1481,9 +1486,9 @@ module platui {
                     (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent): void => {
                         eventRemover();
 
-                        var _utils = this.utils,
-                            isString = _utils.isString,
-                            isUndefined = _utils.isUndefined,
+                        var utils = this.utils,
+                            isString = utils.isString,
+                            isUndefined = utils.isUndefined,
                             drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{},
                             drawerElement = this._drawerElement = drawer.element;
 
@@ -1520,16 +1525,27 @@ module platui {
                                 });
                         }
 
-                        if (!useContext) {
+                        if (drawerArg.state) {
+                            this._isOpen = true;
+                            this.inputChanged(true);
+                            if (!drawerArg.nextState && utils.isNull(this._preInitializedValue)) {
+                                this._preInitializedValue = false;
+                            }
+                        } else if (drawerArg.nextState && utils.isNull(this._preInitializedValue)) {
+                            this._preInitializedValue = true;
+                        }
+
+                        var finish = (): void => {
                             this._isInitialized = true;
                             this._checkPreInit();
+                        };
+
+                        if (!useContext) {
+                            finish();
                             return;
                         }
 
-                        this._determineTemplate(drawerArg.template).then((): void => {
-                            this._isInitialized = true;
-                            this._checkPreInit();
-                        });
+                        this._determineTemplate(drawerArg.template).then(finish);
                     });
 
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, <IDrawerControllerHandshakeEvent>{
@@ -1552,13 +1568,24 @@ module platui {
          * @returns {void}
          */
         protected _checkPreInit(): void {
-            if (!this._preInitializedValue) {
+            var value = this._preInitializedValue;
+            if (this.utils.isNull(value)) {
+                return;
+            }
+
+            var isOpen = this._isOpen;
+            if (isOpen && value || !(isOpen || value)) {
                 return;
             }
 
             this._toggleDelay();
             this._toggleDelay = this.utils.requestAnimationFrame((): void => {
-                this._open();
+                if (value) {
+                    this._open();
+                    return;
+                }
+
+                this._close();
             });
         }
 
@@ -1577,13 +1604,13 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been determined.
          */
         protected _determineTemplate(fragment?: Node): plat.async.IThenable<void> {
-            var _utils = this.utils;
+            var utils = this.utils;
 
-            if (_utils.isString(this._templateUrl)) {
+            if (utils.isString(this._templateUrl)) {
                 return plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template): plat.async.IThenable<void> => {
                     return this.bindTemplate('drawer', template);
                 });
-            } else if (_utils.isNode(fragment)) {
+            } else if (utils.isNode(fragment)) {
                 return this.bindTemplate('drawer', fragment);
             }
 
@@ -1683,15 +1710,15 @@ module platui {
          */
         protected _getRootElement(): HTMLElement {
             var drawer = this._drawer,
-                _utils = this.utils;
+                utils = this.utils;
 
-            if (!_utils.isNull(drawer.storedProperties)) {
+            if (!utils.isNull(drawer.storedProperties)) {
                 return drawer.storedProperties.rootElement;
             }
 
-            var isNode = _utils.isNode,
+            var isNode = utils.isNode,
                 root = this.root,
-                element = _utils.isObject(root) && isNode(root.element) ? root.element : this.element,
+                element = utils.isObject(root) && isNode(root.element) ? root.element : this.element,
                 drawerEl = this._drawerElement,
                 parent: HTMLElement;
 
@@ -1716,7 +1743,7 @@ module platui {
                 style.position = 'relative';
             }
 
-            if (!_utils.isNumber(zIndex) || zIndex < 1) {
+            if (!utils.isNumber(zIndex) || zIndex < 1) {
                 rootElementStyle.zIndex = style.zIndex;
                 style.zIndex = '1';
             }

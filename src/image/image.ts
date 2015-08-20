@@ -231,21 +231,33 @@ module platui {
                 this.utils.requestAnimationFrame((): void => {
                     if (this._isBackground) {
                         element.style.backgroundImage = 'url("' + url + '")';
-                        element.removeChild(img);
-                        element.removeChild(loader);
+                        if (element.contains(img)) {
+                            element.removeChild(img);
+                        }
+    
+                        if (element.contains(loader)) {
+                            element.removeChild(loader);
+                        }
                         return;
                     }
 
                     dom.removeClass(img, imageLoadClass);
-                    element.removeChild(loader);
+                    if (element.contains(loader)) {
+                        element.removeChild(loader);
+                    }
                 });
             };
 
             img.onerror = (): void => {
                 this.utils.requestAnimationFrame((): void => {
                     dom.addClass(element, __Image + '-error');
-                    element.removeChild(img);
-                    element.removeChild(loader);
+                    if (element.contains(img)) {
+                        element.removeChild(img);
+                    }
+
+                    if (element.contains(loader)) {
+                        element.removeChild(loader);
+                    }
                 });
             };
 
