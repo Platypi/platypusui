@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.6.6 (https://platypi.io)
+  * PlatypusUI v0.6.7 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -474,6 +474,14 @@ declare module platui {
           */
         protected _preInitializedValue: boolean;
         /**
+          * A private variable that tells the Drawer its last open or closed state.
+          */
+        private __state;
+        /**
+          * A private variable that tells the Drawer its next open or closed state.
+          */
+        private __nextState;
+        /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
           * in addition to its standard set.
@@ -506,10 +514,6 @@ declare module platui {
           * Toggles the Drawer's open/closed state.
           */
         toggle(): plat.async.IThenable<void>;
-        /**
-          * Resets the Drawer to it's current open/closed state.
-          */
-        reset(): plat.async.IThenable<void>;
         /**
           * Indicates whether the Drawer is currently open.
           */
@@ -620,6 +624,14 @@ declare module platui {
           * Defaults to false.
           */
         elastic: boolean;
+        /**
+          * Whether the Drawer is open upon discovery.
+          */
+        state: boolean;
+        /**
+          * Whether the Drawer should be open or closed upon discovery.
+          */
+        nextState: boolean;
     }
     /**
       * An BindControl that manipulates and controls a global drawer.
@@ -813,10 +825,6 @@ declare module platui {
           */
         toggle(): plat.async.IThenable<void>;
         /**
-          * Resets the Drawer to it's current open/closed state.
-          */
-        reset(): plat.async.IThenable<void>;
-        /**
           * Indicates whether the Drawer is currently open.
           */
         isOpen(): boolean;
@@ -844,12 +852,18 @@ declare module platui {
         protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void;
         /**
           * Opens the Drawer.
+          * @param {boolean} reset? Whether the open is being called to reset the open state.
           */
-        protected _open(): plat.async.IThenable<void>;
+        protected _open(reset?: boolean): plat.async.IThenable<void>;
         /**
           * Closes the Drawer.
+          * @param {boolean} reset? Whether the open is being called to reset the open state.
           */
-        protected _close(): plat.async.IThenable<void>;
+        protected _close(reset?: boolean): plat.async.IThenable<void>;
+        /**
+          * Resets the Drawer to it's current open/closed state.
+          */
+        protected _reset(): plat.async.IThenable<void>;
         /**
           * Adds a click eater when tracking and closing an open Drawer.
           */

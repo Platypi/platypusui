@@ -6,7 +6,7 @@ var __extends = this.__extends || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.6.6 (https://platypi.io)
+ * PlatypusUI v0.6.7 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -751,6 +751,14 @@ var platui;
              * A bound value that may have come through prior to initialization.
              */
             this._preInitializedValue = false;
+            /**
+             * A private variable that tells the Drawer its last open or closed state.
+             */
+            this.__state = false;
+            /**
+             * A private variable that tells the Drawer its next open or closed state.
+             */
+            this.__nextState = false;
         }
         /**
          * Sets the classes on the proper elements.
@@ -829,18 +837,6 @@ var platui;
             return controller.toggle();
         };
         /**
-         * Resets the Drawer to it's current open/closed state.
-         */
-        Drawer.prototype.reset = function () {
-            var controller = this._controllers[0];
-            if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to reset.');
-                return this._Promise.resolve();
-            }
-            return controller.reset();
-        };
-        /**
          * Indicates whether the Drawer is currently open.
          */
         Drawer.prototype.isOpen = function () {
@@ -887,6 +883,7 @@ var platui;
             if (index === -1) {
                 return;
             }
+            this.__state = this.__nextState = controllers[index].isOpen();
             controllers.splice(index, 1);
         };
         /**
@@ -918,6 +915,7 @@ var platui;
                 }
                 this._preInitializedValue = false;
                 if (_utils.isNull(controller)) {
+                    this.__nextState = drawerState;
                     return;
                 }
                 if (drawerState) {
@@ -974,7 +972,9 @@ var platui;
                         received: true,
                         position: position,
                         template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
-                        elastic: isElastic
+                        elastic: isElastic,
+                        state: _this.__state,
+                        nextState: _this.__nextState
                     });
                 }
                 _this._isInitialized = true;
@@ -991,7 +991,9 @@ var platui;
                 received: false,
                 position: position,
                 template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
-                elastic: isElastic
+                elastic: isElastic,
+                state: this.__state,
+                nextState: this.__nextState
             });
         };
         /**
@@ -1055,10 +1057,6 @@ var platui;
              * Whether or not the this control has been paired with a corresponding Drawer.
              */
             this._isInitialized = false;
-            /**
-             * A bound value that may have come through prior to initialization.
-             */
-            this._preInitializedValue = false;
         }
         /**
          * Sets the class name on the element.
@@ -1164,15 +1162,6 @@ var platui;
             return this.open();
         };
         /**
-         * Resets the Drawer to it's current open/closed state.
-         */
-        DrawerController.prototype.reset = function () {
-            if (this._isOpen) {
-                return this.open();
-            }
-            return this.close();
-        };
-        /**
          * Indicates whether the Drawer is currently open.
          */
         DrawerController.prototype.isOpen = function () {
@@ -1214,12 +1203,12 @@ var platui;
          */
         DrawerController.prototype._setBoundProperty = function (drawerState, oldValue, identifier, firstTime) {
             var _this = this;
-            var _utils = this.utils;
-            if (firstTime === true && _utils.isNull(drawerState)) {
+            var utils = this.utils;
+            if (firstTime === true && utils.isNull(drawerState)) {
                 this.inputChanged(this._isOpen);
                 return;
             }
-            if (_utils.isBoolean(drawerState)) {
+            if (utils.isBoolean(drawerState)) {
                 if (!this._isInitialized) {
                     this._preInitializedValue = drawerState;
                     return;
@@ -1229,14 +1218,14 @@ var platui;
                         return;
                     }
                     this._toggleDelay();
-                    this._toggleDelay = _utils.requestAnimationFrame(function () {
+                    this._toggleDelay = utils.requestAnimationFrame(function () {
                         _this._open();
                     });
                     return;
                 }
                 if (this._isOpen) {
                     this._toggleDelay();
-                    this._toggleDelay = _utils.requestAnimationFrame(function () {
+                    this._toggleDelay = utils.requestAnimationFrame(function () {
                         _this._close();
                     });
                 }
@@ -1247,11 +1236,12 @@ var platui;
         };
         /**
          * Opens the Drawer.
+         * @param {boolean} reset? Whether the open is being called to reset the open state.
          */
-        DrawerController.prototype._open = function () {
+        DrawerController.prototype._open = function (reset) {
             var _this = this;
-            var rootElement = this._rootElement, isNode = this.utils.isNode, wasClosed = !this._isOpen, offset = this._getOffset();
-            if (!(offset && isNode(rootElement) && isNode(this._drawerElement))) {
+            var rootElement = this._rootElement, isNode = this.utils.isNode, isOpen = this._isOpen, offset = this._getOffset();
+            if ((isOpen && !reset) || !(offset && isNode(rootElement) && isNode(this._drawerElement))) {
                 return this._Promise.resolve();
             }
             var translation;
@@ -1273,7 +1263,7 @@ var platui;
             }
             this._isOpen = true;
             this.dom.addClass(rootElement, this._directionalTransitionPrep);
-            if (wasClosed) {
+            if (!isOpen) {
                 this._addClickEater();
             }
             var animationOptions = {};
@@ -1287,14 +1277,15 @@ var platui;
         };
         /**
          * Closes the Drawer.
+         * @param {boolean} reset? Whether the open is being called to reset the open state.
          */
-        DrawerController.prototype._close = function () {
+        DrawerController.prototype._close = function (reset) {
             var _this = this;
-            var rootElement = this._rootElement, isNode = this.utils.isNode;
-            this._isOpen = false;
-            if (!(isNode(rootElement) && isNode(this._drawerElement))) {
+            var rootElement = this._rootElement, isNode = this.utils.isNode, isClosed = !this._isOpen;
+            if ((isClosed && !reset) || !(isNode(rootElement) && isNode(this._drawerElement))) {
                 return this._Promise.resolve();
             }
+            this._isOpen = false;
             var animationOptions = {};
             animationOptions[this._transform] = this._preTransform;
             return this._animationThenable = this._animator.animate(rootElement, __Transition, {
@@ -1309,6 +1300,15 @@ var platui;
                     _this._removeClickEater();
                 }
             });
+        };
+        /**
+         * Resets the Drawer to it's current open/closed state.
+         */
+        DrawerController.prototype._reset = function () {
+            if (this._isOpen) {
+                return this._open(true);
+            }
+            return this._close(true);
         };
         /**
          * Adds a click eater when tracking and closing an open Drawer.
@@ -1524,11 +1524,11 @@ var platui;
                     this.toggle();
                     return;
                 }
-                this.reset();
+                this._reset();
             }
             else if (this._isElastic) {
                 if (Math.abs(distanceMoved) > 0) {
-                    this.reset();
+                    this._reset();
                 }
             }
             else if (!this._isOpen) {
@@ -1653,7 +1653,7 @@ var platui;
             var _this = this;
             var useContext = this._useContext, eventRemover = this.on(__DrawerFoundEvent + '_' + id, function (event, drawerArg) {
                 eventRemover();
-                var _utils = _this.utils, isString = _utils.isString, isUndefined = _utils.isUndefined, drawer = (_this._drawer = drawerArg.control) || {}, drawerElement = _this._drawerElement = drawer.element;
+                var utils = _this.utils, isString = utils.isString, isUndefined = utils.isUndefined, drawer = (_this._drawer = drawerArg.control) || {}, drawerElement = _this._drawerElement = drawer.element;
                 if (!isString(position)) {
                     if (isString(drawerArg.position)) {
                         position = drawerArg.position;
@@ -1682,15 +1682,25 @@ var platui;
                         useContext: useContext
                     });
                 }
-                if (!useContext) {
+                if (drawerArg.state) {
+                    _this._isOpen = true;
+                    _this.inputChanged(true);
+                    if (!drawerArg.nextState && utils.isNull(_this._preInitializedValue)) {
+                        _this._preInitializedValue = false;
+                    }
+                }
+                else if (drawerArg.nextState && utils.isNull(_this._preInitializedValue)) {
+                    _this._preInitializedValue = true;
+                }
+                var finish = function () {
                     _this._isInitialized = true;
                     _this._checkPreInit();
+                };
+                if (!useContext) {
+                    finish();
                     return;
                 }
-                _this._determineTemplate(drawerArg.template).then(function () {
-                    _this._isInitialized = true;
-                    _this._checkPreInit();
-                });
+                _this._determineTemplate(drawerArg.template).then(finish);
             });
             this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
                 control: this,
@@ -1704,12 +1714,21 @@ var platui;
          */
         DrawerController.prototype._checkPreInit = function () {
             var _this = this;
-            if (!this._preInitializedValue) {
+            var value = this._preInitializedValue;
+            if (this.utils.isNull(value)) {
+                return;
+            }
+            var isOpen = this._isOpen;
+            if (isOpen && value || !(isOpen || value)) {
                 return;
             }
             this._toggleDelay();
             this._toggleDelay = this.utils.requestAnimationFrame(function () {
-                _this._open();
+                if (value) {
+                    _this._open();
+                    return;
+                }
+                _this._close();
             });
         };
         /**
@@ -1719,13 +1738,13 @@ var platui;
          */
         DrawerController.prototype._determineTemplate = function (fragment) {
             var _this = this;
-            var _utils = this.utils;
-            if (_utils.isString(this._templateUrl)) {
+            var utils = this.utils;
+            if (utils.isString(this._templateUrl)) {
                 return plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then(function (template) {
                     return _this.bindTemplate('drawer', template);
                 });
             }
-            else if (_utils.isNode(fragment)) {
+            else if (utils.isNode(fragment)) {
                 return this.bindTemplate('drawer', fragment);
             }
             return this._Promise.resolve();
@@ -1789,11 +1808,11 @@ var platui;
          * Obtains the root element to translate.
          */
         DrawerController.prototype._getRootElement = function () {
-            var drawer = this._drawer, _utils = this.utils;
-            if (!_utils.isNull(drawer.storedProperties)) {
+            var drawer = this._drawer, utils = this.utils;
+            if (!utils.isNull(drawer.storedProperties)) {
                 return drawer.storedProperties.rootElement;
             }
-            var isNode = _utils.isNode, root = this.root, element = _utils.isObject(root) && isNode(root.element) ? root.element : this.element, drawerEl = this._drawerElement, parent;
+            var isNode = utils.isNode, root = this.root, element = utils.isObject(root) && isNode(root.element) ? root.element : this.element, drawerEl = this._drawerElement, parent;
             while (isNode(parent = element.parentElement) && !parent.contains(drawerEl)) {
                 element = parent;
             }
@@ -1804,7 +1823,7 @@ var platui;
                 rootElementStyle.position = style.position;
                 style.position = 'relative';
             }
-            if (!_utils.isNumber(zIndex) || zIndex < 1) {
+            if (!utils.isNumber(zIndex) || zIndex < 1) {
                 rootElementStyle.zIndex = style.zIndex;
                 style.zIndex = '1';
             }
@@ -7387,19 +7406,29 @@ var platui;
                 _this.utils.requestAnimationFrame(function () {
                     if (_this._isBackground) {
                         element.style.backgroundImage = 'url("' + url + '")';
-                        element.removeChild(img);
-                        element.removeChild(loader);
+                        if (element.contains(img)) {
+                            element.removeChild(img);
+                        }
+                        if (element.contains(loader)) {
+                            element.removeChild(loader);
+                        }
                         return;
                     }
                     dom.removeClass(img, imageLoadClass);
-                    element.removeChild(loader);
+                    if (element.contains(loader)) {
+                        element.removeChild(loader);
+                    }
                 });
             };
             img.onerror = function () {
                 _this.utils.requestAnimationFrame(function () {
                     dom.addClass(element, __Image + '-error');
-                    element.removeChild(img);
-                    element.removeChild(loader);
+                    if (element.contains(img)) {
+                        element.removeChild(img);
+                    }
+                    if (element.contains(loader)) {
+                        element.removeChild(loader);
+                    }
                 });
             };
             element.insertBefore(loader, null);
