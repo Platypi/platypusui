@@ -28,37 +28,37 @@
             }
         }
 
-        .width(@minWidth: 0px; @maxWidth: 0px; @rules) {
-            & when not(@maxWidth = 0px) {
-                & when not(@minWidth = 0px) {
-                    .media(all; ~'min-width: @{minWidth}'; ~'max-width: @{maxWidth}'; @rules);
-                } & when (@minWidth = 0px) {
-                    .media(all; ~'max-width: @{maxWidth}'; @rules);
+        .width(@min-width: 0px; @max-width: 0px; @rules) {
+            & when not(@max-width = 0px) {
+                & when not(@min-width = 0px) {
+                    .media(all; ~'min-width: @{min-width}'; ~'max-width: @{max-width}'; @rules);
+                } & when (@min-width = 0px) {
+                    .media(all; ~'max-width: @{max-width}'; @rules);
                 }
-            } & when (@maxWidth = 0px) {
-                & when not(@minWidth = 0px) {
-                    .media(all; ~'min-width: @{minWidth}'; @rules);
+            } & when (@max-width = 0px) {
+                & when not(@min-width = 0px) {
+                    .media(all; ~'min-width: @{min-width}'; @rules);
                 }
             }
         }
 
-        .height(@minHeight: 0px; @maxHeight: 0px; @rules) {
-            & when not(@maxHeight = 0px) {
-                & when not(@minHeight = 0px) {
-                    .media(all; ~'min-height: @{minHeight}'; ~'max-height: @{maxHeight}'; @rules);
-                } & when (@minHeight = 0px) {
-                    .media(all; ~'max-height: @{maxHeight}'; @rules);
+        .height(@min-height: 0px; @max-height: 0px; @rules) {
+            & when not(@max-height = 0px) {
+                & when not(@min-height = 0px) {
+                    .media(all; ~'min-height: @{min-height}'; ~'max-height: @{max-height}'; @rules);
+                } & when (@min-height = 0px) {
+                    .media(all; ~'max-height: @{max-height}'; @rules);
                 }
-            } & when (@maxHeight = 0px) {
-                & when not(@minHeight = 0px) {
-                    .media(all; ~'min-height: @{minHeight}'; @rules);
+            } & when (@max-height = 0px) {
+                & when not(@min-height = 0px) {
+                    .media(all; ~'min-height: @{min-height}'; @rules);
                 }
             }
         }
 
         .phone-max(@rules) {
             #platui > #variables;
-            .width(@maxWidth: @phone-end; @rules: @rules);
+            .width(@max-width: @phone-end; @rules: @rules);
         }
 
         .phablet(@rules) {
@@ -68,7 +68,7 @@
 
         .phablet-max(@rules) {
             #platui > #variables;
-            .width(@maxWidth: @phablet-end; @rules: @rules);
+            .width(@max-width: @phablet-end; @rules: @rules);
         }
 
         .phablet-only(@rules) {
@@ -83,7 +83,7 @@
 
         .tablet-max(@rules) {
             #platui > #variables;
-            .width(@maxWidth: @tablet-end; @rules: @rules);
+            .width(@max-width: @tablet-end; @rules: @rules);
         }
 
         .tablet-only(@rules) {
