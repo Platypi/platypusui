@@ -28,6 +28,74 @@
             }
         }
 
+        .width(@min-width: 0px; @max-width: 0px; @rules) {
+            & when not(@max-width = 0px) {
+                & when not(@min-width = 0px) {
+                    .media(all; ~'min-width: @{min-width}'; ~'max-width: @{max-width}'; @rules);
+                } & when (@min-width = 0px) {
+                    .media(all; ~'max-width: @{max-width}'; @rules);
+                }
+            } & when (@max-width = 0px) {
+                & when not(@min-width = 0px) {
+                    .media(all; ~'min-width: @{min-width}'; @rules);
+                }
+            }
+        }
+
+        .height(@min-height: 0px; @max-height: 0px; @rules) {
+            & when not(@max-height = 0px) {
+                & when not(@min-height = 0px) {
+                    .media(all; ~'min-height: @{min-height}'; ~'max-height: @{max-height}'; @rules);
+                } & when (@min-height = 0px) {
+                    .media(all; ~'max-height: @{max-height}'; @rules);
+                }
+            } & when (@max-height = 0px) {
+                & when not(@min-height = 0px) {
+                    .media(all; ~'min-height: @{min-height}'; @rules);
+                }
+            }
+        }
+
+        .phone-max(@rules) {
+            #platui > #variables;
+            .width(@max-width: @phone-end; @rules: @rules);
+        }
+
+        .phablet(@rules) {
+            #platui > #variables;
+            .width(@phablet-start; @rules: @rules);
+        }
+
+        .phablet-max(@rules) {
+            #platui > #variables;
+            .width(@max-width: @phablet-end; @rules: @rules);
+        }
+
+        .phablet-only(@rules) {
+            #platui > #variables;
+            .width(@phablet-start; @phablet-end; @rules);
+        }
+
+        .tablet(@rules) {
+            #platui > #variables;
+            .width(@tablet-start; @rules: @rules);
+        }
+
+        .tablet-max(@rules) {
+            #platui > #variables;
+            .width(@max-width: @tablet-end; @rules: @rules);
+        }
+
+        .tablet-only(@rules) {
+            #platui > #variables;
+            .width(@tablet-start; @tablet-end; @rules);
+        }
+
+        .desktop(@rules) {
+            #platui > #variables;
+            .width(@desktop-start; @rules: @rules);
+        }
+
         .media-width(@minWidth: 0px; @maxWidth: 0px; @rules) {
             & when not(@maxWidth = 0px) {
                 & when not(@minWidth = 0px) {

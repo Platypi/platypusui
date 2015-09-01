@@ -43,6 +43,7 @@
                     padding-right: @padding-right;
                     padding-top: @padding-top;
                     padding-bottom: @padding-bottom;
+                    white-space: normal;
                 }
 
                 &.plat-transition-init {
@@ -147,6 +148,15 @@
 
                 .plat-forward-arrow {
                     bottom: 0;
+                }
+            }
+        }
+
+        &.carousel-no-arrows {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    display: none;
                 }
             }
         }

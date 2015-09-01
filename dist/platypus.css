@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.6.7 (https://platypi.io) 
+ * PlatypusUI v0.6.8 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1107,6 +1107,7 @@ h6 {
   padding-right: 5px;
   padding-top: 5px;
   padding-bottom: 5px;
+  white-space: normal;
 }
 .plat-carousel .plat-carousel-viewport .plat-carousel-container.plat-transition-init {
   -webkit-transition: -webkit-transform 300ms;
@@ -1218,6 +1219,10 @@ h6 {
 }
 .plat-carousel.plat-vertical .plat-carousel-viewport .plat-forward-arrow {
   bottom: 0;
+}
+.plat-carousel.carousel-no-arrows .plat-carousel-viewport .plat-back-arrow,
+.plat-carousel.carousel-no-arrows .plat-carousel-viewport .plat-forward-arrow {
+  display: none;
 }
 .plat-checkbox {
   display: -webkit-inline-box;
@@ -3388,7 +3393,7 @@ h6 {
   border-left: none;
   z-index: 100;
 }
-.plat-navbar:not(.no-navbar-shadow) {
+.plat-navbar:not(.navbar-no-shadow) {
   -webkit-box-shadow: 0px 0px 2px 1px #1a1a1a;
   box-shadow: 0px 0px 2px 1px #1a1a1a;
 }

@@ -40,7 +40,7 @@
 	    font-weight: bold;
     }
 
-    dfn { 
+    dfn {
         font-style: italic;
     }
 
@@ -60,11 +60,11 @@
 	    vertical-align: baseline;
     }
 
-    sup { 
+    sup {
         top: -0.5em;
     }
 
-    sub { 
+    sub {
         bottom: -0.25em;
     }
 
@@ -90,12 +90,12 @@
     h1 {
         .headings();
         margin: @typography-margin 0 (@typography-margin / 1.25);
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin / 1.25;
@@ -105,12 +105,12 @@
     h2, h3, h4 {
         .headings();
         margin: (@typography-margin * 1.25) 0 @typography-margin;
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin * 1.25;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin;
@@ -120,12 +120,12 @@
     h5, h6 {
         .headings();
         margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin * 1.5;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin * 1.25;
@@ -135,12 +135,12 @@
     p {
         padding: 0;
         margin: (@typography-margin * 1.5) 0;
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin * 1.5;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin * 1.5;
@@ -157,7 +157,7 @@
 	.type(h6, 0.775em, 1.0783em);
 
     /// Tablet
-    .media-tablet({
+    .tablet({
 	    .type(p, @default-font-size, 1.412em);
 	    .type(h1, 2.5em, 1.37em);
 	    .type(h2, 2em, 1.25em);
@@ -166,7 +166,7 @@
     });
 
     /// Desktop
-    .media-desktop({
+    .desktop({
 	    .type(h1, 3em, 1.3em);
 	    .type(h2, 2.25em, 1.25em);
 	    .type(h3, 1.75em, 1.25em);

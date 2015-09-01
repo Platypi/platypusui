@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.6.7 (https://platypi.io) 
+ * PlatypusUI v0.6.8 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -489,6 +489,74 @@
             @media @type and (@condition1) {
                 @rules();
             }
+        }
+
+        .width(@min-width: 0px; @max-width: 0px; @rules) {
+            & when not(@max-width = 0px) {
+                & when not(@min-width = 0px) {
+                    .media(all; ~'min-width: @{min-width}'; ~'max-width: @{max-width}'; @rules);
+                } & when (@min-width = 0px) {
+                    .media(all; ~'max-width: @{max-width}'; @rules);
+                }
+            } & when (@max-width = 0px) {
+                & when not(@min-width = 0px) {
+                    .media(all; ~'min-width: @{min-width}'; @rules);
+                }
+            }
+        }
+
+        .height(@min-height: 0px; @max-height: 0px; @rules) {
+            & when not(@max-height = 0px) {
+                & when not(@min-height = 0px) {
+                    .media(all; ~'min-height: @{min-height}'; ~'max-height: @{max-height}'; @rules);
+                } & when (@min-height = 0px) {
+                    .media(all; ~'max-height: @{max-height}'; @rules);
+                }
+            } & when (@max-height = 0px) {
+                & when not(@min-height = 0px) {
+                    .media(all; ~'min-height: @{min-height}'; @rules);
+                }
+            }
+        }
+
+        .phone-max(@rules) {
+            #platui > #variables;
+            .width(@max-width: @phone-end; @rules: @rules);
+        }
+
+        .phablet(@rules) {
+            #platui > #variables;
+            .width(@phablet-start; @rules: @rules);
+        }
+
+        .phablet-max(@rules) {
+            #platui > #variables;
+            .width(@max-width: @phablet-end; @rules: @rules);
+        }
+
+        .phablet-only(@rules) {
+            #platui > #variables;
+            .width(@phablet-start; @phablet-end; @rules);
+        }
+
+        .tablet(@rules) {
+            #platui > #variables;
+            .width(@tablet-start; @rules: @rules);
+        }
+
+        .tablet-max(@rules) {
+            #platui > #variables;
+            .width(@max-width: @tablet-end; @rules: @rules);
+        }
+
+        .tablet-only(@rules) {
+            #platui > #variables;
+            .width(@tablet-start; @tablet-end; @rules);
+        }
+
+        .desktop(@rules) {
+            #platui > #variables;
+            .width(@desktop-start; @rules: @rules);
         }
 
         .media-width(@minWidth: 0px; @maxWidth: 0px; @rules) {
@@ -5701,37 +5769,37 @@
     #platui > #variables;
     #platui > #media;
 
-    .media-phone-max({
+    .phone-max({
 	    .hide-on-@{phone-alias} {
 		    display: none !important;
 	    }
     });
 
-    .media-phablet-max({
+    .phablet-max({
 	    .hide-on-@{phablet-alias} {
 		    display: none !important;
 	    }
     });
 
-    .media-tablet-max({
+    .tablet-max({
 	    .hide-on-@{tablet-alias} {
 		    display: none !important;
 	    }
     });
 
-    .media-phablet({
+    .phablet({
 	    .hide-above-@{phone-alias} {
 		    display: none !important;
 	    }
     });
 
-    .media-tablet({
+    .tablet({
 	    .hide-above-@{phablet-alias} {
 		    display: none !important;
 	    }
     });
 
-    .media-desktop({
+    .desktop({
 	    .hide-above-@{tablet-alias} {
 		    display: none !important;
 	    }
@@ -5777,7 +5845,7 @@
 	    font-weight: bold;
     }
 
-    dfn { 
+    dfn {
         font-style: italic;
     }
 
@@ -5797,11 +5865,11 @@
 	    vertical-align: baseline;
     }
 
-    sup { 
+    sup {
         top: -0.5em;
     }
 
-    sub { 
+    sub {
         bottom: -0.25em;
     }
 
@@ -5827,12 +5895,12 @@
     h1 {
         .headings();
         margin: @typography-margin 0 (@typography-margin / 1.25);
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin / 1.25;
@@ -5842,12 +5910,12 @@
     h2, h3, h4 {
         .headings();
         margin: (@typography-margin * 1.25) 0 @typography-margin;
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin * 1.25;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin;
@@ -5857,12 +5925,12 @@
     h5, h6 {
         .headings();
         margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin * 1.5;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin * 1.25;
@@ -5872,12 +5940,12 @@
     p {
         padding: 0;
         margin: (@typography-margin * 1.5) 0;
-        
+
         &.no-collapse-top {
             margin-top: 0;
             padding-top: @typography-margin * 1.5;
         }
-        
+
         &.no-collapse-bottom {
             margin-bottom: 0;
             padding-bottom: @typography-margin * 1.5;
@@ -5894,7 +5962,7 @@
 	.type(h6, 0.775em, 1.0783em);
 
     /// Tablet
-    .media-tablet({
+    .tablet({
 	    .type(p, @default-font-size, 1.412em);
 	    .type(h1, 2.5em, 1.37em);
 	    .type(h2, 2em, 1.25em);
@@ -5903,7 +5971,7 @@
     });
 
     /// Desktop
-    .media-desktop({
+    .desktop({
 	    .type(h1, 3em, 1.3em);
 	    .type(h2, 2.25em, 1.25em);
 	    .type(h3, 1.75em, 1.25em);
@@ -6353,6 +6421,7 @@
                     padding-right: @padding-right;
                     padding-top: @padding-top;
                     padding-bottom: @padding-bottom;
+                    white-space: normal;
                 }
 
                 &.plat-transition-init {
@@ -6457,6 +6526,15 @@
 
                 .plat-forward-arrow {
                     bottom: 0;
+                }
+            }
+        }
+
+        &.carousel-no-arrows {
+            .plat-carousel-viewport {
+                .plat-back-arrow,
+                .plat-forward-arrow {
+                    display: none;
                 }
             }
         }
@@ -7158,21 +7236,21 @@
 	.generate-shiftable-cols(@phone-alias);
 
 	/// Phablet
-	.media-phablet({
+	.phablet({
 		.generate-partial-width-cols(@phablet-alias);
 		.generate-offset-cols(@phablet-alias);
 		.generate-shiftable-cols(@phablet-alias);
 	});
 
 	/// Tablet
-	.media-tablet({
+	.tablet({
 		.generate-partial-width-cols(@tablet-alias);
 		.generate-offset-cols(@tablet-alias);
 		.generate-shiftable-cols(@tablet-alias);
 	});
 
 	/// Desktop
-	.media-desktop({
+	.desktop({
 		.generate-partial-width-cols(@desktop-alias);
 		.generate-offset-cols(@desktop-alias);
 		.generate-shiftable-cols(@desktop-alias);
@@ -8173,7 +8251,7 @@
         border-left: @border-left;
         z-index: @z-index;
 
-        &:not(.no-navbar-shadow) {
+        &:not(.navbar-no-shadow) {
             .box-shadow(@box-shadow);
         }
 
