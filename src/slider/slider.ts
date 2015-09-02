@@ -16,6 +16,7 @@ module platui {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,
+            _Promise: __Promise,
             _animator: __Animator
         };
 
@@ -114,6 +115,19 @@ module platui {
          * Reference to the Document injectable.
          */
         protected _document: Document;
+
+        /**
+         * @name _Promise
+         * @memberof platui.Slider
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.async.IPromise}
+         *
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        protected _Promise: plat.async.IPromise;
 
         /**
          * @name _animator
@@ -285,32 +299,30 @@ module platui {
         protected _lengthProperty: string;
 
         /**
-         * @name _cloneAttempts
+         * @name _removeVisibilityListener
          * @memberof platui.Slider
          * @kind property
          * @access protected
          *
-         * @type {number}
+         * @type {plat.IRemoveListener}
          *
          * @description
-         * The current number of times we checked to see if the element was placed into the DOM.
-         * Used for determining max offset width.
+         * A function that will stop listening for visibility if applicable.
          */
-        protected _cloneAttempts: number = 0;
+        protected _removeVisibilityListener: plat.IRemoveListener = noop;
 
         /**
-         * @name _maxCloneCount
+         * @name _sliderVisible
          * @memberof platui.Slider
          * @kind property
          * @access protected
          *
-         * @type {boolean}
+         * @type {plat.async.IThenable<void>}
          *
          * @description
-         * The max number of times we'll check to see if the element was placed into the DOM.
-         * Used for determining max offset width.
+         * A Promise that indicates slider visibility.
          */
-        protected _maxCloneAttempts: number = 25;
+        protected _sliderVisible: plat.async.IThenable<void>;
 
         /**
          * @name setClasses
@@ -394,6 +406,23 @@ module platui {
             this._setLength();
             this._initializeEvents();
             this.setValue(value);
+        }
+
+        /**
+         * @name dispose
+         * @memberof platui.Slider
+         * @kind function
+         * @access public
+         *
+         * @description
+         * Removes the visibility listener if applicable.
+         *
+         * @returns {void}
+         */
+        dispose(): void {
+            super.dispose();
+            this._removeVisibilityListener();
+            this._sliderVisible = null;
         }
 
         /**
@@ -520,6 +549,10 @@ module platui {
             this.addEventListener(element, __$touchend, touchEnd, false);
             this.addEventListener(element, __$trackend, touchEnd, false);
             this.addEventListener(this._window, 'resize', (): void => {
+                if (!this.utils.isNull(this._sliderVisible)) {
+                    return;
+                }
+
                 this._setLength();
                 this._setKnob();
             }, false);
@@ -755,13 +788,10 @@ module platui {
          * @description
          * Sets the property to use for length and sets the max length of the slider.
          *
-         * @param {HTMLElement} element? The element to use to obtain the max length.
-         *
          * @returns {void}
          */
-        protected _setLength(element?: HTMLElement): void {
-            var isNode = this.utils.isNode(element),
-                el = isNode ? element : this._slider.parentElement;
+        protected _setLength(): void {
+            var el = this._slider.parentElement;
 
             if (this._isVertical) {
                 this._lengthProperty = 'height';
@@ -773,8 +803,14 @@ module platui {
                 this._sliderOffset = el.offsetLeft;
             }
 
-            if (!(isNode || this._maxOffset)) {
-                this._setOffsetWithClone(this._lengthProperty);
+            if (!this._maxOffset) {
+                this._sliderVisible = new this._Promise<void>((resolve) => {
+                    this._removeVisibilityListener = this.dom.whenVisible((): void => {
+                        this._setLength();
+                        this._sliderVisible = null;
+                        resolve();
+                    }, el);
+                });
                 return;
             }
 
@@ -851,18 +887,21 @@ module platui {
          * @returns {void}
          */
         protected _setKnob(value?: number): void {
-            var animationOptions: plat.IObject<string> = {},
-                length = this._calculateKnobPosition((value || this.value));
+            this._Promise.resolve(this._sliderVisible).then((): void => {
+                var animationOptions: plat.IObject<string> = {},
+                    length = this._calculateKnobPosition((value || this.value));
 
-            if (length === this._knobOffset) {
-                return;
-            }
+                if (length === this._knobOffset) {
+                    return;
+                }
 
-            animationOptions[this._lengthProperty] = length + 'px';
-            this._animator.animate(this._slider, __Transition, {
-                properties: animationOptions
+                animationOptions[this._lengthProperty] = length + 'px';
+                this._animator.animate(this._slider, __Transition, {
+                    properties: animationOptions
+                });
+
+                this._knobOffset = length;
             });
-            this._knobOffset = length;
         }
 
         /**
@@ -915,93 +954,6 @@ module platui {
             }
 
             return validOrientation;
-        }
-
-        /**
-         * @name _setOffsetWithClone
-         * @memberof platui.Slider
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * Creates a clone of this element and uses it to find the max offset.
-         *
-         * @param {string} dependencyProperty The property that the offset is being based off of.
-         *
-         * @returns {void}
-         */
-        protected _setOffsetWithClone(dependencyProperty: string): void {
-            var element = this.element,
-                body = this._document.body;
-
-            if (!body.contains(element)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.');
-                    (<plat.ui.ITemplateControlFactory>plat.acquire(__TemplateControlFactory)).dispose(this);
-                    return;
-                }
-
-                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
-                return;
-            }
-
-            var hasDeferred = this._cloneAttempts > 0;
-            this._cloneAttempts = 0;
-
-            var clone = <HTMLElement>element.cloneNode(true),
-                regex = /\d+(?!\d+|%)/,
-                _window = this._window,
-                parentChain = <Array<HTMLElement>>[],
-                shallowCopy = clone,
-                computedStyle: CSSStyleDeclaration,
-                important = 'important',
-                isNull = this.utils.isNull,
-                dependencyValue: string;
-
-            shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = (<any>_window.getComputedStyle(element)))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                element = element.parentElement;
-                if (isNull(element)) {
-                    // if we go all the way up to <html> the body may currently be hidden.
-                    this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                        'hidden. Please do not set the body\'s display to none.');
-                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
-                    return;
-                }
-                shallowCopy = <HTMLElement>element.cloneNode(false);
-                shallowCopy.id = '';
-                parentChain.push(shallowCopy);
-            }
-
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(),
-                    temp: HTMLElement;
-
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-
-                curr.insertBefore(clone, null);
-            }
-
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            this._setLength(<HTMLElement>clone.firstElementChild);
-            body.removeChild(shallowCopy);
-            if (hasDeferred) {
-                this._setKnob();
-            }
         }
     }
 

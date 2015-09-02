@@ -428,8 +428,7 @@ module platui {
         loaded(): void {
             var element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
-                _utils = this.utils,
-                isNumber = _utils.isNumber,
+                isNumber = this.utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
                 options = optionObj.value || <IRangeOptions>{},
                 optionLower = Number(options.lower),

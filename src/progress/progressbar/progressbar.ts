@@ -15,6 +15,7 @@ module platui {
     export class ProgressBar extends plat.ui.TemplateControl implements IUiControl {
         protected static _inject: any = {
             _window: __Window,
+            _Promise: __Promise,
             _animator: __Animator
         };
 
@@ -48,6 +49,19 @@ module platui {
         protected _window: Window;
 
         /**
+         * @name _Promise
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.async.IPromise}
+         *
+         * @description
+         * Reference to the {@link plat.async.IPromise|IPromise} injectable.
+         */
+        protected _Promise: plat.async.IPromise;
+
+        /**
          * @name _animator
          * @memberof platui.ProgressBar
          * @kind property
@@ -72,6 +86,19 @@ module platui {
          * The animated bar element.
          */
         protected _barElement: HTMLElement;
+
+        /**
+         * @name _removeVisibilityListener
+         * @memberof platui.ProgressBar
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.IRemoveListener}
+         *
+         * @description
+         * A function that will stop listening for visibility if applicable.
+         */
+        protected _removeVisibilityListener: plat.IRemoveListener = noop;
 
         /**
          * @name setClasses
@@ -121,11 +148,27 @@ module platui {
          */
         loaded(): void {
             this._barElement = <HTMLElement>this.element.firstElementChild.firstElementChild;
-            this.setProgress(this.context);
 
             this.addEventListener(this._window, 'resize', () => {
                 this.setProgress(this.context);
             });
+
+            this.setProgress(this.context);
+        }
+
+        /**
+         * @name dispose
+         * @memberof platui.ProgressBar
+         * @kind function
+         * @access public
+         *
+         * @description
+         * Removes the visibility listener if applicable.
+         *
+         * @returns {void}
+         */
+        dispose(): void {
+            this._removeVisibilityListener();
         }
 
         /**
@@ -155,26 +198,37 @@ module platui {
          * @param {number} value The decimal number between 0 and 1 to set as the
          * bar percentage (e.g. - 0.5 would be 50% complete).
          *
-         * @returns {plat.ui.animations.IAnimationThenable<void>} An animation promise that returns when the
+         * @returns {plat.async.IThenable<void>} A Promise that resolves when the
          * progress loader has shown the progress update.
          */
-        setProgress(value: number): plat.ui.animations.IAnimationThenable<void> {
-            if (!this.utils.isNumber(value) || value > 1 || value < 0) {
-                this._log.debug('The context of a "' + this.type + '" control must be a number between 0 and 1.');
-                return;
-            }
-
-            var barElement = this._barElement,
-                barMax = barElement.parentElement.clientWidth;
-            if (!barMax) {
-                return;
-            }
-
-            return this._animator.animate(barElement, __Transition, {
-                properties: {
-                    width: Math.ceil(barMax * value) + 'px'
+        setProgress(value: number): plat.async.IThenable<void> {
+            return new this._Promise<void>((resolve, reject) => {
+                if (!this.utils.isNumber(value) || value > 1 || value < 0) {
+                    var msg = 'The value of a "' + this.type + '" control must be a number between 0 and 1.';
+                    this._log.debug(msg);
+                    reject(msg);
+                    return;
                 }
-            }).then(noop);
+
+                var barElement = this._barElement,
+                    barMax = barElement.parentElement.clientWidth;
+
+                if (!barMax) {
+                    this._removeVisibilityListener();
+                    this._removeVisibilityListener = this.dom.whenVisible((): void => {
+                        this.setProgress(value).then(resolve);
+                    }, this.element);
+                    return;
+                }
+
+                this._animator.animate(barElement, __Transition, {
+                    properties: {
+                        width: Math.ceil(barMax * value) + 'px'
+                    }
+                }).then((): void => {
+                    resolve();
+                });
+            });
         }
     }
 
