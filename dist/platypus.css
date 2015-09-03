@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.6.8 (https://platypi.io) 
+ * PlatypusUI v0.6.9 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -2813,7 +2813,7 @@ h6 {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 15px;
+  padding-bottom: 0px;
 }
 .plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container {
   display: -webkit-box;
@@ -2868,10 +2868,8 @@ h6 {
   -moz-align-content: flex-start;
   -ms-flex-line-pack: start;
   align-content: flex-start;
-  width: 100%;
   height: 100%;
-  padding: 0;
-  margin: 0;
+  min-width: 10px;
 }
 .plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped .plat-listview-group .plat-listview-items > * {
   -webkit-box-flex: 0 0 auto;
@@ -4177,21 +4175,29 @@ h6 {
 .plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track .plat-upper-knob {
   right: -0.8em;
 }
-.plat-range.plat-horizontal .plat-range-container .plat-range-track.plat-transition-init,
+.plat-range.plat-horizontal .plat-range-container .plat-range-track {
+  left: 0;
+}
+.plat-range.plat-horizontal .plat-range-container .plat-range-track.plat-transition-init {
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-transition: width 300ms, left 300ms;
+  -moz-transition: width 300ms, left 300ms;
+  transition: width 300ms, left 300ms;
+}
+.plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track {
+  right: 0;
+}
 .plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track.plat-transition-init {
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-transition: width 300ms;
-  -moz-transition: width 300ms;
-  transition: width 300ms;
-}
-.plat-range.plat-horizontal .plat-range-container .plat-range-track {
-  left: 0;
-}
-.plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track {
-  right: 0;
+  -webkit-transition: width 300ms, right 300ms;
+  -moz-transition: width 300ms, right 300ms;
+  transition: width 300ms, right 300ms;
 }
 .plat-range.plat-vertical,
 .plat-range.plat-vertical-reversed {
@@ -4241,21 +4247,29 @@ h6 {
 .plat-range.plat-vertical-reversed .plat-range-container .plat-range-track .plat-upper-knob {
   top: -0.8em;
 }
-.plat-range.plat-vertical .plat-range-container .plat-range-track.plat-transition-init,
+.plat-range.plat-vertical .plat-range-container .plat-range-track {
+  bottom: 0;
+}
+.plat-range.plat-vertical .plat-range-container .plat-range-track.plat-transition-init {
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-transition: height 300ms, bottom 300ms;
+  -moz-transition: height 300ms, bottom 300ms;
+  transition: height 300ms, bottom 300ms;
+}
+.plat-range.plat-vertical-reversed .plat-range-container .plat-range-track {
+  top: 0;
+}
 .plat-range.plat-vertical-reversed .plat-range-container .plat-range-track.plat-transition-init {
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
-  -webkit-transition: height 300ms;
-  -moz-transition: height 300ms;
-  transition: height 300ms;
-}
-.plat-range.plat-vertical .plat-range-container .plat-range-track {
-  bottom: 0;
-}
-.plat-range.plat-vertical-reversed .plat-range-container .plat-range-track {
-  top: 0;
+  -webkit-transition: height 300ms, top 300ms;
+  -moz-transition: height 300ms, top 300ms;
+  transition: height 300ms, top 300ms;
 }
 .plat-range.range-primary .plat-range-container .plat-range-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #2479a8;
