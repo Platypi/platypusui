@@ -49,6 +49,7 @@ var __prefix = '$',
      * Referenced Controls / Vars
      */
     __Hide = __Plat + 'hide',
+    __Hidden = __Plat + 'hidden',
     __Context = __Plat + __CONTEXT,
     __Checked = __Plat + 'checked',
     __ForEach = __Plat + 'foreach',

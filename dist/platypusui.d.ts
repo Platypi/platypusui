@@ -397,6 +397,10 @@ declare module platui {
           */
         protected _window: Window;
         /**
+          * Reference to the IPromise injectable.
+          */
+        protected _Promise: plat.async.IPromise;
+        /**
           * Reference to the Animator injectable.
           */
         protected _animator: plat.ui.animations.Animator;
@@ -404,6 +408,10 @@ declare module platui {
           * The animated bar element.
           */
         protected _barElement: HTMLElement;
+        /**
+          * A function that will stop listening for visibility if applicable.
+          */
+        protected _removeVisibilityListener: plat.IRemoveListener;
         /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
@@ -421,6 +429,10 @@ declare module platui {
           */
         loaded(): void;
         /**
+          * Removes the visibility listener if applicable.
+          */
+        dispose(): void;
+        /**
           * Animates the bar on a context changed.
           */
         contextChanged(): void;
@@ -429,7 +441,7 @@ declare module platui {
           * @param {number} value The decimal number between 0 and 1 to set as the
           * bar percentage (e.g. - 0.5 would be 50% complete).
           */
-        setProgress(value: number): plat.ui.animations.IAnimationThenable<void>;
+        setProgress(value: number): plat.async.IThenable<void>;
     }
     /**
       * An BindControl that acts as a global drawer.
@@ -1196,6 +1208,10 @@ declare module platui {
           */
         protected _document: Document;
         /**
+          * Reference to the IPromise injectable.
+          */
+        protected _Promise: plat.async.IPromise;
+        /**
           * Reference to the Animator injectable.
           */
         protected _animator: plat.ui.animations.Animator;
@@ -1248,15 +1264,13 @@ declare module platui {
           */
         protected _lengthProperty: string;
         /**
-          * The current number of times we checked to see if the element was placed into the DOM.
-          * Used for determining max offset width.
+          * A function that will stop listening for visibility if applicable.
           */
-        protected _cloneAttempts: number;
+        protected _removeVisibilityListener: plat.IRemoveListener;
         /**
-          * The max number of times we'll check to see if the element was placed into the DOM.
-          * Used for determining max offset width.
+          * A Promise that indicates slider visibility.
           */
-        protected _maxCloneAttempts: number;
+        protected _sliderVisible: plat.async.IThenable<void>;
         /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
@@ -1273,6 +1287,10 @@ declare module platui {
           * Determine the button type and apply the proper classes.
           */
         loaded(): void;
+        /**
+          * Removes the visibility listener if applicable.
+          */
+        dispose(): void;
         /**
           * Set the value of the Slider. If an invalid value is passed in
           * nothing will happen.
@@ -1342,9 +1360,8 @@ declare module platui {
         protected _calculateOffset(ev: plat.ui.IGestureEvent): number;
         /**
           * Sets the property to use for length and sets the max length of the slider.
-          * @param {HTMLElement} element? The element to use to obtain the max length.
           */
-        protected _setLength(element?: HTMLElement): void;
+        protected _setLength(): void;
         /**
           * Sets the increment for sliding the {link platui.Slider|Slider}.
           */
@@ -1373,11 +1390,6 @@ declare module platui {
           * @param {string} orientation The element to base the length off of.
           */
         protected _validateOrientation(orientation: string): string;
-        /**
-          * Creates a clone of this element and uses it to find the max offset.
-          * @param {string} dependencyProperty The property that the offset is being based off of.
-          */
-        protected _setOffsetWithClone(dependencyProperty: string): void;
     }
     /**
       * The available options for the Slider control.

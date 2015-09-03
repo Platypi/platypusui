@@ -88,11 +88,6 @@
                     .plat-upper-knob {
                         right: -@knob-radius;
                     }
-
-                    &.plat-transition-init {
-                        .translateZ(0);
-                        .transition(width @transition-time);
-                    }
                 }
             }
         }
@@ -101,6 +96,11 @@
             .plat-range-container {
                 .plat-range-track {
                     left: 0;
+
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(~'width @{transition-time}, left @{transition-time}');
+                    }
                 }
             }
         }
@@ -109,6 +109,11 @@
             .plat-range-container {
                 .plat-range-track {
                     right: 0;
+
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(~'width @{transition-time}, right @{transition-time}');
+                    }
                 }
             }
         }
@@ -142,11 +147,6 @@
                     .plat-upper-knob {
                         top: -@knob-radius;
                     }
-
-                    &.plat-transition-init {
-                        .translateZ(0);
-                        .transition(height @transition-time);
-                    }
                 }
             }
         }
@@ -155,6 +155,11 @@
             .plat-range-container {
                 .plat-range-track {
                     bottom: 0;
+
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(~'height @{transition-time}, bottom @{transition-time}');
+                    }
                 }
             }
         }
@@ -163,6 +168,11 @@
             .plat-range-container {
                 .plat-range-track {
                     top: 0;
+
+                    &.plat-transition-init {
+                        .translateZ(0);
+                        .transition(~'height @{transition-time}, top @{transition-time}');
+                    }
                 }
             }
         }

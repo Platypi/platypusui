@@ -320,7 +320,7 @@ module platui {
          * @type {plat.async.IThenable<void>}
          *
          * @description
-         * A Promise that indicates slider visibility.
+         * A Promise that indicates {@link platui.Slider|Slider} visibility.
          */
         protected _sliderVisible: plat.async.IThenable<void>;
 
@@ -806,8 +806,8 @@ module platui {
             if (!this._maxOffset) {
                 this._sliderVisible = new this._Promise<void>((resolve) => {
                     this._removeVisibilityListener = this.dom.whenVisible((): void => {
-                        this._setLength();
                         this._sliderVisible = null;
+                        this._setLength();
                         resolve();
                     }, el);
                 });

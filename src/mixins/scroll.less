@@ -1,0 +1,50 @@
+#platui {
+    #mixins {
+        .scroll() {
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll(@direction) {
+            & when (@direction = x) {
+                overflow-x: auto;
+                overflow-y: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+            & when not (@direction = x) {
+                overflow-y: auto;
+                overflow-x: hidden;
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        .scrollbar(@size; @foreground-color; @background-color) {
+            .scrollbar-size(@size);
+            .scrollbar-foreground-color(@foreground-color);
+            .scrollbar-background-color(@background-color);
+        }
+
+        .scrollbar-size(@size) {
+            ::-webkit-scrollbar {
+                width: @size;
+                height: @size;
+            }
+        }
+
+        .scrollbar-foreground-color(@foreground-color) {
+            scrollbar-face-color: @foreground-color;
+
+            ::-webkit-scrollbar-thumb {
+                background: @foreground-color;
+            }
+        }
+
+        .scrollbar-background-color(@background-color) {
+            scrollbar-track-color: @background-color;
+            
+            ::-webkit-scrollbar-track {
+                background: @background-color;
+            }
+        }
+	}
+}
