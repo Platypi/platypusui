@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.6.8 (https://platypi.io)
+  * PlatypusUI v0.6.9 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -397,6 +397,10 @@ declare module platui {
           */
         protected _window: Window;
         /**
+          * Reference to the IPromise injectable.
+          */
+        protected _Promise: plat.async.IPromise;
+        /**
           * Reference to the Animator injectable.
           */
         protected _animator: plat.ui.animations.Animator;
@@ -404,6 +408,10 @@ declare module platui {
           * The animated bar element.
           */
         protected _barElement: HTMLElement;
+        /**
+          * A function that will stop listening for visibility if applicable.
+          */
+        protected _removeVisibilityListener: plat.IRemoveListener;
         /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
@@ -421,6 +429,10 @@ declare module platui {
           */
         loaded(): void;
         /**
+          * Removes the visibility listener if applicable.
+          */
+        dispose(): void;
+        /**
           * Animates the bar on a context changed.
           */
         contextChanged(): void;
@@ -429,7 +441,7 @@ declare module platui {
           * @param {number} value The decimal number between 0 and 1 to set as the
           * bar percentage (e.g. - 0.5 would be 50% complete).
           */
-        setProgress(value: number): plat.ui.animations.IAnimationThenable<void>;
+        setProgress(value: number): plat.async.IThenable<void>;
     }
     /**
       * An BindControl that acts as a global drawer.
@@ -1196,6 +1208,10 @@ declare module platui {
           */
         protected _document: Document;
         /**
+          * Reference to the IPromise injectable.
+          */
+        protected _Promise: plat.async.IPromise;
+        /**
           * Reference to the Animator injectable.
           */
         protected _animator: plat.ui.animations.Animator;
@@ -1248,15 +1264,13 @@ declare module platui {
           */
         protected _lengthProperty: string;
         /**
-          * The current number of times we checked to see if the element was placed into the DOM.
-          * Used for determining max offset width.
+          * A function that will stop listening for visibility if applicable.
           */
-        protected _cloneAttempts: number;
+        protected _removeVisibilityListener: plat.IRemoveListener;
         /**
-          * The max number of times we'll check to see if the element was placed into the DOM.
-          * Used for determining max offset width.
+          * A Promise that indicates Slider visibility.
           */
-        protected _maxCloneAttempts: number;
+        protected _sliderVisible: plat.async.IThenable<void>;
         /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
@@ -1273,6 +1287,10 @@ declare module platui {
           * Determine the button type and apply the proper classes.
           */
         loaded(): void;
+        /**
+          * Removes the visibility listener if applicable.
+          */
+        dispose(): void;
         /**
           * Set the value of the Slider. If an invalid value is passed in
           * nothing will happen.
@@ -1342,9 +1360,8 @@ declare module platui {
         protected _calculateOffset(ev: plat.ui.IGestureEvent): number;
         /**
           * Sets the property to use for length and sets the max length of the slider.
-          * @param {HTMLElement} element? The element to use to obtain the max length.
           */
-        protected _setLength(element?: HTMLElement): void;
+        protected _setLength(): void;
         /**
           * Sets the increment for sliding the {link platui.Slider|Slider}.
           */
@@ -1373,11 +1390,6 @@ declare module platui {
           * @param {string} orientation The element to base the length off of.
           */
         protected _validateOrientation(orientation: string): string;
-        /**
-          * Creates a clone of this element and uses it to find the max offset.
-          * @param {string} dependencyProperty The property that the offset is being based off of.
-          */
-        protected _setOffsetWithClone(dependencyProperty: string): void;
     }
     /**
       * The available options for the Slider control.
@@ -1449,6 +1461,10 @@ declare module platui {
           */
         protected _document: Document;
         /**
+          * Reference to the IPromise injectable.
+          */
+        protected _Promise: plat.async.IPromise;
+        /**
           * Reference to the Animator injectable.
           */
         protected _animator: plat.ui.animations.Animator;
@@ -1517,15 +1533,13 @@ declare module platui {
           */
         protected _touchState: number;
         /**
-          * The current number of times we checked to see if the element was placed into the DOM.
-          * Used for determining max offset width.
+          * A function that will stop listening for visibility if applicable.
           */
-        protected _cloneAttempts: number;
+        protected _removeVisibilityListener: plat.IRemoveListener;
         /**
-          * The max number of times we'll check to see if the element was placed into the DOM.
-          * Used for determining max offset width.
+          * A Promise that indicates Range visibility.
           */
-        protected _maxCloneAttempts: number;
+        protected _rangeVisible: plat.async.IThenable<void>;
         /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
@@ -1680,9 +1694,8 @@ declare module platui {
         protected _setIncrement(): number;
         /**
           * Sets the properties to use for length and position and sets the max length of the sliding element.
-          * @param {HTMLElement} element? The element to base the length off of.
           */
-        protected _setPositionAndLength(element?: HTMLElement): void;
+        protected _setPositionAndLength(): void;
         /**
           * Animates and sets the knob position.
           * @param {number} value? The value to use to calculate the knob position. If no value is
@@ -1710,11 +1723,6 @@ declare module platui {
           * @param {string} orientation The element to base the length off of.
           */
         protected _validateOrientation(orientation: string): string;
-        /**
-          * Creates a clone of this element and uses it to find the max offset.
-          * @param {string} dependencyProperty The property that the offset is being based off of.
-          */
-        protected _setOffsetWithClone(dependencyProperty: string): void;
     }
     /**
       * The available options for the Range control.
@@ -2785,15 +2793,13 @@ declare module platui {
           */
         protected _headerTemplatePromise: plat.async.IThenable<void>;
         /**
-          * The current number of times we checked to see if the element was placed into the DOM.
-          * Used for determining height.
+          * Whether or not we're on IE.
           */
-        protected _cloneAttempts: number;
+        protected _ie: boolean;
         /**
-          * The max number of times we'll check to see if the element was placed into the DOM.
-          * Used for determining height.
+          * A set of functions to remove all visibility listeners.
           */
-        protected _maxCloneAttempts: number;
+        protected _visibilityRemoveListeners: Array<plat.IRemoveListener>;
         /**
           * Whether or not the main Array listener has been set.
           */
@@ -3160,18 +3166,12 @@ declare module platui {
           * @param {HTMLElement} element The element to set the width on.
           * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
           */
-        protected _setItemContainerWidth(element: HTMLElement, immediate?: boolean): void;
+        protected _setItemContainerWidth(element: HTMLElement): void;
         /**
           * Resets the width of a group's item container.
           * @param {HTMLElement} element The element to reset the width on.
           */
         protected _resetItemContainerWidth(element: HTMLElement): void;
-        /**
-          * Creates a clone of the group container and uses it to find width values.
-          * @param {HTMLElement} item The element having its width set.
-          * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
-          */
-        protected _setItemContainerWidthWithClone(item: HTMLElement, immediate?: boolean): void;
         /**
           * Sets the height of a group's item container.
           * @param {HTMLElement} element The element to set the height on.
@@ -3179,11 +3179,11 @@ declare module platui {
           */
         protected _setItemContainerHeight(element: HTMLElement, withHeader: boolean): void;
         /**
-          * Creates a clone of the group container and uses it to find height values.
-          * @param {HTMLElement} item The element having its height set.
-          * @param {boolean} withHeader Whether the header should be included in the calculation or not.
+          * Adds a visibility listener and hides and shows element accordingly
+          * @param {() => void} listener The listener to fire when visible.
+          * @param {HTMLElement} element The element to listen for visibility.
           */
-        protected _setItemContainerHeightWithClone(item: HTMLElement, withHeader: boolean): void;
+        protected _addVisibilityListener(listener: () => void, element: HTMLElement): void;
     }
     /**
       * The available options for the Listview control.

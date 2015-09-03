@@ -1,12 +1,11 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
-    __.prototype = b.prototype;
-    d.prototype = new __();
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.6.8 (https://platypi.io)
+ * PlatypusUI v0.6.9 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -31,7 +30,7 @@ var platui;
     __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', __Navbar = __Plat + 'navbar', __Image = __Plat + 'image', 
     /**
      */
-    __Hide = __Plat + 'hide', __Context = __Plat + __CONTEXT, __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', __CamelSrc = __PlatPrefix + 'Src', 
+    __Hide = __Plat + 'hide', __Hidden = __Plat + 'hidden', __Context = __Plat + __CONTEXT, __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', __CamelSrc = __PlatPrefix + 'Src', 
     /**
      */
     __listviewAliasOptions = {
@@ -670,6 +669,10 @@ var platui;
             this.templateString = '<div class="plat-progress-container">\n' +
                 '    <div class="plat-animated-bar"></div>\n' +
                 '</div>\n';
+            /**
+             * A function that will stop listening for visibility if applicable.
+             */
+            this._removeVisibilityListener = noop;
         }
         /**
          * Sets the classes on the proper elements.
@@ -693,10 +696,16 @@ var platui;
         ProgressBar.prototype.loaded = function () {
             var _this = this;
             this._barElement = this.element.firstElementChild.firstElementChild;
-            this.setProgress(this.context);
             this.addEventListener(this._window, 'resize', function () {
                 _this.setProgress(_this.context);
             });
+            this.setProgress(this.context);
+        };
+        /**
+         * Removes the visibility listener if applicable.
+         */
+        ProgressBar.prototype.dispose = function () {
+            this._removeVisibilityListener();
         };
         /**
          * Animates the bar on a context changed.
@@ -710,22 +719,34 @@ var platui;
          * bar percentage (e.g. - 0.5 would be 50% complete).
          */
         ProgressBar.prototype.setProgress = function (value) {
-            if (!this.utils.isNumber(value) || value > 1 || value < 0) {
-                this._log.debug('The context of a "' + this.type + '" control must be a number between 0 and 1.');
-                return;
-            }
-            var barElement = this._barElement, barMax = barElement.parentElement.clientWidth;
-            if (!barMax) {
-                return;
-            }
-            return this._animator.animate(barElement, __Transition, {
-                properties: {
-                    width: Math.ceil(barMax * value) + 'px'
+            var _this = this;
+            return new this._Promise(function (resolve, reject) {
+                if (!_this.utils.isNumber(value) || value > 1 || value < 0) {
+                    var msg = 'The value of a "' + _this.type + '" control must be a number between 0 and 1.';
+                    _this._log.debug(msg);
+                    reject(msg);
+                    return;
                 }
-            }).then(noop);
+                var barElement = _this._barElement, barMax = barElement.parentElement.clientWidth;
+                if (!barMax) {
+                    _this._removeVisibilityListener();
+                    _this._removeVisibilityListener = _this.dom.whenVisible(function () {
+                        _this.setProgress(value).then(resolve);
+                    }, _this.element);
+                    return;
+                }
+                _this._animator.animate(barElement, __Transition, {
+                    properties: {
+                        width: Math.ceil(barMax * value) + 'px'
+                    }
+                }).then(function () {
+                    resolve();
+                });
+            });
         };
         ProgressBar._inject = {
             _window: __Window,
+            _Promise: __Promise,
             _animator: __Animator
         };
         return ProgressBar;
@@ -2199,15 +2220,9 @@ var platui;
              */
             this._touchState = 0;
             /**
-             * The current number of times we checked to see if the element was placed into the DOM.
-             * Used for determining max offset width.
+             * A function that will stop listening for visibility if applicable.
              */
-            this._cloneAttempts = 0;
-            /**
-             * The max number of times we'll check to see if the element was placed into the DOM.
-             * Used for determining max offset width.
-             */
-            this._maxCloneAttempts = 25;
+            this._removeVisibilityListener = noop;
         }
         /**
          * Sets the classes on the proper elements.
@@ -2245,6 +2260,14 @@ var platui;
             this._setLength();
             this._initializeEvents();
             this.setValue(value);
+        };
+        /**
+         * Removes the visibility listener if applicable.
+         */
+        Slider.prototype.dispose = function () {
+            _super.prototype.dispose.call(this);
+            this._removeVisibilityListener();
+            this._sliderVisible = null;
         };
         /**
          * Set the value of the Slider. If an invalid value is passed in
@@ -2317,6 +2340,9 @@ var platui;
             this.addEventListener(element, __$touchend, touchEnd, false);
             this.addEventListener(element, __$trackend, touchEnd, false);
             this.addEventListener(this._window, 'resize', function () {
+                if (!_this.utils.isNull(_this._sliderVisible)) {
+                    return;
+                }
                 _this._setLength();
                 _this._setKnob();
             }, false);
@@ -2469,10 +2495,10 @@ var platui;
         };
         /**
          * Sets the property to use for length and sets the max length of the slider.
-         * @param {HTMLElement} element? The element to use to obtain the max length.
          */
-        Slider.prototype._setLength = function (element) {
-            var isNode = this.utils.isNode(element), el = isNode ? element : this._slider.parentElement;
+        Slider.prototype._setLength = function () {
+            var _this = this;
+            var el = this._slider.parentElement;
             if (this._isVertical) {
                 this._lengthProperty = 'height';
                 this._maxOffset = el.clientHeight;
@@ -2483,8 +2509,14 @@ var platui;
                 this._maxOffset = el.clientWidth;
                 this._sliderOffset = el.offsetLeft;
             }
-            if (!(isNode || this._maxOffset)) {
-                this._setOffsetWithClone(this._lengthProperty);
+            if (!this._maxOffset) {
+                this._sliderVisible = new this._Promise(function (resolve) {
+                    _this._removeVisibilityListener = _this.dom.whenVisible(function () {
+                        _this._sliderVisible = null;
+                        _this._setLength();
+                        resolve();
+                    }, el);
+                });
                 return;
             }
             this._setIncrement();
@@ -2530,15 +2562,18 @@ var platui;
          * specified, the current Slider's value will be used.
          */
         Slider.prototype._setKnob = function (value) {
-            var animationOptions = {}, length = this._calculateKnobPosition((value || this.value));
-            if (length === this._knobOffset) {
-                return;
-            }
-            animationOptions[this._lengthProperty] = length + 'px';
-            this._animator.animate(this._slider, __Transition, {
-                properties: animationOptions
+            var _this = this;
+            this._Promise.resolve(this._sliderVisible).then(function () {
+                var animationOptions = {}, length = _this._calculateKnobPosition((value || _this.value));
+                if (length === _this._knobOffset) {
+                    return;
+                }
+                animationOptions[_this._lengthProperty] = length + 'px';
+                _this._animator.animate(_this._slider, __Transition, {
+                    properties: animationOptions
+                });
+                _this._knobOffset = length;
             });
-            this._knobOffset = length;
         };
         /**
          * Triggers an event starting from this control's element.
@@ -2572,67 +2607,10 @@ var platui;
             }
             return validOrientation;
         };
-        /**
-         * Creates a clone of this element and uses it to find the max offset.
-         * @param {string} dependencyProperty The property that the offset is being based off of.
-         */
-        Slider.prototype._setOffsetWithClone = function (dependencyProperty) {
-            var element = this.element, body = this._document.body;
-            if (!body.contains(element)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.');
-                    plat.acquire(__TemplateControlFactory).dispose(this);
-                    return;
-                }
-                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
-                return;
-            }
-            var hasDeferred = this._cloneAttempts > 0;
-            this._cloneAttempts = 0;
-            var clone = element.cloneNode(true), regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, important = 'important', isNull = this.utils.isNull, dependencyValue;
-            shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                element = element.parentElement;
-                if (isNull(element)) {
-                    // if we go all the way up to <html> the body may currently be hidden. 
-                    this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                        'hidden. Please do not set the body\'s display to none.');
-                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
-                    return;
-                }
-                shallowCopy = element.cloneNode(false);
-                shallowCopy.id = '';
-                parentChain.push(shallowCopy);
-            }
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(), temp;
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-                curr.insertBefore(clone, null);
-            }
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            this._setLength(clone.firstElementChild);
-            body.removeChild(shallowCopy);
-            if (hasDeferred) {
-                this._setKnob();
-            }
-        };
         Slider._inject = {
             _document: __Document,
             _window: __Window,
+            _Promise: __Promise,
             _animator: __Animator
         };
         return Slider;
@@ -2665,15 +2643,9 @@ var platui;
              */
             this._touchState = 0;
             /**
-             * The current number of times we checked to see if the element was placed into the DOM.
-             * Used for determining max offset width.
+             * A function that will stop listening for visibility if applicable.
              */
-            this._cloneAttempts = 0;
-            /**
-             * The max number of times we'll check to see if the element was placed into the DOM.
-             * Used for determining max offset width.
-             */
-            this._maxCloneAttempts = 25;
+            this._removeVisibilityListener = noop;
         }
         /**
          * Sets the classes on the proper elements.
@@ -2695,7 +2667,7 @@ var platui;
          * Determine the button type and apply the proper classes.
          */
         Range.prototype.loaded = function () {
-            var element = this.element, slider = this._slider = element.firstElementChild.firstElementChild, _utils = this.utils, isNumber = _utils.isNumber, optionObj = this.options || {}, options = optionObj.value || {}, optionLower = Number(options.lower), optionUpper = Number(options.upper), identifiers = options.identifiers || {}, optionMin = options.min, optionMax = options.max, step = options.step, reversed = this._reversed = (options.reverse === true), min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0, max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100, lower = isNumber(optionLower) ? Math.round(optionLower) : min, upper = isNumber(optionUpper) ? Math.round(optionUpper) : max, className = __Plat + this._validateOrientation(options.orientation);
+            var element = this.element, slider = this._slider = element.firstElementChild.firstElementChild, isNumber = this.utils.isNumber, optionObj = this.options || {}, options = optionObj.value || {}, optionLower = Number(options.lower), optionUpper = Number(options.upper), identifiers = options.identifiers || {}, optionMin = options.min, optionMax = options.max, step = options.step, reversed = this._reversed = (options.reverse === true), min = this.min = isNumber(optionMin) ? Math.floor(optionMin) : 0, max = this.max = isNumber(optionMax) ? Math.ceil(optionMax) : 100, lower = isNumber(optionLower) ? Math.round(optionLower) : min, upper = isNumber(optionUpper) ? Math.round(optionUpper) : max, className = __Plat + this._validateOrientation(options.orientation);
             this._lowerKnob = slider.firstElementChild;
             this._upperKnob = slider.lastElementChild;
             this._lowerIdentifier = identifiers.lower || 'lower';
@@ -2717,6 +2689,7 @@ var platui;
                 this.max = min + 1;
             }
             this._setPositionAndLength();
+            // must set this in case the value is not set and lower knob is never positioned due to setLower function. 
             this._setLowerKnobPosition(min);
             this._initializeEvents();
             this.setLower(lower);
@@ -2853,6 +2826,9 @@ var platui;
             this.addEventListener(lowerKnob, __$trackend, touchEnd, false);
             this.addEventListener(upperKnob, __$trackend, touchEnd, false);
             this.addEventListener(this._window, 'resize', function () {
+                if (!_this.utils.isNull(_this._rangeVisible)) {
+                    return;
+                }
                 _this._setPositionAndLength();
                 _this._setLowerKnobPosition();
                 _this._setUpperKnobPosition();
@@ -3172,10 +3148,10 @@ var platui;
         };
         /**
          * Sets the properties to use for length and position and sets the max length of the sliding element.
-         * @param {HTMLElement} element? The element to base the length off of.
          */
-        Range.prototype._setPositionAndLength = function (element) {
-            var isNode = this.utils.isNode(element), el = isNode ? element : this._slider.parentElement;
+        Range.prototype._setPositionAndLength = function () {
+            var _this = this;
+            var el = this._slider.parentElement;
             if (this._isVertical) {
                 this._lengthProperty = 'height';
                 this._positionProperty = this._reversed ? 'top' : 'bottom';
@@ -3186,8 +3162,14 @@ var platui;
                 this._positionProperty = this._reversed ? 'right' : 'left';
                 this._maxOffset = el.clientWidth;
             }
-            if (!(isNode || this._maxOffset)) {
-                this._setOffsetWithClone(this._lengthProperty);
+            if (!this._maxOffset) {
+                this._rangeVisible = new this._Promise(function (resolve) {
+                    _this._removeVisibilityListener = _this.dom.whenVisible(function () {
+                        _this._rangeVisible = null;
+                        _this._setPositionAndLength();
+                        resolve();
+                    }, el);
+                });
                 return;
             }
             this._setIncrement();
@@ -3198,17 +3180,21 @@ var platui;
          * specified, the current Range's value will be used.
          */
         Range.prototype._setLowerKnobPosition = function (value) {
-            var animationOptions = {}, upperKnobOffset = this._upperKnobOffset, upperOffset = this.utils.isNumber(upperKnobOffset) ? upperKnobOffset :
-                this._setOffset(this._calculateKnobPosition(this.upper), false), position = this._calculateKnobPosition((value || this.lower));
-            if (position === this._lowerKnobOffset) {
-                return;
-            }
-            animationOptions[this._positionProperty] = position + 'px';
-            animationOptions[this._lengthProperty] = (upperOffset - position) + 'px';
-            this._animator.animate(this._slider, __Transition, {
-                properties: animationOptions
+            var _this = this;
+            this._Promise.resolve(this._rangeVisible).then(function () {
+                var animationOptions = {}, upperKnobOffset = _this._upperKnobOffset, upperOffset = _this.utils.isNumber(upperKnobOffset) ?
+                    upperKnobOffset :
+                    _this._setOffset(_this._calculateKnobPosition(_this.upper), false), position = _this._calculateKnobPosition((value || _this.lower));
+                if (position === _this._lowerKnobOffset) {
+                    return;
+                }
+                animationOptions[_this._positionProperty] = position + 'px';
+                animationOptions[_this._lengthProperty] = (upperOffset - position) + 'px';
+                _this._animator.animate(_this._slider, __Transition, {
+                    properties: animationOptions
+                });
+                _this._lowerKnobOffset = position;
             });
-            this._lowerKnobOffset = position;
         };
         /**
          * Animates and sets the knob position.
@@ -3216,15 +3202,18 @@ var platui;
          * specified, the current Range's value will be used.
          */
         Range.prototype._setUpperKnobPosition = function (value) {
-            var animationOptions = {}, length = this._calculateKnobPosition((value || this.upper));
-            if (length === this._upperKnobOffset) {
-                return;
-            }
-            animationOptions[this._lengthProperty] = (length - this._lowerKnobOffset) + 'px';
-            this._animator.animate(this._slider, __Transition, {
-                properties: animationOptions
+            var _this = this;
+            this._Promise.resolve(this._rangeVisible).then(function () {
+                var animationOptions = {}, length = _this._calculateKnobPosition((value || _this.upper));
+                if (length === _this._upperKnobOffset) {
+                    return;
+                }
+                animationOptions[_this._lengthProperty] = (length - _this._lowerKnobOffset) + 'px';
+                _this._animator.animate(_this._slider, __Transition, {
+                    properties: animationOptions
+                });
+                _this._upperKnobOffset = length;
             });
-            this._upperKnobOffset = length;
         };
         /**
          * Fires an inputChanged event with the new bound value.
@@ -3267,68 +3256,10 @@ var platui;
             }
             return validOrientation;
         };
-        /**
-         * Creates a clone of this element and uses it to find the max offset.
-         * @param {string} dependencyProperty The property that the offset is being based off of.
-         */
-        Range.prototype._setOffsetWithClone = function (dependencyProperty) {
-            var element = this.element, body = this._document.body;
-            if (!body.contains(element)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.');
-                    plat.acquire(__TemplateControlFactory).dispose(this);
-                    return;
-                }
-                this.utils.defer(this._setOffsetWithClone, 20, [dependencyProperty], this);
-                return;
-            }
-            var hasDeferred = this._cloneAttempts > 0;
-            this._cloneAttempts = 0;
-            var clone = element.cloneNode(true), regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, important = 'important', isNull = this.utils.isNull, dependencyValue;
-            shallowCopy.id = '';
-            while (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                element = element.parentElement;
-                if (isNull(element)) {
-                    // if we go all the way up to <html> the body may currently be hidden. 
-                    this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                        'hidden. Please do not set the body\'s display to none.');
-                    this.utils.defer(this._setOffsetWithClone, 100, [dependencyProperty], this);
-                    return;
-                }
-                shallowCopy = element.cloneNode(false);
-                shallowCopy.id = '';
-                parentChain.push(shallowCopy);
-            }
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(), temp;
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-                curr.insertBefore(clone, null);
-            }
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            this._setPositionAndLength(clone.firstElementChild);
-            body.removeChild(shallowCopy);
-            if (hasDeferred) {
-                this._setLowerKnobPosition();
-                this._setUpperKnobPosition();
-            }
-        };
         Range._inject = {
             _document: __Document,
             _window: __Window,
+            _Promise: __Promise,
             _animator: __Animator
         };
         return Range;
@@ -5424,15 +5355,9 @@ var platui;
              */
             this._isGrouped = false;
             /**
-             * The current number of times we checked to see if the element was placed into the DOM.
-             * Used for determining height.
+             * A set of functions to remove all visibility listeners.
              */
-            this._cloneAttempts = 0;
-            /**
-             * The max number of times we'll check to see if the element was placed into the DOM.
-             * Used for determining height.
-             */
-            this._maxCloneAttempts = 25;
+            this._visibilityRemoveListeners = [];
             /**
              * Whether or not the main Array listener has been set.
              */
@@ -5496,6 +5421,7 @@ var platui;
         Listview.prototype.loaded = function () {
             var options = this.options.value, utils = this.utils, isString = utils.isString, element = this.element, viewport = this._viewport = element.firstElementChild, scrollContainer = this._scrollContainer = viewport.firstElementChild, loading = this._loading = options.loading, animate = this._animate = options.animate === true, requestItems = options.onItemsRequested, refresh = options.onRefresh, itemTemplate = options.itemTemplate;
             this._container = scrollContainer.firstElementChild;
+            this._ie = utils.isNumber(this._compat.IE);
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (' ' + __Plat + 'animated') : ''));
             if (!isString(itemTemplate)) {
@@ -5545,6 +5471,10 @@ var platui;
          * Removes any potentially held memory.
          */
         Listview.prototype.dispose = function () {
+            var visibilityRemovers = this._visibilityRemoveListeners;
+            while (visibilityRemovers.length > 0) {
+                visibilityRemovers.pop()();
+            }
             if (this.utils.isFunction(this.__rejectFn)) {
                 this.__rejectFn();
                 this.__resolveFn = this.__rejectFn = null;
@@ -5743,22 +5673,13 @@ var platui;
                         if (index > -1) {
                             animationQueue.splice(index, 1);
                         }
-                        if (!_this._isVertical) {
-                            // set height for flexbox container 
-                            _this._setItemContainerHeight(itemContainer, true);
-                        }
                     }),
                     op: null
                 };
                 animationQueue.push(animation);
+                return;
             }
-            else {
-                this._container.insertBefore(fragment, null);
-                if (!this._isVertical) {
-                    // set height for flexbox container 
-                    this._setItemContainerHeight(itemContainer, true);
-                }
-            }
+            this._container.insertBefore(fragment, null);
         };
         /**
          * Handle binding of a single group.
@@ -5786,9 +5707,6 @@ var platui;
                     });
                     return;
                 }
-                else if (!isVertical) {
-                    this._setItemContainerHeight(opGroup.itemContainer, false);
-                }
             }
             var addQueue = opGroup.addQueue, postLoad = function () {
                 var indexOf = addQueue.indexOf(addPromise);
@@ -5802,7 +5720,12 @@ var platui;
                 if (isVertical) {
                     return;
                 }
-                _this._setItemContainerWidth(opGroup.itemContainer);
+                _this.utils.requestAnimationFrame(function () {
+                    // set width and height for flexbox container 
+                    var itemContainer = opGroup.itemContainer;
+                    _this._setItemContainerHeight(itemContainer, _this._isGrouped);
+                    _this._setItemContainerWidth(itemContainer);
+                });
             }, onError = function (error) {
                 _this._log.debug(_this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
             };
@@ -6916,20 +6839,13 @@ var platui;
          * @param {HTMLElement} element The element to set the width on.
          * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
          */
-        Listview.prototype._setItemContainerWidth = function (element, immediate) {
+        Listview.prototype._setItemContainerWidth = function (element) {
             var width = element.scrollWidth;
             if (!width) {
-                this._setItemContainerWidthWithClone(element, immediate);
+                this._addVisibilityListener(this._setItemContainerWidth.bind(this, element), element);
                 return;
             }
-            var setter = function () {
-                element.style.width = width + 'px';
-            };
-            if (immediate === true) {
-                setter();
-                return;
-            }
-            this.utils.requestAnimationFrame(setter);
+            element.style.width = width + 'px';
         };
         /**
          * Resets the width of a group's item container.
@@ -6937,81 +6853,7 @@ var platui;
          */
         Listview.prototype._resetItemContainerWidth = function (element) {
             element.style.width = '';
-            this._setItemContainerWidth(element, true);
-        };
-        /**
-         * Creates a clone of the group container and uses it to find width values.
-         * @param {HTMLElement} item The element having its width set.
-         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
-         */
-        Listview.prototype._setItemContainerWidthWithClone = function (item, immediate) {
-            var body = this._document.body, parent = item.parentElement, utils = this.utils, element = parent.lastElementChild;
-            if (!body.contains(parent)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.');
-                    this._TemplateControlFactory.dispose(this);
-                    return;
-                }
-                utils.defer(this._setItemContainerWidthWithClone, 20, [item], this);
-                return;
-            }
-            this._cloneAttempts = 0;
-            var parentClone = parent.cloneNode(true), clone = parentClone.lastElementChild, regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, dependencyProperty = 'width', codependentProperty = 'height', important = 'important', isNull = utils.isNull, dependencyValue;
-            shallowCopy.id = '';
-            if (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                shallowCopy.style.setProperty(codependentProperty, computedStyle.height, important);
-                element = element.parentElement;
-                shallowCopy = parentClone;
-                shallowCopy.id = '';
-                while (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
-                    if (computedStyle.display === 'none') {
-                        shallowCopy.style.setProperty('display', 'block', important);
-                    }
-                    shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                    shallowCopy.style.setProperty(codependentProperty, computedStyle.height, important);
-                    element = element.parentElement;
-                    if (isNull(element)) {
-                        // if we go all the way up to <html> the body may currently be hidden. 
-                        this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                            'hidden. Please do not set the body\'s display to none.');
-                        utils.defer(this._setItemContainerWidthWithClone, 100, [dependencyProperty], this);
-                        return;
-                    }
-                    shallowCopy = element.cloneNode(false);
-                    shallowCopy.id = '';
-                    parentChain.push(shallowCopy);
-                }
-            }
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(), temp;
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-                curr.insertBefore(parentClone, null);
-            }
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty(codependentProperty, computedStyle.height, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            var setWidth = clone.scrollWidth + 'px', setter = function () {
-                item.style.width = setWidth;
-            };
-            body.removeChild(shallowCopy);
-            if (immediate === true) {
-                setter();
-                return;
-            }
-            utils.requestAnimationFrame(setter);
+            this._setItemContainerWidth(element);
         };
         /**
          * Sets the height of a group's item container.
@@ -7021,86 +6863,41 @@ var platui;
         Listview.prototype._setItemContainerHeight = function (element, withHeader) {
             var parent = element.parentElement, parentHeight = parent.offsetHeight, headerHeight = 0;
             if (!parentHeight) {
-                this._setItemContainerHeightWithClone(element, withHeader);
+                this._addVisibilityListener(this._setItemContainerHeight.bind(this, element, withHeader), parent);
                 return;
             }
             if (withHeader === true) {
-                headerHeight = parent.firstElementChild.offsetHeight;
+                var header = parent.firstElementChild;
+                headerHeight = header.offsetHeight;
                 if (!headerHeight) {
-                    this._setItemContainerHeightWithClone(element, withHeader);
+                    this._addVisibilityListener(this._setItemContainerHeight.bind(this, element, withHeader), header);
                     return;
                 }
             }
-            this.utils.requestAnimationFrame(function () {
-                element.style.height = (parentHeight - headerHeight) + 'px';
-            });
+            // parent element minus header minus scrollbar (for IE) 
+            element.style.height = (parentHeight - headerHeight - (this._ie ? 17 : 0)) + 'px';
         };
         /**
-         * Creates a clone of the group container and uses it to find height values.
-         * @param {HTMLElement} item The element having its height set.
-         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
+         * Adds a visibility listener and hides and shows element accordingly
+         * @param {() => void} listener The listener to fire when visible.
+         * @param {HTMLElement} element The element to listen for visibility.
          */
-        Listview.prototype._setItemContainerHeightWithClone = function (item, withHeader) {
-            var body = this._document.body, parent = item.parentElement, element = parent.firstElementChild;
-            if (!body.contains(parent)) {
-                var cloneAttempts = ++this._cloneAttempts;
-                if (cloneAttempts === this._maxCloneAttempts) {
-                    var controlType = this.type;
-                    this._log.debug('Max clone attempts reached before the ' + controlType + ' was placed into the ' +
-                        'DOM. Disposing of the ' + controlType + '.');
-                    this._TemplateControlFactory.dispose(this);
-                    return;
+        Listview.prototype._addVisibilityListener = function (listener, element) {
+            var _this = this;
+            var visibilityRemovers = this._visibilityRemoveListeners, remove = this.dom.whenVisible(function () {
+                listener();
+                var i = visibilityRemovers.indexOf(remove);
+                if (i !== -1) {
+                    visibilityRemovers.splice(i, 1);
                 }
-                this.utils.defer(this._setItemContainerHeightWithClone, 20, [item], this);
-                return;
+                if (visibilityRemovers.length === 0) {
+                    _this.element.removeAttribute(__Hidden);
+                }
+            }, element);
+            if (visibilityRemovers.length === 0) {
+                this.element.setAttribute(__Hidden, '');
             }
-            this._cloneAttempts = 0;
-            var parentClone = parent.cloneNode(true), clone = parentClone.firstElementChild, regex = /\d+(?!\d+|%)/, _window = this._window, parentChain = [], shallowCopy = clone, computedStyle, dependencyProperty = 'height', important = 'important', isNull = this.utils.isNull, dependencyValue;
-            shallowCopy.id = '';
-            if (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
-                if (computedStyle.display === 'none') {
-                    shallowCopy.style.setProperty('display', 'block', important);
-                }
-                shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                element = element.parentElement;
-                shallowCopy = parentClone;
-                shallowCopy.id = '';
-                while (!regex.test((dependencyValue = (computedStyle = _window.getComputedStyle(element))[dependencyProperty]))) {
-                    if (computedStyle.display === 'none') {
-                        shallowCopy.style.setProperty('display', 'block', important);
-                    }
-                    shallowCopy.style.setProperty(dependencyProperty, dependencyValue, important);
-                    element = element.parentElement;
-                    if (isNull(element)) {
-                        // if we go all the way up to <html> the body may currently be hidden. 
-                        this._log.debug('The document\'s body contains a ' + this.type + ' that needs its length and is currently ' +
-                            'hidden. Please do not set the body\'s display to none.');
-                        this.utils.defer(this._setItemContainerHeightWithClone, 100, [dependencyProperty], this);
-                        return;
-                    }
-                    shallowCopy = element.cloneNode(false);
-                    shallowCopy.id = '';
-                    parentChain.push(shallowCopy);
-                }
-            }
-            if (parentChain.length > 0) {
-                var curr = parentChain.pop(), temp;
-                while (parentChain.length > 0) {
-                    temp = parentChain.pop();
-                    curr.insertBefore(temp, null);
-                    curr = temp;
-                }
-                curr.insertBefore(parentClone, null);
-            }
-            var shallowStyle = shallowCopy.style;
-            shallowStyle.setProperty(dependencyProperty, dependencyValue, important);
-            shallowStyle.setProperty('visibility', 'hidden', important);
-            body.appendChild(shallowCopy);
-            var setHeight = withHeader === true ? (parentClone.offsetHeight - clone.offsetHeight) + 'px' : clone.offsetHeight + 'px';
-            body.removeChild(shallowCopy);
-            this.utils.requestAnimationFrame(function () {
-                item.style.height = setHeight;
-            });
+            visibilityRemovers.push(remove);
         };
         Listview._inject = {
             _document: __Document,
@@ -7414,7 +7211,8 @@ var platui;
                         }
                         return;
                     }
-                    dom.removeClass(img, imageLoadClass);
+                    // remove error class in case image decides to load 
+                    dom.removeClass(img, __Image + '-error ' + imageLoadClass);
                     if (element.contains(loader)) {
                         element.removeChild(loader);
                     }

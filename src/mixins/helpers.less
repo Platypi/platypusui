@@ -16,24 +16,6 @@
             margin: 0;
         }
 
-        .scroll() {
-            overflow: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .scroll(@direction) {
-            & when (@direction = x) {
-                overflow-x: auto;
-                overflow-y: hidden;
-                -webkit-overflow-scrolling: touch;
-            }
-            & when not (@direction = x) {
-                overflow-y: auto;
-                overflow-x: hidden;
-                -webkit-overflow-scrolling: touch;
-            }
-        }
-
         /// Border Radius
 
         .border-radius(@radius) {

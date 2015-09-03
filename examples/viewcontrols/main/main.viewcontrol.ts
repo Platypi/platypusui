@@ -12,7 +12,7 @@ module app {
                 CSS: false,
                 JavaScript: true
             },
-            progress: 0,
+            progress: 0.5,
             sliders: {
                 slider1: 20,
                 slider2: 35,

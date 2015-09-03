@@ -234,14 +234,15 @@ module platui {
                         if (element.contains(img)) {
                             element.removeChild(img);
                         }
-    
+
                         if (element.contains(loader)) {
                             element.removeChild(loader);
                         }
                         return;
                     }
 
-                    dom.removeClass(img, imageLoadClass);
+                    // remove error class in case image decides to load
+                    dom.removeClass(img, __Image + '-error ' + imageLoadClass);
                     if (element.contains(loader)) {
                         element.removeChild(loader);
                     }
