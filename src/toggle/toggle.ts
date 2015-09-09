@@ -5,10 +5,10 @@ module platui {
      * @name Select
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl}
-     * 
+     *
      * @description
      * An {@link plat.ui.BindControl|BindControl} that simulates a toggle switch.
      */
@@ -18,9 +18,9 @@ module platui {
          * @memberof platui.Toggle
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -34,9 +34,9 @@ module platui {
          * @memberof platui.Toggle
          * @kind property
          * @access public
-         * 
+         *
          * @type {boolean}
-         * 
+         *
          * @description
          * A boolean value indicating whether the control is actively selected.
          */
@@ -47,9 +47,9 @@ module platui {
          * @memberof platui.Toggle
          * @kind property
          * @access protected
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The type of the control's activated element.
          */
@@ -60,9 +60,9 @@ module platui {
          * @memberof platui.Toggle
          * @kind property
          * @access protected
-         * 
+         *
          * @type {Element}
-         * 
+         *
          * @description
          * The element used to create the targeted effect.
          */
@@ -73,15 +73,15 @@ module platui {
          * @memberof platui.Toggle
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
@@ -93,10 +93,10 @@ module platui {
          * @memberof platui.Toggle
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set the class name.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -108,16 +108,17 @@ module platui {
          * @memberof platui.Toggle
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Adds a listener for the tap event.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
             var element = this.element;
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
+            this._convertChecked();
         }
 
         /**
@@ -126,7 +127,7 @@ module platui {
          * @kind function
          * @access public
          * @virtual
-         * 
+         *
          * @description
          * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
@@ -145,7 +146,7 @@ module platui {
          * @memberof platui.Toggle
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable property is set externally.
          *
@@ -174,16 +175,67 @@ module platui {
         }
 
         /**
+         * @name _convertChecked
+         * @memberof platui.Toggle
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * A function for checking "checked" attributes and handling them accordingly.
+         *
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         *
+         * @returns {void}
+         */
+        protected _convertChecked(): void {
+            var element = this.element;
+
+            if (!this.utils.isNull(this.attributes[__CamelChecked])) {
+                this._convertAttribute(this.attributes[__CamelChecked]);
+                this.attributes.observe(this._convertAttribute, __CamelChecked);
+            } else if (element.hasAttribute('checked')) {
+                this._convertAttribute(true);
+            }
+        }
+
+        /**
+         * @name _convertAttribute
+         * @memberof platui.Toggle
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * A function for handling the attribute value conversion for updating the
+         * bound property.
+         *
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         *
+         * @returns {void}
+         */
+        protected _convertAttribute(newValue: any, oldValue?: any): void {
+            var _utils = this.utils;
+            if (_utils.isBoolean(newValue)) {
+                return this._setBoundProperty(newValue, oldValue, null, true);
+            } else if (!_utils.isString(newValue)) {
+                return;
+            }
+
+            this._setBoundProperty(newValue === 'true', oldValue === 'true', null, true);
+        }
+
+        /**
          * @name _onTap
          * @memberof platui.Toggle
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The callback for a tap event.
-         * 
+         *
          * @param {plat.ui.IGestureEvent} ev The tap event object.
-         * 
+         *
          * @returns {void}
          */
         protected _onTap(ev: plat.ui.IGestureEvent): void {
@@ -196,12 +248,12 @@ module platui {
          * @memberof platui.Toggle
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Triggers an event starting from this control's element.
-         * 
+         *
          * @param {string} event The event name to trigger.
-         * 
+         *
          * @returns {void}
          */
         protected _trigger(event: string): void {
@@ -215,21 +267,28 @@ module platui {
          * @memberof platui.Toggle
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Toggles the mark and updates the bindable property if needed.
-         * 
-         * @param {boolean} setProperty? A boolean value stating whether the bindable 
+         *
+         * @param {boolean} setProperty? A boolean value stating whether the bindable
          * property should be updated.
-         * 
+         *
          * @returns {void}
          */
         protected _toggle(setProperty?: boolean): void {
             var wasActive = this.isActive,
-                isActive = !wasActive;
+                isActive = !wasActive,
+                element = this.element;
 
-            this._activate(this._targetElement || (this._targetElement = this.element.firstElementChild));
-            this.isActive = (<HTMLInputElement>this.element).checked = isActive;
+            this._activate(this._targetElement || (this._targetElement = element.firstElementChild));
+            this.isActive = (<HTMLInputElement>element).checked = isActive;
+            if (isActive) {
+                element.setAttribute('checked', 'checked');
+            } else {
+                element.removeAttribute('checked');
+            }
+
             if (setProperty === true) {
                 this.inputChanged(isActive, wasActive);
             }
@@ -240,13 +299,13 @@ module platui {
          * @memberof platui.Toggle
          * @kind function
          * @access protected
-         * 
+         *
          * @description
-         * A function to activate the given element by toggling the 
+         * A function to activate the given element by toggling the
          * class specified as the target type.
-         * 
+         *
          * @param {Element} element The element to activate.
-         * 
+         *
          * @returns {void}
          */
         protected _activate(element: Element): void {

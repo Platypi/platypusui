@@ -152,8 +152,6 @@ module platui {
                 previousType = this._targetType,
                 mark = this._targetType = options.mark || 'check';
 
-            this._convertChecked();
-
             switch (mark.toLowerCase()) {
                 case 'check':
                 case 'x':
@@ -171,59 +169,6 @@ module platui {
             }
 
             this._targetTypeSet = true;
-        }
-
-        /**
-         * @name _convertChecked
-         * @memberof platui.Checkbox
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * A function for checking "checked" attributes and handling them accordingly.
-         *
-         * @param {any} newValue The newValue of the attribute to convert.
-         * @param {any} oldValue? The oldValue of the attribute to convert.
-         *
-         * @returns {void}
-         */
-        protected _convertChecked(): void {
-            var element = this.element;
-            if (element.hasAttribute(__Checked)) {
-                this._convertAttribute(element.getAttribute(__Checked));
-                this.attributes.observe(this._convertAttribute, __CamelChecked);
-            } else if (element.hasAttribute('data-' + __Checked)) {
-                this._convertAttribute(element.getAttribute('data-' + __Checked));
-                this.attributes.observe(this._convertAttribute, __CamelChecked);
-            } else if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
-                this._convertAttribute(true);
-            }
-        }
-
-        /**
-         * @name _convertAttribute
-         * @memberof platui.Checkbox
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * A function for handling the attribute value conversion for updating the
-         * bound property.
-         *
-         * @param {any} newValue The newValue of the attribute to convert.
-         * @param {any} oldValue? The oldValue of the attribute to convert.
-         *
-         * @returns {void}
-         */
-        protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var _utils = this.utils;
-            if (_utils.isBoolean(newValue)) {
-                return this._setBoundProperty(newValue, oldValue, null, true);
-            } else if (!_utils.isString(newValue)) {
-                return;
-            }
-
-            this._setBoundProperty(newValue === 'true', oldValue === 'true', null, true);
         }
 
         /**
