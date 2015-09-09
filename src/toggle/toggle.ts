@@ -118,6 +118,7 @@ module platui {
             var element = this.element;
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
+            this._convertChecked();
         }
 
         /**
@@ -171,6 +172,57 @@ module platui {
             }
 
             this._toggle(setProperty);
+        }
+
+        /**
+         * @name _convertChecked
+         * @memberof platui.Toggle
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * A function for checking "checked" attributes and handling them accordingly.
+         *
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         *
+         * @returns {void}
+         */
+        protected _convertChecked(): void {
+            var element = this.element;
+
+            if (!this.utils.isNull(this.attributes[__CamelChecked])) {
+                this._convertAttribute(this.attributes[__CamelChecked]);
+                this.attributes.observe(this._convertAttribute, __CamelChecked);
+            } else if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
+                this._convertAttribute(true);
+            }
+        }
+
+        /**
+         * @name _convertAttribute
+         * @memberof platui.Toggle
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * A function for handling the attribute value conversion for updating the
+         * bound property.
+         *
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         *
+         * @returns {void}
+         */
+        protected _convertAttribute(newValue: any, oldValue?: any): void {
+            var _utils = this.utils;
+            if (_utils.isBoolean(newValue)) {
+                return this._setBoundProperty(newValue, oldValue, null, true);
+            } else if (!_utils.isString(newValue)) {
+                return;
+            }
+
+            this._setBoundProperty(newValue === 'true', oldValue === 'true', null, true);
         }
 
         /**
