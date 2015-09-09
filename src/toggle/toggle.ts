@@ -194,7 +194,7 @@ module platui {
             if (!this.utils.isNull(this.attributes[__CamelChecked])) {
                 this._convertAttribute(this.attributes[__CamelChecked]);
                 this.attributes.observe(this._convertAttribute, __CamelChecked);
-            } else if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
+            } else if (element.hasAttribute('checked')) {
                 this._convertAttribute(true);
             }
         }
