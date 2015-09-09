@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.6.9 (https://platypi.io)
+ * PlatypusUI v0.6.10 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -30,7 +30,7 @@ var platui;
     __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', __Navbar = __Plat + 'navbar', __Image = __Plat + 'image', 
     /**
      */
-    __Hide = __Plat + 'hide', __Hidden = __Plat + 'hidden', __Context = __Plat + __CONTEXT, __Checked = __Plat + 'checked', __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Bind = __Plat + 'bind', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', __CamelSrc = __PlatPrefix + 'Src', 
+    __Hide = __Plat + 'hide', __Hidden = __Plat + 'hidden', __Context = __Plat + __CONTEXT, __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', __CamelSrc = __PlatPrefix + 'Src', 
     /**
      */
     __listviewAliasOptions = {
@@ -239,6 +239,7 @@ var platui;
             var element = this.element;
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
+            this._convertChecked();
         };
         /**
          * A function that allows this control to observe both the bound property itself as well as
@@ -272,6 +273,37 @@ var platui;
             this._toggle(setProperty);
         };
         /**
+         * A function for checking "checked" attributes and handling them accordingly.
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         */
+        Toggle.prototype._convertChecked = function () {
+            var element = this.element;
+            if (!this.utils.isNull(this.attributes[__CamelChecked])) {
+                this._convertAttribute(this.attributes[__CamelChecked]);
+                this.attributes.observe(this._convertAttribute, __CamelChecked);
+            }
+            else if (element.hasAttribute('checked')) {
+                this._convertAttribute(true);
+            }
+        };
+        /**
+         * A function for handling the attribute value conversion for updating the
+         * bound property.
+         * @param {any} newValue The newValue of the attribute to convert.
+         * @param {any} oldValue? The oldValue of the attribute to convert.
+         */
+        Toggle.prototype._convertAttribute = function (newValue, oldValue) {
+            var _utils = this.utils;
+            if (_utils.isBoolean(newValue)) {
+                return this._setBoundProperty(newValue, oldValue, null, true);
+            }
+            else if (!_utils.isString(newValue)) {
+                return;
+            }
+            this._setBoundProperty(newValue === 'true', oldValue === 'true', null, true);
+        };
+        /**
          * The callback for a tap event.
          * @param {plat.ui.IGestureEvent} ev The tap event object.
          */
@@ -294,9 +326,15 @@ var platui;
          * property should be updated.
          */
         Toggle.prototype._toggle = function (setProperty) {
-            var wasActive = this.isActive, isActive = !wasActive;
-            this._activate(this._targetElement || (this._targetElement = this.element.firstElementChild));
-            this.isActive = this.element.checked = isActive;
+            var wasActive = this.isActive, isActive = !wasActive, element = this.element;
+            this._activate(this._targetElement || (this._targetElement = element.firstElementChild));
+            this.isActive = element.checked = isActive;
+            if (isActive) {
+                element.setAttribute('checked', 'checked');
+            }
+            else {
+                element.removeAttribute('checked');
+            }
             if (setProperty === true) {
                 this.inputChanged(isActive, wasActive);
             }
@@ -372,7 +410,6 @@ var platui;
         Checkbox.prototype.loaded = function () {
             _super.prototype.loaded.call(this);
             var optionObj = this.options || {}, options = optionObj.value || {}, previousType = this._targetType, mark = this._targetType = options.mark || 'check';
-            this._convertChecked();
             switch (mark.toLowerCase()) {
                 case 'check':
                 case 'x':
@@ -388,41 +425,6 @@ var platui;
                 this._activate(target);
             }
             this._targetTypeSet = true;
-        };
-        /**
-         * A function for checking "checked" attributes and handling them accordingly.
-         * @param {any} newValue The newValue of the attribute to convert.
-         * @param {any} oldValue? The oldValue of the attribute to convert.
-         */
-        Checkbox.prototype._convertChecked = function () {
-            var element = this.element;
-            if (element.hasAttribute(__Checked)) {
-                this._convertAttribute(element.getAttribute(__Checked));
-                this.attributes.observe(this._convertAttribute, __CamelChecked);
-            }
-            else if (element.hasAttribute('data-' + __Checked)) {
-                this._convertAttribute(element.getAttribute('data-' + __Checked));
-                this.attributes.observe(this._convertAttribute, __CamelChecked);
-            }
-            else if (element.hasAttribute('checked') || element.hasAttribute('data-checked')) {
-                this._convertAttribute(true);
-            }
-        };
-        /**
-         * A function for handling the attribute value conversion for updating the
-         * bound property.
-         * @param {any} newValue The newValue of the attribute to convert.
-         * @param {any} oldValue? The oldValue of the attribute to convert.
-         */
-        Checkbox.prototype._convertAttribute = function (newValue, oldValue) {
-            var _utils = this.utils;
-            if (_utils.isBoolean(newValue)) {
-                return this._setBoundProperty(newValue, oldValue, null, true);
-            }
-            else if (!_utils.isString(newValue)) {
-                return;
-            }
-            this._setBoundProperty(newValue === 'true', oldValue === 'true', null, true);
         };
         /**
          * A function to activate the given element by toggling the
@@ -489,11 +491,8 @@ var platui;
             if (element.hasAttribute('name')) {
                 this.groupName = element.getAttribute('name');
             }
-            else if (element.hasAttribute(__Bind)) {
-                this.groupName = element.getAttribute(__Bind);
-            }
-            else if (element.hasAttribute('data-' + __Bind)) {
-                this.groupName = element.getAttribute('data-' + __Bind);
+            else if (!this.utils.isNull(this.attributes[__CamelBind])) {
+                this.groupName = this.attributes[__CamelBind];
             }
             this._convertChecked();
         };
@@ -3267,7 +3266,7 @@ var platui;
     platui.Range = Range;
     plat.register.control(__Range, Range);
     /**
-     * An ITemplateControl that allows for data-binding a select box and adds
+     * An ITemplateControl that allows for databinding a select box and adds
      * custom styling to make it look consistent across all platforms.
      */
     var Select = (function (_super) {

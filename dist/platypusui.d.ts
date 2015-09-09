@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.6.9 (https://platypi.io)
+  * PlatypusUI v0.6.10 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -174,6 +174,19 @@ declare module platui {
           */
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void;
         /**
+          * A function for checking "checked" attributes and handling them accordingly.
+          * @param {any} newValue The newValue of the attribute to convert.
+          * @param {any} oldValue? The oldValue of the attribute to convert.
+          */
+        protected _convertChecked(): void;
+        /**
+          * A function for handling the attribute value conversion for updating the
+          * bound property.
+          * @param {any} newValue The newValue of the attribute to convert.
+          * @param {any} oldValue? The oldValue of the attribute to convert.
+          */
+        protected _convertAttribute(newValue: any, oldValue?: any): void;
+        /**
           * The callback for a tap event.
           * @param {plat.ui.IGestureEvent} ev The tap event object.
           */
@@ -234,19 +247,6 @@ declare module platui {
           * initializes the mark and adds a listener for the tap event.
           */
         loaded(): void;
-        /**
-          * A function for checking "checked" attributes and handling them accordingly.
-          * @param {any} newValue The newValue of the attribute to convert.
-          * @param {any} oldValue? The oldValue of the attribute to convert.
-          */
-        protected _convertChecked(): void;
-        /**
-          * A function for handling the attribute value conversion for updating the
-          * bound property.
-          * @param {any} newValue The newValue of the attribute to convert.
-          * @param {any} oldValue? The oldValue of the attribute to convert.
-          */
-        protected _convertAttribute(newValue: any, oldValue?: any): void;
         /**
           * A function to activate the given element by toggling the
           * class specified as the target type.
@@ -1794,7 +1794,7 @@ declare module platui {
     interface IRangeBinding extends IRangeIdentifiers<number> {
     }
     /**
-      * An ITemplateControl that allows for data-binding a select box and adds
+      * An ITemplateControl that allows for databinding a select box and adds
       * custom styling to make it look consistent across all platforms.
       */
     class Select extends plat.ui.controls.Select implements IUiControl {
