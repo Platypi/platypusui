@@ -117,7 +117,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __ProgressBar + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__ProgressBar} ${(className || '')}`);
         }
 
         /**
@@ -204,13 +204,13 @@ module platui {
         setProgress(value: number): plat.async.IThenable<void> {
             return new this._Promise<void>((resolve, reject) => {
                 if (!this.utils.isNumber(value) || value > 1 || value < 0) {
-                    var msg = 'The value of a "' + this.type + '" control must be a number between 0 and 1.';
+                    let msg = `The value of a "${this.type}" control must be a number between 0 and 1.`;
                     this._log.debug(msg);
                     reject(msg);
                     return;
                 }
 
-                var barElement = this._barElement,
+                let barElement = this._barElement,
                     barMax = barElement.parentElement.clientWidth;
 
                 if (!barMax) {
@@ -223,7 +223,7 @@ module platui {
 
                 this._animator.animate(barElement, __Transition, {
                     properties: {
-                        width: Math.ceil(barMax * value) + 'px'
+                        width: `${Math.ceil(barMax * value)}px`
                     }
                 }).then((): void => {
                     resolve();

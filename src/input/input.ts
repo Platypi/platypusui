@@ -252,7 +252,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Input + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Input} ${(className || '')}`);
         }
 
         /**
@@ -282,7 +282,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var element = this.element,
+            let element = this.element,
                 image = this._imageElement = <HTMLElement>element.firstElementChild.firstElementChild,
                 input = this._inputElement = <HTMLInputElement>image.nextElementSibling,
                 attributes = this.attributes,
@@ -291,15 +291,15 @@ module platui {
                 controlInjectors = plat.dependency.injectors.control,
                 hasPlaceholder = false,
                 attrRegex = /plat-(?:control|hide|context)|class|style/,
-                _utils = this.utils,
-                isNull = _utils.isNull,
-                delimit = _utils.delimit,
-                isString = _utils.isString,
+                utils = this.utils,
+                isNull = utils.isNull,
+                delimit = utils.delimit,
+                isString = utils.isString,
                 key: string,
                 name: string,
                 value: string;
 
-            for (var i = 0; i < length; ++i) {
+            for (let i = 0; i < length; ++i) {
                 key = keys[i];
                 name = delimit(key, '-');
                 value = attributes[key];
@@ -323,8 +323,8 @@ module platui {
                 return;
             }
 
-            var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!_utils.isEmpty(placeholder)) {
+            let placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
+            if (!utils.isEmpty(placeholder)) {
                 input.placeholder = placeholder;
             }
         }
@@ -341,7 +341,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
+            let optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
                 options = optionObj.value || <IInputOptions>{},
                 element = this.element,
                 inputType = this._type = this.attributes['type'] || options.type || 'text',
@@ -355,7 +355,7 @@ module platui {
             this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
 
             this.dom.addClass(element, __Plat + inputType);
-            var actionContainer = <HTMLElement>this._inputElement.nextElementSibling;
+            let actionContainer = <HTMLElement>this._inputElement.nextElementSibling;
             this.addEventListener(actionContainer, __$touchend, (): void => {
                 this._inputElement.focus();
             }, false);
@@ -409,14 +409,14 @@ module platui {
          * @returns {void}
          */
         clear(): void {
-            var inputElement = this._inputElement,
+            let inputElement = this._inputElement,
                 value = inputElement.value;
 
             if (value === '') {
                 return;
             }
 
-            var actionElement = this._actionElement;
+            let actionElement = this._actionElement;
             inputElement.value = this.value = '';
             this.inputChanged(this.value, value);
             actionElement.textContent = this._typeChar = '';
@@ -490,7 +490,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(newValue: string, oldValue: string, identifier: void, firstTime?: boolean): void {
-            var value = this._inputElement.value;
+            let value = this._inputElement.value;
             if (this.utils.isNull(newValue)) {
                 newValue = '';
 
@@ -519,7 +519,7 @@ module platui {
          * @returns {void}
          */
         protected _initializeType(): void {
-            var inputType = this._type,
+            let inputType = this._type,
                 event = __$tap,
                 actionElement = this._actionElement;
 
@@ -533,11 +533,11 @@ module platui {
                 case 'email':
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._regex.validateEmail;
-                    this._actionHandler = this._checkEmail.bind(this);
-                    this._typeHandler = this._handleEmail;
+                    this._actionHandler = this._checkText.bind(this);
+                    this._typeHandler = this._erase;
                     break;
                 case 'password':
-                    var hidePassword = this._handlePasswordHide;
+                    let hidePassword = this._handlePasswordHide;
 
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
@@ -565,24 +565,19 @@ module platui {
                     this.element.setAttribute(__Hide, '');
                     return;
                 case 'radio':
-                    this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Radio + ' instead.');
+                    this._log.debug(`${inputType} is not supported by ${this.type}. Please use a ${__Radio} instead.`);
                     return;
                 case 'checkbox':
-                   this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Checkbox + ' instead.');
+                    this._log.debug(`${inputType} is not supported by ${this.type}. Please use a ${__Checkbox} instead.`);
                     return;
                 case 'range':
-                    this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Slider + ' instead.');
+                    this._log.debug(`${inputType} is not supported by ${this.type}. Please use a ${__Slider} instead.`);
                     return;
                 case 'file':
-                    this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __File + ' instead.');
+                    this._log.debug(`${inputType} is not supported by ${this.type}. Please use a ${__File} instead.`);
                     return;
                 default:
-                    this._log.debug(inputType + ' is not yet fully supported by ' + this.type +
-                        '. Defaulting to type="text".');
+                    this._log.debug(`${inputType} is not yet fully supported by ${this.type}. Defaulting to type="text".`);
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
@@ -611,7 +606,7 @@ module platui {
          * @returns {void}
          */
         protected _addEventListeners(event: string): void {
-            var actionElement = this._actionElement,
+            let actionElement = this._actionElement,
                 input = this._inputElement,
                 actionEnd = (): boolean => (this._inAction = false);
 
@@ -646,9 +641,9 @@ module platui {
          * @returns {void}
          */
         protected _addTextEventListener(): void {
-            var input = this._inputElement,
-                _compat = this._compat,
-                _utils = this.utils,
+            let input = this._inputElement,
+                compat = this._compat,
+                utils = this.utils,
                 composing = false,
                 timeout: plat.IRemoveListener,
                 eventListener = (): void => {
@@ -659,17 +654,17 @@ module platui {
                     this._onInput();
                 },
                 postponedEventListener = (): void => {
-                    if (_utils.isFunction(timeout)) {
+                    if (utils.isFunction(timeout)) {
                         return;
                     }
 
-                    timeout = _utils.postpone((): void => {
+                    timeout = utils.postpone((): void => {
                         eventListener();
                         timeout = null;
                     });
                 };
 
-            if (_utils.isUndefined(_compat.ANDROID)) {
+            if (utils.isUndefined(compat.ANDROID)) {
                 this.addEventListener(input, 'compositionstart', (): boolean => (composing = true), false);
                 this.addEventListener(input, 'compositionend', (): void => {
                     composing = false;
@@ -677,11 +672,11 @@ module platui {
                 }, false);
             }
 
-            if (_compat.hasEvent('input')) {
+            if (compat.hasEvent('input')) {
                 this.addEventListener(input, 'input', eventListener, false);
             } else {
                 this.addEventListener(input, 'keydown', (ev: KeyboardEvent): void => {
-                    var key = ev.keyCode;
+                    let key = ev.keyCode;
 
                     if (key === 91 ||
                         key === 92 ||
@@ -690,7 +685,7 @@ module platui {
                         return;
                     }
 
-                    var pattern = this._pattern,
+                    let pattern = this._pattern,
                         char = ev.char;
 
                     if (!(pattern.test(char) && pattern.test(input.value + char))) {
@@ -758,30 +753,8 @@ module platui {
             }
             this._inTouch = false;
 
-            var inputElement = this._inputElement;
+            let inputElement = this._inputElement;
             inputElement.type = this._type;
-            inputElement.focus();
-        }
-
-        /**
-         * @name _handleEmail
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * The action handler for the "email" type.
-         *
-         * @returns {void}
-         */
-        protected _handleEmail(): void {
-            var inputElement = this._inputElement,
-                value = inputElement.value,
-                char = this._typeChar;
-
-            inputElement.value = this.value = char === 'x' ? '' : value + char;
-            this.inputChanged(this.value, value);
-            this._checkEmail();
             inputElement.focus();
         }
 
@@ -797,7 +770,7 @@ module platui {
          * @returns {void}
          */
         protected _checkText(): void {
-            var char = this._typeChar;
+            let char = this._typeChar;
 
             if (char === 'x') {
                 if (this.value === '') {
@@ -807,9 +780,9 @@ module platui {
                 this._typeChar = 'x';
             }
 
-            var newChar = this._typeChar;
+            let newChar = this._typeChar;
             if (char !== newChar) {
-                var actionElement = this._actionElement;
+                let actionElement = this._actionElement;
                 actionElement.textContent = newChar;
                 if (newChar === '') {
                     actionElement.setAttribute(__Hide, '');
@@ -832,7 +805,7 @@ module platui {
          * @returns {void}
          */
         protected _checkPassword(): void {
-            var char = this._typeChar;
+            let char = this._typeChar;
 
             if (char === '?') {
                 if (this.value === '') {
@@ -842,72 +815,9 @@ module platui {
                 this._typeChar = '?';
             }
 
-            var newChar = this._typeChar;
+            let newChar = this._typeChar;
             if (char !== newChar) {
-                var actionElement = this._actionElement;
-                actionElement.textContent = newChar;
-                if (newChar === '') {
-                    actionElement.setAttribute(__Hide, '');
-                    return;
-                }
-
-                actionElement.removeAttribute(__Hide);
-            }
-        }
-
-        /**
-         * @name _checkEmail
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * Checks the current state of the "email" action and handles accordingly.
-         *
-         * @returns {void}
-         */
-        protected _checkEmail(): void {
-            var value = this._inputElement.value,
-                char = this._typeChar;
-
-            switch (char) {
-                case '@':
-                    if (value.indexOf('@') !== -1) {
-                        if (value.indexOf('.com') !== -1) {
-                            this._typeChar = 'x';
-                            break;
-                        }
-                        this._typeChar = '.com';
-                    }
-                    break;
-                case '.com':
-                    if (value.indexOf('@') === -1) {
-                        this._typeChar = '@';
-                    } else if (value.indexOf('.com') !== -1) {
-                        this._typeChar = 'x';
-                    }
-                    break;
-                case 'x':
-                    if (value === '') {
-                        this._typeChar = '';
-                    } else if (value.indexOf('@') === -1) {
-                        this._typeChar = '@';
-                    } else if (value.indexOf('.com') === -1) {
-                        this._typeChar = '.com';
-                    }
-                    break;
-                default:
-                    if (value === '') {
-                        this._typeChar = '';
-                    } else if (value.indexOf('@') === -1) {
-                        this._typeChar = '@';
-                    }
-                    break;
-            }
-
-            var newChar = this._typeChar;
-            if (char !== newChar) {
-                var actionElement = this._actionElement;
+                let actionElement = this._actionElement;
                 actionElement.textContent = newChar;
                 if (newChar === '') {
                     actionElement.setAttribute(__Hide, '');
@@ -930,7 +840,7 @@ module platui {
          * @returns {void}
          */
         protected _onInput(): void {
-            var inputElement = this._inputElement,
+            let inputElement = this._inputElement,
                 value = inputElement.value,
                 strippedValue = this._stripInput(inputElement.value);
 
@@ -961,7 +871,7 @@ module platui {
          * @returns {void}
          */
         protected _onInputChanged(newValue: string): void {
-            var inputElement = this._inputElement;
+            let inputElement = this._inputElement;
 
             newValue = this._stripInput(newValue);
             inputElement.value = newValue;
@@ -984,13 +894,13 @@ module platui {
          * @returns {string} The final value after its been stripped by the pattern.
          */
         protected _stripInput(value:  string): string {
-            var newValue = '',
+            let newValue = '',
                 revert = newValue,
                 char: string,
                 pattern = this._pattern,
                 length = value.length;
 
-            for (var i = 0; i < length; ++i) {
+            for (let i = 0; i < length; ++i) {
                 char = value[i];
                 if (pattern.test(char)) {
                     newValue += char;

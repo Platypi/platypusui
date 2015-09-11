@@ -85,7 +85,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Toggle + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Toggle} ${(className || '')}`);
         }
 
         /**
@@ -115,7 +115,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element;
+            let element = this.element;
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
             this._convertChecked();
@@ -166,7 +166,7 @@ module platui {
                 return;
             }
 
-            var isActive = !!newValue;
+            let isActive = !!newValue;
             if (isActive === this.isActive) {
                 return;
             }
@@ -189,7 +189,7 @@ module platui {
          * @returns {void}
          */
         protected _convertChecked(): void {
-            var element = this.element;
+            let element = this.element;
 
             if (!this.utils.isNull(this.attributes[__CamelChecked])) {
                 this._convertAttribute(this.attributes[__CamelChecked]);
@@ -215,10 +215,11 @@ module platui {
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var _utils = this.utils;
-            if (_utils.isBoolean(newValue)) {
+            let utils = this.utils;
+            
+            if (utils.isBoolean(newValue)) {
                 return this._setBoundProperty(newValue, oldValue, null, true);
-            } else if (!_utils.isString(newValue)) {
+            } else if (!utils.isString(newValue)) {
                 return;
             }
 
@@ -257,7 +258,7 @@ module platui {
          * @returns {void}
          */
         protected _trigger(event: string): void {
-            var domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
+            let domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
             domEvent.initialize(this.element, event);
             domEvent.trigger();
         }
@@ -277,7 +278,7 @@ module platui {
          * @returns {void}
          */
         protected _toggle(setProperty?: boolean): void {
-            var wasActive = this.isActive,
+            let wasActive = this.isActive,
                 isActive = !wasActive,
                 element = this.element;
 

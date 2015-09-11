@@ -97,7 +97,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Radio + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Radio} ${(className || '')}`);
         }
 
         /**
@@ -112,7 +112,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element;
+            let element = this.element;
 
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
@@ -172,7 +172,7 @@ module platui {
                 return;
             }
 
-            var isChecked = newValue === this._getValue(),
+            let isChecked = newValue === this._getValue(),
                 wasChecked = this.isActive;
 
             if (isChecked === wasChecked) {
@@ -226,9 +226,9 @@ module platui {
             }
 
             if (this.isActive) {
-                var name = this.groupName;
+                let name = this.groupName;
                 this.dispatchEvent(__RadioPrefix + name, plat.events.EventManager.DIRECT);
-                var remover = this._removeListener = this.on(__RadioPrefix + name, (): void => {
+                let remover = this._removeListener = this.on(__RadioPrefix + name, (): void => {
                     this._toggle();
                     remover();
                 });
@@ -251,13 +251,13 @@ module platui {
          * @returns {void}
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
-            var _utils = this.utils;
-            if (_utils.isBoolean(newValue)) {
+            let utils = this.utils;
+            if (utils.isBoolean(newValue)) {
                 if (newValue) {
                     this._setBoundProperty(this._getValue(), null, null, true);
                 }
                 return;
-            } else if (!_utils.isString(newValue)) {
+            } else if (!utils.isString(newValue)) {
                 return;
             }
 
@@ -279,7 +279,7 @@ module platui {
          * @returns {string} Returns the bindable value of this control.
          */
         protected _getValue(): string {
-            var element = this.element;
+            let element = this.element;
             return element.hasAttribute('value') ? element.getAttribute('value').trim() : element.textContent.trim();
         }
     }

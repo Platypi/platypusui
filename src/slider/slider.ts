@@ -341,7 +341,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Slider + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Slider} ${(className || '')}`);
         }
 
         /**
@@ -371,7 +371,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element,
+            let element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
                 isNumber = this.utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<ISliderOptions>>{},
@@ -399,7 +399,7 @@ module platui {
             this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
 
             if (min >= max) {
-                this._log.debug('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                this._log.debug(`"${this.type}'s" min is greater than or equal to its max. Setting max to min + 1.`);
                 this.max = min + 1;
             }
 
@@ -503,14 +503,14 @@ module platui {
          * @returns {void}
          */
         protected _setValue(value: number, propertyChanged: boolean): void {
-            var _utils = this.utils;
+            let utils = this.utils;
+
             if (this._touchState === 1) {
-                this._log.debug('Cannot set the value of ' + this.type +
-                    ' while the user is manipulating it.');
+                this._log.debug(`Cannot set the value of ${this.type} while the user is manipulating it.`);
                 return;
-            } else if (_utils.isNull(value)) {
+            } else if (utils.isNull(value)) {
                 value = this.min;
-            } else if (!_utils.isNumber(value)) {
+            } else if (!utils.isNumber(value)) {
                 return;
             }
 
@@ -529,18 +529,18 @@ module platui {
          * @returns {void}
          */
         protected _initializeEvents(): void {
-            var element = this.element,
+            let element = this.element,
                 trackFn = this._track,
                 touchEnd = this._touchEnd,
                 track: string,
                 reverseTrack: string;
 
             if (this._isVertical) {
-                track = __$track + 'down';
-                reverseTrack = __$track + 'up';
+                track = `${__$track}down`;
+                reverseTrack = `${__$track}up`;
             } else {
-                track = __$track + 'right';
-                reverseTrack = __$track + 'left';
+                track = `${__$track}right`;
+                reverseTrack = `${__$track}left`;
             }
 
             this.addEventListener(element, __$touchstart, this._touchStart, false);
@@ -584,12 +584,12 @@ module platui {
                 value: this.value
             };
 
-            var target = ev.target;
+            let target = ev.target;
             if (target === this._knob) {
                 return;
             }
 
-            var offset: number;
+            let offset: number;
             if (this._isVertical) {
                 if (target === this.element) {
                     offset = this._reversed ? ev.offsetY - this._sliderOffset : this._maxOffset - (ev.offsetY - this._sliderOffset);
@@ -634,7 +634,7 @@ module platui {
 
             this._touchState = 2;
 
-            var newOffset = this._calculateOffset(ev),
+            let newOffset = this._calculateOffset(ev),
                 maxOffset = this._maxOffset;
 
             this.utils.requestAnimationFrame((): void => {
@@ -694,7 +694,7 @@ module platui {
          * @returns {number} The normalized position value.
          */
         protected _setSliderProperties(position: number): number {
-            var maxOffset = this._maxOffset,
+            let maxOffset = this._maxOffset,
                 value: number;
 
             if (position <= 0) {
@@ -714,7 +714,7 @@ module platui {
             }
 
             this._setValueProperty(value, false, true);
-            this._slider.style[<any>this._lengthProperty] = position + 'px';
+            this._slider.style[<any>this._lengthProperty] = `${position}px`;
 
             return position;
         }
@@ -733,7 +733,7 @@ module platui {
          * @returns {number} The current value of the {link platui.Slider|Slider}.
          */
         protected _calculateValue(width: number): number {
-            var step = this._step;
+            let step = this._step;
             return (this.min + Math.round(width / this._increment / step) * step);
         }
 
@@ -791,7 +791,7 @@ module platui {
          * @returns {void}
          */
         protected _setLength(): void {
-            var el = this._slider.parentElement;
+            let el = this._slider.parentElement;
 
             if (this._isVertical) {
                 this._lengthProperty = 'height';
@@ -848,7 +848,7 @@ module platui {
          * @returns {void}
          */
         protected _setValueProperty(newValue: number, setKnob: boolean, propertyChanged: boolean): void {
-            var value = this.value;
+            let value = this.value;
             if (newValue === value) {
                 return;
             } else if (newValue >= this.max) {
@@ -888,14 +888,14 @@ module platui {
          */
         protected _setKnob(value?: number): void {
             this._Promise.resolve(this._sliderVisible).then((): void => {
-                var animationOptions: plat.IObject<string> = {},
+                let animationOptions: plat.IObject<string> = {},
                     length = this._calculateKnobPosition((value || this.value));
 
                 if (length === this._knobOffset) {
                     return;
                 }
 
-                animationOptions[this._lengthProperty] = length + 'px';
+                animationOptions[this._lengthProperty] = `${length}px`;
                 this._animator.animate(this._slider, __Transition, {
                     properties: animationOptions
                 });
@@ -918,7 +918,7 @@ module platui {
          * @returns {void}
          */
         protected _trigger(event: string): void {
-            var domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
+            let domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
             domEvent.initialize(this.element, event);
             domEvent.trigger();
         }
@@ -942,14 +942,14 @@ module platui {
                 return 'horizontal';
             }
 
-            var validOrientation: string;
+            let validOrientation: string;
             if (orientation === 'horizontal') {
                 validOrientation = orientation;
             } else if (orientation === 'vertical') {
                 validOrientation = orientation;
                 this._isVertical = true;
             } else {
-                ('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
+                this._log.debug(`Invalid orientation "${orientation}" for ${this.type}. Defaulting to "horizontal."`);
                 validOrientation = 'horizontal';
             }
 

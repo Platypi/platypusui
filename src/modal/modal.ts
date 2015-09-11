@@ -258,7 +258,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Modal + ' ' + __Hide + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Modal} ${__Hide} ${(className || '')}`);
         }
 
         /**
@@ -273,7 +273,7 @@ module platui {
          * @returns {void}
          */
         initialize(): void {
-            var optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IModalOptions>>{}),
+            let optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IModalOptions>>{}),
                 options = optionObj.value || (optionObj.value = <IModalOptions>{});
 
             this.templateUrl = options.templateUrl;
@@ -292,11 +292,11 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var _utils = this.utils,
+            let utils = this.utils,
                 modalContainer: HTMLElement;
 
-            if (_utils.isString(this.templateUrl)) {
-                var dom = this.dom,
+            if (utils.isString(this.templateUrl)) {
+                let dom = this.dom,
                     fragment = dom.serializeHtml(this.templateString),
                     element = this.element;
 
@@ -318,7 +318,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var options = this.options.value,
+            let options = this.options.value,
                 transition = options.transition;
 
             // in case of cloning
@@ -327,22 +327,21 @@ module platui {
             this._injectElement();
 
             if (!this.utils.isString(transition) || transition === 'none') {
-                this.dom.addClass(this._container, __Plat + 'no-transition');
+                this.dom.addClass(this._container, `${__Plat}no-transition`);
                 return;
             } else if (!this._transitionHash[transition]) {
-                this._log.debug('Custom transition: "' + transition + '" defined for "' + this.type +
-                    '." Please ensure the transition is defined to avoid errors.');
+                this._log.debug(`Custom transition: "${transition}" defined for "${this.type}." Please ensure the transition is defined to avoid errors.`);
             }
 
-            var animationEvents = this._compat.animationEvents;
+            let animationEvents = this._compat.animationEvents;
             if (this.utils.isNull(animationEvents)) {
                 this._log.debug('This browser does not support CSS3 animations.');
-                this.dom.addClass(this._container, __Plat + 'no-transition');
+                this.dom.addClass(this._container, `${__Plat}no-transition`);
                 return;
             }
 
             this._transitionEnd = animationEvents.$transitionEnd;
-            this.dom.addClass(this._container, __Plat + transition + ' ' + __Plat + 'modal-transition');
+            this.dom.addClass(this._container, `${__Plat + transition} ${__Plat}modal-transition`);
         }
 
         /**
@@ -378,7 +377,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
         show(): plat.async.IThenable<void> {
-            var wasHidden = !this._isVisible,
+            let wasHidden = !this._isVisible,
                 promise = this._show();
 
             if (wasHidden) {
@@ -400,7 +399,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
         hide(): plat.async.IThenable<void> {
-            var wasVisible = this.isVisible,
+            let wasVisible = this.isVisible,
                 promise = this._hide();
 
             if (wasVisible) {
@@ -482,13 +481,14 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(modalState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
-            var _utils = this.utils;
-            if (firstTime === true && _utils.isNull(modalState)) {
+            let utils = this.utils;
+
+            if (firstTime === true && utils.isNull(modalState)) {
                 this.inputChanged(this._isVisible);
                 return;
             }
 
-            if (_utils.isBoolean(modalState)) {
+            if (utils.isBoolean(modalState)) {
                 if (modalState) {
                     if (this._isVisible) {
                         return;
@@ -504,8 +504,7 @@ module platui {
                 return;
             }
 
-            this._log.debug('Attempting to show or hide a ' + this.type +
-                ' with a bound value that is something other than a boolean.');
+            this._log.debug(`Attempting to show or hide a ${this.type} with a bound value that is something other than a boolean.`);
         }
 
         /**
@@ -520,7 +519,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
         protected _show(): plat.async.IThenable<void> {
-            var dom = this.dom,
+            let dom = this.dom,
                 utils = this.utils;
 
             if (!utils.isNull(this.innerTemplate)) {
@@ -536,7 +535,7 @@ module platui {
 
                     utils.defer((): void => {
                         utils.requestAnimationFrame((): void => {
-                            dom.addClass(this._container, __Plat + 'activate');
+                            dom.addClass(this._container, `${__Plat}activate`);
                             resolve();
                         });
                     }, 20);
@@ -558,7 +557,7 @@ module platui {
          * @returns {void}
          */
         protected _alignModal(ev?: Event): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 isNull = utils.isNull,
                 _document = this._document,
                 documentEl = _document.documentElement,
@@ -571,10 +570,10 @@ module platui {
 
             if (!isNull(ev)) {
                 utils.requestAnimationFrame((): void => {
-                    this.element.style.top = scrollTop + 'px';
+                    this.element.style.top = `${scrollTop}px`;
                 });
             } else {
-                this.element.style.top = scrollTop + 'px';
+                this.element.style.top = `${scrollTop}px`;
                 this._scrollRemover = this.addEventListener(this._window, 'scroll', this._alignModal, false);
             }
 
@@ -593,7 +592,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
          */
         protected _hide(): plat.async.IThenable<void> {
-            var dom = this.dom,
+            let dom = this.dom,
                 utils = this.utils,
                 promise: plat.async.IThenable<void>;
 
@@ -604,13 +603,13 @@ module platui {
             if (utils.isString(this._transitionEnd)) {
                 promise = this._addHideOnTransitionEnd();
                 utils.requestAnimationFrame((): void => {
-                    dom.removeClass(this._container, __Plat + 'activate');
+                    dom.removeClass(this._container, `${__Plat}activate`);
                 });
             } else {
                 promise = new this._Promise<void>((resolve): void => {
                     utils.requestAnimationFrame((): void => {
                         dom.addClass(this.element, __Hide);
-                        dom.removeClass(this._container, __Plat + 'activate');
+                        dom.removeClass(this._container, `${__Plat}activate`);
                         resolve();
                     });
                 });
@@ -632,7 +631,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
         protected _bindInnerTemplate(): plat.async.IThenable<void> {
-            var innerTemplate = this.innerTemplate,
+            let innerTemplate = this.innerTemplate,
                 bindableTemplates = this.bindableTemplates,
                 modal = 'modal';
 
@@ -664,7 +663,7 @@ module platui {
          * @returns {void}
          */
         protected _injectElement(): void {
-            var element = this.element,
+            let element = this.element,
                 parentElement = element.parentElement,
                 body = this._document.body;
 
@@ -688,7 +687,7 @@ module platui {
          */
         protected _addHideOnTransitionEnd(): plat.async.IThenable<void> {
             return new this._Promise<void>((resolve): void => {
-                var element = this.element,
+                let element = this.element,
                     remove = this.addEventListener(element, this._transitionEnd,(): void => {
                         remove();
                         this.dom.addClass(element, __Hide);

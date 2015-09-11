@@ -145,7 +145,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Navbar + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Navbar} ${(className || '')}`);
         }
 
         /**
@@ -175,14 +175,14 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var isNull = this.utils.isNull,
+            let isNull = this.utils.isNull,
                 innerTemplate = this.innerTemplate;
 
             if (isNull(innerTemplate)) {
                 return;
             }
 
-            var doc = this._document,
+            let doc = this._document,
                 overrides = this._overrides,
                 slice = Array.prototype.slice,
                 appendChildren = this.dom.appendChildren,
@@ -202,21 +202,21 @@ module platui {
                     case 'left':
                         overrides.left = true;
                         newNode = doc.createElement('div');
-                        newNode.className = __Navbar + '-left';
+                        newNode.className = `${__Navbar}-left`;
                         newNode.setAttribute(__Context, 'left');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[0]);
                         break;
                     case 'center':
                         overrides.center = true;
                         newNode = doc.createElement('div');
-                        newNode.className = __Navbar + '-center';
+                        newNode.className = `${__Navbar}-center`;
                         newNode.setAttribute(__Context, 'center');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[1]);
                         break;
                     case 'right':
                         overrides.right = true;
                         newNode = doc.createElement('div');
-                        newNode.className = __Navbar + '-right';
+                        newNode.className = `${__Navbar}-right`;
                         newNode.setAttribute(__Context, 'right');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[2]);
                         break;
@@ -236,7 +236,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<INavbarOptions>>{},
+            let optionObj = this.options || <plat.observable.IObservableProperty<INavbarOptions>>{},
                 options = optionObj.value || <INavbarOptions>{},
                 position = this.utils.isString(options.position) && options.position.toLowerCase() === 'bottom' ? '-bottom' : '-top';
 
@@ -442,7 +442,7 @@ module platui {
          */
         protected _setComponent(position: string, components: Array<INavbarComponent>): void;
         protected _setComponent(position: string, components: any): void {
-            var context = this.context;
+            let context = this.context;
             if (!this.utils.isArray(components)) {
                 if (this._overrides[position]) {
                     this._parseComponent(components);
@@ -453,7 +453,7 @@ module platui {
                 components = [components];
             }
 
-            var curr = components.length;
+            let curr = components.length;
             while (curr-- > 0) {
                 this._parseComponent(components[curr], (<any>context[position])[curr]);
             }
@@ -478,7 +478,7 @@ module platui {
          * @returns {void}
          */
         protected _parseComponent(newComponent: INavbarComponent, oldComponent?: INavbarComponent): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 isObject = utils.isObject,
                 oldComponentExists = isObject(oldComponent),
                 customActions: plat.IObject<() => any>,
@@ -521,7 +521,7 @@ module platui {
          * @returns {void}
          */
         protected _executeAction(ev: plat.ui.IGestureEvent, position: string, property?: any): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 component: INavbarComponent = this.context[position];
 
             if (utils.isArray(component) && !utils.isNull(property)) {
@@ -533,7 +533,7 @@ module platui {
                 return;
             }
 
-            this._log.debug('An action function is not defined for the component ' + component + '.')
+            this._log.debug(`An action function is not defined for the component ${component}.`)
         }
     }
 

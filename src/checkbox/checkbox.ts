@@ -88,7 +88,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Checkbox + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Checkbox} ${(className || '')}`);
         }
 
         /**
@@ -103,14 +103,14 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var isNull = this.utils.isNull,
+            let isNull = this.utils.isNull,
                 innerTemplate = this.innerTemplate;
 
             if (isNull(innerTemplate)) {
                 return;
             }
 
-            var _document = this._document,
+            let _document = this._document,
                 element = this.element,
                 childNodes = Array.prototype.slice.call(innerTemplate.childNodes),
                 childNode: Node,
@@ -147,7 +147,7 @@ module platui {
         loaded(): void {
             super.loaded();
 
-            var optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
+            let optionObj = this.options || <plat.observable.IObservableProperty<ICheckboxOptions>>{},
                 options = optionObj.value || <ICheckboxOptions>{},
                 previousType = this._targetType,
                 mark = this._targetType = options.mark || 'check';
@@ -157,13 +157,14 @@ module platui {
                 case 'x':
                     break;
                 default:
-                    this._log.debug('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.');
+                    this._log.debug(`Invalid mark option specified for ${this.type}. Defaulting to checkmark.`);
                     this._targetType = 'check';
                     break;
             }
 
             if (this._targetTypeSet) {
-                var target = this._targetElement;
+                let target = this._targetElement;
+
                 this.dom.removeClass(target, previousType);
                 this._activate(target);
             }

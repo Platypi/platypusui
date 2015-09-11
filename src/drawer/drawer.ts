@@ -157,7 +157,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Drawer + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Drawer} ${(className || '')}`);
         }
 
         /**
@@ -203,8 +203,8 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element,
-                _utils = this.utils,
+            let element = this.element,
+                utils = this.utils,
                 optionObj = this.options || <plat.observable.IObservableProperty<IDrawerOptions>>{},
                 options = optionObj.value || <IDrawerOptions>{},
                 position = this._currentPosition = options.position || 'left',
@@ -215,7 +215,7 @@ module platui {
             element.setAttribute(__Hide, '');
             this.dom.addClass(element, __Plat + position);
 
-            if (_utils.isString(templateUrl)) {
+            if (utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then((template): any => {
                     this.innerTemplate = template;
                     this._initializeEvents(id, position, isElastic);
@@ -239,10 +239,9 @@ module platui {
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         open(): plat.async.IThenable<void> {
-            var controller = this._controllers[0];
+            let controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to open.');
+                this._log.debug(`No controller, such as a ${__DrawerController}, found for the ${this.type} attempting to open.`);
                 return this._Promise.resolve();
             }
 
@@ -262,10 +261,9 @@ module platui {
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         close(): plat.async.IThenable<void> {
-            var controller = this._controllers[0];
+            let controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to close.');
+                this._log.debug(`No controller, such as a ${__DrawerController}, found for the ${this.type} attempting to close.`);
                 return this._Promise.resolve();
             }
 
@@ -285,10 +283,9 @@ module platui {
          * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
         toggle(): plat.async.IThenable<void> {
-            var controller = this._controllers[0];
+            let controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to toggle.');
+                this._log.debug(`No controller, such as a ${__DrawerController}, found for the ${this.type} attempting to toggle.`);
                 return this._Promise.resolve();
             }
 
@@ -307,10 +304,9 @@ module platui {
          * @returns {boolean} Whether or not the {@link platui.Drawer|Drawer} is currently open.
          */
         isOpen(): boolean {
-            var controller = this._controllers[0];
+            let controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to check if open.');
+                this._log.debug(`No controller, such as a ${__DrawerController}, found for the ${this.type} attempting to check if open.`);
                 return false;
             }
 
@@ -332,14 +328,15 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been bound and inserted.
          */
         bindTemplate(name: string, node: Node): plat.async.IThenable<void> {
-            var bindableTemplates = this.bindableTemplates;
+            let bindableTemplates = this.bindableTemplates;
+
             bindableTemplates.add(name, node);
             return bindableTemplates.bind(name).then((template): void => {
-                var element = this.element;
+                let element = this.element;
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error): void => {
-                this._log.debug('Error binding template for ' + this.type + ': ' + error);
+                this._log.debug(`Error binding template for ${this.type}: ${error}`);
             });
         }
 
@@ -375,7 +372,7 @@ module platui {
          * @returns {void}
          */
         spliceController(controller: DrawerController): void {
-            var controllers = this._controllers,
+            let controllers = this._controllers,
                 index = controllers.indexOf(controller);
 
             if (index === -1) {
@@ -423,21 +420,21 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
-            var _utils = this.utils,
+            let utils = this.utils,
                 controller = this._controllers[0];
-            if (firstTime === true && _utils.isNull(drawerState)) {
-                this.inputChanged(_utils.isNull(controller) ? false : controller.isOpen());
+            if (firstTime === true && utils.isNull(drawerState)) {
+                this.inputChanged(utils.isNull(controller) ? false : controller.isOpen());
                 return;
             }
 
-            if (_utils.isBoolean(drawerState)) {
+            if (utils.isBoolean(drawerState)) {
                 if (!this._isInitialized) {
                     this._preInitializedValue = drawerState;
                     return;
                 }
                 this._preInitializedValue = false;
 
-                if (_utils.isNull(controller)) {
+                if (utils.isNull(controller)) {
                     this.__nextState = drawerState;
                     return;
                 }
@@ -457,8 +454,7 @@ module platui {
                 return;
             }
 
-            this._log.debug('Attempting to open or close ' + this.type +
-                ' with a bound value that is something other than a boolean.');
+            this._log.debug(`Attempting to open or close ${this.type} with a bound value that is something other than a boolean.`);
         }
 
         /**
@@ -479,7 +475,7 @@ module platui {
                 return;
             }
 
-            var dom = this.dom,
+            let dom = this.dom,
                 element = this.element;
 
             dom.removeClass(element, __Plat + this._currentPosition);
@@ -505,18 +501,18 @@ module platui {
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string, isElastic: boolean): void {
-            var _utils = this.utils,
+            let utils = this.utils,
                 innerTemplate = this.innerTemplate;
 
-            this.on(__DrawerControllerFetchEvent + '_' + id,
+            this.on(`${__DrawerControllerFetchEvent}_${id}`,
                 (event: plat.events.DispatchEvent, controllerArg: IDrawerControllerHandshakeEvent): void => {
-                    var control = controllerArg.control;
+                    let control = controllerArg.control;
 
-                    if (_utils.isNull(control)) {
+                    if (utils.isNull(control)) {
                         return;
                     }
 
-                    if (_utils.isString(controllerArg.position)) {
+                    if (utils.isString(controllerArg.position)) {
                         position = controllerArg.position;
                         this._changeDirection(position);
                     }
@@ -524,11 +520,11 @@ module platui {
                     this._controllers.unshift(<DrawerController>control);
 
                     if (!controllerArg.received) {
-                        this.dispatchEvent(__DrawerFoundEvent + '_' + id, plat.events.EventManager.DIRECT, <IDrawerHandshakeEvent>{
+                        this.dispatchEvent(`${__DrawerFoundEvent}_${id}`, plat.events.EventManager.DIRECT, <IDrawerHandshakeEvent>{
                             control: this,
                             received: true,
                             position: position,
-                            template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                            template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                             elastic: isElastic,
                             state: this.__state,
                             nextState: this.__nextState
@@ -547,11 +543,11 @@ module platui {
                     this._checkPreInit();
                 });
 
-            this.dispatchEvent(__DrawerFoundEvent + '_' + id, plat.events.EventManager.DIRECT, <IDrawerHandshakeEvent>{
+            this.dispatchEvent(`${__DrawerFoundEvent}_${id}`, plat.events.EventManager.DIRECT, <IDrawerHandshakeEvent>{
                 control: this,
                 received: false,
                 position: position,
-                template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                 elastic: isElastic,
                 state: this.__state,
                 nextState: this.__nextState
@@ -571,10 +567,10 @@ module platui {
          */
         protected _checkPreInit(): void {
             if (this._preInitializedValue) {
-                var _utils = this.utils;
-                _utils.postpone(() => {
-                    var controller = this._controllers[0];
-                    if (!_utils.isNull(controller)) {
+                let utils = this.utils;
+                utils.postpone(() => {
+                    let controller = this._controllers[0];
+                    if (!utils.isNull(controller)) {
                         controller.open();
                     }
                 });

@@ -108,7 +108,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Button + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Button} ${(className || '')}`);
         }
 
         /**
@@ -138,13 +138,13 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var _document = this._document,
+            let _document = this._document,
                 element = this.element,
                 childNodes = Array.prototype.slice.call(element.childNodes),
                 childNode: Node,
-                span: HTMLSpanElement;
+                span: HTMLSpanElement,
+                isEmpty = this.utils.isEmpty;
 
-            var isEmpty = this.utils.isEmpty;
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
                 if (childNode.nodeType === Node.TEXT_NODE) {
@@ -171,7 +171,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element,
+            let element = this.element,
                 optionObj = this.options || <plat.observable.IObservableProperty<IButtonOptions>>{},
                 options = optionObj.value || <IButtonOptions>{},
                 group = options.group,
@@ -181,7 +181,7 @@ module platui {
                 group = this.attributes[__CamelBind];
                 if (isString(group)) {
                     this._group = group;
-                    if (this.dom.hasClass(element, __Plat + 'selected')) {
+                    if (this.dom.hasClass(element, `${__Plat}selected`)) {
                         this._onTap();
                     }
                     this._addEventListeners();
@@ -190,7 +190,7 @@ module platui {
             }
 
             this._group = group;
-            if (this.dom.hasClass(element, __Plat + 'selected')) {
+            if (this.dom.hasClass(element, `${__Plat}selected`)) {
                 this._onTap();
             }
             this._addEventListeners();
@@ -255,7 +255,7 @@ module platui {
             this.addEventListener(this.element, __$tap, this._onTap, false);
             this.on(__ButtonPrefix + this._group, (): void => {
                 if (this._isSelected) {
-                    this.dom.removeClass(this.element, __Plat + 'selected');
+                    this.dom.removeClass(this.element, `${__Plat}selected`);
                     this._isSelected = false;
                 }
             });
@@ -277,8 +277,9 @@ module platui {
                 return;
             }
 
-            var element = this.element;
-            this.dom.addClass(element, __Plat + 'selected');
+            let element = this.element;
+
+            this.dom.addClass(element, `${__Plat}selected`);
             this.dispatchEvent(__ButtonPrefix + this._group, plat.events.EventManager.DIRECT);
             this._isSelected = true;
             this.inputChanged(element.textContent);
