@@ -5,12 +5,12 @@ module platui {
      * @name File
      * @memberof platui
      * @kind class
-     * 
+     *
      * @extends {plat.ui.BindControl}
      * @implements {platui.IUIControl, platui.IFormControl}
-     * 
+     *
      * @description
-     * An {@link plat.ui.BindControl|BindControl} that standardizes and styles 
+     * An {@link plat.ui.BindControl|BindControl} that standardizes and styles
      * an HTML input[type="file"] element.
      */
     export class File extends plat.ui.BindControl implements IUiControl, IFormControl {
@@ -23,9 +23,9 @@ module platui {
          * @memberof platui.File
          * @kind property
          * @access public
-         * 
+         *
          * @type {string}
-         * 
+         *
          * @description
          * The HTML template represented as a string.
          */
@@ -41,9 +41,9 @@ module platui {
          * @memberof platui.File
          * @kind property
          * @access protected
-         * 
+         *
          * @type {plat.Compat}
-         * 
+         *
          * @description
          * Reference to the {@link plat.Compat|Compat} injectable.
          */
@@ -54,9 +54,9 @@ module platui {
          * @memberof platui.File
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLInputElement}
-         * 
+         *
          * @description
          * The HTMLInputElement for hidden input functionality.
          */
@@ -67,9 +67,9 @@ module platui {
          * @memberof platui.File
          * @kind property
          * @access protected
-         * 
+         *
          * @type {HTMLInputElement}
-         * 
+         *
          * @description
          * A secondary HTMLInputElement for visible control input.
          */
@@ -80,19 +80,19 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Sets the classes on the proper elements.
-         * 
-         * @param {string} className? An optional, additional class name or class names to set on the control 
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
          * in addition to its standard set.
-         * @param {Element} element? The element to set the class name on. Should default to 
+         * @param {Element} element? The element to set the class name on. Should default to
          * the control's element if not specified.
-         * 
+         *
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __File + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__File} ${(className || '')}`);
         }
 
         /**
@@ -100,10 +100,10 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set the class name.
-         * 
+         *
          * @returns {void}
          */
         initialize(): void {
@@ -115,14 +115,14 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set all HTMLElement references and potential attribute controls.
-         * 
+         *
          * @returns {void}
          */
         setTemplate(): void {
-            var element = this.element,
+            let element = this.element,
                 hiddenInput = this._hiddenInput = <HTMLInputElement>element.firstElementChild.firstElementChild,
                 visibleInput = this._visibleInput = <HTMLInputElement>hiddenInput.nextElementSibling,
                 buttonInput = <HTMLButtonElement>visibleInput.nextElementSibling,
@@ -132,15 +132,15 @@ module platui {
                 controlInjectors = plat.dependency.injectors.control,
                 attrRegex = /plat-(?:control|hide|context)|class|style/,
                 hasMultiple = false,
-                _utils = this.utils,
-                isNull = _utils.isNull,
-                delimit = _utils.delimit,
-                isString = _utils.isString,
+                utils = this.utils,
+                isNull = utils.isNull,
+                delimit = utils.delimit,
+                isString = utils.isString,
                 key: string,
                 name: string,
                 value: string;
 
-            for (var i = 0; i < length; ++i) {
+            for (let i = 0; i < length; ++i) {
                 key = keys[i];
                 name = delimit(key, '-');
                 value = attributes[key];
@@ -171,8 +171,8 @@ module platui {
                 return;
             }
 
-            var buttonText = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (_utils.isEmpty(buttonText)) {
+            let buttonText = this.innerTemplate.textContent.replace(/\r|\n/g, '');
+            if (utils.isEmpty(buttonText)) {
                 buttonInput.textContent = hasMultiple ? 'Select files' : 'Select a file';
                 return;
             }
@@ -185,14 +185,14 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Set the style and initialize the action.
-         * 
+         *
          * @returns {void}
          */
         loaded(): void {
-            var hiddenInput = this._hiddenInput = this._hiddenInput || <HTMLInputElement>this.element.firstElementChild.firstElementChild;
+            let hiddenInput = this._hiddenInput = this._hiddenInput || <HTMLInputElement>this.element.firstElementChild.firstElementChild;
             this._visibleInput = this._visibleInput || <HTMLInputElement>hiddenInput.nextElementSibling;
         }
 
@@ -201,10 +201,10 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * A function to validate the user's input. Returns true if the input is not empty.
-         * 
+         *
          * @returns {boolean} Whether or not the user's input is valid.
          */
         validate(): boolean {
@@ -216,20 +216,20 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Clears the user's input.
-         * 
+         *
          * @returns {void}
          */
         clear(): void {
-            var hiddenInput = this._hiddenInput;
+            let hiddenInput = this._hiddenInput;
 
             if (this.utils.isEmpty(hiddenInput.value)) {
                 return;
             }
 
-            var clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
+            let clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
 
             this.element.firstElementChild.replaceChild(clone, hiddenInput);
             this._visibleInput.value = '';
@@ -241,10 +241,10 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Acts as a programmatic click for file selection.
-         * 
+         *
          * @returns {void}
          */
         click(): void {
@@ -256,14 +256,14 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Returns the current value of {@link platui.File|File} control.
-         * 
+         *
          * @returns {any} The currently selected file(s) of the {@link platui.File|File} control.
          */
         value(): any {
-            var hiddenInput = this._hiddenInput,
+            let hiddenInput = this._hiddenInput,
                 files = hiddenInput.files;
 
             if (this.utils.isNull(files)) {
@@ -280,14 +280,14 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Disables the control.
-         * 
+         *
          * @returns {void}
          */
         disable(): void {
-            var disabled = 'disabled',
+            let disabled = 'disabled',
                 visibleInput = this._visibleInput;
 
             this._hiddenInput.setAttribute(disabled, disabled);
@@ -301,14 +301,14 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access public
-         * 
+         *
          * @description
          * Enables the control.
-         * 
+         *
          * @returns {void}
          */
         enable(): void {
-            var disabled = 'disabled',
+            let disabled = 'disabled',
                 visibleInput = this._visibleInput;
 
             this._hiddenInput.removeAttribute(disabled);
@@ -323,7 +323,7 @@ module platui {
          * @kind function
          * @access public
          * @virtual
-         * 
+         *
          * @description
          * A function that allows this control to observe both the bound property itself as well as
          * potential child properties if being bound to an object.
@@ -342,25 +342,25 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * The function called when the bindable text is set externally.
-         * 
+         *
          * @param {any} newValue The new value of the bindable file(s).
          * @param {any} oldValue The old value of the bindable file(s).
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
-         * 
+         *
          * @returns {void}
          */
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: void, firstTime?: boolean): void {
-            var utils = this.utils;
+            let utils = this.utils;
             if (utils.isUndefined(newValue)) {
                 this.inputChanged(null);
                 return;
             }
 
-            var hiddenInput = this._hiddenInput,
+            let hiddenInput = this._hiddenInput,
                 files = hiddenInput.files;
 
             if (utils.isNull(files)) {
@@ -382,16 +382,16 @@ module platui {
          * @memberof plat.controls.Bind
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * An event listener to handle a "keydown" event on the visible input.
-         * 
+         *
          * @param {KeyboardEvent} ev The "keydown" event.
-         * 
+         *
          * @returns {boolean} Whether or not to prevent default behavior.
          */
         protected _onKeyDown(ev: KeyboardEvent): boolean {
-            var key = ev.keyCode,
+            let key = ev.keyCode,
                 keyCodes = plat.controls.KeyCodes;
 
             if (key === keyCodes.tab) {
@@ -409,10 +409,10 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * Kicks off the file selection process.
-         * 
+         *
          * @returns {void}
          */
         protected _selectFiles(): void {
@@ -424,14 +424,14 @@ module platui {
          * @memberof platui.File
          * @kind function
          * @access protected
-         * 
+         *
          * @description
          * An event indicating that files have been selected.
-         * 
+         *
          * @returns {void}
          */
         protected _filesSelected(): void {
-            var hiddenInput = this._hiddenInput,
+            let hiddenInput = this._hiddenInput,
                 visibleInput = this._visibleInput,
                 files = hiddenInput.files;
 
@@ -440,16 +440,16 @@ module platui {
             }
 
             if (!hiddenInput.multiple) {
-                var file = files[0];
+                let file = files[0];
                 visibleInput.value = file.name;
                 this.inputChanged(file);
                 return;
             }
 
-            var fileNames = <Array<string>>[],
+            let fileNames = <Array<string>>[],
                 length = files.length;
 
-            for (var i = 0; i < length; ++i) {
+            for (let i = 0; i < length; ++i) {
                 fileNames.push(files[i].name);
             }
 

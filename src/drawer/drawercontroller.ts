@@ -7,11 +7,12 @@ module platui {
      * @kind class
      *
      * @extends {plat.ui.BindControl}
+     * @implements {platui.IUIControl}
      *
      * @description
      * An {@link plat.ui.BindControl|BindControl} that manipulates and controls a global drawer.
      */
-    export class DrawerController extends plat.ui.BindControl {
+    export class DrawerController extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any = {
             _document: __Document,
             _window: __Window,
@@ -523,6 +524,26 @@ module platui {
         protected _preInitializedValue: boolean;
 
         /**
+         * @name setClasses
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access public
+         *
+         * @description
+         * Sets the classes on the proper elements.
+         *
+         * @param {string} className? An optional, additional class name or class names to set on the control
+         * in addition to its standard set.
+         * @param {Element} element? The element to set the class name on. Should default to
+         * the control's element if not specified.
+         *
+         * @returns {void}
+         */
+        setClasses(className?: string, element?: Element): void {
+            this.dom.addClass(element || this.element, `${__DrawerController} ${(className || '')}`);
+        }
+
+        /**
          * @name initialize
          * @memberof platui.DrawerController
          * @kind function
@@ -549,7 +570,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
+            let optionObj = this.options || <plat.observable.IObservableProperty<IDrawerControllerOptions>>{},
                 options = optionObj.value || <IDrawerControllerOptions>{},
                 position = options.position,
                 id = options.id || '';
@@ -577,7 +598,7 @@ module platui {
         dispose(): void {
             super.dispose();
 
-            var utils = this.utils,
+            let utils = this.utils,
                 isNode = utils.isNode,
                 drawer = this._drawer,
                 rootElement = this._rootElement,
@@ -600,14 +621,14 @@ module platui {
                 return;
             }
 
-            this.dom.removeClass(rootElement, __Drawer + '-root ' + this._directionalTransitionPrep);
+            this.dom.removeClass(rootElement, `${__Drawer}-root ${this._directionalTransitionPrep}`);
 
-            var storedStyle = drawer.storedProperties;
+            let storedStyle = drawer.storedProperties;
             if (!utils.isObject(storedStyle)) {
                 return;
             }
 
-            var rootElementStyle = rootElement.style,
+            let rootElementStyle = rootElement.style,
                 parent = rootElement.parentElement,
                 overflow = storedStyle.parentOverflow;
 
@@ -634,19 +655,19 @@ module platui {
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         open(): plat.async.IThenable<void> {
-            var wasClosed = !this._isOpen,
+            let wasClosed = !this._isOpen,
                 utils = this.utils;
 
             this._toggleDelay();
 
-            var promise = new this._Promise<void>((resolve): void => {
+            let promise = new this._Promise<void>((resolve): void => {
                 this._toggleDelay = utils.requestAnimationFrame((): void => {
                     this._open().then(resolve);
                 });
             });
 
             if (wasClosed) {
-                var drawer = this._drawer;
+                let drawer = this._drawer;
 
                 this.inputChanged(true);
                 if (!utils.isNull(drawer)) {
@@ -670,19 +691,19 @@ module platui {
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         close(): plat.async.IThenable<void> {
-            var wasOpen = this._isOpen,
+            let wasOpen = this._isOpen,
                 utils = this.utils;
 
             this._toggleDelay();
 
-            var promise = new this._Promise<void>((resolve): void => {
+            let promise = new this._Promise<void>((resolve): void => {
                 this._toggleDelay = utils.requestAnimationFrame((): void => {
                     this._close().then(resolve);
                 });
             });
 
             if (wasOpen) {
-                var drawer = this._drawer;
+                let drawer = this._drawer;
 
                 this.inputChanged(false);
                 if (!utils.isNull(drawer)) {
@@ -744,14 +765,14 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been bound and inserted.
          */
         bindTemplate(name: string, node: Node): plat.async.IThenable<void> {
-            var bindableTemplates = this.bindableTemplates;
+            let bindableTemplates = this.bindableTemplates;
             bindableTemplates.add(name, node);
             return bindableTemplates.bind(name).then((template): void => {
-                var element = this._drawerElement;
+                let element = this._drawerElement;
                 this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch((error): void => {
-                this._log.debug('Error binding template for ' + this.type + ': ' + error);
+                this._log.debug(`Error binding template for ${this.type}: ${error}`);
             });
         }
 
@@ -792,7 +813,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
-            var utils = this.utils;
+            let utils = this.utils;
             if (firstTime === true && utils.isNull(drawerState)) {
                 this.inputChanged(this._isOpen);
                 return;
@@ -826,8 +847,7 @@ module platui {
                 return;
             }
 
-            this._log.debug('Attempting to bind ' + this.type +
-                ' with a value that is something other than a boolean.');
+            this._log.debug(`Attempting to bind ${this.type} with a value that is something other than a boolean.`);
         }
 
         /**
@@ -845,7 +865,7 @@ module platui {
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
         protected _open(reset?: boolean): plat.async.IThenable<void> {
-            var rootElement = this._rootElement,
+            let rootElement = this._rootElement,
                 isNode = this.utils.isNode,
                 isOpen = this._isOpen,
                 offset = this._getOffset();
@@ -854,19 +874,19 @@ module platui {
                 return this._Promise.resolve();
             }
 
-            var translation: string;
+            let translation: string;
             switch (this._position) {
                 case 'left':
-                    translation = 'translate3d(' + offset + 'px,0,0)';
+                    translation = `translate3d(${offset}px,0,0)`;
                     break;
                 case 'right':
-                    translation = 'translate3d(' + (-offset) + 'px,0,0)';
+                    translation = `translate3d(${(-offset)}px,0,0)`;
                     break;
                 case 'top':
-                    translation = 'translate3d(0,' + offset + 'px,0)';
+                    translation = `translate3d(0,${offset}px,0)`;
                     break;
                 case 'bottom':
-                    translation = 'translate3d(0,' + (-offset) + 'px,0)';
+                    translation = `translate3d(0,${(-offset)}px,0)`;
                     break;
                 default:
                     return this._Promise.resolve();
@@ -879,7 +899,7 @@ module platui {
                 this._addClickEater();
             }
 
-            var animationOptions: plat.IObject<string> = {};
+            let animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = translation;
 
             return this._animationThenable = this._animator.animate(rootElement, __Transition, {
@@ -905,7 +925,7 @@ module platui {
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
         protected _close(reset?: boolean): plat.async.IThenable<void> {
-            var rootElement = this._rootElement,
+            let rootElement = this._rootElement,
                 isNode = this.utils.isNode,
                 isClosed = !this._isOpen;
 
@@ -915,7 +935,7 @@ module platui {
 
             this._isOpen = false;
 
-            var animationOptions: plat.IObject<string> = {};
+            let animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._preTransform;
 
             return this._animationThenable = this._animator.animate(rootElement, __Transition, {
@@ -963,7 +983,7 @@ module platui {
          * @returns {void}
          */
         protected _addClickEater(): void {
-            var clickEater = this._clickEater,
+            let clickEater = this._clickEater,
                 style = clickEater.style,
                 rootElement = this._rootElement;
 
@@ -972,13 +992,13 @@ module platui {
             }
 
             // align clickEater to fill the rootElement
-            style.top = rootElement.scrollTop + 'px';
-            style.left = rootElement.scrollLeft + 'px';
+            style.top = `${rootElement.scrollTop}px`;
+            style.left = `${rootElement.scrollLeft}px`;
 
             rootElement.insertBefore(clickEater, null);
             this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
 
-            var removeScroll: plat.IRemoveListener,
+            let removeScroll: plat.IRemoveListener,
                 removeRequest: plat.IRemoveListener = noop,
                 ready = true;
 
@@ -989,12 +1009,12 @@ module platui {
 
                 ready = false;
                 removeRequest = this.utils.requestAnimationFrame((): void => {
-                    var style = clickEater.style;
+                    let style = clickEater.style;
                     ready = true;
 
                     // align clickEater to fill the rootElement
-                    style.top = rootElement.scrollTop + 'px';
-                    style.left = rootElement.scrollLeft + 'px';
+                    style.top = `${rootElement.scrollTop}px`;
+                    style.left = `${rootElement.scrollLeft}px`;
                 });
             });
 
@@ -1016,7 +1036,7 @@ module platui {
          * @returns {void}
          */
         protected _removeClickEater(): void {
-            var rootElement = this._rootElement,
+            let rootElement = this._rootElement,
                 clickEater = this._clickEater;
 
             this._removeClickEaterListener();
@@ -1040,7 +1060,7 @@ module platui {
          * @returns {void}
          */
         protected _addSwipeToggle(): void {
-            var element = this.element,
+            let element = this.element,
                 removeSwipeOpen = this.addEventListener(element, __$swipe + __transitionNegate[this._position], (): void => {
                     this._hasSwiped = true;
                     this.open();
@@ -1122,7 +1142,7 @@ module platui {
          * @returns {void}
          */
         protected _addEventListeners(): void {
-            var element = this.element,
+            let element = this.element,
                 isNull = this.utils.isNull,
                 types = this._type.split(' '),
                 position = this._position;
@@ -1141,7 +1161,7 @@ module platui {
             }
 
             if (this._isTrack = (types.indexOf('track') !== -1)) {
-                var trackFn = this._track,
+                let trackFn = this._track,
                     trackDirection: string,
                     clickEater = this._clickEater;
 
@@ -1160,7 +1180,7 @@ module platui {
                         return;
                 }
 
-                var primaryTrack = __$track + __transitionNegate[trackDirection],
+                let primaryTrack = __$track + __transitionNegate[trackDirection],
                     secondaryTrack = __$track + trackDirection,
                     removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false),
                     removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false),
@@ -1178,7 +1198,7 @@ module platui {
                 };
 
                 if (isNull(this._lastTouch)) {
-                    var touchStart = this._touchStart,
+                    let touchStart = this._touchStart,
                         touchEnd = this._touchEnd;
 
                     this._lastTouch = { x: 0, y: 0 };
@@ -1205,7 +1225,7 @@ module platui {
          * @returns {void}
          */
         protected _removeEventListeners(): void {
-            var isFunction = this.utils.isFunction;
+            let isFunction = this.utils.isFunction;
 
             if (this._isTap) {
                 if (isFunction(this._removeTap)) {
@@ -1283,7 +1303,7 @@ module platui {
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var noTouch = this._touchState === 0,
+            let noTouch = this._touchState === 0,
                 hasSwiped = this._hasSwiped,
                 hasTapped = this._hasTapped;
 
@@ -1294,9 +1314,9 @@ module platui {
                 return;
             }
 
-            var distanceMoved = this._isVertical ? ev.clientY - this._lastTouch.y : ev.clientX - this._lastTouch.x;
+            let distanceMoved = this._isVertical ? ev.clientY - this._lastTouch.y : ev.clientX - this._lastTouch.x;
             if (this._isRightDirection(distanceMoved)) {
-                var offset = this._getOffset();
+                let offset = this._getOffset();
                 if (!offset) {
                     return;
                 } else if (Math.abs(distanceMoved) > Math.ceil(offset / 2)) {
@@ -1329,7 +1349,7 @@ module platui {
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent): void {
-            var touchState = this._touchState;
+            let touchState = this._touchState;
             if (touchState === 0) {
                 return;
             } else if (touchState === 1) {
@@ -1400,7 +1420,7 @@ module platui {
          * @returns {string} The translation value.
          */
         protected _calculateTranslation(ev: plat.ui.IGestureEvent): string {
-            var offset = this._getOffset(),
+            let offset = this._getOffset(),
                 distanceMoved: number;
             if (!offset) {
                 return this._preTransform;
@@ -1412,25 +1432,25 @@ module platui {
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(' + distanceMoved + 'px,0,0)';
+                    return `translate3d(${distanceMoved}px,0,0)`;
                 case 'right':
                     distanceMoved = this._checkElasticity(offset, this._lastTouch.x - ev.clientX);
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(' + (-distanceMoved) + 'px,0,0)';
+                    return `translate3d(${(-distanceMoved)}px,0,0)`;
                 case 'top':
                     distanceMoved = this._checkElasticity(offset, ev.clientY - this._lastTouch.y);
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(0,' + distanceMoved + 'px,0)';
+                    return `translate3d(0,${distanceMoved}px,0)`;
                 case 'bottom':
                     distanceMoved = this._checkElasticity(offset, this._lastTouch.y - ev.clientY);
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(0,' + (-distanceMoved) + 'px,0)';
+                    return `translate3d(0,${(-distanceMoved)}px,0)`;
                 default:
                     return this._preTransform;
             }
@@ -1452,7 +1472,7 @@ module platui {
          * @returns {number} The potentially recalcuated distance moved.
          */
         protected _checkElasticity(maxOffset: number, delta: number): number {
-            var distanceMoved = this._isOpen ? maxOffset + delta : delta;
+            let distanceMoved = this._isOpen ? maxOffset + delta : delta;
             if (this._isElastic) {
                 return distanceMoved;
             }
@@ -1481,12 +1501,12 @@ module platui {
          * @returns {void}
          */
         protected _initializeEvents(id: string, position: string): void {
-            var useContext = this._useContext,
-                eventRemover = this.on(__DrawerFoundEvent + '_' + id,
+            let useContext = this._useContext,
+                eventRemover = this.on(`${__DrawerFoundEvent}_${id}`,
                     (event: plat.events.DispatchEvent, drawerArg: IDrawerHandshakeEvent): void => {
                         eventRemover();
 
-                        var utils = this.utils,
+                        let utils = this.utils,
                             isString = utils.isString,
                             isUndefined = utils.isUndefined,
                             drawer = (this._drawer = <Drawer>drawerArg.control) || <Drawer>{},
@@ -1496,9 +1516,8 @@ module platui {
                             if (isString(drawerArg.position)) {
                                 position = drawerArg.position;
                             } else {
-                                this._log.debug('"position" is incorrectly defined for a control such as "' +
-                                    __Drawer + '" or "' + this.type + '."' +
-                                    ' Please ensure it is a string.');
+                                this._log.debug(`"position" is incorrectly defined for a control such as "${__Drawer}" ` +
+                                    `or "${this.type}." Please ensure it is a string.`);
                                 return;
                             }
                         }
@@ -1516,7 +1535,7 @@ module platui {
                         }
 
                         if (!drawerArg.received) {
-                            this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT,
+                            this.dispatchEvent(`${__DrawerControllerFetchEvent}_${id}`, plat.events.EventManager.DIRECT,
                                 <IDrawerControllerHandshakeEvent>{
                                     control: this,
                                     received: true,
@@ -1535,7 +1554,7 @@ module platui {
                             this._preInitializedValue = true;
                         }
 
-                        var finish = (): void => {
+                        let finish = (): void => {
                             this._isInitialized = true;
                             this._checkPreInit();
                         };
@@ -1548,7 +1567,7 @@ module platui {
                         this._determineTemplate(drawerArg.template).then(finish);
                     });
 
-            this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, <IDrawerControllerHandshakeEvent>{
+            this.dispatchEvent(`${__DrawerControllerFetchEvent}_${id}`, plat.events.EventManager.DIRECT, <IDrawerControllerHandshakeEvent>{
                 control: this,
                 received: false,
                 position: position,
@@ -1568,12 +1587,12 @@ module platui {
          * @returns {void}
          */
         protected _checkPreInit(): void {
-            var value = this._preInitializedValue;
+            let value = this._preInitializedValue;
             if (this.utils.isNull(value)) {
                 return;
             }
 
-            var isOpen = this._isOpen;
+            let isOpen = this._isOpen;
             if (isOpen && value || !(isOpen || value)) {
                 return;
             }
@@ -1604,7 +1623,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been determined.
          */
         protected _determineTemplate(fragment?: Node): plat.async.IThenable<void> {
-            var utils = this.utils;
+            let utils = this.utils;
 
             if (utils.isString(this._templateUrl)) {
                 return plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template): plat.async.IThenable<void> => {
@@ -1629,14 +1648,14 @@ module platui {
          * @returns {void}
          */
         protected _setTransform(): void {
-            var style = this._rootElement.style,
+            let style = this._rootElement.style,
                 isUndefined = this.utils.isUndefined;
 
-            var vendorPrefix = this._compat.vendorPrefix;
-            if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
-            } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.upperCase + 'Transform';
+            let vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(this._preTransform = style[<any>(`${vendorPrefix.lowerCase}Transform`)])) {
+                this._transform = `${vendorPrefix.lowerCase}Transform`;
+            } else if (!isUndefined(this._preTransform = style[<any>(`${vendorPrefix.upperCase}Transform`)])) {
+                this._transform = `${vendorPrefix.upperCase}Transform`;
             } else {
                 this._transform = 'transform';
             }
@@ -1656,11 +1675,10 @@ module platui {
          * @returns {boolean} Whether or not this control is valid.
          */
         protected _controllerIsValid(position: string): boolean {
-            var isNull = this.utils.isNull;
+            let isNull = this.utils.isNull;
 
             if (isNull(this._drawerElement)) {
-                this._log.debug('Could not find a corresponding control such as "' + __Drawer +
-                    '" for this "' + this.type + '."');
+                this._log.debug(`Could not find a corresponding control such as "${__Drawer}" for this "${this.type}."`);
                 return false;
             }
 
@@ -1673,26 +1691,23 @@ module platui {
                     this._position = position;
                     break;
                 default:
-                    this._log.debug('Incorrect position: "' + position +
-                        '" defined for the a control such as "' +
-                        __Drawer + '", or "' + this.type + '."');
+                    this._log.debug(`Incorrect position: "${position}" defined for the a control such as a "${__Drawer}", or "${this.type}."`);
                     return false;
             }
 
-            var rootElement = this._rootElement = this._getRootElement();
+            let rootElement = this._rootElement = this._getRootElement();
             if (isNull(rootElement)) {
-               this._log.debug('Cannot have a "' + this.type +
-                    '" in a hierarchy above the corresponding control such as "' + __Drawer + '."');
+               this._log.debug(`Cannot have a "${this.type}" in a hierarchy above the corresponding control such as "${__Drawer}."`);
                 return false;
             }
 
-            var dom = this.dom;
-            dom.addClass(rootElement, __Drawer + '-root');
-            dom.addClass(this.element, (this._isVertical ? __Plat + 'vertical' : __Plat + 'horizontal'));
-            this._directionalTransitionPrep = __Drawer + '-transition-' + position;
+            let dom = this.dom;
+            dom.addClass(rootElement, `${__Drawer}-root`);
+            dom.addClass(this.element, (this._isVertical ? `${__Plat}vertical` : `${__Plat}horizontal`));
+            this._directionalTransitionPrep = `${__Drawer}-transition-${position}`;
 
             this._clickEater = this._document.createElement('div');
-            this._clickEater.className = __Plat + 'clickeater';
+            this._clickEater.className = `${__Plat}clickeater`;
 
             return true;
         }
@@ -1709,14 +1724,14 @@ module platui {
          * @returns {HTMLElement} The root element.
          */
         protected _getRootElement(): HTMLElement {
-            var drawer = this._drawer,
+            let drawer = this._drawer,
                 utils = this.utils;
 
             if (!utils.isNull(drawer.storedProperties)) {
                 return drawer.storedProperties.rootElement;
             }
 
-            var isNode = utils.isNode,
+            let isNode = utils.isNode,
                 root = this.root,
                 element = utils.isObject(root) && isNode(root.element) ? root.element : this.element,
                 drawerEl = this._drawerElement,
@@ -1726,7 +1741,7 @@ module platui {
                 element = parent;
             }
 
-            var _window = this._window,
+            let _window = this._window,
                 computedStyle = _window.getComputedStyle(element),
                 style = element.style,
                 position = computedStyle.position,
@@ -1749,11 +1764,11 @@ module platui {
             }
 
             if (isNode(parent)) {
-                var parentStyle = parent.style,
+                let parentStyle = parent.style,
                     overflow = parentStyle.overflow;
 
                 if (overflow !== 'hidden') {
-                    var computedParentStyle = _window.getComputedStyle(parent),
+                    let computedParentStyle = _window.getComputedStyle(parent),
                         computedDirectionalOverflow: string,
                         key: string;
 

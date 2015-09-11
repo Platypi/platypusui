@@ -56,7 +56,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __ProgressRing + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__ProgressRing} ${(className || '')}`);
         }
 
         /**
@@ -86,7 +86,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var options = this.options,
+            let options = this.options,
                 utils = this.utils,
                 isObject = utils.isObject,
                 style = 0;
@@ -98,7 +98,7 @@ module platui {
                 }
             }
 
-            this.dom.addClass(this.element, __ProgressRing + '-' + style);
+            this.dom.addClass(this.element, `${__ProgressRing}-${style}`);
             if (style === 0) {
                 return;
             }
@@ -118,14 +118,14 @@ module platui {
          * @returns {void}
          */
         protected _addAnimatedElements(style: number): void {
-            var _document: Document = plat.acquire(__Document),
+            let _document: Document = plat.acquire(__Document),
                 fragment = _document.createDocumentFragment(),
                 count = style === 2 ? 12 : 4,
                 div = 'div',
-                classPrefix = __Plat + 'animated-child ' + __Plat + 'animated-child-',
+                classPrefix = `${__Plat}animated-child ${__Plat}animated-child-`,
                 child: HTMLElement;
 
-            for (var i = 0; i < count; ++i) {
+            for (let i = 0; i < count; ++i) {
                 child = _document.createElement(div);
                 child.className = classPrefix + i;
                 fragment.insertBefore(child, null);

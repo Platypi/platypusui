@@ -140,7 +140,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Image + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Image} ${(className || '')}`);
         }
 
         /**
@@ -170,7 +170,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element,
+            let element = this.element,
                 utils = this.utils,
                 isString = utils.isString,
                 isObject = utils.isObject,
@@ -191,7 +191,7 @@ module platui {
             }
 
             if (this._isBackground) {
-                this.dom.addClass(element, __Plat + 'background');
+                this.dom.addClass(element, `${__Plat}background`);
             }
 
             this._loader = <HTMLElement>element.firstElementChild;
@@ -218,10 +218,10 @@ module platui {
          * @returns {void}
          */
         protected _setSrc(url: string, oldUrl?: string): void {
-            var img = this._img,
+            let img = this._img,
                 element = this.element,
                 dom = this.dom,
-                imageLoadClass = __Plat + 'load-image',
+                imageLoadClass = `${__Plat}load-image`,
                 loader = this._loader;
 
             dom.addClass(img, imageLoadClass);
@@ -230,7 +230,7 @@ module platui {
             img.onload = (): void => {
                 this.utils.requestAnimationFrame((): void => {
                     if (this._isBackground) {
-                        element.style.backgroundImage = 'url("' + url + '")';
+                        element.style.backgroundImage = `url("${url}")`;
                         if (element.contains(img)) {
                             element.removeChild(img);
                         }
@@ -242,7 +242,7 @@ module platui {
                     }
 
                     // remove error class in case image decides to load
-                    dom.removeClass(img, __Image + '-error ' + imageLoadClass);
+                    dom.removeClass(img, `${__Image}-error ${imageLoadClass}`);
                     if (element.contains(loader)) {
                         element.removeChild(loader);
                     }
@@ -251,7 +251,7 @@ module platui {
 
             img.onerror = (): void => {
                 this.utils.requestAnimationFrame((): void => {
-                    dom.addClass(element, __Image + '-error');
+                    dom.addClass(element, `${__Image}-error`);
                     if (element.contains(img)) {
                         element.removeChild(img);
                     }

@@ -408,7 +408,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Range + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Range} ${(className || '')}`);
         }
 
         /**
@@ -438,7 +438,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var element = this.element,
+            let element = this.element,
                 slider = this._slider = <HTMLElement>element.firstElementChild.firstElementChild,
                 isNumber = this.utils.isNumber,
                 optionObj = this.options || <plat.observable.IObservableProperty<IRangeOptions>>{},
@@ -463,7 +463,7 @@ module platui {
 
             // if it's a reversed direction, swap knobs.
             if (reversed) {
-                var lowerKnob = this._lowerKnob;
+                let lowerKnob = this._lowerKnob;
                 this._lowerKnob = this._upperKnob;
                 this._upperKnob = lowerKnob;
                 className += __Reversed;
@@ -477,7 +477,7 @@ module platui {
             this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
 
             if (min >= max) {
-                this._log.debug('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                this._log.debug(`"${this.type}'s" min is greater than or equal to its max. Setting max to min + 1.`);
                 this.max = min + 1;
             }
 
@@ -610,18 +610,17 @@ module platui {
          * @returns {void}
          */
         protected _setLower(value: number, propertyChanged: boolean): void {
-            var _utils = this.utils;
+            let utils = this.utils;
             if (this._touchState === 2) {
-                this._log.debug('Cannot set the value of the ' + this.type +
-                    '\'s lower knob while the user is manipulating it.');
+                this._log.debug(`Cannot set the value of the ${this.type}'s lower knob while the user is manipulating it.`);
                 return;
-            } else if (_utils.isNull(value)) {
+            } else if (utils.isNull(value)) {
                 value = this.min;
             }
 
-            if (!_utils.isNumber(value)) {
-                var numberVal = Number(value);
-                if (_utils.isNumber(numberVal)) {
+            if (!utils.isNumber(value)) {
+                let numberVal = Number(value);
+                if (utils.isNumber(numberVal)) {
                     value = numberVal;
                 } else {
                     return;
@@ -647,18 +646,18 @@ module platui {
          * @returns {void}
          */
         protected _setUpper(value: number, propertyChanged: boolean): void {
-            var _utils = this.utils;
+            let utils = this.utils;
+
             if (this._touchState === 3) {
-                this._log.debug('Cannot set the upper value of the ' + this.type +
-                    '\'s upper knob while the user is manipulating it.');
+                this._log.debug(`Cannot set the value of the ${this.type}'s upper knob while the user is manipulating it.`);
                 return;
-            } else if (_utils.isNull(value)) {
+            } else if (utils.isNull(value)) {
                 value = this.max;
             }
 
-            if (!_utils.isNumber(value)) {
-                var numberVal = Number(value);
-                if (_utils.isNumber(numberVal)) {
+            if (!utils.isNumber(value)) {
+                let numberVal = Number(value);
+                if (utils.isNumber(numberVal)) {
                     value = numberVal;
                 } else {
                     return;
@@ -680,7 +679,7 @@ module platui {
          * @returns {void}
          */
         protected _initializeEvents(): void {
-            var lowerKnob = this._lowerKnob,
+            let lowerKnob = this._lowerKnob,
                 upperKnob = this._upperKnob,
                 touchstart = this._touchStart,
                 touchEnd = this._touchEnd,
@@ -690,11 +689,11 @@ module platui {
                 reverseTrack: string;
 
             if (this._isVertical) {
-                track = __$track + 'down';
-                reverseTrack = __$track + 'up';
+                track = `${__$track}down`;
+                reverseTrack = `${__$track}up`;
             } else {
-                track = __$track + 'right';
-                reverseTrack = __$track + 'left';
+                track = `${__$track}right`;
+                reverseTrack = `${__$track}left`;
             }
 
             this.addEventListener(lowerKnob, __$touchstart, touchstart, false);
@@ -732,14 +731,14 @@ module platui {
          * @returns {void}
          */
         protected _touchStart(ev: plat.ui.IGestureEvent): void {
-            var touchState = this._touchState;
+            let touchState = this._touchState;
             if (touchState === 1 || touchState === 2 || touchState === 3) {
                 return;
             }
 
             this._touchState = 1;
 
-            var target = <HTMLElement>ev.currentTarget,
+            let target = <HTMLElement>ev.currentTarget,
                 lastTouch = this._lastTouch;
             if (!this.utils.isNull(lastTouch)) {
                 if (lastTouch.target !== target) {
@@ -772,7 +771,7 @@ module platui {
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var touchState = this._touchState;
+            let touchState = this._touchState;
             if (touchState === 0 || touchState === 4) {
                 this._touchState = 0;
                 return;
@@ -780,7 +779,7 @@ module platui {
 
             this._touchState = 4;
 
-            var lastTouch = this._lastTouch,
+            let lastTouch = this._lastTouch,
                 target = ev.currentTarget;
 
             if (this.utils.isNull(lastTouch) || (lastTouch.target !== target)) {
@@ -790,7 +789,7 @@ module platui {
             this.utils.requestAnimationFrame((): void => {
                 this._touchState = 0;
 
-                var isLower = target === this._lowerKnob,
+                let isLower = target === this._lowerKnob,
                     newOffset = this._calculateOffset(ev, isLower);
 
                 if (isLower) {
@@ -820,7 +819,7 @@ module platui {
          * @returns {number} The new upper offset.
          */
         protected _setOffset(offset: number, isLower: boolean): number {
-            var maxOffset = this._maxOffset;
+            let maxOffset = this._maxOffset;
 
             if (offset < 0) {
                 return isLower ? (this._lowerKnobOffset = 0) :
@@ -848,7 +847,7 @@ module platui {
          * @returns {void}
          */
         protected _trackLower(ev: plat.ui.IGestureEvent): void {
-            var touchState = this._touchState;
+            let touchState = this._touchState;
             if (touchState !== 2) {
                 if (touchState === 1) {
                     this._touchState = 2;
@@ -857,7 +856,7 @@ module platui {
                 }
             }
 
-            var maxOffset = this._maxOffset,
+            let maxOffset = this._maxOffset,
                 position = this._calculateOffset(ev, true),
                 value: number;
 
@@ -903,7 +902,7 @@ module platui {
          * @returns {void}
          */
         protected _trackUpper(ev: plat.ui.IGestureEvent): void {
-            var touchState = this._touchState;
+            let touchState = this._touchState;
             if (touchState !== 3) {
                 if (touchState === 1) {
                     this._touchState = 3;
@@ -912,7 +911,7 @@ module platui {
                 }
             }
 
-            var maxOffset = this._maxOffset,
+            let maxOffset = this._maxOffset,
                 position = this._calculateOffset(ev, false),
                 value: number;
 
@@ -961,9 +960,9 @@ module platui {
          */
         protected _positionLower(position: number, value?: number): void {
             this.utils.requestAnimationFrame((): void => {
-                var style = this._slider.style;
-                style[<any>this._positionProperty] = position + 'px';
-                style[<any>this._lengthProperty] = (this._upperKnobOffset - position) + 'px';
+                let style = this._slider.style;
+                style[<any>this._positionProperty] = `${position}px`;
+                style[<any>this._lengthProperty] = `${(this._upperKnobOffset - position)}px`;
 
                 if (value === null) {
                     return;
@@ -990,7 +989,7 @@ module platui {
          */
         protected _positionUpper(position: number, value?: number): void {
             this.utils.requestAnimationFrame((): void => {
-                this._slider.style[<any>this._lengthProperty] = (position - this._lowerKnobOffset) + 'px';
+                this._slider.style[<any>this._lengthProperty] = `${(position - this._lowerKnobOffset)}px`;
 
                 if (value === null) {
                     return;
@@ -1017,8 +1016,8 @@ module platui {
          */
         protected _positionTogether(position: number, value?: number): void {
             this.utils.requestAnimationFrame((): void => {
-                var style = this._slider.style;
-                style[<any>this._positionProperty] = position + 'px';
+                let style = this._slider.style;
+                style[<any>this._positionProperty] = `${position}px`;
                 style[<any>this._lengthProperty] = '0px';
 
                 if (value === null) {
@@ -1044,7 +1043,7 @@ module platui {
          * @returns {number} The current value of the {link platui.Range|Range}.
          */
         protected _calculateValue(width: number): number {
-            var step = this._step;
+            let step = this._step;
             return (this.min + Math.round(width / this._increment / step) * step);
         }
 
@@ -1063,7 +1062,7 @@ module platui {
          * @returns {number} The current position of the knob in pixels.
          */
         protected _calculateOffset(ev: plat.ui.IGestureEvent, isLower: boolean): number {
-            var currentOffset = isLower ? this._lowerKnobOffset : this._upperKnobOffset,
+            let currentOffset = isLower ? this._lowerKnobOffset : this._upperKnobOffset,
                 displacement: number;
 
             if (this._isVertical) {
@@ -1109,7 +1108,7 @@ module platui {
          * @returns {void}
          */
         protected _setLowerValue(newValue: number, setKnob: boolean, propertyChanged: boolean, trigger: boolean): void {
-            var lower = this.lower;
+            let lower = this.lower;
             if (newValue === lower) {
                 return;
             } else if (newValue >= this.max) {
@@ -1152,7 +1151,7 @@ module platui {
          * @returns {void}
          */
         protected _setUpperValue(newValue: number, setKnob: boolean, propertyChanged: boolean, trigger: boolean): void {
-            var upper = this.upper;
+            let upper = this.upper;
             if (newValue === upper) {
                 return;
             } else if (newValue >= this.max) {
@@ -1205,7 +1204,7 @@ module platui {
          * @returns {void}
          */
         protected _setPositionAndLength(): void {
-            var el = this._slider.parentElement;
+            let el = this._slider.parentElement;
 
             if (this._isVertical) {
                 this._lengthProperty = 'height';
@@ -1247,7 +1246,7 @@ module platui {
          */
         protected _setLowerKnobPosition(value?: number): void {
             this._Promise.resolve(this._rangeVisible).then((): void => {
-                var animationOptions: plat.IObject<string> = {},
+                let animationOptions: plat.IObject<string> = {},
                     upperKnobOffset = this._upperKnobOffset,
                     upperOffset = this.utils.isNumber(upperKnobOffset) ?
                         upperKnobOffset :
@@ -1258,8 +1257,8 @@ module platui {
                     return;
                 }
 
-                animationOptions[this._positionProperty] = position + 'px';
-                animationOptions[this._lengthProperty] = (upperOffset - position) + 'px';
+                animationOptions[this._positionProperty] = `${position}px`;
+                animationOptions[this._lengthProperty] = `${(upperOffset - position)}px`;
                 this._animator.animate(this._slider, __Transition, {
                     properties: animationOptions
                 });
@@ -1284,14 +1283,14 @@ module platui {
          */
         protected _setUpperKnobPosition(value?: number): void {
             this._Promise.resolve(this._rangeVisible).then((): void => {
-                var animationOptions: plat.IObject<string> = {},
+                let animationOptions: plat.IObject<string> = {},
                     length = this._calculateKnobPosition((value || this.upper));
 
                 if (length === this._upperKnobOffset) {
                     return;
                 }
 
-                animationOptions[this._lengthProperty] = (length - this._lowerKnobOffset) + 'px';
+                animationOptions[this._lengthProperty] = `${(length - this._lowerKnobOffset)}px`;
                 this._animator.animate(this._slider, __Transition, {
                     properties: animationOptions
                 });
@@ -1312,7 +1311,7 @@ module platui {
          * @returns {void}
          */
         protected _fireChange(): void {
-            var newProperty = <plat.IObject<number>>{};
+            let newProperty = <plat.IObject<number>>{};
             newProperty[this._lowerIdentifier] = this.lower;
             newProperty[this._upperIdentifier] = this.upper;
             this.inputChanged(newProperty);
@@ -1332,7 +1331,7 @@ module platui {
          * @returns {void}
          */
         protected _trigger(event: string): void {
-            var domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
+            let domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
             domEvent.initialize(this.element, event);
             domEvent.trigger();
         }
@@ -1356,14 +1355,14 @@ module platui {
                 return 'horizontal';
             }
 
-            var validOrientation: string;
+            let validOrientation: string;
             if (orientation === 'horizontal') {
                 validOrientation = orientation;
             } else if (orientation === 'vertical') {
                 validOrientation = orientation;
                 this._isVertical = true;
             } else {
-                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
+                this._log.debug(`Invalid orientation "${orientation}" for ${this.type}. Defaulting to "horizontal."`);
                 validOrientation = 'horizontal';
             }
 

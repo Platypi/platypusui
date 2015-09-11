@@ -4,17 +4,17 @@
 /*
  * Injectables
  */
-var __prefix = '$',
-    __Promise = __prefix + 'Promise',
-    __Compat = __prefix + 'Compat',
-    __Regex = __prefix + 'Regex',
-    __Window = __prefix + 'Window',
-    __Document = __prefix + 'Document',
-    __Utils = __prefix + 'Utils',
-    __Animator = __prefix + 'Animator',
-    __DomEventInstance = __prefix + 'DomEventInstance',
-    __TemplateControlFactory = __prefix + 'TemplateControlFactory',
-    __NodeManagerStatic = __prefix + 'NodeManagerStatic',
+let __prefix = '$',
+    __Promise = `${__prefix}Promise`,
+    __Compat = `${__prefix}Compat`,
+    __Regex = `${__prefix}Regex`,
+    __Window = `${__prefix}Window`,
+    __Document = `${__prefix}Document`,
+    __Utils = `${__prefix}Utils`,
+    __Animator = `${__prefix}Animator`,
+    __DomEventInstance = `${__prefix}DomEventInstance`,
+    __TemplateControlFactory = `${__prefix}TemplateControlFactory`,
+    __NodeManagerStatic = `${__prefix}NodeManagerStatic`,
 
     /**
      * Constants
@@ -25,40 +25,40 @@ var __prefix = '$',
      * Controls
      */
     __PlatPrefix = 'plat',
-    __Plat = __PlatPrefix + '-',
-    __Button = __Plat + 'button',
-    __Checkbox = __Plat + 'checkbox',
-    __Drawer = __Plat + 'drawer',
-    __DrawerController = __Drawer + '-controller',
-    __Modal = __Plat + 'modal',
-    __ProgressBar = __Plat + 'progress',
-    __ProgressRing = __Plat + 'ring',
-    __Radio = __Plat + 'radio',
-    __Toggle = __Plat + 'toggle',
-    __Slider = __Plat + 'slider',
-    __Range = __Plat + 'range',
-    __Select = __Plat + 'select',
-    __Input = __Plat + 'input',
-    __File = __Plat + 'file',
-    __Carousel = __Plat + 'carousel',
-    __Listview = __Plat + 'listview',
-    __Navbar = __Plat + 'navbar',
-    __Image = __Plat + 'image',
+    __Plat = `${__PlatPrefix}-`,
+    __Button = `${__Plat}button`,
+    __Checkbox = `${__Plat}checkbox`,
+    __Drawer = `${__Plat}drawer`,
+    __DrawerController = `${__Drawer}-controller`,
+    __Modal = `${__Plat}modal`,
+    __ProgressBar = `${__Plat}progress`,
+    __ProgressRing = `${__Plat}ring`,
+    __Radio = `${__Plat}radio`,
+    __Toggle = `${__Plat}toggle`,
+    __Slider = `${__Plat}slider`,
+    __Range = `${__Plat}range`,
+    __Select = `${__Plat}select`,
+    __Input = `${__Plat}input`,
+    __File = `${__Plat}file`,
+    __Carousel = `${__Plat}carousel`,
+    __Listview = `${__Plat}listview`,
+    __Navbar = `${__Plat}navbar`,
+    __Image = `${__Plat}image`,
 
     /**
      * Referenced Controls / Vars
      */
-    __Hide = __Plat + 'hide',
-    __Hidden = __Plat + 'hidden',
+    __Hide = `${__Plat}hide`,
+    __Hidden = `${__Plat}hidden`,
     __Context = __Plat + __CONTEXT,
-    __ForEach = __Plat + 'foreach',
-    __Html = __Plat + 'html',
-    __Disabled = __Plat + 'disabled',
-    __Readonly = __Plat + 'readonly',
-    __CamelContext = __PlatPrefix + 'Context',
-    __CamelChecked = __PlatPrefix + 'Checked',
-    __CamelBind = __PlatPrefix + 'Bind',
-    __CamelSrc = __PlatPrefix + 'Src',
+    __ForEach = `${__Plat}foreach`,
+    __Html = `${__Plat}html`,
+    __Disabled = `${__Plat}disabled`,
+    __Readonly = `${__Plat}readonly`,
+    __CamelContext = `${__PlatPrefix}Context`,
+    __CamelChecked = `${__PlatPrefix}Checked`,
+    __CamelBind = `${__PlatPrefix}Bind`,
+    __CamelSrc = `${__PlatPrefix}Src`,
 
     /**
      * Listview aliases
@@ -75,9 +75,9 @@ var __prefix = '$',
     /**
      * Animations
      */
-    __Transition = __Plat + 'transition',
-    __Enter = __Plat + 'enter',
-    __Leave = __Plat + 'leave',
+    __Transition = `${__Plat}transition`,
+    __Enter = `${__Plat}enter`,
+    __Leave = `${__Plat}leave`,
 
     /**
      * Events

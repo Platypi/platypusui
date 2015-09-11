@@ -580,7 +580,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Carousel + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Carousel} ${(className || '')}`);
         }
 
         /**
@@ -598,12 +598,13 @@ module platui {
          * @returns {void}
          */
         contextChanged(newValue: Array<any>, oldValue: Array<any>): void {
-            var utils = this.utils;
+            let utils = this.utils;
+
             if (utils.isFunction(this._onLoad)) {
                 if (utils.isArray(newValue)) {
                     this._setListener();
                 } else {
-                    this._log.debug(this.type + ' context set to something other than an Array.');
+                    this._log.debug(`${this.type} context set to something other than an Array.`);
                     newValue = [];
                 }
 
@@ -646,8 +647,9 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            var itemContainer = this._document.createElement('div');
-            itemContainer.className = __Carousel + '-item';
+            let itemContainer = this._document.createElement('div');
+
+            itemContainer.className = `${__Carousel}-item`;
             itemContainer.appendChild(this.innerTemplate);
             this.bindableTemplates.add('item', itemContainer);
         }
@@ -664,18 +666,18 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 context = this.context;
 
             if (!utils.isArray(context)) {
-                this._log.warn('The context of a ' + this.type + ' must be an Array.');
+                this._log.warn(`The context of a ${this.type} must be an Array.`);
                 return;
             }
 
             // since we're extending the ForEach, we must set this animate to false as it refers to item manipulation.
             this._animate = false;
 
-            var optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
+            let optionObj = this.options || <plat.observable.IObservableProperty<ICarouselOptions>>{},
                 options = optionObj.value || <ICarouselOptions>{},
                 index = options.index,
                 isNumber = utils.isNumber,
@@ -693,7 +695,7 @@ module platui {
             this.dom.addClass(this.element, __Plat + orientation);
 
             this._onLoad = (): void => {
-                var setIndex = this._index;
+                let setIndex = this._index;
 
                 index = isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : null;
                 this._index = 0;
@@ -832,12 +834,12 @@ module platui {
          * @returns {plat.IRemoveListener} A function to stop listening for property changes.
          */
         onInput(listener: (newValue: any, oldValue: any) => void): plat.IRemoveListener {
-            var listeners = this._listeners;
+            let listeners = this._listeners;
 
             listeners.push(listener);
 
             return (): void => {
-                var index = listeners.indexOf(listener);
+                let index = listeners.indexOf(listener);
                 if (index === -1) {
                     return;
                 }
@@ -865,10 +867,10 @@ module platui {
                 return;
             }
 
-            var listeners = this._listeners,
+            let listeners = this._listeners,
                 length = listeners.length;
 
-            for (var i = 0; i < length; ++i) {
+            for (let i = 0; i < length; ++i) {
                 listeners[i](newValue, oldValue);
             }
         }
@@ -910,7 +912,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(index: number, oldValue: number, identifier: void, firstTime?: boolean): void {
-            var utils = this.utils;
+            let utils = this.utils;
 
             if (utils.isNull(index)) {
                 if (firstTime === true) {
@@ -921,7 +923,7 @@ module platui {
             } else if (!utils.isNumber(index)) {
                 index = Number(index);
                 if (!utils.isNumber(index)) {
-                    this._log.debug(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.');
+                    this._log.debug(`${this.type} has it's index bound to a property that cannot be interpreted as a Number.`);
                     return;
                 }
             } else if (index < 0) {
@@ -951,7 +953,7 @@ module platui {
          * @returns {void}
          */
         protected _reset(): void {
-            var animationOptions: plat.IObject<string> = {};
+            let animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
         }
@@ -968,7 +970,7 @@ module platui {
          * @returns {void}
          */
         protected _verifyLength(): void {
-            var context = this.context,
+            let context = this.context,
                 index = this._index;
 
             if (!this.utils.isArray(context) || context.length === 0) {
@@ -981,7 +983,7 @@ module platui {
                 return;
             }
 
-            var maxIndex = context.length - 1;
+            let maxIndex = context.length - 1;
             if (index > maxIndex) {
                 this.goToIndex(maxIndex);
                 return;
@@ -1002,7 +1004,7 @@ module platui {
          * @returns {void}
          */
         protected _setIndexWindow(): void {
-            var index = this._index,
+            let index = this._index,
                 lastIndex = this._itemNodes.length - 1;
 
             if (lastIndex < 0) {
@@ -1041,7 +1043,7 @@ module platui {
          */
         protected _goToNext(inputChanged: boolean): plat.async.IThenable<boolean> {
             return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
-                var index = this._index,
+                let index = this._index,
                     reset = false;
 
                 if ((index >= this._itemNodes.length - 1) && !(reset = this._isInfinite)) {
@@ -1053,7 +1055,7 @@ module platui {
                     return this._Promise.resolve(false);
                 }
 
-                var length = this._getLength();
+                let length = this._getLength();
                 if (!length) {
                     return this.goToIndex(this._nextIndex, true);
                 }
@@ -1063,10 +1065,10 @@ module platui {
                         this._initializeOuterNodes();
                     }
 
-                    var animationOptions: plat.IObject<string> = {};
+                    let animationOptions: plat.IObject<string> = {};
                     animationOptions[this._transform] = this._calculateStaticTranslation(-length);
 
-                    var animation = this._initiateAnimation({ properties: animationOptions }),
+                    let animation = this._initiateAnimation({ properties: animationOptions }),
                         nextIndex: number;
 
                     if (reset) {
@@ -1104,7 +1106,7 @@ module platui {
          */
         protected _goToPrevious(inputChanged: boolean): plat.async.IThenable<boolean> {
             return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
-                var index = this._index,
+                let index = this._index,
                     reset = false;
 
                 if (index <= 0 && !(reset = this._isInfinite)) {
@@ -1113,7 +1115,7 @@ module platui {
                     this.resume();
                 }
 
-                var length = this._getLength();
+                let length = this._getLength();
                 if (!length) {
                     return this.goToIndex(this._previousIndex, true);
                 }
@@ -1123,10 +1125,10 @@ module platui {
                         this._initializeOuterNodes();
                     }
 
-                    var animationOptions: plat.IObject<string> = {};
+                    let animationOptions: plat.IObject<string> = {};
                     animationOptions[this._transform] = this._calculateStaticTranslation(length);
 
-                    var animation = this._initiateAnimation({ properties: animationOptions }),
+                    let animation = this._initiateAnimation({ properties: animationOptions }),
                         previousIndex: number;
 
                     if (reset) {
@@ -1167,7 +1169,8 @@ module platui {
          */
         protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.IThenable<boolean> {
             return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
-                var oldIndex = this._index;
+                let oldIndex = this._index;
+
                 if (this.utils.isUndefined(oldIndex)) {
                     this._initializeIndex(0);
                     this.inputChanged(this._index, index);
@@ -1229,7 +1232,7 @@ module platui {
          * Resolves with true if successful.
          */
         protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.IThenable<boolean> {
-            var oldIndex = this._index;
+            let oldIndex = this._index;
 
             if (index === oldIndex || index < 0 || index >= this.context.length) {
                 return this._Promise.resolve(false);
@@ -1242,7 +1245,7 @@ module platui {
                 return this._Promise.resolve(true);
             }
 
-            var _Promise = this._Promise,
+            let _Promise = this._Promise,
                 defer = this.utils.defer,
                 move: (inputChanged: boolean) => plat.async.IThenable<boolean>,
                 diff: number,
@@ -1275,13 +1278,13 @@ module platui {
             }
 
             move = move.bind(this);
-            var promises = <Array<plat.async.IThenable<boolean>>>[],
+            let promises = <Array<plat.async.IThenable<boolean>>>[],
                 removeListeners = this._removeListeners,
                 constant = this._goToIntervalConstant,
                 interval = 0,
                 mover = (resolve: (value: any) => any): void => {
-                    var remove = defer((): void => {
-                        var removeIndex = removeListeners.indexOf(remove);
+                    let remove = defer((): void => {
+                        let removeIndex = removeListeners.indexOf(remove);
                         if (removeIndex !== -1) {
                             removeListeners.splice(removeIndex, 1);
                         }
@@ -1297,7 +1300,7 @@ module platui {
 
             promises.push(move(inputChanged));
             return _Promise.all(promises).then((results): boolean => {
-                var result = false;
+                let result = false;
                 while (results.length > 0) {
                     result = result || results.pop();
                     if (result) {
@@ -1324,7 +1327,7 @@ module platui {
          * @returns {void}
          */
         protected _handleNext(index: number, length: number): void {
-            var isInfinite = this._isInfinite,
+            let isInfinite = this._isInfinite,
                 itemNodes = this._itemNodes,
                 nodeLength = itemNodes.length,
                 isNode = this.utils.isNode;
@@ -1334,7 +1337,7 @@ module platui {
                 return;
             }
 
-            var container = this._container;
+            let container = this._container;
             if (this._outerStart) {
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
@@ -1369,7 +1372,7 @@ module platui {
          * @returns {void}
          */
         protected _handlePrevious(index: number, length: number): void {
-            var isInfinite = this._isInfinite,
+            let isInfinite = this._isInfinite,
                 itemNodes = this._itemNodes,
                 nodeLength = itemNodes.length,
                 isNode = this.utils.isNode;
@@ -1379,7 +1382,7 @@ module platui {
                 return;
             }
 
-            var container = this._container;
+            let container = this._container;
             if (this._outerEnd) {
                 if (isInfinite || index < nodeLength - 2) {
                     this.dom.insertBefore(itemNodes[this._nextIndex], Array.prototype.slice.call(container.childNodes, -3));
@@ -1414,12 +1417,12 @@ module platui {
             this._removeClones();
             this._outerStart = this._outerEnd = false;
 
-            var itemNodes = this._itemNodes;
+            let itemNodes = this._itemNodes;
             if (itemNodes.length === 0) {
                 return false;
             }
 
-            var childNodes: Array<Node> = Array.prototype.slice.call(this._container.childNodes),
+            let childNodes: Array<Node> = Array.prototype.slice.call(this._container.childNodes),
                 insertBefore = this.dom.insertBefore;
 
             switch (childNodes.length) {
@@ -1429,7 +1432,7 @@ module platui {
                     insertBefore(itemNodes[this._index], childNodes);
                     break;
                 case 6:
-                    var next = this._nextIndex,
+                    let next = this._nextIndex,
                         index = this._index;
 
                     if (next < 0 || next === index) {
@@ -1463,7 +1466,7 @@ module platui {
          * @returns {boolean} Whether or not initialization was a success.
          */
         protected _initializeIndex(index: number): boolean {
-            var innerNodesCleared = this._clearInnerNodes();
+            let innerNodesCleared = this._clearInnerNodes();
 
             if (this._itemNodes.length === 0) {
                 index = -1;
@@ -1478,7 +1481,7 @@ module platui {
                 return false;
             }
 
-            var container = this._container;
+            let container = this._container;
             container.insertBefore(this._itemNodes[index], null);
             container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
             this._forceRepaint(container);
@@ -1500,13 +1503,13 @@ module platui {
          * @returns {void}
          */
         protected _initializeOuterNodes(): void {
-            var length = this._getLength();
+            let length = this._getLength();
             if (!length) {
                 this._outerStart = this._outerEnd = false;
                 return;
             }
 
-            var itemNodes = this._itemNodes,
+            let itemNodes = this._itemNodes,
                 container = this._container,
                 nodeLength = itemNodes.length,
                 nodeToInsert: Node;
@@ -1517,7 +1520,7 @@ module platui {
                     return;
                 }
             } else {
-                var isNode = this.utils.isNode;
+                let isNode = this.utils.isNode;
                 if (!this._outerEnd) {
                     nodeToInsert = itemNodes[this._nextIndex];
                     if (isNode(nodeToInsert)) {
@@ -1573,20 +1576,20 @@ module platui {
          * @returns {void}
          */
         protected _init(): void {
-            var addQueue = this._addQueue,
+            let addQueue = this._addQueue,
                 itemCount = this.context.length;
 
             this._setAliases();
 
-            var addPromise = this._addItems(0, itemCount, 0).then((): void => {
-                var index = addQueue.indexOf(addPromise);
+            let addPromise = this._addItems(0, itemCount, 0).then((): void => {
+                let index = addQueue.indexOf(addPromise);
                 if (index !== -1) {
                     addQueue.splice(index, 1);
                 }
 
                 this._onLoad();
             }).catch((): void => {
-                this._log.debug('An error occurred while processing the ' + this.type + '. Please ensure you\'re context is correct.');
+                this._log.debug(`An error occurred while processing the ${this.type}. Please ensure you're context is correct.`);
                 this._loaded = false;
                 return;
             });
@@ -1609,7 +1612,7 @@ module platui {
          * @returns {void}
          */
         protected _addEventListeners(): void {
-            var types = this._type.split(' ');
+            let types = this._type.split(' ');
 
             if (types.indexOf('tap') !== -1) {
                 this._initializeTap();
@@ -1640,7 +1643,7 @@ module platui {
          * @returns {void}
          */
         protected _removeEventListeners(): void {
-            var removeListeners = this._removeListeners;
+            let removeListeners = this._removeListeners;
             while (removeListeners.length > 0) {
                 removeListeners.pop()();
             }
@@ -1673,27 +1676,27 @@ module platui {
         protected _cloneForInfinite(length: number): void {
             this._removeClones();
 
-            var context = this.context;
+            let context = this.context;
             if (!this.utils.isArray(context) || context.length === 0) {
                 return;
             }
 
-            var outerStart = this._outerStart,
+            let outerStart = this._outerStart,
                 outerEnd = this._outerEnd;
 
             if (outerStart && outerEnd) {
                 return;
             }
 
-            var container = this._container;
+            let container = this._container;
             if (!outerEnd) {
-                var postClone = this._postClonedNode = <HTMLElement>container.firstElementChild.cloneNode(true);
+                let postClone = this._postClonedNode = <HTMLElement>container.firstElementChild.cloneNode(true);
                 container.insertBefore(postClone, null);
                 this._outerEnd = true;
             }
 
             if (!outerStart) {
-                var preClone = this._preClonedNode = <HTMLElement>container.lastElementChild.cloneNode(true);
+                let preClone = this._preClonedNode = <HTMLElement>container.lastElementChild.cloneNode(true);
                 container.insertBefore(preClone, container.firstChild);
                 container.style[<any>this._transform] = this._calculateStaticTranslation(length);
                 this._forceRepaint(container);
@@ -1713,7 +1716,7 @@ module platui {
          * @returns {void}
          */
         protected _removeClones(): void {
-            var container = this._container,
+            let container = this._container,
                 preClone = this._preClonedNode,
                 postClone = this._postClonedNode,
                 isNode = this.utils.isNode;
@@ -1801,7 +1804,7 @@ module platui {
                 this._createArrowElements();
             }
 
-            var removeListeners = this._removeListeners;
+            let removeListeners = this._removeListeners;
             removeListeners.push(this.addEventListener(this._backArrow, __$tap,(): void => {
                 this._suspendInterval();
                 this.goToPrevious();
@@ -1826,7 +1829,7 @@ module platui {
          * @returns {void}
          */
         protected _createArrowElements(): void {
-            var _document = this._document,
+            let _document = this._document,
                 viewport = this._viewport,
                 backArrowContainer = this._backArrow = _document.createElement('div'),
                 forwardArrowContainer = this._forwardArrow = _document.createElement('div'),
@@ -1834,15 +1837,15 @@ module platui {
                 forwardArrow = _document.createElement('span');
 
             if (this._isVertical) {
-                backArrow.className = __Plat + 'icon-arrow-up';
-                forwardArrow.className = __Plat + 'icon-arrow-down';
+                backArrow.className = `${__Plat}icon-arrow-up`;
+                forwardArrow.className = `${__Plat}icon-arrow-down`;
             } else {
-                backArrow.className = __Plat + 'icon-arrow-left';
-                forwardArrow.className = __Plat + 'icon-arrow-right';
+                backArrow.className = `${__Plat}icon-arrow-left`;
+                forwardArrow.className = `${__Plat}icon-arrow-right`;
             }
 
-            backArrowContainer.className = __Plat + 'back-arrow';
-            forwardArrowContainer.className = __Plat + 'forward-arrow';
+            backArrowContainer.className = `${__Plat}back-arrow`;
+            forwardArrowContainer.className = `${__Plat}forward-arrow`;
             backArrowContainer.appendChild(backArrow);
             forwardArrowContainer.appendChild(forwardArrow);
             viewport.appendChild(backArrowContainer);
@@ -1861,13 +1864,13 @@ module platui {
          * @returns {void}
          */
         protected _checkArrows(): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 isNode = utils.isNode;
             if (this._isInfinite || !(isNode(this._forwardArrow) && isNode(this._backArrow))) {
                 return;
             }
 
-            var contextLength = this.context.length,
+            let contextLength = this.context.length,
                 index = this._index;
 
             if (utils.isNull(index)) {
@@ -1901,20 +1904,20 @@ module platui {
          * @returns {void}
          */
         protected _initializeSwipe(): void {
-            var container = this._viewport,
+            let container = this._viewport,
                 swipeFn = this._handleSwipe,
                 swipe: string,
                 reverseSwipe: string;
 
             if (this._isVertical) {
-                swipe = __$swipe + 'up';
-                reverseSwipe = __$swipe + 'down';
+                swipe = `${__$swipe}up`;
+                reverseSwipe = `${__$swipe}down`;
             } else {
-                swipe = __$swipe + 'left';
-                reverseSwipe = __$swipe + 'right';
+                swipe = `${__$swipe}left`;
+                reverseSwipe = `${__$swipe}right`;
             }
 
-            var removeListeners = this._removeListeners;
+            let removeListeners = this._removeListeners;
             removeListeners.push(this.addEventListener(container, swipe, swipeFn, false));
             removeListeners.push(this.addEventListener(container, reverseSwipe, swipeFn, false));
         }
@@ -1931,21 +1934,21 @@ module platui {
          * @returns {void}
          */
         protected _initializeTrack(): void {
-            var viewport = this._viewport,
+            let viewport = this._viewport,
                 trackFn = this._track,
                 touchEnd = this._touchEnd,
                 track: string,
                 reverseTrack: string;
 
             if (this._isVertical) {
-                track = __$track + 'up';
-                reverseTrack = __$track + 'down';
+                track = `${__$track}up`;
+                reverseTrack = `${__$track}down`;
             } else {
-                track = __$track + 'left';
-                reverseTrack = __$track + 'right';
+                track = `${__$track}left`;
+                reverseTrack = `${__$track}right`;
             }
 
-            var removeListeners = this._removeListeners;
+            let removeListeners = this._removeListeners;
             removeListeners.push(this.addEventListener(viewport, track, trackFn, false));
             removeListeners.push(this.addEventListener(viewport, reverseTrack, trackFn, false));
             removeListeners.push(this.addEventListener(viewport, __$touchstart, this._touchStart, false));
@@ -1965,7 +1968,7 @@ module platui {
          * @returns {void}
          */
         protected _handleSwipe(ev: plat.ui.IGestureEvent): void {
-            var direction = ev.direction.primary,
+            let direction = ev.direction.primary,
                 hasSwiped = false;
 
             switch (direction) {
@@ -2047,7 +2050,7 @@ module platui {
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent): void {
-            var inTouch = this._inTouch,
+            let inTouch = this._inTouch,
                 hasMoved = this._hasMoved,
                 hasSwiped = this._hasSwiped;
 
@@ -2062,7 +2065,7 @@ module platui {
                 return;
             }
 
-            var distanceMoved = this._isVertical ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x),
+            let distanceMoved = this._isVertical ? (ev.clientY - this._lastTouch.y) : (ev.clientX - this._lastTouch.x),
                 length = this._getLength();
 
             if (!length) {
@@ -2116,7 +2119,7 @@ module platui {
 
             this._hasMoved = true;
             this.utils.requestAnimationFrame((): void => {
-                var translation = this._calculateDynamicTranslation(ev);
+                let translation = this._calculateDynamicTranslation(ev);
                 if (translation === null) {
                     return;
                 }
@@ -2139,8 +2142,8 @@ module platui {
          * @returns {string} The translation value.
          */
         protected _calculateStaticTranslation(interval: number): string {
-            return this._isVertical ? 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)' :
-                'translate3d(' + (this._currentOffset += interval) + 'px,0,0)';
+            return this._isVertical ? `translate3d(0,${(this._currentOffset += interval)}px,0)` :
+                `translate3d(${(this._currentOffset += interval)}px,0,0)`;
         }
 
         /**
@@ -2157,7 +2160,7 @@ module platui {
          * @returns {string} The translation value.
          */
         protected _calculateDynamicTranslation(ev: plat.ui.IGestureEvent): string {
-            var offset: number;
+            let offset: number;
             if (this._isVertical) {
                 offset = ev.clientY - this._lastTouch.y;
                 if (Math.abs(offset) > this._getLength()) {
@@ -2165,7 +2168,7 @@ module platui {
                     return null;
                 }
 
-                return 'translate3d(0,' + (this._currentOffset + offset) + 'px,0)';
+                return `translate3d(0,${(this._currentOffset + offset)}px,0)`;
             }
 
             offset = ev.clientX - this._lastTouch.x;
@@ -2174,7 +2177,7 @@ module platui {
                 return null;
             }
 
-            return 'translate3d(' + (this._currentOffset + offset) + 'px,0,0)';
+            return `translate3d(${(this._currentOffset + offset)}px,0,0)`;
         }
 
         /**
@@ -2189,14 +2192,14 @@ module platui {
          * @returns {void}
          */
         protected _setTransform(): void {
-            var style = this._container.style,
+            let style = this._container.style,
                 isUndefined = this.utils.isUndefined;
 
-            var vendorPrefix = this._compat.vendorPrefix;
-            if (!isUndefined(style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
-            } else if (!isUndefined(style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.upperCase + 'Transform';
+            let vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(style[<any>(`${vendorPrefix.lowerCase}Transform`)])) {
+                this._transform = `${vendorPrefix.lowerCase}Transform`;
+            } else if (!isUndefined(style[<any>(`${vendorPrefix.upperCase}Transform`)])) {
+                this._transform = `${vendorPrefix.upperCase}Transform`;
             } else {
                 this._transform = 'transform';
             }
@@ -2236,14 +2239,14 @@ module platui {
                 return 'horizontal';
             }
 
-            var validOrientation: string;
+            let validOrientation: string;
             if (orientation === 'horizontal') {
                 validOrientation = orientation;
             } else if (orientation === 'vertical') {
                 validOrientation = orientation;
                 this._isVertical = true;
             } else {
-                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
+                this._log.debug(`Invalid orientation "${orientation}" for ${this.type}. Defaulting to "horizontal."`);
                 validOrientation = 'horizontal';
             }
 
@@ -2267,6 +2270,8 @@ module platui {
             this._itemNodes = this._itemNodes.concat(items);
 
             if (this._loaded) {
+                let index = this._index;
+
                 // if no remove listeners exist we know that we had previously removed them.
                 if (this._removeListeners.length === 0) {
                     this._addEventListeners();
@@ -2276,7 +2281,6 @@ module platui {
                     return;
                 }
 
-                var index = this._index;
                 if (index >= this._itemNodes.length - 2) {
                     this._initializeIndex(index);
                 }
@@ -2298,7 +2302,7 @@ module platui {
          * @returns {void}
          */
         protected _removeItems(index: number, numberOfItems: number): void {
-            var dispose = this._TemplateControlFactory.dispose,
+            let dispose = this._TemplateControlFactory.dispose,
                 controls = this.controls,
                 itemNodes = this._itemNodes,
                 last = index + numberOfItems;
@@ -2345,7 +2349,7 @@ module platui {
          * @returns {void}
          */
         protected _forceRepaint(element: HTMLElement): void {
-            var style = element.style,
+            let style = element.style,
                 display = style.display,
                 none = 'none';
 

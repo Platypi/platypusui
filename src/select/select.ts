@@ -31,7 +31,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Select + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Select} ${(className || '')}`);
         }
 
         /**

@@ -707,7 +707,7 @@ module platui {
          * @returns {void}
          */
         setClasses(className?: string, element?: Element): void {
-            this.dom.addClass(element || this.element, __Listview + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, `${__Listview} ${(className || '')}`);
         }
 
         /**
@@ -722,7 +722,7 @@ module platui {
          * @returns {void}
          */
         initialize(): void {
-            var optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IListviewOptions>>{}),
+            let optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IListviewOptions>>{}),
                 options = optionObj.value || (optionObj.value = <IListviewOptions>{});
 
             this.templateUrl = this.templateUrl || options.templateUrl;
@@ -745,7 +745,7 @@ module platui {
                 return;
             }
 
-            var fragment = this.dom.serializeHtml(this.templateString),
+            let fragment = this.dom.serializeHtml(this.templateString),
                 element = this.element;
 
             this.innerTemplate = this.dom.appendChildren(element.childNodes);
@@ -771,7 +771,7 @@ module platui {
             if (this.utils.isArray(newValue)) {
                 this._setListener();
             } else {
-                this._log.debug(this.type + ' context set to something other than an Array.');
+                this._log.debug(`${this.type} context set to something other than an Array.`);
                 newValue = [];
             }
 
@@ -793,7 +793,7 @@ module platui {
          * @returns {void}
          */
         loaded(): void {
-            var options = this.options.value,
+            let options = this.options.value,
                 utils = this.utils,
                 isString = utils.isString,
                 element = this.element,
@@ -809,14 +809,14 @@ module platui {
             this._ie = utils.isNumber(this._compat.IE);
 
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
-                (animate ? (' ' + __Plat + 'animated') : ''));
+                (animate ? (` ${__Plat}animated`) : ''));
 
             if (!isString(itemTemplate)) {
-                this._log.debug('No item template or item template selector specified for ' + this.type + '.');
+                this._log.debug(`No item template or item template selector specified for ${this.type}.`);
                 return;
             }
 
-            var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate),
+            let normalizedItemTemplate = this._normalizeTemplateName(itemTemplate),
                 headerTemplate = options.headerTemplate,
                 normalizedGroupTemplate = isString(headerTemplate) ? this._normalizeTemplateName(headerTemplate) : null;
 
@@ -833,15 +833,14 @@ module platui {
                 animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
             };
 
-            var isLoading = false,
+            let isLoading = false,
                 isRefreshing = false;
             if (isString(loading)) {
                 if (isString(requestItems)) {
                     isLoading = true;
                     this._determineLoading(requestItems, options.infiniteProgress !== false);
                 } else {
-                    this._log.debug(this.type + ' loading type specified as "' + loading +
-                        '" but no option specifying an onItemsRequested handler.');
+                    this._log.debug(`${this.type} loading type specified as "${loading}" but no option specifying an onItemsRequested handler.`);
                 }
             }
 
@@ -854,7 +853,7 @@ module platui {
 
             if (!utils.isArray(this.context)) {
                 if (!utils.isNull(this.context)) {
-                    this._log.debug(this.type + '\'s context must be an Array.');
+                    this._log.debug(`${this.type}'s context must be an Array.`);
                 }
                 return;
             }
@@ -876,7 +875,7 @@ module platui {
          * @returns {void}
          */
         dispose(): void {
-            var visibilityRemovers = this._visibilityRemoveListeners;
+            let visibilityRemovers = this._visibilityRemoveListeners;
             while (visibilityRemovers.length > 0) {
                 visibilityRemovers.pop()();
             }
@@ -904,7 +903,7 @@ module platui {
          * @returns {void}
          */
         render(index?: number, count?: number, group?: IGroupHash): void {
-            var isNumber = this.utils.isNumber,
+            let isNumber = this.utils.isNumber,
                 opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 context = this === control ? this.context : control.context.items;
@@ -913,7 +912,7 @@ module platui {
                 index = 0;
             }
 
-            var maxCount = context.length - index,
+            let maxCount = context.length - index,
                 itemCount = isNumber(count) && maxCount >= count ? count : maxCount;
 
             this._createItems(index, itemCount, opGroup, 0);
@@ -989,20 +988,20 @@ module platui {
          * @returns {void}
          */
         protected _setAliases(): void {
-            var aliases = this.options.value.aliases,
+            let aliases = this.options.value.aliases,
                 utils = this.utils;
 
             if (!utils.isObject(aliases)) {
                 return;
             }
 
-            var _aliases = this._aliases,
+            let _aliases = this._aliases,
                 isString = utils.isString,
                 keys = Object.keys(_aliases),
                 length = keys.length,
                 value: string;
 
-            for (var i = 0; i < length; ++i) {
+            for (let i = 0; i < length; ++i) {
                 value = aliases[keys[i]];
 
                 if (isString(value)) {
@@ -1028,14 +1027,14 @@ module platui {
          * @returns {void}
          */
         protected _determineTemplates(itemTemplate: string, itemTemplateKey: string, headerTemplate: string): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 bindableTemplates = this.bindableTemplates,
                 templates = this._templates,
                 template: Node;
 
             if (utils.isString(headerTemplate)) {
                 this._isGrouped = true;
-                this.dom.addClass(this._container, __Plat + 'grouped');
+                this.dom.addClass(this._container, `${__Plat}grouped`);
 
                 template = templates[headerTemplate];
                 if (utils.isNode(template)) {
@@ -1043,8 +1042,7 @@ module platui {
                     this.bindableTemplates.add(headerTemplate, template);
                     delete templates[headerTemplate];
                 } else {
-                    this._log.debug(__Listview + ' group header template "' + headerTemplate +
-                        '" was not a template defined in the DOM.');
+                    this._log.debug(`${__Listview} group header template "${headerTemplate}" was not a template defined in the DOM.`);
                 }
 
                 this._headerTemplatePromise = this._createGroupTemplate();
@@ -1058,16 +1056,15 @@ module platui {
                 return;
             }
 
-            var controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
+            let controlProperty = this.findProperty(itemTemplate) || <plat.IControlProperty>{};
             if (!utils.isFunction(controlProperty.value)) {
-                this._log.debug(__Listview + ' item template "' + itemTemplate +
-                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.');
+                this._log.debug(`${__Listview} item template "${itemTemplate}" was neither a template defined in the DOM nor a template selector function in its control hiearchy.`);
                 return;
             }
 
             this._templateSelector = (<Function>controlProperty.value).bind(controlProperty.control);
             this._templateSelectorKeys = {};
-            var keys = Object.keys(templates),
+            let keys = Object.keys(templates),
                 key: string;
             while (keys.length > 0) {
                 key = keys.pop();
@@ -1089,16 +1086,16 @@ module platui {
          * the group template has been added to bindable templates.
          */
         protected _createGroupTemplate(): plat.async.IThenable<void> {
-            var _document = this._document,
+            let _document = this._document,
                 bindableTemplates = this.bindableTemplates,
                 headerTemplate = this._headerTemplate,
-                listviewGroup = __Listview + '-group',
+                listviewGroup = `${__Listview}-group`,
                 group = _document.createElement('div'),
                 itemContainer = _document.createElement('div'),
                 headerPromise: plat.async.IThenable<void>;
 
             group.className = listviewGroup;
-            itemContainer.className = __Listview + '-items';
+            itemContainer.className = `${__Listview}-items`;
             if (this.utils.isString(headerTemplate)) {
                 headerPromise = bindableTemplates.templates[headerTemplate].then((headerTemplate): void => {
                     group.insertBefore(headerTemplate.cloneNode(true), null);
@@ -1109,7 +1106,7 @@ module platui {
                 group.insertBefore(itemContainer, null);
                 bindableTemplates.add(listviewGroup, group);
             }).then(null, (error): void => {
-                this._log.debug(this.type + ' error: ' + error);
+                this._log.debug(`${this.type} error: ${error}`);
             });
         }
 
@@ -1130,7 +1127,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
          */
         protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.IThenable<void> {
-            var initialIndex = index,
+            let initialIndex = index,
                 max = +(index + numberOfGroups),
                 promises = <Array<plat.async.IThenable<DocumentFragment>>>[];
 
@@ -1139,8 +1136,8 @@ module platui {
             }
 
             return this._Promise.all(promises).then((fragments): void => {
-                var length = fragments.length;
-                for (var i = 0; i < length; ++i) {
+                let length = fragments.length;
+                for (let i = 0; i < length; ++i) {
                     this._addGroup(i + initialIndex, fragments[i], i < animateItems);
                 }
             });
@@ -1162,7 +1159,7 @@ module platui {
          * @returns {void}
          */
         protected _addGroup(index: number, fragment: DocumentFragment, animate: boolean): void {
-            var context = this.context,
+            let context = this.context,
                 groups = this._groups || (this._groups = <plat.IObject<IGroupHash>>{}),
                 group: IListviewGroup = context[index],
                 name = group.group,
@@ -1189,12 +1186,12 @@ module platui {
             };
 
             control.observe((newValue?: IListviewGroup, oldValue?: IListviewGroup): void => {
-                var newName = newValue.group;
+                let newName = newValue.group;
                 if (newName === name || !this.utils.isObject(newValue)) {
                     return;
                 }
 
-                var temp = groups[name];
+                let temp = groups[name];
                 delete groups[name];
                 temp.name = newName;
                 groups[newName] = temp;
@@ -1212,10 +1209,10 @@ module platui {
             this._createItems(0, (group.items || []).length, groupHash, 0);
 
             if (animate) {
-                var animationQueue = this._defaultGroup.animationQueue,
+                let animationQueue = this._defaultGroup.animationQueue,
                     animation = {
                         animation: this._animator.enter(fragment, __Enter, this._container).then((): void => {
-                            var index = animationQueue.indexOf(animation);
+                            let index = animationQueue.indexOf(animation);
                             if (index > -1) {
                                 animationQueue.splice(index, 1);
                             }
@@ -1243,7 +1240,7 @@ module platui {
          * @returns {plat.async.IThenable<DocumentFragment>}
          */
         protected _bindGroup(index: number): plat.async.IThenable<DocumentFragment> {
-            return this.bindableTemplates.bind(__Listview + '-group', index, this._getAliases(this.context, index));
+            return this.bindableTemplates.bind(`${__Listview}-group`, index, this._getAliases(this.context, index));
         }
 
         /**
@@ -1263,7 +1260,7 @@ module platui {
          * @returns {void}
          */
         protected _createItems(index: number, count: number, group: IGroupHash, animateItems: number): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 isVertical = this._isVertical,
@@ -1274,16 +1271,17 @@ module platui {
                     this._headerTemplatePromise.then((): void => {
                         this._addGroups(count, index, animateItems);
                     }).then(null, (error): void => {
-                        this._log.debug(this.type + ' error: ' + error);
+                        this._log.debug(`${this.type} error: ${error}`);
                     });
 
                     return;
                 }
             }
 
-            var addQueue = opGroup.addQueue,
+            let addQueue = opGroup.addQueue,
+                addPromise: plat.async.IThenable<void>,
                 postLoad = (): void => {
-                    var indexOf = addQueue.indexOf(addPromise);
+                    let indexOf = addQueue.indexOf(addPromise);
                     if (indexOf !== -1) {
                         addQueue.splice(indexOf, 1);
                     }
@@ -1299,27 +1297,27 @@ module platui {
 
                     this.utils.requestAnimationFrame((): void => {
                         // set width and height for flexbox container
-                        var itemContainer = opGroup.itemContainer;
+                        let itemContainer = opGroup.itemContainer;
                         this._setItemContainerHeight(itemContainer, this._isGrouped);
                         this._setItemContainerWidth(itemContainer);
                     });
                 },
                 onError = (error: Error): void => {
-                    this._log.debug(this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
+                    this._log.debug(`${this.type} error: ${(utils.isString(error.message) ? error.message : error)}`);
                 };
 
             if (utils.isFunction(this._templateSelector)) {
-                var promises: Array<plat.async.IThenable<any>> = [];
+                let promises: Array<plat.async.IThenable<any>> = [];
                 opGroup.itemCount += count;
 
-                for (var i = 0; i < count; ++i, ++index) {
+                for (let i = 0; i < count; ++i, ++index) {
                     promises.push(this._renderUsingFunction(index, opGroup));
                 }
 
-                var itemsLoaded = this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises)
+                let itemsLoaded = this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises)
                 .then((nodes: Array<any>): void => {
-                    var length = nodes.length;
-                    for (var ii = 0; ii < length; ++ii) {
+                    let length = nodes.length;
+                    for (let ii = 0; ii < length; ++ii) {
                         this._appendRenderedItem(nodes[ii], opGroup, ii < animateItems);
                     }
                 }).then(postLoad, onError);
@@ -1327,7 +1325,7 @@ module platui {
                 return;
             }
 
-            var key = this._itemTemplate;
+            let key = this._itemTemplate;
             if (utils.isUndefined(this.bindableTemplates.templates[key])) {
                 return;
             }
@@ -1335,7 +1333,7 @@ module platui {
             this._disposeFromIndex(index, opGroup);
             opGroup.itemCount += count;
 
-            var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
+            addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
             addQueue.push(addPromise);
         }
 
@@ -1357,7 +1355,7 @@ module platui {
          * @returns {plat.async.IThenable<void>} The itemsLoaded promise.
          */
         protected _addItems(index: number, numberOfItems: number, group: IGroupHash, animateItems: number): plat.async.IThenable<void> {
-            var opGroup = group || this._defaultGroup,
+            let opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 container = opGroup.itemContainer,
                 max = +(index + numberOfItems),
@@ -1383,8 +1381,8 @@ module platui {
             if (promises.length > 0) {
                 this.itemsLoaded = this._Promise.all(promises).then<void>((templates): void => {
                     if (animateItems > 0) {
-                        var length = templates.length;
-                        for (var i = 0; i < length; ++i) {
+                        let length = templates.length;
+                        for (let i = 0; i < length; ++i) {
                             if (i < animateItems) {
                                 this._appendAnimatedItem(templates[i], opGroup);
                             } else {
@@ -1428,7 +1426,7 @@ module platui {
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
         protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.IThenable<any> {
-            var _Promise = this._Promise,
+            let _Promise = this._Promise,
                 utils = this.utils,
                 opGroup = group || this._defaultGroup,
                 control = opGroup.control,
@@ -1440,7 +1438,7 @@ module platui {
                 identifier = index;
                 context = this.context;
             } else {
-                identifier = 'items.' + index;
+                identifier = `items.${index}`;
                 context = control.context.items;
                 groupName = opGroup.name;
             }
@@ -1448,7 +1446,7 @@ module platui {
             return _Promise.resolve(this._templateSelectorPromise).then((): plat.async.IThenable<any> => {
                 return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(context[index], index, groupName));
             }).then((selectedTemplate): plat.async.IThenable<any> => {
-                var bindableTemplates = control.bindableTemplates,
+                let bindableTemplates = control.bindableTemplates,
                     templates = bindableTemplates.templates,
                     controls = <Array<plat.ui.TemplateControl>>control.controls,
                     key = this._normalizeTemplateName(selectedTemplate),
@@ -1474,7 +1472,7 @@ module platui {
                     templateKeys[index] = key;
                     return bindableTemplates.bind(key, identifier, this._getAliases(context, index));
                 } else {
-                    this._log.debug(this.type + ' template "' + selectedTemplate + '" was not found.');
+                    this._log.debug(`${this.type} template "${selectedTemplate}" was not found.`);
                     if (controlExists) {
                         this._TemplateControlFactory.dispose(controls[index]);
                     }
@@ -1498,16 +1496,16 @@ module platui {
          * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
          */
         protected _appendRenderedItem(node: any, group?: IGroupHash, animate?: boolean): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 opGroup = group || this._defaultGroup;
 
             if (utils.isNull(node) || utils.isArray(node)) {
                 return;
             } else if (animate === true) {
-                var animationQueue = opGroup.animationQueue,
+                let animationQueue = opGroup.animationQueue,
                     animation = {
                         animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then((): void => {
-                            var animationIndex = animationQueue.indexOf(animation);
+                            let animationIndex = animationQueue.indexOf(animation);
                             if (animationIndex === -1) {
                                 return;
                             }
@@ -1544,7 +1542,7 @@ module platui {
          * @returns {void}
          */
         protected _updateResource(index: number, control: plat.ui.TemplateControl): void {
-            var controls = <Array<plat.ui.TemplateControl>>control.controls;
+            let controls = <Array<plat.ui.TemplateControl>>control.controls;
             if (index < 0 || index >= controls.length) {
                 return;
             }
@@ -1569,7 +1567,7 @@ module platui {
          * @returns {plat.IObject<plat.ui.IResource>} An object consisting of {@link plat.ui.IResource|Resources}.
          */
         protected _getAliases(context: any, index: number): plat.IObject<plat.ui.IResource> {
-            var isEven = (index & 1) === 0,
+            let isEven = (index & 1) === 0,
                 aliases: plat.IObject<plat.ui.IResource> = {},
                 _aliases = this._aliases,
                 type = __LITERAL_RESOURCE;
@@ -1639,10 +1637,10 @@ module platui {
                 return;
             }
 
-            var animationQueue = group.animationQueue,
+            let animationQueue = group.animationQueue,
                 animation = {
                     animation: this._animator.enter(item, __Enter, group.itemContainer).then((): void => {
-                        var index = animationQueue.indexOf(animation);
+                        let index = animationQueue.indexOf(animation);
                         if (index === -1) {
                             return;
                         }
@@ -1670,7 +1668,7 @@ module platui {
          * @returns {void}
          */
         protected _removeItems(index: number, numberOfItems: number, group: IGroupHash): void {
-            var dispose = this._TemplateControlFactory.dispose,
+            let dispose = this._TemplateControlFactory.dispose,
                 control = group.control,
                 controls = <Array<plat.ui.TemplateControl>>control.controls,
                 last = index + numberOfItems,
@@ -1708,7 +1706,7 @@ module platui {
          * @returns {void}
          */
         protected _disposeFromIndex(index: number, group?: IGroupHash): void {
-            var opGroup = group || this._defaultGroup,
+            let opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 controls = <Array<plat.ui.TemplateControl>>control.controls,
                 dispose = this._TemplateControlFactory.dispose,
@@ -1745,19 +1743,18 @@ module platui {
          * @returns {void}
          */
         protected _determineLoading(requestItems: string, showRing: boolean): void {
-            var controlProperty = this.findProperty(requestItems) || <plat.IControlProperty>{};
+            let controlProperty = this.findProperty(requestItems) || <plat.IControlProperty>{};
             if (!this.utils.isFunction(controlProperty.value)) {
-                this._log.debug(__Listview + ' onItemsRequested function "' + requestItems +
-                    '" was not found.');
+                this._log.debug(`${__Listview} onItemsRequested function "${requestItems}" was not found.`);
                 return;
             }
 
             this._requestItems = (<Function>controlProperty.value).bind(controlProperty.control);
 
-            var progressRingContainer: HTMLElement;
+            let progressRingContainer: HTMLElement;
             switch (this._loading) {
                 case 'infinite':
-                    var ready = true,
+                    let ready = true,
                         removeScroll: plat.IRemoveListener,
                         removeRequest: plat.IRemoveListener = noop;
 
@@ -1780,7 +1777,7 @@ module platui {
 
                     if (showRing) {
                         progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                        progressRingContainer.className = __Plat + 'infinite';
+                        progressRingContainer.className = `${__Plat}infinite`;
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
 
@@ -1790,7 +1787,7 @@ module platui {
                     break;
                 case 'incremental':
                     progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                    progressRingContainer.className = __Plat + 'incremental';
+                    progressRingContainer.className = `${__Plat}incremental`;
                     progressRingContainer.setAttribute(__Hide, '');
                     progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     this.element.insertBefore(progressRingContainer, null);
@@ -1812,7 +1809,7 @@ module platui {
          * @returns {void}
          */
         protected _onScroll(): void {
-            var scrollContainer = this._scrollContainer,
+            let scrollContainer = this._scrollContainer,
                 scrollPos = this._scrollPosition,
                 scrollPosition = this._isVertical ?
                     scrollContainer.scrollTop + scrollContainer.offsetHeight :
@@ -1843,18 +1840,18 @@ module platui {
          */
         protected _handleScroll(): void {
             // infinite scrolling set to load items at 80% of scroll length
-            var scrollContainer = this._scrollContainer,
+            let scrollContainer = this._scrollContainer,
                 scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth),
                 utils = this.utils;
 
             if (scrollLength === 0) {
                 return;
             } else if (this._scrollPosition >= scrollLength) {
-                var itemsRemain = this._requestItems();
+                let itemsRemain = this._requestItems();
                 if (itemsRemain === false) {
                     this._removeScroll();
                 } else if (utils.isPromise(itemsRemain)) {
-                    var progressRing = this._loadingProgressRing,
+                    let progressRing = this._loadingProgressRing,
                         showProgress = !utils.isNull(progressRing),
                         container = this._container;
 
@@ -1896,16 +1893,15 @@ module platui {
          * @returns {void}
          */
         protected _initializeRefresh(refresh: string): void {
-            var controlProperty = this.findProperty(refresh) || <plat.IControlProperty>{};
+            let controlProperty = this.findProperty(refresh) || <plat.IControlProperty>{};
             if (!this.utils.isFunction(controlProperty.value)) {
-                this._log.debug(__Listview + ' onRefresh function "' + refresh +
-                    '" was not found.');
+                this._log.debug(`${__Listview} onRefresh function "${refresh}" was not found.`);
                 return;
             }
 
             this._refresh = (<Function>controlProperty.value).bind(controlProperty.control);
-            var progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
-            progressRingContainer.className = __Plat + 'refresh';
+            let progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
+            progressRingContainer.className = `${__Plat}refresh`;
             progressRingContainer.setAttribute(__Hide, '');
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
             this.element.insertBefore(progressRingContainer, null);
@@ -1932,17 +1928,17 @@ module platui {
 
             this._setTransform();
 
-            var track: string,
+            let track: string,
                 reverseTrack: string;
             if (this._isVertical) {
-                track = __$track + 'down';
-                reverseTrack = __$track + 'up';
+                track = `${__$track}down`;
+                reverseTrack = `${__$track}up`;
             } else {
-                track = __$track + 'right';
-                reverseTrack = __$track + 'left';
+                track = `${__$track}right`;
+                reverseTrack = `${__$track}left`;
             }
 
-            var viewport = this._viewport,
+            let viewport = this._viewport,
                 touchEnd: EventListener,
                 trackFn: EventListener;
 
@@ -1986,7 +1982,7 @@ module platui {
             if (this._touchState !== 0) {
                 return;
             } else if (!this._isVertical) {
-                var pos = Math.ceil(ev.offsetY),
+                let pos = Math.ceil(ev.offsetY),
                     // we're going to decrease the threshold by 20 to buffer the scrollbar
                     threshold = this._viewport.offsetHeight - 20;
 
@@ -2026,7 +2022,7 @@ module platui {
          * @returns {void}
          */
         protected _touchEndLoad(ev: plat.ui.IGestureEvent): void {
-            var isLoading = this._isLoading;
+            let isLoading = this._isLoading;
             this._isLoading = false;
             if (!isLoading) {
                 if (!this._isRefreshing) {
@@ -2035,7 +2031,7 @@ module platui {
                 return;
             }
 
-            var scrollContainer = this._scrollContainer,
+            let scrollContainer = this._scrollContainer,
                 scrollLength: number,
                 threshold: number;
 
@@ -2070,7 +2066,7 @@ module platui {
          * @returns {void}
          */
         protected _touchEndRefresh(ev: plat.ui.IGestureEvent): void {
-            var isRefreshing = this._isRefreshing;
+            let isRefreshing = this._isRefreshing;
             this._isRefreshing = false;
 
             if (!isRefreshing) {
@@ -2101,7 +2097,7 @@ module platui {
          * @returns {void}
          */
         protected _touchEnd(ev: plat.ui.IGestureEvent, refreshing: boolean): void {
-            var state = this._touchState,
+            let state = this._touchState,
                 hasMoved = this._hasMoved;
 
             this._hasMoved = false;
@@ -2109,7 +2105,7 @@ module platui {
                 return;
             }
 
-            var animationOptions: plat.IObject<string> = {},
+            let animationOptions: plat.IObject<string> = {},
                 dom = this.dom,
                 viewport = this._viewport,
                 progressRing = refreshing ? this._refreshProgressRing : this._loadingProgressRing,
@@ -2117,13 +2113,13 @@ module platui {
                 nextTranslation: string;
 
             if (isActionState) {
-                var offset: number;
+                let offset: number;
                 if (this._isVertical) {
                     offset = refreshing ? progressRing.offsetHeight : -progressRing.offsetHeight;
-                    nextTranslation = 'translate3d(0,' + offset + 'px,0)';
+                    nextTranslation = `translate3d(0,${offset}px,0)`;
                 } else {
                     offset = refreshing ? progressRing.offsetWidth : -progressRing.offsetWidth;
-                    nextTranslation = 'translate3d(' + offset + 'px,0,0)';
+                    nextTranslation = `translate3d(${offset}px,0,0)`;
                 }
             } else {
                 nextTranslation = this._preTransform;
@@ -2140,7 +2136,7 @@ module platui {
                     return this._Promise.resolve(refreshing ? this._refresh() : this._requestItems());
                 }
 
-                dom.removeClass(viewport, __Plat + 'manipulation-prep');
+                dom.removeClass(viewport, `${__Plat}manipulation-prep`);
                 progressRing.setAttribute(__Hide, '');
                 return this._Promise.resolve();
             }).then((): plat.ui.animations.IAnimationThenable<void> => {
@@ -2149,19 +2145,19 @@ module platui {
                     return;
                 }
 
-                dom.removeClass(progressRing, __Plat + 'play');
+                dom.removeClass(progressRing, `${__Plat}play`);
                 animationOptions[this._transform] = this._preTransform;
                 return this._touchAnimationThenable = this._animator.animate(viewport, __Transition, {
                     properties: animationOptions
                 }).then((): void => {
                     this._touchState = 0;
                     this._touchAnimationThenable = null;
-                    dom.removeClass(viewport, __Plat + 'manipulation-prep');
+                    dom.removeClass(viewport, `${__Plat}manipulation-prep`);
                     progressRing.setAttribute(__Hide, '');
                 });
             }).then(null, (error): void => {
                 this._touchState = 0;
-                this._log.debug(this.type + 'error: ' + error);
+                this._log.debug(`${this.type} error: ${error}`);
             });
         }
 
@@ -2184,7 +2180,7 @@ module platui {
             }
 
             if (!this._isLoading) {
-                var scrollContainer = this._scrollContainer,
+                let scrollContainer = this._scrollContainer,
                     scrollLength: number,
                     threshold: number;
 
@@ -2261,12 +2257,12 @@ module platui {
          * @returns {void}
          */
         protected _track(ev: plat.ui.IGestureEvent, refreshing: boolean): void {
-            var touchState = this._touchState;
+            let touchState = this._touchState;
             if (!(touchState === 2 || touchState === 3)) {
                 return;
             }
 
-            var translation = this._calculateTranslation(ev, refreshing);
+            let translation = this._calculateTranslation(ev, refreshing);
             this.utils.requestAnimationFrame((): void => {
                 this._viewport.style[<any>this._transform] = translation;
             });
@@ -2287,7 +2283,7 @@ module platui {
          * @returns {string} The translation value.
          */
         protected _calculateTranslation(ev: plat.ui.IGestureEvent, refreshing: boolean): string {
-            var isVertical = this._isVertical,
+            let isVertical = this._isVertical,
                 progressRing = refreshing ? this._refreshProgressRing : this._loadingProgressRing,
                 diff: number,
                 threshold: number;
@@ -2304,22 +2300,23 @@ module platui {
                 diff = 0;
             } else if (!this._hasMoved) {
                 this._hasMoved = true;
-                this.dom.addClass(this._viewport, __Plat + 'manipulation-prep');
+                this.dom.addClass(this._viewport, `${__Plat}manipulation-prep`);
                 progressRing.removeAttribute(__Hide);
             } else if (Math.abs(diff) >= threshold) {
                 if (this._touchState < 3) {
                     this._touchState = 3;
-                    this.dom.addClass(progressRing, __Plat + 'play');
+                    this.dom.addClass(progressRing, `${__Plat}play`);
                 }
             } else if (this._touchState === 3) {
                 this._touchState = 2;
-                this.dom.removeClass(progressRing, __Plat + 'play');
+                this.dom.removeClass(progressRing, `${__Plat}play`);
             }
 
             if (isVertical) {
-                return 'translate3d(0,' + diff + 'px,0)';
+                return `translate3d(0,${diff}px,0)`;
             }
-            return 'translate3d(' + diff + 'px,0,0)';
+
+            return `translate3d(${diff}px,0,0)`;
         }
 
         /**
@@ -2334,14 +2331,14 @@ module platui {
          * @returns {void}
          */
         protected _setTransform(): void {
-            var style = this._viewport.style,
+            let style = this._viewport.style,
                 isUndefined = this.utils.isUndefined;
 
-            var vendorPrefix = this._compat.vendorPrefix;
-            if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.lowerCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
-            } else if (!isUndefined(this._preTransform = style[<any>(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.upperCase + 'Transform';
+            let vendorPrefix = this._compat.vendorPrefix;
+            if (!isUndefined(this._preTransform = style[<any>(`${vendorPrefix.lowerCase}Transform`)])) {
+                this._transform = `${vendorPrefix.lowerCase}Transform`;
+            } else if (!isUndefined(this._preTransform = style[<any>(`${vendorPrefix.upperCase}Transform`)])) {
+                this._transform = `${vendorPrefix.upperCase}Transform`;
             } else {
                 this._preTransform = style.transform
                 this._transform = 'transform';
@@ -2363,7 +2360,7 @@ module platui {
          * @returns {void}
          */
         protected _parseInnerTemplate(itemTemplate: string, headerTemplate?: string): void {
-            var templates = this._templates,
+            let templates = this._templates,
                 slice = Array.prototype.slice,
                 appendChildren = this.dom.appendChildren,
                 _document = this._document,
@@ -2382,7 +2379,7 @@ module platui {
                 templateName = this._normalizeTemplateName(childNode.nodeName);
                 if (validGroupTemplate && templateName === headerTemplate) {
                     container = _document.createElement('div');
-                    (<HTMLElement>container).className = __Plat + 'header';
+                    (<HTMLElement>container).className = `${__Plat}header`;
                 } else {
                     container = _document.createDocumentFragment();
                 }
@@ -2407,7 +2404,7 @@ module platui {
          * @returns {void}
          */
         protected _executeEvent(changes: Array<plat.observable.IArrayChanges<any>>): void {
-            var method = '_' + changes[0].type;
+            let method = `_${changes[0].type}`;
             if (this.utils.isFunction((<any>this)[method])) {
                 (<any>this)[method](changes);
             }
@@ -2428,10 +2425,11 @@ module platui {
          * @returns {void}
          */
         protected _executeChildEvent(groupName: string, changes: Array<plat.observable.IArrayChanges<any>>): void {
-            var utils = this.utils,
-                method = '_' + changes[0].type;
+            let utils = this.utils,
+                method = `_${changes[0].type}`;
+
             if (utils.isFunction((<any>this)[method])) {
-                var group = this._groups[groupName];
+                let group = this._groups[groupName];
                 if (utils.isNull(group)) {
                     return;
                 }
@@ -2454,7 +2452,7 @@ module platui {
          * @returns {void}
          */
         protected _push(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            var change = changes[0],
+            let change = changes[0],
                 addedCount = change.addedCount;
             this._createItems(change.index, addedCount, group, this._animate ? addedCount : 0);
         }
@@ -2474,7 +2472,7 @@ module platui {
          * @returns {void}
          */
         protected _pop(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            var opGroup = group || this._defaultGroup,
+            let opGroup = group || this._defaultGroup,
                 addQueue = opGroup.addQueue,
                 change = changes[0],
                 start = change.object.length;
@@ -2482,7 +2480,7 @@ module platui {
                 return;
             }
 
-            var removeIndex = change.object.length;
+            let removeIndex = change.object.length;
             if (opGroup.itemCount > 0) {
                 opGroup.itemCount--;
             }
@@ -2518,12 +2516,12 @@ module platui {
                 return;
             }
 
-            var opGroup = group || this._defaultGroup,
+            let opGroup = group || this._defaultGroup,
                 change = changes[0],
                 addedCount = change.addedCount;
 
             if (this._animate) {
-                var animationQueue = opGroup.animationQueue,
+                let animationQueue = opGroup.animationQueue,
                     animationLength = animationQueue.length;
                 this._animateItems(0, addedCount, __Enter, opGroup, null,
                     animationLength > 0 && animationQueue[animationLength - 1].op === 'clone');
@@ -2547,7 +2545,7 @@ module platui {
          * @returns {void}
          */
         protected _shift(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            var opGroup = group || this._defaultGroup,
+            let opGroup = group || this._defaultGroup,
                 addQueue = opGroup.addQueue,
                 change = changes[0];
             if (change.removed.length === 0) {
@@ -2558,7 +2556,7 @@ module platui {
                 }
             }
 
-            var removeIndex = change.object.length;
+            let removeIndex = change.object.length;
             if (opGroup.itemCount > 0) {
                 opGroup.itemCount--;
             }
@@ -2583,7 +2581,7 @@ module platui {
          * @returns {void}
          */
         protected _splice(changes: Array<plat.observable.IArrayChanges<any>>, group?: IGroupHash): void {
-            var utils = this.utils,
+            let utils = this.utils,
                 change = changes[0],
                 opGroup = group || this._defaultGroup,
                 addCount = change.addedCount,
@@ -2597,7 +2595,7 @@ module platui {
                     this._cancelCurrentAnimations();
                 }
 
-                var newLength = change.object.length,
+                let newLength = change.object.length,
                     itemCount = currentLength - newLength;
 
                 if (newLength > currentLength) {
@@ -2626,10 +2624,10 @@ module platui {
                 return;
             }
 
-            var removeCount = change.removed.length,
+            let removeCount = change.removed.length,
                 animationQueue = opGroup.animationQueue;
             if (addCount > removeCount) {
-                var itemAddCount = addCount - removeCount,
+                let itemAddCount = addCount - removeCount,
                     animationCount: number;
 
                 if (utils.isFunction(this._templateSelector)) {
@@ -2644,7 +2642,7 @@ module platui {
                 if (animating) {
                     animationCount = addCount;
 
-                    var animationLength = animationQueue.length,
+                    let animationLength = animationQueue.length,
                         startIndex = change.index;
 
                     if (currentLength < addCount - startIndex) {
@@ -2661,12 +2659,12 @@ module platui {
 
                 this._createItems(change.object.length - itemAddCount, itemAddCount, opGroup, animationCount);
             } else if (removeCount > addCount) {
-                var adding = addCount > 0;
+                let adding = addCount > 0;
                 if (animating && !adding && addQueue.length === 0) {
                     addQueue = addQueue.concat([this._animateItems(change.index, removeCount, __Leave, opGroup, 'clone', true)]);
                 }
 
-                var deleteCount = removeCount - addCount;
+                let deleteCount = removeCount - addCount;
                 if (opGroup.itemCount >= deleteCount) {
                     opGroup.itemCount -= deleteCount;
                 } else {
@@ -2675,7 +2673,7 @@ module platui {
 
                 this._Promise.all(addQueue).then((): void => {
                     if (animating && adding) {
-                        var animLength = animationQueue.length;
+                        let animLength = animationQueue.length;
                         this._animateItems(change.index, addCount, __Enter, opGroup, null,
                             animLength > 0 && animationQueue[animLength - 1].op === 'clone');
                     }
@@ -2733,13 +2731,13 @@ module platui {
         protected _getAnimatedNodes(startIndex: number, numberOfItems: number, group: IGroupHash): Array<Node> {
             if (this._isGrouped && group === this._defaultGroup) {
                 // we are animating a group so block length === 3 (one element node and two comment nodes)
-                var blockLength = 3,
+                let blockLength = 3,
                     start = startIndex * blockLength;
 
                 return Array.prototype.slice.call(group.itemContainer.childNodes, start, numberOfItems * blockLength + start);
             }
 
-            var utils = this.utils,
+            let utils = this.utils,
                 isNode = utils.isNode,
                 nodes: Array<Node> = Array.prototype.slice.call(group.itemContainer.childNodes),
                 endIndex = startIndex + numberOfItems - 1,
@@ -2749,13 +2747,13 @@ module platui {
                 endIndex = controls.length - 1;
             }
 
-            var startNode = controls[startIndex].startNode,
+            let startNode = controls[startIndex].startNode,
                 endNode = controls[endIndex].endNode;
             if (!(isNode(startNode) && isNode(endNode))) {
                 return [];
             }
 
-            var startNodeIndex = nodes.indexOf(startNode),
+            let startNodeIndex = nodes.indexOf(startNode),
                 endNodeIndex = nodes.indexOf(endNode);
             if (startNodeIndex === -1 || endNodeIndex === -1) {
                 return [];
@@ -2785,15 +2783,15 @@ module platui {
                 return this._Promise.resolve();
             }
 
-            var container = group.itemContainer,
+            let container = group.itemContainer,
                 animationQueue = group.animationQueue,
                 animationCreation = this._animator.create(nodes, key),
-                animation = {
-                    animation: animationPromise,
-                    op: <string>null
+                animation: {
+                    animation: plat.ui.animations.IAnimationThenable<void>,
+                    op: string;
                 },
                 animationPromise = animationCreation.current.then((): void => {
-                    var index = animationQueue.indexOf(animation);
+                    let index = animationQueue.indexOf(animation);
                     if (index === -1) {
                         return;
                     }
@@ -2807,8 +2805,13 @@ module platui {
                     return animationPromise;
                 };
 
+            animation = {
+                animation: animationPromise,
+                op: <string>null
+            };
+
             if (cancel && animationQueue.length > 0) {
-                var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                let cancelPromise = this._cancelCurrentAnimations().then(callback);
                 animationQueue.push(animation);
                 return cancelPromise;
             }
@@ -2838,20 +2841,25 @@ module platui {
                 return this._Promise.resolve();
             }
 
-            var container = group.itemContainer,
+            let container = group.itemContainer,
                 animationQueue = group.animationQueue,
+                animation: {
+                    animation: plat.ui.animations.IAnimationThenable<void>,
+                    op: string;
+                },
                 animationPromise = this._animator.leave(nodes, key).then((): void => {
-                    var index = animationQueue.indexOf(animation);
+                    let index = animationQueue.indexOf(animation);
                     if (index === -1) {
                         return;
                     }
 
                     animationQueue.splice(index, 1);
-                }),
-                animation = {
-                    animation: animationPromise,
-                    op: 'leave'
-                };
+                });
+
+            animation = {
+                animation: animationPromise,
+                op: 'leave'
+            };
 
             animationQueue.push(animation);
 
@@ -2881,14 +2889,18 @@ module platui {
                 return this._Promise.resolve();
             }
 
-            var container = group.itemContainer,
+            let container = group.itemContainer,
                 clonedContainer = container.cloneNode(true),
                 parentNode: Node,
                 animationQueue = group.animationQueue,
                 isNull = this.utils.isNull,
                 animationCreation = this._animator.create(nodes, key),
+                animation: {
+                    animation: plat.ui.animations.IAnimationThenable<void>,
+                    op: string;
+                },
                 animationPromise = animationCreation.current.then((): void => {
-                    var index = animationQueue.indexOf(animation);
+                    let index = animationQueue.indexOf(animation);
                     if (index > -1) {
                         animationQueue.splice(index, 1);
                     }
@@ -2899,10 +2911,6 @@ module platui {
 
                     parentNode.replaceChild(container, clonedContainer);
                 }),
-                animation = {
-                    animation: animationPromise,
-                    op: 'clone'
-                },
                 callback = (): plat.async.IThenable<void> => {
                     parentNode = container.parentNode;
                     if (isNull(parentNode) || animationPromise.isCanceled()) {
@@ -2916,8 +2924,13 @@ module platui {
                     return animationPromise;
                 };
 
+            animation = {
+                animation: animationPromise,
+                op: 'clone'
+            };
+
             if (cancel && animationQueue.length > 0) {
-                var cancelPromise = this._cancelCurrentAnimations().then(callback);
+                let cancelPromise = this._cancelCurrentAnimations().then(callback);
                 animationQueue.push(animation);
                 return cancelPromise;
             }
@@ -2941,11 +2954,11 @@ module platui {
          * all current animations have been canceled.
          */
         protected _cancelCurrentAnimations(group?: IGroupHash): plat.async.IThenable<any> {
-            var animationQueue = (group || this._defaultGroup).animationQueue,
+            let animationQueue = (group || this._defaultGroup).animationQueue,
                 animations = <Array<plat.ui.animations.IAnimationThenable<any>>>[],
                 length = animationQueue.length;
 
-            for (var i = 0; i < length; ++i) {
+            for (let i = 0; i < length; ++i) {
                 animations.push(animationQueue[i].animation.cancel());
             }
 
@@ -2983,12 +2996,12 @@ module platui {
          * @returns {HTMLElement} The progress ring element.
          */
         protected _generateProgressRing(): HTMLElement {
-            var _document = this._document,
+            let _document = this._document,
                 control = _document.createElement('div'),
                 ring = _document.createElement('div');
 
-            control.className = __Listview + '-ring ' + __Plat + 'ring ' + __Plat + 'ring-0';
-            ring.className = __Plat + 'animated-ring';
+            control.className = `${__Listview}-ring ${__Plat}ring ${__Plat}ring-0`;
+            ring.className = `${__Plat}animated-ring`;
             control.insertBefore(ring, null);
 
             return control;
@@ -3013,14 +3026,14 @@ module platui {
                 return 'vertical';
             }
 
-            var validOrientation: string;
+            let validOrientation: string;
             if (orientation === 'vertical') {
                 validOrientation = orientation;
             } else if (orientation === 'horizontal') {
                 validOrientation = orientation;
                 this._isVertical = false;
             } else {
-                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "vertical."');
+                this._log.debug(`Invalid orientation "${orientation}" for ${this.type}. Defaulting to "vertical."`);
                 validOrientation = 'vertical';
             }
 
@@ -3042,14 +3055,14 @@ module platui {
          * @returns {void}
          */
         protected _setItemContainerWidth(element: HTMLElement): void {
-            var width = element.scrollWidth;
+            let width = element.scrollWidth;
 
             if (!width) {
                 this._addVisibilityListener(this._setItemContainerWidth.bind(this, element), element);
                 return;
             }
 
-            element.style.width = width + 'px';
+            element.style.width = `${width}px`;
         }
 
         /**
@@ -3085,7 +3098,7 @@ module platui {
          * @returns {void}
          */
         protected _setItemContainerHeight(element: HTMLElement, withHeader: boolean): void {
-            var parent = element.parentElement,
+            let parent = element.parentElement,
                 parentHeight = parent.offsetHeight,
                 headerHeight = 0;
 
@@ -3095,7 +3108,7 @@ module platui {
             }
 
             if (withHeader === true) {
-                var header = <HTMLElement>parent.firstElementChild;
+                let header = <HTMLElement>parent.firstElementChild;
                 headerHeight = header.offsetHeight;
 
                 if (!headerHeight) {
@@ -3105,7 +3118,7 @@ module platui {
             }
 
             // parent element minus header minus scrollbar (for IE)
-            element.style.height = (parentHeight - headerHeight - (this._ie ? 17 : 0)) + 'px';
+            element.style.height = `${(parentHeight - headerHeight - (this._ie ? 17 : 0))}px`;
         }
 
         /**
@@ -3123,10 +3136,10 @@ module platui {
          * @returns {void}
          */
         protected _addVisibilityListener(listener: () => void, element: HTMLElement): void {
-            var visibilityRemovers = this._visibilityRemoveListeners,
+            let visibilityRemovers = this._visibilityRemoveListeners,
                 remove = this.dom.whenVisible((): void => {
                     listener();
-                    var i = visibilityRemovers.indexOf(remove);
+                    let i = visibilityRemovers.indexOf(remove);
                     if (i !== -1) {
                         visibilityRemovers.splice(i, 1);
                     }
