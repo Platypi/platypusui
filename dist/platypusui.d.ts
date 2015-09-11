@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.6.10 (https://platypi.io)
+  * PlatypusUI v0.7.0 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -648,7 +648,7 @@ declare module platui {
     /**
       * An BindControl that manipulates and controls a global drawer.
       */
-    class DrawerController extends plat.ui.BindControl {
+    class DrawerController extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any;
         /**
           * The evaluated plat-options object.
@@ -810,6 +810,14 @@ declare module platui {
           * A bound value that may have come through prior to initialization.
           */
         protected _preInitializedValue: boolean;
+        /**
+          * Sets the classes on the proper elements.
+          * @param {string} className? An optional, additional class name or class names to set on the control
+          * in addition to its standard set.
+          * @param {Element} element? The element to set the class name on. Should default to
+          * the control's element if not specified.
+          */
+        setClasses(className?: string, element?: Element): void;
         /**
           * Sets the class name on the element.
           */
@@ -1986,10 +1994,6 @@ declare module platui {
           */
         protected _handlePasswordHide(): void;
         /**
-          * The action handler for the "email" type.
-          */
-        protected _handleEmail(): void;
-        /**
           * Checks the current state of the default action and handles accordingly.
           */
         protected _checkText(): void;
@@ -1997,10 +2001,6 @@ declare module platui {
           * Checks the current state of the password action and handles accordingly.
           */
         protected _checkPassword(): void;
-        /**
-          * Checks the current state of the "email" action and handles accordingly.
-          */
-        protected _checkEmail(): void;
         /**
           * The event handler upon user text input.
           */

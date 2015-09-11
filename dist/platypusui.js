@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.6.10 (https://platypi.io)
+ * PlatypusUI v0.7.0 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -21,16 +21,16 @@ var platui;
     /* tslint:disable:no-unused-variable */
     /*
      */
-    var __prefix = '$', __Promise = __prefix + 'Promise', __Compat = __prefix + 'Compat', __Regex = __prefix + 'Regex', __Window = __prefix + 'Window', __Document = __prefix + 'Document', __Utils = __prefix + 'Utils', __Animator = __prefix + 'Animator', __DomEventInstance = __prefix + 'DomEventInstance', __TemplateControlFactory = __prefix + 'TemplateControlFactory', __NodeManagerStatic = __prefix + 'NodeManagerStatic', 
+    var __prefix = '$', __Promise = __prefix + "Promise", __Compat = __prefix + "Compat", __Regex = __prefix + "Regex", __Window = __prefix + "Window", __Document = __prefix + "Document", __Utils = __prefix + "Utils", __Animator = __prefix + "Animator", __DomEventInstance = __prefix + "DomEventInstance", __TemplateControlFactory = __prefix + "TemplateControlFactory", __NodeManagerStatic = __prefix + "NodeManagerStatic", 
     /**
      */
     __CONTEXT = 'context', 
     /**
      */
-    __PlatPrefix = 'plat', __Plat = __PlatPrefix + '-', __Button = __Plat + 'button', __Checkbox = __Plat + 'checkbox', __Drawer = __Plat + 'drawer', __DrawerController = __Drawer + '-controller', __Modal = __Plat + 'modal', __ProgressBar = __Plat + 'progress', __ProgressRing = __Plat + 'ring', __Radio = __Plat + 'radio', __Toggle = __Plat + 'toggle', __Slider = __Plat + 'slider', __Range = __Plat + 'range', __Select = __Plat + 'select', __Input = __Plat + 'input', __File = __Plat + 'file', __Carousel = __Plat + 'carousel', __Listview = __Plat + 'listview', __Navbar = __Plat + 'navbar', __Image = __Plat + 'image', 
+    __PlatPrefix = 'plat', __Plat = __PlatPrefix + "-", __Button = __Plat + "button", __Checkbox = __Plat + "checkbox", __Drawer = __Plat + "drawer", __DrawerController = __Drawer + "-controller", __Modal = __Plat + "modal", __ProgressBar = __Plat + "progress", __ProgressRing = __Plat + "ring", __Radio = __Plat + "radio", __Toggle = __Plat + "toggle", __Slider = __Plat + "slider", __Range = __Plat + "range", __Select = __Plat + "select", __Input = __Plat + "input", __File = __Plat + "file", __Carousel = __Plat + "carousel", __Listview = __Plat + "listview", __Navbar = __Plat + "navbar", __Image = __Plat + "image", 
     /**
      */
-    __Hide = __Plat + 'hide', __Hidden = __Plat + 'hidden', __Context = __Plat + __CONTEXT, __ForEach = __Plat + 'foreach', __Html = __Plat + 'html', __Disabled = __Plat + 'disabled', __Readonly = __Plat + 'readonly', __CamelContext = __PlatPrefix + 'Context', __CamelChecked = __PlatPrefix + 'Checked', __CamelBind = __PlatPrefix + 'Bind', __CamelSrc = __PlatPrefix + 'Src', 
+    __Hide = __Plat + "hide", __Hidden = __Plat + "hidden", __Context = __Plat + __CONTEXT, __ForEach = __Plat + "foreach", __Html = __Plat + "html", __Disabled = __Plat + "disabled", __Readonly = __Plat + "readonly", __CamelContext = __PlatPrefix + "Context", __CamelChecked = __PlatPrefix + "Checked", __CamelBind = __PlatPrefix + "Bind", __CamelSrc = __PlatPrefix + "Src", 
     /**
      */
     __listviewAliasOptions = {
@@ -43,7 +43,7 @@ var platui;
     }, 
     /**
      */
-    __Transition = __Plat + 'transition', __Enter = __Plat + 'enter', __Leave = __Plat + 'leave', 
+    __Transition = __Plat + "transition", __Enter = __Plat + "enter", __Leave = __Plat + "leave", 
     /**
      */
     __$tap = '$tap', __$touchstart = '$touchstart', __$touchend = '$touchend', __$touchcancel = '$touchcancel', __$swipe = '$swipe', __$track = '$track', __$trackend = '$trackend', __ButtonPrefix = '__plat-button-', __RadioPrefix = '__plat-radio-', __DrawerControllerInitEvent = '__platDrawerControllerInit', __DrawerControllerFetchEvent = '__platDrawerControllerFetch', __DrawerFoundEvent = '__platDrawerFound', 
@@ -89,7 +89,7 @@ var platui;
          * the control's element if not specified.
          */
         Button.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Button + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Button + " " + (className || ''));
         };
         /**
          * Sets default classes.
@@ -101,8 +101,7 @@ var platui;
          * Wrap all inner text nodes in spans.
          */
         Button.prototype.setTemplate = function () {
-            var _document = this._document, element = this.element, childNodes = Array.prototype.slice.call(element.childNodes), childNode, span;
-            var isEmpty = this.utils.isEmpty;
+            var _document = this._document, element = this.element, childNodes = Array.prototype.slice.call(element.childNodes), childNode, span, isEmpty = this.utils.isEmpty;
             while (childNodes.length > 0) {
                 childNode = childNodes.shift();
                 if (childNode.nodeType === Node.TEXT_NODE) {
@@ -126,7 +125,7 @@ var platui;
                 group = this.attributes[__CamelBind];
                 if (isString(group)) {
                     this._group = group;
-                    if (this.dom.hasClass(element, __Plat + 'selected')) {
+                    if (this.dom.hasClass(element, __Plat + "selected")) {
                         this._onTap();
                     }
                     this._addEventListeners();
@@ -134,7 +133,7 @@ var platui;
                 return;
             }
             this._group = group;
-            if (this.dom.hasClass(element, __Plat + 'selected')) {
+            if (this.dom.hasClass(element, __Plat + "selected")) {
                 this._onTap();
             }
             this._addEventListeners();
@@ -169,7 +168,7 @@ var platui;
             this.addEventListener(this.element, __$tap, this._onTap, false);
             this.on(__ButtonPrefix + this._group, function () {
                 if (_this._isSelected) {
-                    _this.dom.removeClass(_this.element, __Plat + 'selected');
+                    _this.dom.removeClass(_this.element, __Plat + "selected");
                     _this._isSelected = false;
                 }
             });
@@ -182,7 +181,7 @@ var platui;
                 return;
             }
             var element = this.element;
-            this.dom.addClass(element, __Plat + 'selected');
+            this.dom.addClass(element, __Plat + "selected");
             this.dispatchEvent(__ButtonPrefix + this._group, plat.events.EventManager.DIRECT);
             this._isSelected = true;
             this.inputChanged(element.textContent);
@@ -224,7 +223,7 @@ var platui;
          * the control's element if not specified.
          */
         Toggle.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Toggle + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Toggle + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -294,11 +293,11 @@ var platui;
          * @param {any} oldValue? The oldValue of the attribute to convert.
          */
         Toggle.prototype._convertAttribute = function (newValue, oldValue) {
-            var _utils = this.utils;
-            if (_utils.isBoolean(newValue)) {
+            var utils = this.utils;
+            if (utils.isBoolean(newValue)) {
                 return this._setBoundProperty(newValue, oldValue, null, true);
             }
-            else if (!_utils.isString(newValue)) {
+            else if (!utils.isString(newValue)) {
                 return;
             }
             this._setBoundProperty(newValue === 'true', oldValue === 'true', null, true);
@@ -377,7 +376,7 @@ var platui;
          * the control's element if not specified.
          */
         Checkbox.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Checkbox + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Checkbox + " " + (className || ''));
         };
         /**
          * Adds the inner template to the DOM making sure to wrap text nodes in spans.
@@ -415,7 +414,7 @@ var platui;
                 case 'x':
                     break;
                 default:
-                    this._log.debug('Invalid mark option specified for' + this.type + '. Defaulting to checkmark.');
+                    this._log.debug("Invalid mark option specified for " + this.type + ". Defaulting to checkmark.");
                     this._targetType = 'check';
                     break;
             }
@@ -479,7 +478,7 @@ var platui;
          * the control's element if not specified.
          */
         Radio.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Radio + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Radio + " " + (className || ''));
         };
         /**
          * Checks for a radio group and converts "checked" attributes.
@@ -553,9 +552,9 @@ var platui;
                 this._removeListener = null;
             }
             if (this.isActive) {
-                var name = this.groupName;
-                this.dispatchEvent(__RadioPrefix + name, plat.events.EventManager.DIRECT);
-                var remover = this._removeListener = this.on(__RadioPrefix + name, function () {
+                var name_1 = this.groupName;
+                this.dispatchEvent(__RadioPrefix + name_1, plat.events.EventManager.DIRECT);
+                var remover = this._removeListener = this.on(__RadioPrefix + name_1, function () {
                     _this._toggle();
                     remover();
                 });
@@ -568,14 +567,14 @@ var platui;
          * @param {any} oldValue? The oldValue of the attribute to convert.
          */
         Radio.prototype._convertAttribute = function (newValue, oldValue) {
-            var _utils = this.utils;
-            if (_utils.isBoolean(newValue)) {
+            var utils = this.utils;
+            if (utils.isBoolean(newValue)) {
                 if (newValue) {
                     this._setBoundProperty(this._getValue(), null, null, true);
                 }
                 return;
             }
-            else if (!_utils.isString(newValue)) {
+            else if (!utils.isString(newValue)) {
                 return;
             }
             if (newValue === 'true') {
@@ -614,7 +613,7 @@ var platui;
          * the control's element if not specified.
          */
         ProgressRing.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __ProgressRing + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __ProgressRing + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -633,7 +632,7 @@ var platui;
                     style = 0;
                 }
             }
-            this.dom.addClass(this.element, __ProgressRing + '-' + style);
+            this.dom.addClass(this.element, __ProgressRing + "-" + style);
             if (style === 0) {
                 return;
             }
@@ -643,7 +642,7 @@ var platui;
          * Adds any needed DOM for the animation.
          */
         ProgressRing.prototype._addAnimatedElements = function (style) {
-            var _document = plat.acquire(__Document), fragment = _document.createDocumentFragment(), count = style === 2 ? 12 : 4, div = 'div', classPrefix = __Plat + 'animated-child ' + __Plat + 'animated-child-', child;
+            var _document = plat.acquire(__Document), fragment = _document.createDocumentFragment(), count = style === 2 ? 12 : 4, div = 'div', classPrefix = __Plat + "animated-child " + __Plat + "animated-child-", child;
             for (var i = 0; i < count; ++i) {
                 child = _document.createElement(div);
                 child.className = classPrefix + i;
@@ -681,7 +680,7 @@ var platui;
          * the control's element if not specified.
          */
         ProgressBar.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __ProgressBar + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __ProgressBar + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -721,7 +720,7 @@ var platui;
             var _this = this;
             return new this._Promise(function (resolve, reject) {
                 if (!_this.utils.isNumber(value) || value > 1 || value < 0) {
-                    var msg = 'The value of a "' + _this.type + '" control must be a number between 0 and 1.';
+                    var msg = "The value of a \"" + _this.type + "\" control must be a number between 0 and 1.";
                     _this._log.debug(msg);
                     reject(msg);
                     return;
@@ -736,7 +735,7 @@ var platui;
                 }
                 _this._animator.animate(barElement, __Transition, {
                     properties: {
-                        width: Math.ceil(barMax * value) + 'px'
+                        width: Math.ceil(barMax * value) + "px"
                     }
                 }).then(function () {
                     resolve();
@@ -788,7 +787,7 @@ var platui;
          * the control's element if not specified.
          */
         Drawer.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Drawer + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Drawer + " " + (className || ''));
         };
         /**
          * Set the class name and hides the element and
@@ -808,10 +807,10 @@ var platui;
          */
         Drawer.prototype.loaded = function () {
             var _this = this;
-            var element = this.element, _utils = this.utils, optionObj = this.options || {}, options = optionObj.value || {}, position = this._currentPosition = options.position || 'left', id = options.id || '', templateUrl = options.templateUrl, isElastic = options.elastic === true;
+            var element = this.element, utils = this.utils, optionObj = this.options || {}, options = optionObj.value || {}, position = this._currentPosition = options.position || 'left', id = options.id || '', templateUrl = options.templateUrl, isElastic = options.elastic === true;
             element.setAttribute(__Hide, '');
             this.dom.addClass(element, __Plat + position);
-            if (_utils.isString(templateUrl)) {
+            if (utils.isString(templateUrl)) {
                 plat.ui.TemplateControl.determineTemplate(this, templateUrl).then(function (template) {
                     _this.innerTemplate = template;
                     _this._initializeEvents(id, position, isElastic);
@@ -826,8 +825,7 @@ var platui;
         Drawer.prototype.open = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to open.');
+                this._log.debug("No controller, such as a " + __DrawerController + ", found for the " + this.type + " attempting to open.");
                 return this._Promise.resolve();
             }
             return controller.open();
@@ -838,8 +836,7 @@ var platui;
         Drawer.prototype.close = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to close.');
+                this._log.debug("No controller, such as a " + __DrawerController + ", found for the " + this.type + " attempting to close.");
                 return this._Promise.resolve();
             }
             return controller.close();
@@ -850,8 +847,7 @@ var platui;
         Drawer.prototype.toggle = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to toggle.');
+                this._log.debug("No controller, such as a " + __DrawerController + ", found for the " + this.type + " attempting to toggle.");
                 return this._Promise.resolve();
             }
             return controller.toggle();
@@ -862,8 +858,7 @@ var platui;
         Drawer.prototype.isOpen = function () {
             var controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
-                this._log.debug('No controller, such as a ' + __DrawerController + ', found for the ' +
-                    this.type + ' attempting to check if open.');
+                this._log.debug("No controller, such as a " + __DrawerController + ", found for the " + this.type + " attempting to check if open.");
                 return false;
             }
             return controller.isOpen();
@@ -882,7 +877,7 @@ var platui;
                 _this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch(function (error) {
-                _this._log.debug('Error binding template for ' + _this.type + ': ' + error);
+                _this._log.debug("Error binding template for " + _this.type + ": " + error);
             });
         };
         /**
@@ -923,18 +918,18 @@ var platui;
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
         Drawer.prototype._setBoundProperty = function (drawerState, oldValue, identifier, firstTime) {
-            var _utils = this.utils, controller = this._controllers[0];
-            if (firstTime === true && _utils.isNull(drawerState)) {
-                this.inputChanged(_utils.isNull(controller) ? false : controller.isOpen());
+            var utils = this.utils, controller = this._controllers[0];
+            if (firstTime === true && utils.isNull(drawerState)) {
+                this.inputChanged(utils.isNull(controller) ? false : controller.isOpen());
                 return;
             }
-            if (_utils.isBoolean(drawerState)) {
+            if (utils.isBoolean(drawerState)) {
                 if (!this._isInitialized) {
                     this._preInitializedValue = drawerState;
                     return;
                 }
                 this._preInitializedValue = false;
-                if (_utils.isNull(controller)) {
+                if (utils.isNull(controller)) {
                     this.__nextState = drawerState;
                     return;
                 }
@@ -950,8 +945,7 @@ var platui;
                 }
                 return;
             }
-            this._log.debug('Attempting to open or close ' + this.type +
-                ' with a bound value that is something other than a boolean.');
+            this._log.debug("Attempting to open or close " + this.type + " with a bound value that is something other than a boolean.");
         };
         /**
          * Changes the placement and implied position of the Drawer.
@@ -975,23 +969,23 @@ var platui;
          */
         Drawer.prototype._initializeEvents = function (id, position, isElastic) {
             var _this = this;
-            var _utils = this.utils, innerTemplate = this.innerTemplate;
-            this.on(__DrawerControllerFetchEvent + '_' + id, function (event, controllerArg) {
+            var utils = this.utils, innerTemplate = this.innerTemplate;
+            this.on(__DrawerControllerFetchEvent + "_" + id, function (event, controllerArg) {
                 var control = controllerArg.control;
-                if (_utils.isNull(control)) {
+                if (utils.isNull(control)) {
                     return;
                 }
-                if (_utils.isString(controllerArg.position)) {
+                if (utils.isString(controllerArg.position)) {
                     position = controllerArg.position;
                     _this._changeDirection(position);
                 }
                 _this._controllers.unshift(control);
                 if (!controllerArg.received) {
-                    _this.dispatchEvent(__DrawerFoundEvent + '_' + id, plat.events.EventManager.DIRECT, {
+                    _this.dispatchEvent(__DrawerFoundEvent + "_" + id, plat.events.EventManager.DIRECT, {
                         control: _this,
                         received: true,
                         position: position,
-                        template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                        template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                         elastic: isElastic,
                         state: _this.__state,
                         nextState: _this.__nextState
@@ -1006,11 +1000,11 @@ var platui;
                 }
                 _this._checkPreInit();
             });
-            this.dispatchEvent(__DrawerFoundEvent + '_' + id, plat.events.EventManager.DIRECT, {
+            this.dispatchEvent(__DrawerFoundEvent + "_" + id, plat.events.EventManager.DIRECT, {
                 control: this,
                 received: false,
                 position: position,
-                template: _utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
                 elastic: isElastic,
                 state: this.__state,
                 nextState: this.__nextState
@@ -1022,10 +1016,10 @@ var platui;
         Drawer.prototype._checkPreInit = function () {
             var _this = this;
             if (this._preInitializedValue) {
-                var _utils = this.utils;
-                _utils.postpone(function () {
+                var utils = this.utils;
+                utils.postpone(function () {
                     var controller = _this._controllers[0];
-                    if (!_utils.isNull(controller)) {
+                    if (!utils.isNull(controller)) {
                         controller.open();
                     }
                 });
@@ -1079,6 +1073,16 @@ var platui;
             this._isInitialized = false;
         }
         /**
+         * Sets the classes on the proper elements.
+         * @param {string} className? An optional, additional class name or class names to set on the control
+         * in addition to its standard set.
+         * @param {Element} element? The element to set the class name on. Should default to
+         * the control's element if not specified.
+         */
+        DrawerController.prototype.setClasses = function (className, element) {
+            this.dom.addClass(element || this.element, __DrawerController + " " + (className || ''));
+        };
+        /**
          * Sets the class name on the element.
          */
         DrawerController.prototype.initialize = function () {
@@ -1116,7 +1120,7 @@ var platui;
             if (drawer.controllerCount() > 0) {
                 return;
             }
-            this.dom.removeClass(rootElement, __Drawer + '-root ' + this._directionalTransitionPrep);
+            this.dom.removeClass(rootElement, __Drawer + "-root " + this._directionalTransitionPrep);
             var storedStyle = drawer.storedProperties;
             if (!utils.isObject(storedStyle)) {
                 return;
@@ -1202,7 +1206,7 @@ var platui;
                 _this.dom.clearNode(element);
                 element.appendChild(template);
             }).catch(function (error) {
-                _this._log.debug('Error binding template for ' + _this.type + ': ' + error);
+                _this._log.debug("Error binding template for " + _this.type + ": " + error);
             });
         };
         /**
@@ -1251,8 +1255,7 @@ var platui;
                 }
                 return;
             }
-            this._log.debug('Attempting to bind ' + this.type +
-                ' with a value that is something other than a boolean.');
+            this._log.debug("Attempting to bind " + this.type + " with a value that is something other than a boolean.");
         };
         /**
          * Opens the Drawer.
@@ -1267,16 +1270,16 @@ var platui;
             var translation;
             switch (this._position) {
                 case 'left':
-                    translation = 'translate3d(' + offset + 'px,0,0)';
+                    translation = "translate3d(" + offset + "px,0,0)";
                     break;
                 case 'right':
-                    translation = 'translate3d(' + (-offset) + 'px,0,0)';
+                    translation = "translate3d(" + (-offset) + "px,0,0)";
                     break;
                 case 'top':
-                    translation = 'translate3d(0,' + offset + 'px,0)';
+                    translation = "translate3d(0," + offset + "px,0)";
                     break;
                 case 'bottom':
-                    translation = 'translate3d(0,' + (-offset) + 'px,0)';
+                    translation = "translate3d(0," + (-offset) + "px,0)";
                     break;
                 default:
                     return this._Promise.resolve();
@@ -1340,8 +1343,8 @@ var platui;
                 return;
             }
             // align clickEater to fill the rootElement 
-            style.top = rootElement.scrollTop + 'px';
-            style.left = rootElement.scrollLeft + 'px';
+            style.top = rootElement.scrollTop + "px";
+            style.left = rootElement.scrollLeft + "px";
             rootElement.insertBefore(clickEater, null);
             this.dom.addClass(this._rootElement, this._directionalTransitionPrep);
             var removeScroll, removeRequest = noop, ready = true;
@@ -1354,8 +1357,8 @@ var platui;
                     var style = clickEater.style;
                     ready = true;
                     // align clickEater to fill the rootElement 
-                    style.top = rootElement.scrollTop + 'px';
-                    style.left = rootElement.scrollLeft + 'px';
+                    style.top = rootElement.scrollTop + "px";
+                    style.left = rootElement.scrollLeft + "px";
                 });
             });
             this._removeClickEaterListener = function () {
@@ -1622,25 +1625,25 @@ var platui;
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(' + distanceMoved + 'px,0,0)';
+                    return "translate3d(" + distanceMoved + "px,0,0)";
                 case 'right':
                     distanceMoved = this._checkElasticity(offset, this._lastTouch.x - ev.clientX);
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(' + (-distanceMoved) + 'px,0,0)';
+                    return "translate3d(" + (-distanceMoved) + "px,0,0)";
                 case 'top':
                     distanceMoved = this._checkElasticity(offset, ev.clientY - this._lastTouch.y);
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(0,' + distanceMoved + 'px,0)';
+                    return "translate3d(0," + distanceMoved + "px,0)";
                 case 'bottom':
                     distanceMoved = this._checkElasticity(offset, this._lastTouch.y - ev.clientY);
                     if (distanceMoved === 0) {
                         return this._preTransform;
                     }
-                    return 'translate3d(0,' + (-distanceMoved) + 'px,0)';
+                    return "translate3d(0," + (-distanceMoved) + "px,0)";
                 default:
                     return this._preTransform;
             }
@@ -1671,7 +1674,7 @@ var platui;
          */
         DrawerController.prototype._initializeEvents = function (id, position) {
             var _this = this;
-            var useContext = this._useContext, eventRemover = this.on(__DrawerFoundEvent + '_' + id, function (event, drawerArg) {
+            var useContext = this._useContext, eventRemover = this.on(__DrawerFoundEvent + "_" + id, function (event, drawerArg) {
                 eventRemover();
                 var utils = _this.utils, isString = utils.isString, isUndefined = utils.isUndefined, drawer = (_this._drawer = drawerArg.control) || {}, drawerElement = _this._drawerElement = drawer.element;
                 if (!isString(position)) {
@@ -1679,9 +1682,8 @@ var platui;
                         position = drawerArg.position;
                     }
                     else {
-                        _this._log.debug('"position" is incorrectly defined for a control such as "' +
-                            __Drawer + '" or "' + _this.type + '."' +
-                            ' Please ensure it is a string.');
+                        _this._log.debug(("\"position\" is incorrectly defined for a control such as \"" + __Drawer + "\" ") +
+                            ("or \"" + _this.type + ".\" Please ensure it is a string."));
                         return;
                     }
                 }
@@ -1695,7 +1697,7 @@ var platui;
                     _this._isElastic = drawerArg.elastic === true;
                 }
                 if (!drawerArg.received) {
-                    _this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
+                    _this.dispatchEvent(__DrawerControllerFetchEvent + "_" + id, plat.events.EventManager.DIRECT, {
                         control: _this,
                         received: true,
                         position: position,
@@ -1722,7 +1724,7 @@ var platui;
                 }
                 _this._determineTemplate(drawerArg.template).then(finish);
             });
-            this.dispatchEvent(__DrawerControllerFetchEvent + '_' + id, plat.events.EventManager.DIRECT, {
+            this.dispatchEvent(__DrawerControllerFetchEvent + "_" + id, plat.events.EventManager.DIRECT, {
                 control: this,
                 received: false,
                 position: position,
@@ -1775,11 +1777,11 @@ var platui;
         DrawerController.prototype._setTransform = function () {
             var style = this._rootElement.style, isUndefined = this.utils.isUndefined;
             var vendorPrefix = this._compat.vendorPrefix;
-            if (!isUndefined(this._preTransform = style[(vendorPrefix.lowerCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
+            if (!isUndefined(this._preTransform = style[(vendorPrefix.lowerCase + "Transform")])) {
+                this._transform = vendorPrefix.lowerCase + "Transform";
             }
-            else if (!isUndefined(this._preTransform = style[(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.upperCase + 'Transform';
+            else if (!isUndefined(this._preTransform = style[(vendorPrefix.upperCase + "Transform")])) {
+                this._transform = vendorPrefix.upperCase + "Transform";
             }
             else {
                 this._transform = 'transform';
@@ -1792,8 +1794,7 @@ var platui;
         DrawerController.prototype._controllerIsValid = function (position) {
             var isNull = this.utils.isNull;
             if (isNull(this._drawerElement)) {
-                this._log.debug('Could not find a corresponding control such as "' + __Drawer +
-                    '" for this "' + this.type + '."');
+                this._log.debug("Could not find a corresponding control such as \"" + __Drawer + "\" for this \"" + this.type + ".\"");
                 return false;
             }
             switch (position) {
@@ -1805,23 +1806,20 @@ var platui;
                     this._position = position;
                     break;
                 default:
-                    this._log.debug('Incorrect position: "' + position +
-                        '" defined for the a control such as "' +
-                        __Drawer + '", or "' + this.type + '."');
+                    this._log.debug("Incorrect position: \"" + position + "\" defined for the a control such as a \"" + __Drawer + "\", or \"" + this.type + ".\"");
                     return false;
             }
             var rootElement = this._rootElement = this._getRootElement();
             if (isNull(rootElement)) {
-                this._log.debug('Cannot have a "' + this.type +
-                    '" in a hierarchy above the corresponding control such as "' + __Drawer + '."');
+                this._log.debug("Cannot have a \"" + this.type + "\" in a hierarchy above the corresponding control such as \"" + __Drawer + ".\"");
                 return false;
             }
             var dom = this.dom;
-            dom.addClass(rootElement, __Drawer + '-root');
-            dom.addClass(this.element, (this._isVertical ? __Plat + 'vertical' : __Plat + 'horizontal'));
-            this._directionalTransitionPrep = __Drawer + '-transition-' + position;
+            dom.addClass(rootElement, __Drawer + "-root");
+            dom.addClass(this.element, (this._isVertical ? __Plat + "vertical" : __Plat + "horizontal"));
+            this._directionalTransitionPrep = __Drawer + "-transition-" + position;
             this._clickEater = this._document.createElement('div');
-            this._clickEater.className = __Plat + 'clickeater';
+            this._clickEater.className = __Plat + "clickeater";
             return true;
         };
         /**
@@ -1938,7 +1936,7 @@ var platui;
          * the control's element if not specified.
          */
         Modal.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Modal + ' ' + __Hide + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Modal + " " + __Hide + " " + (className || ''));
         };
         /**
          * Check for templateUrl and set if needed then hide the control.
@@ -1952,8 +1950,8 @@ var platui;
          * Add the innerTemplate to the control's element.
          */
         Modal.prototype.setTemplate = function () {
-            var _utils = this.utils, modalContainer;
-            if (_utils.isString(this.templateUrl)) {
+            var utils = this.utils, modalContainer;
+            if (utils.isString(this.templateUrl)) {
                 var dom = this.dom, fragment = dom.serializeHtml(this.templateString), element = this.element;
                 modalContainer = this._container = fragment.firstChild;
                 this.innerTemplate = dom.appendChildren(element.childNodes);
@@ -1969,21 +1967,20 @@ var platui;
             this._container = this._container || this.element.firstElementChild;
             this._injectElement();
             if (!this.utils.isString(transition) || transition === 'none') {
-                this.dom.addClass(this._container, __Plat + 'no-transition');
+                this.dom.addClass(this._container, __Plat + "no-transition");
                 return;
             }
             else if (!this._transitionHash[transition]) {
-                this._log.debug('Custom transition: "' + transition + '" defined for "' + this.type +
-                    '." Please ensure the transition is defined to avoid errors.');
+                this._log.debug("Custom transition: \"" + transition + "\" defined for \"" + this.type + ".\" Please ensure the transition is defined to avoid errors.");
             }
             var animationEvents = this._compat.animationEvents;
             if (this.utils.isNull(animationEvents)) {
                 this._log.debug('This browser does not support CSS3 animations.');
-                this.dom.addClass(this._container, __Plat + 'no-transition');
+                this.dom.addClass(this._container, __Plat + "no-transition");
                 return;
             }
             this._transitionEnd = animationEvents.$transitionEnd;
-            this.dom.addClass(this._container, __Plat + transition + ' ' + __Plat + 'modal-transition');
+            this.dom.addClass(this._container, (__Plat + transition) + " " + __Plat + "modal-transition");
         };
         /**
          * Clean up the auto scroll.
@@ -2048,12 +2045,12 @@ var platui;
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
         Modal.prototype._setBoundProperty = function (modalState, oldValue, identifier, firstTime) {
-            var _utils = this.utils;
-            if (firstTime === true && _utils.isNull(modalState)) {
+            var utils = this.utils;
+            if (firstTime === true && utils.isNull(modalState)) {
                 this.inputChanged(this._isVisible);
                 return;
             }
-            if (_utils.isBoolean(modalState)) {
+            if (utils.isBoolean(modalState)) {
                 if (modalState) {
                     if (this._isVisible) {
                         return;
@@ -2066,8 +2063,7 @@ var platui;
                 }
                 return;
             }
-            this._log.debug('Attempting to show or hide a ' + this.type +
-                ' with a bound value that is something other than a boolean.');
+            this._log.debug("Attempting to show or hide a " + this.type + " with a bound value that is something other than a boolean.");
         };
         /**
          * Shows the Modal.
@@ -2085,7 +2081,7 @@ var platui;
                     dom.removeClass(_this.element, __Hide);
                     utils.defer(function () {
                         utils.requestAnimationFrame(function () {
-                            dom.addClass(_this._container, __Plat + 'activate');
+                            dom.addClass(_this._container, __Plat + "activate");
                             resolve();
                         });
                     }, 20);
@@ -2104,11 +2100,11 @@ var platui;
             }
             if (!isNull(ev)) {
                 utils.requestAnimationFrame(function () {
-                    _this.element.style.top = scrollTop + 'px';
+                    _this.element.style.top = scrollTop + "px";
                 });
             }
             else {
-                this.element.style.top = scrollTop + 'px';
+                this.element.style.top = scrollTop + "px";
                 this._scrollRemover = this.addEventListener(this._window, 'scroll', this._alignModal, false);
             }
             this._scrollTop = scrollTop;
@@ -2125,14 +2121,14 @@ var platui;
             if (utils.isString(this._transitionEnd)) {
                 promise = this._addHideOnTransitionEnd();
                 utils.requestAnimationFrame(function () {
-                    dom.removeClass(_this._container, __Plat + 'activate');
+                    dom.removeClass(_this._container, __Plat + "activate");
                 });
             }
             else {
                 promise = new this._Promise(function (resolve) {
                     utils.requestAnimationFrame(function () {
                         dom.addClass(_this.element, __Hide);
-                        dom.removeClass(_this._container, __Plat + 'activate');
+                        dom.removeClass(_this._container, __Plat + "activate");
                         resolve();
                     });
                 });
@@ -2231,7 +2227,7 @@ var platui;
          * the control's element if not specified.
          */
         Slider.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Slider + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Slider + " " + (className || ''));
         };
         /**
          * Set the proper classes for the control.
@@ -2253,7 +2249,7 @@ var platui;
             this.value = min;
             this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
             if (min >= max) {
-                this._log.debug('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                this._log.debug("\"" + this.type + "'s\" min is greater than or equal to its max. Setting max to min + 1.");
                 this.max = min + 1;
             }
             this._setLength();
@@ -2305,16 +2301,15 @@ var platui;
          * @param {boolean} propertyChanged Whether or not we need to fire a propertyChanged event.
          */
         Slider.prototype._setValue = function (value, propertyChanged) {
-            var _utils = this.utils;
+            var utils = this.utils;
             if (this._touchState === 1) {
-                this._log.debug('Cannot set the value of ' + this.type +
-                    ' while the user is manipulating it.');
+                this._log.debug("Cannot set the value of " + this.type + " while the user is manipulating it.");
                 return;
             }
-            else if (_utils.isNull(value)) {
+            else if (utils.isNull(value)) {
                 value = this.min;
             }
-            else if (!_utils.isNumber(value)) {
+            else if (!utils.isNumber(value)) {
                 return;
             }
             this._setValueProperty(value, true, propertyChanged);
@@ -2326,12 +2321,12 @@ var platui;
             var _this = this;
             var element = this.element, trackFn = this._track, touchEnd = this._touchEnd, track, reverseTrack;
             if (this._isVertical) {
-                track = __$track + 'down';
-                reverseTrack = __$track + 'up';
+                track = __$track + "down";
+                reverseTrack = __$track + "up";
             }
             else {
-                track = __$track + 'right';
-                reverseTrack = __$track + 'left';
+                track = __$track + "right";
+                reverseTrack = __$track + "left";
             }
             this.addEventListener(element, __$touchstart, this._touchStart, false);
             this.addEventListener(element, track, trackFn, false);
@@ -2458,7 +2453,7 @@ var platui;
                 value = this._calculateValue(position);
             }
             this._setValueProperty(value, false, true);
-            this._slider.style[this._lengthProperty] = position + 'px';
+            this._slider.style[this._lengthProperty] = position + "px";
             return position;
         };
         /**
@@ -2567,7 +2562,7 @@ var platui;
                 if (length === _this._knobOffset) {
                     return;
                 }
-                animationOptions[_this._lengthProperty] = length + 'px';
+                animationOptions[_this._lengthProperty] = length + "px";
                 _this._animator.animate(_this._slider, __Transition, {
                     properties: animationOptions
                 });
@@ -2601,7 +2596,7 @@ var platui;
                 this._isVertical = true;
             }
             else {
-                ('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
+                this._log.debug("Invalid orientation \"" + orientation + "\" for " + this.type + ". Defaulting to \"horizontal.\"");
                 validOrientation = 'horizontal';
             }
             return validOrientation;
@@ -2654,7 +2649,7 @@ var platui;
          * the control's element if not specified.
          */
         Range.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Range + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Range + " " + (className || ''));
         };
         /**
          * Set the proper classes for the control.
@@ -2684,7 +2679,7 @@ var platui;
             this.upper = max;
             this._step = isNumber(step) ? (step > 0 ? Math.round(step) : 1) : 1;
             if (min >= max) {
-                this._log.debug('"' + this.type + '\'s" min is greater than or equal to its max. Setting max to min + 1.');
+                this._log.debug("\"" + this.type + "'s\" min is greater than or equal to its max. Setting max to min + 1.");
                 this.max = min + 1;
             }
             this._setPositionAndLength();
@@ -2753,18 +2748,17 @@ var platui;
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
          */
         Range.prototype._setLower = function (value, propertyChanged) {
-            var _utils = this.utils;
+            var utils = this.utils;
             if (this._touchState === 2) {
-                this._log.debug('Cannot set the value of the ' + this.type +
-                    '\'s lower knob while the user is manipulating it.');
+                this._log.debug("Cannot set the value of the " + this.type + "'s lower knob while the user is manipulating it.");
                 return;
             }
-            else if (_utils.isNull(value)) {
+            else if (utils.isNull(value)) {
                 value = this.min;
             }
-            if (!_utils.isNumber(value)) {
+            if (!utils.isNumber(value)) {
                 var numberVal = Number(value);
-                if (_utils.isNumber(numberVal)) {
+                if (utils.isNumber(numberVal)) {
                     value = numberVal;
                 }
                 else {
@@ -2780,18 +2774,17 @@ var platui;
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
          */
         Range.prototype._setUpper = function (value, propertyChanged) {
-            var _utils = this.utils;
+            var utils = this.utils;
             if (this._touchState === 3) {
-                this._log.debug('Cannot set the upper value of the ' + this.type +
-                    '\'s upper knob while the user is manipulating it.');
+                this._log.debug("Cannot set the value of the " + this.type + "'s upper knob while the user is manipulating it.");
                 return;
             }
-            else if (_utils.isNull(value)) {
+            else if (utils.isNull(value)) {
                 value = this.max;
             }
-            if (!_utils.isNumber(value)) {
+            if (!utils.isNumber(value)) {
                 var numberVal = Number(value);
-                if (_utils.isNumber(numberVal)) {
+                if (utils.isNumber(numberVal)) {
                     value = numberVal;
                 }
                 else {
@@ -2807,12 +2800,12 @@ var platui;
             var _this = this;
             var lowerKnob = this._lowerKnob, upperKnob = this._upperKnob, touchstart = this._touchStart, touchEnd = this._touchEnd, trackLower = this._trackLower, trackUpper = this._trackUpper, track, reverseTrack;
             if (this._isVertical) {
-                track = __$track + 'down';
-                reverseTrack = __$track + 'up';
+                track = __$track + "down";
+                reverseTrack = __$track + "up";
             }
             else {
-                track = __$track + 'right';
-                reverseTrack = __$track + 'left';
+                track = __$track + "right";
+                reverseTrack = __$track + "left";
             }
             this.addEventListener(lowerKnob, __$touchstart, touchstart, false);
             this.addEventListener(upperKnob, __$touchstart, touchstart, false);
@@ -3002,8 +2995,8 @@ var platui;
             var _this = this;
             this.utils.requestAnimationFrame(function () {
                 var style = _this._slider.style;
-                style[_this._positionProperty] = position + 'px';
-                style[_this._lengthProperty] = (_this._upperKnobOffset - position) + 'px';
+                style[_this._positionProperty] = position + "px";
+                style[_this._lengthProperty] = (_this._upperKnobOffset - position) + "px";
                 if (value === null) {
                     return;
                 }
@@ -3019,7 +3012,7 @@ var platui;
         Range.prototype._positionUpper = function (position, value) {
             var _this = this;
             this.utils.requestAnimationFrame(function () {
-                _this._slider.style[_this._lengthProperty] = (position - _this._lowerKnobOffset) + 'px';
+                _this._slider.style[_this._lengthProperty] = (position - _this._lowerKnobOffset) + "px";
                 if (value === null) {
                     return;
                 }
@@ -3036,7 +3029,7 @@ var platui;
             var _this = this;
             this.utils.requestAnimationFrame(function () {
                 var style = _this._slider.style;
-                style[_this._positionProperty] = position + 'px';
+                style[_this._positionProperty] = position + "px";
                 style[_this._lengthProperty] = '0px';
                 if (value === null) {
                     return;
@@ -3187,8 +3180,8 @@ var platui;
                 if (position === _this._lowerKnobOffset) {
                     return;
                 }
-                animationOptions[_this._positionProperty] = position + 'px';
-                animationOptions[_this._lengthProperty] = (upperOffset - position) + 'px';
+                animationOptions[_this._positionProperty] = position + "px";
+                animationOptions[_this._lengthProperty] = (upperOffset - position) + "px";
                 _this._animator.animate(_this._slider, __Transition, {
                     properties: animationOptions
                 });
@@ -3207,7 +3200,7 @@ var platui;
                 if (length === _this._upperKnobOffset) {
                     return;
                 }
-                animationOptions[_this._lengthProperty] = (length - _this._lowerKnobOffset) + 'px';
+                animationOptions[_this._lengthProperty] = (length - _this._lowerKnobOffset) + "px";
                 _this._animator.animate(_this._slider, __Transition, {
                     properties: animationOptions
                 });
@@ -3250,7 +3243,7 @@ var platui;
                 this._isVertical = true;
             }
             else {
-                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
+                this._log.debug("Invalid orientation \"" + orientation + "\" for " + this.type + ". Defaulting to \"horizontal.\"");
                 validOrientation = 'horizontal';
             }
             return validOrientation;
@@ -3282,7 +3275,7 @@ var platui;
          * the control's element if not specified.
          */
         Select.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Select + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Select + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -3334,7 +3327,7 @@ var platui;
          * the control's element if not specified.
          */
         Input.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Input + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Input + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -3346,7 +3339,7 @@ var platui;
          * Set all HTMLElement references and potential attribute controls.
          */
         Input.prototype.setTemplate = function () {
-            var element = this.element, image = this._imageElement = element.firstElementChild.firstElementChild, input = this._inputElement = image.nextElementSibling, attributes = this.attributes, keys = Object.keys(attributes), length = keys.length, controlInjectors = plat.dependency.injectors.control, hasPlaceholder = false, attrRegex = /plat-(?:control|hide|context)|class|style/, _utils = this.utils, isNull = _utils.isNull, delimit = _utils.delimit, isString = _utils.isString, key, name, value;
+            var element = this.element, image = this._imageElement = element.firstElementChild.firstElementChild, input = this._inputElement = image.nextElementSibling, attributes = this.attributes, keys = Object.keys(attributes), length = keys.length, controlInjectors = plat.dependency.injectors.control, hasPlaceholder = false, attrRegex = /plat-(?:control|hide|context)|class|style/, utils = this.utils, isNull = utils.isNull, delimit = utils.delimit, isString = utils.isString, key, name, value;
             for (var i = 0; i < length; ++i) {
                 key = keys[i];
                 name = delimit(key, '-');
@@ -3373,7 +3366,7 @@ var platui;
                 return;
             }
             var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!_utils.isEmpty(placeholder)) {
+            if (!utils.isEmpty(placeholder)) {
                 input.placeholder = placeholder;
             }
         };
@@ -3487,8 +3480,8 @@ var platui;
                 case 'email':
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._regex.validateEmail;
-                    this._actionHandler = this._checkEmail.bind(this);
-                    this._typeHandler = this._handleEmail;
+                    this._actionHandler = this._checkText.bind(this);
+                    this._typeHandler = this._erase;
                     break;
                 case 'password':
                     var hidePassword = this._handlePasswordHide;
@@ -3518,24 +3511,19 @@ var platui;
                     this.element.setAttribute(__Hide, '');
                     return;
                 case 'radio':
-                    this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Radio + ' instead.');
+                    this._log.debug(inputType + " is not supported by " + this.type + ". Please use a " + __Radio + " instead.");
                     return;
                 case 'checkbox':
-                    this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Checkbox + ' instead.');
+                    this._log.debug(inputType + " is not supported by " + this.type + ". Please use a " + __Checkbox + " instead.");
                     return;
                 case 'range':
-                    this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __Slider + ' instead.');
+                    this._log.debug(inputType + " is not supported by " + this.type + ". Please use a " + __Slider + " instead.");
                     return;
                 case 'file':
-                    this._log.debug(inputType + ' is not supported by ' + this.type +
-                        '. Please use a ' + __File + ' instead.');
+                    this._log.debug(inputType + " is not supported by " + this.type + ". Please use a " + __File + " instead.");
                     return;
                 default:
-                    this._log.debug(inputType + ' is not yet fully supported by ' + this.type +
-                        '. Defaulting to type="text".');
+                    this._log.debug(inputType + " is not yet fully supported by " + this.type + ". Defaulting to type=\"text\".");
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
@@ -3578,28 +3566,28 @@ var platui;
          */
         Input.prototype._addTextEventListener = function () {
             var _this = this;
-            var input = this._inputElement, _compat = this._compat, _utils = this.utils, composing = false, timeout, eventListener = function () {
+            var input = this._inputElement, compat = this._compat, utils = this.utils, composing = false, timeout, eventListener = function () {
                 if (composing) {
                     return;
                 }
                 _this._onInput();
             }, postponedEventListener = function () {
-                if (_utils.isFunction(timeout)) {
+                if (utils.isFunction(timeout)) {
                     return;
                 }
-                timeout = _utils.postpone(function () {
+                timeout = utils.postpone(function () {
                     eventListener();
                     timeout = null;
                 });
             };
-            if (_utils.isUndefined(_compat.ANDROID)) {
+            if (utils.isUndefined(compat.ANDROID)) {
                 this.addEventListener(input, 'compositionstart', function () { return (composing = true); }, false);
                 this.addEventListener(input, 'compositionend', function () {
                     composing = false;
                     eventListener();
                 }, false);
             }
-            if (_compat.hasEvent('input')) {
+            if (compat.hasEvent('input')) {
                 this.addEventListener(input, 'input', eventListener, false);
             }
             else {
@@ -3652,16 +3640,6 @@ var platui;
             inputElement.focus();
         };
         /**
-         * The action handler for the "email" type.
-         */
-        Input.prototype._handleEmail = function () {
-            var inputElement = this._inputElement, value = inputElement.value, char = this._typeChar;
-            inputElement.value = this.value = char === 'x' ? '' : value + char;
-            this.inputChanged(this.value, value);
-            this._checkEmail();
-            inputElement.focus();
-        };
-        /**
          * Checks the current state of the default action and handles accordingly.
          */
         Input.prototype._checkText = function () {
@@ -3697,60 +3675,6 @@ var platui;
             }
             else if (this.value !== '') {
                 this._typeChar = '?';
-            }
-            var newChar = this._typeChar;
-            if (char !== newChar) {
-                var actionElement = this._actionElement;
-                actionElement.textContent = newChar;
-                if (newChar === '') {
-                    actionElement.setAttribute(__Hide, '');
-                    return;
-                }
-                actionElement.removeAttribute(__Hide);
-            }
-        };
-        /**
-         * Checks the current state of the "email" action and handles accordingly.
-         */
-        Input.prototype._checkEmail = function () {
-            var value = this._inputElement.value, char = this._typeChar;
-            switch (char) {
-                case '@':
-                    if (value.indexOf('@') !== -1) {
-                        if (value.indexOf('.com') !== -1) {
-                            this._typeChar = 'x';
-                            break;
-                        }
-                        this._typeChar = '.com';
-                    }
-                    break;
-                case '.com':
-                    if (value.indexOf('@') === -1) {
-                        this._typeChar = '@';
-                    }
-                    else if (value.indexOf('.com') !== -1) {
-                        this._typeChar = 'x';
-                    }
-                    break;
-                case 'x':
-                    if (value === '') {
-                        this._typeChar = '';
-                    }
-                    else if (value.indexOf('@') === -1) {
-                        this._typeChar = '@';
-                    }
-                    else if (value.indexOf('.com') === -1) {
-                        this._typeChar = '.com';
-                    }
-                    break;
-                default:
-                    if (value === '') {
-                        this._typeChar = '';
-                    }
-                    else if (value.indexOf('@') === -1) {
-                        this._typeChar = '@';
-                    }
-                    break;
             }
             var newChar = this._typeChar;
             if (char !== newChar) {
@@ -3842,7 +3766,7 @@ var platui;
          * the control's element if not specified.
          */
         File.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __File + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __File + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -3854,7 +3778,7 @@ var platui;
          * Set all HTMLElement references and potential attribute controls.
          */
         File.prototype.setTemplate = function () {
-            var element = this.element, hiddenInput = this._hiddenInput = element.firstElementChild.firstElementChild, visibleInput = this._visibleInput = hiddenInput.nextElementSibling, buttonInput = visibleInput.nextElementSibling, attributes = this.attributes, keys = Object.keys(attributes), length = keys.length, controlInjectors = plat.dependency.injectors.control, attrRegex = /plat-(?:control|hide|context)|class|style/, hasMultiple = false, _utils = this.utils, isNull = _utils.isNull, delimit = _utils.delimit, isString = _utils.isString, key, name, value;
+            var element = this.element, hiddenInput = this._hiddenInput = element.firstElementChild.firstElementChild, visibleInput = this._visibleInput = hiddenInput.nextElementSibling, buttonInput = visibleInput.nextElementSibling, attributes = this.attributes, keys = Object.keys(attributes), length = keys.length, controlInjectors = plat.dependency.injectors.control, attrRegex = /plat-(?:control|hide|context)|class|style/, hasMultiple = false, utils = this.utils, isNull = utils.isNull, delimit = utils.delimit, isString = utils.isString, key, name, value;
             for (var i = 0; i < length; ++i) {
                 key = keys[i];
                 name = delimit(key, '-');
@@ -3889,7 +3813,7 @@ var platui;
                 return;
             }
             var buttonText = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (_utils.isEmpty(buttonText)) {
+            if (utils.isEmpty(buttonText)) {
                 buttonInput.textContent = hasMultiple ? 'Select files' : 'Select a file';
                 return;
             }
@@ -4162,7 +4086,7 @@ var platui;
          * the control's element if not specified.
          */
         Carousel.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Carousel + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Carousel + " " + (className || ''));
         };
         /**
          * Checks if the control has been initialized, otherwise it does so.
@@ -4176,7 +4100,7 @@ var platui;
                     this._setListener();
                 }
                 else {
-                    this._log.debug(this.type + ' context set to something other than an Array.');
+                    this._log.debug(this.type + " context set to something other than an Array.");
                     newValue = [];
                 }
                 this._executeEvent([{
@@ -4199,7 +4123,7 @@ var platui;
          */
         Carousel.prototype.setTemplate = function () {
             var itemContainer = this._document.createElement('div');
-            itemContainer.className = __Carousel + '-item';
+            itemContainer.className = __Carousel + "-item";
             itemContainer.appendChild(this.innerTemplate);
             this.bindableTemplates.add('item', itemContainer);
         };
@@ -4210,7 +4134,7 @@ var platui;
             var _this = this;
             var utils = this.utils, context = this.context;
             if (!utils.isArray(context)) {
-                this._log.warn('The context of a ' + this.type + ' must be an Array.');
+                this._log.warn("The context of a " + this.type + " must be an Array.");
                 return;
             }
             // since we're extending the ForEach, we must set this animate to false as it refers to item manipulation. 
@@ -4341,7 +4265,7 @@ var platui;
             else if (!utils.isNumber(index)) {
                 index = Number(index);
                 if (!utils.isNumber(index)) {
-                    this._log.debug(this.type + ' has it\'s index bound to a property that cannot be interpreted as a Number.');
+                    this._log.debug(this.type + " has it's index bound to a property that cannot be interpreted as a Number.");
                     return;
                 }
             }
@@ -4798,7 +4722,7 @@ var platui;
                 }
                 _this._onLoad();
             }).catch(function () {
-                _this._log.debug('An error occurred while processing the ' + _this.type + '. Please ensure you\'re context is correct.');
+                _this._log.debug("An error occurred while processing the " + _this.type + ". Please ensure you're context is correct.");
                 _this._loaded = false;
                 return;
             });
@@ -4936,15 +4860,15 @@ var platui;
         Carousel.prototype._createArrowElements = function () {
             var _document = this._document, viewport = this._viewport, backArrowContainer = this._backArrow = _document.createElement('div'), forwardArrowContainer = this._forwardArrow = _document.createElement('div'), backArrow = _document.createElement('span'), forwardArrow = _document.createElement('span');
             if (this._isVertical) {
-                backArrow.className = __Plat + 'icon-arrow-up';
-                forwardArrow.className = __Plat + 'icon-arrow-down';
+                backArrow.className = __Plat + "icon-arrow-up";
+                forwardArrow.className = __Plat + "icon-arrow-down";
             }
             else {
-                backArrow.className = __Plat + 'icon-arrow-left';
-                forwardArrow.className = __Plat + 'icon-arrow-right';
+                backArrow.className = __Plat + "icon-arrow-left";
+                forwardArrow.className = __Plat + "icon-arrow-right";
             }
-            backArrowContainer.className = __Plat + 'back-arrow';
-            forwardArrowContainer.className = __Plat + 'forward-arrow';
+            backArrowContainer.className = __Plat + "back-arrow";
+            forwardArrowContainer.className = __Plat + "forward-arrow";
             backArrowContainer.appendChild(backArrow);
             forwardArrowContainer.appendChild(forwardArrow);
             viewport.appendChild(backArrowContainer);
@@ -4983,12 +4907,12 @@ var platui;
         Carousel.prototype._initializeSwipe = function () {
             var container = this._viewport, swipeFn = this._handleSwipe, swipe, reverseSwipe;
             if (this._isVertical) {
-                swipe = __$swipe + 'up';
-                reverseSwipe = __$swipe + 'down';
+                swipe = __$swipe + "up";
+                reverseSwipe = __$swipe + "down";
             }
             else {
-                swipe = __$swipe + 'left';
-                reverseSwipe = __$swipe + 'right';
+                swipe = __$swipe + "left";
+                reverseSwipe = __$swipe + "right";
             }
             var removeListeners = this._removeListeners;
             removeListeners.push(this.addEventListener(container, swipe, swipeFn, false));
@@ -5000,12 +4924,12 @@ var platui;
         Carousel.prototype._initializeTrack = function () {
             var viewport = this._viewport, trackFn = this._track, touchEnd = this._touchEnd, track, reverseTrack;
             if (this._isVertical) {
-                track = __$track + 'up';
-                reverseTrack = __$track + 'down';
+                track = __$track + "up";
+                reverseTrack = __$track + "down";
             }
             else {
-                track = __$track + 'left';
-                reverseTrack = __$track + 'right';
+                track = __$track + "left";
+                reverseTrack = __$track + "right";
             }
             var removeListeners = this._removeListeners;
             removeListeners.push(this.addEventListener(viewport, track, trackFn, false));
@@ -5143,8 +5067,8 @@ var platui;
          * @param {number} interval The interval change.
          */
         Carousel.prototype._calculateStaticTranslation = function (interval) {
-            return this._isVertical ? 'translate3d(0,' + (this._currentOffset += interval) + 'px,0)' :
-                'translate3d(' + (this._currentOffset += interval) + 'px,0,0)';
+            return this._isVertical ? "translate3d(0," + (this._currentOffset += interval) + "px,0)" :
+                "translate3d(" + (this._currentOffset += interval) + "px,0,0)";
         };
         /**
          * Calculates the translation value for setting the transform value during tracking.
@@ -5158,14 +5082,14 @@ var platui;
                     this._touchEnd(ev);
                     return null;
                 }
-                return 'translate3d(0,' + (this._currentOffset + offset) + 'px,0)';
+                return "translate3d(0," + (this._currentOffset + offset) + "px,0)";
             }
             offset = ev.clientX - this._lastTouch.x;
             if (Math.abs(offset) > this._getLength()) {
                 this._touchEnd(ev);
                 return null;
             }
-            return 'translate3d(' + (this._currentOffset + offset) + 'px,0,0)';
+            return "translate3d(" + (this._currentOffset + offset) + "px,0,0)";
         };
         /**
          * Obtains the current browser's transform property value.
@@ -5173,11 +5097,11 @@ var platui;
         Carousel.prototype._setTransform = function () {
             var style = this._container.style, isUndefined = this.utils.isUndefined;
             var vendorPrefix = this._compat.vendorPrefix;
-            if (!isUndefined(style[(vendorPrefix.lowerCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
+            if (!isUndefined(style[(vendorPrefix.lowerCase + "Transform")])) {
+                this._transform = vendorPrefix.lowerCase + "Transform";
             }
-            else if (!isUndefined(style[(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.upperCase + 'Transform';
+            else if (!isUndefined(style[(vendorPrefix.upperCase + "Transform")])) {
+                this._transform = vendorPrefix.upperCase + "Transform";
             }
             else {
                 this._transform = 'transform';
@@ -5207,7 +5131,7 @@ var platui;
                 this._isVertical = true;
             }
             else {
-                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "horizontal."');
+                this._log.debug("Invalid orientation \"" + orientation + "\" for " + this.type + ". Defaulting to \"horizontal.\"");
                 validOrientation = 'horizontal';
             }
             return validOrientation;
@@ -5219,6 +5143,7 @@ var platui;
         Carousel.prototype._appendItems = function (items) {
             this._itemNodes = this._itemNodes.concat(items);
             if (this._loaded) {
+                var index = this._index;
                 // if no remove listeners exist we know that we had previously removed them. 
                 if (this._removeListeners.length === 0) {
                     this._addEventListeners();
@@ -5226,7 +5151,6 @@ var platui;
                     this.inputChanged(0, index);
                     return;
                 }
-                var index = this._index;
                 if (index >= this._itemNodes.length - 2) {
                     this._initializeIndex(index);
                 }
@@ -5374,7 +5298,7 @@ var platui;
          * the control's element if not specified.
          */
         Listview.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Listview + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Listview + " " + (className || ''));
         };
         /**
          * Check for templateUrl and set if needed.
@@ -5406,7 +5330,7 @@ var platui;
                 this._setListener();
             }
             else {
-                this._log.debug(this.type + ' context set to something other than an Array.');
+                this._log.debug(this.type + " context set to something other than an Array.");
                 newValue = [];
             }
             this._executeEvent([{
@@ -5422,9 +5346,9 @@ var platui;
             this._container = scrollContainer.firstElementChild;
             this._ie = utils.isNumber(this._compat.IE);
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
-                (animate ? (' ' + __Plat + 'animated') : ''));
+                (animate ? (" " + __Plat + "animated") : ''));
             if (!isString(itemTemplate)) {
-                this._log.debug('No item template or item template selector specified for ' + this.type + '.');
+                this._log.debug("No item template or item template selector specified for " + this.type + ".");
                 return;
             }
             var normalizedItemTemplate = this._normalizeTemplateName(itemTemplate), headerTemplate = options.headerTemplate, normalizedGroupTemplate = isString(headerTemplate) ? this._normalizeTemplateName(headerTemplate) : null;
@@ -5447,8 +5371,7 @@ var platui;
                     this._determineLoading(requestItems, options.infiniteProgress !== false);
                 }
                 else {
-                    this._log.debug(this.type + ' loading type specified as "' + loading +
-                        '" but no option specifying an onItemsRequested handler.');
+                    this._log.debug(this.type + " loading type specified as \"" + loading + "\" but no option specifying an onItemsRequested handler.");
                 }
             }
             if (isString(refresh)) {
@@ -5458,7 +5381,7 @@ var platui;
             this._initializeTracking(isLoading, isRefreshing);
             if (!utils.isArray(this.context)) {
                 if (!utils.isNull(this.context)) {
-                    this._log.debug(this.type + '\'s context must be an Array.');
+                    this._log.debug(this.type + "'s context must be an Array.");
                 }
                 return;
             }
@@ -5550,7 +5473,7 @@ var platui;
             var utils = this.utils, bindableTemplates = this.bindableTemplates, templates = this._templates, template;
             if (utils.isString(headerTemplate)) {
                 this._isGrouped = true;
-                this.dom.addClass(this._container, __Plat + 'grouped');
+                this.dom.addClass(this._container, __Plat + "grouped");
                 template = templates[headerTemplate];
                 if (utils.isNode(template)) {
                     this._headerTemplate = headerTemplate;
@@ -5558,8 +5481,7 @@ var platui;
                     delete templates[headerTemplate];
                 }
                 else {
-                    this._log.debug(__Listview + ' group header template "' + headerTemplate +
-                        '" was not a template defined in the DOM.');
+                    this._log.debug(__Listview + " group header template \"" + headerTemplate + "\" was not a template defined in the DOM.");
                 }
                 this._headerTemplatePromise = this._createGroupTemplate();
             }
@@ -5572,8 +5494,7 @@ var platui;
             }
             var controlProperty = this.findProperty(itemTemplate) || {};
             if (!utils.isFunction(controlProperty.value)) {
-                this._log.debug(__Listview + ' item template "' + itemTemplate +
-                    '" was neither a template defined in the DOM nor a template selector function in its control hiearchy.');
+                this._log.debug(__Listview + " item template \"" + itemTemplate + "\" was neither a template defined in the DOM nor a template selector function in its control hiearchy.");
                 return;
             }
             this._templateSelector = controlProperty.value.bind(controlProperty.control);
@@ -5590,9 +5511,9 @@ var platui;
          */
         Listview.prototype._createGroupTemplate = function () {
             var _this = this;
-            var _document = this._document, bindableTemplates = this.bindableTemplates, headerTemplate = this._headerTemplate, listviewGroup = __Listview + '-group', group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
+            var _document = this._document, bindableTemplates = this.bindableTemplates, headerTemplate = this._headerTemplate, listviewGroup = __Listview + "-group", group = _document.createElement('div'), itemContainer = _document.createElement('div'), headerPromise;
             group.className = listviewGroup;
-            itemContainer.className = __Listview + '-items';
+            itemContainer.className = __Listview + "-items";
             if (this.utils.isString(headerTemplate)) {
                 headerPromise = bindableTemplates.templates[headerTemplate].then(function (headerTemplate) {
                     group.insertBefore(headerTemplate.cloneNode(true), null);
@@ -5602,7 +5523,7 @@ var platui;
                 group.insertBefore(itemContainer, null);
                 bindableTemplates.add(listviewGroup, group);
             }).then(null, function (error) {
-                _this._log.debug(_this.type + ' error: ' + error);
+                _this._log.debug(_this.type + " error: " + error);
             });
         };
         /**
@@ -5685,7 +5606,7 @@ var platui;
          * @param {number} index The index of the group in context.
          */
         Listview.prototype._bindGroup = function (index) {
-            return this.bindableTemplates.bind(__Listview + '-group', index, this._getAliases(this.context, index));
+            return this.bindableTemplates.bind(__Listview + "-group", index, this._getAliases(this.context, index));
         };
         /**
          * Creates a specified number of items.
@@ -5702,12 +5623,12 @@ var platui;
                     this._headerTemplatePromise.then(function () {
                         _this._addGroups(count, index, animateItems);
                     }).then(null, function (error) {
-                        _this._log.debug(_this.type + ' error: ' + error);
+                        _this._log.debug(_this.type + " error: " + error);
                     });
                     return;
                 }
             }
-            var addQueue = opGroup.addQueue, postLoad = function () {
+            var addQueue = opGroup.addQueue, addPromise, postLoad = function () {
                 var indexOf = addQueue.indexOf(addPromise);
                 if (indexOf !== -1) {
                     addQueue.splice(indexOf, 1);
@@ -5726,7 +5647,7 @@ var platui;
                     _this._setItemContainerWidth(itemContainer);
                 });
             }, onError = function (error) {
-                _this._log.debug(_this.type + ' error: ' + (utils.isString(error.message) ? error.message : error));
+                _this._log.debug(_this.type + " error: " + (utils.isString(error.message) ? error.message : error));
             };
             if (utils.isFunction(this._templateSelector)) {
                 var promises = [];
@@ -5750,7 +5671,7 @@ var platui;
             }
             this._disposeFromIndex(index, opGroup);
             opGroup.itemCount += count;
-            var addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
+            addPromise = this._addItems(index, count, opGroup, animateItems).then(postLoad, onError);
             addQueue.push(addPromise);
         };
         /**
@@ -5778,8 +5699,8 @@ var platui;
             if (promises.length > 0) {
                 this.itemsLoaded = this._Promise.all(promises).then(function (templates) {
                     if (animateItems > 0) {
-                        var length = templates.length;
-                        for (var i = 0; i < length; ++i) {
+                        var length_1 = templates.length;
+                        for (var i = 0; i < length_1; ++i) {
                             if (i < animateItems) {
                                 _this._appendAnimatedItem(templates[i], opGroup);
                             }
@@ -5819,7 +5740,7 @@ var platui;
                 context = this.context;
             }
             else {
-                identifier = 'items.' + index;
+                identifier = "items." + index;
                 context = control.context.items;
                 groupName = opGroup.name;
             }
@@ -5842,7 +5763,7 @@ var platui;
                     return bindableTemplates.bind(key, identifier, _this._getAliases(context, index));
                 }
                 else {
-                    _this._log.debug(_this.type + ' template "' + selectedTemplate + '" was not found.');
+                    _this._log.debug(_this.type + " template \"" + selectedTemplate + "\" was not found.");
                     if (controlExists) {
                         _this._TemplateControlFactory.dispose(controls[index]);
                     }
@@ -6006,8 +5927,7 @@ var platui;
             var _this = this;
             var controlProperty = this.findProperty(requestItems) || {};
             if (!this.utils.isFunction(controlProperty.value)) {
-                this._log.debug(__Listview + ' onItemsRequested function "' + requestItems +
-                    '" was not found.');
+                this._log.debug(__Listview + " onItemsRequested function \"" + requestItems + "\" was not found.");
                 return;
             }
             this._requestItems = controlProperty.value.bind(controlProperty.control);
@@ -6031,7 +5951,7 @@ var platui;
                     };
                     if (showRing) {
                         progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                        progressRingContainer.className = __Plat + 'infinite';
+                        progressRingContainer.className = __Plat + "infinite";
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
                     this.itemsLoaded.then(function () {
@@ -6040,7 +5960,7 @@ var platui;
                     break;
                 case 'incremental':
                     progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
-                    progressRingContainer.className = __Plat + 'incremental';
+                    progressRingContainer.className = __Plat + "incremental";
                     progressRingContainer.setAttribute(__Hide, '');
                     progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     this.element.insertBefore(progressRingContainer, null);
@@ -6111,13 +6031,12 @@ var platui;
         Listview.prototype._initializeRefresh = function (refresh) {
             var controlProperty = this.findProperty(refresh) || {};
             if (!this.utils.isFunction(controlProperty.value)) {
-                this._log.debug(__Listview + ' onRefresh function "' + refresh +
-                    '" was not found.');
+                this._log.debug(__Listview + " onRefresh function \"" + refresh + "\" was not found.");
                 return;
             }
             this._refresh = controlProperty.value.bind(controlProperty.control);
             var progressRingContainer = this._refreshProgressRing = this._document.createElement('div');
-            progressRingContainer.className = __Plat + 'refresh';
+            progressRingContainer.className = __Plat + "refresh";
             progressRingContainer.setAttribute(__Hide, '');
             progressRingContainer.insertBefore(this._generateProgressRing(), null);
             this.element.insertBefore(progressRingContainer, null);
@@ -6134,12 +6053,12 @@ var platui;
             this._setTransform();
             var track, reverseTrack;
             if (this._isVertical) {
-                track = __$track + 'down';
-                reverseTrack = __$track + 'up';
+                track = __$track + "down";
+                reverseTrack = __$track + "up";
             }
             else {
-                track = __$track + 'right';
-                reverseTrack = __$track + 'left';
+                track = __$track + "right";
+                reverseTrack = __$track + "left";
             }
             var viewport = this._viewport, touchEnd, trackFn;
             this.addEventListener(viewport, __$touchstart, this._touchStart, false);
@@ -6258,11 +6177,11 @@ var platui;
                 var offset;
                 if (this._isVertical) {
                     offset = refreshing ? progressRing.offsetHeight : -progressRing.offsetHeight;
-                    nextTranslation = 'translate3d(0,' + offset + 'px,0)';
+                    nextTranslation = "translate3d(0," + offset + "px,0)";
                 }
                 else {
                     offset = refreshing ? progressRing.offsetWidth : -progressRing.offsetWidth;
-                    nextTranslation = 'translate3d(' + offset + 'px,0,0)';
+                    nextTranslation = "translate3d(" + offset + "px,0,0)";
                 }
             }
             else {
@@ -6278,7 +6197,7 @@ var platui;
                 if (isActionState) {
                     return _this._Promise.resolve(refreshing ? _this._refresh() : _this._requestItems());
                 }
-                dom.removeClass(viewport, __Plat + 'manipulation-prep');
+                dom.removeClass(viewport, __Plat + "manipulation-prep");
                 progressRing.setAttribute(__Hide, '');
                 return _this._Promise.resolve();
             }).then(function () {
@@ -6286,19 +6205,19 @@ var platui;
                     _this._touchState = 0;
                     return;
                 }
-                dom.removeClass(progressRing, __Plat + 'play');
+                dom.removeClass(progressRing, __Plat + "play");
                 animationOptions[_this._transform] = _this._preTransform;
                 return _this._touchAnimationThenable = _this._animator.animate(viewport, __Transition, {
                     properties: animationOptions
                 }).then(function () {
                     _this._touchState = 0;
                     _this._touchAnimationThenable = null;
-                    dom.removeClass(viewport, __Plat + 'manipulation-prep');
+                    dom.removeClass(viewport, __Plat + "manipulation-prep");
                     progressRing.setAttribute(__Hide, '');
                 });
             }).then(null, function (error) {
                 _this._touchState = 0;
-                _this._log.debug(_this.type + 'error: ' + error);
+                _this._log.debug(_this.type + " error: " + error);
             });
         };
         /**
@@ -6390,23 +6309,23 @@ var platui;
             }
             else if (!this._hasMoved) {
                 this._hasMoved = true;
-                this.dom.addClass(this._viewport, __Plat + 'manipulation-prep');
+                this.dom.addClass(this._viewport, __Plat + "manipulation-prep");
                 progressRing.removeAttribute(__Hide);
             }
             else if (Math.abs(diff) >= threshold) {
                 if (this._touchState < 3) {
                     this._touchState = 3;
-                    this.dom.addClass(progressRing, __Plat + 'play');
+                    this.dom.addClass(progressRing, __Plat + "play");
                 }
             }
             else if (this._touchState === 3) {
                 this._touchState = 2;
-                this.dom.removeClass(progressRing, __Plat + 'play');
+                this.dom.removeClass(progressRing, __Plat + "play");
             }
             if (isVertical) {
-                return 'translate3d(0,' + diff + 'px,0)';
+                return "translate3d(0," + diff + "px,0)";
             }
-            return 'translate3d(' + diff + 'px,0,0)';
+            return "translate3d(" + diff + "px,0,0)";
         };
         /**
          * Obtains the current browser's transform property value.
@@ -6414,11 +6333,11 @@ var platui;
         Listview.prototype._setTransform = function () {
             var style = this._viewport.style, isUndefined = this.utils.isUndefined;
             var vendorPrefix = this._compat.vendorPrefix;
-            if (!isUndefined(this._preTransform = style[(vendorPrefix.lowerCase + 'Transform')])) {
-                this._transform = vendorPrefix.lowerCase + 'Transform';
+            if (!isUndefined(this._preTransform = style[(vendorPrefix.lowerCase + "Transform")])) {
+                this._transform = vendorPrefix.lowerCase + "Transform";
             }
-            else if (!isUndefined(this._preTransform = style[(vendorPrefix.upperCase + 'Transform')])) {
-                this._transform = vendorPrefix.upperCase + 'Transform';
+            else if (!isUndefined(this._preTransform = style[(vendorPrefix.upperCase + "Transform")])) {
+                this._transform = vendorPrefix.upperCase + "Transform";
             }
             else {
                 this._preTransform = style.transform;
@@ -6440,7 +6359,7 @@ var platui;
                 templateName = this._normalizeTemplateName(childNode.nodeName);
                 if (validGroupTemplate && templateName === headerTemplate) {
                     container = _document.createElement('div');
-                    container.className = __Plat + 'header';
+                    container.className = __Plat + "header";
                 }
                 else {
                     container = _document.createDocumentFragment();
@@ -6455,7 +6374,7 @@ var platui;
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array mutation event information.
          */
         Listview.prototype._executeEvent = function (changes) {
-            var method = '_' + changes[0].type;
+            var method = "_" + changes[0].type;
             if (this.utils.isFunction(this[method])) {
                 this[method](changes);
             }
@@ -6466,7 +6385,7 @@ var platui;
          * @param {Array<plat.observable.IArrayChanges<any>>} changes The Array change information.
          */
         Listview.prototype._executeChildEvent = function (groupName, changes) {
-            var utils = this.utils, method = '_' + changes[0].type;
+            var utils = this.utils, method = "_" + changes[0].type;
             if (utils.isFunction(this[method])) {
                 var group = this._groups[groupName];
                 if (utils.isNull(group)) {
@@ -6692,10 +6611,7 @@ var platui;
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var container = group.itemContainer, animationQueue = group.animationQueue, animationCreation = this._animator.create(nodes, key), animation = {
-                animation: animationPromise,
-                op: null
-            }, animationPromise = animationCreation.current.then(function () {
+            var container = group.itemContainer, animationQueue = group.animationQueue, animationCreation = this._animator.create(nodes, key), animation, animationPromise = animationCreation.current.then(function () {
                 var index = animationQueue.indexOf(animation);
                 if (index === -1) {
                     return;
@@ -6706,6 +6622,10 @@ var platui;
                     animationPromise.start();
                 });
                 return animationPromise;
+            };
+            animation = {
+                animation: animationPromise,
+                op: null
             };
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
@@ -6725,13 +6645,14 @@ var platui;
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var container = group.itemContainer, animationQueue = group.animationQueue, animationPromise = this._animator.leave(nodes, key).then(function () {
+            var container = group.itemContainer, animationQueue = group.animationQueue, animation, animationPromise = this._animator.leave(nodes, key).then(function () {
                 var index = animationQueue.indexOf(animation);
                 if (index === -1) {
                     return;
                 }
                 animationQueue.splice(index, 1);
-            }), animation = {
+            });
+            animation = {
                 animation: animationPromise,
                 op: 'leave'
             };
@@ -6749,7 +6670,7 @@ var platui;
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
-            var container = group.itemContainer, clonedContainer = container.cloneNode(true), parentNode, animationQueue = group.animationQueue, isNull = this.utils.isNull, animationCreation = this._animator.create(nodes, key), animationPromise = animationCreation.current.then(function () {
+            var container = group.itemContainer, clonedContainer = container.cloneNode(true), parentNode, animationQueue = group.animationQueue, isNull = this.utils.isNull, animationCreation = this._animator.create(nodes, key), animation, animationPromise = animationCreation.current.then(function () {
                 var index = animationQueue.indexOf(animation);
                 if (index > -1) {
                     animationQueue.splice(index, 1);
@@ -6758,10 +6679,7 @@ var platui;
                     return;
                 }
                 parentNode.replaceChild(container, clonedContainer);
-            }), animation = {
-                animation: animationPromise,
-                op: 'clone'
-            }, callback = function () {
+            }), callback = function () {
                 parentNode = container.parentNode;
                 if (isNull(parentNode) || animationPromise.isCanceled()) {
                     return animationPromise;
@@ -6771,6 +6689,10 @@ var platui;
                     animationPromise.start();
                 });
                 return animationPromise;
+            };
+            animation = {
+                animation: animationPromise,
+                op: 'clone'
             };
             if (cancel && animationQueue.length > 0) {
                 var cancelPromise = this._cancelCurrentAnimations().then(callback);
@@ -6805,8 +6727,8 @@ var platui;
          */
         Listview.prototype._generateProgressRing = function () {
             var _document = this._document, control = _document.createElement('div'), ring = _document.createElement('div');
-            control.className = __Listview + '-ring ' + __Plat + 'ring ' + __Plat + 'ring-0';
-            ring.className = __Plat + 'animated-ring';
+            control.className = __Listview + "-ring " + __Plat + "ring " + __Plat + "ring-0";
+            ring.className = __Plat + "animated-ring";
             control.insertBefore(ring, null);
             return control;
         };
@@ -6828,7 +6750,7 @@ var platui;
                 this._isVertical = false;
             }
             else {
-                this._log.debug('Invalid orientation "' + orientation + '" for ' + this.type + '. Defaulting to "vertical."');
+                this._log.debug("Invalid orientation \"" + orientation + "\" for " + this.type + ". Defaulting to \"vertical.\"");
                 validOrientation = 'vertical';
             }
             return validOrientation;
@@ -6844,7 +6766,7 @@ var platui;
                 this._addVisibilityListener(this._setItemContainerWidth.bind(this, element), element);
                 return;
             }
-            element.style.width = width + 'px';
+            element.style.width = width + "px";
         };
         /**
          * Resets the width of a group's item container.
@@ -6874,7 +6796,7 @@ var platui;
                 }
             }
             // parent element minus header minus scrollbar (for IE) 
-            element.style.height = (parentHeight - headerHeight - (this._ie ? 17 : 0)) + 'px';
+            element.style.height = (parentHeight - headerHeight - (this._ie ? 17 : 0)) + "px";
         };
         /**
          * Adds a visibility listener and hides and shows element accordingly
@@ -6974,7 +6896,7 @@ var platui;
          * the control's element if not specified.
          */
         Navbar.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Navbar + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Navbar + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -7000,21 +6922,21 @@ var platui;
                     case 'left':
                         overrides.left = true;
                         newNode = doc.createElement('div');
-                        newNode.className = __Navbar + '-left';
+                        newNode.className = __Navbar + "-left";
                         newNode.setAttribute(__Context, 'left');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[0]);
                         break;
                     case 'center':
                         overrides.center = true;
                         newNode = doc.createElement('div');
-                        newNode.className = __Navbar + '-center';
+                        newNode.className = __Navbar + "-center";
                         newNode.setAttribute(__Context, 'center');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[1]);
                         break;
                     case 'right':
                         overrides.right = true;
                         newNode = doc.createElement('div');
-                        newNode.className = __Navbar + '-right';
+                        newNode.className = __Navbar + "-right";
                         newNode.setAttribute(__Context, 'right');
                         element.replaceChild(appendChildren(slice.call(childNode.childNodes), newNode), elementNodes[2]);
                         break;
@@ -7117,7 +7039,7 @@ var platui;
                 component.action(ev);
                 return;
             }
-            this._log.debug('An action function is not defined for the component ' + component + '.');
+            this._log.debug("An action function is not defined for the component " + component + ".");
         };
         Navbar._inject = {
             _document: __Document
@@ -7154,7 +7076,7 @@ var platui;
          * the control's element if not specified.
          */
         Image.prototype.setClasses = function (className, element) {
-            this.dom.addClass(element || this.element, __Image + ' ' + (className || ''));
+            this.dom.addClass(element || this.element, __Image + " " + (className || ''));
         };
         /**
          * Set the class name.
@@ -7180,7 +7102,7 @@ var platui;
                 this._isBackground = options.value.isBackground === true;
             }
             if (this._isBackground) {
-                this.dom.addClass(element, __Plat + 'background');
+                this.dom.addClass(element, __Plat + "background");
             }
             this._loader = element.firstElementChild;
             if (this._NodeManagerStatic.hasMarkup(url)) {
@@ -7195,13 +7117,13 @@ var platui;
          */
         Image.prototype._setSrc = function (url, oldUrl) {
             var _this = this;
-            var img = this._img, element = this.element, dom = this.dom, imageLoadClass = __Plat + 'load-image', loader = this._loader;
+            var img = this._img, element = this.element, dom = this.dom, imageLoadClass = __Plat + "load-image", loader = this._loader;
             dom.addClass(img, imageLoadClass);
             img.src = url;
             img.onload = function () {
                 _this.utils.requestAnimationFrame(function () {
                     if (_this._isBackground) {
-                        element.style.backgroundImage = 'url("' + url + '")';
+                        element.style.backgroundImage = "url(\"" + url + "\")";
                         if (element.contains(img)) {
                             element.removeChild(img);
                         }
@@ -7211,7 +7133,7 @@ var platui;
                         return;
                     }
                     // remove error class in case image decides to load 
-                    dom.removeClass(img, __Image + '-error ' + imageLoadClass);
+                    dom.removeClass(img, __Image + "-error " + imageLoadClass);
                     if (element.contains(loader)) {
                         element.removeChild(loader);
                     }
@@ -7219,7 +7141,7 @@ var platui;
             };
             img.onerror = function () {
                 _this.utils.requestAnimationFrame(function () {
-                    dom.addClass(element, __Image + '-error');
+                    dom.addClass(element, __Image + "-error");
                     if (element.contains(img)) {
                         element.removeChild(img);
                     }
