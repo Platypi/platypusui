@@ -12,8 +12,8 @@
 /// ======= Grid Styles ======== ///
 
     [class*='col-'],
-    [class*='col-']:after,
-    [class*='col-']:before {
+    [class*='col-']::after,
+    [class*='col-']::before {
 	    margin: 0;
 	    padding: 0;
         #platui > #mixins > .box-sizing(border-box);
@@ -29,7 +29,7 @@
 	    padding-right: @column-padding;
     }
 
-    .row:after {
+    .row::after {
 	    content: "";
 	    display: table;
 	    clear: both;

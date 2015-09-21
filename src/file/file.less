@@ -12,13 +12,14 @@
         .box-sizing(border-box);
         display: inline-block;
         height: @height;
+        width: @width;
         cursor: text;
 
         .plat-file-container {
             .box-sizing(border-box);
             height: 100%;
             margin: 0;
-            padding: 0;
+            padding: 0 @button-width 0 0;
             position: relative;
 
             .plat-file-hidden {
@@ -35,12 +36,9 @@
                 .border-top-right-radius(0px);
                 .border-bottom-right-radius(0px);
                 position: relative;
-                display: inline-block;
                 height: 100%;
-                width: @input-width;
-                left: 0;
-                bottom: 0;
-                padding: 0 0.25em;
+                width: 100%;
+                padding: 0 0.5em;
                 text-align: right;
                 background-color: @input-background-color;
                 color: @text-color;
@@ -68,16 +66,17 @@
                 .border-top-right-radius(@border-radius);
                 .border-bottom-right-radius(@border-radius);
                 .webkit-touch-additions();
-                position: relative;
-                display: inline-block;
+                position: absolute;
+                top: 0;
+                right: 0;
                 margin: 0;
                 height: 100%;
+                width: @button-width;
                 background-color: @button-background-color;
                 color: @button-color;
                 border: 0px solid @button-background-color;
                 outline: none;
                 font: inherit;
-                margin-left: -5px;
 
                 &:active {
                     background-color: darken(@button-background-color, 10%);

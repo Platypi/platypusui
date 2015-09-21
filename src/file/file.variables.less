@@ -15,7 +15,8 @@
     /// =============== File Sizes =============== ///
 
         @height: 2.5em;
-        @input-width: 10em;
+        @width: 16em;
+        @button-width: 6em;
         @border-radius: 4px;
 
     /// =========== Variable File Styles =========== ///
@@ -26,12 +27,14 @@
             & when (@prop = undefined), (@value = undefined) {
                 &.plat-file {
                     height: @height;
+                    width: @width;
 
                     .plat-file-container {
+                        padding-right: @button-width;
+
                         .plat-file-input {
                             .border-top-left-radius(@border-radius);
                             .border-bottom-left-radius(@border-radius);
-                            width: @input-width;
                             background-color: @input-background-color;
                             color: @text-color;
                             border-color: @input-border-color;
@@ -40,6 +43,7 @@
                         .plat-file-button {
                             .border-top-right-radius(@border-radius);
                             .border-bottom-right-radius(@border-radius);
+                            width: @button-width;
                             background-color: @button-background-color;
                             color: @button-color;
                             border-color: @button-background-color;
@@ -148,10 +152,17 @@
                     height: @value;
                 }
             }
-            & when (@prop = input-width) {
+            & when (@prop = width) {
+                &.plat-file {
+                    width: @value;
+                }
+            }
+            & when (@prop = button-width) {
                 &.plat-file {
                     .plat-file-container {
-                        .plat-file-input {
+                        padding-right: @value;
+
+                        .plat-file-button {
                             width: @value;
                         }
                     }
