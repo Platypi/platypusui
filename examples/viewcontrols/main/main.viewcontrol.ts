@@ -5,6 +5,7 @@ module app {
         title = 'Main';
         templateUrl = 'viewcontrols/main/main.viewcontrol.html';
         context = {
+            email: 'test@test.com',
             password: <string>null,
             test: <any>null,
             checks: {

@@ -105,21 +105,22 @@
             #platui > #__mixins > .vendor-loop(box-sizing; @args; @vendor-list);
         }
 
-        /// Background Size
+        /// Appearance
+        // only common values are none, button, checkbox, scrollbarbutton-up
 
-        .background-size(@args) {
+        .appearance(@args: none) {
             #platui > #variables;
-            .background-size(@args; @webkit-list);
+            .appearance(@args; @webkit-moz-list);
         }
-        .background-size(@args; @vendor-list) {
-            #platui > #__mixins > .vendor-loop(background-size; @args; @vendor-list);
+        .appearance(@args; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(appearance; @args; @vendor-list);
         }
 
         /// Backface Visibility
 
         .backface-visibility(@arg: visible) {
             #platui > #variables;
-            .background-size(@arg; @webkit-list);
+            .backface-visibility(@arg; @webkit-list);
         }
         .backface-visibility(@arg; @vendor-list) {
             #platui > #__mixins > .vendor-loop(backface-visibility; @arg; @vendor-list);
