@@ -1752,7 +1752,7 @@ module platui {
                         ready = false;
                         removeRequest = this.utils.requestAnimationFrame((): void => {
                             ready = true;
-                            this._handleScroll();
+                            this._onScroll();
                         });
                     }, false);
 
@@ -1768,7 +1768,7 @@ module platui {
                     }
 
                     this.itemsLoaded.then((): void => {
-                        this._handleScroll();
+                        this._onScroll();
                     });
                     break;
                 case 'incremental':
@@ -1916,7 +1916,7 @@ module platui {
 
             let track: string,
                 reverseTrack: string;
-                
+
             if (this._isVertical) {
                 track = `${__$track}down`;
                 reverseTrack = `${__$track}up`;
