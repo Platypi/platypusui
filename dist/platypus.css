@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.7.1 (https://platypi.io) 
+ * PlatypusUI v0.7.2 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1385,8 +1385,8 @@ h6 {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-background-size: hidden;
-  background-size: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   position: absolute;
   color: #ffffff;
   z-index: 0;
@@ -1419,8 +1419,8 @@ h6 {
   bottom: 0;
 }
 .plat-drawer-root {
-  -webkit-background-size: hidden;
-  background-size: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   -webkit-perspective: none;
   -moz-perspective: none;
   -ms-perspective: none;
@@ -1754,19 +1754,19 @@ h6 {
 [class*='col-'],
 [class*='col-']::after,
 [class*='col-']::before {
-  margin: 0;
-  padding: 0;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  margin: 0;
+}
+[class*='col-']::after,
+[class*='col-']::before {
+  padding: 0;
 }
 [class*='col-'] {
   position: relative;
   float: left;
-  padding: 5px;
-}
-[class*='col-']:last-of-type {
-  padding-right: 5px;
+  padding: 0px;
 }
 .row::after {
   content: "";
@@ -2695,21 +2695,36 @@ h6 {
   top: 0;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
-.plat-listview .plat-listview-viewport .plat-scroll-container .plat-container {
-  width: 100%;
-  height: 100%;
-  padding: 0;
+.plat-listview .plat-listview-viewport .plat-scroll-container .plat-listview-container {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: absolute;
+  left: 0;
+  top: 0;
   margin: 0;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+  padding: 0;
 }
-.plat-listview .plat-listview-viewport .plat-scroll-container .plat-container .plat-listview-group,
-.plat-listview .plat-listview-viewport .plat-scroll-container .plat-container .plat-listview-group .plat-header,
-.plat-listview .plat-listview-viewport .plat-scroll-container .plat-container .plat-listview-group .plat-listview-items {
+.plat-listview .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-listview-group {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  position: relative;
+}
+.plat-listview .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-listview-group .plat-header {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-height: 100%;
+}
+.plat-listview .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-listview-group .plat-listview-items {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  min-width: 1px;
 }
 .plat-listview .plat-listview-viewport.plat-manipulation-prep {
   -ms-touch-action: none;
@@ -2726,14 +2741,14 @@ h6 {
   position: absolute;
   z-index: 0;
 }
-.plat-listview .plat-refresh .plat-ring .plat-progress-container .plat-animated-ring,
-.plat-listview .plat-incremental .plat-ring .plat-progress-container .plat-animated-ring {
+.plat-listview .plat-refresh .plat-ring .plat-animated-ring,
+.plat-listview .plat-incremental .plat-ring .plat-animated-ring {
   -webkit-animation-play-state: paused;
   -moz-animation-play-state: paused;
   animation-play-state: paused;
 }
-.plat-listview .plat-refresh.plat-play .plat-ring .plat-progress-container .plat-animated-ring,
-.plat-listview .plat-incremental.plat-play .plat-ring .plat-progress-container .plat-animated-ring {
+.plat-listview .plat-refresh.plat-play .plat-ring .plat-animated-ring,
+.plat-listview .plat-incremental.plat-play .plat-ring .plat-animated-ring {
   -webkit-animation-play-state: running;
   -moz-animation-play-state: running;
   animation-play-state: running;
@@ -2743,12 +2758,16 @@ h6 {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
-.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite {
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container {
+  width: 100%;
+  height: auto;
+}
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite {
   height: 2.5em;
   width: 100%;
   position: relative;
 }
-.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite .plat-listview-ring {
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite .plat-listview-ring {
   position: absolute;
   -webkit-transform: translate(-50%, 0);
   -moz-transform: translate(-50%, 0);
@@ -2762,15 +2781,12 @@ h6 {
   margin-bottom: 0.25em;
   left: 50%;
 }
-.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite .plat-listview-ring.plat-ring {
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite .plat-listview-ring.plat-ring {
   width: 2em;
   height: 2em;
 }
-.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
   border-width: 0.2em;
-}
-.plat-listview.plat-vertical .plat-listview-viewport.plat-manipulation-prep .plat-scroll-container {
-  overflow: hidden;
 }
 .plat-listview.plat-vertical .plat-refresh,
 .plat-listview.plat-vertical .plat-incremental {
@@ -2808,20 +2824,35 @@ h6 {
 .plat-listview.plat-vertical .plat-incremental {
   bottom: 0;
 }
+.plat-listview.plat-vertical.plat-no-scroller {
+  height: auto;
+  overflow: unset;
+}
+.plat-listview.plat-vertical.plat-no-scroller .plat-listview-viewport {
+  height: auto;
+  overflow: unset;
+}
+.plat-listview.plat-vertical.plat-no-scroller .plat-listview-viewport .plat-scroll-container {
+  height: auto;
+  overflow-x: unset;
+  overflow-y: unset;
+  -webkit-overflow-scrolling: auto;
+}
 .plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container {
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 0px;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container {
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container {
   display: -webkit-box;
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  width: auto;
+  height: 100%;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped {
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container.plat-grouped {
   -webkit-box-direction: normal;
   -webkit-box-orient: horizontal;
   -webkit-flex-direction: row;
@@ -2838,7 +2869,7 @@ h6 {
   -ms-flex-align: stretch;
   align-items: stretch;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped .plat-listview-group {
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container.plat-grouped .plat-listview-group {
   -webkit-box-flex: 0 0 auto;
   -webkit-flex: 0 0 auto;
   -moz-box-flex: 0 0 auto;
@@ -2847,12 +2878,12 @@ h6 {
   flex: 0 0 auto;
   height: 100%;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped .plat-listview-group .plat-listview-items {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flexbox;
-  display: flex;
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container.plat-grouped .plat-listview-group .plat-listview-items {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -moz-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
   -webkit-box-direction: normal;
   -webkit-box-orient: vertical;
   -webkit-flex-direction: column;
@@ -2867,46 +2898,43 @@ h6 {
   -moz-align-content: flex-start;
   -ms-flex-line-pack: start;
   align-content: flex-start;
-  height: 100%;
-  min-width: 10px;
-}
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container.plat-grouped .plat-listview-group .plat-listview-items > * {
-  -webkit-box-flex: 0 0 auto;
-  -webkit-flex: 0 0 auto;
-  -moz-box-flex: 0 0 auto;
-  -moz-flex: 0 0 auto;
-  -ms-flex: 0 0 auto;
-  flex: 0 0 auto;
-}
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container:not(.plat-grouped) {
-  -webkit-box-direction: normal;
-  -webkit-box-orient: vertical;
-  -webkit-flex-direction: column;
-  -moz-flex-direction: column;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  -webkit-flex-wrap: wrap;
-  -moz-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-align-content: flex-start;
-  -moz-align-content: flex-start;
-  -ms-flex-line-pack: start;
-  align-content: flex-start;
-}
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container:not(.plat-grouped) > * {
-  -webkit-box-flex: 0 0 auto;
-  -webkit-flex: 0 0 auto;
-  -moz-box-flex: 0 0 auto;
-  -moz-flex: 0 0 auto;
-  -ms-flex: 0 0 auto;
-  flex: 0 0 auto;
-}
-.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-container .plat-infinite {
   position: relative;
+  height: 100%;
 }
-.plat-listview.plat-horizontal .plat-listview-viewport.plat-manipulation-prep .plat-scroll-container {
-  overflow: hidden;
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container.plat-grouped .plat-listview-group .plat-listview-items > * {
+  -webkit-box-flex: 0 0 auto;
+  -webkit-flex: 0 0 auto;
+  -moz-box-flex: 0 0 auto;
+  -moz-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container:not(.plat-grouped) {
+  -webkit-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-align-content: flex-start;
+  -moz-align-content: flex-start;
+  -ms-flex-line-pack: start;
+  align-content: flex-start;
+}
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container:not(.plat-grouped) > * {
+  -webkit-box-flex: 0 0 auto;
+  -webkit-flex: 0 0 auto;
+  -moz-box-flex: 0 0 auto;
+  -moz-flex: 0 0 auto;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+.plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite {
+  position: relative;
 }
 .plat-listview.plat-horizontal .plat-refresh,
 .plat-listview.plat-horizontal .plat-incremental {
@@ -2944,15 +2972,29 @@ h6 {
 .plat-listview.plat-horizontal .plat-incremental {
   right: 0;
 }
-.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-enter-init {
+.plat-listview.plat-horizontal.plat-no-scroller {
+  width: auto;
+  overflow: unset;
+}
+.plat-listview.plat-horizontal.plat-no-scroller .plat-listview-viewport {
+  width: auto;
+  overflow: unset;
+}
+.plat-listview.plat-horizontal.plat-no-scroller .plat-listview-viewport .plat-scroll-container {
+  width: auto;
+  overflow-y: unset;
+  overflow-x: unset;
+  -webkit-overflow-scrolling: auto;
+}
+.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-enter-init {
   opacity: 0;
 }
-.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-enter {
+.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-enter {
   -webkit-animation: LISTVIEW_ITEM_ENTER 300ms;
   -moz-animation: LISTVIEW_ITEM_ENTER 300ms;
   animation: LISTVIEW_ITEM_ENTER 300ms;
 }
-.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-container .plat-leave {
+.plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-leave {
   -webkit-animation: LISTVIEW_ITEM_LEAVE 300ms;
   -moz-animation: LISTVIEW_ITEM_LEAVE 300ms;
   animation: LISTVIEW_ITEM_LEAVE 300ms;
@@ -3022,8 +3064,8 @@ h6 {
   -ms-user-select: none;
   -khtml-user-select: none;
   user-select: none;
-  -webkit-background-size: hidden;
-  background-size: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   -webkit-perspective: none;
   -moz-perspective: none;
   -ms-perspective: none;
@@ -3043,8 +3085,8 @@ h6 {
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
-  -webkit-background-size: hidden;
-  background-size: hidden;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   -webkit-perspective: none;
   -moz-perspective: none;
   -ms-perspective: none;
@@ -4312,6 +4354,9 @@ h6 {
   -ms-user-select: none;
   -khtml-user-select: none;
   user-select: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   display: inline-block;
   color: #444444;
   background-color: transparent;
@@ -4323,13 +4368,10 @@ h6 {
   white-space: nowrap;
   font: inherit;
   border: 1px solid #e2e2e5;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-position: right 40%;
+  background-position: 95% 50%;
   background-repeat: no-repeat;
-  background-size: contain;
-  background-image: url(data:image/png;base64,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);
+  background-size: 0.7em;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAUCAYAAACeXl35AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAShJREFUeNq8lc0RgjAQhfOnXCkFbx61BDvQDvTo0QosQTvQDrQDPXrTDuSuEN9GcDIYQJH4ZnbYyUIe7AcLY38Wz46DP/nt82SJ0FwIL0F7I1b2E5IOQspIKNXqI6VJwtL7/Yh0iIiFVRuhGOs0bc2M9oJZjHRCZrRmG16okNxuOFO3Ymj2YmyGOOZrsnDOCRHizvpo7+9mWq+RLlxvaVE/8Sxys2ui5JrGPF3cPjFszNPFzVYVqCdPrT/mmd3gFum8btKUKUTswDKqM824UWd6rlbWtTSXYUFMqniiC2Rm2FeZfaMx7auCwBmccwI9bXvwrmguvpk9Z+XGx6QPzfep1MuMcqyds5oXRYir7HS07Hbzv0Dk+59mePriVqaNL25VPBtxewgwABxVrJXnt4pwAAAAAElFTkSuQmCC");
 }
 .plat-select::-ms-expand {
   display: none;

@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.7.1 (https://platypi.io)
+ * PlatypusUI v0.7.2 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1892,7 +1892,7 @@ var platui;
     var Modal = (function (_super) {
         __extends(Modal, _super);
         /**
-         * The constructor for a Listview. Creates the modalLoaded Promise.
+         * The constructor for a Modal. Creates the modalLoaded Promise.
          */
         function Modal() {
             var _this = this;
@@ -3543,14 +3543,12 @@ var platui;
         Input.prototype._addEventListeners = function (event) {
             var _this = this;
             var actionElement = this._actionElement, input = this._inputElement, actionEnd = function () { return (_this._inAction = false); };
+            actionElement.setAttribute(__Hide, '');
             this.addEventListener(actionElement, event, this._typeHandler, false);
             this.addEventListener(actionElement, __$touchstart, function () { return (_this._inAction = true); }, false);
             this.addEventListener(actionElement, __$touchend, actionEnd, false);
             this.addEventListener(actionElement, __$trackend, actionEnd, false);
             this.addEventListener(input, 'focus', function () {
-                if (_this.value === '') {
-                    return;
-                }
                 actionElement.removeAttribute(__Hide);
             }, false);
             this.addEventListener(input, 'blur', function (ev) {
@@ -3641,8 +3639,9 @@ var platui;
         };
         /**
          * Checks the current state of the default action and handles accordingly.
+         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
          */
-        Input.prototype._checkText = function () {
+        Input.prototype._checkText = function (inputChanged) {
             var char = this._typeChar;
             if (char === 'x') {
                 if (this.value === '') {
@@ -3656,7 +3655,10 @@ var platui;
             if (char !== newChar) {
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
-                if (newChar === '') {
+                if (inputChanged === true) {
+                    return;
+                }
+                else if (newChar === '') {
                     actionElement.setAttribute(__Hide, '');
                     return;
                 }
@@ -3665,8 +3667,9 @@ var platui;
         };
         /**
          * Checks the current state of the password action and handles accordingly.
+         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
          */
-        Input.prototype._checkPassword = function () {
+        Input.prototype._checkPassword = function (inputChanged) {
             var char = this._typeChar;
             if (char === '?') {
                 if (this.value === '') {
@@ -3680,7 +3683,10 @@ var platui;
             if (char !== newChar) {
                 var actionElement = this._actionElement;
                 actionElement.textContent = newChar;
-                if (newChar === '') {
+                if (inputChanged === true) {
+                    return;
+                }
+                else if (newChar === '') {
                     actionElement.setAttribute(__Hide, '');
                     return;
                 }
@@ -3711,7 +3717,7 @@ var platui;
             newValue = this._stripInput(newValue);
             inputElement.value = newValue;
             this.value = inputElement.value;
-            this._actionHandler();
+            this._actionHandler(true);
         };
         /**
          * Parses the input and strips it of characters that don't fit its pattern.
@@ -5220,7 +5226,7 @@ var platui;
              */
             this.templateString = '<div class="plat-listview-viewport">\n' +
                 '    <div class="plat-scroll-container">\n' +
-                '        <div class="plat-container"></div>\n' +
+                '        <div class="plat-listview-container"></div>\n' +
                 '    </div>\n' +
                 '</div>\n';
             /**
@@ -5246,6 +5252,10 @@ var platui;
              */
             this._isVertical = true;
             /**
+             * Whether or not the scroll function is ready to be handled.
+             */
+            this._scrollReady = true;
+            /**
              * Whether or not the user is currently performing a load operation.
              */
             this._isLoading = false;
@@ -5253,6 +5263,10 @@ var platui;
              * The current scroll position of the container.
              */
             this._scrollPosition = 0;
+            /**
+             * A function that removes the scroll event listener.
+             */
+            this._removeScroll = noop;
             /**
              * Whether or not the user is currently performing a refresh operation.
              */
@@ -5342,11 +5356,14 @@ var platui;
          * Determine item templates and kick off rendering.
          */
         Listview.prototype.loaded = function () {
-            var options = this.options.value, utils = this.utils, isString = utils.isString, element = this.element, viewport = this._viewport = element.firstElementChild, scrollContainer = this._scrollContainer = viewport.firstElementChild, loading = this._loading = options.loading, animate = this._animate = options.animate === true, requestItems = options.onItemsRequested, refresh = options.onRefresh, itemTemplate = options.itemTemplate;
+            var options = this.options.value, utils = this.utils, isString = utils.isString, element = this.element, viewport = this._viewport = element.firstElementChild, scrollContainer = this._scrollContainer = viewport.firstElementChild, loading = this._loading = options.loading, animate = this._animate = options.animate === true, requestItems = options.onItemsRequested, refresh = options.onRefresh, itemTemplate = options.itemTemplate, loadScroller = options.loadScroller;
             this._container = scrollContainer.firstElementChild;
-            this._ie = utils.isNumber(this._compat.IE);
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (" " + __Plat + "animated") : ''));
+            if (utils.isNode(loadScroller)) {
+                this._scrollContainer = loadScroller;
+                this.dom.addClass(element, __Plat + "no-scroller");
+            }
             if (!isString(itemTemplate)) {
                 this._log.debug("No item template or item template selector specified for " + this.type + ".");
                 return;
@@ -5364,10 +5381,9 @@ var platui;
                 addQueue: [],
                 animationQueue: []
             };
-            var isLoading = false, isRefreshing = false;
+            var isRefreshing = false;
             if (isString(loading)) {
                 if (isString(requestItems)) {
-                    isLoading = true;
                     this._determineLoading(requestItems, options.infiniteProgress !== false);
                 }
                 else {
@@ -5378,7 +5394,7 @@ var platui;
                 isRefreshing = true;
                 this._initializeRefresh(refresh);
             }
-            this._initializeTracking(isLoading, isRefreshing);
+            this._initializeTracking(loading === 'incremental', isRefreshing);
             if (!utils.isArray(this.context)) {
                 if (!utils.isNull(this.context)) {
                     this._log.debug(this.type + "'s context must be an Array.");
@@ -5386,6 +5402,7 @@ var platui;
                 return;
             }
             this._setAliases();
+            this._setContainerHeight();
             this.render();
             this._setListener();
         };
@@ -5397,6 +5414,7 @@ var platui;
             while (visibilityRemovers.length > 0) {
                 visibilityRemovers.pop()();
             }
+            this._removeScroll();
             if (this.utils.isFunction(this.__rejectFn)) {
                 this.__rejectFn();
                 this.__resolveFn = this.__rejectFn = null;
@@ -5554,7 +5572,7 @@ var platui;
          */
         Listview.prototype._addGroup = function (index, fragment, animate) {
             var _this = this;
-            var context = this.context, groups = this._groups || (this._groups = {}), group = context[index], name = group.group, groupContainer = fragment.childNodes[1], itemContainer = groupContainer.lastElementChild, control = this.controls[index], groupHash = groups[name] = {
+            var utils = this.utils, context = this.context, groups = this._groups || (this._groups = {}), group = context[index], name = group.group, groupContainer = fragment.childNodes[1], itemContainer = groupContainer.lastElementChild, control = this.controls[index], groupHash = groups[name] = {
                 name: name,
                 index: index,
                 element: groupContainer,
@@ -5570,7 +5588,7 @@ var platui;
             };
             control.observe(function (newValue, oldValue) {
                 var newName = newValue.group;
-                if (newName === name || !_this.utils.isObject(newValue)) {
+                if (newName === name || !utils.isObject(newValue)) {
                     return;
                 }
                 var temp = groups[name];
@@ -5593,6 +5611,7 @@ var platui;
                         if (index > -1) {
                             animationQueue.splice(index, 1);
                         }
+                        utils.requestAnimationFrame(_this._setGroupContainerPadding.bind(_this, groupContainer));
                     }),
                     op: null
                 };
@@ -5600,6 +5619,7 @@ var platui;
                 return;
             }
             this._container.insertBefore(fragment, null);
+            utils.requestAnimationFrame(this._setGroupContainerPadding.bind(this, groupContainer));
         };
         /**
          * Handle binding of a single group.
@@ -5637,15 +5657,11 @@ var platui;
                     return;
                 }
                 opGroup.element.removeAttribute(__Hide);
-                if (isVertical) {
+                if (isVertical || isControl || !_this._isGrouped) {
                     return;
                 }
-                _this.utils.requestAnimationFrame(function () {
-                    // set width and height for flexbox container 
-                    var itemContainer = opGroup.itemContainer;
-                    _this._setItemContainerHeight(itemContainer, _this._isGrouped);
-                    _this._setItemContainerWidth(itemContainer);
-                });
+                // set width for flexbox container 
+                utils.requestAnimationFrame(_this._setGroupContainerWidth.bind(_this, opGroup.itemContainer));
             }, onError = function (error) {
                 _this._log.debug(_this.type + " error: " + (utils.isString(error.message) ? error.message : error));
             };
@@ -5891,11 +5907,11 @@ var platui;
             if (this === control) {
                 return;
             }
-            else if (controlDisposed && !this._isVertical) {
-                this._resetItemContainerWidth(group.itemContainer);
-            }
-            if (controls.length === 0) {
+            else if (controls.length === 0) {
                 group.element.setAttribute(__Hide, '');
+            }
+            else if (controlDisposed && this._isGrouped && !this._isVertical) {
+                this.utils.requestAnimationFrame(this._setGroupContainerWidth.bind(this, group.itemContainer));
             }
         };
         /**
@@ -5911,11 +5927,11 @@ var platui;
             if (this === control) {
                 return;
             }
-            else if (controlDisposed && !this._isVertical) {
-                this._resetItemContainerWidth(opGroup.itemContainer);
-            }
-            if (controls.length === 0) {
+            else if (controls.length === 0) {
                 group.element.setAttribute(__Hide, '');
+            }
+            else if (controlDisposed && this._isGrouped && !this._isVertical) {
+                this.utils.requestAnimationFrame(this._setGroupContainerWidth.bind(this, group.itemContainer));
             }
         };
         /**
@@ -5934,18 +5950,19 @@ var platui;
             var progressRingContainer;
             switch (this._loading) {
                 case 'infinite':
-                    var ready = true, removeScroll, removeRequest = noop;
+                    var removeScroll, removeRequest = noop;
                     removeScroll = this.addEventListener(this._scrollContainer, 'scroll', function () {
-                        if (!ready) {
+                        if (!_this._scrollReady) {
                             return;
                         }
-                        ready = false;
+                        _this._scrollReady = false;
                         removeRequest = _this.utils.requestAnimationFrame(function () {
-                            ready = true;
-                            _this._handleScroll();
+                            _this._scrollReady = true;
+                            _this._onScroll();
                         });
                     }, false);
                     this._removeScroll = function () {
+                        _this._scrollReady = false;
                         removeRequest();
                         removeScroll();
                     };
@@ -5954,9 +5971,7 @@ var platui;
                         progressRingContainer.className = __Plat + "infinite";
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
-                    this.itemsLoaded.then(function () {
-                        _this._handleScroll();
-                    });
+                    this.itemsLoaded.then(this._onScroll.bind(this));
                     break;
                 case 'incremental':
                     progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
@@ -5993,18 +6008,18 @@ var platui;
         Listview.prototype._handleScroll = function () {
             var _this = this;
             // infinite scrolling set to load items at 80% of scroll length 
-            var scrollContainer = this._scrollContainer, scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth), utils = this.utils;
+            var scrollContainer = this._scrollContainer, scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth);
             if (scrollLength === 0) {
                 return;
             }
             else if (this._scrollPosition >= scrollLength) {
-                var itemsRemain = this._requestItems();
+                var utils = this.utils, itemsRemain = this._requestItems();
                 if (itemsRemain === false) {
                     this._removeScroll();
                 }
                 else if (utils.isPromise(itemsRemain)) {
                     var progressRing = this._loadingProgressRing, showProgress = !utils.isNull(progressRing), container = this._container;
-                    this._removeScroll();
+                    this._scrollReady = false;
                     if (showProgress) {
                         utils.requestAnimationFrame(function () {
                             container.insertBefore(progressRing, null);
@@ -6019,7 +6034,16 @@ var platui;
                         if (moreItemsRemain === false) {
                             return;
                         }
-                        _this._removeScroll = _this.addEventListener(scrollContainer, 'scroll', _this._onScroll, false);
+                        _this._scrollReady = true;
+                    });
+                }
+                else {
+                    utils.postpone(function () {
+                        _this.itemsLoaded.then(function () {
+                            if (_this._scrollReady) {
+                                _this._handleScroll();
+                            }
+                        });
                     });
                 }
             }
@@ -6756,47 +6780,74 @@ var platui;
             return validOrientation;
         };
         /**
-         * Sets the width of a group's item container.
-         * @param {HTMLElement} element The element to set the width on.
-         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
+         * Sets the height of a horizontally grouped Listview's container.
          */
-        Listview.prototype._setItemContainerWidth = function (element) {
-            var width = element.scrollWidth;
+        Listview.prototype._setContainerHeight = function () {
+            if (this._isVertical || !this._isGrouped) {
+                return;
+            }
+            var element = this.element, height = element.offsetHeight;
+            if (!height) {
+                this._addVisibilityListener(this._setContainerHeight.bind(this), element);
+                return;
+            }
+            // account for scroll bar height even if scroll bar isn't visible 
+            // allows for transition of scroll bar in and out of page in browsers where scroll bar affects height 
+            height = height - this._getScrollBarWidth();
+            if (height < 0) {
+                height = 0;
+            }
+            this._container.style.height = height + "px";
+        };
+        /**
+         * Sets the width of a group container based on the scroll width of the group's item container.
+         * @param {HTMLElement} itemContainer The item container element whose parent we're going to set its scroll width on.
+         */
+        Listview.prototype._setGroupContainerWidth = function (itemContainer) {
+            var width = itemContainer.scrollWidth;
             if (!width) {
-                this._addVisibilityListener(this._setItemContainerWidth.bind(this, element), element);
+                this._addVisibilityListener(this._setGroupContainerWidth.bind(this, itemContainer), itemContainer);
                 return;
             }
-            element.style.width = width + "px";
+            itemContainer.parentElement.style.width = width + "px";
         };
         /**
-         * Resets the width of a group's item container.
-         * @param {HTMLElement} element The element to reset the width on.
+         * Sets the padding of a group's element.
+         * @param {HTMLElement} element The group container element who we're setting padding on.
          */
-        Listview.prototype._resetItemContainerWidth = function (element) {
-            element.style.width = '';
-            this._setItemContainerWidth(element);
-        };
-        /**
-         * Sets the height of a group's item container.
-         * @param {HTMLElement} element The element to set the height on.
-         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
-         */
-        Listview.prototype._setItemContainerHeight = function (element, withHeader) {
-            var parent = element.parentElement, parentHeight = parent.offsetHeight, headerHeight = 0;
-            if (!parentHeight) {
-                this._addVisibilityListener(this._setItemContainerHeight.bind(this, element, withHeader), parent);
+        Listview.prototype._setGroupContainerPadding = function (element) {
+            var elementHeight = element.offsetHeight;
+            if (!elementHeight) {
+                this._addVisibilityListener(this._setGroupContainerPadding.bind(this, element), element);
                 return;
             }
-            if (withHeader === true) {
-                var header = parent.firstElementChild;
-                headerHeight = header.offsetHeight;
-                if (!headerHeight) {
-                    this._addVisibilityListener(this._setItemContainerHeight.bind(this, element, withHeader), header);
-                    return;
-                }
+            var header = element.firstElementChild, headerHeight = header.offsetHeight;
+            if (!headerHeight) {
+                this._addVisibilityListener(this._setGroupContainerPadding.bind(this, element), header);
+                return;
             }
-            // parent element minus header minus scrollbar (for IE) 
-            element.style.height = (parentHeight - headerHeight - (this._ie ? 17 : 0)) + "px";
+            element.style.paddingTop = headerHeight + "px";
+        };
+        /**
+         * Calcuates the width of the horizontal scroll bar in the current browser.
+         */
+        Listview.prototype._getScrollBarWidth = function () {
+            var _document = this._document, body = _document.body, inner = _document.createElement('div'), outer = _document.createElement('div'), innerStyle = inner.style, outerStyle = outer.style;
+            innerStyle.width = innerStyle.height = outerStyle.height = '100px';
+            outerStyle.width = '50px';
+            outerStyle.position = 'absolute';
+            outerStyle.top = outerStyle.left = '0px';
+            outerStyle.visibility = outerStyle.overflow = 'hidden';
+            outer.insertBefore(inner, null);
+            body.insertBefore(outer, null);
+            var w1 = inner.offsetHeight;
+            outerStyle.overflow = 'scroll';
+            var w2 = inner.offsetHeight;
+            if (w1 === w2) {
+                w2 = outer.clientHeight;
+            }
+            body.removeChild(outer);
+            return (w1 - w2);
         };
         /**
          * Adds a visibility listener and hides and shows element accordingly
@@ -6805,7 +6856,7 @@ var platui;
          */
         Listview.prototype._addVisibilityListener = function (listener, element) {
             var _this = this;
-            var visibilityRemovers = this._visibilityRemoveListeners, remove = this.dom.whenVisible(function () {
+            var visibilityRemovers = this._visibilityRemoveListeners, remove, cb = function () {
                 listener();
                 var i = visibilityRemovers.indexOf(remove);
                 if (i !== -1) {
@@ -6814,7 +6865,8 @@ var platui;
                 if (visibilityRemovers.length === 0) {
                     _this.element.removeAttribute(__Hidden);
                 }
-            }, element);
+            };
+            remove = this.dom.whenVisible(this.utils.requestAnimationFrame.bind(this, cb), element);
             if (visibilityRemovers.length === 0) {
                 this.element.setAttribute(__Hidden, '');
             }

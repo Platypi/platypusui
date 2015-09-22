@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.7.1 (https://platypi.io)
+  * PlatypusUI v0.7.2 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -1081,7 +1081,7 @@ declare module platui {
           */
         private __rejectFn;
         /**
-          * The constructor for a Listview. Creates the modalLoaded Promise.
+          * The constructor for a Modal. Creates the modalLoaded Promise.
           */
         constructor();
         /**
@@ -1904,7 +1904,7 @@ declare module platui {
         /**
           * A function to check the current action state and handle accordingly.
           */
-        protected _actionHandler: () => void;
+        protected _actionHandler: (inputChanged?: boolean) => void;
         /**
           * Whether the user is currently touching the screen.
           */
@@ -1995,12 +1995,14 @@ declare module platui {
         protected _handlePasswordHide(): void;
         /**
           * Checks the current state of the default action and handles accordingly.
+          * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
           */
-        protected _checkText(): void;
+        protected _checkText(inputChanged?: boolean): void;
         /**
           * Checks the current state of the password action and handles accordingly.
+          * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
           */
-        protected _checkPassword(): void;
+        protected _checkPassword(inputChanged?: boolean): void;
         /**
           * The event handler upon user text input.
           */
@@ -2699,6 +2701,10 @@ declare module platui {
           */
         protected _templateSelectorKeys: plat.IObject<plat.IObject<string>>;
         /**
+          * Whether or not the scroll function is ready to be handled.
+          */
+        protected _scrollReady: boolean;
+        /**
           * Whether or not the user is currently performing a load operation.
           */
         protected _isLoading: boolean;
@@ -2792,10 +2798,6 @@ declare module platui {
           * A promise that resolves when the group template has been created.
           */
         protected _headerTemplatePromise: plat.async.IThenable<void>;
-        /**
-          * Whether or not we're on IE.
-          */
-        protected _ie: boolean;
         /**
           * A set of functions to remove all visibility listeners.
           */
@@ -3162,22 +3164,23 @@ declare module platui {
           */
         protected _validateOrientation(orientation: string): string;
         /**
-          * Sets the width of a group's item container.
-          * @param {HTMLElement} element The element to set the width on.
-          * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
+          * Sets the height of a horizontally grouped Listview's container.
           */
-        protected _setItemContainerWidth(element: HTMLElement): void;
+        protected _setContainerHeight(): void;
         /**
-          * Resets the width of a group's item container.
-          * @param {HTMLElement} element The element to reset the width on.
+          * Sets the width of a group container based on the scroll width of the group's item container.
+          * @param {HTMLElement} itemContainer The item container element whose parent we're going to set its scroll width on.
           */
-        protected _resetItemContainerWidth(element: HTMLElement): void;
+        protected _setGroupContainerWidth(itemContainer: HTMLElement): void;
         /**
-          * Sets the height of a group's item container.
-          * @param {HTMLElement} element The element to set the height on.
-          * @param {boolean} withHeader Whether the header should be included in the calculation or not.
+          * Sets the padding of a group's element.
+          * @param {HTMLElement} element The group container element who we're setting padding on.
           */
-        protected _setItemContainerHeight(element: HTMLElement, withHeader: boolean): void;
+        protected _setGroupContainerPadding(element: HTMLElement): void;
+        /**
+          * Calcuates the width of the horizontal scroll bar in the current browser.
+          */
+        protected _getScrollBarWidth(): number;
         /**
           * Adds a visibility listener and hides and shows element accordingly
           * @param {() => void} listener The listener to fire when visible.
@@ -3210,6 +3213,11 @@ declare module platui {
           * Indicates a special type of loading. Available options are "infinite" or "incremental".
           */
         loading?: string;
+        /**
+          * Indicates a separate HTMLElement is being used to scroll. If this is set to a HTMLElement, the Listview
+          * will not handle its own scrolling.
+          */
+        loadScroller?: HTMLElement;
         /**
           * The name of the function that will be called when more items are being requested to add to the list.
           */
