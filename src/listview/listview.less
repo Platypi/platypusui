@@ -73,13 +73,29 @@
                 -ms-overflow-style: -ms-autohiding-scrollbar;
 
                 .plat-container {
-                    .fill();
                     .box-sizing(border-box);
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    margin: 0;
+                    padding: 0;
 
-                    .plat-listview-group,
-                    .plat-listview-group .plat-header,
-                    .plat-listview-group .plat-listview-items {
+                    .plat-listview-group {
                         .box-sizing(border-box);
+                        position: relative;
+
+                        .plat-header {
+                            .box-sizing(border-box);
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            max-height: 100%;
+                        }
+
+                        .plat-listview-items {
+                            .box-sizing(border-box);
+                            min-width: 1px;
+                        }
                     }
                 }
             }
@@ -102,19 +118,15 @@
             z-index: 0;
 
             .plat-ring {
-                .plat-progress-container {
-                    .plat-animated-ring {
-                        .animation-play-state(paused);
-                    }
+                .plat-animated-ring {
+                    .animation-play-state(paused);
                 }
             }
 
             &.plat-play {
                 .plat-ring {
-                    .plat-progress-container {
-                        .plat-animated-ring {
-                            .animation-play-state(running);
-                        }
+                    .plat-animated-ring {
+                        .animation-play-state(running);
                     }
                 }
             }
@@ -126,16 +138,13 @@
                     .scroll(y);
 
                     .plat-container {
+                        width: 100%;
+                        height: auto;
+
                         .plat-infinite {
                             .plat-ring-constants();
                             position: relative;
                         }
-                    }
-                }
-
-                &.plat-manipulation-prep {
-                    .plat-scroll-container {
-                        overflow: hidden;
                     }
                 }
             }
@@ -159,10 +168,11 @@
             .plat-listview-viewport {
                 .plat-scroll-container {
                     .scroll(x);
-                    padding-bottom: @horizontal-scroll-padding;
 
                     .plat-container {
                         .flexbox();
+                        width: auto;
+                        height: 100%;
 
                         &.plat-grouped {
                             .flex-direction(row);
@@ -174,12 +184,12 @@
                                 height: 100%;
 
                                 .plat-listview-items {
-                                    .flexbox();
+                                    .inline-flexbox();
                                     .flex-direction(column);
                                     .flex-wrap(wrap);
                                     .align-content(flex-start);
+                                    position: relative;
                                     height: 100%;
-                                    min-width: 10px;
 
                                     & > * {
                                         .flex(0 0 auto);
@@ -201,12 +211,6 @@
                         .plat-infinite {
                             position: relative;
                         }
-                    }
-                }
-
-                &.plat-manipulation-prep {
-                    .plat-scroll-container {
-                        overflow: hidden;
                     }
                 }
             }
