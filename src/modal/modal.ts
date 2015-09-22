@@ -229,7 +229,7 @@ module platui {
          * @access public
          *
          * @description
-         * The constructor for a {@link platui.Listview|Listview}. Creates the modalLoaded Promise.
+         * The constructor for a {@link platui.Modal|Modal}. Creates the modalLoaded Promise.
          *
          * @returns {platui.Modal} A {@link platui.Modal|Modal} instance.
          */

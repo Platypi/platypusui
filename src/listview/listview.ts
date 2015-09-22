@@ -36,7 +36,7 @@ module platui {
         templateString: string =
         '<div class="plat-listview-viewport">\n' +
         '    <div class="plat-scroll-container">\n' +
-        '        <div class="plat-container"></div>\n' +
+        '        <div class="plat-listview-container"></div>\n' +
         '    </div>\n' +
         '</div>\n';
 
@@ -324,6 +324,19 @@ module platui {
         protected _templateSelectorKeys: plat.IObject<plat.IObject<string>>;
 
         /**
+         * @name _scrollReady
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         *
+         * @type {boolean}
+         *
+         * @description
+         * Whether or not the scroll function is ready to be handled.
+         */
+        protected _scrollReady: boolean = true;
+
+        /**
          * @name _isLoading
          * @memberof platui.Listview
          * @kind property
@@ -407,7 +420,7 @@ module platui {
          * @description
          * A function that removes the scroll event listener.
          */
-        protected _removeScroll: plat.IRemoveListener;
+        protected _removeScroll: plat.IRemoveListener = noop;
 
         /**
          * @name _isRefreshing
@@ -607,19 +620,6 @@ module platui {
         protected _headerTemplatePromise: plat.async.IThenable<void>;
 
         /**
-         * @name _ie
-         * @memberof platui.Listview
-         * @kind property
-         * @access protected
-         *
-         * @type {boolean}
-         *
-         * @description
-         * Whether or not we're on IE.
-         */
-        protected _ie: boolean;
-
-        /**
          * @name _visibilityRemoveListeners
          * @memberof platui.Listview
          * @kind property
@@ -803,13 +803,18 @@ module platui {
                 animate = this._animate = options.animate === true,
                 requestItems = options.onItemsRequested,
                 refresh = options.onRefresh,
-                itemTemplate = options.itemTemplate;
+                itemTemplate = options.itemTemplate,
+                loadScroller = options.loadScroller;
 
             this._container = <HTMLElement>scrollContainer.firstElementChild;
-            this._ie = utils.isNumber(this._compat.IE);
 
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (` ${__Plat}animated`) : ''));
+
+            if (utils.isNode(loadScroller)) {
+                this._scrollContainer = loadScroller;
+                this.dom.addClass(element, `${__Plat}no-scroller`);
+            }
 
             if (!isString(itemTemplate)) {
                 this._log.debug(`No item template or item template selector specified for ${this.type}.`);
@@ -833,11 +838,9 @@ module platui {
                 animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
             };
 
-            let isLoading = false,
-                isRefreshing = false;
+            let isRefreshing = false;
             if (isString(loading)) {
                 if (isString(requestItems)) {
-                    isLoading = true;
                     this._determineLoading(requestItems, options.infiniteProgress !== false);
                 } else {
                     this._log.debug(`${this.type} loading type specified as "${loading}" but no option specifying an onItemsRequested handler.`);
@@ -849,7 +852,7 @@ module platui {
                 this._initializeRefresh(refresh);
             }
 
-            this._initializeTracking(isLoading, isRefreshing);
+            this._initializeTracking(loading === 'incremental', isRefreshing);
 
             if (!utils.isArray(this.context)) {
                 if (!utils.isNull(this.context)) {
@@ -859,6 +862,7 @@ module platui {
             }
 
             this._setAliases();
+            this._setContainerHeight();
             this.render();
             this._setListener();
         }
@@ -879,6 +883,8 @@ module platui {
             while (visibilityRemovers.length > 0) {
                 visibilityRemovers.pop()();
             }
+
+            this._removeScroll();
 
             if (this.utils.isFunction(this.__rejectFn)) {
                 this.__rejectFn();
@@ -1159,7 +1165,8 @@ module platui {
          * @returns {void}
          */
         protected _addGroup(index: number, fragment: DocumentFragment, animate: boolean): void {
-            let context = this.context,
+            let utils = this.utils,
+                context = this.context,
                 groups = this._groups || (this._groups = <plat.IObject<IGroupHash>>{}),
                 group: IListviewGroup = context[index],
                 name = group.group,
@@ -1187,7 +1194,7 @@ module platui {
 
             control.observe((newValue?: IListviewGroup, oldValue?: IListviewGroup): void => {
                 let newName = newValue.group;
-                if (newName === name || !this.utils.isObject(newValue)) {
+                if (newName === name || !utils.isObject(newValue)) {
                     return;
                 }
 
@@ -1216,6 +1223,7 @@ module platui {
                             if (index > -1) {
                                 animationQueue.splice(index, 1);
                             }
+                            utils.requestAnimationFrame(this._setGroupContainerPadding.bind(this, groupContainer));
                         }),
                         op: <string>null
                     };
@@ -1224,6 +1232,7 @@ module platui {
             }
 
             this._container.insertBefore(fragment, null);
+            utils.requestAnimationFrame(this._setGroupContainerPadding.bind(this, groupContainer));
         }
 
         /**
@@ -1291,16 +1300,12 @@ module platui {
                     }
 
                     opGroup.element.removeAttribute(__Hide);
-                    if (isVertical) {
+                    if (isVertical || isControl || !this._isGrouped) {
                         return;
                     }
 
-                    this.utils.requestAnimationFrame((): void => {
-                        // set width and height for flexbox container
-                        let itemContainer = opGroup.itemContainer;
-                        this._setItemContainerHeight(itemContainer, this._isGrouped);
-                        this._setItemContainerWidth(itemContainer);
-                    });
+                    // set width for flexbox container
+                    utils.requestAnimationFrame(this._setGroupContainerWidth.bind(this, opGroup.itemContainer));
                 },
                 onError = (error: Error): void => {
                     this._log.debug(`${this.type} error: ${(utils.isString(error.message) ? error.message : error)}`);
@@ -1682,12 +1687,10 @@ module platui {
 
             if (this === control) {
                 return;
-            } else if (controlDisposed && !this._isVertical) {
-                this._resetItemContainerWidth(group.itemContainer);
-            }
-
-            if (controls.length === 0) {
+            } else if (controls.length === 0) {
                 group.element.setAttribute(__Hide, '');
+            } else if (controlDisposed && this._isGrouped && !this._isVertical) {
+                this.utils.requestAnimationFrame(this._setGroupContainerWidth.bind(this, group.itemContainer));
             }
         }
 
@@ -1719,12 +1722,10 @@ module platui {
 
             if (this === control) {
                 return;
-            } else if (controlDisposed && !this._isVertical) {
-                this._resetItemContainerWidth(opGroup.itemContainer);
-            }
-
-            if (controls.length === 0) {
+            } else if (controls.length === 0) {
                 group.element.setAttribute(__Hide, '');
+            } else if (controlDisposed && this._isGrouped && !this._isVertical) {
+                this.utils.requestAnimationFrame(this._setGroupContainerWidth.bind(this, group.itemContainer));
             }
         }
 
@@ -1754,23 +1755,23 @@ module platui {
             let progressRingContainer: HTMLElement;
             switch (this._loading) {
                 case 'infinite':
-                    let ready = true,
-                        removeScroll: plat.IRemoveListener,
+                    let removeScroll: plat.IRemoveListener,
                         removeRequest: plat.IRemoveListener = noop;
 
                     removeScroll = this.addEventListener(this._scrollContainer, 'scroll', (): void => {
-                        if (!ready) {
+                        if (!this._scrollReady) {
                             return;
                         }
 
-                        ready = false;
+                        this._scrollReady = false;
                         removeRequest = this.utils.requestAnimationFrame((): void => {
-                            ready = true;
-                            this._handleScroll();
+                            this._scrollReady = true;
+                            this._onScroll();
                         });
                     }, false);
 
                     this._removeScroll = (): void => {
+                        this._scrollReady = false;
                         removeRequest();
                         removeScroll();
                     };
@@ -1781,9 +1782,7 @@ module platui {
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
 
-                    this.itemsLoaded.then((): void => {
-                        this._handleScroll();
-                    });
+                    this.itemsLoaded.then(this._onScroll.bind(this));
                     break;
                 case 'incremental':
                     progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
@@ -1841,13 +1840,14 @@ module platui {
         protected _handleScroll(): void {
             // infinite scrolling set to load items at 80% of scroll length
             let scrollContainer = this._scrollContainer,
-                scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth),
-                utils = this.utils;
+                scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth);
 
             if (scrollLength === 0) {
                 return;
             } else if (this._scrollPosition >= scrollLength) {
-                let itemsRemain = this._requestItems();
+                let utils = this.utils,
+                    itemsRemain = this._requestItems();
+
                 if (itemsRemain === false) {
                     this._removeScroll();
                 } else if (utils.isPromise(itemsRemain)) {
@@ -1855,7 +1855,8 @@ module platui {
                         showProgress = !utils.isNull(progressRing),
                         container = this._container;
 
-                    this._removeScroll();
+                    this._scrollReady = false;
+
                     if (showProgress) {
                         utils.requestAnimationFrame((): void => {
                             container.insertBefore(progressRing, null);
@@ -1873,7 +1874,15 @@ module platui {
                             return;
                         }
 
-                        this._removeScroll = this.addEventListener(scrollContainer, 'scroll', this._onScroll, false);
+                        this._scrollReady = true;
+                    });
+                } else {
+                    utils.postpone((): void => {
+                        this.itemsLoaded.then((): void => {
+                            if (this._scrollReady) {
+                                this._handleScroll();
+                            }
+                        });
                     });
                 }
             }
@@ -1930,6 +1939,7 @@ module platui {
 
             let track: string,
                 reverseTrack: string;
+
             if (this._isVertical) {
                 track = `${__$track}down`;
                 reverseTrack = `${__$track}up`;
@@ -3041,84 +3051,136 @@ module platui {
         }
 
         /**
-         * @name _setItemContainerWidth
+         * @name _setContainerHeight
          * @memberof platui.Listview
          * @kind function
          * @access protected
          *
          * @description
-         * Sets the width of a group's item container.
-         *
-         * @param {HTMLElement} element The element to set the width on.
-         * @param {boolean} immediate? Whether or not the change must be immediate. Default is false.
+         * Sets the height of a horizontally grouped {@link platui.Listview|Listview's} container.
          *
          * @returns {void}
          */
-        protected _setItemContainerWidth(element: HTMLElement): void {
-            let width = element.scrollWidth;
+        protected _setContainerHeight(): void {
+            if (this._isVertical || !this._isGrouped) {
+                return;
+            }
+
+            let element = this.element,
+                height = element.offsetHeight;
+
+            if (!height) {
+                this._addVisibilityListener(this._setContainerHeight.bind(this), element);
+                return;
+            }
+
+            // account for scroll bar height even if scroll bar isn't visible
+            // allows for transition of scroll bar in and out of page in browsers where scroll bar affects height
+            height = height - this._getScrollBarWidth();
+            if (height < 0) {
+                height = 0;
+            }
+
+            this._container.style.height = `${height}px`;
+        }
+
+        /**
+         * @name _setGroupContainerWidth
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Sets the width of a group container based on the scroll width of the group's item container.
+         *
+         * @param {HTMLElement} itemContainer The item container element whose parent we're going to set its scroll width on.
+         *
+         * @returns {void}
+         */
+        protected _setGroupContainerWidth(itemContainer: HTMLElement): void {
+            let width = itemContainer.scrollWidth;
 
             if (!width) {
-                this._addVisibilityListener(this._setItemContainerWidth.bind(this, element), element);
+                this._addVisibilityListener(this._setGroupContainerWidth.bind(this, itemContainer), itemContainer);
                 return;
             }
 
-            element.style.width = `${width}px`;
+            itemContainer.parentElement.style.width = `${width}px`;
         }
 
         /**
-         * @name _resetItemContainerWidth
+         * @name _setGroupContainerPadding
          * @memberof platui.Listview
          * @kind function
          * @access protected
          *
          * @description
-         * Resets the width of a group's item container.
+         * Sets the padding of a group's element.
          *
-         * @param {HTMLElement} element The element to reset the width on.
-         *
-         * @returns {void}
-         */
-        protected _resetItemContainerWidth(element: HTMLElement): void {
-            element.style.width = '';
-            this._setItemContainerWidth(element);
-        }
-
-        /**
-         * @name _setItemContainerHeight
-         * @memberof platui.Listview
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * Sets the height of a group's item container.
-         *
-         * @param {HTMLElement} element The element to set the height on.
-         * @param {boolean} withHeader Whether the header should be included in the calculation or not.
+         * @param {HTMLElement} element The group container element who we're setting padding on.
          *
          * @returns {void}
          */
-        protected _setItemContainerHeight(element: HTMLElement, withHeader: boolean): void {
-            let parent = element.parentElement,
-                parentHeight = parent.offsetHeight,
-                headerHeight = 0;
+        protected _setGroupContainerPadding(element: HTMLElement): void {
+            let elementHeight = element.offsetHeight;
 
-            if (!parentHeight) {
-                this._addVisibilityListener(this._setItemContainerHeight.bind(this, element, withHeader), parent);
+            if (!elementHeight) {
+                this._addVisibilityListener(this._setGroupContainerPadding.bind(this, element), element);
                 return;
             }
 
-            if (withHeader === true) {
-                let header = <HTMLElement>parent.firstElementChild;
+            let header = <HTMLElement>element.firstElementChild,
                 headerHeight = header.offsetHeight;
 
-                if (!headerHeight) {
-                    this._addVisibilityListener(this._setItemContainerHeight.bind(this, element, withHeader), header);
-                    return;
-                }
+            if (!headerHeight) {
+                this._addVisibilityListener(this._setGroupContainerPadding.bind(this, element), header);
+                return;
             }
 
-            // parent element minus header minus scrollbar (for IE)
-            element.style.height = `${(parentHeight - headerHeight - (this._ie ? 17 : 0))}px`;
+            element.style.paddingTop = `${headerHeight}px`;
+        }
+
+        /**
+         * @name _getScrollBarWidth
+         * @memberof platui.Listview
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Calcuates the width of the horizontal scroll bar in the current browser.
+         *
+         * @returns {number} The width of the horizontal scroll bar in pixels.
+         */
+        protected _getScrollBarWidth(): number {
+            let _document = this._document,
+                body = _document.body,
+                inner = _document.createElement('div'),
+                outer = _document.createElement('div'),
+                innerStyle = inner.style,
+                outerStyle = outer.style;
+
+            innerStyle.width = innerStyle.height = outerStyle.height = '100px';
+            outerStyle.width = '50px';
+            outerStyle.position = 'absolute';
+            outerStyle.top = outerStyle.left = '0px';
+            outerStyle.visibility = outerStyle.overflow = 'hidden';
+
+            outer.insertBefore(inner, null);
+            body.insertBefore(outer, null);
+
+            let w1 = inner.offsetHeight;
+
+            outerStyle.overflow = 'scroll';
+
+            let w2 = inner.offsetHeight;
+
+            if (w1 === w2)  {
+                w2 = outer.clientHeight;
+            }
+
+            body.removeChild(outer);
+
+            return (w1 - w2);
         }
 
         /**
@@ -3137,7 +3199,8 @@ module platui {
          */
         protected _addVisibilityListener(listener: () => void, element: HTMLElement): void {
             let visibilityRemovers = this._visibilityRemoveListeners,
-                remove = this.dom.whenVisible((): void => {
+                remove: plat.IRemoveListener,
+                cb = (): void => {
                     listener();
                     let i = visibilityRemovers.indexOf(remove);
                     if (i !== -1) {
@@ -3147,7 +3210,9 @@ module platui {
                     if (visibilityRemovers.length === 0) {
                         this.element.removeAttribute(__Hidden);
                     }
-                }, element);
+                };
+
+            remove = this.dom.whenVisible(this.utils.requestAnimationFrame.bind(this, cb), element);
 
             if (visibilityRemovers.length === 0) {
                 this.element.setAttribute(__Hidden, '');
@@ -3244,6 +3309,20 @@ module platui {
          * Returning false indicates no more items.
          */
         loading?: string;
+
+        /**
+         * @name loadScroller
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         *
+         * @type {HTMLElement}
+         *
+         * @description
+         * Indicates a separate HTMLElement is being used to scroll. If this is set to a HTMLElement, the {@link platui.Listview|Listview}
+         * will not handle its own scrolling.
+         */
+        loadScroller?: HTMLElement;
 
         /**
          * @name onItemsRequested

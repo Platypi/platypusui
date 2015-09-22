@@ -202,12 +202,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {() => void}
+         * @type {(inputChanged?: boolean) => void}
          *
          * @description
          * A function to check the current action state and handle accordingly.
          */
-        protected _actionHandler: () => void;
+        protected _actionHandler: (inputChanged?: boolean) => void;
 
         /**
          * @name _inTouch
@@ -610,14 +610,13 @@ module platui {
                 input = this._inputElement,
                 actionEnd = (): boolean => (this._inAction = false);
 
+            actionElement.setAttribute(__Hide, '');
+
             this.addEventListener(actionElement, event, this._typeHandler, false);
             this.addEventListener(actionElement, __$touchstart, (): boolean => (this._inAction = true), false);
             this.addEventListener(actionElement, __$touchend, actionEnd, false);
             this.addEventListener(actionElement, __$trackend, actionEnd, false);
             this.addEventListener(input, 'focus', (): void => {
-                if (this.value === '') {
-                    return;
-                }
                 actionElement.removeAttribute(__Hide);
             }, false);
             this.addEventListener(input, 'blur', (ev: Event): void => {
@@ -767,9 +766,11 @@ module platui {
          * @description
          * Checks the current state of the default action and handles accordingly.
          *
+         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
+         *
          * @returns {void}
          */
-        protected _checkText(): void {
+        protected _checkText(inputChanged?: boolean): void {
             let char = this._typeChar;
 
             if (char === 'x') {
@@ -784,7 +785,10 @@ module platui {
             if (char !== newChar) {
                 let actionElement = this._actionElement;
                 actionElement.textContent = newChar;
-                if (newChar === '') {
+
+                if (inputChanged === true) {
+                    return;
+                } else if (newChar === '') {
                     actionElement.setAttribute(__Hide, '');
                     return;
                 }
@@ -802,9 +806,11 @@ module platui {
          * @description
          * Checks the current state of the password action and handles accordingly.
          *
+         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
+         *
          * @returns {void}
          */
-        protected _checkPassword(): void {
+        protected _checkPassword(inputChanged?: boolean): void {
             let char = this._typeChar;
 
             if (char === '?') {
@@ -819,7 +825,10 @@ module platui {
             if (char !== newChar) {
                 let actionElement = this._actionElement;
                 actionElement.textContent = newChar;
-                if (newChar === '') {
+
+                if (inputChanged === true) {
+                    return;
+                } else if (newChar === '') {
                     actionElement.setAttribute(__Hide, '');
                     return;
                 }
@@ -877,7 +886,7 @@ module platui {
             inputElement.value = newValue;
             this.value = inputElement.value;
 
-            this._actionHandler();
+            this._actionHandler(true);
         }
 
         /**

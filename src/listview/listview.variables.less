@@ -17,10 +17,6 @@
 
         @manipulated-viewport-background-color: @white;
 
-    /// =========== Listview Properties =========== ///
-
-        @horizontal-scroll-padding: 0px;
-
     /// =========== Listview Animations =========== ///
 
         @refresh-transition-time: 200ms;
@@ -72,14 +68,6 @@
 
                         &.plat-transition-init {
                             .transition-duration(@refresh-transition-time);
-                        }
-                    }
-
-                    &.plat-horizontal {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                padding-bottom: @horizontal-scroll-padding;
-                            }
                         }
                     }
 
@@ -169,17 +157,6 @@
                     .plat-listview-viewport {
                         &.plat-manipulation-prep {
                             background-color: @value;
-                        }
-                    }
-                }
-            }
-            & when (@prop = horizontal-scroll-padding) {
-                &.plat-listview {
-                    &.plat-horizontal {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                padding-bottom: @value;
-                            }
                         }
                     }
                 }

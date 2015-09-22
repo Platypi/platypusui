@@ -14,19 +14,19 @@
     [class*='col-'],
     [class*='col-']::after,
     [class*='col-']::before {
-	    margin: 0;
-	    padding: 0;
         #platui > #mixins > .box-sizing(border-box);
+	    margin: 0;
+    }
+
+	[class*='col-']::after,
+    [class*='col-']::before {
+	    padding: 0;
     }
 
     [class*='col-'] {
 	    position: relative;
 	    float: left;
 	    padding: @column-padding;
-    }
-
-    [class*='col-']:last-of-type {
-	    padding-right: @column-padding;
     }
 
     .row::after {

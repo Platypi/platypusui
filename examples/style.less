@@ -9,7 +9,7 @@ body {
     #platui > #variables;
     .fill();
     .scroll();
-    .box-sizing(border-box);
+    box-sizing: border-box;
     background-color: @white;
     #platui > #Navbar;
     padding-top: @height;
@@ -54,10 +54,13 @@ body {
     background-color: dodgerblue;
 }
 
+.grid-demo [class*="col-"] {
+    border: 1px solid black;
+}
+
 .grid-demo [class*="col-"] > div {
     background-color: #dddddd;
     padding: 10px;
-    border-radius: 5px;
 }
 
 .demo-area {

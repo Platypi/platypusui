@@ -72,14 +72,30 @@
                 top: 0;
                 -ms-overflow-style: -ms-autohiding-scrollbar;
 
-                .plat-container {
-                    .fill();
+                .plat-listview-container {
                     .box-sizing(border-box);
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    margin: 0;
+                    padding: 0;
 
-                    .plat-listview-group,
-                    .plat-listview-group .plat-header,
-                    .plat-listview-group .plat-listview-items {
+                    .plat-listview-group {
                         .box-sizing(border-box);
+                        position: relative;
+
+                        .plat-header {
+                            .box-sizing(border-box);
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            max-height: 100%;
+                        }
+
+                        .plat-listview-items {
+                            .box-sizing(border-box);
+                            min-width: 1px;
+                        }
                     }
                 }
             }
@@ -102,19 +118,15 @@
             z-index: 0;
 
             .plat-ring {
-                .plat-progress-container {
-                    .plat-animated-ring {
-                        .animation-play-state(paused);
-                    }
+                .plat-animated-ring {
+                    .animation-play-state(paused);
                 }
             }
 
             &.plat-play {
                 .plat-ring {
-                    .plat-progress-container {
-                        .plat-animated-ring {
-                            .animation-play-state(running);
-                        }
+                    .plat-animated-ring {
+                        .animation-play-state(running);
                     }
                 }
             }
@@ -125,17 +137,14 @@
                 .plat-scroll-container {
                     .scroll(y);
 
-                    .plat-container {
+                    .plat-listview-container {
+                        width: 100%;
+                        height: auto;
+
                         .plat-infinite {
                             .plat-ring-constants();
                             position: relative;
                         }
-                    }
-                }
-
-                &.plat-manipulation-prep {
-                    .plat-scroll-container {
-                        overflow: hidden;
                     }
                 }
             }
@@ -153,16 +162,34 @@
             .plat-incremental {
                 bottom: 0;
             }
+
+            &.plat-no-scroller {
+                height: auto;
+                overflow: unset;
+
+                .plat-listview-viewport {
+                    height: auto;
+                    overflow: unset;
+
+                    .plat-scroll-container {
+                        height: auto;
+                        overflow-x: unset;
+                        overflow-y: unset;
+                        -webkit-overflow-scrolling: auto;
+                    }
+                }
+            }
         }
 
         &.plat-horizontal {
             .plat-listview-viewport {
                 .plat-scroll-container {
                     .scroll(x);
-                    padding-bottom: @horizontal-scroll-padding;
 
-                    .plat-container {
+                    .plat-listview-container {
                         .flexbox();
+                        width: auto;
+                        height: 100%;
 
                         &.plat-grouped {
                             .flex-direction(row);
@@ -174,12 +201,12 @@
                                 height: 100%;
 
                                 .plat-listview-items {
-                                    .flexbox();
+                                    .inline-flexbox();
                                     .flex-direction(column);
                                     .flex-wrap(wrap);
                                     .align-content(flex-start);
+                                    position: relative;
                                     height: 100%;
-                                    min-width: 10px;
 
                                     & > * {
                                         .flex(0 0 auto);
@@ -203,12 +230,6 @@
                         }
                     }
                 }
-
-                &.plat-manipulation-prep {
-                    .plat-scroll-container {
-                        overflow: hidden;
-                    }
-                }
             }
 
             .plat-refresh,
@@ -224,12 +245,29 @@
             .plat-incremental {
                 right: 0;
             }
+
+            &.plat-no-scroller {
+                width: auto;
+                overflow: unset;
+
+                .plat-listview-viewport {
+                    width: auto;
+                    overflow: unset;
+
+                    .plat-scroll-container {
+                        width: auto;
+                        overflow-y: unset;
+                        overflow-x: unset;
+                        -webkit-overflow-scrolling: auto;
+                    }
+                }
+            }
         }
 
         &.plat-animated {
             .plat-listview-viewport {
                 .plat-scroll-container {
-                    .plat-container {
+                    .plat-listview-container {
                         .plat-enter-init {
                             @enter-init();
                         }
