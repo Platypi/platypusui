@@ -165,13 +165,16 @@
 
             &.plat-no-scroller {
                 height: auto;
+                overflow: unset;
 
                 .plat-listview-viewport {
                     height: auto;
+                    overflow: unset;
 
                     .plat-scroll-container {
                         height: auto;
-                        overflow-y: visible;
+                        overflow-x: unset;
+                        overflow-y: unset;
                         -webkit-overflow-scrolling: auto;
                     }
                 }
@@ -245,13 +248,16 @@
 
             &.plat-no-scroller {
                 width: auto;
+                overflow: unset;
 
                 .plat-listview-viewport {
                     width: auto;
+                    overflow: unset;
 
                     .plat-scroll-container {
                         width: auto;
-                        overflow-x: visible;
+                        overflow-y: unset;
+                        overflow-x: unset;
                         -webkit-overflow-scrolling: auto;
                     }
                 }
