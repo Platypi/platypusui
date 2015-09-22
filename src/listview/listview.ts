@@ -1879,7 +1879,7 @@ module platui {
                     utils.postpone((): void => {
                         this.itemsLoaded.then((): void => {
                             if (this._scrollReady) {
-                                this._onScroll();
+                                this._handleScroll();
                             }
                         });
                     });
