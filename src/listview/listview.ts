@@ -324,6 +324,19 @@ module platui {
         protected _templateSelectorKeys: plat.IObject<plat.IObject<string>>;
 
         /**
+         * @name _scrollReady
+         * @memberof platui.Listview
+         * @kind property
+         * @access protected
+         *
+         * @type {boolean}
+         *
+         * @description
+         * Whether or not the scroll function is ready to be handled.
+         */
+        protected _scrollReady: boolean = true;
+
+        /**
          * @name _isLoading
          * @memberof platui.Listview
          * @kind property
@@ -407,7 +420,7 @@ module platui {
          * @description
          * A function that removes the scroll event listener.
          */
-        protected _removeScroll: plat.IRemoveListener;
+        protected _removeScroll: plat.IRemoveListener = noop;
 
         /**
          * @name _isRefreshing
@@ -870,6 +883,8 @@ module platui {
             while (visibilityRemovers.length > 0) {
                 visibilityRemovers.pop()();
             }
+
+            this._removeScroll();
 
             if (this.utils.isFunction(this.__rejectFn)) {
                 this.__rejectFn();
@@ -1740,18 +1755,17 @@ module platui {
             let progressRingContainer: HTMLElement;
             switch (this._loading) {
                 case 'infinite':
-                    let ready = true,
-                        removeScroll: plat.IRemoveListener,
+                    let removeScroll: plat.IRemoveListener,
                         removeRequest: plat.IRemoveListener = noop;
 
                     removeScroll = this.addEventListener(this._scrollContainer, 'scroll', (): void => {
-                        if (!ready) {
+                        if (!this._scrollReady) {
                             return;
                         }
 
-                        ready = false;
+                        this._scrollReady = false;
                         removeRequest = this.utils.requestAnimationFrame((): void => {
-                            ready = true;
+                            this._scrollReady = true;
                             this._onScroll();
                         });
                     }, false);
@@ -1767,9 +1781,7 @@ module platui {
                         progressRingContainer.insertBefore(this._generateProgressRing(), null);
                     }
 
-                    this.itemsLoaded.then((): void => {
-                        this._onScroll();
-                    });
+                    this.itemsLoaded.then(this._onScroll.bind(this));
                     break;
                 case 'incremental':
                     progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
@@ -1827,13 +1839,14 @@ module platui {
         protected _handleScroll(): void {
             // infinite scrolling set to load items at 80% of scroll length
             let scrollContainer = this._scrollContainer,
-                scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth),
-                utils = this.utils;
+                scrollLength = 0.8 * (this._isVertical ? scrollContainer.scrollHeight : scrollContainer.scrollWidth);
 
             if (scrollLength === 0) {
                 return;
             } else if (this._scrollPosition >= scrollLength) {
-                let itemsRemain = this._requestItems();
+                let utils = this.utils,
+                    itemsRemain = this._requestItems();
+
                 if (itemsRemain === false) {
                     this._removeScroll();
                 } else if (utils.isPromise(itemsRemain)) {
@@ -1841,7 +1854,8 @@ module platui {
                         showProgress = !utils.isNull(progressRing),
                         container = this._container;
 
-                    this._removeScroll();
+                    this._scrollReady = false;
+
                     if (showProgress) {
                         utils.requestAnimationFrame((): void => {
                             container.insertBefore(progressRing, null);
@@ -1859,7 +1873,15 @@ module platui {
                             return;
                         }
 
-                        this._removeScroll = this.addEventListener(scrollContainer, 'scroll', this._onScroll, false);
+                        this._scrollReady = true;
+                    });
+                } else {
+                    utils.postpone((): void => {
+                        this.itemsLoaded.then((): void => {
+                            if (this._scrollReady) {
+                                this._onScroll();
+                            }
+                        });
                     });
                 }
             }
