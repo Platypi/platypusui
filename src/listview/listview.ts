@@ -1771,6 +1771,7 @@ module platui {
                     }, false);
 
                     this._removeScroll = (): void => {
+                        this._scrollReady = false;
                         removeRequest();
                         removeScroll();
                     };
