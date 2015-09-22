@@ -36,7 +36,7 @@ module platui {
         templateString: string =
         '<div class="plat-listview-viewport">\n' +
         '    <div class="plat-scroll-container">\n' +
-        '        <div class="plat-container"></div>\n' +
+        '        <div class="plat-listview-container"></div>\n' +
         '    </div>\n' +
         '</div>\n';
 
