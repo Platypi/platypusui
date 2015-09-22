@@ -825,11 +825,9 @@ module platui {
                 animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
             };
 
-            let isLoading = false,
-                isRefreshing = false;
+            let isRefreshing = false;
             if (isString(loading)) {
                 if (isString(requestItems)) {
-                    isLoading = true;
                     this._determineLoading(requestItems, options.infiniteProgress !== false);
                 } else {
                     this._log.debug(`${this.type} loading type specified as "${loading}" but no option specifying an onItemsRequested handler.`);
@@ -841,7 +839,7 @@ module platui {
                 this._initializeRefresh(refresh);
             }
 
-            this._initializeTracking(isLoading, isRefreshing);
+            this._initializeTracking(loading === 'incremental', isRefreshing);
 
             if (!utils.isArray(this.context)) {
                 if (!utils.isNull(this.context)) {
@@ -1918,6 +1916,7 @@ module platui {
 
             let track: string,
                 reverseTrack: string;
+                
             if (this._isVertical) {
                 track = `${__$track}down`;
                 reverseTrack = `${__$track}up`;
