@@ -790,12 +790,18 @@ module platui {
                 animate = this._animate = options.animate === true,
                 requestItems = options.onItemsRequested,
                 refresh = options.onRefresh,
-                itemTemplate = options.itemTemplate;
+                itemTemplate = options.itemTemplate,
+                loadScroller = options.loadScroller;
 
             this._container = <HTMLElement>scrollContainer.firstElementChild;
 
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (` ${__Plat}animated`) : ''));
+
+            if (utils.isNode(loadScroller)) {
+                this._scrollContainer = loadScroller;
+                this.dom.addClass(element, `${__Plat}no-scroller`);
+            }
 
             if (!isString(itemTemplate)) {
                 this._log.debug(`No item template or item template selector specified for ${this.type}.`);
@@ -3281,6 +3287,20 @@ module platui {
          * Returning false indicates no more items.
          */
         loading?: string;
+
+        /**
+         * @name loadScroller
+         * @memberof platui.IListviewOptions
+         * @kind property
+         * @access public
+         *
+         * @type {HTMLElement}
+         *
+         * @description
+         * Indicates a separate HTMLElement is being used to scroll. If this is set to a HTMLElement, the {@link platui.Listview|Listview}
+         * will not handle its own scrolling.
+         */
+        loadScroller?: HTMLElement;
 
         /**
          * @name onItemsRequested

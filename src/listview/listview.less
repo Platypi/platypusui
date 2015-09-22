@@ -162,6 +162,20 @@
             .plat-incremental {
                 bottom: 0;
             }
+
+            &.plat-no-scroller {
+                height: auto;
+
+                .plat-listview-viewport {
+                    height: auto;
+
+                    .plat-scroll-container {
+                        height: auto;
+                        overflow-y: visible;
+                        -webkit-overflow-scrolling: auto;
+                    }
+                }
+            }
         }
 
         &.plat-horizontal {
@@ -227,6 +241,20 @@
 
             .plat-incremental {
                 right: 0;
+            }
+
+            &.plat-no-scroller {
+                width: auto;
+
+                .plat-listview-viewport {
+                    width: auto;
+
+                    .plat-scroll-container {
+                        width: auto;
+                        overflow-x: visible;
+                        -webkit-overflow-scrolling: auto;
+                    }
+                }
             }
         }
 
