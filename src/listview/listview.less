@@ -162,23 +162,6 @@
             .plat-incremental {
                 bottom: 0;
             }
-
-            &.plat-no-scroller {
-                height: auto;
-                overflow: unset;
-
-                .plat-listview-viewport {
-                    height: auto;
-                    overflow: unset;
-
-                    .plat-scroll-container {
-                        height: auto;
-                        overflow-x: unset;
-                        overflow-y: unset;
-                        -webkit-overflow-scrolling: auto;
-                    }
-                }
-            }
         }
 
         &.plat-horizontal {
@@ -245,20 +228,47 @@
             .plat-incremental {
                 right: 0;
             }
+        }
 
-            &.plat-no-scroller {
-                width: auto;
+        &.plat-no-scroller {
+            overflow: unset;
+
+            .plat-listview-viewport {
+                position: relative;
                 overflow: unset;
+
+                .plat-scroll-container {
+                    position: relative;
+                    overflow-x: unset;
+                    overflow-y: unset;
+                    -webkit-overflow-scrolling: auto;
+
+                    .plat-listview-container {
+                        position: relative;
+                    }
+                }
+            }
+
+            &.plat-vertical {
+                height: auto;
+
+                .plat-listview-viewport {
+                    height: auto;
+
+                    .plat-scroll-container {
+                        height: auto;
+                    }
+                }
+            }
+
+            &.plat-horizontal {
+                width: auto;
 
                 .plat-listview-viewport {
                     width: auto;
-                    overflow: unset;
 
                     .plat-scroll-container {
                         width: auto;
-                        overflow-y: unset;
-                        overflow-x: unset;
-                        -webkit-overflow-scrolling: auto;
                     }
                 }
             }
