@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.7.2 (https://platypi.io) 
+ * PlatypusUI v0.7.3 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -2824,20 +2824,6 @@ h6 {
 .plat-listview.plat-vertical .plat-incremental {
   bottom: 0;
 }
-.plat-listview.plat-vertical.plat-no-scroller {
-  height: auto;
-  overflow: unset;
-}
-.plat-listview.plat-vertical.plat-no-scroller .plat-listview-viewport {
-  height: auto;
-  overflow: unset;
-}
-.plat-listview.plat-vertical.plat-no-scroller .plat-listview-viewport .plat-scroll-container {
-  height: auto;
-  overflow-x: unset;
-  overflow-y: unset;
-  -webkit-overflow-scrolling: auto;
-}
 .plat-listview.plat-horizontal .plat-listview-viewport .plat-scroll-container {
   overflow-x: auto;
   overflow-y: hidden;
@@ -2972,19 +2958,39 @@ h6 {
 .plat-listview.plat-horizontal .plat-incremental {
   right: 0;
 }
-.plat-listview.plat-horizontal.plat-no-scroller {
-  width: auto;
+.plat-listview.plat-no-scroller {
   overflow: unset;
 }
-.plat-listview.plat-horizontal.plat-no-scroller .plat-listview-viewport {
-  width: auto;
+.plat-listview.plat-no-scroller .plat-listview-viewport {
+  position: relative;
   overflow: unset;
 }
-.plat-listview.plat-horizontal.plat-no-scroller .plat-listview-viewport .plat-scroll-container {
-  width: auto;
-  overflow-y: unset;
+.plat-listview.plat-no-scroller .plat-listview-viewport .plat-scroll-container {
+  position: relative;
   overflow-x: unset;
+  overflow-y: unset;
   -webkit-overflow-scrolling: auto;
+}
+.plat-listview.plat-no-scroller .plat-listview-viewport .plat-scroll-container .plat-listview-container {
+  position: relative;
+}
+.plat-listview.plat-no-scroller.plat-vertical {
+  height: auto;
+}
+.plat-listview.plat-no-scroller.plat-vertical .plat-listview-viewport {
+  height: auto;
+}
+.plat-listview.plat-no-scroller.plat-vertical .plat-listview-viewport .plat-scroll-container {
+  height: auto;
+}
+.plat-listview.plat-no-scroller.plat-horizontal {
+  width: auto;
+}
+.plat-listview.plat-no-scroller.plat-horizontal .plat-listview-viewport {
+  width: auto;
+}
+.plat-listview.plat-no-scroller.plat-horizontal .plat-listview-viewport .plat-scroll-container {
+  width: auto;
 }
 .plat-listview.plat-animated .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-enter-init {
   opacity: 0;
