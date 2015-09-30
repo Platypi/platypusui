@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.7.3 (https://platypi.io) 
+ * PlatypusUI v0.8.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1404,6 +1404,115 @@
 
     /// ====== Variable Button Styles ====== ///
 
+        .plat-button(@prop; @value) {
+            #platui > #mixins;
+            #platui > #__Button;
+
+            & when (@prop = color) {
+                &.plat-button,
+                &.button {
+                    color: @value;
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-button,
+                &.button {
+                    background-color: @value;
+
+                    &:active,
+                    &.plat-selected {
+                        background-color: darken(@value, 10%);
+                    }
+
+                    &.button-disabled,
+                    &[disabled],
+                    &:disabled {
+                        background-color: @value;
+                    }
+
+                    &.button-outline {
+                        border-color: @value;
+                        color: @value;
+
+                        &:active,
+                        &.plat-selected {
+                            background-color: @value;
+                        }
+
+                        &.button-disabled,
+                        &[disabled],
+                        &:disabled {
+                            color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-button,
+                &.button {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-width) {
+                &.plat-button,
+                &.button {
+                    border-width: @value;
+                }
+            }
+            & when (@prop = button-font-size) {
+                &.plat-button,
+                &.button {
+                    font-size: @value;
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-button,
+                &.button {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = padding-vertical) {
+                &.plat-button,
+                &.button {
+                    padding-top: @value;
+                    padding-bottom: @value;
+                }
+            }
+            & when (@prop = padding-horizontal) {
+                &.plat-button,
+                &.button {
+                    padding-left: @value;
+                    padding-right: @value;
+                }
+            }
+        }
+
+    /// ============== Variable Button Group Styles =============== ///
+
+        .plat-button-group(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = border-radius) {
+                &.button-group {
+                    & > .plat-button:nth-of-type(1),
+                    & > .button:nth-of-type(1) {
+                        .border-top-left-radius(@value);
+                        .border-bottom-left-radius(@value);
+                    }
+
+                    & > .plat-button:nth-last-of-type(1),
+                    & > .button:nth-last-of-type(1) {
+                        .border-top-right-radius(@value);
+                        .border-bottom-right-radius(@value);
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+    /// ====== Variable Button Styles ====== ///
+
         .plat-button(@prop: undefined; @value: undefined) {
             #platui > #mixins;
             #platui > #__Button;
@@ -1604,6 +1713,238 @@
 
     /// =========== Variable Carousel Styles =========== ///
 
+        .plat-carousel(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = padding) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-carousel-container {
+                            .plat-carousel-item {
+                                padding-left: @value;
+                                padding-right: @value;
+                                padding-top: @value;
+                                padding-bottom: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-carousel-container {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-color) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-active-color) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            &:active,
+                            &:hover {
+                                color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-font-size) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            font-size: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-font-family) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
+                                font-family: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-font-weight) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
+                                font-weight: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-down) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down::before { content: @value; }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-left) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-left::before { content: @value; }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-right) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-right::before { content: @value; }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-up) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-up::before { content: @value; }
+                        }
+                    }
+                }
+            }
+            & when (@prop = padding-left) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-carousel-container {
+                            .plat-carousel-item {
+                                padding-left: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = padding-right) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-carousel-container {
+                            .plat-carousel-item {
+                                padding-right: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = padding-top) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-carousel-container {
+                            .plat-carousel-item {
+                                padding-top: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = padding-bottom) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-carousel-container {
+                            .plat-carousel-item {
+                                padding-bottom: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-length) {
+                &.plat-carousel {
+                    &.plat-horizontal {
+                        .plat-carousel-viewport {
+                            .plat-back-arrow,
+                            .plat-forward-arrow {
+                                height: @value;
+                            }
+                        }
+                    }
+
+                    &.plat-vertical {
+                        .plat-carousel-viewport {
+                            .plat-back-arrow,
+                            .plat-forward-arrow {
+                                width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-width) {
+                &.plat-carousel {
+                    &.plat-horizontal {
+                        .plat-carousel-viewport {
+                            .plat-back-arrow,
+                            .plat-forward-arrow {
+                                width: @value;
+                            }
+                        }
+                    }
+
+                    &.plat-vertical {
+                        .plat-carousel-viewport {
+                            .plat-back-arrow,
+                            .plat-forward-arrow {
+                                height: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-carousel-container {
+                            &.plat-transition-init {
+                                .transition-duration(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+    /// =========== Variable Carousel Styles =========== ///
+    
         .plat-carousel(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -1913,6 +2254,64 @@
 
     /// =========== Variable Checkbox Styles =========== ///
 
+        .plat-checkbox(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = background-color) {
+                &.plat-checkbox {
+                    .plat-checkbox-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-checkbox {
+                    .plat-checkbox-container {
+                        border-color: @value;
+
+                        &.plat-check,
+                        &.plat-x {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                &.plat-checkbox {
+                    & > span {
+                        line-height: @value;
+                    }
+
+                    .plat-checkbox-container {
+                        .flex(0 0 @value);
+                        width: @value;
+                        height: @value;
+
+                        &.plat-check {
+                            .plat-mark::before {
+                                width: @value / 2.6;
+                            }
+
+                            .plat-mark::after {
+                                width: @value / 1.7;
+                            }
+                        }
+
+                        &.plat-x {
+                            .plat-mark::before,
+                            .plat-mark::after {
+                                width: @value / 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+    /// =========== Variable Checkbox Styles =========== ///
+    
         .plat-checkbox(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -2039,6 +2438,119 @@
         @transition-time: 300ms;
         @transition-function: ease-out;
 
+    /// =========== Variable Drawer Styles =========== ///
+
+        .plat-drawer(@prop; @value) {
+            & when (@prop = length-default) {
+                &.plat-drawer {
+                    &.plat-left {
+                        width: @value;
+                    }
+
+                    &.plat-right {
+                        width: @value;
+                    }
+
+                    &.plat-top {
+                        height: @value;
+                    }
+
+                    &.plat-bottom {
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = color) {
+                &.plat-drawer {
+                    color: @value;
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-drawer {
+                    background-color: @value;
+                }
+            }
+            & when (@prop = length-left) {
+                &.plat-drawer {
+                    &.plat-left {
+                        width: @value;
+                    }
+                }
+            }
+            & when (@prop = length-right) {
+                &.plat-drawer {
+                    &.plat-right {
+                        width: @value;
+                    }
+                }
+            }
+            & when (@prop = length-top) {
+                &.plat-drawer {
+                    &.plat-top {
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = length-bottom) {
+                &.plat-drawer {
+                    &.plat-bottom {
+                        height: @value;
+                    }
+                }
+            }
+        }
+
+    /// =========== Drawer Controller Root Element Styles =========== ///
+
+        .plat-drawer-root(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = shadow-left) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-left {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = shadow-right) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-right {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = shadow-top) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-top {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = shadow-bottom) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-bottom {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-drawer-root {
+                    &.plat-transition-init {
+                        .transition-duration(@value);
+                    }
+                }
+            }
+            & when (@prop = transition-function) {
+                &.plat-drawer-root {
+                    &.plat-transition-init {
+                        .transition-timing-function(@value);
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
     /// =========== Variable Drawer Styles =========== ///
 
         .plat-drawer(@prop: undefined; @value: undefined) {
@@ -2220,6 +2732,122 @@
 
     /// =========== Variable File Styles =========== ///
 
+        .plat-file(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = text-color) {
+                &.plat-file {
+                    .plat-file-container {
+                        .plat-file-input {
+                            color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = input-background-color) {
+                &.plat-file {
+                    .plat-file-container {
+                        .plat-file-input {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = input-border-color) {
+                &.plat-file {
+                    .plat-file-container {
+                        .plat-file-input {
+                            border-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = button-color) {
+                &.plat-file {
+                    .plat-file-container {
+                        .plat-file-button {
+                            color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = button-background-color) {
+                &.plat-file {
+                    .plat-file-container {
+                        .plat-file-button {
+                            background-color: @value;
+                            border-color: @value;
+
+                            &:active {
+                                background-color: darken(@value, 10%);
+                            }
+
+                            &[disabled],
+                            &:disabled {
+                                background-color: @value;
+                            }
+                        }
+                    }
+
+                    &.file-outline {
+                        .plat-file-button {
+                            border-color: @value;
+                            color: @value;
+
+                            &:active {
+                                background-color: @value;
+                            }
+
+                            &[disabled],
+                            &:disabled {
+                                color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = height) {
+                &.plat-file {
+                    height: @value;
+                }
+            }
+            & when (@prop = width) {
+                &.plat-file {
+                    width: @value;
+                }
+            }
+            & when (@prop = button-width) {
+                &.plat-file {
+                    .plat-file-container {
+                        padding-right: @value;
+
+                        .plat-file-button {
+                            width: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-file {
+                    .plat-file-container {
+                        .plat-file-input {
+                            .border-top-left-radius(@value);
+                            .border-bottom-left-radius(@value);
+                        }
+
+                        .plat-file-button {
+                            .border-top-right-radius(@value);
+                            .border-bottom-right-radius(@value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable File Styles =========== ///
+
         .plat-file(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -2390,6 +3018,12 @@
     #Image {
     /// =========== Variable Image Styles =========== ///
 
+        .plat-image(@prop; @value) { }
+    }
+
+    #controls {
+        /// =========== Variable Image Styles =========== ///
+
         .plat-image(@prop: undefined; @value: undefined) { }
     }
 }
@@ -2420,6 +3054,161 @@
         @outline-border-radius: 4px;
 
     /// =========== Variable Input Styles =========== ///
+
+        .plat-input(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = border-color) {
+                &.plat-input {
+                    .plat-input-container {
+                        .plat-input-action {
+                            color: darken(@value, 25%);;
+                        }
+                    }
+
+                    &:not(.input-outline) {
+                        .plat-input-container {
+                            input {
+                                border-bottom-color: @value;
+
+                                &:focus {
+                                    border-bottom-color: darken(@value, 25%);;
+                                }
+                            }
+                        }
+                    }
+
+                /// ============== Secondary Input =============== ///
+
+                    &.input-outline {
+                        .plat-input-container {
+                            input {
+                                border-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-bottom-width) {
+                &.plat-input {
+                    &:not(.input-outline) {
+                        .plat-input-container {
+                            input {
+                                border-bottom-width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-bottom) {
+                &.plat-input {
+                    &:not(.input-outline) {
+                        .plat-input-container {
+                            input {
+                                border-bottom: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = outline-border-width) {
+                &.plat-input {
+                    &.input-outline {
+                        .plat-input-container {
+                            input {
+                                border-width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = outline-border) {
+                &.plat-input {
+                    &.input-outline {
+                        .plat-input-container {
+                            input {
+                                border: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = outline-border-radius) {
+                &.plat-input {
+                    &.input-outline {
+                        .plat-input-container {
+                            input {
+                                .border-radius(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = text-color) {
+                &.plat-input {
+                    .plat-input-container {
+                        input {
+                            color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-input {
+                    .plat-input-container {
+                        input {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = placeholder-color) {
+                &.plat-input {
+                    .plat-input-container {
+                        input {
+                /// =========== Placeholder Styling =========== ///
+
+                            &::-webkit-input-placeholder {
+                                color: @value;
+                            }
+
+                            &::-moz-input-placeholder {
+                                color: @value;
+                            }
+
+                            &:-moz-input-placeholder {
+                                color: @value;
+                            }
+
+                            &:-ms-input-placeholder {
+                                color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = height) {
+                &.plat-input {
+                    height: @value;
+
+                    .plat-input-container {
+                        .plat-input-action {
+                            height: @value;
+                            line-height: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = width) {
+                &.plat-input {
+                    width: @value;
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Input Styles =========== ///
 
         .plat-input(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -2693,6 +3482,138 @@
 
     /// =========== Variable Listview Styles =========== ///
 
+        .plat-listview(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = enter-animation-name) {
+                &.plat-listview {
+                    &.plat-animated {
+                        .plat-listview-viewport {
+                            .plat-scroll-container {
+                                .plat-container {
+                                    .plat-enter {
+                                        .animation-name(@value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = enter-animation-duration) {
+                &.plat-listview {
+                    &.plat-animated {
+                        .plat-listview-viewport {
+                            .plat-scroll-container {
+                                .plat-container {
+                                    .plat-enter {
+                                        .animation-duration(@value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = leave-animation-name) {
+                &.plat-listview {
+                    &.plat-animated {
+                        .plat-listview-viewport {
+                            .plat-scroll-container {
+                                .plat-container {
+                                    .plat-leave {
+                                        .animation-name(@value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = leave-animation-duration) {
+                &.plat-listview {
+                    &.plat-animated {
+                        .plat-listview-viewport {
+                            .plat-scroll-container {
+                                .plat-container {
+                                    .plat-leave {
+                                        .animation-duration(@value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = manipulated-viewport-background-color) {
+                &.plat-listview {
+                    .plat-listview-viewport {
+                        &.plat-manipulation-prep {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = refresh-transition-time) {
+                &.plat-listview {
+                    .plat-listview-viewport {
+                        &.plat-transition-init {
+                            .transition-duration(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = enter-init) {
+                &.plat-listview {
+                    &.plat-animated {
+                        .plat-listview-viewport {
+                            .plat-scroll-container {
+                                .plat-container {
+                                    .plat-enter-init {
+                                        @value();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = enter-animation) {
+                &.plat-listview {
+                    &.plat-animated {
+                        .plat-listview-viewport {
+                            .plat-scroll-container {
+                                .plat-container {
+                                    .plat-enter {
+                                        .animation(@value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = leave-animation) {
+                &.plat-listview {
+                    &.plat-animated {
+                        .plat-listview-viewport {
+                            .plat-scroll-container {
+                                .plat-container {
+                                    .plat-leave {
+                                        .animation(@value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Listview Styles =========== ///
+
         .plat-listview(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -2905,6 +3826,395 @@
 	    @prompt-border-radius: 8px;
 
     /// =========== Variable Modal Styles =========== ///
+
+        .plat-modal(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = transition-time) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        &.plat-modal-transition {
+                            .transition-duration(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = left-transition) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        &.plat-modal-transition {
+                            &.plat-left {
+                                .transition(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = right-transition) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        &.plat-modal-transition {
+                            &.plat-right {
+                                .transition(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = up-transition) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        &.plat-modal-transition {
+                            &.plat-up {
+                                .transition(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = down-transition) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        &.plat-modal-transition {
+                            &.plat-down {
+                                .transition(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = fade-transition) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        &.plat-modal-transition {
+                            &.plat-fade {
+                                .transition(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = color) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-modal {
+                    .plat-modal-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = custom-height_height) {
+                &.plat-modal {
+                    &.modal-custom-height {
+                        .plat-modal-container {
+                            height: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = custom-height_y-offset) {
+                &.plat-modal {
+                    &.modal-custom-height {
+                        .plat-modal-container {
+                            &.plat-no-transition,
+                            &.plat-modal-transition.plat-fade {
+                                top: @value;
+                            }
+
+                            &.plat-modal-transition {
+                                &.plat-right {
+                                    top: @value;
+                                }
+
+                                &.plat-left {
+                                    top: @value;
+                                }
+
+                                &.plat-down {
+                                    &.plat-activate {
+                                        top: @value;
+                                    }
+                                }
+
+                                &.plat-up {
+                                    &.plat-activate {
+                                        bottom: @value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = custom-width_width) {
+                &.plat-modal {
+                    &.modal-custom-width {
+                        .plat-modal-container {
+                            width: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = custom-width_x-offset) {
+                &.plat-modal {
+                    &.modal-custom-width {
+                        .plat-modal-container {
+                            &.plat-no-transition,
+                            &.plat-modal-transition.plat-fade {
+                                left: @value;
+                            }
+
+                            &.plat-modal-transition {
+                                &.plat-right {
+                                    &.plat-activate {
+                                        left: @value;
+                                    }
+                                }
+
+                                &.plat-left {
+                                    &.plat-activate {
+                                        right: @value;
+                                    }
+                                }
+
+                                &.plat-down {
+                                    left: @value;
+                                }
+
+                                &.plat-up {
+                                    left: @value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = custom_width) {
+                &.plat-modal {
+                    &.modal-custom {
+                        .plat-modal-container {
+                            width: @value;
+
+                            &.plat-modal-transition {
+                                &.plat-left {
+                                    right: -@value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = custom_height) {
+                &.plat-modal {
+                    &.modal-custom {
+                        .plat-modal-container {
+                            height: @value;
+
+                            &.plat-modal-transition {
+                                &.plat-down {
+                                    top: -@value;
+                                }
+
+                                &.plat-up {
+                                    bottom: -@value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = custom_x-offset) {
+                &.plat-modal {
+                    &.modal-custom {
+                        .plat-modal-container {
+                            &.plat-no-transition,
+                            &.plat-modal-transition.plat-fade {
+                                left: @value;
+                            }
+
+                            &.plat-modal-transition {
+                                .plat-right {
+                                    left: -@value;
+
+                                    &.plat-activate {
+                                        left: @value;
+                                    }
+                                }
+
+                                &.plat-left {
+                                    &.plat-activate {
+                                        right: @value;
+                                    }
+                                }
+
+                                &.plat-down {
+                                    left: @value;
+                                }
+
+                                &.plat-up {
+                                    left: @value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = custom_y-offset) {
+                &.plat-modal {
+                    &.modal-custom {
+                        .plat-modal-container {
+                            &.plat-no-transition,
+                            &.plat-modal-transition.plat-fade {
+                                top: @value;
+                            }
+
+                            &.plat-modal-transition {
+                                .plat-right {
+                                    top: @value;
+                                }
+
+                                &.plat-left {
+                                    top: @value;
+                                }
+
+                                &.plat-down {
+                                    &.plat-activate {
+                                        top: @value;
+                                    }
+                                }
+
+                                &.plat-up {
+                                    &.plat-activate {
+                                        bottom: @value;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    /// =========== Variable Modal Prompt Styles =========== ///
+
+        .plat-modal-prompt(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = prompt-body-color) {
+                &.plat-modal {
+                    &.modal-prompt {
+                        .plat-modal-container {
+                            & .prompt-title {
+                                border-bottom-color: darken(@value, 4%);
+                            }
+
+                            & .prompt-body {
+                                background-color: @value;
+                            }
+
+                            & .prompt-action {
+                                background-color: @value;
+
+                                &.button-group {
+                                    & > button {
+                                        border-top-color: darken(@value, 4%);
+
+                                        &:last-child {
+                                            border-left-color: darken(@value, 4%);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = down-transition) {
+                &.plat-modal {
+                    &.modal-prompt {
+                        .plat-modal-container {
+                            &.plat-modal-transition {
+                                &.plat-up {
+                                    .transition(@value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = prompt-top) {
+                &.plat-modal {
+                    &.modal-prompt {
+                        .plat-modal-container {
+                            &.plat-no-transition,
+                            &.plat-modal-transition.plat-fade {
+                                top: @value;
+                            }
+
+                            &.plat-modal-transition {
+                                &.plat-up {
+                                    &.plat-activate {
+                                        top: @value;
+                                    }
+                                }
+
+                                &.plat-down {
+                                    &.plat-activate {
+                                        top: @value;
+                                    }
+                                }
+
+                                &.plat-left,
+                                &.plat-right {
+                                    top: @value;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = prompt-accent-color) {
+                &.plat-modal {
+                    &.modal-prompt {
+                        .plat-modal-container {
+                            & .prompt-title {
+                                border-bottom-color: @value;
+                            }
+
+                            & .prompt-action {
+                                &.button-group {
+                                    & > button {
+                                        border-top-color: @value;
+
+                                        &:last-child {
+                                            border-left-color: @value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = prompt-border-radius) {
+                &.plat-modal {
+                    &.modal-prompt {
+                        .plat-modal-container {
+                            .border-radius(@value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Modal Styles =========== ///
 
         .plat-modal(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -3506,7 +4816,7 @@
 #platui {
     #Navbar {
         #platui > #variables;
-        
+
     /// =========== Navbar Colors =========== ///
 
         @background-color: @primary-color;
@@ -3532,6 +4842,104 @@
         @box-shadow: 0px 0px 2px 1px lighten(@black, 10%);
 
     /// =========== Variable Navbar Styles =========== ///
+
+        .plat-navbar(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = background-color) {
+                &.plat-navbar {
+                    background-color: @value;
+                }
+            }
+            & when (@prop = color) {
+                &.plat-navbar {
+                    color: @value;
+                }
+            }
+            & when (@prop = height) {
+                &.plat-navbar {
+                    height: @value;
+                }
+            }
+            & when (@prop = z-index) {
+                &.plat-navbar {
+                    z-index: @value;
+                }
+            }
+            & when (@prop = padding) {
+                &.plat-navbar {
+                    padding: @value;
+                }
+            }
+            & when (@prop = border-top) {
+                &.plat-navbar {
+                    border-top: @value;
+                }
+            }
+            & when (@prop = border-right) {
+                &.plat-navbar {
+                    border-right: @value;
+                }
+            }
+            & when (@prop = border-bottom) {
+                &.plat-navbar {
+                    border-bottom: @value;
+                }
+            }
+            & when (@prop = border-left) {
+                &.plat-navbar {
+                    border-left: @value;
+                }
+            }
+            & when (@prop = left-percentage) {
+                &.plat-navbar {
+                    .plat-navbar-left {
+                        width: @value;
+                    }
+                }
+            }
+            & when (@prop = center-percentage) {
+                &.plat-navbar {
+                    .plat-navbar-center {
+                        width: @value;
+                    }
+                }
+            }
+            & when (@prop = right-percentage) {
+                &.plat-navbar {
+                    .plat-navbar-right {
+                        width: @value;
+                    }
+                }
+            }
+            & when (@prop = item-padding) {
+                &.plat-navbar {
+                    .plat-navbar-item {
+                        padding: @value;
+                    }
+                }
+            }
+            & when (@prop = font-size) {
+                &.plat-navbar {
+                    .plat-navbar-left,
+                    .plat-navbar-center,
+                    .plat-navbar-right {
+                        font-size: @value;
+                    }
+                }
+            }
+            & when (@prop = box-shadow) {
+                &.plat-navbar {
+                    &:not(.no-navbar-shadow) {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Navbar Styles =========== ///
 
         .plat-navbar(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -3691,6 +5099,83 @@
 
     /// =========== Variable Progress Bar Styles =========== ///
 
+        .plat-progress(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = fill-color) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = unfilled-color) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = height) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = border) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        border: @value;
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .border-radius(@value);
+                    }
+                }
+            }
+            & when (@prop = fill-radius) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            .border-radius(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            &.plat-transition-init {
+                                .transition-duration(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-function) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            &.plat-transition-init {
+                                .transition-timing-function(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Progress Bar Styles =========== ///
+
         .plat-progress(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -3828,6 +5313,464 @@
         }
 
     /// =========== Variable Progress Ring Styles =========== ///
+
+        .plat-ring(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = color) {
+                @fill-color: fade(@value, 80%);
+                @unfilled-color-0: fade(@value, 10%);
+                @unfilled-color-1: fade(@value, 15%);
+
+                &.plat-ring {
+                    &.plat-ring-0 {
+                        .plat-animated-ring {
+                            border-left-color: @fill-color;
+                            border-top-color: @unfilled-color-0;
+                            border-right-color: @unfilled-color-0;
+                            border-bottom-color: @unfilled-color-0;
+                        }
+                    }
+
+                    &.plat-ring-1 {
+                        .plat-animated-ring {
+                            .plat-animated-child-0::before {
+                                background-color: fade(@value, 75%);
+                            }
+
+                            .plat-animated-child-0::after {
+                                background-color: fade(@value, 60%);
+                            }
+
+                            .plat-animated-child-1::before {
+                                background-color: fade(@value, 45%);
+                            }
+
+                            .plat-animated-child-1::after {
+                                background-color: fade(@value, 30%);
+                            }
+
+                            .plat-animated-child-2::before {
+                                background-color: @unfilled-color-1;
+                            }
+
+                            .plat-animated-child-2::after {
+                                background-color: @unfilled-color-1;
+                            }
+
+                            .plat-animated-child-3::before {
+                                background-color: @unfilled-color-1;
+                            }
+
+                            .plat-animated-child-3::after {
+                                background-color: @unfilled-color-1;
+                            }
+                        }
+                    }
+
+                    &.plat-ring-2 {
+                        .plat-animated-ring {
+                            .plat-animated-child {
+                                &::before {
+                                    background-color: @fill-color;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                @thickness: @value / 10;
+
+                &.plat-ring {
+                    width: @value;
+                    height: @value;
+
+                    &.plat-ring-0 {
+                        .plat-animated-ring {
+                            border-width: @thickness;
+                        }
+                    }
+                }
+            }
+            & when (@prop = spin-animation-name) {
+                &.plat-ring {
+                    &.plat-ring-0 {
+                        .plat-animated-ring {
+                            .animation-name(@value);
+                        }
+                    }
+
+                    &.plat-ring-1 {
+                        .plat-animated-ring {
+                            .animation-name(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = fade-delay-animation-name) {
+                &.plat-ring {
+                    &.plat-ring-2 {
+                        .plat-animated-ring {
+                            .plat-animated-child {
+                                &::before {
+                                    .animation-name(@value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = spin-frequency) {
+                @delay-step: @spin-frequency / 12;
+
+                &.plat-ring {
+                    &.plat-ring-0 {
+                        .plat-animated-ring {
+                            .animation-duration(@value);
+                        }
+                    }
+
+                    &.plat-ring-1 {
+                        .plat-animated-ring {
+                            .animation-duration(@value);
+                        }
+                    }
+
+                    &.plat-ring-2 {
+                        .plat-animated-ring {
+                            .plat-animated-child {
+                                &::before {
+                                    .animation-duration(@value);
+                                }
+                            }
+
+                            .plat-animated-child-1 {
+                                &::before {
+                                    .animation-delay(-@value + @delay-step);
+                                }
+                            }
+
+                            .plat-animated-child-2 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 2));
+                                }
+                            }
+
+                            .plat-animated-child-3 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 3));
+                                }
+                            }
+
+                            .plat-animated-child-4 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 4));
+                                }
+                            }
+
+                            .plat-animated-child-5 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 5));
+                                }
+                            }
+
+                            .plat-animated-child-6 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 6));
+                                }
+                            }
+
+                            .plat-animated-child-7 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 7));
+                                }
+                            }
+
+                            .plat-animated-child-8 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 8));
+                                }
+                            }
+
+                            .plat-animated-child-9 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 9));
+                                }
+                            }
+
+                            .plat-animated-child-10 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 10));
+                                }
+                            }
+
+                            .plat-animated-child-11 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 11));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    /// =========== Variable Progress Ring 0 Styles =========== ///
+
+        .plat-ring-0(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = color) {
+                @fill-color: fade(@value, 80%);
+                @unfilled-color-0: fade(@value, 10%);
+
+                &.plat-ring {
+                    &.plat-ring-0 {
+                        .plat-animated-ring {
+                            border-left-color: @fill-color;
+                            border-top-color: @unfilled-color-0;
+                            border-right-color: @unfilled-color-0;
+                            border-bottom-color: @unfilled-color-0;
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                @thickness: @value / 10;
+
+                &.plat-ring {
+                    &.plat-ring-0 {
+                        width: @value;
+                        height: @value;
+
+                        .plat-animated-ring {
+                            border-width: @thickness;
+                        }
+                    }
+                }
+            }
+            & when (@prop = spin-animation-name) {
+                &.plat-ring {
+                    &.plat-ring-0 {
+                        .plat-animated-ring {
+                            .animation-name(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = spin-frequency) {
+                &.plat-ring {
+                    &.plat-ring-0 {
+                        .plat-animated-ring {
+                            .animation-duration(@value);
+                        }
+                    }
+                }
+            }
+        }
+
+    /// =========== Variable Progress Ring 1 Styles =========== ///
+
+        .plat-ring-1(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = color) {
+                @unfilled-color-1: fade(@value, 15%);
+
+                &.plat-ring {
+                    &.plat-ring-1 {
+                        .plat-animated-ring {
+                            .plat-animated-child-0::before {
+                                background-color: fade(@value, 75%);
+                            }
+
+                            .plat-animated-child-0::after {
+                                background-color: fade(@value, 60%);
+                            }
+
+                            .plat-animated-child-1::before {
+                                background-color: fade(@value, 45%);
+                            }
+
+                            .plat-animated-child-1::after {
+                                background-color: fade(@value, 30%);
+                            }
+
+                            .plat-animated-child-2::before {
+                                background-color: @unfilled-color-1;
+                            }
+
+                            .plat-animated-child-2::after {
+                                background-color: @unfilled-color-1;
+                            }
+
+                            .plat-animated-child-3::before {
+                                background-color: @unfilled-color-1;
+                            }
+
+                            .plat-animated-child-3::after {
+                                background-color: @unfilled-color-1;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                &.plat-ring {
+                    &.plat-ring-1 {
+                        width: @value;
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = spin-animation-name) {
+                &.plat-ring {
+                    &.plat-ring-1 {
+                        .plat-animated-ring {
+                            .animation-name(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = spin-frequency) {
+                &.plat-ring {
+                    &.plat-ring-1 {
+                        .plat-animated-ring {
+                            .animation-duration(@value);
+                        }
+                    }
+                }
+            }
+        }
+
+    /// =========== Variable Progress Ring 2 Styles =========== ///
+
+        .plat-ring-2(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = color) {
+                @fill-color: fade(@value, 80%);
+
+                &.plat-ring {
+                    &.plat-ring-2 {
+                        .plat-animated-ring {
+                            .plat-animated-child {
+                                &::before {
+                                    background-color: @fill-color;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                &.plat-ring {
+                    &.plat-ring-2 {
+                        width: @value;
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = fade-delay-animation-name) {
+                &.plat-ring {
+                    &.plat-ring-2 {
+                        .plat-animated-ring {
+                            .plat-animated-child {
+                                &::before {
+                                    .animation-name(@value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = spin-frequency) {
+                @delay-step: @spin-frequency / 12;
+
+                &.plat-ring {
+                    &.plat-ring-2 {
+                        .plat-animated-ring {
+                            .plat-animated-child {
+                                &::before {
+                                    .animation-duration(@value);
+                                }
+                            }
+
+                            .plat-animated-child-1 {
+                                &::before {
+                                    .animation-delay(-@value + @delay-step);
+                                }
+                            }
+
+                            .plat-animated-child-2 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 2));
+                                }
+                            }
+
+                            .plat-animated-child-3 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 3));
+                                }
+                            }
+
+                            .plat-animated-child-4 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 4));
+                                }
+                            }
+
+                            .plat-animated-child-5 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 5));
+                                }
+                            }
+
+                            .plat-animated-child-6 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 6));
+                                }
+                            }
+
+                            .plat-animated-child-7 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 7));
+                                }
+                            }
+
+                            .plat-animated-child-8 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 8));
+                                }
+                            }
+
+                            .plat-animated-child-9 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 9));
+                                }
+                            }
+
+                            .plat-animated-child-10 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 10));
+                                }
+                            }
+
+                            .plat-animated-child-11 {
+                                &::before {
+                                    .animation-delay(-@value + (@delay-step * 11));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Progress Ring Styles =========== ///
 
         .plat-ring(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -4606,6 +6549,102 @@
 
     /// =========== Variable Radio Styles =========== ///
 
+        .plat-radio(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = checked-border-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            border-color: @value;
+
+                            .plat-mark {
+                                background-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        border-color: @value;
+                    }
+                }
+            }
+            & when (@prop = mark-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            .plat-mark {
+                                background-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = mark-padding-color) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                &.plat-radio {
+                    & > span {
+                        line-height: @value;
+                    }
+
+                    .plat-radio-container {
+                        .flex(0 0 @value);
+                        width: @value;
+                        height: @value;
+
+                        &.plat-bullet {
+                            .plat-mark {
+                                width: @value;
+                                height: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-width) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        border-width: @value;
+                    }
+                }
+            }
+            & when (@prop = mark-padding) {
+                &.plat-radio {
+                    .plat-radio-container {
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Radio Styles =========== ///
+
         .plat-radio(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -4752,6 +6791,172 @@
         @transition-time: 300ms;
 
     /// ========== Variable Range Style =========== ///
+
+        .plat-range(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = fill-color) {
+                &.plat-range {
+                    .plat-range-container {
+                        .plat-range-track {
+                            .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = unfilled-color) {
+                &.plat-range {
+                    .plat-range-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = knob-base-color) {
+                &.plat-range {
+                    .plat-range-container {
+                        .plat-range-track {
+                            .plat-lower-knob,
+                            .plat-upper-knob {
+                                background-color: lighten(@value, 10%);
+                                border-color: darken(@value, 5%);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-range {
+                    .plat-range-container {
+                        .border-radius(@value);
+
+                        .plat-range-track {
+                            .border-radius(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = thickness) {
+                @half-thickness: @value / 2;
+
+                &.plat-range {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        .plat-range-container {
+                            .translate-accelerate(0;-@half-thickness);
+                            height: @value;
+
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    top: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-range-container {
+                            .translate-accelerate(-@half-thickness;0);
+                            width: @value;
+
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    left: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = knob-diameter) {
+                @knob-radius: @knob-diameter / 2;
+
+                &.plat-range {
+                    .plat-range-container {
+                        .plat-range-track {
+                            .plat-lower-knob,
+                            .plat-upper-knob {
+                                width: @value;
+                                height: @value;
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        height: @value;
+                        padding-left: @knob-radius;
+                        padding-right: @knob-radius;
+
+                        .plat-range-container {
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    .translate-accelerate(0;-@knob-radius);
+                                }
+
+                                .plat-lower-knob {
+                                    left: -@knob-radius;
+                                }
+
+                                .plat-upper-knob {
+                                    right: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        width: @value;
+                        padding-top: @knob-radius;
+                        padding-bottom: @knob-radius;
+
+                        .plat-range-container {
+                            top: @knob-radius;
+
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    .translate-accelerate(-@knob-radius;0);
+                                }
+
+                                .plat-lower-knob {
+                                    bottom: -@knob-radius;
+                                }
+
+                                .plat-upper-knob {
+                                    top: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-range {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed,
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-range-container {
+                            .plat-range-track {
+                                &.plat-transition-init {
+                                    .transition-duration(@value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// ========== Variable Range Style =========== ///
 
         .plat-range(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -5024,6 +7229,48 @@
 
     /// =========== Variable Select Styles =========== ///
 
+        .plat-select(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = background-color) {
+                &.plat-select {
+                    background-color: @value;
+
+                    &::-ms-value {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = color) {
+                &.plat-select {
+                    color: @value;
+
+                    &::-ms-value {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-select {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-select {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-width) {
+                &.plat-select {
+                    border-width: @value;
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Select Styles =========== ///
+
         .plat-select(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -5102,6 +7349,190 @@
         @transition-time: 300ms;
 
     /// ========== Variable Slider Styles =========== ///
+
+        .plat-slider(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = fill-color) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        .plat-slider-track {
+                            .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = unfilled-color) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = knob-base-color) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        .plat-slider-track {
+                            .plat-knob {
+                                background-color: lighten(@value, 10%);
+                                border-color: darken(@value, 5%);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        .border-radius(@value);
+
+                        .plat-slider-track {
+                            .border-radius(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = thickness) {
+                @half-thickness: @value / 2;
+
+                &.plat-slider {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        .plat-slider-container {
+                            .translate-accelerate(0;-@half-thickness);
+                            height: @value;
+
+                            .plat-slider-track {
+                                .plat-knob {
+                                    top: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-slider-container {
+                            .translate-accelerate(-@half-thickness;0);
+                            width: @value;
+
+                            .plat-slider-track {
+                                .plat-knob {
+                                    left: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = knob-diameter) {
+                @knob-radius: @value / 2;
+
+                &.plat-slider {
+                    .plat-slider-container {
+                        .plat-slider-track {
+                            .plat-knob {
+                                width: @value;
+                                height: @value;
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        height: @value;
+                        padding-left: @knob-radius;
+                        padding-right: @knob-radius;
+
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    .translate-accelerate(0;-@knob-radius);
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    right: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal-reversed {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    left: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        width: @value;
+                        padding-top: @knob-radius;
+                        padding-bottom: @knob-radius;
+
+                        .plat-slider-container {
+                            top: @knob-radius;
+
+                            .plat-slider-track {
+                                .plat-knob {
+                                    .translate-accelerate(-@knob-radius;0);
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    top: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical-reversed {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    bottom: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-slider {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed,
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                &.plat-transition-init {
+                                    .transition-duration(@value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// ========== Variable Slider Styles =========== ///
 
         .plat-slider(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -5428,6 +7859,193 @@
         @transition-time: 250ms;
 
     /// ========== Variable Toggle Style =========== ///
+
+        .plat-toggle(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = color-off) {
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        background-color: @value;
+                        border-color: darken(@value, 3%);
+                    }
+                }
+            }
+            & when (@prop = color-on) {
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        &.plat-slide {
+                            border-color: darken(@value, 5%);
+                            background-color: @value;
+                        }
+                    }
+
+                    &.toggle-thin {
+                        .plat-toggle-container {
+                            &.plat-slide {
+                                background-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = background-color-off) {
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-color-off) {
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        border-color: @value;
+                    }
+                }
+            }
+            & when (@prop = background-color-on) {
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        &.plat-slide {
+                            background-color: @value;
+                        }
+                    }
+
+                    &.toggle-thin {
+                        .plat-toggle-container {
+                            &.plat-slide {
+                                background-color: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-color-on) {
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        &.plat-slide {
+                            border-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = toggle-thin-color-off) {
+                &.plat-toggle {
+                    &.toggle-thin {
+                        .plat-toggle-container {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = width) {
+                #platui > #Toggle;
+                @height: @value * @ratio;
+                @toggle-thin-height: @value * @toggle-thin-ratio;
+                @half-thin-height: @toggle-thin-height / 2;
+                @toggle-thin-knob-radius: (@value * @toggle-thin-knob-ratio) / 2;
+
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        .border-radius(@height);
+                        width: @value;
+                        height: @height;
+
+                        .plat-knob {
+                            height: @height;
+                            width: @height;
+                        }
+
+                        &.plat-slide {
+                            .plat-knob {
+                                left: @value - @height;
+                            }
+                        }
+                    }
+
+                    &.toggle-thin {
+                        .plat-toggle-container {
+                            height: @toggle-thin-height;
+
+                            .plat-knob {
+                                top: @half-thin-height - @toggle-thin-knob-radius;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = ratio) {
+                #platui > #Toggle;
+                @height: @width * @value;
+
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        .border-radius(@height);
+                        height: @height;
+
+                        .plat-knob {
+                            height: @height;
+                            width: @height;
+                        }
+
+                        &.plat-slide {
+                            .plat-knob {
+                                left: @width - @height;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = toggle-thin-ratio) {
+                #platui > #Toggle;
+                @toggle-thin-height: @width * @value;
+                @half-thin-height: @toggle-thin-height / 2;
+                @toggle-thin-knob-radius: (@width * @toggle-thin-knob-ratio) / 2;
+
+                &.plat-toggle {
+                    &.toggle-thin {
+                        .plat-toggle-container {
+                            height: @toggle-thin-height;
+
+                            .plat-knob {
+                                top: @half-thin-height - @toggle-thin-knob-radius;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = toggle-thin-knob-ratio) {
+                #platui > #Toggle;
+                @toggle-thin-height: @width * @toggle-thin-ratio;
+                @half-thin-height: @toggle-thin-height / 2;
+                @toggle-thin-knob-radius: (@width * @value) / 2;
+
+                &.plat-toggle {
+                    &.toggle-thin {
+                        .plat-toggle-container {
+                            .plat-knob {
+                                top: @half-thin-height - @toggle-thin-knob-radius;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-toggle {
+                    .plat-toggle-container {
+                        .transition(~'background-color @{value}, border-color @{value}');
+
+                        .plat-knob {
+                            .transition-duration(@value);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// ========== Variable Toggle Style =========== ///
 
         .plat-toggle(@prop: undefined; @value: undefined) {
             #platui > #mixins;
@@ -7555,6 +10173,7 @@
             input {
                 .box-sizing(border-box);
                 .border-radius(0px);
+                .appearance(none);
                 position: absolute;
                 height: 100%;
                 width: 100%;
@@ -7566,7 +10185,6 @@
                 outline: none;
                 border: none;
                 font: inherit;
-                -webkit-appearance: none;
 
                 &::-ms-clear,
                 &::-ms-reveal {
