@@ -252,6 +252,7 @@ module platui {
             this._addChangeListener();
             this._visibleInput.value = '';
             this.inputChanged(null);
+            this._trigger('change');
         }
 
         /**
@@ -388,11 +389,13 @@ module platui {
             if (!hiddenInput.multiple) {
                 if (newValue !== files[0]) {
                     this.inputChanged(files[0]);
+                    this._trigger('change');
                 }
                 return;
             }
 
             this.inputChanged(Array.prototype.slice.call(files));
+            this._trigger('change');
         }
 
         /**
@@ -475,20 +478,41 @@ module platui {
 
             if (!hiddenInput.multiple) {
                 let file = files[0];
+                
                 visibleInput.value = file.name;
                 this.inputChanged(file);
-                return;
+            } else {
+                let fileNames = <Array<string>>[],
+                    length = files.length;
+
+                for (let i = 0; i < length; ++i) {
+                    fileNames.push(files[i].name);
+                }
+
+                visibleInput.value = fileNames.join(', ');
+                this.inputChanged(Array.prototype.slice.call(files));
             }
 
-            let fileNames = <Array<string>>[],
-                length = files.length;
+            this._trigger('change');
+        }
 
-            for (let i = 0; i < length; ++i) {
-                fileNames.push(files[i].name);
-            }
-
-            visibleInput.value = fileNames.join(', ');
-            this.inputChanged(Array.prototype.slice.call(files));
+        /**
+         * @name _trigger
+         * @memberof platui.File
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Triggers an event starting from this control's element.
+         *
+         * @param {string} event The event name to trigger.
+         *
+         * @returns {void}
+         */
+        protected _trigger(event: string): void {
+            let domEvent: plat.ui.DomEvent = plat.acquire(__DomEventInstance);
+            domEvent.initialize(this.element, event);
+            domEvent.trigger();
         }
     }
 
