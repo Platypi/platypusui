@@ -75,7 +75,18 @@ module platui {
          */
         protected _visibleInput: HTMLInputElement;
 
-        protected _changeListener: plat.IRemoveListener = noop;
+        /**
+         * @name _removeListener
+         * @memberof platui.File
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.IRemoveListener}
+         *
+         * @description
+         * A function for removing the 'change' event listener.
+         */
+        protected _removeListener: plat.IRemoveListener = noop;
 
         /**
          * @name setClasses
@@ -196,7 +207,8 @@ module platui {
         loaded(): void {
             let hiddenInput = this._hiddenInput = this._hiddenInput || <HTMLInputElement>this.element.firstElementChild.firstElementChild;
             this._visibleInput = this._visibleInput || <HTMLInputElement>hiddenInput.nextElementSibling;
-            this._addChangeListener(hiddenInput);
+
+            this._addChangeListener();
         }
 
         /**
@@ -235,9 +247,9 @@ module platui {
             hiddenInput.value = null;
 
             let clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
+
             this.element.firstElementChild.replaceChild(clone, hiddenInput);
-            this._addChangeListener(clone);
-            
+            this._addChangeListener();
             this._visibleInput.value = '';
             this.inputChanged(null);
         }
@@ -383,14 +395,25 @@ module platui {
             this.inputChanged(Array.prototype.slice.call(files));
         }
 
-        protected _addChangeListener(element: HTMLElement): void {
-            this._changeListener();
-            this._changeListener = this.addEventListener(element, 'change', this._filesSelected, false);
+        /**
+         * @name _addChangeListener
+         * @memberof platui.File
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Adds the 'change' event listener to the hidden input[type=file].
+         *
+         * @returns {void}
+         */
+        protected _addChangeListener(): void {
+            this._removeListener();
+            this._removeListener = this.addEventListener(this._hiddenInput, 'change', this._filesSelected, false);
         }
 
         /**
          * @name _onKeyDown
-         * @memberof plat.controls.Bind
+         * @memberof platui.File
          * @kind function
          * @access protected
          *
