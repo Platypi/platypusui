@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.7.3 (https://platypi.io)
+ * PlatypusUI v0.8.0 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -5356,12 +5356,15 @@ var platui;
          * Determine item templates and kick off rendering.
          */
         Listview.prototype.loaded = function () {
-            var options = this.options.value, utils = this.utils, isString = utils.isString, element = this.element, viewport = this._viewport = element.firstElementChild, scrollContainer = this._scrollContainer = viewport.firstElementChild, loading = this._loading = options.loading, animate = this._animate = options.animate === true, requestItems = options.onItemsRequested, refresh = options.onRefresh, itemTemplate = options.itemTemplate, loadScroller = options.loadScroller;
+            var options = this.options.value, utils = this.utils, isString = utils.isString, element = this.element, viewport = this._viewport = element.firstElementChild, scrollContainer = this._scrollContainer = viewport.firstElementChild, loading = this._loading = options.loading, animate = this._animate = options.animate === true, requestItems = options.onItemsRequested, refresh = options.onRefresh, itemTemplate = options.itemTemplate, scrollElement = options.scrollElement;
             this._container = scrollContainer.firstElementChild;
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (" " + __Plat + "animated") : ''));
-            if (utils.isNode(loadScroller)) {
-                this._scrollContainer = loadScroller;
+            if (isString(scrollElement)) {
+                scrollElement = this._document.querySelector(scrollElement);
+            }
+            if (utils.isNode(scrollElement)) {
+                this._scrollContainer = scrollElement;
                 this.dom.addClass(element, __Plat + "no-scroller");
             }
             if (!isString(itemTemplate)) {

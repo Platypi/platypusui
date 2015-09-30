@@ -35,6 +35,119 @@
 
     /// =========== Variable Drawer Styles =========== ///
 
+        .plat-drawer(@prop; @value) {
+            & when (@prop = length-default) {
+                &.plat-drawer {
+                    &.plat-left {
+                        width: @value;
+                    }
+
+                    &.plat-right {
+                        width: @value;
+                    }
+
+                    &.plat-top {
+                        height: @value;
+                    }
+
+                    &.plat-bottom {
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = color) {
+                &.plat-drawer {
+                    color: @value;
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-drawer {
+                    background-color: @value;
+                }
+            }
+            & when (@prop = length-left) {
+                &.plat-drawer {
+                    &.plat-left {
+                        width: @value;
+                    }
+                }
+            }
+            & when (@prop = length-right) {
+                &.plat-drawer {
+                    &.plat-right {
+                        width: @value;
+                    }
+                }
+            }
+            & when (@prop = length-top) {
+                &.plat-drawer {
+                    &.plat-top {
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = length-bottom) {
+                &.plat-drawer {
+                    &.plat-bottom {
+                        height: @value;
+                    }
+                }
+            }
+        }
+
+    /// =========== Drawer Controller Root Element Styles =========== ///
+
+        .plat-drawer-root(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = shadow-left) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-left {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = shadow-right) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-right {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = shadow-top) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-top {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = shadow-bottom) {
+                &.plat-drawer-root {
+                    &.plat-drawer-transition-bottom {
+                        .box-shadow(@value);
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-drawer-root {
+                    &.plat-transition-init {
+                        .transition-duration(@value);
+                    }
+                }
+            }
+            & when (@prop = transition-function) {
+                &.plat-drawer-root {
+                    &.plat-transition-init {
+                        .transition-timing-function(@value);
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+    /// =========== Variable Drawer Styles =========== ///
+
         .plat-drawer(@prop: undefined; @value: undefined) {
             & when (@prop = undefined), (@value = undefined) {
                 &.plat-drawer {

@@ -25,6 +25,190 @@
 
     /// ========== Variable Slider Styles =========== ///
 
+        .plat-slider(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = fill-color) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        .plat-slider-track {
+                            .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = unfilled-color) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = knob-base-color) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        .plat-slider-track {
+                            .plat-knob {
+                                background-color: lighten(@value, 10%);
+                                border-color: darken(@value, 5%);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-slider {
+                    .plat-slider-container {
+                        .border-radius(@value);
+
+                        .plat-slider-track {
+                            .border-radius(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = thickness) {
+                @half-thickness: @value / 2;
+
+                &.plat-slider {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        .plat-slider-container {
+                            .translate-accelerate(0;-@half-thickness);
+                            height: @value;
+
+                            .plat-slider-track {
+                                .plat-knob {
+                                    top: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-slider-container {
+                            .translate-accelerate(-@half-thickness;0);
+                            width: @value;
+
+                            .plat-slider-track {
+                                .plat-knob {
+                                    left: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = knob-diameter) {
+                @knob-radius: @value / 2;
+
+                &.plat-slider {
+                    .plat-slider-container {
+                        .plat-slider-track {
+                            .plat-knob {
+                                width: @value;
+                                height: @value;
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        height: @value;
+                        padding-left: @knob-radius;
+                        padding-right: @knob-radius;
+
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    .translate-accelerate(0;-@knob-radius);
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    right: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal-reversed {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    left: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        width: @value;
+                        padding-top: @knob-radius;
+                        padding-bottom: @knob-radius;
+
+                        .plat-slider-container {
+                            top: @knob-radius;
+
+                            .plat-slider-track {
+                                .plat-knob {
+                                    .translate-accelerate(-@knob-radius;0);
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    top: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical-reversed {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                .plat-knob {
+                                    bottom: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-slider {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed,
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-slider-container {
+                            .plat-slider-track {
+                                &.plat-transition-init {
+                                    .transition-duration(@value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// ========== Variable Slider Styles =========== ///
+
         .plat-slider(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 

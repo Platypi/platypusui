@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.7.3 (https://platypi.io)
+  * PlatypusUI v0.8.0 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -3215,9 +3215,10 @@ declare module platui {
         loading?: string;
         /**
           * Indicates a separate HTMLElement is being used to scroll. If this is set to a HTMLElement, the Listview
-          * will not handle its own scrolling.
+          * will not handle its own scrolling. If it is set to a string, the Listview will run a querySelector
+          * on it at the Document level to obtain the Element.
           */
-        loadScroller?: HTMLElement;
+        scrollElement?: HTMLElement;
         /**
           * The name of the function that will be called when more items are being requested to add to the list.
           */

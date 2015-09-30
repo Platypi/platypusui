@@ -23,6 +23,83 @@
 
     /// =========== Variable Progress Bar Styles =========== ///
 
+        .plat-progress(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = fill-color) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = unfilled-color) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = height) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        height: @value;
+                    }
+                }
+            }
+            & when (@prop = border) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        border: @value;
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .border-radius(@value);
+                    }
+                }
+            }
+            & when (@prop = fill-radius) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            .border-radius(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            &.plat-transition-init {
+                                .transition-duration(@value);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-function) {
+                &.plat-progress {
+                    .plat-progress-container {
+                        .plat-animated-bar {
+                            &.plat-transition-init {
+                                .transition-timing-function(@value);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Progress Bar Styles =========== ///
+
         .plat-progress(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 

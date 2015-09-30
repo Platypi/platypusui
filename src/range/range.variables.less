@@ -25,6 +25,172 @@
 
     /// ========== Variable Range Style =========== ///
 
+        .plat-range(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = fill-color) {
+                &.plat-range {
+                    .plat-range-container {
+                        .plat-range-track {
+                            .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = unfilled-color) {
+                &.plat-range {
+                    .plat-range-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = knob-base-color) {
+                &.plat-range {
+                    .plat-range-container {
+                        .plat-range-track {
+                            .plat-lower-knob,
+                            .plat-upper-knob {
+                                background-color: lighten(@value, 10%);
+                                border-color: darken(@value, 5%);
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-range {
+                    .plat-range-container {
+                        .border-radius(@value);
+
+                        .plat-range-track {
+                            .border-radius(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = thickness) {
+                @half-thickness: @value / 2;
+
+                &.plat-range {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        .plat-range-container {
+                            .translate-accelerate(0;-@half-thickness);
+                            height: @value;
+
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    top: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-range-container {
+                            .translate-accelerate(-@half-thickness;0);
+                            width: @value;
+
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    left: @half-thickness;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = knob-diameter) {
+                @knob-radius: @knob-diameter / 2;
+
+                &.plat-range {
+                    .plat-range-container {
+                        .plat-range-track {
+                            .plat-lower-knob,
+                            .plat-upper-knob {
+                                width: @value;
+                                height: @value;
+                            }
+                        }
+                    }
+
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed {
+                        height: @value;
+                        padding-left: @knob-radius;
+                        padding-right: @knob-radius;
+
+                        .plat-range-container {
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    .translate-accelerate(0;-@knob-radius);
+                                }
+
+                                .plat-lower-knob {
+                                    left: -@knob-radius;
+                                }
+
+                                .plat-upper-knob {
+                                    right: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        width: @value;
+                        padding-top: @knob-radius;
+                        padding-bottom: @knob-radius;
+
+                        .plat-range-container {
+                            top: @knob-radius;
+
+                            .plat-range-track {
+                                .plat-lower-knob,
+                                .plat-upper-knob {
+                                    .translate-accelerate(-@knob-radius;0);
+                                }
+
+                                .plat-lower-knob {
+                                    bottom: -@knob-radius;
+                                }
+
+                                .plat-upper-knob {
+                                    top: -@knob-radius;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = transition-time) {
+                &.plat-range {
+                    &.plat-horizontal,
+                    &.plat-horizontal-reversed,
+                    &.plat-vertical,
+                    &.plat-vertical-reversed {
+                        .plat-range-container {
+                            .plat-range-track {
+                                &.plat-transition-init {
+                                    .transition-duration(@value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// ========== Variable Range Style =========== ///
+
         .plat-range(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 

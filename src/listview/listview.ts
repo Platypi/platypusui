@@ -804,15 +804,19 @@ module platui {
                 requestItems = options.onItemsRequested,
                 refresh = options.onRefresh,
                 itemTemplate = options.itemTemplate,
-                loadScroller = options.loadScroller;
+                scrollElement = options.scrollElement;
 
             this._container = <HTMLElement>scrollContainer.firstElementChild;
 
             this.dom.addClass(element, __Plat + this._validateOrientation(options.orientation) +
                 (animate ? (` ${__Plat}animated`) : ''));
 
-            if (utils.isNode(loadScroller)) {
-                this._scrollContainer = loadScroller;
+            if (isString(scrollElement)) {
+                scrollElement = <HTMLElement>this._document.querySelector(<any>scrollElement);
+            }
+
+            if (utils.isNode(scrollElement)) {
+                this._scrollContainer = scrollElement;
                 this.dom.addClass(element, `${__Plat}no-scroller`);
             }
 
@@ -3311,18 +3315,19 @@ module platui {
         loading?: string;
 
         /**
-         * @name loadScroller
+         * @name scrollElement
          * @memberof platui.IListviewOptions
          * @kind property
          * @access public
          *
-         * @type {HTMLElement}
+         * @type {HTMLElement|string}
          *
          * @description
          * Indicates a separate HTMLElement is being used to scroll. If this is set to a HTMLElement, the {@link platui.Listview|Listview}
-         * will not handle its own scrolling.
+         * will not handle its own scrolling. If it is set to a string, the {@link platui.Listview|Listview} will run a querySelector
+         * on it at the Document level to obtain the Element.
          */
-        loadScroller?: HTMLElement;
+        scrollElement?: HTMLElement;
 
         /**
          * @name onItemsRequested
