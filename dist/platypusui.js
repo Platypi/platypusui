@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.8.1 (https://platypi.io)
+ * PlatypusUI v0.8.2 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -3857,6 +3857,7 @@ var platui;
             this._addChangeListener();
             this._visibleInput.value = '';
             this.inputChanged(null);
+            this._trigger('change');
         };
         /**
          * Acts as a programmatic click for file selection.
@@ -3926,10 +3927,12 @@ var platui;
             if (!hiddenInput.multiple) {
                 if (newValue !== files[0]) {
                     this.inputChanged(files[0]);
+                    this._trigger('change');
                 }
                 return;
             }
             this.inputChanged(Array.prototype.slice.call(files));
+            this._trigger('change');
         };
         /**
          * Adds the 'change' event listener to the hidden input[type=file].
@@ -3971,14 +3974,25 @@ var platui;
                 var file = files[0];
                 visibleInput.value = file.name;
                 this.inputChanged(file);
-                return;
             }
-            var fileNames = [], length = files.length;
-            for (var i = 0; i < length; ++i) {
-                fileNames.push(files[i].name);
+            else {
+                var fileNames = [], length_1 = files.length;
+                for (var i = 0; i < length_1; ++i) {
+                    fileNames.push(files[i].name);
+                }
+                visibleInput.value = fileNames.join(', ');
+                this.inputChanged(Array.prototype.slice.call(files));
             }
-            visibleInput.value = fileNames.join(', ');
-            this.inputChanged(Array.prototype.slice.call(files));
+            this._trigger('change');
+        };
+        /**
+         * Triggers an event starting from this control's element.
+         * @param {string} event The event name to trigger.
+         */
+        File.prototype._trigger = function (event) {
+            var domEvent = plat.acquire(__DomEventInstance);
+            domEvent.initialize(this.element, event);
+            domEvent.trigger();
         };
         File._inject = {
             _compat: __Compat
@@ -5732,8 +5746,8 @@ var platui;
             if (promises.length > 0) {
                 this.itemsLoaded = this._Promise.all(promises).then(function (templates) {
                     if (animateItems > 0) {
-                        var length_1 = templates.length;
-                        for (var i = 0; i < length_1; ++i) {
+                        var length_2 = templates.length;
+                        for (var i = 0; i < length_2; ++i) {
                             if (i < animateItems) {
                                 _this._appendAnimatedItem(templates[i], opGroup);
                             }

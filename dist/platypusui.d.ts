@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.8.1 (https://platypi.io)
+  * PlatypusUI v0.8.2 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -2138,6 +2138,11 @@ declare module platui {
           * An event indicating that files have been selected.
           */
         protected _filesSelected(): void;
+        /**
+          * Triggers an event starting from this control's element.
+          * @param {string} event The event name to trigger.
+          */
+        protected _trigger(event: string): void;
     }
     /**
       * An extension of the ForEach that acts as a HTML template carousel
