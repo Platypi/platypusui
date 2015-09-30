@@ -31,7 +31,7 @@ module platui {
          */
         templateString: string =
         '<div class="plat-file-container">\n' +
-        '    <input type="file" class="plat-file-hidden" plat-change="_filesSelected" />\n' +
+        '    <input type="file" class="plat-file-hidden" />\n' +
         '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" />\n' +
         '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
         '</div>\n';
@@ -74,6 +74,8 @@ module platui {
          * A secondary HTMLInputElement for visible control input.
          */
         protected _visibleInput: HTMLInputElement;
+
+        protected _changeListener: plat.IRemoveListener = noop;
 
         /**
          * @name setClasses
@@ -194,6 +196,7 @@ module platui {
         loaded(): void {
             let hiddenInput = this._hiddenInput = this._hiddenInput || <HTMLInputElement>this.element.firstElementChild.firstElementChild;
             this._visibleInput = this._visibleInput || <HTMLInputElement>hiddenInput.nextElementSibling;
+            this._addChangeListener(hiddenInput);
         }
 
         /**
@@ -232,8 +235,9 @@ module platui {
             hiddenInput.value = null;
 
             let clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
-
             this.element.firstElementChild.replaceChild(clone, hiddenInput);
+            this._addChangeListener(clone);
+            
             this._visibleInput.value = '';
             this.inputChanged(null);
         }
@@ -377,6 +381,11 @@ module platui {
             }
 
             this.inputChanged(Array.prototype.slice.call(files));
+        }
+
+        protected _addChangeListener(element: HTMLElement): void {
+            this._changeListener();
+            this._changeListener = this.addEventListener(element, 'change', this._filesSelected, false);
         }
 
         /**
