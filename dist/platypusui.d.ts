@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.8.0 (https://platypi.io)
+  * PlatypusUI v0.8.1 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -2059,6 +2059,10 @@ declare module platui {
           */
         protected _visibleInput: HTMLInputElement;
         /**
+          * A function for removing the 'change' event listener.
+          */
+        protected _removeListener: plat.IRemoveListener;
+        /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
           * in addition to its standard set.
@@ -2117,6 +2121,10 @@ declare module platui {
           * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
           */
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: void, firstTime?: boolean): void;
+        /**
+          * Adds the 'change' event listener to the hidden input[type=file].
+          */
+        protected _addChangeListener(): void;
         /**
           * An event listener to handle a "keydown" event on the visible input.
           * @param {KeyboardEvent} ev The "keydown" event.

@@ -31,7 +31,7 @@ module platui {
          */
         templateString: string =
         '<div class="plat-file-container">\n' +
-        '    <input type="file" class="plat-file-hidden" plat-change="_filesSelected" />\n' +
+        '    <input type="file" class="plat-file-hidden" />\n' +
         '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" />\n' +
         '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
         '</div>\n';
@@ -74,6 +74,19 @@ module platui {
          * A secondary HTMLInputElement for visible control input.
          */
         protected _visibleInput: HTMLInputElement;
+
+        /**
+         * @name _removeListener
+         * @memberof platui.File
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.IRemoveListener}
+         *
+         * @description
+         * A function for removing the 'change' event listener.
+         */
+        protected _removeListener: plat.IRemoveListener = noop;
 
         /**
          * @name setClasses
@@ -194,6 +207,8 @@ module platui {
         loaded(): void {
             let hiddenInput = this._hiddenInput = this._hiddenInput || <HTMLInputElement>this.element.firstElementChild.firstElementChild;
             this._visibleInput = this._visibleInput || <HTMLInputElement>hiddenInput.nextElementSibling;
+
+            this._addChangeListener();
         }
 
         /**
@@ -229,9 +244,12 @@ module platui {
                 return;
             }
 
+            hiddenInput.value = null;
+
             let clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
 
             this.element.firstElementChild.replaceChild(clone, hiddenInput);
+            this._addChangeListener();
             this._visibleInput.value = '';
             this.inputChanged(null);
         }
@@ -355,8 +373,8 @@ module platui {
          */
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: void, firstTime?: boolean): void {
             let utils = this.utils;
-            if (utils.isUndefined(newValue)) {
-                this.inputChanged(null);
+            if (!utils.isFile(newValue)) {
+                this.clear();
                 return;
             }
 
@@ -378,8 +396,24 @@ module platui {
         }
 
         /**
+         * @name _addChangeListener
+         * @memberof platui.File
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Adds the 'change' event listener to the hidden input[type=file].
+         *
+         * @returns {void}
+         */
+        protected _addChangeListener(): void {
+            this._removeListener();
+            this._removeListener = this.addEventListener(this._hiddenInput, 'change', this._filesSelected, false);
+        }
+
+        /**
          * @name _onKeyDown
-         * @memberof plat.controls.Bind
+         * @memberof platui.File
          * @kind function
          * @access protected
          *

@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.8.0 (https://platypi.io)
+ * PlatypusUI v0.8.1 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -3759,10 +3759,14 @@ var platui;
              * The HTML template represented as a string.
              */
             this.templateString = '<div class="plat-file-container">\n' +
-                '    <input type="file" class="plat-file-hidden" plat-change="_filesSelected" />\n' +
+                '    <input type="file" class="plat-file-hidden" />\n' +
                 '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" />\n' +
                 '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
                 '</div>\n';
+            /**
+             * A function for removing the 'change' event listener.
+             */
+            this._removeListener = noop;
         }
         /**
          * Sets the classes on the proper elements.
@@ -3831,6 +3835,7 @@ var platui;
         File.prototype.loaded = function () {
             var hiddenInput = this._hiddenInput = this._hiddenInput || this.element.firstElementChild.firstElementChild;
             this._visibleInput = this._visibleInput || hiddenInput.nextElementSibling;
+            this._addChangeListener();
         };
         /**
          * A function to validate the user's input. Returns true if the input is not empty.
@@ -3846,8 +3851,10 @@ var platui;
             if (this.utils.isEmpty(hiddenInput.value)) {
                 return;
             }
+            hiddenInput.value = null;
             var clone = this._hiddenInput = hiddenInput.cloneNode(true);
             this.element.firstElementChild.replaceChild(clone, hiddenInput);
+            this._addChangeListener();
             this._visibleInput.value = '';
             this.inputChanged(null);
         };
@@ -3908,8 +3915,8 @@ var platui;
          */
         File.prototype._setBoundProperty = function (newValue, oldValue, identifier, firstTime) {
             var utils = this.utils;
-            if (utils.isUndefined(newValue)) {
-                this.inputChanged(null);
+            if (!utils.isFile(newValue)) {
+                this.clear();
                 return;
             }
             var hiddenInput = this._hiddenInput, files = hiddenInput.files;
@@ -3923,6 +3930,13 @@ var platui;
                 return;
             }
             this.inputChanged(Array.prototype.slice.call(files));
+        };
+        /**
+         * Adds the 'change' event listener to the hidden input[type=file].
+         */
+        File.prototype._addChangeListener = function () {
+            this._removeListener();
+            this._removeListener = this.addEventListener(this._hiddenInput, 'change', this._filesSelected, false);
         };
         /**
          * An event listener to handle a "keydown" event on the visible input.
