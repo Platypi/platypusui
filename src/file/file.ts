@@ -355,7 +355,8 @@ module platui {
          */
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: void, firstTime?: boolean): void {
             let utils = this.utils;
-            if (utils.isUndefined(newValue)) {
+            if (!utils.isFile(newValue)) {
+                this.clear();
                 this.inputChanged(null);
                 return;
             }
