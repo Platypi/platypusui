@@ -20,6 +20,115 @@
 
     /// ====== Variable Button Styles ====== ///
 
+        .plat-button(@prop; @value) {
+            #platui > #mixins;
+            #platui > #__Button;
+
+            & when (@prop = color) {
+                &.plat-button,
+                &.button {
+                    color: @value;
+                }
+            }
+            & when (@prop = background-color) {
+                &.plat-button,
+                &.button {
+                    background-color: @value;
+
+                    &:active,
+                    &.plat-selected {
+                        background-color: darken(@value, 10%);
+                    }
+
+                    &.button-disabled,
+                    &[disabled],
+                    &:disabled {
+                        background-color: @value;
+                    }
+
+                    &.button-outline {
+                        border-color: @value;
+                        color: @value;
+
+                        &:active,
+                        &.plat-selected {
+                            background-color: @value;
+                        }
+
+                        &.button-disabled,
+                        &[disabled],
+                        &:disabled {
+                            color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-button,
+                &.button {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-width) {
+                &.plat-button,
+                &.button {
+                    border-width: @value;
+                }
+            }
+            & when (@prop = button-font-size) {
+                &.plat-button,
+                &.button {
+                    font-size: @value;
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-button,
+                &.button {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = padding-vertical) {
+                &.plat-button,
+                &.button {
+                    padding-top: @value;
+                    padding-bottom: @value;
+                }
+            }
+            & when (@prop = padding-horizontal) {
+                &.plat-button,
+                &.button {
+                    padding-left: @value;
+                    padding-right: @value;
+                }
+            }
+        }
+
+    /// ============== Variable Button Group Styles =============== ///
+
+        .plat-button-group(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = border-radius) {
+                &.button-group {
+                    & > .plat-button:nth-of-type(1),
+                    & > .button:nth-of-type(1) {
+                        .border-top-left-radius(@value);
+                        .border-bottom-left-radius(@value);
+                    }
+
+                    & > .plat-button:nth-last-of-type(1),
+                    & > .button:nth-last-of-type(1) {
+                        .border-top-right-radius(@value);
+                        .border-bottom-right-radius(@value);
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+    /// ====== Variable Button Styles ====== ///
+
         .plat-button(@prop: undefined; @value: undefined) {
             #platui > #mixins;
             #platui > #__Button;

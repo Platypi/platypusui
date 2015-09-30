@@ -17,6 +17,48 @@
 
     /// =========== Variable Select Styles =========== ///
 
+        .plat-select(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = background-color) {
+                &.plat-select {
+                    background-color: @value;
+
+                    &::-ms-value {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = color) {
+                &.plat-select {
+                    color: @value;
+
+                    &::-ms-value {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-radius) {
+                &.plat-select {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-select {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-width) {
+                &.plat-select {
+                    border-width: @value;
+                }
+            }
+        }
+    }
+
+    #controls {
+        /// =========== Variable Select Styles =========== ///
+
         .plat-select(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 

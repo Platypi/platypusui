@@ -15,6 +15,64 @@
 
     /// =========== Variable Checkbox Styles =========== ///
 
+        .plat-checkbox(@prop; @value) {
+            #platui > #mixins;
+
+            & when (@prop = background-color) {
+                &.plat-checkbox {
+                    .plat-checkbox-container {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-color) {
+                &.plat-checkbox {
+                    .plat-checkbox-container {
+                        border-color: @value;
+
+                        &.plat-check,
+                        &.plat-x {
+                            background-color: @value;
+                        }
+                    }
+                }
+            }
+            & when (@prop = diameter) {
+                &.plat-checkbox {
+                    & > span {
+                        line-height: @value;
+                    }
+
+                    .plat-checkbox-container {
+                        .flex(0 0 @value);
+                        width: @value;
+                        height: @value;
+
+                        &.plat-check {
+                            .plat-mark::before {
+                                width: @value / 2.6;
+                            }
+
+                            .plat-mark::after {
+                                width: @value / 1.7;
+                            }
+                        }
+
+                        &.plat-x {
+                            .plat-mark::before,
+                            .plat-mark::after {
+                                width: @value / 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #controls {
+    /// =========== Variable Checkbox Styles =========== ///
+    
         .plat-checkbox(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
