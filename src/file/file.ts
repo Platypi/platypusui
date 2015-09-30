@@ -229,6 +229,8 @@ module platui {
                 return;
             }
 
+            hiddenInput.value = null;
+
             let clone = this._hiddenInput = <HTMLInputElement>hiddenInput.cloneNode(true);
 
             this.element.firstElementChild.replaceChild(clone, hiddenInput);
@@ -357,7 +359,6 @@ module platui {
             let utils = this.utils;
             if (!utils.isFile(newValue)) {
                 this.clear();
-                this.inputChanged(null);
                 return;
             }
 
