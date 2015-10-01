@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.8.2 (https://platypi.io)
+  * PlatypusUI v0.8.3 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -3465,6 +3465,7 @@ declare module platui {
       * Defines the available bindings for a single component of the Navbar control.
       */
     interface INavbarComponent {
+        [x: string]: any;
         /**
           * The content contained inside the component.
           */
