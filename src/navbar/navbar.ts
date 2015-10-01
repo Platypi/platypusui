@@ -576,6 +576,8 @@ module platui {
      * Defines the available bindings for a single component of the {@link platui.Navbar|Navbar} control.
      */
     export interface INavbarComponent {
+        [x: string]: any;
+        
         /**
          * @name content
          * @memberof platui.INavbarComponent
