@@ -906,7 +906,7 @@ module platui {
                 properties: animationOptions
             }).then((): void => {
                 this._animationThenable = null;
-                this._drawerElement.removeEventListener('selectstart', this._preventDefault, false);
+                this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
             });
         }
 
@@ -942,7 +942,7 @@ module platui {
                 properties: animationOptions
             }).then((): void => {
                 this._animationThenable = null;
-                this._drawerElement.removeEventListener('selectstart', this._preventDefault, false);
+                this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
                 if (this._isOpen) {
                     return;
                 } else if (this._touchState < 2) {
@@ -1211,6 +1211,45 @@ module platui {
                     this.addEventListener(clickEater, __$touchend, touchEnd, false);
                 }
             }
+
+            this.addEventListener(this._window, 'resize',this._handleResize, false);
+        }
+
+        /**
+         * @name _handleResize
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Handles a Window resize event by closing the {@link platui.Drawer|Drawer} immediately.
+         *
+         * @returns {void}
+         */
+        protected _handleResize(): void {
+            if (!this._isOpen) {
+                return;
+            }
+
+            let isNull = this.utils.isNull,
+                rootElement = this._rootElement,
+                drawer = this._drawer;
+
+            this._isOpen = false;
+            this.inputChanged(false);
+
+            if (!isNull(rootElement)) {
+                rootElement.style[this._transform] = this._preTransform;
+            }
+
+            if (!isNull(drawer)) {
+                drawer.inputChanged(false);
+                this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
+            }
+
+            if (this._touchState < 2) {
+                this._removeClickEater();
+            }
         }
 
         /**
@@ -1357,13 +1396,13 @@ module platui {
                     this._animationThenable.cancel().then((): void => {
                         this._addClickEater();
                         if (this.utils.isNode(this._drawerElement)) {
-                            this._drawerElement.addEventListener('selectstart', this._preventDefault, false);
+                            this._drawerElement.addEventListener('selectstart', __preventDefault, false);
                         }
                     });
                 } else {
                     this._addClickEater();
                     if (this.utils.isNode(this._drawerElement)) {
-                        this._drawerElement.addEventListener('selectstart', this._preventDefault, false);
+                        this._drawerElement.addEventListener('selectstart', __preventDefault, false);
                     }
                 }
 
@@ -1373,10 +1412,6 @@ module platui {
             this.utils.requestAnimationFrame((): void => {
                 this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
             });
-        }
-
-        protected _preventDefault(ev: Event): void {
-            ev.preventDefault();
         }
 
         /**
