@@ -1212,7 +1212,7 @@ module platui {
                 }
             }
 
-            this.addEventListener(this._window, 'resize',this._handleResize, false);
+            this.addEventListener(this._window, 'resize', this._handleResize, false);
         }
 
         /**
