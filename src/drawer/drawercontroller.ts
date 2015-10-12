@@ -1239,7 +1239,7 @@ module platui {
             this.inputChanged(false);
 
             if (!isNull(rootElement)) {
-                rootElement.style[this._transform] = this._preTransform;
+                rootElement.style[<any>this._transform] = this._preTransform;
             }
 
             if (!isNull(drawer)) {
