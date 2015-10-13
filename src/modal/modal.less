@@ -12,6 +12,7 @@
 
     .plat-modal {
         .fill();
+        .scroll();
         .box-sizing(border-box);
         .misc-webkit-touch();
         .user-select();
@@ -20,12 +21,11 @@
         position: absolute;
         top: 0;
         left: 0;
-        z-index: 999999;
         background-color: @background-color;
+        z-index: 999999;
 
         .plat-modal-container {
             .fill();
-            .scroll();
             .box-sizing(content-box);
             .backface-visibility(hidden);
             .perspective(none);
