@@ -107,6 +107,10 @@ let __prefix = '$',
         down: 'up'
     },
     __src = 'src',
+    __preventDefault = (ev: Event): boolean => {
+        ev.preventDefault();
+        return false;
+    },
     noop = (): void => { };
 /* tslint:enable:no-unused-variable */
 

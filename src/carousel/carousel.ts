@@ -923,7 +923,7 @@ module platui {
             } else if (!utils.isNumber(index)) {
                 index = Number(index);
                 if (!utils.isNumber(index)) {
-                    this._log.debug(`${this.type} has it's index bound to a property that cannot be interpreted as a Number.`);
+                    this._log.warn(`${this.type} has its index bound to a property that cannot be interpreted as a Number.`);
                     return;
                 }
             } else if (index < 0) {

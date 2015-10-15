@@ -480,11 +480,6 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(newValue: number, oldValue: number, identifier: void, firstTime?: boolean): void {
-            if (firstTime === true && this.utils.isNull(newValue)) {
-                this.inputChanged(this.value);
-                return;
-            }
-
             this._setValue(newValue, false);
         }
 
@@ -510,8 +505,18 @@ module platui {
                 return;
             } else if (utils.isNull(value)) {
                 value = this.min;
-            } else if (!utils.isNumber(value)) {
-                return;
+                propertyChanged = true;
+            }
+
+            if (!utils.isNumber(value)) {
+                let numberVal = Number(value);
+                if (utils.isNumber(numberVal)) {
+                    value = numberVal;
+                    propertyChanged = true;
+                } else {
+                    this._log.warn(`${this.type} has its value bound to a property that cannot be interpreted as a Number.`);
+                    return;
+                }
             }
 
             this._setValueProperty(value, true, propertyChanged);

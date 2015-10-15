@@ -412,49 +412,40 @@ module platui {
          * @description
          * The function called when the bindable property is set externally.
          *
-         * @param {boolean} drawerState The new value of the control state.
+         * @param {boolean} newValue The new value of the control state.
          * @param {boolean} oldValue The old value of the bindable control state.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          *
          * @returns {void}
          */
-        protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
+        protected _setBoundProperty(newValue: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
             let utils = this.utils,
                 controller = this._controllers[0];
-            if (firstTime === true && utils.isNull(drawerState)) {
+
+            if (firstTime === true && utils.isNull(newValue)) {
                 this.inputChanged(utils.isNull(controller) ? false : controller.isOpen());
                 return;
             }
 
-            if (utils.isBoolean(drawerState)) {
-                if (!this._isInitialized) {
-                    this._preInitializedValue = drawerState;
-                    return;
-                }
-                this._preInitializedValue = false;
-
-                if (utils.isNull(controller)) {
-                    this.__nextState = drawerState;
-                    return;
-                }
-
-                if (drawerState) {
-                    if (controller.isOpen()) {
-                        return;
-                    }
-                    controller.open();
-                    return;
-                }
-
-                if (controller.isOpen()) {
-                    controller.close();
-                }
-
-                return;
+            let drawerState = !!newValue;
+            if (drawerState !== newValue) {
+                this.inputChanged(drawerState);
             }
 
-            this._log.debug(`Attempting to open or close ${this.type} with a bound value that is something other than a boolean.`);
+            if (!this._isInitialized) {
+                this._preInitializedValue = drawerState;
+            } else if (utils.isNull(controller)) {
+                this.__nextState = drawerState;
+            } else if (drawerState) {
+                if (controller.isOpen()) {
+                    return;
+                }
+
+                controller.open();
+            } else if (controller.isOpen()) {
+                controller.close();
+            }
         }
 
         /**

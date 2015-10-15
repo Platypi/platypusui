@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.3 (https://platypi.io) 
+ * PlatypusUI v0.8.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -8436,6 +8436,7 @@
     }
 
     input {
+        .border-radius(0px);
         line-height: normal;
     }
 
@@ -9092,7 +9093,7 @@
 
         & > .plat-button,
         & > .button {
-            .border-radius(0);
+            .border-radius(0px);
             margin: 0;
             border-right-width: 0;
             border-left-width: 0;
@@ -10673,6 +10674,7 @@
 
     .plat-modal {
         .fill();
+        .scroll();
         .box-sizing(border-box);
         .misc-webkit-touch();
         .user-select();
@@ -10685,7 +10687,6 @@
 
         .plat-modal-container {
             .fill();
-            .scroll();
             .box-sizing(content-box);
             .backface-visibility(hidden);
             .perspective(none);
@@ -11186,7 +11187,7 @@
 
                 & .prompt-action {
                     text-align: center;
-                    padding: 0 2em 1em;
+                    padding: 1em 2em;
                     background-color: @prompt-body-color;
 
                     &.button-group {

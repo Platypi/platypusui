@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.8.3 (https://platypi.io)
+ * PlatypusUI v0.8.4 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -54,7 +54,10 @@ var platui;
         left: 'right',
         up: 'down',
         down: 'up'
-    }, __src = 'src', noop = function () { };
+    }, __src = 'src', __preventDefault = function (ev) {
+        ev.preventDefault();
+        return false;
+    }, noop = function () { };
     /* tslint:enable:no-unused-variable */
     if (typeof window !== 'undefined') {
         if (typeof window.platui === 'undefined') {
@@ -912,40 +915,36 @@ var platui;
         };
         /**
          * The function called when the bindable property is set externally.
-         * @param {boolean} drawerState The new value of the control state.
+         * @param {boolean} newValue The new value of the control state.
          * @param {boolean} oldValue The old value of the bindable control state.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
-        Drawer.prototype._setBoundProperty = function (drawerState, oldValue, identifier, firstTime) {
+        Drawer.prototype._setBoundProperty = function (newValue, oldValue, identifier, firstTime) {
             var utils = this.utils, controller = this._controllers[0];
-            if (firstTime === true && utils.isNull(drawerState)) {
+            if (firstTime === true && utils.isNull(newValue)) {
                 this.inputChanged(utils.isNull(controller) ? false : controller.isOpen());
                 return;
             }
-            if (utils.isBoolean(drawerState)) {
-                if (!this._isInitialized) {
-                    this._preInitializedValue = drawerState;
-                    return;
-                }
-                this._preInitializedValue = false;
-                if (utils.isNull(controller)) {
-                    this.__nextState = drawerState;
-                    return;
-                }
-                if (drawerState) {
-                    if (controller.isOpen()) {
-                        return;
-                    }
-                    controller.open();
-                    return;
-                }
-                if (controller.isOpen()) {
-                    controller.close();
-                }
-                return;
+            var drawerState = !!newValue;
+            if (drawerState !== newValue) {
+                this.inputChanged(drawerState);
             }
-            this._log.debug("Attempting to open or close " + this.type + " with a bound value that is something other than a boolean.");
+            if (!this._isInitialized) {
+                this._preInitializedValue = drawerState;
+            }
+            else if (utils.isNull(controller)) {
+                this.__nextState = drawerState;
+            }
+            else if (drawerState) {
+                if (controller.isOpen()) {
+                    return;
+                }
+                controller.open();
+            }
+            else if (controller.isOpen()) {
+                controller.close();
+            }
         };
         /**
          * Changes the placement and implied position of the Drawer.
@@ -1220,42 +1219,40 @@ var platui;
         };
         /**
          * The function called when the bindable property is set externally.
-         * @param {boolean} drawerState The new value of the control's state.
+         * @param {boolean} newValue The new value of the control's state.
          * @param {boolean} oldValue The old value of the bindable control state.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
-        DrawerController.prototype._setBoundProperty = function (drawerState, oldValue, identifier, firstTime) {
+        DrawerController.prototype._setBoundProperty = function (newValue, oldValue, identifier, firstTime) {
             var _this = this;
             var utils = this.utils;
-            if (firstTime === true && utils.isNull(drawerState)) {
+            if (firstTime === true && utils.isNull(newValue)) {
                 this.inputChanged(this._isOpen);
                 return;
             }
-            if (utils.isBoolean(drawerState)) {
-                if (!this._isInitialized) {
-                    this._preInitializedValue = drawerState;
-                    return;
-                }
-                if (drawerState) {
-                    if (this._isOpen) {
-                        return;
-                    }
-                    this._toggleDelay();
-                    this._toggleDelay = utils.requestAnimationFrame(function () {
-                        _this._open();
-                    });
-                    return;
-                }
-                if (this._isOpen) {
-                    this._toggleDelay();
-                    this._toggleDelay = utils.requestAnimationFrame(function () {
-                        _this._close();
-                    });
-                }
-                return;
+            var drawerState = !!newValue;
+            if (drawerState !== newValue) {
+                this.inputChanged(drawerState);
             }
-            this._log.debug("Attempting to bind " + this.type + " with a value that is something other than a boolean.");
+            if (!this._isInitialized) {
+                this._preInitializedValue = drawerState;
+            }
+            else if (drawerState) {
+                if (this._isOpen) {
+                    return;
+                }
+                this._toggleDelay();
+                this._toggleDelay = utils.requestAnimationFrame(function () {
+                    _this._open();
+                });
+            }
+            else if (this._isOpen) {
+                this._toggleDelay();
+                this._toggleDelay = utils.requestAnimationFrame(function () {
+                    _this._close();
+                });
+            }
         };
         /**
          * Opens the Drawer.
@@ -1295,7 +1292,7 @@ var platui;
                 properties: animationOptions
             }).then(function () {
                 _this._animationThenable = null;
-                _this._drawerElement.removeEventListener('selectstart', _this._preventDefault, false);
+                _this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
             });
         };
         /**
@@ -1315,7 +1312,7 @@ var platui;
                 properties: animationOptions
             }).then(function () {
                 _this._animationThenable = null;
-                _this._drawerElement.removeEventListener('selectstart', _this._preventDefault, false);
+                _this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
                 if (_this._isOpen) {
                     return;
                 }
@@ -1475,6 +1472,28 @@ var platui;
                     this.addEventListener(clickEater, __$touchend, touchEnd, false);
                 }
             }
+            this.addEventListener(this._window, 'resize', this._handleResize, false);
+        };
+        /**
+         * Handles a Window resize event by closing the Drawer immediately.
+         */
+        DrawerController.prototype._handleResize = function () {
+            if (!this._isOpen) {
+                return;
+            }
+            var isNull = this.utils.isNull, rootElement = this._rootElement, drawer = this._drawer;
+            this._isOpen = false;
+            this.inputChanged(false);
+            if (!isNull(rootElement)) {
+                rootElement.style[this._transform] = this._preTransform;
+            }
+            if (!isNull(drawer)) {
+                drawer.inputChanged(false);
+                this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
+            }
+            if (this._touchState < 2) {
+                this._removeClickEater();
+            }
         };
         /**
          * Removes all event listeners.
@@ -1574,14 +1593,14 @@ var platui;
                     this._animationThenable.cancel().then(function () {
                         _this._addClickEater();
                         if (_this.utils.isNode(_this._drawerElement)) {
-                            _this._drawerElement.addEventListener('selectstart', _this._preventDefault, false);
+                            _this._drawerElement.addEventListener('selectstart', __preventDefault, false);
                         }
                     });
                 }
                 else {
                     this._addClickEater();
                     if (this.utils.isNode(this._drawerElement)) {
-                        this._drawerElement.addEventListener('selectstart', this._preventDefault, false);
+                        this._drawerElement.addEventListener('selectstart', __preventDefault, false);
                     }
                 }
                 this._touchState = 2;
@@ -1589,9 +1608,6 @@ var platui;
             this.utils.requestAnimationFrame(function () {
                 _this._rootElement.style[_this._transform] = _this._calculateTranslation(ev);
             });
-        };
-        DrawerController.prototype._preventDefault = function (ev) {
-            ev.preventDefault();
         };
         /**
          * Checks to make sure the user has been tracking in the right direction to
@@ -2289,10 +2305,6 @@ var platui;
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
         Slider.prototype._setBoundProperty = function (newValue, oldValue, identifier, firstTime) {
-            if (firstTime === true && this.utils.isNull(newValue)) {
-                this.inputChanged(this.value);
-                return;
-            }
             this._setValue(newValue, false);
         };
         /**
@@ -2308,9 +2320,18 @@ var platui;
             }
             else if (utils.isNull(value)) {
                 value = this.min;
+                propertyChanged = true;
             }
-            else if (!utils.isNumber(value)) {
-                return;
+            if (!utils.isNumber(value)) {
+                var numberVal = Number(value);
+                if (utils.isNumber(numberVal)) {
+                    value = numberVal;
+                    propertyChanged = true;
+                }
+                else {
+                    this._log.warn(this.type + " has its value bound to a property that cannot be interpreted as a Number.");
+                    return;
+                }
             }
             this._setValueProperty(value, true, propertyChanged);
         };
@@ -2640,6 +2661,10 @@ var platui;
              * A function that will stop listening for visibility if applicable.
              */
             this._removeVisibilityListener = noop;
+            /**
+             * A boolean value that forces a one-time trigger upon the first bound value change.
+             */
+            this._forceFirstTime = false;
         }
         /**
          * Sets the classes on the proper elements.
@@ -2723,10 +2748,7 @@ var platui;
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
         Range.prototype._setLowerBoundProperty = function (newValue, oldValue, identifier, firstTime) {
-            if (firstTime === true && this.utils.isNull(newValue)) {
-                this._fireChange();
-            }
-            this._setLower(newValue, false);
+            this._setLower(newValue, false, firstTime);
         };
         /**
          * The function called when the bindable upper value is set externally.
@@ -2736,18 +2758,16 @@ var platui;
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
         Range.prototype._setUpperBoundProperty = function (newValue, oldValue, identifier, firstTime) {
-            if (firstTime === true && this.utils.isNull(newValue)) {
-                this._fireChange();
-            }
-            this._setUpper(newValue, false);
+            this._setUpper(newValue, false, firstTime);
         };
         /**
          * Sets the lower value of the Range. If an invalid value is passed in
          * nothing will happen.
          * @param {number} value The value to set the Range to.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * @param {boolean} firstTime? Whether or not this is the first call to set the lower value.
          */
-        Range.prototype._setLower = function (value, propertyChanged) {
+        Range.prototype._setLower = function (value, propertyChanged, firstTime) {
             var utils = this.utils;
             if (this._touchState === 2) {
                 this._log.debug("Cannot set the value of the " + this.type + "'s lower knob while the user is manipulating it.");
@@ -2755,13 +2775,26 @@ var platui;
             }
             else if (utils.isNull(value)) {
                 value = this.min;
+                if (firstTime === true) {
+                    this._forceFirstTime = true;
+                }
+                else {
+                    propertyChanged = true;
+                }
             }
             if (!utils.isNumber(value)) {
                 var numberVal = Number(value);
                 if (utils.isNumber(numberVal)) {
                     value = numberVal;
+                    if (firstTime === true) {
+                        this._forceFirstTime = true;
+                    }
+                    else {
+                        propertyChanged = true;
+                    }
                 }
                 else {
+                    this._log.warn(this.type + " has its lower value bound to a property that cannot be interpreted as a Number.");
                     return;
                 }
             }
@@ -2772,8 +2805,9 @@ var platui;
          * nothing will happen.
          * @param {number} value The value to set the Range to.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * @param {boolean} firstTime? Whether or not this is the first call to set the upper value.
          */
-        Range.prototype._setUpper = function (value, propertyChanged) {
+        Range.prototype._setUpper = function (value, propertyChanged, firstTime) {
             var utils = this.utils;
             if (this._touchState === 3) {
                 this._log.debug("Cannot set the value of the " + this.type + "'s upper knob while the user is manipulating it.");
@@ -2781,17 +2815,20 @@ var platui;
             }
             else if (utils.isNull(value)) {
                 value = this.max;
+                propertyChanged = true;
             }
             if (!utils.isNumber(value)) {
                 var numberVal = Number(value);
                 if (utils.isNumber(numberVal)) {
                     value = numberVal;
+                    propertyChanged = true;
                 }
                 else {
+                    this._log.warn(this.type + " has its upper value bound to a property that cannot be interpreted as a Number.");
                     return;
                 }
             }
-            this._setUpperValue(value, true, propertyChanged, true);
+            this._setUpperValue(value, true, propertyChanged || (firstTime === true && this._forceFirstTime), true);
         };
         /**
          * Initialize the proper tracking events.
@@ -3440,7 +3477,7 @@ var platui;
          * databinding.
          */
         Input.prototype.observeProperties = function (binder) {
-            binder.observeProperty(this._setBoundProperty);
+            binder.observeProperty(this._setBoundProperty, null, true);
         };
         /**
          * The function called when the bindable text is set externally.
@@ -4299,7 +4336,7 @@ var platui;
             else if (!utils.isNumber(index)) {
                 index = Number(index);
                 if (!utils.isNumber(index)) {
-                    this._log.debug(this.type + " has it's index bound to a property that cannot be interpreted as a Number.");
+                    this._log.warn(this.type + " has its index bound to a property that cannot be interpreted as a Number.");
                     return;
                 }
             }

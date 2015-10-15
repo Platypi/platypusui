@@ -805,49 +805,42 @@ module platui {
          * @description
          * The function called when the bindable property is set externally.
          *
-         * @param {boolean} drawerState The new value of the control's state.
+         * @param {boolean} newValue The new value of the control's state.
          * @param {boolean} oldValue The old value of the bindable control state.
          * @param {void} identifier The child identifier of the property being observed.
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          *
          * @returns {void}
          */
-        protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
+        protected _setBoundProperty(newValue: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void {
             let utils = this.utils;
-            if (firstTime === true && utils.isNull(drawerState)) {
+            if (firstTime === true && utils.isNull(newValue)) {
                 this.inputChanged(this._isOpen);
                 return;
             }
 
-            if (utils.isBoolean(drawerState)) {
-                if (!this._isInitialized) {
-                    this._preInitializedValue = drawerState;
-                    return;
-                }
-
-                if (drawerState) {
-                    if (this._isOpen) {
-                        return;
-                    }
-
-                    this._toggleDelay();
-                    this._toggleDelay = utils.requestAnimationFrame((): void => {
-                        this._open();
-                    });
-                    return;
-                }
-
-                if (this._isOpen) {
-                    this._toggleDelay();
-                    this._toggleDelay = utils.requestAnimationFrame((): void => {
-                        this._close();
-                    });
-                }
-
-                return;
+            let drawerState = !!newValue;
+            if (drawerState !== newValue) {
+                this.inputChanged(drawerState);
             }
 
-            this._log.debug(`Attempting to bind ${this.type} with a value that is something other than a boolean.`);
+            if (!this._isInitialized) {
+                this._preInitializedValue = drawerState;
+            } else if (drawerState) {
+                if (this._isOpen) {
+                    return;
+                }
+
+                this._toggleDelay();
+                this._toggleDelay = utils.requestAnimationFrame((): void => {
+                    this._open();
+                });
+            } else if (this._isOpen) {
+                this._toggleDelay();
+                this._toggleDelay = utils.requestAnimationFrame((): void => {
+                    this._close();
+                });
+            }
         }
 
         /**
@@ -906,7 +899,7 @@ module platui {
                 properties: animationOptions
             }).then((): void => {
                 this._animationThenable = null;
-                this._drawerElement.removeEventListener('selectstart', this._preventDefault, false);
+                this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
             });
         }
 
@@ -942,7 +935,7 @@ module platui {
                 properties: animationOptions
             }).then((): void => {
                 this._animationThenable = null;
-                this._drawerElement.removeEventListener('selectstart', this._preventDefault, false);
+                this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
                 if (this._isOpen) {
                     return;
                 } else if (this._touchState < 2) {
@@ -1211,6 +1204,45 @@ module platui {
                     this.addEventListener(clickEater, __$touchend, touchEnd, false);
                 }
             }
+
+            this.addEventListener(this._window, 'resize', this._handleResize, false);
+        }
+
+        /**
+         * @name _handleResize
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Handles a Window resize event by closing the {@link platui.Drawer|Drawer} immediately.
+         *
+         * @returns {void}
+         */
+        protected _handleResize(): void {
+            if (!this._isOpen) {
+                return;
+            }
+
+            let isNull = this.utils.isNull,
+                rootElement = this._rootElement,
+                drawer = this._drawer;
+
+            this._isOpen = false;
+            this.inputChanged(false);
+
+            if (!isNull(rootElement)) {
+                rootElement.style[<any>this._transform] = this._preTransform;
+            }
+
+            if (!isNull(drawer)) {
+                drawer.inputChanged(false);
+                this._drawerElement.removeEventListener('selectstart', __preventDefault, false);
+            }
+
+            if (this._touchState < 2) {
+                this._removeClickEater();
+            }
         }
 
         /**
@@ -1357,13 +1389,13 @@ module platui {
                     this._animationThenable.cancel().then((): void => {
                         this._addClickEater();
                         if (this.utils.isNode(this._drawerElement)) {
-                            this._drawerElement.addEventListener('selectstart', this._preventDefault, false);
+                            this._drawerElement.addEventListener('selectstart', __preventDefault, false);
                         }
                     });
                 } else {
                     this._addClickEater();
                     if (this.utils.isNode(this._drawerElement)) {
-                        this._drawerElement.addEventListener('selectstart', this._preventDefault, false);
+                        this._drawerElement.addEventListener('selectstart', __preventDefault, false);
                     }
                 }
 
@@ -1373,10 +1405,6 @@ module platui {
             this.utils.requestAnimationFrame((): void => {
                 this._rootElement.style[<any>this._transform] = this._calculateTranslation(ev);
             });
-        }
-
-        protected _preventDefault(ev: Event): void {
-            ev.preventDefault();
         }
 
         /**
