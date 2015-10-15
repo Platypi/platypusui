@@ -470,7 +470,7 @@ module platui {
          * @returns {void}
          */
         observeProperties(binder: plat.observable.IImplementTwoWayBinding): void {
-            binder.observeProperty(this._setBoundProperty);
+            binder.observeProperty(this._setBoundProperty, null, true);
         }
 
         /**

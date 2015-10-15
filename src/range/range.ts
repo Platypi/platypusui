@@ -392,6 +392,19 @@ module platui {
         protected _rangeVisible: plat.async.IThenable<void>;
 
         /**
+         * @name _forceFirstTime
+         * @memberof platui.Range
+         * @kind property
+         * @access protected
+         *
+         * @type {boolean}
+         *
+         * @description
+         * A boolean value that forces a one-time trigger upon the first bound value change.
+         */
+        protected _forceFirstTime = false;
+
+        /**
          * @name setClasses
          * @memberof platui.Range
          * @kind function
@@ -563,11 +576,7 @@ module platui {
          * @returns {void}
          */
         protected _setLowerBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
-            if (firstTime === true && this.utils.isNull(newValue)) {
-                this._fireChange();
-            }
-
-            this._setLower(newValue, false);
+            this._setLower(newValue, false, firstTime);
         }
 
         /**
@@ -587,11 +596,7 @@ module platui {
          * @returns {void}
          */
         protected _setUpperBoundProperty(newValue: number, oldValue: number, identifier: string, firstTime?: boolean): void {
-            if (firstTime === true && this.utils.isNull(newValue)) {
-                this._fireChange();
-            }
-
-            this._setUpper(newValue, false);
+            this._setUpper(newValue, false, firstTime);
         }
 
         /**
@@ -606,23 +611,36 @@ module platui {
          *
          * @param {number} value The value to set the {@link platui.Range|Range} to.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * @param {boolean} firstTime? Whether or not this is the first call to set the lower value.
          *
          * @returns {void}
          */
-        protected _setLower(value: number, propertyChanged: boolean): void {
+        protected _setLower(value: number, propertyChanged: boolean, firstTime?: boolean): void {
             let utils = this.utils;
+
             if (this._touchState === 2) {
                 this._log.debug(`Cannot set the value of the ${this.type}'s lower knob while the user is manipulating it.`);
                 return;
             } else if (utils.isNull(value)) {
                 value = this.min;
+                if (firstTime === true) {
+                    this._forceFirstTime = true;
+                } else {
+                    propertyChanged = true;
+                }
             }
 
             if (!utils.isNumber(value)) {
                 let numberVal = Number(value);
                 if (utils.isNumber(numberVal)) {
                     value = numberVal;
+                    if (firstTime === true) {
+                        this._forceFirstTime = true;
+                    } else {
+                        propertyChanged = true;
+                    }
                 } else {
+                    this._log.warn(`${this.type} has its lower value bound to a property that cannot be interpreted as a Number.`);
                     return;
                 }
             }
@@ -642,10 +660,11 @@ module platui {
          *
          * @param {number} value The value to set the {@link platui.Range|Range} to.
          * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+         * @param {boolean} firstTime? Whether or not this is the first call to set the upper value.
          *
          * @returns {void}
          */
-        protected _setUpper(value: number, propertyChanged: boolean): void {
+        protected _setUpper(value: number, propertyChanged: boolean, firstTime?: boolean): void {
             let utils = this.utils;
 
             if (this._touchState === 3) {
@@ -653,18 +672,21 @@ module platui {
                 return;
             } else if (utils.isNull(value)) {
                 value = this.max;
+                propertyChanged = true;
             }
 
             if (!utils.isNumber(value)) {
                 let numberVal = Number(value);
                 if (utils.isNumber(numberVal)) {
                     value = numberVal;
+                    propertyChanged = true;
                 } else {
+                    this._log.warn(`${this.type} has its upper value bound to a property that cannot be interpreted as a Number.`);
                     return;
                 }
             }
 
-            this._setUpperValue(value, true, propertyChanged, true);
+            this._setUpperValue(value, true, propertyChanged || (firstTime === true && this._forceFirstTime), true);
         }
 
         /**
