@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.8.3 (https://platypi.io)
+  * PlatypusUI v0.8.4 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -557,12 +557,12 @@ declare module platui {
         observeProperties(binder: plat.observable.IImplementTwoWayBinding): void;
         /**
           * The function called when the bindable property is set externally.
-          * @param {boolean} drawerState The new value of the control state.
+          * @param {boolean} newValue The new value of the control state.
           * @param {boolean} oldValue The old value of the bindable control state.
           * @param {void} identifier The child identifier of the property being observed.
           * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
           */
-        protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void;
+        protected _setBoundProperty(newValue: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void;
         /**
           * Changes the placement and implied position of the Drawer.
           * @param {string} position The new position to change to.
@@ -864,12 +864,12 @@ declare module platui {
         observeProperties(binder: plat.observable.IImplementTwoWayBinding): void;
         /**
           * The function called when the bindable property is set externally.
-          * @param {boolean} drawerState The new value of the control's state.
+          * @param {boolean} newValue The new value of the control's state.
           * @param {boolean} oldValue The old value of the bindable control state.
           * @param {void} identifier The child identifier of the property being observed.
           * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
           */
-        protected _setBoundProperty(drawerState: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void;
+        protected _setBoundProperty(newValue: boolean, oldValue: boolean, identifier: void, firstTime?: boolean): void;
         /**
           * Opens the Drawer.
           * @param {boolean} reset? Whether the open is being called to reset the open state.
@@ -913,6 +913,10 @@ declare module platui {
           */
         protected _addEventListeners(): void;
         /**
+          * Handles a Window resize event by closing the Drawer immediately.
+          */
+        protected _handleResize(): void;
+        /**
           * Removes all event listeners.
           */
         protected _removeEventListeners(): void;
@@ -932,7 +936,6 @@ declare module platui {
           * @param {plat.ui.IGestureEvent} ev The $tracking event.
           */
         protected _track(ev: plat.ui.IGestureEvent): void;
-        protected _preventDefault(ev: Event): void;
         /**
           * Checks to make sure the user has been tracking in the right direction to
           * toggle.
@@ -1549,6 +1552,10 @@ declare module platui {
           */
         protected _rangeVisible: plat.async.IThenable<void>;
         /**
+          * A boolean value that forces a one-time trigger upon the first bound value change.
+          */
+        protected _forceFirstTime: boolean;
+        /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
           * in addition to its standard set.
@@ -1604,15 +1611,17 @@ declare module platui {
           * nothing will happen.
           * @param {number} value The value to set the Range to.
           * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+          * @param {boolean} firstTime? Whether or not this is the first call to set the lower value.
           */
-        protected _setLower(value: number, propertyChanged: boolean): void;
+        protected _setLower(value: number, propertyChanged: boolean, firstTime?: boolean): void;
         /**
           * Sets the uppper value of the Range. If an invalid value is passed in
           * nothing will happen.
           * @param {number} value The value to set the Range to.
           * @param {boolean} propertyChanged Whether or not the property was changed by the user.
+          * @param {boolean} firstTime? Whether or not this is the first call to set the upper value.
           */
-        protected _setUpper(value: number, propertyChanged: boolean): void;
+        protected _setUpper(value: number, propertyChanged: boolean, firstTime?: boolean): void;
         /**
           * Initialize the proper tracking events.
           */

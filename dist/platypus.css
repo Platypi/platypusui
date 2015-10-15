@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.3 (https://platypi.io) 
+ * PlatypusUI v0.8.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -149,6 +149,14 @@ input::-moz-focus-inner {
   padding: 0;
 }
 input {
+  -webkit-border-top-left-radius: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  border-bottom-right-radius: 0px;
   line-height: normal;
 }
 input[type="checkbox"],
@@ -1012,14 +1020,14 @@ h6 {
 }
 .button-group > .plat-button,
 .button-group > .button {
-  -webkit-border-top-left-radius: 0;
-  border-top-left-radius: 0;
-  -webkit-border-top-right-radius: 0;
-  border-top-right-radius: 0;
-  -webkit-border-bottom-left-radius: 0;
-  border-bottom-left-radius: 0;
-  -webkit-border-bottom-right-radius: 0;
-  border-bottom-right-radius: 0;
+  -webkit-border-top-left-radius: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-top-right-radius: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  border-bottom-right-radius: 0px;
   margin: 0;
   border-right-width: 0;
   border-left-width: 0;
@@ -3060,6 +3068,7 @@ h6 {
   height: 100%;
   padding: 0;
   margin: 0;
+  overflow: auto;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -3088,8 +3097,6 @@ h6 {
   height: 100%;
   padding: 0;
   margin: 0;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
@@ -3593,7 +3600,7 @@ h6 {
 }
 .plat-modal.modal-prompt .plat-modal-container .prompt-action {
   text-align: center;
-  padding: 0 2em 1em;
+  padding: 1em 2em;
   background-color: #edecec;
 }
 .plat-modal.modal-prompt .plat-modal-container .prompt-action.button-group {
