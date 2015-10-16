@@ -11,34 +11,33 @@
     }
 
     body {
-        position: relative;
         .fill();
+        position: relative;
     }
 
     [plat-control="plat-viewport"] {
-        position: relative;
         .fill();
         .box-sizing(border-box);
+        position: relative;
 
         &:not(.plat-viewport-animate) {
             & > .plat-viewcontrol {
-                position: relative;
                 .fill();
                 .box-sizing(border-box);
+                position: relative;
             }
         }
 
         &.plat-viewport-animate {
             & > .plat-viewcontrol {
+                .fill();
+                .box-sizing(border-box);
                 position: absolute;
                 top: 0;
                 left: 0;
                 z-index: 0;
-                .fill();
-                .box-sizing(border-box);
             }
         }
-
     }
 
     .plat-hide,
