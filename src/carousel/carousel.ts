@@ -1658,6 +1658,8 @@ module platui {
             if (this._isInfinite) {
                 this._removeClones();
             }
+
+            this._onLoad = noop;
         }
 
         /**
