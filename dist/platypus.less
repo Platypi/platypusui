@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.4 (https://platypi.io) 
+ * PlatypusUI v0.8.5 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -8291,34 +8291,37 @@
     }
 
     body {
-        position: relative;
         .fill();
+        position: relative;
     }
 
     [plat-control="plat-viewport"] {
-        position: relative;
         .fill();
         .box-sizing(border-box);
+        position: relative;
 
         &:not(.plat-viewport-animate) {
             & > .plat-viewcontrol {
-                position: relative;
-                .fill();
                 .box-sizing(border-box);
+                position: relative;
+                height: 100%;
+                width: 100%;
+                margin: 0;
             }
         }
 
         &.plat-viewport-animate {
             & > .plat-viewcontrol {
+                .box-sizing(border-box);
                 position: absolute;
                 top: 0;
                 left: 0;
+                height: 100%;
+                width: 100%;
+                margin: 0;
                 z-index: 0;
-                .fill();
-                .box-sizing(border-box);
             }
         }
-
     }
 
     .plat-hide,
@@ -8417,6 +8420,13 @@
     }
 
     button,
+    select,
+    input {
+        .border-radius(0px);
+        line-height: normal;
+    }
+
+    button,
     html input[type="button"],
     input[type="reset"],
     input[type="submit"] {
@@ -8435,14 +8445,9 @@
         padding: 0;
     }
 
-    input {
-        .border-radius(0px);
-        line-height: normal;
-    }
-
     input[type="checkbox"],
     input[type="radio"] {
-        box-sizing: border-box;
+        .box-sizing(border-box);
         padding: 0;
     }
 

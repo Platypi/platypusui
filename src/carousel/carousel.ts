@@ -1648,16 +1648,14 @@ module platui {
                 removeListeners.pop()();
             }
 
-            if (this._isAuto) {
-                this._removeInterval();
-                this._removeInterval = noop;
-                this._removeSuspend();
-                this._removeSuspend = noop;
-            }
+            this._removeInterval();
+            this._removeSuspend();
 
             if (this._isInfinite) {
                 this._removeClones();
             }
+
+            this._onLoad = noop;
         }
 
         /**
