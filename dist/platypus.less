@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.5 (https://platypi.io) 
+ * PlatypusUI v0.8.6 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -672,7 +672,7 @@
             #platui > #__mixins > .vendor-loop(touch-action; @behavior; @ms-list);
         }
 
-        .user-select(@behavior: none) {
+        .user-select(@behavior: all) {
             #platui > #variables;
             .user-select(@behavior; @all-list);
         }
@@ -686,9 +686,9 @@
         }
 
         .misc-webkit-touch(@callout: none; @drag: none; @highlight: transparent; @overflowscroll: touch) {
+            .webkit-touch-additions(@callout; @highlight);
             -webkit-user-drag: @drag;
             -webkit-overflow-scrolling: @overflowscroll;
-            .webkit-touch-additions(@callout; @highlight);
         }
     }
 }
@@ -8503,7 +8503,7 @@
 
     .plat-gesture {
         .misc-webkit-touch();
-        .user-select();
+        .user-select(none);
         .touch-action();
     }
 
@@ -9141,7 +9141,6 @@
 
     .plat-carousel {
         .fill();
-        .user-select();
         .box-sizing(border-box);
         position: relative;
         display: inline-block;
@@ -9441,8 +9440,6 @@
     #platui > #mixins;
 
     .plat-drawer-controller {
-        .user-select();
-
         &.plat-horizontal {
             .touch-action(pan-y);
         }
@@ -10681,10 +10678,7 @@
         .fill();
         .scroll();
         .box-sizing(border-box);
-        .misc-webkit-touch();
-        .user-select();
         .backface-visibility(hidden);
-        .perspective(none);
         position: absolute;
         top: 0;
         left: 0;
@@ -11590,7 +11584,7 @@
     #platui > #__Range;
 
     .plat-range {
-        .user-select();
+        .user-select(none);
         .box-sizing(border-box);
         position: relative;
         width: 100%;
@@ -11873,7 +11867,7 @@
     #platui > #__Slider;
 
     .plat-slider {
-        .user-select();
+        .user-select(none);
         .box-sizing(border-box);
         position: relative;
         width: 100%;
