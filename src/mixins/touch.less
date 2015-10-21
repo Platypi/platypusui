@@ -10,7 +10,7 @@
             #platui > #__mixins > .vendor-loop(touch-action; @behavior; @ms-list);
         }
 
-        .user-select(@behavior: none) {
+        .user-select(@behavior: all) {
             #platui > #variables;
             .user-select(@behavior; @all-list);
         }
@@ -24,9 +24,9 @@
         }
 
         .misc-webkit-touch(@callout: none; @drag: none; @highlight: transparent; @overflowscroll: touch) {
+            .webkit-touch-additions(@callout; @highlight);
             -webkit-user-drag: @drag;
             -webkit-overflow-scrolling: @overflowscroll;
-            .webkit-touch-additions(@callout; @highlight);
         }
     }
 }

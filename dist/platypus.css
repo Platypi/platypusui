@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.5 (https://platypi.io) 
+ * PlatypusUI v0.8.6 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -204,10 +204,10 @@ th {
   padding: 0;
 }
 .plat-gesture {
-  -webkit-user-drag: none;
-  -webkit-overflow-scrolling: touch;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
+  -webkit-overflow-scrolling: touch;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -1068,11 +1068,6 @@ h6 {
   height: 100%;
   padding: 0;
   margin: 0;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -1373,13 +1368,6 @@ h6 {
 .plat-checkbox.checkbox-danger .plat-checkbox-container.plat-x {
   border-color: #ef716f;
   background-color: #ef716f;
-}
-.plat-drawer-controller {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
 }
 .plat-drawer-controller.plat-horizontal {
   -ms-touch-action: pan-y;
@@ -3071,24 +3059,12 @@ h6 {
   padding: 0;
   margin: 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-user-drag: none;
-  -webkit-overflow-scrolling: touch;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -khtml-user-select: none;
-  user-select: none;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  -webkit-perspective: none;
-  -moz-perspective: none;
-  -ms-perspective: none;
-  perspective: none;
   position: absolute;
   top: 0;
   left: 0;
