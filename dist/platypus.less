@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.7 (https://platypi.io) 
+ * PlatypusUI v0.8.8 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -6529,21 +6529,21 @@
     #Radio {
         #dependencies {
             #platui > #variables;
-            @checked-border-color: @primary-color;
+            @mark-color: @primary-color;
+            @background-color: @transparent;
         }
 
         #platui > #Radio > #dependencies;
 
     /// =========== Radio Colors =========== ///
 
-        @background-color: @transparent;
         @border-color: @grey;
-        @mark-color: @checked-border-color;
-        @mark-padding-color: @transparent;
+        @checked-border-color: @mark-color;
+        @marked-background-color: @background-color;
 
     /// =========== Radio Size =========== ///
 
-        @diameter: 1em;
+        @diameter: 1.2em;
         @border-width: 1px;
         @mark-padding: 1px;
 
@@ -6552,7 +6552,7 @@
         .plat-radio(@prop; @value) {
             #platui > #mixins;
 
-            & when (@prop = checked-border-color) {
+            & when (@prop = mark-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -6569,6 +6569,12 @@
                 &.plat-radio {
                     .plat-radio-container {
                         background-color: @value;
+
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-color: @value;
+                            }
+                        }
                     }
                 }
             }
@@ -6579,10 +6585,12 @@
                     }
                 }
             }
-            & when (@prop = mark-color) {
+            & when (@prop = checked-border-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
+                            border-color: @value;
+
                             .plat-mark {
                                 background-color: @value;
                             }
@@ -6590,7 +6598,7 @@
                     }
                 }
             }
-            & when (@prop = mark-padding-color) {
+            & when (@prop = marked-background-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -6603,10 +6611,6 @@
             }
             & when (@prop = diameter) {
                 &.plat-radio {
-                    & > span {
-                        line-height: @value;
-                    }
-
                     .plat-radio-container {
                         .flex(0 0 @value);
                         width: @value;
@@ -6650,10 +6654,6 @@
 
             & when (@prop = undefined), (@value = undefined) {
                 &.plat-radio {
-                    & > span {
-                        line-height: @diameter;
-                    }
-
                     .plat-radio-container {
                         .flex(0 0 @diameter);
                         width: @diameter;
@@ -6667,16 +6667,14 @@
 
                             .plat-mark {
                                 background-color: @mark-color;
-                                width: @diameter;
-                                height: @diameter;
                                 border-width: @mark-padding;
-                                border-color: @mark-padding-color;
+                                border-color: @marked-background-color;
                             }
                         }
                     }
                 }
             }
-            & when (@prop = checked-border-color) {
+            & when (@prop = mark-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -6693,6 +6691,12 @@
                 &.plat-radio {
                     .plat-radio-container {
                         background-color: @value;
+
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-color: @value;
+                            }
+                        }
                     }
                 }
             }
@@ -6703,10 +6707,12 @@
                     }
                 }
             }
-            & when (@prop = mark-color) {
+            & when (@prop = checked-border-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
+                            border-color: @value;
+
                             .plat-mark {
                                 background-color: @value;
                             }
@@ -6714,7 +6720,7 @@
                     }
                 }
             }
-            & when (@prop = mark-padding-color) {
+            & when (@prop = marked-background-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -6727,10 +6733,6 @@
             }
             & when (@prop = diameter) {
                 &.plat-radio {
-                    & > span {
-                        line-height: @value;
-                    }
-
                     .plat-radio-container {
                         .flex(0 0 @value);
                         width: @value;
@@ -11524,7 +11526,7 @@
         cursor: pointer;
 
         & > span {
-            line-height: @diameter;
+            line-height: 1.2;
 
             &:first-of-type {
                 padding-left: 0.4em;
@@ -11535,12 +11537,11 @@
             .flex(0 0 @diameter);
             .border-radius(50%);
             .background-clip(padding-box);
-            .box-sizing(content-box);
+            .box-sizing(border-box);
             position: relative;
             display: inline-block;
             width: @diameter;
             height: @diameter;
-            overflow: hidden;
             background-color: @background-color;
             border: @border-width solid @border-color;
 
@@ -11552,9 +11553,9 @@
                     .background-clip(padding-box);
                     .box-sizing(border-box);
                     background-color: @mark-color;
-                    width: @diameter;
-                    height: @diameter;
-                    border: @mark-padding solid @mark-padding-color;
+                    width: 100%;
+                    height: 100%;
+                    border: @mark-padding solid @marked-background-color;
                 }
             }
         }
