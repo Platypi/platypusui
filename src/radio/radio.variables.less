@@ -4,21 +4,21 @@
     #Radio {
         #dependencies {
             #platui > #variables;
-            @checked-border-color: @primary-color;
+            @mark-color: @primary-color;
+            @background-color: @transparent;
         }
 
         #platui > #Radio > #dependencies;
 
     /// =========== Radio Colors =========== ///
 
-        @background-color: @transparent;
         @border-color: @grey;
-        @mark-color: @checked-border-color;
-        @mark-padding-color: @transparent;
+        @checked-border-color: @mark-color;
+        @marked-background-color: @background-color;
 
     /// =========== Radio Size =========== ///
 
-        @diameter: 1em;
+        @diameter: 1.2em;
         @border-width: 1px;
         @mark-padding: 1px;
 
@@ -27,7 +27,7 @@
         .plat-radio(@prop; @value) {
             #platui > #mixins;
 
-            & when (@prop = checked-border-color) {
+            & when (@prop = mark-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -44,6 +44,12 @@
                 &.plat-radio {
                     .plat-radio-container {
                         background-color: @value;
+
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-color: @value;
+                            }
+                        }
                     }
                 }
             }
@@ -54,10 +60,12 @@
                     }
                 }
             }
-            & when (@prop = mark-color) {
+            & when (@prop = checked-border-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
+                            border-color: @value;
+
                             .plat-mark {
                                 background-color: @value;
                             }
@@ -65,7 +73,7 @@
                     }
                 }
             }
-            & when (@prop = mark-padding-color) {
+            & when (@prop = marked-background-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -78,10 +86,6 @@
             }
             & when (@prop = diameter) {
                 &.plat-radio {
-                    & > span {
-                        line-height: @value;
-                    }
-
                     .plat-radio-container {
                         .flex(0 0 @value);
                         width: @value;
@@ -125,10 +129,6 @@
 
             & when (@prop = undefined), (@value = undefined) {
                 &.plat-radio {
-                    & > span {
-                        line-height: @diameter;
-                    }
-
                     .plat-radio-container {
                         .flex(0 0 @diameter);
                         width: @diameter;
@@ -142,16 +142,14 @@
 
                             .plat-mark {
                                 background-color: @mark-color;
-                                width: @diameter;
-                                height: @diameter;
                                 border-width: @mark-padding;
-                                border-color: @mark-padding-color;
+                                border-color: @marked-background-color;
                             }
                         }
                     }
                 }
             }
-            & when (@prop = checked-border-color) {
+            & when (@prop = mark-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -168,6 +166,12 @@
                 &.plat-radio {
                     .plat-radio-container {
                         background-color: @value;
+
+                        &.plat-bullet {
+                            .plat-mark {
+                                border-color: @value;
+                            }
+                        }
                     }
                 }
             }
@@ -178,10 +182,12 @@
                     }
                 }
             }
-            & when (@prop = mark-color) {
+            & when (@prop = checked-border-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
+                            border-color: @value;
+
                             .plat-mark {
                                 background-color: @value;
                             }
@@ -189,7 +195,7 @@
                     }
                 }
             }
-            & when (@prop = mark-padding-color) {
+            & when (@prop = marked-background-color) {
                 &.plat-radio {
                     .plat-radio-container {
                         &.plat-bullet {
@@ -202,10 +208,6 @@
             }
             & when (@prop = diameter) {
                 &.plat-radio {
-                    & > span {
-                        line-height: @value;
-                    }
-
                     .plat-radio-container {
                         .flex(0 0 @value);
                         width: @value;
