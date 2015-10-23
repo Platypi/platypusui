@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.8.7 (https://platypi.io)
+  * PlatypusUI v0.8.8 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at

@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.7 (https://platypi.io) 
+ * PlatypusUI v0.8.8 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -4023,18 +4023,18 @@ h6 {
   cursor: pointer;
 }
 .plat-radio > span {
-  line-height: 1em;
+  line-height: 1.2;
 }
 .plat-radio > span:first-of-type {
   padding-left: 0.4em;
 }
 .plat-radio .plat-radio-container {
-  -webkit-box-flex: 0 0 1em;
-  -webkit-flex: 0 0 1em;
-  -moz-box-flex: 0 0 1em;
-  -moz-flex: 0 0 1em;
-  -ms-flex: 0 0 1em;
-  flex: 0 0 1em;
+  -webkit-box-flex: 0 0 1.2em;
+  -webkit-flex: 0 0 1.2em;
+  -moz-box-flex: 0 0 1.2em;
+  -moz-flex: 0 0 1.2em;
+  -ms-flex: 0 0 1.2em;
+  flex: 0 0 1.2em;
   -webkit-border-top-left-radius: 50%;
   border-top-left-radius: 50%;
   -webkit-border-top-right-radius: 50%;
@@ -4046,14 +4046,13 @@ h6 {
   -moz-background-clip: padding;
   -webkit-background-clip: padding;
   background-clip: padding-box;
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   position: relative;
   display: inline-block;
-  width: 1em;
-  height: 1em;
-  overflow: hidden;
+  width: 1.2em;
+  height: 1.2em;
   background-color: transparent;
   border: 1px solid #c8c7cd;
 }
@@ -4076,8 +4075,8 @@ h6 {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   background-color: #2d97d2;
-  width: 1em;
-  height: 1em;
+  width: 100%;
+  height: 100%;
   border: 1px solid transparent;
 }
 .plat-range {
