@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.6 (https://platypi.io) 
+ * PlatypusUI v0.8.7 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -29,7 +29,7 @@ body {
   box-sizing: border-box;
   position: relative;
 }
-[plat-control="plat-viewport"]:not(.plat-viewport-animate) > .plat-viewcontrol {
+.plat-viewcontrol {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -38,16 +38,10 @@ body {
   width: 100%;
   margin: 0;
 }
-[plat-control="plat-viewport"].plat-viewport-animate > .plat-viewcontrol {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+.plat-viewport-animate > .plat-viewcontrol {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
-  margin: 0;
   z-index: 0;
 }
 .plat-hide,
