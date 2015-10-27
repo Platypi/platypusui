@@ -101,32 +101,32 @@
         }
 
         .media-width(@minWidth: undefined; @maxWidth: undefined; @rules) {
-            & when not(@max-width = 0px) and not(@max-width = 0) and not(@max-width = undefined) and not(@max-width = null) {
-                & when not(@min-width = 0px) and not(@min-width = 0) and not(@min-width = undefined) and not(@min-width = null) {
-                    #platui > #media > .media(all; ~'min-width: @{min-width}'; ~'max-width: @{max-width}'; @rules);
-                } & when (@min-width = 0px), (@min-width = 0), (@min-width = undefined), (@min-width = null) {
-                    #platui > #media > .media(all; ~'max-width: @{max-width}'; @rules);
+            & when not(@maxWidth = 0px) and not(@maxWidth = 0) and not(@maxWidth = undefined) and not(@maxWidth = null) {
+                & when not(@minWidth = 0px) and not(@minWidth = 0) and not(@minWidth = undefined) and not(@minWidth = null) {
+                    #platui > #media > .media(all; ~'min-width: @{minWidth}'; ~'max-width: @{maxWidth}'; @rules);
+                } & when (@minWidth = 0px), (@minWidth = 0), (@minWidth = undefined), (@minWidth = null) {
+                    #platui > #media > .media(all; ~'max-width: @{maxWidth}'; @rules);
                 }
-            } & when (@max-width = 0px), (@max-width = 0), (@max-width = undefined), (@max-width = null) {
-                & when not(@min-width = 0px) and not(@min-width = 0) and not(@min-width = undefined) and not(@min-width = null) {
-                    #platui > #media > .media(all; ~'min-width: @{min-width}'; @rules);
-                } & when (@min-width = 0px), (@min-width = 0), (@min-width = undefined), (@min-width = null) {
+            } & when (@maxWidth = 0px), (@maxWidth = 0), (@maxWidth = undefined), (@maxWidth = null) {
+                & when not(@minWidth = 0px) and not(@minWidth = 0) and not(@minWidth = undefined) and not(@minWidth = null) {
+                    #platui > #media > .media(all; ~'min-width: @{minWidth}'; @rules);
+                } & when (@minWidth = 0px), (@minWidth = 0), (@minWidth = undefined), (@minWidth = null) {
                     /** #platui > #media > .media-width mixin had no min-width or max-width defined  **/
                 }
             }
         }
 
         .media-height(@minHeight: undefined; @maxHeight: undefined; @rules) {
-            & when not(@max-height = 0px) and not(@max-height = 0) and not(@max-height = undefined) and not(@max-height = null) {
-                & when not(@min-height = 0px) and not(@min-height = 0) and not(@min-height = undefined) and not(@min-height = null) {
-                    #platui > #media > .media(all; ~'min-height: @{min-height}'; ~'max-height: @{max-height}'; @rules);
-                } & when (@min-height = 0px), (@min-height = 0), (@min-height = undefined), (@min-height = null) {
-                    #platui > #media > .media(all; ~'max-height: @{max-height}'; @rules);
+            & when not(@maxHeight = 0px) and not(@maxHeight = 0) and not(@maxHeight = undefined) and not(@maxHeight = null) {
+                & when not(@minHeight = 0px) and not(@minHeight = 0) and not(@minHeight = undefined) and not(@minHeight = null) {
+                    #platui > #media > .media(all; ~'min-height: @{minHeight}'; ~'max-height: @{maxHeight}'; @rules);
+                } & when (@minHeight = 0px), (@minHeight = 0), (@minHeight = undefined), (@minHeight = null) {
+                    #platui > #media > .media(all; ~'max-height: @{maxHeight}'; @rules);
                 }
-            } & when (@max-height = 0px), (@max-height = 0), (@max-height = undefined), (@max-height = null) {
-                & when not(@min-height = 0px) and not(@min-height = 0) and not(@min-height = undefined) and not(@min-height = null) {
-                    #platui > #media > .media(all; ~'min-height: @{min-height}'; @rules);
-                } & when (@min-height = 0px), (@min-height = 0), (@min-height = undefined), (@min-height = null) {
+            } & when (@maxHeight = 0px), (@maxHeight = 0), (@maxHeight = undefined), (@maxHeight = null) {
+                & when not(@minHeight = 0px) and not(@minHeight = 0) and not(@minHeight = undefined) and not(@minHeight = null) {
+                    #platui > #media > .media(all; ~'min-height: @{minHeight}'; @rules);
+                } & when (@minHeight = 0px), (@minHeight = 0), (@minHeight = undefined), (@minHeight = null) {
                     /**  #platui > #media > .media-height mixin had no min-height or max-height defined  **/
                 }
             }
