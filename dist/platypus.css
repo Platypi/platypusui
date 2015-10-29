@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.8.11 (https://platypi.io) 
+ * PlatypusUI v0.9.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -34,7 +34,6 @@ body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   position: relative;
-  height: 100%;
   width: 100%;
   margin: 0;
 }
@@ -254,6 +253,9 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 blockquote {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   display: block;
   margin: 1em 0;
   padding-left: 1em;
@@ -262,6 +264,9 @@ blockquote {
   border-left: 1px solid #919191;
 }
 cite {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   display: block;
   padding: 0.3em 0;
   font-size: 14.4px;
@@ -274,6 +279,9 @@ dfn {
   font-style: italic;
 }
 abbr[title] {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   border-bottom: 1px dotted;
 }
 small {
@@ -301,11 +309,18 @@ h1 {
   font-weight: 600;
   margin: 0.67em 0 0.536em;
 }
+h1:first-child,
 h1.no-collapse-top {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-top: 0;
   padding-top: 0.67em;
 }
 h1.no-collapse-bottom {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-bottom: 0;
   padding-bottom: 0.536em;
 }
@@ -316,15 +331,24 @@ h4 {
   font-weight: 600;
   margin: 0.8375em 0 0.67em;
 }
+h2:first-child,
+h3:first-child,
+h4:first-child,
 h2.no-collapse-top,
 h3.no-collapse-top,
 h4.no-collapse-top {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-top: 0;
   padding-top: 0.8375em;
 }
 h2.no-collapse-bottom,
 h3.no-collapse-bottom,
 h4.no-collapse-bottom {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-bottom: 0;
   padding-bottom: 0.67em;
 }
@@ -334,13 +358,21 @@ h6 {
   font-weight: 600;
   margin: 1.005em 0 0.8375em;
 }
+h5:first-child,
+h6:first-child,
 h5.no-collapse-top,
 h6.no-collapse-top {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-top: 0;
   padding-top: 1.005em;
 }
 h5.no-collapse-bottom,
 h6.no-collapse-bottom {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-bottom: 0;
   padding-bottom: 0.8375em;
 }
@@ -348,11 +380,18 @@ p {
   padding: 0;
   margin: 1.005em 0;
 }
+p:first-child,
 p.no-collapse-top {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-top: 0;
   padding-top: 1.005em;
 }
 p.no-collapse-bottom {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-bottom: 0;
   padding-bottom: 1.005em;
 }

@@ -5,13 +5,11 @@
 
 & {
     #platui > #variables;
+    #platui > #mixins;
     #platui > #media;
 
-    /// ======= Local Variables =======
-
-    @line-height-ratio: 1.5;
-
-    html, body {
+    html,
+    body {
 	    font-family: @default-font-type;
 	    color: @default-font-color;
         font-size: @default-font-size;
@@ -21,6 +19,7 @@
     }
 
     blockquote {
+        .box-sizing(border-box);
 	    display: block;
 	    margin: 1em 0;
 	    padding-left: 1em;
@@ -30,6 +29,7 @@
     }
 
     cite {
+        .box-sizing(border-box);
 	    display: block;
 	    padding: 0.3em 0;
 	    font-size: @default-font-size * 0.9;
@@ -45,11 +45,12 @@
     }
 
     abbr[title] {
-      border-bottom: 1px dotted;
+        .box-sizing(border-box);
+        border-bottom: 1px dotted;
     }
 
     small {
-      font-size: 80%;
+        font-size: 80%;
     }
 
     sub,
@@ -91,12 +92,15 @@
         .headings();
         margin: @typography-margin 0 (@typography-margin / 1.25);
 
+        &:first-child,
         &.no-collapse-top {
+            .box-sizing(border-box);
             margin-top: 0;
             padding-top: @typography-margin;
         }
 
         &.no-collapse-bottom {
+            .box-sizing(border-box);
             margin-bottom: 0;
             padding-bottom: @typography-margin / 1.25;
         }
@@ -106,12 +110,15 @@
         .headings();
         margin: (@typography-margin * 1.25) 0 @typography-margin;
 
+        &:first-child,
         &.no-collapse-top {
+            .box-sizing(border-box);
             margin-top: 0;
             padding-top: @typography-margin * 1.25;
         }
 
         &.no-collapse-bottom {
+            .box-sizing(border-box);
             margin-bottom: 0;
             padding-bottom: @typography-margin;
         }
@@ -121,12 +128,15 @@
         .headings();
         margin: (@typography-margin * 1.5) 0 (@typography-margin * 1.25);
 
+        &:first-child,
         &.no-collapse-top {
+            .box-sizing(border-box);
             margin-top: 0;
             padding-top: @typography-margin * 1.5;
         }
 
         &.no-collapse-bottom {
+            .box-sizing(border-box);
             margin-bottom: 0;
             padding-bottom: @typography-margin * 1.25;
         }
@@ -136,12 +146,15 @@
         padding: 0;
         margin: (@typography-margin * 1.5) 0;
 
+        &:first-child,
         &.no-collapse-top {
+            .box-sizing(border-box);
             margin-top: 0;
             padding-top: @typography-margin * 1.5;
         }
 
         &.no-collapse-bottom {
+            .box-sizing(border-box);
             margin-bottom: 0;
             padding-bottom: @typography-margin * 1.5;
         }
