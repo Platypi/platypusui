@@ -472,13 +472,12 @@ module platui {
                 visibleInput = this._visibleInput,
                 files = hiddenInput.files;
 
-            if (this.utils.isNull(files)) {
+            if (this.utils.isEmpty(files)) {
+                this.clear();
                 return;
-            }
-
-            if (!hiddenInput.multiple) {
+            } else if (!hiddenInput.multiple) {
                 let file = files[0];
-                
+
                 visibleInput.value = file.name;
                 this.inputChanged(file);
             } else {
