@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.9.0 (https://platypi.io)
+ * PlatypusUI v0.9.1 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -4004,10 +4004,11 @@ var platui;
          */
         File.prototype._filesSelected = function () {
             var hiddenInput = this._hiddenInput, visibleInput = this._visibleInput, files = hiddenInput.files;
-            if (this.utils.isNull(files)) {
+            if (this.utils.isEmpty(files)) {
+                this.clear();
                 return;
             }
-            if (!hiddenInput.multiple) {
+            else if (!hiddenInput.multiple) {
                 var file = files[0];
                 visibleInput.value = file.name;
                 this.inputChanged(file);

@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.0 (https://platypi.io) 
+ * PlatypusUI v0.9.1 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -2621,6 +2621,9 @@ h6 {
 .plat-input .plat-input-container input:disabled + .plat-input-action {
   display: none;
 }
+.plat-input.input-no-action .plat-input-container input {
+  padding-right: 0;
+}
 .plat-input.input-no-action .plat-input-container .plat-input-action {
   display: none;
 }
@@ -2644,6 +2647,9 @@ h6 {
 }
 .plat-input.input-outline .plat-input-container .plat-input-action {
   right: 6px;
+}
+.plat-input.input-outline.input-no-action .plat-input-container input {
+  padding-right: 0.5em;
 }
 .plat-input.input-primary .plat-input-container input:focus {
   border-color: #2d97d2;
@@ -3109,9 +3115,11 @@ h6 {
   height: 100%;
   padding: 0;
   margin: 0;
-  -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-perspective: none;
