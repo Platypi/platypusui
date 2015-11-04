@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.0 (https://platypi.io) 
+ * PlatypusUI v0.9.1 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -10267,6 +10267,10 @@
 
         &.input-no-action {
             .plat-input-container {
+                input {
+                    padding-right: 0;
+                }
+
                 .plat-input-action {
                     display: none;
                 }
@@ -10297,6 +10301,14 @@
 
                 .plat-input-action {
                     right: 6px;
+                }
+            }
+
+            &.input-no-action {
+                .plat-input-container {
+                    input {
+                        padding-right: 0.5em;
+                    }
                 }
             }
         }
@@ -10703,7 +10715,8 @@
 
         .plat-modal-container {
             .fill();
-            .box-sizing(content-box);
+            .scroll();
+            .box-sizing(border-box);
             .backface-visibility(hidden);
             .perspective(none);
             position: absolute;
