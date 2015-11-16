@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.9.1 (https://platypi.io)
+ * PlatypusUI v0.9.2 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -4211,19 +4211,21 @@ var platui;
             }
             // since we're extending the ForEach, we must set this animate to false as it refers to item manipulation. 
             this._animate = false;
-            var optionObj = this.options || {}, options = optionObj.value || {}, index = options.index, isNumber = utils.isNumber, orientation = this._validateOrientation(options.orientation), interval = options.interval, intervalNum = this._interval = isNumber(interval) ? Math.abs(interval) : 3000, suspend = options.suspend, viewport = this._viewport = this.element.firstElementChild;
+            var optionObj = this.options || {}, options = optionObj.value || {}, index = options.index, isNumber = utils.isNumber, orientation = this._validateOrientation(options.orientation), interval = options.interval, intervalNum = this._interval = isNumber(interval) ? Math.abs(interval) : 3000, suspend = options.suspend, dom = this.dom, element = this.element, viewport = this._viewport = element.firstElementChild;
             this._container = viewport.firstElementChild;
             this._type = options.type || 'track swipe';
             this._isInfinite = options.infinite === true;
             this._suspend = Math.abs(isNumber(suspend) ? intervalNum - suspend : intervalNum - 3000);
-            this.dom.addClass(this.element, __Plat + orientation);
+            dom.addClass(element, __Plat + orientation);
             this._onLoad = function () {
                 var setIndex = _this._index;
                 index = isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : null;
                 _this._index = 0;
-                _this._initializeIndex(index === null ? setIndex : index);
-                _this._addEventListeners();
-                _this._loaded = true;
+                dom.whenVisible(function () {
+                    _this._initializeIndex(index === null ? setIndex : index);
+                    _this._addEventListeners();
+                    _this._loaded = true;
+                }, element);
             };
             this._init();
         };
@@ -4806,6 +4808,7 @@ var platui;
          * Adds all event listeners on this control's element.
          */
         Carousel.prototype._addEventListeners = function () {
+            var _this = this;
             var types = this._type.split(' ');
             if (types.indexOf('tap') !== -1) {
                 this._initializeTap();
@@ -4819,6 +4822,21 @@ var platui;
             if (types.indexOf('auto') !== -1) {
                 this._initializeAuto();
             }
+            var fired = false;
+            this.addEventListener(this._window, 'resize', function () {
+                if (fired) {
+                    return;
+                }
+                fired = true;
+                _this.utils.requestAnimationFrame(function () {
+                    fired = false;
+                    var currentLength = _this._length, length = _this._getLength();
+                    if (!length || currentLength === length) {
+                        return;
+                    }
+                    _this._container.style[_this._transform] = _this._calculateStaticTranslation(currentLength - length);
+                });
+            }, false);
         };
         /**
          * Removes all event listeners on this control's element.
@@ -5180,7 +5198,7 @@ var platui;
          * Gets the interval length of the sliding container.
          */
         Carousel.prototype._getLength = function () {
-            return this._isVertical ? this._viewport.offsetHeight : this._viewport.offsetWidth;
+            return this._length = (this._isVertical ? this._viewport.offsetHeight : this._viewport.offsetWidth);
         };
         /**
          * Checks the orientation of the control and ensures it is valid.
