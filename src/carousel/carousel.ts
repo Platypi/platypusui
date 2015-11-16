@@ -355,6 +355,19 @@ module platui {
         protected _interval: number;
 
         /**
+         * @name _length
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         *
+         * @type {number}
+         *
+         * @description
+         * The current length of the {@link platui.Carousel|Carousel}.
+         */
+        protected _length: number;
+
+        /**
          * @name _removeInterval
          * @memberof platui.Carousel
          * @kind property
@@ -685,23 +698,28 @@ module platui {
                 interval = options.interval,
                 intervalNum = this._interval = isNumber(interval) ? Math.abs(interval) : 3000,
                 suspend = options.suspend,
-                viewport = this._viewport = <HTMLElement>this.element.firstElementChild;
+                dom = this.dom,
+                element = this.element,
+                viewport = this._viewport = <HTMLElement>element.firstElementChild;
 
             this._container = <HTMLElement>viewport.firstElementChild;
             this._type = options.type || 'track swipe';
             this._isInfinite = options.infinite === true;
             this._suspend = Math.abs(isNumber(suspend) ? intervalNum - suspend : intervalNum - 3000);
 
-            this.dom.addClass(this.element, __Plat + orientation);
+            dom.addClass(element, __Plat + orientation);
 
             this._onLoad = (): void => {
                 let setIndex = this._index;
 
                 index = isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : null;
                 this._index = 0;
-                this._initializeIndex(index === null ? setIndex : index);
-                this._addEventListeners();
-                this._loaded = true;
+
+                dom.whenVisible((): void => {
+                    this._initializeIndex(index === null ? setIndex : index);
+                    this._addEventListeners();
+                    this._loaded = true;
+                }, element);
             };
 
             this._init();
@@ -1629,6 +1647,28 @@ module platui {
             if (types.indexOf('auto') !== -1) {
                 this._initializeAuto();
             }
+
+            let fired = false;
+            this.addEventListener(this._window, 'resize', (): void => {
+                if (fired) {
+                    return;
+                }
+
+                fired = true;
+
+                this.utils.requestAnimationFrame((): void => {
+                    fired = false;
+
+                    let currentLength = this._length,
+                        length = this._getLength();
+
+                    if (!length || currentLength === length) {
+                        return;
+                    }
+
+                    this._container.style[<any>this._transform] = this._calculateStaticTranslation(currentLength - length);
+                });
+            }, false);
         }
 
         /**
@@ -2215,7 +2255,7 @@ module platui {
          * @returns {number} The length of the sliding container.
          */
         protected _getLength(): number {
-            return this._isVertical ? this._viewport.offsetHeight : this._viewport.offsetWidth;
+            return this._length = (this._isVertical ? this._viewport.offsetHeight : this._viewport.offsetWidth);
         }
 
         /**
