@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.9.2 (https://platypi.io)
+  * PlatypusUI v0.9.3 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -465,6 +465,10 @@ declare module platui {
                 value: string;
             };
         };
+        /**
+          * A promise that signifies the Drawer is ready for a pairing.
+          */
+        ready: plat.async.IThenable<void>;
         /**
           * Reference to the IPromise injectable.
           */
@@ -983,6 +987,10 @@ declare module platui {
           * Obtains the root element to translate.
           */
         protected _getRootElement(): HTMLElement;
+        /**
+          * Uninitializes the root element.
+          */
+        protected _cleanRootElement(): void;
         /**
           * Sets the max offset to translate the corresponding Drawer.
           */
