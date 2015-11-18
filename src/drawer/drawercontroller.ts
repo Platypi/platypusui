@@ -685,6 +685,7 @@ module platui {
 
                 this.inputChanged(false);
                 if (!utils.isNull(drawer)) {
+                    drawer.ready = promise;
                     drawer.inputChanged(false);
                 }
             }
@@ -815,9 +816,17 @@ module platui {
                 });
             } else if (this._isOpen) {
                 this._toggleDelay();
-                this._toggleDelay = utils.requestAnimationFrame((): void => {
-                    this._close();
-                });
+
+                let promise = new this._Promise<any>((resolve) => {
+                        this._toggleDelay = utils.requestAnimationFrame((): void => {
+                            resolve(this._close());
+                        });
+                    }),
+                    drawer = this._drawer;
+
+                if (!utils.isNull(drawer)) {
+                    drawer.ready = promise;
+                }
             }
         }
 
@@ -939,7 +948,14 @@ module platui {
                 return this._open(true);
             }
 
-            return this._close(true);
+            let promise = this._close(true),
+                drawer = this._drawer;
+
+            if (!this.utils.isNull(drawer)) {
+                drawer.ready = promise;
+            }
+
+            return promise;
         }
 
         /**
@@ -1593,8 +1609,11 @@ module platui {
          * @returns {void}
          */
         protected _checkPreInit(): void {
-            let value = this._preInitializedValue;
-            if (this.utils.isNull(value)) {
+            let value = this._preInitializedValue,
+                utils = this.utils,
+                isNull = utils.isNull;
+
+            if (isNull(value)) {
                 return;
             }
 
@@ -1604,14 +1623,21 @@ module platui {
             }
 
             this._toggleDelay();
-            this._toggleDelay = this.utils.requestAnimationFrame((): void => {
-                if (value) {
-                    this._open();
-                    return;
-                }
+            if (value) {
+                this._toggleDelay = utils.requestAnimationFrame(this._open.bind(this));
+                return;
+            }
 
-                this._close();
-            });
+            let promise = new this._Promise<any>((resolve) => {
+                    this._toggleDelay = utils.requestAnimationFrame((): void => {
+                        resolve(this._close());
+                    });
+                }),
+                drawer = this._drawer;
+
+            if (!isNull(drawer)) {
+                drawer.ready = promise;
+            }
         }
 
         /**
