@@ -603,11 +603,12 @@ module platui {
                 return;
             }
 
-            drawer.spliceController(this);
-            if (drawer.controllerCount() > 0) {
+            if (drawer.controllerCount() > 1) {
+                drawer.spliceController(this);
                 return;
             } else if (this._isOpen) {
                 drawer.ready = this.close().then((): void => {
+                    drawer.spliceController(this);
                     if (drawer.controllerCount() > 0) {
                         return;
                     }
@@ -618,6 +619,7 @@ module platui {
             }
 
             drawer.ready.then((): void => {
+                drawer.spliceController(this);
                 if (drawer.controllerCount() > 0) {
                     return;
                 }
