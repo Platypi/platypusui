@@ -619,27 +619,18 @@ module platui {
             drawer.spliceController(this);
             if (drawer.controllerCount() > 0) {
                 return;
-            }
+            } else if (this._isOpen) {
+                this.close().then((): void => {
+                    if (drawer.controllerCount() > 0) {
+                        return;
+                    }
 
-            this.dom.removeClass(rootElement, `${__Drawer}-root ${this._directionalTransitionPrep}`);
-
-            let storedStyle = drawer.storedProperties;
-            if (!utils.isObject(storedStyle)) {
+                    this._cleanRootElement();
+                });
                 return;
             }
 
-            let rootElementStyle = rootElement.style,
-                parent = rootElement.parentElement,
-                overflow = storedStyle.parentOverflow;
-
-            rootElementStyle.position = storedStyle.position;
-            rootElementStyle.zIndex = storedStyle.zIndex;
-            if (utils.isObject(overflow) && utils.isNode(parent)) {
-                parent.style[<any>overflow.key] = overflow.value;
-            }
-
-            delete drawer.storedProperties;
-            this._drawerElement.setAttribute(__Hide, '');
+            this._cleanRootElement();
         }
 
         /**
@@ -1821,6 +1812,53 @@ module platui {
             drawer.storedProperties = rootElementStyle;
 
             return element;
+        }
+
+        /**
+         * @name _cleanRootElement
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Uninitializes the root element.
+         *
+         * @returns {void}
+         */
+        protected _cleanRootElement(): void {
+            let utils = this.utils,
+                isObject = utils.isObject,
+                isNode = utils.isNode,
+                rootElement = this._rootElement,
+                drawer = this._drawer;
+
+            if (!isNode(rootElement)) {
+                return;
+            }
+
+            this.dom.removeClass(rootElement, `${__Drawer}-root ${this._directionalTransitionPrep}`);
+
+            if (utils.isNull(drawer)) {
+                return;
+            }
+
+            let storedStyle = drawer.storedProperties;
+            if (!isObject(storedStyle)) {
+                return;
+            }
+
+            let rootElementStyle = rootElement.style,
+                parent = rootElement.parentElement,
+                overflow = storedStyle.parentOverflow;
+
+            rootElementStyle.position = storedStyle.position;
+            rootElementStyle.zIndex = storedStyle.zIndex;
+            if (isObject(overflow) && isNode(parent)) {
+                parent.style[<any>overflow.key] = overflow.value;
+            }
+
+            delete drawer.storedProperties;
+            this._drawerElement.setAttribute(__Hide, '');
         }
 
         /**
