@@ -617,7 +617,7 @@ module platui {
                 return;
             }
 
-            this._cleanRootElement();
+            drawer.ready.then(this._cleanRootElement.bind(this));
         }
 
         /**
