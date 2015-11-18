@@ -598,48 +598,34 @@ module platui {
         dispose(): void {
             super.dispose();
 
-            let utils = this.utils,
-                isNode = utils.isNode,
-                drawer = this._drawer,
-                rootElement = this._rootElement,
-                clickEater = this._clickEater;
-
-            if (!isNode(rootElement)) {
+            let drawer = this._drawer;
+            if (this.utils.isNull(drawer)) {
                 return;
             }
 
-            if (isNode(clickEater)) {
-                this._removeClickEater();
-            }
+            if (drawer.controllerCount() > 1) {
+                drawer.spliceController(this);
+                return;
+            } else if (this._isOpen) {
+                drawer.ready = this.close().then((): void => {
+                    drawer.spliceController(this);
+                    if (drawer.controllerCount() > 0) {
+                        return;
+                    }
 
-            if (utils.isNull(drawer)) {
+                    this._cleanRootElement();
+                });
                 return;
             }
 
-            drawer.spliceController(this);
-            if (drawer.controllerCount() > 0) {
-                return;
-            }
+            drawer.ready.then((): void => {
+                drawer.spliceController(this);
+                if (drawer.controllerCount() > 0) {
+                    return;
+                }
 
-            this.dom.removeClass(rootElement, `${__Drawer}-root ${this._directionalTransitionPrep}`);
-
-            let storedStyle = drawer.storedProperties;
-            if (!utils.isObject(storedStyle)) {
-                return;
-            }
-
-            let rootElementStyle = rootElement.style,
-                parent = rootElement.parentElement,
-                overflow = storedStyle.parentOverflow;
-
-            rootElementStyle.position = storedStyle.position;
-            rootElementStyle.zIndex = storedStyle.zIndex;
-            if (utils.isObject(overflow) && utils.isNode(parent)) {
-                parent.style[<any>overflow.key] = overflow.value;
-            }
-
-            delete drawer.storedProperties;
-            this._drawerElement.setAttribute(__Hide, '');
+                this._cleanRootElement();
+            });
         }
 
         /**
@@ -707,6 +693,7 @@ module platui {
 
                 this.inputChanged(false);
                 if (!utils.isNull(drawer)) {
+                    drawer.ready = promise;
                     drawer.inputChanged(false);
                 }
             }
@@ -837,9 +824,17 @@ module platui {
                 });
             } else if (this._isOpen) {
                 this._toggleDelay();
-                this._toggleDelay = utils.requestAnimationFrame((): void => {
-                    this._close();
-                });
+
+                let promise = new this._Promise<any>((resolve) => {
+                        this._toggleDelay = utils.requestAnimationFrame((): void => {
+                            resolve(this._close());
+                        });
+                    }),
+                    drawer = this._drawer;
+
+                if (!utils.isNull(drawer)) {
+                    drawer.ready = promise;
+                }
             }
         }
 
@@ -961,7 +956,14 @@ module platui {
                 return this._open(true);
             }
 
-            return this._close(true);
+            let promise = this._close(true),
+                drawer = this._drawer;
+
+            if (!this.utils.isNull(drawer)) {
+                drawer.ready = promise;
+            }
+
+            return promise;
         }
 
         /**
@@ -1615,8 +1617,11 @@ module platui {
          * @returns {void}
          */
         protected _checkPreInit(): void {
-            let value = this._preInitializedValue;
-            if (this.utils.isNull(value)) {
+            let value = this._preInitializedValue,
+                utils = this.utils,
+                isNull = utils.isNull;
+
+            if (isNull(value)) {
                 return;
             }
 
@@ -1626,14 +1631,21 @@ module platui {
             }
 
             this._toggleDelay();
-            this._toggleDelay = this.utils.requestAnimationFrame((): void => {
-                if (value) {
-                    this._open();
-                    return;
-                }
+            if (value) {
+                this._toggleDelay = utils.requestAnimationFrame(this._open.bind(this));
+                return;
+            }
 
-                this._close();
-            });
+            let promise = new this._Promise<any>((resolve) => {
+                    this._toggleDelay = utils.requestAnimationFrame((): void => {
+                        resolve(this._close());
+                    });
+                }),
+                drawer = this._drawer;
+
+            if (!isNull(drawer)) {
+                drawer.ready = promise;
+            }
         }
 
         /**
@@ -1821,6 +1833,53 @@ module platui {
             drawer.storedProperties = rootElementStyle;
 
             return element;
+        }
+
+        /**
+         * @name _cleanRootElement
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Uninitializes the root element.
+         *
+         * @returns {void}
+         */
+        protected _cleanRootElement(): void {
+            let utils = this.utils,
+                isObject = utils.isObject,
+                isNode = utils.isNode,
+                rootElement = this._rootElement,
+                drawer = this._drawer;
+
+            if (!isNode(rootElement)) {
+                return;
+            }
+
+            this.dom.removeClass(rootElement, `${__Drawer}-root ${this._directionalTransitionPrep}`);
+
+            if (utils.isNull(drawer)) {
+                return;
+            }
+
+            let storedStyle = drawer.storedProperties;
+            if (!isObject(storedStyle)) {
+                return;
+            }
+
+            let rootElementStyle = rootElement.style,
+                parent = rootElement.parentElement,
+                overflow = storedStyle.parentOverflow;
+
+            rootElementStyle.position = storedStyle.position;
+            rootElementStyle.zIndex = storedStyle.zIndex;
+            if (isObject(overflow) && isNode(parent)) {
+                parent.style[<any>overflow.key] = overflow.value;
+            }
+
+            delete drawer.storedProperties;
+            this._drawerElement.setAttribute(__Hide, '');
         }
 
         /**

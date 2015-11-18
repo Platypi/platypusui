@@ -34,7 +34,7 @@ module platui {
          * @name storedProperties
          * @memberof platui.Drawer
          * @kind property
-         * @access protected
+         * @access public
          *
          * @type {{ position?: string; zIndex?: string; rootElement?: HTMLElement; parentOverflow?: { key: string; value: string; }; }}
          *
@@ -48,6 +48,19 @@ module platui {
             rootElement?: HTMLElement;
             parentOverflow?: { key: string; value: string; };
         };
+
+        /**
+         * @name ready
+         * @memberof platui.Drawer
+         * @kind property
+         * @access public
+         *
+         * @type {plat.async.IThenable<void>}
+         *
+         * @description
+         * A promise that signifies the {@link platui.Drawer|Drawer} is ready for a pairing.
+         */
+        ready: plat.async.IThenable<void> = this._Promise.resolve();
 
         /**
          * @name _Promise
@@ -511,14 +524,16 @@ module platui {
                     this._controllers.unshift(<DrawerController>control);
 
                     if (!controllerArg.received) {
-                        this.dispatchEvent(`${__DrawerFoundEvent}_${id}`, plat.events.EventManager.DIRECT, <IDrawerHandshakeEvent>{
-                            control: this,
-                            received: true,
-                            position: position,
-                            template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
-                            elastic: isElastic,
-                            state: this.__state,
-                            nextState: this.__nextState
+                        this.ready.then((): void => {
+                            this.dispatchEvent(`${__DrawerFoundEvent}_${id}`, plat.events.EventManager.DIRECT, <IDrawerHandshakeEvent>{
+                                control: this,
+                                received: true,
+                                position: position,
+                                template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                                elastic: isElastic,
+                                state: this.__state,
+                                nextState: this.__nextState
+                            });
                         });
                     }
 

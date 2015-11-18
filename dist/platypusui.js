@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.9.2 (https://platypi.io)
+ * PlatypusUI v0.9.3 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -762,6 +762,10 @@ var platui;
         function Drawer() {
             _super.apply(this, arguments);
             /**
+             * A promise that signifies the Drawer is ready for a pairing.
+             */
+            this.ready = this._Promise.resolve();
+            /**
              * References to all the DrawerControllers used to control this Drawer.
              */
             this._controllers = [];
@@ -980,14 +984,16 @@ var platui;
                 }
                 _this._controllers.unshift(control);
                 if (!controllerArg.received) {
-                    _this.dispatchEvent(__DrawerFoundEvent + "_" + id, plat.events.EventManager.DIRECT, {
-                        control: _this,
-                        received: true,
-                        position: position,
-                        template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
-                        elastic: isElastic,
-                        state: _this.__state,
-                        nextState: _this.__nextState
+                    _this.ready.then(function () {
+                        _this.dispatchEvent(__DrawerFoundEvent + "_" + id, plat.events.EventManager.DIRECT, {
+                            control: _this,
+                            received: true,
+                            position: position,
+                            template: utils.isNode(innerTemplate) ? innerTemplate.cloneNode(true) : null,
+                            elastic: isElastic,
+                            state: _this.__state,
+                            nextState: _this.__nextState
+                        });
                     });
                 }
                 _this._isInitialized = true;
@@ -1104,34 +1110,33 @@ var platui;
          * referencing this Drawer.
          */
         DrawerController.prototype.dispose = function () {
+            var _this = this;
             _super.prototype.dispose.call(this);
-            var utils = this.utils, isNode = utils.isNode, drawer = this._drawer, rootElement = this._rootElement, clickEater = this._clickEater;
-            if (!isNode(rootElement)) {
+            var drawer = this._drawer;
+            if (this.utils.isNull(drawer)) {
                 return;
             }
-            if (isNode(clickEater)) {
-                this._removeClickEater();
-            }
-            if (utils.isNull(drawer)) {
+            if (drawer.controllerCount() > 1) {
+                drawer.spliceController(this);
                 return;
             }
-            drawer.spliceController(this);
-            if (drawer.controllerCount() > 0) {
+            else if (this._isOpen) {
+                drawer.ready = this.close().then(function () {
+                    drawer.spliceController(_this);
+                    if (drawer.controllerCount() > 0) {
+                        return;
+                    }
+                    _this._cleanRootElement();
+                });
                 return;
             }
-            this.dom.removeClass(rootElement, __Drawer + "-root " + this._directionalTransitionPrep);
-            var storedStyle = drawer.storedProperties;
-            if (!utils.isObject(storedStyle)) {
-                return;
-            }
-            var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
-            rootElementStyle.position = storedStyle.position;
-            rootElementStyle.zIndex = storedStyle.zIndex;
-            if (utils.isObject(overflow) && utils.isNode(parent)) {
-                parent.style[overflow.key] = overflow.value;
-            }
-            delete drawer.storedProperties;
-            this._drawerElement.setAttribute(__Hide, '');
+            drawer.ready.then(function () {
+                drawer.spliceController(_this);
+                if (drawer.controllerCount() > 0) {
+                    return;
+                }
+                _this._cleanRootElement();
+            });
         };
         /**
          * Opens the Drawer.
@@ -1170,6 +1175,7 @@ var platui;
                 var drawer = this._drawer;
                 this.inputChanged(false);
                 if (!utils.isNull(drawer)) {
+                    drawer.ready = promise;
                     drawer.inputChanged(false);
                 }
             }
@@ -1249,9 +1255,14 @@ var platui;
             }
             else if (this._isOpen) {
                 this._toggleDelay();
-                this._toggleDelay = utils.requestAnimationFrame(function () {
-                    _this._close();
-                });
+                var promise = new this._Promise(function (resolve) {
+                    _this._toggleDelay = utils.requestAnimationFrame(function () {
+                        resolve(_this._close());
+                    });
+                }), drawer = this._drawer;
+                if (!utils.isNull(drawer)) {
+                    drawer.ready = promise;
+                }
             }
         };
         /**
@@ -1328,7 +1339,11 @@ var platui;
             if (this._isOpen) {
                 return this._open(true);
             }
-            return this._close(true);
+            var promise = this._close(true), drawer = this._drawer;
+            if (!this.utils.isNull(drawer)) {
+                drawer.ready = promise;
+            }
+            return promise;
         };
         /**
          * Adds a click eater when tracking and closing an open Drawer.
@@ -1752,8 +1767,8 @@ var platui;
          */
         DrawerController.prototype._checkPreInit = function () {
             var _this = this;
-            var value = this._preInitializedValue;
-            if (this.utils.isNull(value)) {
+            var value = this._preInitializedValue, utils = this.utils, isNull = utils.isNull;
+            if (isNull(value)) {
                 return;
             }
             var isOpen = this._isOpen;
@@ -1761,13 +1776,18 @@ var platui;
                 return;
             }
             this._toggleDelay();
-            this._toggleDelay = this.utils.requestAnimationFrame(function () {
-                if (value) {
-                    _this._open();
-                    return;
-                }
-                _this._close();
-            });
+            if (value) {
+                this._toggleDelay = utils.requestAnimationFrame(this._open.bind(this));
+                return;
+            }
+            var promise = new this._Promise(function (resolve) {
+                _this._toggleDelay = utils.requestAnimationFrame(function () {
+                    resolve(_this._close());
+                });
+            }), drawer = this._drawer;
+            if (!isNull(drawer)) {
+                drawer.ready = promise;
+            }
         };
         /**
          * Determines the proper HTML template, binds it, and inserts it if needed.
@@ -1884,6 +1904,31 @@ var platui;
             }
             drawer.storedProperties = rootElementStyle;
             return element;
+        };
+        /**
+         * Uninitializes the root element.
+         */
+        DrawerController.prototype._cleanRootElement = function () {
+            var utils = this.utils, isObject = utils.isObject, isNode = utils.isNode, rootElement = this._rootElement, drawer = this._drawer;
+            if (!isNode(rootElement)) {
+                return;
+            }
+            this.dom.removeClass(rootElement, __Drawer + "-root " + this._directionalTransitionPrep);
+            if (utils.isNull(drawer)) {
+                return;
+            }
+            var storedStyle = drawer.storedProperties;
+            if (!isObject(storedStyle)) {
+                return;
+            }
+            var rootElementStyle = rootElement.style, parent = rootElement.parentElement, overflow = storedStyle.parentOverflow;
+            rootElementStyle.position = storedStyle.position;
+            rootElementStyle.zIndex = storedStyle.zIndex;
+            if (isObject(overflow) && isNode(parent)) {
+                parent.style[overflow.key] = overflow.value;
+            }
+            delete drawer.storedProperties;
+            this._drawerElement.setAttribute(__Hide, '');
         };
         /**
          * Sets the max offset to translate the corresponding Drawer.
