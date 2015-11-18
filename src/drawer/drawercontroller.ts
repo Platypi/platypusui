@@ -617,7 +617,13 @@ module platui {
                 return;
             }
 
-            drawer.ready.then(this._cleanRootElement.bind(this));
+            drawer.ready.then((): void => {
+                if (drawer.controllerCount() > 0) {
+                    return;
+                }
+
+                this._cleanRootElement();
+            });
         }
 
         /**
