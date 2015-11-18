@@ -598,21 +598,8 @@ module platui {
         dispose(): void {
             super.dispose();
 
-            let utils = this.utils,
-                isNode = utils.isNode,
-                drawer = this._drawer,
-                rootElement = this._rootElement,
-                clickEater = this._clickEater;
-
-            if (!isNode(rootElement)) {
-                return;
-            }
-
-            if (isNode(clickEater)) {
-                this._removeClickEater();
-            }
-
-            if (utils.isNull(drawer)) {
+            let drawer = this._drawer;
+            if (this.utils.isNull(drawer)) {
                 return;
             }
 
@@ -620,7 +607,7 @@ module platui {
             if (drawer.controllerCount() > 0) {
                 return;
             } else if (this._isOpen) {
-                this.close().then((): void => {
+                drawer.ready = this.close().then((): void => {
                     if (drawer.controllerCount() > 0) {
                         return;
                     }
