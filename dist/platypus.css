@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.3 (https://platypi.io) 
+ * PlatypusUI v0.9.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1106,6 +1106,7 @@ h6 {
   box-sizing: border-box;
   position: relative;
   display: inline-block;
+  line-height: 0;
   min-height: 50px;
 }
 .plat-carousel .plat-carousel-viewport {
@@ -1146,7 +1147,9 @@ h6 {
   padding-right: 5px;
   padding-top: 5px;
   padding-bottom: 5px;
+  vertical-align: top;
   white-space: normal;
+  line-height: normal;
 }
 .plat-carousel .plat-carousel-viewport .plat-carousel-container.plat-transition-init {
   -webkit-transition: -webkit-transform 300ms;
@@ -1158,6 +1161,8 @@ h6 {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
   position: absolute;
   text-align: center;
   color: rgba(255, 255, 255, 0.5);
@@ -1180,13 +1185,11 @@ h6 {
   -moz-transform: translate3d(0, -50%, 0);
   -ms-transform: translate3d(0, -50%, 0);
   transform: translate3d(0, -50%, 0);
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
   display: inline-block;
   vertical-align: middle;
   position: absolute;
+  width: 1em;
   height: 0.55em;
-  width: 100%;
   left: 0;
   top: 50%;
   font-family: "platypus-icons";

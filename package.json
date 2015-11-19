@@ -1,6 +1,6 @@
 {
   "name": "platypusui",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
   "main": "dist/platypusui.js",
   "devDependencies": {

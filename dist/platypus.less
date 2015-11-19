@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.3 (https://platypi.io) 
+ * PlatypusUI v0.9.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1702,8 +1702,10 @@
         @padding-right: @padding;
         @padding-top: @padding;
         @padding-bottom: @padding;
-        @arrow-length: 100%;
-        @arrow-width: 1em;
+        @arrow-perpendicular-length: 100%;
+        @arrow-parallel-length: 1em;
+        @arrow-icon-width: 1em;
+        @arrow-icon-height: 0.55em;
 
     /// ============ Carousel Transition ============ ///
 
@@ -1894,7 +1896,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-length) {
+            & when (@prop = arrow-perpendicular-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -1915,7 +1917,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-width) {
+            & when (@prop = arrow-parallel-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -1930,6 +1932,36 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
+                                height: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-width) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
+                                width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-height) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
                                 height: @value;
                             }
                         }
@@ -1952,7 +1984,7 @@
 
     #controls {
     /// =========== Variable Carousel Styles =========== ///
-    
+
         .plat-carousel(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -1983,6 +2015,8 @@
                             .plat-icon-arrow-up,
                             .plat-icon-arrow-left,
                             .plat-icon-arrow-right {
+                                height: @arrow-icon-height;
+                                width: @arrow-icon-width;
                                 font-family: @arrow-font-family;
                                 font-weight: @arrow-font-weight;
                             }
@@ -2003,8 +2037,8 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
-                                width: @arrow-width;
-                                height: @arrow-length;
+                                width: @arrow-parallel-length;
+                                height: @arrow-perpendicular-length;
                             }
                         }
                     }
@@ -2013,8 +2047,8 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
-                                width: @arrow-length;
-                                height: @arrow-width;
+                                width: @arrow-perpendicular-length;
+                                height: @arrow-parallel-length;
                             }
                         }
                     }
@@ -2190,7 +2224,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-length) {
+            & when (@prop = arrow-perpendicular-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -2211,7 +2245,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-width) {
+            & when (@prop = arrow-parallel-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -2226,6 +2260,36 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
+                                height: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-width) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
+                                width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-height) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
                                 height: @value;
                             }
                         }
@@ -9160,6 +9224,7 @@
         .box-sizing(border-box);
         position: relative;
         display: inline-block;
+        line-height: 0;
         min-height: 50px;
 
         .plat-carousel-viewport {
@@ -9188,7 +9253,9 @@
                     padding-right: @padding-right;
                     padding-top: @padding-top;
                     padding-bottom: @padding-bottom;
+                    vertical-align: top;
                     white-space: normal;
+                    line-height: normal;
                 }
 
                 &.plat-transition-init {
@@ -9201,6 +9268,7 @@
             .plat-back-arrow,
             .plat-forward-arrow {
                 .box-sizing(border-box);
+                .webkit-touch-additions();
                 position: absolute;
                 text-align: center;
                 color: @arrow-color;
@@ -9212,12 +9280,11 @@
                 .plat-icon-arrow-left,
                 .plat-icon-arrow-right {
                     .translate-accelerate(0;-50%);
-                    .webkit-touch-additions();
                     display: inline-block;
                     vertical-align: middle;
                     position: absolute;
-                    height: 0.55em;
-                    width: 100%;
+                    width: @arrow-icon-width;
+                    height: @arrow-icon-height;
                     left: 0;
                     top: 50%;
                     font-family: @arrow-font-family;
@@ -9256,8 +9323,8 @@
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     top: 0;
-                    width: @arrow-width;
-                    height: @arrow-length;
+                    width: @arrow-parallel-length;
+                    height: @arrow-perpendicular-length;
                 }
 
                 .plat-back-arrow {
@@ -9283,8 +9350,8 @@
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     left: 0;
-                    width: @arrow-length;
-                    height: @arrow-width;
+                    width: @arrow-perpendicular-length;
+                    height: @arrow-parallel-length;
                 }
 
                 .plat-back-arrow {

@@ -21,8 +21,10 @@
         @padding-right: @padding;
         @padding-top: @padding;
         @padding-bottom: @padding;
-        @arrow-length: 100%;
-        @arrow-width: 1em;
+        @arrow-perpendicular-length: 100%;
+        @arrow-parallel-length: 1em;
+        @arrow-icon-width: 1em;
+        @arrow-icon-height: 0.55em;
 
     /// ============ Carousel Transition ============ ///
 
@@ -213,7 +215,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-length) {
+            & when (@prop = arrow-perpendicular-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -234,7 +236,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-width) {
+            & when (@prop = arrow-parallel-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -249,6 +251,36 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
+                                height: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-width) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
+                                width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-height) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
                                 height: @value;
                             }
                         }
@@ -271,7 +303,7 @@
 
     #controls {
     /// =========== Variable Carousel Styles =========== ///
-    
+
         .plat-carousel(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -302,6 +334,8 @@
                             .plat-icon-arrow-up,
                             .plat-icon-arrow-left,
                             .plat-icon-arrow-right {
+                                height: @arrow-icon-height;
+                                width: @arrow-icon-width;
                                 font-family: @arrow-font-family;
                                 font-weight: @arrow-font-weight;
                             }
@@ -322,8 +356,8 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
-                                width: @arrow-width;
-                                height: @arrow-length;
+                                width: @arrow-parallel-length;
+                                height: @arrow-perpendicular-length;
                             }
                         }
                     }
@@ -332,8 +366,8 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
-                                width: @arrow-length;
-                                height: @arrow-width;
+                                width: @arrow-perpendicular-length;
+                                height: @arrow-parallel-length;
                             }
                         }
                     }
@@ -509,7 +543,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-length) {
+            & when (@prop = arrow-perpendicular-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -530,7 +564,7 @@
                     }
                 }
             }
-            & when (@prop = arrow-width) {
+            & when (@prop = arrow-parallel-length) {
                 &.plat-carousel {
                     &.plat-horizontal {
                         .plat-carousel-viewport {
@@ -545,6 +579,36 @@
                         .plat-carousel-viewport {
                             .plat-back-arrow,
                             .plat-forward-arrow {
+                                height: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-width) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
+                                width: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = arrow-icon-height) {
+                &.plat-carousel {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            .plat-icon-arrow-down,
+                            .plat-icon-arrow-up,
+                            .plat-icon-arrow-left,
+                            .plat-icon-arrow-right {
                                 height: @value;
                             }
                         }
