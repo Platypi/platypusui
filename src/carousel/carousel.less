@@ -15,6 +15,7 @@
         .box-sizing(border-box);
         position: relative;
         display: inline-block;
+        line-height: 0;
         min-height: 50px;
 
         .plat-carousel-viewport {
@@ -43,7 +44,9 @@
                     padding-right: @padding-right;
                     padding-top: @padding-top;
                     padding-bottom: @padding-bottom;
+                    vertical-align: top;
                     white-space: normal;
+                    line-height: normal;
                 }
 
                 &.plat-transition-init {
@@ -56,6 +59,7 @@
             .plat-back-arrow,
             .plat-forward-arrow {
                 .box-sizing(border-box);
+                .webkit-touch-additions();
                 position: absolute;
                 text-align: center;
                 color: @arrow-color;
@@ -67,12 +71,11 @@
                 .plat-icon-arrow-left,
                 .plat-icon-arrow-right {
                     .translate-accelerate(0;-50%);
-                    .webkit-touch-additions();
                     display: inline-block;
                     vertical-align: middle;
                     position: absolute;
-                    height: 0.55em;
-                    width: 100%;
+                    width: @arrow-icon-width;
+                    height: @arrow-icon-height;
                     left: 0;
                     top: 50%;
                     font-family: @arrow-font-family;
@@ -111,8 +114,8 @@
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     top: 0;
-                    width: @arrow-width;
-                    height: @arrow-length;
+                    width: @arrow-parallel-length;
+                    height: @arrow-perpendicular-length;
                 }
 
                 .plat-back-arrow {
@@ -138,8 +141,8 @@
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     left: 0;
-                    width: @arrow-length;
-                    height: @arrow-width;
+                    width: @arrow-perpendicular-length;
+                    height: @arrow-parallel-length;
                 }
 
                 .plat-back-arrow {
