@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.4 (https://platypi.io) 
+ * PlatypusUI v0.9.5 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -187,6 +187,9 @@ textarea {
 }
 optgroup {
   font-weight: bold;
+}
+ul {
+  margin: 1em 0;
 }
 table {
   border-collapse: collapse;
