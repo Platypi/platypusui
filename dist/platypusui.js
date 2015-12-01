@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.9.5 (https://platypi.io)
+ * PlatypusUI v0.9.6 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -4876,7 +4876,7 @@ var platui;
                 _this.utils.requestAnimationFrame(function () {
                     fired = false;
                     var currentLength = _this._length, length = _this._getLength();
-                    if (!length || currentLength === length) {
+                    if (!length || currentLength === length || (!_this._isInfinite && _this._index === 0)) {
                         return;
                     }
                     _this._container.style[_this._transform] = _this._calculateStaticTranslation(currentLength - length);
