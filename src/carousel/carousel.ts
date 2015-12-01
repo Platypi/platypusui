@@ -1662,7 +1662,7 @@ module platui {
                     let currentLength = this._length,
                         length = this._getLength();
 
-                    if (!length || currentLength === length) {
+                    if (!length || currentLength === length || (!this._isInfinite && this._index === 0)) {
                         return;
                     }
 
