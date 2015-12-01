@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.4 (https://platypi.io) 
+ * PlatypusUI v0.9.5 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1414,7 +1414,6 @@
 
         .plat-button(@prop; @value) {
             #platui > #mixins;
-            #platui > #__Button;
 
             & when (@prop = color) {
                 &.plat-button,
@@ -1523,7 +1522,6 @@
 
         .plat-button(@prop: undefined; @value: undefined) {
             #platui > #mixins;
-            #platui > #__Button;
 
             & when (@prop = undefined), (@value = undefined) {
                 &.plat-button,
@@ -1647,6 +1645,7 @@
 
         .plat-button-group(@prop: undefined; @value: undefined) {
             #platui > #mixins;
+            
             & when (@prop = undefined), (@value = undefined) {
                 &.button-group {
                     & > .plat-button:nth-of-type(1),
@@ -8550,6 +8549,10 @@
 
     optgroup {
         font-weight: bold;
+    }
+
+    ul {
+        margin: 1em 0;
     }
 
     table {

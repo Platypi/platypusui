@@ -22,7 +22,6 @@
 
         .plat-button(@prop; @value) {
             #platui > #mixins;
-            #platui > #__Button;
 
             & when (@prop = color) {
                 &.plat-button,
@@ -131,7 +130,6 @@
 
         .plat-button(@prop: undefined; @value: undefined) {
             #platui > #mixins;
-            #platui > #__Button;
 
             & when (@prop = undefined), (@value = undefined) {
                 &.plat-button,
@@ -255,6 +253,7 @@
 
         .plat-button-group(@prop: undefined; @value: undefined) {
             #platui > #mixins;
+            
             & when (@prop = undefined), (@value = undefined) {
                 &.button-group {
                     & > .plat-button:nth-of-type(1),
