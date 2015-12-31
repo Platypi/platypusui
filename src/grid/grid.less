@@ -37,32 +37,50 @@
 
 /// ======= Grid Column Generation ======== ///
 
-	/// Phone
+    /// Initial declarations
 	.generate-full-width-cols(@phablet-alias);
 	.generate-full-width-cols(@tablet-alias);
 	.generate-full-width-cols(@desktop-alias);
+	.generate-full-width-cols(@hd-alias);
+	.generate-full-width-cols(@xhd-alias);
+
+	/// Phone
 	.generate-partial-width-cols(@phone-alias);
 	.generate-offset-cols(@phone-alias);
 	.generate-shiftable-cols(@phone-alias);
 
 	/// Phablet
-	.phablet({
+	.phb({
 		.generate-partial-width-cols(@phablet-alias);
 		.generate-offset-cols(@phablet-alias);
 		.generate-shiftable-cols(@phablet-alias);
 	});
 
 	/// Tablet
-	.tablet({
+	.tab({
 		.generate-partial-width-cols(@tablet-alias);
 		.generate-offset-cols(@tablet-alias);
 		.generate-shiftable-cols(@tablet-alias);
 	});
 
 	/// Desktop
-	.desktop({
+	.dsk({
 		.generate-partial-width-cols(@desktop-alias);
 		.generate-offset-cols(@desktop-alias);
 		.generate-shiftable-cols(@desktop-alias);
 	});
+
+    /// HD
+    .hd({
+		.generate-partial-width-cols(@hd-alias);
+		.generate-offset-cols(@hd-alias);
+		.generate-shiftable-cols(@hd-alias);
+    });
+
+    /// XHD
+    .xhd({
+		.generate-partial-width-cols(@xhd-alias);
+		.generate-offset-cols(@xhd-alias);
+		.generate-shiftable-cols(@xhd-alias);
+    });
 }

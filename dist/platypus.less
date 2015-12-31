@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.7 (https://platypi.io) 
+ * PlatypusUI v0.9.8 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -148,6 +148,16 @@
         /// Desktop Breakpoint
         @desktop-alias: dsk;
         @desktop-start: 900px;
+        @desktop-end: 1099px;
+
+        /// HD Breakpoint
+        @hd-alias: hd;
+        @hd-start: 1100px;
+        @hd-end: 1299px;
+
+        /// XHD Breakpoint
+        @xhd-alias: xhd;
+        @xhd-start: 1300px;
     }
 }
 
@@ -490,6 +500,14 @@
             }
         }
 
+        .min-width(@min-width; @rules) {
+            #platui > #media > .media(all; ~'min-width: @{min-width}'; @rules);
+        }
+
+        .max-width(@max-width; @rules) {
+            #platui > #media > .media(all; ~'max-width: @{max-width}'; @rules);
+        }
+
         .height(@min-height: undefined; @max-height: undefined; @rules) {
             & when not(@max-height = 0px) and not(@max-height = 0) and not(@max-height = undefined) and not(@max-height = null) {
                 & when not(@min-height = 0px) and not(@min-height = 0) and not(@min-height = undefined) and not(@min-height = null) {
@@ -506,7 +524,20 @@
             }
         }
 
+        .min-height(@min-height; @rules) {
+            #platui > #media > .media(all; ~'min-height: @{min-height}'; @rules);
+        }
+
+        .max-height(@max-height; @rules) {
+            #platui > #media > .media(all; ~'max-height: @{max-height}'; @rules);
+        }
+
         .phone-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @phone-end; @rules: @rules);
+        }
+
+        .phn-max(@rules) {
             #platui > #variables;
             #platui > #media > .width(@max-width: @phone-end; @rules: @rules);
         }
@@ -526,6 +557,21 @@
             #platui > #media > .width(@phablet-start; @phablet-end; @rules);
         }
 
+        .phb(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@phablet-start; @rules: @rules);
+        }
+
+        .phb-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @phablet-end; @rules: @rules);
+        }
+
+        .phb-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@phablet-start; @phablet-end; @rules);
+        }
+
         .tablet(@rules) {
             #platui > #variables;
             #platui > #media > .width(@tablet-start; @rules: @rules);
@@ -541,9 +587,69 @@
             #platui > #media > .width(@tablet-start; @tablet-end; @rules);
         }
 
+        .tab(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@tablet-start; @rules: @rules);
+        }
+
+        .tab-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @tablet-end; @rules: @rules);
+        }
+
+        .tab-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@tablet-start; @tablet-end; @rules);
+        }
+
         .desktop(@rules) {
             #platui > #variables;
             #platui > #media > .width(@desktop-start; @rules: @rules);
+        }
+
+        .desktop-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @desktop-end; @rules: @rules);
+        }
+
+        .desktop-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@desktop-start; @desktop-end; @rules);
+        }
+
+        .dsk(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@desktop-start; @rules: @rules);
+        }
+
+        .dsk-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @desktop-end; @rules: @rules);
+        }
+
+        .dsk-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@desktop-start; @desktop-end; @rules);
+        }
+
+        .hd(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@hd-start; @rules: @rules);
+        }
+
+        .hd-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @hd-end; @rules: @rules);
+        }
+
+        .hd-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@hd-start; @hd-end; @rules);
+        }
+
+        .xhd(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@xhd-start; @rules: @rules);
         }
 
         .media-width(@minWidth: undefined; @maxWidth: undefined; @rules) {
@@ -8590,37 +8696,37 @@
     #platui > #variables;
     #platui > #media;
 
-    .phone-max({
+    .phn-max({
 	    .hide-on-@{phone-alias} {
 		    display: none !important;
 	    }
     });
 
-    .phablet-max({
+    .phb-max({
 	    .hide-on-@{phablet-alias} {
 		    display: none !important;
 	    }
     });
 
-    .tablet-max({
+    .tab-max({
 	    .hide-on-@{tablet-alias} {
 		    display: none !important;
 	    }
     });
 
-    .phablet({
+    .phb({
 	    .hide-above-@{phone-alias} {
 		    display: none !important;
 	    }
     });
 
-    .tablet({
+    .tab({
 	    .hide-above-@{phablet-alias} {
 		    display: none !important;
 	    }
     });
 
-    .desktop({
+    .dsk({
 	    .hide-above-@{tablet-alias} {
 		    display: none !important;
 	    }
@@ -8787,7 +8893,7 @@
     }
 
     /// Phone
-	.type(p, @default-font-size, 1.30em);
+	.type(p, 1em, 1.30em);
 	.type(h1, 2em, 1.5874em);
 	.type(h2, 1.625em, 1.1538em);
 	.type(h3, 1.375em, 1.1363em);
@@ -8796,8 +8902,8 @@
 	.type(h6, 0.775em, 1.0783em);
 
     /// Tablet
-    .tablet({
-	    .type(p, @default-font-size, 1.412em);
+    .tab({
+	    .type(p, 1em, 1.412em);
 	    .type(h1, 2.5em, 1.37em);
 	    .type(h2, 2em, 1.25em);
 	    .type(h3, 1.5em, 1.25em);
@@ -8805,7 +8911,7 @@
     });
 
     /// Desktop
-    .desktop({
+    .dsk({
 	    .type(h1, 3em, 1.3em);
 	    .type(h2, 2.25em, 1.25em);
 	    .type(h3, 1.75em, 1.25em);
@@ -10061,34 +10167,52 @@
 
 /// ======= Grid Column Generation ======== ///
 
-	/// Phone
+    /// Initial declarations
 	.generate-full-width-cols(@phablet-alias);
 	.generate-full-width-cols(@tablet-alias);
 	.generate-full-width-cols(@desktop-alias);
+	.generate-full-width-cols(@hd-alias);
+	.generate-full-width-cols(@xhd-alias);
+
+	/// Phone
 	.generate-partial-width-cols(@phone-alias);
 	.generate-offset-cols(@phone-alias);
 	.generate-shiftable-cols(@phone-alias);
 
 	/// Phablet
-	.phablet({
+	.phb({
 		.generate-partial-width-cols(@phablet-alias);
 		.generate-offset-cols(@phablet-alias);
 		.generate-shiftable-cols(@phablet-alias);
 	});
 
 	/// Tablet
-	.tablet({
+	.tab({
 		.generate-partial-width-cols(@tablet-alias);
 		.generate-offset-cols(@tablet-alias);
 		.generate-shiftable-cols(@tablet-alias);
 	});
 
 	/// Desktop
-	.desktop({
+	.dsk({
 		.generate-partial-width-cols(@desktop-alias);
 		.generate-offset-cols(@desktop-alias);
 		.generate-shiftable-cols(@desktop-alias);
 	});
+
+    /// HD
+    .hd({
+		.generate-partial-width-cols(@hd-alias);
+		.generate-offset-cols(@hd-alias);
+		.generate-shiftable-cols(@hd-alias);
+    });
+
+    /// XHD
+    .xhd({
+		.generate-partial-width-cols(@xhd-alias);
+		.generate-offset-cols(@xhd-alias);
+		.generate-shiftable-cols(@xhd-alias);
+    });
 }
 
 @font-face {

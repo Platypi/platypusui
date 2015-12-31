@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.7 (https://platypi.io) 
+ * PlatypusUI v0.9.8 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -399,7 +399,7 @@ p.no-collapse-bottom {
   padding-bottom: 1.005em;
 }
 p {
-  font-size: 16px;
+  font-size: 1em;
   line-height: 1.3em;
 }
 h1 {
@@ -428,7 +428,7 @@ h6 {
 }
 @media all and (min-width: 700px) {
   p {
-    font-size: 16px;
+    font-size: 1em;
     line-height: 1.412em;
   }
   h1 {
@@ -811,7 +811,7 @@ h6 {
 }
 .plat-button.button-secondary,
 .button.button-secondary {
-  background-color: #a283a5;
+  background-color: #A283A5;
   border-color: #906b94;
 }
 .plat-button.button-secondary:active,
@@ -826,21 +826,21 @@ h6 {
 .button.button-secondary[disabled],
 .plat-button.button-secondary:disabled,
 .button.button-secondary:disabled {
-  background-color: #a283a5;
+  background-color: #A283A5;
   opacity: 0.5;
   cursor: default;
 }
 .plat-button.button-secondary.button-outline,
 .button.button-secondary.button-outline {
-  border-color: #a283a5;
-  color: #a283a5;
+  border-color: #A283A5;
+  color: #A283A5;
 }
 .plat-button.button-secondary.button-outline:active,
 .button.button-secondary.button-outline:active,
 .plat-button.button-secondary.button-outline.plat-selected,
 .button.button-secondary.button-outline.plat-selected {
   color: #ffffff;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-button.button-secondary.button-outline.button-disabled,
 .button.button-secondary.button-outline.button-disabled,
@@ -848,7 +848,7 @@ h6 {
 .button.button-secondary.button-outline[disabled],
 .plat-button.button-secondary.button-outline:disabled,
 .button.button-secondary.button-outline:disabled {
-  color: #a283a5;
+  color: #A283A5;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -1391,8 +1391,8 @@ h6 {
 }
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-x {
-  border-color: #a283a5;
-  background-color: #a283a5;
+  border-color: #A283A5;
+  background-color: #A283A5;
 }
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-x {
@@ -1647,7 +1647,7 @@ h6 {
   cursor: default;
 }
 .plat-file.file-secondary .plat-file-button {
-  background-color: #a283a5;
+  background-color: #A283A5;
   border-color: #906b94;
 }
 .plat-file.file-secondary .plat-file-button:active {
@@ -1655,21 +1655,21 @@ h6 {
 }
 .plat-file.file-secondary .plat-file-button[disabled],
 .plat-file.file-secondary .plat-file-button:disabled {
-  background-color: #a283a5;
+  background-color: #A283A5;
   opacity: 0.5;
   cursor: default;
 }
 .plat-file.file-secondary.file-outline .plat-file-button {
-  border-color: #a283a5;
-  color: #a283a5;
+  border-color: #A283A5;
+  color: #A283A5;
 }
 .plat-file.file-secondary.file-outline .plat-file-button:active {
   color: #ffffff;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-file.file-secondary.file-outline .plat-file-button[disabled],
 .plat-file.file-secondary.file-outline .plat-file-button:disabled {
-  color: #a283a5;
+  color: #A283A5;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -1818,6 +1818,12 @@ h6 {
   width: 100%;
 }
 [class*="col-dsk"] {
+  width: 100%;
+}
+[class*="col-hd"] {
+  width: 100%;
+}
+[class*="col-xhd"] {
   width: 100%;
 }
 .col-phn-12 {
@@ -2402,6 +2408,298 @@ h6 {
     right: 8.33333333%;
   }
 }
+@media all and (min-width: 1100px) {
+  .col-hd-12 {
+    width: 100%;
+  }
+  .col-hd-11 {
+    width: 91.66666667%;
+  }
+  .col-hd-10 {
+    width: 83.33333333%;
+  }
+  .col-hd-9 {
+    width: 75%;
+  }
+  .col-hd-8 {
+    width: 66.66666667%;
+  }
+  .col-hd-7 {
+    width: 58.33333333%;
+  }
+  .col-hd-6 {
+    width: 50%;
+  }
+  .col-hd-5 {
+    width: 41.66666667%;
+  }
+  .col-hd-4 {
+    width: 33.33333333%;
+  }
+  .col-hd-3 {
+    width: 25%;
+  }
+  .col-hd-2 {
+    width: 16.66666667%;
+  }
+  .col-hd-1 {
+    width: 8.33333333%;
+  }
+  .col-hd-offset-12 {
+    margin-left: 100%;
+  }
+  .col-hd-offset-11 {
+    margin-left: 91.66666667%;
+  }
+  .col-hd-offset-10 {
+    margin-left: 83.33333333%;
+  }
+  .col-hd-offset-9 {
+    margin-left: 75%;
+  }
+  .col-hd-offset-8 {
+    margin-left: 66.66666667%;
+  }
+  .col-hd-offset-7 {
+    margin-left: 58.33333333%;
+  }
+  .col-hd-offset-6 {
+    margin-left: 50%;
+  }
+  .col-hd-offset-5 {
+    margin-left: 41.66666667%;
+  }
+  .col-hd-offset-4 {
+    margin-left: 33.33333333%;
+  }
+  .col-hd-offset-3 {
+    margin-left: 25%;
+  }
+  .col-hd-offset-2 {
+    margin-left: 16.66666667%;
+  }
+  .col-hd-offset-1 {
+    margin-left: 8.33333333%;
+  }
+  .col-hd-push-12 {
+    left: 100%;
+  }
+  .col-hd-pull-12 {
+    right: 100%;
+  }
+  .col-hd-push-11 {
+    left: 91.66666667%;
+  }
+  .col-hd-pull-11 {
+    right: 91.66666667%;
+  }
+  .col-hd-push-10 {
+    left: 83.33333333%;
+  }
+  .col-hd-pull-10 {
+    right: 83.33333333%;
+  }
+  .col-hd-push-9 {
+    left: 75%;
+  }
+  .col-hd-pull-9 {
+    right: 75%;
+  }
+  .col-hd-push-8 {
+    left: 66.66666667%;
+  }
+  .col-hd-pull-8 {
+    right: 66.66666667%;
+  }
+  .col-hd-push-7 {
+    left: 58.33333333%;
+  }
+  .col-hd-pull-7 {
+    right: 58.33333333%;
+  }
+  .col-hd-push-6 {
+    left: 50%;
+  }
+  .col-hd-pull-6 {
+    right: 50%;
+  }
+  .col-hd-push-5 {
+    left: 41.66666667%;
+  }
+  .col-hd-pull-5 {
+    right: 41.66666667%;
+  }
+  .col-hd-push-4 {
+    left: 33.33333333%;
+  }
+  .col-hd-pull-4 {
+    right: 33.33333333%;
+  }
+  .col-hd-push-3 {
+    left: 25%;
+  }
+  .col-hd-pull-3 {
+    right: 25%;
+  }
+  .col-hd-push-2 {
+    left: 16.66666667%;
+  }
+  .col-hd-pull-2 {
+    right: 16.66666667%;
+  }
+  .col-hd-push-1 {
+    left: 8.33333333%;
+  }
+  .col-hd-pull-1 {
+    right: 8.33333333%;
+  }
+}
+@media all and (min-width: 1300px) {
+  .col-xhd-12 {
+    width: 100%;
+  }
+  .col-xhd-11 {
+    width: 91.66666667%;
+  }
+  .col-xhd-10 {
+    width: 83.33333333%;
+  }
+  .col-xhd-9 {
+    width: 75%;
+  }
+  .col-xhd-8 {
+    width: 66.66666667%;
+  }
+  .col-xhd-7 {
+    width: 58.33333333%;
+  }
+  .col-xhd-6 {
+    width: 50%;
+  }
+  .col-xhd-5 {
+    width: 41.66666667%;
+  }
+  .col-xhd-4 {
+    width: 33.33333333%;
+  }
+  .col-xhd-3 {
+    width: 25%;
+  }
+  .col-xhd-2 {
+    width: 16.66666667%;
+  }
+  .col-xhd-1 {
+    width: 8.33333333%;
+  }
+  .col-xhd-offset-12 {
+    margin-left: 100%;
+  }
+  .col-xhd-offset-11 {
+    margin-left: 91.66666667%;
+  }
+  .col-xhd-offset-10 {
+    margin-left: 83.33333333%;
+  }
+  .col-xhd-offset-9 {
+    margin-left: 75%;
+  }
+  .col-xhd-offset-8 {
+    margin-left: 66.66666667%;
+  }
+  .col-xhd-offset-7 {
+    margin-left: 58.33333333%;
+  }
+  .col-xhd-offset-6 {
+    margin-left: 50%;
+  }
+  .col-xhd-offset-5 {
+    margin-left: 41.66666667%;
+  }
+  .col-xhd-offset-4 {
+    margin-left: 33.33333333%;
+  }
+  .col-xhd-offset-3 {
+    margin-left: 25%;
+  }
+  .col-xhd-offset-2 {
+    margin-left: 16.66666667%;
+  }
+  .col-xhd-offset-1 {
+    margin-left: 8.33333333%;
+  }
+  .col-xhd-push-12 {
+    left: 100%;
+  }
+  .col-xhd-pull-12 {
+    right: 100%;
+  }
+  .col-xhd-push-11 {
+    left: 91.66666667%;
+  }
+  .col-xhd-pull-11 {
+    right: 91.66666667%;
+  }
+  .col-xhd-push-10 {
+    left: 83.33333333%;
+  }
+  .col-xhd-pull-10 {
+    right: 83.33333333%;
+  }
+  .col-xhd-push-9 {
+    left: 75%;
+  }
+  .col-xhd-pull-9 {
+    right: 75%;
+  }
+  .col-xhd-push-8 {
+    left: 66.66666667%;
+  }
+  .col-xhd-pull-8 {
+    right: 66.66666667%;
+  }
+  .col-xhd-push-7 {
+    left: 58.33333333%;
+  }
+  .col-xhd-pull-7 {
+    right: 58.33333333%;
+  }
+  .col-xhd-push-6 {
+    left: 50%;
+  }
+  .col-xhd-pull-6 {
+    right: 50%;
+  }
+  .col-xhd-push-5 {
+    left: 41.66666667%;
+  }
+  .col-xhd-pull-5 {
+    right: 41.66666667%;
+  }
+  .col-xhd-push-4 {
+    left: 33.33333333%;
+  }
+  .col-xhd-pull-4 {
+    right: 33.33333333%;
+  }
+  .col-xhd-push-3 {
+    left: 25%;
+  }
+  .col-xhd-pull-3 {
+    right: 25%;
+  }
+  .col-xhd-push-2 {
+    left: 16.66666667%;
+  }
+  .col-xhd-pull-2 {
+    right: 16.66666667%;
+  }
+  .col-xhd-push-1 {
+    left: 8.33333333%;
+  }
+  .col-xhd-pull-1 {
+    right: 8.33333333%;
+  }
+}
 @font-face {
   font-family: 'platypus-icons';
   src: url('fonts/icons.eot');
@@ -2664,10 +2962,10 @@ h6 {
   color: #2d97d2;
 }
 .plat-input.input-secondary .plat-input-container input:focus {
-  border-color: #a283a5;
+  border-color: #A283A5;
 }
 .plat-input.input-secondary .plat-input-container .plat-input-action {
-  color: #a283a5;
+  color: #A283A5;
 }
 .plat-input.input-success .plat-input-container input:focus {
   border-color: #8fcbb5;
@@ -3720,7 +4018,7 @@ h6 {
   background-color: #2d97d2;
 }
 .plat-progress.progress-secondary .plat-animated-bar {
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-progress.progress-success .plat-animated-bar {
   background-color: #8fcbb5;
@@ -4359,7 +4657,7 @@ h6 {
 .plat-range.range-secondary .plat-range-container .plat-range-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #8b678e;
   box-shadow: inset 0px 1px 1px 0px #8b678e;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-range.range-success .plat-range-container .plat-range-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #6cbb9e;
@@ -4631,7 +4929,7 @@ h6 {
 .plat-slider.slider-secondary .plat-slider-container .plat-slider-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #8b678e;
   box-shadow: inset 0px 1px 1px 0px #8b678e;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-slider.slider-success .plat-slider-container .plat-slider-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #6cbb9e;
@@ -4763,7 +5061,7 @@ h6 {
   border-color: #2988bd;
 }
 .plat-toggle.toggle-secondary .plat-toggle-container.plat-slide {
-  background-color: #a283a5;
+  background-color: #A283A5;
   border-color: #97749a;
 }
 .plat-toggle.toggle-success .plat-toggle-container.plat-slide {

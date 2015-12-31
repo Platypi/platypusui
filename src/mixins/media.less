@@ -44,6 +44,14 @@
             }
         }
 
+        .min-width(@min-width; @rules) {
+            #platui > #media > .media(all; ~'min-width: @{min-width}'; @rules);
+        }
+
+        .max-width(@max-width; @rules) {
+            #platui > #media > .media(all; ~'max-width: @{max-width}'; @rules);
+        }
+
         .height(@min-height: undefined; @max-height: undefined; @rules) {
             & when not(@max-height = 0px) and not(@max-height = 0) and not(@max-height = undefined) and not(@max-height = null) {
                 & when not(@min-height = 0px) and not(@min-height = 0) and not(@min-height = undefined) and not(@min-height = null) {
@@ -60,7 +68,20 @@
             }
         }
 
+        .min-height(@min-height; @rules) {
+            #platui > #media > .media(all; ~'min-height: @{min-height}'; @rules);
+        }
+
+        .max-height(@max-height; @rules) {
+            #platui > #media > .media(all; ~'max-height: @{max-height}'; @rules);
+        }
+
         .phone-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @phone-end; @rules: @rules);
+        }
+
+        .phn-max(@rules) {
             #platui > #variables;
             #platui > #media > .width(@max-width: @phone-end; @rules: @rules);
         }
@@ -80,6 +101,21 @@
             #platui > #media > .width(@phablet-start; @phablet-end; @rules);
         }
 
+        .phb(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@phablet-start; @rules: @rules);
+        }
+
+        .phb-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @phablet-end; @rules: @rules);
+        }
+
+        .phb-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@phablet-start; @phablet-end; @rules);
+        }
+
         .tablet(@rules) {
             #platui > #variables;
             #platui > #media > .width(@tablet-start; @rules: @rules);
@@ -95,9 +131,69 @@
             #platui > #media > .width(@tablet-start; @tablet-end; @rules);
         }
 
+        .tab(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@tablet-start; @rules: @rules);
+        }
+
+        .tab-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @tablet-end; @rules: @rules);
+        }
+
+        .tab-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@tablet-start; @tablet-end; @rules);
+        }
+
         .desktop(@rules) {
             #platui > #variables;
             #platui > #media > .width(@desktop-start; @rules: @rules);
+        }
+
+        .desktop-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @desktop-end; @rules: @rules);
+        }
+
+        .desktop-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@desktop-start; @desktop-end; @rules);
+        }
+
+        .dsk(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@desktop-start; @rules: @rules);
+        }
+
+        .dsk-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @desktop-end; @rules: @rules);
+        }
+
+        .dsk-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@desktop-start; @desktop-end; @rules);
+        }
+
+        .hd(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@hd-start; @rules: @rules);
+        }
+
+        .hd-max(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@max-width: @hd-end; @rules: @rules);
+        }
+
+        .hd-only(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@hd-start; @hd-end; @rules);
+        }
+
+        .xhd(@rules) {
+            #platui > #variables;
+            #platui > #media > .width(@xhd-start; @rules: @rules);
         }
 
         .media-width(@minWidth: undefined; @maxWidth: undefined; @rules) {
