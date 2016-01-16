@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.8 (https://platypi.io) 
+ * PlatypusUI v0.10.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -49,29 +49,29 @@
         /// ========= Default Color Palette ========== ///
 
         /// Red
-        @pale-red: #f8e5e7;
+        @pale-red: #e6b3b3;
         @red: #ef716f;
         @red-offset: #dd4d4e;
 
         /// Blue
-        @pale-blue: #edf4f6;
+        @pale-blue: #b3dbe6;
         @blue: #2d97d2;
         @blue-offset: #2d88be;
 
         /// Green
-        @pale-green: #daeee8;
-        @green: #8fcbb5;
-        @green-offset: #8abca4;
+        @pale-green: #b3e6bf;
+        @green: #53c670;
+        @green-offset: #3ea357;
 
         /// Yellow
-        @pale-yellow: #ffefbd;
-        @yellow: #ffe088;
-        @yellow-offset: #f1c448;
+        @pale-yellow: #e6dcb3;
+        @yellow: #e2c95a;
+        @yellow-offset: #d2b537;
 
         /// Brown
-        @pale-brown: #eeeae7;
-        @brown: #cbc6c5;
-        @tan: #beb9b8;
+        @pale-brown: #e6c9b3;
+        @brown: #bf7740;
+        @tan: #e09e6c;
 
         /// Orange
         @orange: #f0862c;
@@ -2462,7 +2462,9 @@
                     .plat-checkbox-container {
                         .flex(0 0 @value);
                         width: @value;
+                        max-width: @value;
                         height: @value;
+                        max-height: @value;
 
                         &.plat-check {
                             .plat-mark::before {
@@ -2488,7 +2490,7 @@
 
     #controls {
     /// =========== Variable Checkbox Styles =========== ///
-    
+
         .plat-checkbox(@prop: undefined; @value: undefined) {
             #platui > #mixins;
 
@@ -2501,7 +2503,9 @@
                     .plat-checkbox-container {
                         .flex(0 0 @diameter);
                         width: @diameter;
+                        max-width: @diameter;
                         height: @diameter;
+                        max-height: @diameter;
                         background-color: @background-color;
                         border-color: @border-color;
 
@@ -2557,7 +2561,9 @@
                     .plat-checkbox-container {
                         .flex(0 0 @value);
                         width: @value;
+                        max-width: @value;
                         height: @value;
+                        max-height: @value;
 
                         &.plat-check {
                             .plat-mark::before {
@@ -6791,14 +6797,9 @@
                     .plat-radio-container {
                         .flex(0 0 @value);
                         width: @value;
+                        max-width: @value;
                         height: @value;
-
-                        &.plat-bullet {
-                            .plat-mark {
-                                width: @value;
-                                height: @value;
-                            }
-                        }
+                        max-height: @value;
                     }
                 }
             }
@@ -6834,7 +6835,9 @@
                     .plat-radio-container {
                         .flex(0 0 @diameter);
                         width: @diameter;
+                        max-width: @diameter;
                         height: @diameter;
+                        max-height: @diameter;
                         background-color: @background-color;
                         border-width: @border-width;
                         border-color: @border-color;
@@ -6913,14 +6916,9 @@
                     .plat-radio-container {
                         .flex(0 0 @value);
                         width: @value;
+                        max-width: @value;
                         height: @value;
-
-                        &.plat-bullet {
-                            .plat-mark {
-                                width: @value;
-                                height: @value;
-                            }
-                        }
+                        max-height: @value;
                     }
                 }
             }
@@ -8137,7 +8135,7 @@
 
                         &.plat-slide {
                             .plat-knob {
-                                left: @value - @height;
+                                left: (@value - @height) * 1.05;
                             }
                         }
                     }
@@ -8169,7 +8167,7 @@
 
                         &.plat-slide {
                             .plat-knob {
-                                left: @width - @height;
+                                left: (@width - @height) * 1.05;
                             }
                         }
                     }
@@ -8255,7 +8253,7 @@
                             background-color: @background-color-on;
 
                             .plat-knob {
-                                left: @width - @height;
+                                left: (@width - @height) * 1.05;
                             }
                         }
                     }
@@ -8371,7 +8369,7 @@
 
                         &.plat-slide {
                             .plat-knob {
-                                left: @value - @height;
+                                left: (@value - @height) * 1.05;
                             }
                         }
                     }
@@ -8403,7 +8401,7 @@
 
                         &.plat-slide {
                             .plat-knob {
-                                left: @width - @height;
+                                left: (@width - @height) * 1.05;
                             }
                         }
                     }
@@ -9510,7 +9508,9 @@
             position: relative;
             display: inline-block;
             width: @diameter;
+            max-width: @diameter;
             height: @diameter;
+            max-height: @diameter;
             background-color: @background-color;
             overflow: hidden;
             border: 1px solid @border-color;
@@ -11347,8 +11347,6 @@
                 width: 80%;
                 max-width: 30em;
                 height: auto;
-                background-color: @white;
-                color: @text-grey;
 
                 &.plat-no-transition,
                 &.plat-modal-transition.plat-fade {
@@ -11769,7 +11767,9 @@
             position: relative;
             display: inline-block;
             width: @diameter;
+            max-width: @diameter;
             height: @diameter;
+            max-height: @diameter;
             background-color: @background-color;
             border: @border-width solid @border-color;
 
@@ -12339,7 +12339,7 @@
 
                 .plat-knob {
                     .box-shadow(inset 1px -2px 3px 0px @pale-grey);
-                    left: @width - @height;
+                    left: (@width - @height) * 1.05;
                 }
             }
         }

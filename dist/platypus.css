@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.9.8 (https://platypi.io) 
+ * PlatypusUI v0.10.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -811,7 +811,7 @@ h6 {
 }
 .plat-button.button-secondary,
 .button.button-secondary {
-  background-color: #A283A5;
+  background-color: #a283a5;
   border-color: #906b94;
 }
 .plat-button.button-secondary:active,
@@ -826,21 +826,21 @@ h6 {
 .button.button-secondary[disabled],
 .plat-button.button-secondary:disabled,
 .button.button-secondary:disabled {
-  background-color: #A283A5;
+  background-color: #a283a5;
   opacity: 0.5;
   cursor: default;
 }
 .plat-button.button-secondary.button-outline,
 .button.button-secondary.button-outline {
-  border-color: #A283A5;
-  color: #A283A5;
+  border-color: #a283a5;
+  color: #a283a5;
 }
 .plat-button.button-secondary.button-outline:active,
 .button.button-secondary.button-outline:active,
 .plat-button.button-secondary.button-outline.plat-selected,
 .button.button-secondary.button-outline.plat-selected {
   color: #ffffff;
-  background-color: #A283A5;
+  background-color: #a283a5;
 }
 .plat-button.button-secondary.button-outline.button-disabled,
 .button.button-secondary.button-outline.button-disabled,
@@ -848,7 +848,7 @@ h6 {
 .button.button-secondary.button-outline[disabled],
 .plat-button.button-secondary.button-outline:disabled,
 .button.button-secondary.button-outline:disabled {
-  color: #A283A5;
+  color: #a283a5;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -899,14 +899,14 @@ h6 {
 }
 .plat-button.button-success,
 .button.button-success {
-  background-color: #8fcbb5;
-  border-color: #73bea3;
+  background-color: #53c670;
+  border-color: #3cb45a;
 }
 .plat-button.button-success:active,
 .button.button-success:active,
 .plat-button.button-success.plat-selected,
 .button.button-success.plat-selected {
-  background-color: #6cbb9e;
+  background-color: #39ad56;
 }
 .plat-button.button-success.button-disabled,
 .button.button-success.button-disabled,
@@ -914,21 +914,21 @@ h6 {
 .button.button-success[disabled],
 .plat-button.button-success:disabled,
 .button.button-success:disabled {
-  background-color: #8fcbb5;
+  background-color: #53c670;
   opacity: 0.5;
   cursor: default;
 }
 .plat-button.button-success.button-outline,
 .button.button-success.button-outline {
-  border-color: #8fcbb5;
-  color: #8fcbb5;
+  border-color: #53c670;
+  color: #53c670;
 }
 .plat-button.button-success.button-outline:active,
 .button.button-success.button-outline:active,
 .plat-button.button-success.button-outline.plat-selected,
 .button.button-success.button-outline.plat-selected {
   color: #ffffff;
-  background-color: #8fcbb5;
+  background-color: #53c670;
 }
 .plat-button.button-success.button-outline.button-disabled,
 .button.button-success.button-outline.button-disabled,
@@ -936,7 +936,7 @@ h6 {
 .button.button-success.button-outline[disabled],
 .plat-button.button-success.button-outline:disabled,
 .button.button-success.button-outline:disabled {
-  color: #8fcbb5;
+  color: #53c670;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -987,14 +987,14 @@ h6 {
 }
 .plat-button.button-caution,
 .button.button-caution {
-  background-color: #ffe088;
-  border-color: #ffd55f;
+  background-color: #e2c95a;
+  border-color: #dcbe37;
 }
 .plat-button.button-caution:active,
 .button.button-caution:active,
 .plat-button.button-caution.plat-selected,
 .button.button-caution.plat-selected {
-  background-color: #ffd355;
+  background-color: #dabb2f;
 }
 .plat-button.button-caution.button-disabled,
 .button.button-caution.button-disabled,
@@ -1002,21 +1002,21 @@ h6 {
 .button.button-caution[disabled],
 .plat-button.button-caution:disabled,
 .button.button-caution:disabled {
-  background-color: #ffe088;
+  background-color: #e2c95a;
   opacity: 0.5;
   cursor: default;
 }
 .plat-button.button-caution.button-outline,
 .button.button-caution.button-outline {
-  border-color: #ffe088;
-  color: #ffe088;
+  border-color: #e2c95a;
+  color: #e2c95a;
 }
 .plat-button.button-caution.button-outline:active,
 .button.button-caution.button-outline:active,
 .plat-button.button-caution.button-outline.plat-selected,
 .button.button-caution.button-outline.plat-selected {
   color: #ffffff;
-  background-color: #ffe088;
+  background-color: #e2c95a;
 }
 .plat-button.button-caution.button-outline.button-disabled,
 .button.button-caution.button-outline.button-disabled,
@@ -1024,7 +1024,7 @@ h6 {
 .button.button-caution.button-outline[disabled],
 .plat-button.button-caution.button-outline:disabled,
 .button.button-caution.button-outline:disabled {
-  color: #ffe088;
+  color: #e2c95a;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -1312,7 +1312,9 @@ h6 {
   position: relative;
   display: inline-block;
   width: 1.3em;
+  max-width: 1.3em;
   height: 1.3em;
+  max-height: 1.3em;
   background-color: transparent;
   overflow: hidden;
   border: 1px solid #c8c7cd;
@@ -1391,18 +1393,18 @@ h6 {
 }
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-x {
-  border-color: #A283A5;
-  background-color: #A283A5;
+  border-color: #a283a5;
+  background-color: #a283a5;
 }
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-x {
-  border-color: #8fcbb5;
-  background-color: #8fcbb5;
+  border-color: #53c670;
+  background-color: #53c670;
 }
 .plat-checkbox.checkbox-caution .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-caution .plat-checkbox-container.plat-x {
-  border-color: #ffe088;
-  background-color: #ffe088;
+  border-color: #e2c95a;
+  background-color: #e2c95a;
 }
 .plat-checkbox.checkbox-danger .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-danger .plat-checkbox-container.plat-x {
@@ -1647,7 +1649,7 @@ h6 {
   cursor: default;
 }
 .plat-file.file-secondary .plat-file-button {
-  background-color: #A283A5;
+  background-color: #a283a5;
   border-color: #906b94;
 }
 .plat-file.file-secondary .plat-file-button:active {
@@ -1655,21 +1657,21 @@ h6 {
 }
 .plat-file.file-secondary .plat-file-button[disabled],
 .plat-file.file-secondary .plat-file-button:disabled {
-  background-color: #A283A5;
+  background-color: #a283a5;
   opacity: 0.5;
   cursor: default;
 }
 .plat-file.file-secondary.file-outline .plat-file-button {
-  border-color: #A283A5;
-  color: #A283A5;
+  border-color: #a283a5;
+  color: #a283a5;
 }
 .plat-file.file-secondary.file-outline .plat-file-button:active {
   color: #ffffff;
-  background-color: #A283A5;
+  background-color: #a283a5;
 }
 .plat-file.file-secondary.file-outline .plat-file-button[disabled],
 .plat-file.file-secondary.file-outline .plat-file-button:disabled {
-  color: #A283A5;
+  color: #a283a5;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -1703,29 +1705,29 @@ h6 {
   cursor: default;
 }
 .plat-file.file-success .plat-file-button {
-  background-color: #8fcbb5;
-  border-color: #73bea3;
+  background-color: #53c670;
+  border-color: #3cb45a;
 }
 .plat-file.file-success .plat-file-button:active {
-  background-color: #6cbb9e;
+  background-color: #39ad56;
 }
 .plat-file.file-success .plat-file-button[disabled],
 .plat-file.file-success .plat-file-button:disabled {
-  background-color: #8fcbb5;
+  background-color: #53c670;
   opacity: 0.5;
   cursor: default;
 }
 .plat-file.file-success.file-outline .plat-file-button {
-  border-color: #8fcbb5;
-  color: #8fcbb5;
+  border-color: #53c670;
+  color: #53c670;
 }
 .plat-file.file-success.file-outline .plat-file-button:active {
   color: #ffffff;
-  background-color: #8fcbb5;
+  background-color: #53c670;
 }
 .plat-file.file-success.file-outline .plat-file-button[disabled],
 .plat-file.file-success.file-outline .plat-file-button:disabled {
-  color: #8fcbb5;
+  color: #53c670;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -1759,29 +1761,29 @@ h6 {
   cursor: default;
 }
 .plat-file.file-caution .plat-file-button {
-  background-color: #ffe088;
-  border-color: #ffd55f;
+  background-color: #e2c95a;
+  border-color: #dcbe37;
 }
 .plat-file.file-caution .plat-file-button:active {
-  background-color: #ffd355;
+  background-color: #dabb2f;
 }
 .plat-file.file-caution .plat-file-button[disabled],
 .plat-file.file-caution .plat-file-button:disabled {
-  background-color: #ffe088;
+  background-color: #e2c95a;
   opacity: 0.5;
   cursor: default;
 }
 .plat-file.file-caution.file-outline .plat-file-button {
-  border-color: #ffe088;
-  color: #ffe088;
+  border-color: #e2c95a;
+  color: #e2c95a;
 }
 .plat-file.file-caution.file-outline .plat-file-button:active {
   color: #ffffff;
-  background-color: #ffe088;
+  background-color: #e2c95a;
 }
 .plat-file.file-caution.file-outline .plat-file-button[disabled],
 .plat-file.file-caution.file-outline .plat-file-button:disabled {
-  color: #ffe088;
+  color: #e2c95a;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -2962,22 +2964,22 @@ h6 {
   color: #2d97d2;
 }
 .plat-input.input-secondary .plat-input-container input:focus {
-  border-color: #A283A5;
+  border-color: #a283a5;
 }
 .plat-input.input-secondary .plat-input-container .plat-input-action {
-  color: #A283A5;
+  color: #a283a5;
 }
 .plat-input.input-success .plat-input-container input:focus {
-  border-color: #8fcbb5;
+  border-color: #53c670;
 }
 .plat-input.input-success .plat-input-container .plat-input-action {
-  color: #8fcbb5;
+  color: #53c670;
 }
 .plat-input.input-caution .plat-input-container input:focus {
-  border-color: #ffe088;
+  border-color: #e2c95a;
 }
 .plat-input.input-caution .plat-input-container .plat-input-action {
-  color: #ffe088;
+  color: #e2c95a;
 }
 .plat-input.input-danger .plat-input-container input:focus {
   border-color: #ef716f;
@@ -3869,8 +3871,6 @@ h6 {
   width: 80%;
   max-width: 30em;
   height: auto;
-  background-color: #ffffff;
-  color: #444444;
 }
 .plat-modal.modal-prompt .plat-modal-container.plat-no-transition,
 .plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-fade {
@@ -4018,16 +4018,16 @@ h6 {
   background-color: #2d97d2;
 }
 .plat-progress.progress-secondary .plat-animated-bar {
-  background-color: #A283A5;
+  background-color: #a283a5;
 }
 .plat-progress.progress-success .plat-animated-bar {
-  background-color: #8fcbb5;
+  background-color: #53c670;
 }
 .plat-progress.progress-danger .plat-animated-bar {
   background-color: #ef716f;
 }
 .plat-progress.progress-caution .plat-animated-bar {
-  background-color: #ffe088;
+  background-color: #e2c95a;
 }
 .plat-ring {
   -webkit-box-sizing: border-box;
@@ -4403,7 +4403,9 @@ h6 {
   position: relative;
   display: inline-block;
   width: 1.2em;
+  max-width: 1.2em;
   height: 1.2em;
+  max-height: 1.2em;
   background-color: transparent;
   border: 1px solid #c8c7cd;
 }
@@ -4657,17 +4659,17 @@ h6 {
 .plat-range.range-secondary .plat-range-container .plat-range-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #8b678e;
   box-shadow: inset 0px 1px 1px 0px #8b678e;
-  background-color: #A283A5;
+  background-color: #a283a5;
 }
 .plat-range.range-success .plat-range-container .plat-range-track {
-  -webkit-box-shadow: inset 0px 1px 1px 0px #6cbb9e;
-  box-shadow: inset 0px 1px 1px 0px #6cbb9e;
-  background-color: #8fcbb5;
+  -webkit-box-shadow: inset 0px 1px 1px 0px #39ad56;
+  box-shadow: inset 0px 1px 1px 0px #39ad56;
+  background-color: #53c670;
 }
 .plat-range.range-caution .plat-range-container .plat-range-track {
-  -webkit-box-shadow: inset 0px 1px 1px 0px #ffd355;
-  box-shadow: inset 0px 1px 1px 0px #ffd355;
-  background-color: #ffe088;
+  -webkit-box-shadow: inset 0px 1px 1px 0px #dabb2f;
+  box-shadow: inset 0px 1px 1px 0px #dabb2f;
+  background-color: #e2c95a;
 }
 .plat-range.range-danger .plat-range-container .plat-range-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #ea4441;
@@ -4929,17 +4931,17 @@ h6 {
 .plat-slider.slider-secondary .plat-slider-container .plat-slider-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #8b678e;
   box-shadow: inset 0px 1px 1px 0px #8b678e;
-  background-color: #A283A5;
+  background-color: #a283a5;
 }
 .plat-slider.slider-success .plat-slider-container .plat-slider-track {
-  -webkit-box-shadow: inset 0px 1px 1px 0px #6cbb9e;
-  box-shadow: inset 0px 1px 1px 0px #6cbb9e;
-  background-color: #8fcbb5;
+  -webkit-box-shadow: inset 0px 1px 1px 0px #39ad56;
+  box-shadow: inset 0px 1px 1px 0px #39ad56;
+  background-color: #53c670;
 }
 .plat-slider.slider-caution .plat-slider-container .plat-slider-track {
-  -webkit-box-shadow: inset 0px 1px 1px 0px #ffd355;
-  box-shadow: inset 0px 1px 1px 0px #ffd355;
-  background-color: #ffe088;
+  -webkit-box-shadow: inset 0px 1px 1px 0px #dabb2f;
+  box-shadow: inset 0px 1px 1px 0px #dabb2f;
+  background-color: #e2c95a;
 }
 .plat-slider.slider-danger .plat-slider-container .plat-slider-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #ea4441;
@@ -5008,13 +5010,13 @@ h6 {
   background-color: #ffffff;
 }
 .plat-toggle .plat-toggle-container.plat-slide {
-  border-color: #7ec3a9;
-  background-color: #8fcbb5;
+  border-color: #40c060;
+  background-color: #53c670;
 }
 .plat-toggle .plat-toggle-container.plat-slide .plat-knob {
   -webkit-box-shadow: inset 1px -2px 3px 0px #edecec;
   box-shadow: inset 1px -2px 3px 0px #edecec;
-  left: 1.625em;
+  left: 1.70625em;
 }
 .plat-toggle.toggle-square .plat-toggle-container {
   -webkit-border-top-left-radius: 2px;
@@ -5050,7 +5052,7 @@ h6 {
   border: 1px solid #edecec;
 }
 .plat-toggle.toggle-thin .plat-toggle-container.plat-slide {
-  background-color: #8fcbb5;
+  background-color: #53c670;
 }
 .plat-toggle.toggle-thin .plat-toggle-container.plat-slide .plat-knob {
   -webkit-box-shadow: -2px 1px 2px 0px rgba(50, 50, 50, 0.24);
@@ -5061,18 +5063,18 @@ h6 {
   border-color: #2988bd;
 }
 .plat-toggle.toggle-secondary .plat-toggle-container.plat-slide {
-  background-color: #A283A5;
+  background-color: #a283a5;
   border-color: #97749a;
 }
 .plat-toggle.toggle-success .plat-toggle-container.plat-slide {
-  background-color: #8fcbb5;
-  border-color: #7ec3a9;
+  background-color: #53c670;
+  border-color: #40c060;
 }
 .plat-toggle.toggle-danger .plat-toggle-container.plat-slide {
   background-color: #ef716f;
   border-color: #ec5a58;
 }
 .plat-toggle.toggle-caution .plat-toggle-container.plat-slide {
-  background-color: #ffe088;
-  border-color: #ffd96e;
+  background-color: #e2c95a;
+  border-color: #dec244;
 }
