@@ -4,7 +4,7 @@
     #Toggle {
         #dependencies {
             #platui > #variables;
-            @color-off: @neutral-color-light;
+            @color-off: lighten(@neutral-color, 10%);
             @color-on: @success-color;
         }
 
@@ -16,7 +16,7 @@
         @border-color-off: darken(@color-off, 3%);
         @background-color-on: @color-on;
         @border-color-on: darken(@color-on, 5%);
-        @toggle-thin-color-off: @neutral-color-dark;
+        @toggle-thin-color-off: darken(@neutral-color, 10%);
 
     /// ============ Toggle Size ============ ///
 

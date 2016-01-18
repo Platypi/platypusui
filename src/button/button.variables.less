@@ -8,7 +8,7 @@
 
         @color: @white;
         @background-color: @neutral-color;
-        @border-color: @neutral-color-dark;
+        @border-color: darken(@neutral-color, 10%);
 
     /// ============= Button Sizes ============== ///
 
@@ -253,7 +253,7 @@
 
         .plat-button-group(@prop: undefined; @value: undefined) {
             #platui > #mixins;
-            
+
             & when (@prop = undefined), (@value = undefined) {
                 &.button-group {
                     & > .plat-button:nth-of-type(1),
