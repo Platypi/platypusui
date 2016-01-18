@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.10.0 (https://platypi.io) 
+ * PlatypusUI v0.11.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -768,7 +768,7 @@ h6 {
 .plat-button.button-primary,
 .button.button-primary {
   background-color: #2d97d2;
-  border-color: #267fb0;
+  border-color: #2479a8;
 }
 .plat-button.button-primary:active,
 .button.button-primary:active,
@@ -812,7 +812,7 @@ h6 {
 .plat-button.button-secondary,
 .button.button-secondary {
   background-color: #a283a5;
-  border-color: #906b94;
+  border-color: #8b678e;
 }
 .plat-button.button-secondary:active,
 .button.button-secondary:active,
@@ -900,7 +900,7 @@ h6 {
 .plat-button.button-success,
 .button.button-success {
   background-color: #53c670;
-  border-color: #3cb45a;
+  border-color: #39ad56;
 }
 .plat-button.button-success:active,
 .button.button-success:active,
@@ -944,7 +944,7 @@ h6 {
 .plat-button.button-danger,
 .button.button-danger {
   background-color: #ef716f;
-  border-color: #eb4d4a;
+  border-color: #ea4441;
 }
 .plat-button.button-danger:active,
 .button.button-danger:active,
@@ -988,7 +988,7 @@ h6 {
 .plat-button.button-caution,
 .button.button-caution {
   background-color: #e2c95a;
-  border-color: #dcbe37;
+  border-color: #dabb2f;
 }
 .plat-button.button-caution:active,
 .button.button-caution:active,
@@ -1622,7 +1622,7 @@ h6 {
 }
 .plat-file.file-primary .plat-file-button {
   background-color: #2d97d2;
-  border-color: #267fb0;
+  border-color: #2479a8;
 }
 .plat-file.file-primary .plat-file-button:active {
   background-color: #2479a8;
@@ -1650,7 +1650,7 @@ h6 {
 }
 .plat-file.file-secondary .plat-file-button {
   background-color: #a283a5;
-  border-color: #906b94;
+  border-color: #8b678e;
 }
 .plat-file.file-secondary .plat-file-button:active {
   background-color: #8b678e;
@@ -1706,7 +1706,7 @@ h6 {
 }
 .plat-file.file-success .plat-file-button {
   background-color: #53c670;
-  border-color: #3cb45a;
+  border-color: #39ad56;
 }
 .plat-file.file-success .plat-file-button:active {
   background-color: #39ad56;
@@ -1734,7 +1734,7 @@ h6 {
 }
 .plat-file.file-danger .plat-file-button {
   background-color: #ef716f;
-  border-color: #eb4d4a;
+  border-color: #ea4441;
 }
 .plat-file.file-danger .plat-file-button:active {
   background-color: #ea4441;
@@ -1762,7 +1762,7 @@ h6 {
 }
 .plat-file.file-caution .plat-file-button {
   background-color: #e2c95a;
-  border-color: #dcbe37;
+  border-color: #dabb2f;
 }
 .plat-file.file-caution .plat-file-button:active {
   background-color: #dabb2f;

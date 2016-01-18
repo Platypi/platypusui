@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.10.0 (https://platypi.io) 
+ * PlatypusUI v0.11.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -15,36 +15,14 @@
         /// Brand Colors
 
         @primary-color: @blue;
-        @primary-color-light: lighten(@primary-color, 10%);
-        @primary-color-dark: darken(@primary-color, 8%);
-        @primary-color-pale: desaturate(@primary-color, 10%);
-
         @secondary-color: @purple;
-        @secondary-color-light: lighten(@secondary-color, 10%);
-        @secondary-color-dark: darken(@secondary-color, 8%);
-        @secondary-color-pale: desaturate(@secondary-color, 10%);
 
         /// State/Action Colors
 
         @success-color: @green;
-        @success-color-light: lighten(@success-color, 10%);
-        @success-color-dark: darken(@success-color, 8%);
-        @success-color-pale: desaturate(@success-color, 10%);
-
         @danger-color: @red;
-        @danger-color-light: lighten(@danger-color, 10%);
-        @danger-color-dark: darken(@danger-color, 8%);
-        @danger-color-pale: desaturate(@danger-color, 10%);
-
         @caution-color: @yellow;
-        @caution-color-light: lighten(@caution-color, 10%);
-        @caution-color-dark: darken(@caution-color, 8%);
-        @caution-color-pale: desaturate(@caution-color, 10%);
-
         @neutral-color: @grey;
-        @neutral-color-light: lighten(@neutral-color, 10%);
-        @neutral-color-dark: darken(@neutral-color, 10%);
-        @neutral-color-pale: desaturate(@neutral-color, 10%);
 
         /// ========= Default Color Palette ========== ///
 
@@ -1506,7 +1484,7 @@
 
         @color: @white;
         @background-color: @neutral-color;
-        @border-color: @neutral-color-dark;
+        @border-color: darken(@neutral-color, 10%);
 
     /// ============= Button Sizes ============== ///
 
@@ -1751,7 +1729,7 @@
 
         .plat-button-group(@prop: undefined; @value: undefined) {
             #platui > #mixins;
-            
+
             & when (@prop = undefined), (@value = undefined) {
                 &.button-group {
                     & > .plat-button:nth-of-type(1),
@@ -5265,8 +5243,8 @@
 
     /// =========== Progress Bar Colors =========== ///
 
-        @fill-color: @neutral-color-dark;
-        @unfilled-color: @neutral-color-light;
+        @fill-color: darken(@neutral-color, 10%);
+        @unfilled-color: lighten(@neutral-color, 10%);
 
     /// =========== Progress Bar Properties =========== ///
 
@@ -6950,8 +6928,8 @@
 
     /// ================= Range Colors ================== ///
 
-        @fill-color: @neutral-color-dark;
-        @unfilled-color: @neutral-color-light;
+        @fill-color: darken(@neutral-color, 10%);
+        @unfilled-color: lighten(@neutral-color, 10%);
         @knob-base-color: @pale-grey;
 
     /// ================= Range Size ================== ///
@@ -7397,7 +7375,7 @@
 
         @background-color: @transparent;
         @color: @default-font-color;
-        @border-color: @neutral-color-light;
+        @border-color: lighten(@neutral-color, 10%);
 
     /// =========== Select Sizes =========== ///
 
@@ -7508,8 +7486,8 @@
 
     /// ================= Slider Colors ================== ///
 
-        @fill-color: @neutral-color-dark;
-        @unfilled-color: @neutral-color-light;
+        @fill-color: darken(@neutral-color, 10%);
+        @unfilled-color: lighten(@neutral-color, 10%);
         @knob-base-color: @pale-grey;
 
     /// ================= Slider Size ================== ///
@@ -8010,7 +7988,7 @@
     #Toggle {
         #dependencies {
             #platui > #variables;
-            @color-off: @neutral-color-light;
+            @color-off: lighten(@neutral-color, 10%);
             @color-on: @success-color;
         }
 
@@ -8022,7 +8000,7 @@
         @border-color-off: darken(@color-off, 3%);
         @background-color-on: @color-on;
         @border-color-on: darken(@color-on, 5%);
-        @toggle-thin-color-off: @neutral-color-dark;
+        @toggle-thin-color-off: darken(@neutral-color, 10%);
 
     /// ============ Toggle Size ============ ///
 
@@ -9020,7 +8998,7 @@
 
         &.button-primary {
             background-color: @primary-color;
-            border-color: @primary-color-dark;
+            border-color: darken(@primary-color, 10%);
 
             &:active,
             &.plat-selected {
@@ -9058,7 +9036,7 @@
 
         &.button-secondary {
             background-color: @secondary-color;
-            border-color: @secondary-color-dark;
+            border-color: darken(@secondary-color, 10%);
 
             &:active,
             &.plat-selected {
@@ -9096,7 +9074,7 @@
 
         &.button-neutral {
             background-color: @neutral-color;
-            border-color: @neutral-color-dark;
+            border-color: darken(@neutral-color, 10%);
 
             &:active,
             &.plat-selected {
@@ -9134,7 +9112,7 @@
 
         &.button-success {
             background-color: @success-color;
-            border-color: @success-color-dark;
+            border-color: darken(@success-color, 10%);
 
             &:active,
             &.plat-selected {
@@ -9172,7 +9150,7 @@
 
         &.button-danger {
             background-color: @danger-color;
-            border-color: @danger-color-dark;
+            border-color: darken(@danger-color, 10%);
 
             &:active,
             &.plat-selected {
@@ -9210,7 +9188,7 @@
 
         &.button-caution {
             background-color: @caution-color;
-            border-color: @caution-color-dark;
+            border-color: darken(@caution-color, 10%);
 
             &:active,
             &.plat-selected {
@@ -9856,7 +9834,7 @@
         &.file-primary {
             .plat-file-button {
                 background-color: @primary-color;
-                border-color: @primary-color-dark;
+                border-color: darken(@primary-color, 10%);
 
                 &:active {
                     background-color: darken(@primary-color, 10%);
@@ -9894,7 +9872,7 @@
         &.file-secondary {
             .plat-file-button {
                 background-color: @secondary-color;
-                border-color: @secondary-color-dark;
+                border-color: darken(@secondary-color, 10%);
 
                 &:active {
                     background-color: darken(@secondary-color, 10%);
@@ -9932,7 +9910,7 @@
         &.file-neutral {
             .plat-file-button {
                 background-color: @neutral-color;
-                border-color: @neutral-color-dark;
+                border-color: darken(@neutral-color, 10%);
 
                 &:active {
                     background-color: darken(@neutral-color, 10%);
@@ -9970,7 +9948,7 @@
         &.file-success {
             .plat-file-button {
                 background-color: @success-color;
-                border-color: @success-color-dark;
+                border-color: darken(@success-color, 10%);
 
                 &:active {
                     background-color: darken(@success-color, 10%);
@@ -10008,7 +9986,7 @@
         &.file-danger {
             .plat-file-button {
                 background-color: @danger-color;
-                border-color: @danger-color-dark;
+                border-color: darken(@danger-color, 10%);
 
                 &:active {
                     background-color: darken(@danger-color, 10%);
@@ -10046,7 +10024,7 @@
         &.file-caution {
             .plat-file-button {
                 background-color: @caution-color;
-                border-color: @caution-color-dark;
+                border-color: darken(@caution-color, 10%);
 
                 &:active {
                     background-color: darken(@caution-color, 10%);
