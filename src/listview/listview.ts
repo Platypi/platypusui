@@ -33,12 +33,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString: string =
-        '<div class="plat-listview-viewport">\n' +
-        '    <div class="plat-scroll-container">\n' +
-        '        <div class="plat-listview-container"></div>\n' +
-        '    </div>\n' +
-        '</div>\n';
+        templateString: string = this.__templateString;
 
         /**
          * @name options
@@ -633,6 +628,24 @@ module platui {
         protected _visibilityRemoveListeners: Array<plat.IRemoveListener> = [];
 
         /**
+         * @name __templateString
+         * @memberof platui.Listview
+         * @kind property
+         * @access private
+         *
+         * @type {string}
+         *
+         * @description
+         * The private template string used to check for a template overwrite.
+         */
+        private __templateString: string =
+        '<div class="plat-listview-viewport">\n' +
+        '    <div class="plat-scroll-container">\n' +
+        '        <div class="plat-listview-container"></div>\n' +
+        '    </div>\n' +
+        '</div>\n';
+
+        /**
          * @name __listenerSet
          * @memberof platui.Listview
          * @kind property
@@ -725,7 +738,7 @@ module platui {
             let optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IListviewOptions>>{}),
                 options = optionObj.value || (optionObj.value = <IListviewOptions>{});
 
-            this.templateUrl = this.templateUrl || options.templateUrl;
+            this.templateUrl = options.templateUrl || this.templateUrl;
             this.setClasses();
         }
 
@@ -741,15 +754,13 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            if (!this.utils.isString(this.templateUrl)) {
-                return;
+            if (this.templateString !== this.__templateString || this.utils.isString(this.templateUrl)) {
+                let fragment = this.dom.serializeHtml(this.__templateString),
+                    element = this.element;
+
+                this.innerTemplate = this.dom.appendChildren(element.childNodes);
+                element.appendChild(fragment);
             }
-
-            let fragment = this.dom.serializeHtml(this.templateString),
-                element = this.element;
-
-            this.innerTemplate = this.dom.appendChildren(element.childNodes);
-            element.appendChild(fragment);
         }
 
         /**

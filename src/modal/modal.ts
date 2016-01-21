@@ -289,7 +289,7 @@ module platui {
             let optionObj = this.options || (this.options = <plat.observable.IObservableProperty<IModalOptions>>{}),
                 options = optionObj.value || (optionObj.value = <IModalOptions>{});
 
-            this.templateUrl = options.templateUrl;
+            this.templateUrl = options.templateUrl || this.templateUrl;
             this.setClasses();
         }
 
@@ -305,15 +305,12 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            let utils = this.utils,
-                modalContainer: HTMLElement;
-
-            if (utils.isString(this.templateUrl) || this.templateString !== this.__templateString) {
+            if (this.templateString !== this.__templateString || this.utils.isString(this.templateUrl)) {
                 let dom = this.dom,
                     fragment = dom.serializeHtml(this.__templateString),
-                    element = this.element;
+                    element = this.element,
+                    modalContainer = this._container = <HTMLElement>fragment.firstChild;
 
-                modalContainer = this._container = <HTMLElement>fragment.firstChild;
                 this.innerTemplate = dom.appendChildren(element.childNodes);
                 element.appendChild(fragment);
             }
