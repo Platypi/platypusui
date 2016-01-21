@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.11.0 (https://platypi.io)
+  * PlatypusUI v0.11.1 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -1083,6 +1083,10 @@ declare module platui {
           * A hash for validating available transitions.
           */
         protected _transitionHash: plat.IObject<boolean>;
+        /**
+          * The private template string used to check for a template overwrite.
+          */
+        private __templateString;
         /**
           * The resolve function for the modalLoaded Promise.
           */
