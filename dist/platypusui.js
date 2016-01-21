@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.11.0 (https://platypi.io)
+ * PlatypusUI v0.11.1 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1961,7 +1961,7 @@ var platui;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-modal-container"></div>\n';
+            this.templateString = this.__templateString;
             /**
              * Whether or not the modal is currently visible.
              */
@@ -1984,6 +1984,10 @@ var platui;
                 right: true,
                 fade: true
             };
+            /**
+             * The private template string used to check for a template overwrite.
+             */
+            this.__templateString = '<div class="plat-modal-container"></div>\n';
             this.modalLoaded = new this._Promise(function (resolve, reject) {
                 _this.__resolveFn = resolve;
                 _this.__rejectFn = reject;
@@ -2012,8 +2016,8 @@ var platui;
          */
         Modal.prototype.setTemplate = function () {
             var utils = this.utils, modalContainer;
-            if (utils.isString(this.templateUrl)) {
-                var dom = this.dom, fragment = dom.serializeHtml(this.templateString), element = this.element;
+            if (utils.isString(this.templateUrl) || this.templateString !== this.__templateString) {
+                var dom = this.dom, fragment = dom.serializeHtml(this.__templateString), element = this.element;
                 modalContainer = this._container = fragment.firstChild;
                 this.innerTemplate = dom.appendChildren(element.childNodes);
                 element.appendChild(fragment);
