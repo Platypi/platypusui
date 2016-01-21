@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.11.1 (https://platypi.io)
+ * PlatypusUI v0.11.2 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -2008,17 +2008,15 @@ var platui;
          */
         Modal.prototype.initialize = function () {
             var optionObj = this.options || (this.options = {}), options = optionObj.value || (optionObj.value = {});
-            this.templateUrl = options.templateUrl;
+            this.templateUrl = options.templateUrl || this.templateUrl;
             this.setClasses();
         };
         /**
          * Add the innerTemplate to the control's element.
          */
         Modal.prototype.setTemplate = function () {
-            var utils = this.utils, modalContainer;
-            if (utils.isString(this.templateUrl) || this.templateString !== this.__templateString) {
-                var dom = this.dom, fragment = dom.serializeHtml(this.__templateString), element = this.element;
-                modalContainer = this._container = fragment.firstChild;
+            if (this.templateString !== this.__templateString || this.utils.isString(this.templateUrl)) {
+                var dom = this.dom, fragment = dom.serializeHtml(this.__templateString), element = this.element, modalContainer = this._container = fragment.firstChild;
                 this.innerTemplate = dom.appendChildren(element.childNodes);
                 element.appendChild(fragment);
             }
@@ -5354,11 +5352,7 @@ var platui;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-listview-viewport">\n' +
-                '    <div class="plat-scroll-container">\n' +
-                '        <div class="plat-listview-container"></div>\n' +
-                '    </div>\n' +
-                '</div>\n';
+            this.templateString = this.__templateString;
             /**
              * Used to hold the alias tokens for the built-in aliases. You
              * can overwrite these with the options for
@@ -5426,6 +5420,14 @@ var platui;
              */
             this._visibilityRemoveListeners = [];
             /**
+             * The private template string used to check for a template overwrite.
+             */
+            this.__templateString = '<div class="plat-listview-viewport">\n' +
+                '    <div class="plat-scroll-container">\n' +
+                '        <div class="plat-listview-container"></div>\n' +
+                '    </div>\n' +
+                '</div>\n';
+            /**
              * Whether or not the main Array listener has been set.
              */
             this.__listenerSet = false;
@@ -5449,19 +5451,18 @@ var platui;
          */
         Listview.prototype.initialize = function () {
             var optionObj = this.options || (this.options = {}), options = optionObj.value || (optionObj.value = {});
-            this.templateUrl = this.templateUrl || options.templateUrl;
+            this.templateUrl = options.templateUrl || this.templateUrl;
             this.setClasses();
         };
         /**
          * Parse the innerTemplate and add it to the control's element.
          */
         Listview.prototype.setTemplate = function () {
-            if (!this.utils.isString(this.templateUrl)) {
-                return;
+            if (this.templateString !== this.__templateString || this.utils.isString(this.templateUrl)) {
+                var fragment = this.dom.serializeHtml(this.__templateString), element = this.element;
+                this.innerTemplate = this.dom.appendChildren(element.childNodes);
+                element.appendChild(fragment);
             }
-            var fragment = this.dom.serializeHtml(this.templateString), element = this.element;
-            this.innerTemplate = this.dom.appendChildren(element.childNodes);
-            element.appendChild(fragment);
         };
         /**
          * Re-syncs the Listview child controls and DOM with the new

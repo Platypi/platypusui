@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.11.1 (https://platypi.io)
+  * PlatypusUI v0.11.2 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -2840,6 +2840,10 @@ declare module platui {
           * A set of functions to remove all visibility listeners.
           */
         protected _visibilityRemoveListeners: Array<plat.IRemoveListener>;
+        /**
+          * The private template string used to check for a template overwrite.
+          */
+        private __templateString;
         /**
           * Whether or not the main Array listener has been set.
           */

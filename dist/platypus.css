@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.11.1 (https://platypi.io) 
+ * PlatypusUI v0.11.2 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -811,7 +811,7 @@ h6 {
 }
 .plat-button.button-secondary,
 .button.button-secondary {
-  background-color: #a283a5;
+  background-color: #A283A5;
   border-color: #8b678e;
 }
 .plat-button.button-secondary:active,
@@ -826,21 +826,21 @@ h6 {
 .button.button-secondary[disabled],
 .plat-button.button-secondary:disabled,
 .button.button-secondary:disabled {
-  background-color: #a283a5;
+  background-color: #A283A5;
   opacity: 0.5;
   cursor: default;
 }
 .plat-button.button-secondary.button-outline,
 .button.button-secondary.button-outline {
-  border-color: #a283a5;
-  color: #a283a5;
+  border-color: #A283A5;
+  color: #A283A5;
 }
 .plat-button.button-secondary.button-outline:active,
 .button.button-secondary.button-outline:active,
 .plat-button.button-secondary.button-outline.plat-selected,
 .button.button-secondary.button-outline.plat-selected {
   color: #ffffff;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-button.button-secondary.button-outline.button-disabled,
 .button.button-secondary.button-outline.button-disabled,
@@ -848,7 +848,7 @@ h6 {
 .button.button-secondary.button-outline[disabled],
 .plat-button.button-secondary.button-outline:disabled,
 .button.button-secondary.button-outline:disabled {
-  color: #a283a5;
+  color: #A283A5;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -1393,8 +1393,8 @@ h6 {
 }
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-secondary .plat-checkbox-container.plat-x {
-  border-color: #a283a5;
-  background-color: #a283a5;
+  border-color: #A283A5;
+  background-color: #A283A5;
 }
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-check,
 .plat-checkbox.checkbox-success .plat-checkbox-container.plat-x {
@@ -1649,7 +1649,7 @@ h6 {
   cursor: default;
 }
 .plat-file.file-secondary .plat-file-button {
-  background-color: #a283a5;
+  background-color: #A283A5;
   border-color: #8b678e;
 }
 .plat-file.file-secondary .plat-file-button:active {
@@ -1657,21 +1657,21 @@ h6 {
 }
 .plat-file.file-secondary .plat-file-button[disabled],
 .plat-file.file-secondary .plat-file-button:disabled {
-  background-color: #a283a5;
+  background-color: #A283A5;
   opacity: 0.5;
   cursor: default;
 }
 .plat-file.file-secondary.file-outline .plat-file-button {
-  border-color: #a283a5;
-  color: #a283a5;
+  border-color: #A283A5;
+  color: #A283A5;
 }
 .plat-file.file-secondary.file-outline .plat-file-button:active {
   color: #ffffff;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-file.file-secondary.file-outline .plat-file-button[disabled],
 .plat-file.file-secondary.file-outline .plat-file-button:disabled {
-  color: #a283a5;
+  color: #A283A5;
   background-color: transparent;
   opacity: 0.5;
   cursor: default;
@@ -2964,10 +2964,10 @@ h6 {
   color: #2d97d2;
 }
 .plat-input.input-secondary .plat-input-container input:focus {
-  border-color: #a283a5;
+  border-color: #A283A5;
 }
 .plat-input.input-secondary .plat-input-container .plat-input-action {
-  color: #a283a5;
+  color: #A283A5;
 }
 .plat-input.input-success .plat-input-container input:focus {
   border-color: #53c670;
@@ -4018,7 +4018,7 @@ h6 {
   background-color: #2d97d2;
 }
 .plat-progress.progress-secondary .plat-animated-bar {
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-progress.progress-success .plat-animated-bar {
   background-color: #53c670;
@@ -4659,7 +4659,7 @@ h6 {
 .plat-range.range-secondary .plat-range-container .plat-range-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #8b678e;
   box-shadow: inset 0px 1px 1px 0px #8b678e;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-range.range-success .plat-range-container .plat-range-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #39ad56;
@@ -4931,7 +4931,7 @@ h6 {
 .plat-slider.slider-secondary .plat-slider-container .plat-slider-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #8b678e;
   box-shadow: inset 0px 1px 1px 0px #8b678e;
-  background-color: #a283a5;
+  background-color: #A283A5;
 }
 .plat-slider.slider-success .plat-slider-container .plat-slider-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #39ad56;
@@ -5063,7 +5063,7 @@ h6 {
   border-color: #2988bd;
 }
 .plat-toggle.toggle-secondary .plat-toggle-container.plat-slide {
-  background-color: #a283a5;
+  background-color: #A283A5;
   border-color: #97749a;
 }
 .plat-toggle.toggle-success .plat-toggle-container.plat-slide {
