@@ -31,7 +31,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString: string = '<div class="plat-modal-container"></div>\n';
+        templateString: string = this.__templateString;
 
         /**
          * @name options
@@ -197,6 +197,19 @@ module platui {
         };
 
         /**
+         * @name __templateString
+         * @memberof platui.Modal
+         * @kind property
+         * @access private
+         *
+         * @type {string}
+         *
+         * @description
+         * The private template string used to check for a template overwrite.
+         */
+        private __templateString: string = '<div class="plat-modal-container"></div>\n';
+
+        /**
          * @name __resolveFn
          * @memberof platui.Modal
          * @kind property
@@ -295,9 +308,9 @@ module platui {
             let utils = this.utils,
                 modalContainer: HTMLElement;
 
-            if (utils.isString(this.templateUrl)) {
+            if (utils.isString(this.templateUrl) || this.templateString !== this.__templateString) {
                 let dom = this.dom,
-                    fragment = dom.serializeHtml(this.templateString),
+                    fragment = dom.serializeHtml(this.__templateString),
                     element = this.element;
 
                 modalContainer = this._container = <HTMLElement>fragment.firstChild;
