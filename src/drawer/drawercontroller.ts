@@ -1804,12 +1804,11 @@ module platui {
             }
 
             if (isNode(parent)) {
-                let parentStyle = parent.style,
-                    overflow = parentStyle.overflow;
+                let computedParentStyle = _window.getComputedStyle(parent),
+                    overflow = computedParentStyle.overflow;
 
                 if (overflow !== 'hidden') {
-                    let computedParentStyle = _window.getComputedStyle(parent),
-                        computedDirectionalOverflow: string,
+                    let computedDirectionalOverflow: string,
                         key: string;
 
                     if (this._isVertical) {
@@ -1821,6 +1820,8 @@ module platui {
                     }
 
                     if (computedDirectionalOverflow !== 'hidden') {
+                        let parentStyle = parent.style;
+
                         rootElementStyle.parentOverflow = {
                             key: key,
                             value: parentStyle[<any>key]
