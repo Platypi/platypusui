@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.11.2 (https://platypi.io)
+ * PlatypusUI v0.11.3 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1882,9 +1882,9 @@ var platui;
                 style.zIndex = '1';
             }
             if (isNode(parent)) {
-                var parentStyle = parent.style, overflow = parentStyle.overflow;
+                var computedParentStyle = _window.getComputedStyle(parent), overflow = computedParentStyle.overflow;
                 if (overflow !== 'hidden') {
-                    var computedParentStyle = _window.getComputedStyle(parent), computedDirectionalOverflow, key;
+                    var computedDirectionalOverflow, key;
                     if (this._isVertical) {
                         key = 'overflowY';
                         computedDirectionalOverflow = computedParentStyle.overflowY;
@@ -1894,6 +1894,7 @@ var platui;
                         computedDirectionalOverflow = computedParentStyle.overflowX;
                     }
                     if (computedDirectionalOverflow !== 'hidden') {
+                        var parentStyle = parent.style;
                         rootElementStyle.parentOverflow = {
                             key: key,
                             value: parentStyle[key]
