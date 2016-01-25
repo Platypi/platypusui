@@ -44,7 +44,6 @@
                 color: @text-color;
                 outline: none;
                 border: none;
-                font: inherit;
 
                 &::-ms-clear,
                 &::-ms-reveal {
@@ -59,18 +58,9 @@
 
     /// =========== Placeholder Styling =========== ///
 
-                &::-webkit-input-placeholder {
-                    color: @placeholder-color;
-                }
-
-                &::-moz-input-placeholder {
-                    color: @placeholder-color;
-                }
-
-                &:-moz-input-placeholder {
-                    color: @placeholder-color;
-                }
-
+                &::-webkit-input-placeholder,
+                &::-moz-input-placeholder,
+                &:-moz-input-placeholder,
                 &:-ms-input-placeholder {
                     color: @placeholder-color;
                 }
