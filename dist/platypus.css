@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.11.3 (https://platypi.io) 
+ * PlatypusUI v0.11.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -135,6 +135,7 @@ input {
   -webkit-border-bottom-right-radius: 0px;
   border-bottom-right-radius: 0px;
   line-height: normal;
+  font: inherit;
 }
 button,
 html input[type="button"],
@@ -2881,7 +2882,6 @@ h6 {
   color: #444444;
   outline: none;
   border: none;
-  font: inherit;
 }
 .plat-input .plat-input-container input::-ms-clear,
 .plat-input .plat-input-container input::-ms-reveal {
@@ -2892,15 +2892,9 @@ h6 {
   -webkit-appearance: none;
   margin: 0;
 }
-.plat-input .plat-input-container input::-webkit-input-placeholder {
-  color: #c8c7cd;
-}
-.plat-input .plat-input-container input::-moz-input-placeholder {
-  color: #c8c7cd;
-}
-.plat-input .plat-input-container input:-moz-input-placeholder {
-  color: #c8c7cd;
-}
+.plat-input .plat-input-container input::-webkit-input-placeholder,
+.plat-input .plat-input-container input::-moz-input-placeholder,
+.plat-input .plat-input-container input:-moz-input-placeholder,
 .plat-input .plat-input-container input:-ms-input-placeholder {
   color: #c8c7cd;
 }
@@ -4705,7 +4699,6 @@ h6 {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font: inherit;
   border: 1px solid #e2e2e5;
   background-position: 95% 50%;
   background-repeat: no-repeat;
