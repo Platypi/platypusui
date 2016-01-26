@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.11.4 (https://platypi.io)
+  * PlatypusUI v0.12.0 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -1870,9 +1870,13 @@ declare module platui {
     class Input extends plat.ui.BindControl implements IUiControl, IFormControl {
         protected static _inject: any;
         /**
-          * The HTML template represented as a string.
+          * The Input Control's element type.
           */
-        templateString: string;
+        element: HTMLInputElement;
+        /**
+          * Replaces the control's element with an HTMLInputElement.
+          */
+        replaceWith: string;
         /**
           * The evaluated plat-options object.
           */
@@ -1890,18 +1894,6 @@ declare module platui {
           */
         protected _regex: plat.expressions.Regex;
         /**
-          * The HTMLElement for the control's optional image.
-          */
-        protected _imageElement: HTMLElement;
-        /**
-          * The HTMLInputElement for control input.
-          */
-        protected _inputElement: HTMLInputElement;
-        /**
-          * The HTMLElement for the control's action.
-          */
-        protected _actionElement: HTMLElement;
-        /**
           * The control's type (e.g. - "email").
           */
         protected _type: string;
@@ -1913,27 +1905,6 @@ declare module platui {
           * A regular expression string used to validate input upon calling the "validate" function.
           */
         protected _validation: RegExp;
-        /**
-          * The control's type character (e.g. - an "x" to delete
-          * input text).
-          */
-        protected _typeChar: string;
-        /**
-          * A function to handle the type event.
-          */
-        protected _typeHandler: EventListener;
-        /**
-          * A function to check the current action state and handle accordingly.
-          */
-        protected _actionHandler: (inputChanged?: boolean) => void;
-        /**
-          * Whether the user is currently touching the screen.
-          */
-        protected _inTouch: boolean;
-        /**
-          * Whether the user is currently in the process of performing the Input's action.
-          */
-        protected _inAction: boolean;
         /**
           * Sets the classes on the proper elements.
           * @param {string} className? An optional, additional class name or class names to set on the control
@@ -1992,38 +1963,9 @@ declare module platui {
           */
         protected _initializeType(): void;
         /**
-          * Adds all event listeners to the input and action element.
-          * @param {string} event The primary action element's event.
-          */
-        protected _addEventListeners(event: string): void;
-        /**
           * Adds a text event listener to the input element.
           */
         protected _addTextEventListener(): void;
-        /**
-          * Clears the user's input and focuses the input element.
-          */
-        protected _erase(): void;
-        /**
-          * The action handler for the "password" type when showing the
-          * password text.
-          */
-        protected _handlePasswordShow(): void;
-        /**
-          * The action handler for the "password" type when hiding the
-          * password text.
-          */
-        protected _handlePasswordHide(): void;
-        /**
-          * Checks the current state of the default action and handles accordingly.
-          * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
-          */
-        protected _checkText(inputChanged?: boolean): void;
-        /**
-          * Checks the current state of the password action and handles accordingly.
-          * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
-          */
-        protected _checkPassword(inputChanged?: boolean): void;
         /**
           * The event handler upon user text input.
           */

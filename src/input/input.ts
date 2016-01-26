@@ -20,7 +20,20 @@ module platui {
         };
 
         /**
-         * @name templateString
+         * @name element
+         * @memberof platui.Input
+         * @kind property
+         * @access public
+         *
+         * @type {HTMLInputElement}
+         *
+         * @description
+         * The {@link platui.Input|Input Control}'s element type.
+         */
+        element: HTMLInputElement;
+
+        /**
+         * @name replaceWith
          * @memberof platui.Input
          * @kind property
          * @access public
@@ -28,16 +41,9 @@ module platui {
          * @type {string}
          *
          * @description
-         * The HTML template represented as a string.
+         * Replaces the control's element with an HTMLInputElement.
          */
-        templateString: string =
-        '<div class="plat-input-container">\n' +
-        '    <span class="plat-input-image"></span>\n' +
-        '    <input type="text" />\n' +
-        '    <span class="plat-input-action">\n' +
-        '        <span class="plat-action"></span>\n' +
-        '    </span>\n' +
-        '</div>\n';
+        replaceWith: string = 'input';
 
         /**
          * @name options
@@ -92,45 +98,6 @@ module platui {
         protected _regex: plat.expressions.Regex;
 
         /**
-         * @name _imageElement
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {HTMLElement}
-         *
-         * @description
-         * The HTMLElement for the control's optional image.
-         */
-        protected _imageElement: HTMLElement;
-
-        /**
-         * @name _inputElement
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {HTMLInputElement}
-         *
-         * @description
-         * The HTMLInputElement for control input.
-         */
-        protected _inputElement: HTMLInputElement;
-
-        /**
-         * @name _actionElement
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {HTMLElement}
-         *
-         * @description
-         * The HTMLElement for the control's action.
-         */
-        protected _actionElement: HTMLElement;
-
-        /**
          * @name _type
          * @memberof platui.Input
          * @kind property
@@ -168,72 +135,6 @@ module platui {
          * A regular expression string used to validate input upon calling the "validate" function.
          */
         protected _validation: RegExp;
-
-        /**
-         * @name _typeChar
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {string}
-         *
-         * @description
-         * The control's type character (e.g. - an "x" to delete
-         * input text).
-         */
-        protected _typeChar: string;
-
-        /**
-         * @name _typeHandler
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {EventListener}
-         *
-         * @description
-         * A function to handle the type event.
-         */
-        protected _typeHandler: EventListener;
-
-        /**
-         * @name _actionHandler
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {(inputChanged?: boolean) => void}
-         *
-         * @description
-         * A function to check the current action state and handle accordingly.
-         */
-        protected _actionHandler: (inputChanged?: boolean) => void;
-
-        /**
-         * @name _inTouch
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {boolean}
-         *
-         * @description
-         * Whether the user is currently touching the screen.
-         */
-        protected _inTouch: boolean = false;
-
-        /**
-         * @name _inAction
-         * @memberof platui.Input
-         * @kind property
-         * @access protected
-         *
-         * @type {boolean}
-         *
-         * @description
-         * Whether the user is currently in the process of performing the {@link platui.Input|Input's} action.
-         */
-        protected _inAction: boolean = false;
 
         /**
          * @name setClasses
@@ -282,51 +183,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            let element = this.element,
-                image = this._imageElement = <HTMLElement>element.firstElementChild.firstElementChild,
-                input = this._inputElement = <HTMLInputElement>image.nextElementSibling,
-                attributes = this.attributes,
-                keys = Object.keys(attributes),
-                length = keys.length,
-                controlInjectors = plat.dependency.injectors.control,
-                hasPlaceholder = false,
-                attrRegex = /plat-(?:control|hide|context)|class|style/,
-                utils = this.utils,
-                isNull = utils.isNull,
-                delimit = utils.delimit,
-                isString = utils.isString,
-                key: string,
-                name: string,
-                value: string;
-
-            for (let i = 0; i < length; ++i) {
-                key = keys[i];
-                name = delimit(key, '-');
-                value = attributes[key];
-                if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
-                    if (name === __Disabled || name === __Readonly) {
-                        input.setAttribute(name, value);
-                    }
-                    continue;
-                } else if (name === 'id') {
-                    element.removeAttribute(name);
-                    input.setAttribute(name, value);
-                } else if (name === 'placeholder') {
-                    hasPlaceholder = true;
-                    input.placeholder = value;
-                } else {
-                    input.setAttribute(name, value);
-                }
-            }
-
-            if (hasPlaceholder || isNull(this.innerTemplate)) {
-                return;
-            }
-
-            let placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!utils.isEmpty(placeholder)) {
-                input.placeholder = placeholder;
-            }
+            this.dom.clearNode(this.element);
         }
 
         /**
@@ -343,23 +200,11 @@ module platui {
         loaded(): void {
             let optionObj = this.options || <plat.observable.IObservableProperty<IInputOptions>>{},
                 options = optionObj.value || <IInputOptions>{},
-                element = this.element,
-                inputType = this._type = this.attributes['type'] || options.type || 'text',
                 pattern = options.pattern,
                 validation = options.validation,
-                utils = this.utils,
-                isString = utils.isString;
+                isString = this.utils.isString;
 
-            // in case of cloning
-            this._imageElement = this._imageElement || <HTMLElement>element.firstElementChild.firstElementChild;
-            this._inputElement = this._inputElement || <HTMLInputElement>this._imageElement.nextElementSibling;
-
-            this.dom.addClass(element, __Plat + inputType);
-            let actionContainer = <HTMLElement>this._inputElement.nextElementSibling;
-            this.addEventListener(actionContainer, __$touchend, (): void => {
-                this._inputElement.focus();
-            }, false);
-            this._actionElement = <HTMLElement>actionContainer.firstElementChild;
+            this._type = this.attributes['type'] || options.type || 'text';
 
             if (isString(pattern) && pattern !== '') {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
@@ -394,7 +239,7 @@ module platui {
          * @returns {boolean} Whether or not the user's input is valid.
          */
         validate(): boolean {
-            return this._validation.test(this._inputElement.value);
+            return this._validation.test(this.element.value);
         }
 
         /**
@@ -409,18 +254,15 @@ module platui {
          * @returns {void}
          */
         clear(): void {
-            let inputElement = this._inputElement,
-                value = inputElement.value;
+            let element = this.element,
+                value = element.value;
 
             if (value === '') {
                 return;
             }
 
-            let actionElement = this._actionElement;
-            inputElement.value = this.value = '';
+            element.value = this.value = '';
             this.inputChanged(this.value, value);
-            actionElement.textContent = this._typeChar = '';
-            actionElement.setAttribute(__Hide, '');
         }
 
         /**
@@ -435,7 +277,7 @@ module platui {
          * @returns {void}
          */
         focus(): void {
-            this._inputElement.focus();
+            this.element.focus();
         }
 
         /**
@@ -450,7 +292,7 @@ module platui {
          * @returns {void}
          */
         blur(): void {
-            this._inputElement.blur();
+            this.element.blur();
         }
 
         /**
@@ -490,7 +332,7 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(newValue: string, oldValue: string, identifier: void, firstTime?: boolean): void {
-            let value = this._inputElement.value;
+            let value = this.element.value;
             if (this.utils.isNull(newValue)) {
                 newValue = '';
 
@@ -519,46 +361,30 @@ module platui {
          * @returns {void}
          */
         protected _initializeType(): void {
-            let inputType = this._type,
-                event = __$tap,
-                actionElement = this._actionElement;
+            let inputType = this._type;
 
             switch (inputType) {
                 case 'text':
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
                 case 'email':
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._regex.validateEmail;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
                 case 'password':
-                    let hidePassword = this._handlePasswordHide;
-
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkPassword.bind(this);
-                    this._typeHandler = this._handlePasswordShow;
-                    this.addEventListener(actionElement, __$touchend, hidePassword);
-                    this.addEventListener(actionElement, __$trackend, hidePassword);
-                    event = __$touchstart;
                     break;
-                case 'tel':
                 case 'telephone':
+                    inputType = 'tel';
+                case 'tel':
                     this._pattern = this._pattern || this._regex.validateTelephone;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
                 case 'number':
                     this._pattern = this._pattern || /^[0-9\.,]*$/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     inputType = 'tel';
                     break;
                 case 'hidden':
@@ -581,50 +407,9 @@ module platui {
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
             }
 
-            this._inputElement.type = inputType;
-            actionElement.textContent = this._typeChar = '';
-            actionElement.setAttribute(__Hide, '');
-            this._addEventListeners(event);
-        }
-
-        /**
-         * @name _addEventListeners
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * Adds all event listeners to the input and action element.
-         *
-         * @param {string} event The primary action element's event.
-         *
-         * @returns {void}
-         */
-        protected _addEventListeners(event: string): void {
-            let actionElement = this._actionElement,
-                input = this._inputElement,
-                actionEnd = (): boolean => (this._inAction = false);
-
-            actionElement.setAttribute(__Hide, '');
-
-            this.addEventListener(actionElement, event, this._typeHandler, false);
-            this.addEventListener(actionElement, __$touchstart, (): boolean => (this._inAction = true), false);
-            this.addEventListener(actionElement, __$touchend, actionEnd, false);
-            this.addEventListener(actionElement, __$trackend, actionEnd, false);
-            this.addEventListener(input, 'focus', (): void => {
-                actionElement.removeAttribute(__Hide);
-            }, false);
-            this.addEventListener(input, 'blur', (ev: Event): void => {
-                if (this._inAction) {
-                    return;
-                }
-                actionElement.setAttribute(__Hide, '');
-            }, false);
             this._addTextEventListener();
         }
 
@@ -640,7 +425,7 @@ module platui {
          * @returns {void}
          */
         protected _addTextEventListener(): void {
-            let input = this._inputElement,
+            let input = this.element,
                 compat = this._compat,
                 utils = this.utils,
                 composing = false,
@@ -702,142 +487,6 @@ module platui {
         }
 
         /**
-         * @name _erase
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * Clears the user's input and focuses the input element.
-         *
-         * @returns {void}
-         */
-        protected _erase(): void {
-            this.clear();
-            this.focus();
-        }
-
-        /**
-         * @name _handlePasswordShow
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * The action handler for the "password" type when showing the
-         * password text.
-         *
-         * @returns {void}
-         */
-        protected _handlePasswordShow(): void {
-            this._inTouch = true;
-            this._inputElement.type = 'text';
-        }
-
-        /**
-         * @name _handlePasswordHide
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * The action handler for the "password" type when hiding the
-         * password text.
-         *
-         * @returns {void}
-         */
-        protected _handlePasswordHide(): void {
-            if (!this._inTouch) {
-                return;
-            }
-            this._inTouch = false;
-
-            let inputElement = this._inputElement;
-            inputElement.type = this._type;
-            inputElement.focus();
-        }
-
-        /**
-         * @name _checkText
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * Checks the current state of the default action and handles accordingly.
-         *
-         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
-         *
-         * @returns {void}
-         */
-        protected _checkText(inputChanged?: boolean): void {
-            let char = this._typeChar;
-
-            if (char === 'x') {
-                if (this.value === '') {
-                    this._typeChar = '';
-                }
-            } else if (this.value !== '') {
-                this._typeChar = 'x';
-            }
-
-            let newChar = this._typeChar;
-            if (char !== newChar) {
-                let actionElement = this._actionElement;
-                actionElement.textContent = newChar;
-
-                if (inputChanged === true) {
-                    return;
-                } else if (newChar === '') {
-                    actionElement.setAttribute(__Hide, '');
-                    return;
-                }
-
-                actionElement.removeAttribute(__Hide);
-            }
-        }
-
-        /**
-         * @name _checkPassword
-         * @memberof platui.Input
-         * @kind function
-         * @access protected
-         *
-         * @description
-         * Checks the current state of the password action and handles accordingly.
-         *
-         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
-         *
-         * @returns {void}
-         */
-        protected _checkPassword(inputChanged?: boolean): void {
-            let char = this._typeChar;
-
-            if (char === '?') {
-                if (this.value === '') {
-                    this._typeChar = '';
-                }
-            } else if (this.value !== '') {
-                this._typeChar = '?';
-            }
-
-            let newChar = this._typeChar;
-            if (char !== newChar) {
-                let actionElement = this._actionElement;
-                actionElement.textContent = newChar;
-
-                if (inputChanged === true) {
-                    return;
-                } else if (newChar === '') {
-                    actionElement.setAttribute(__Hide, '');
-                    return;
-                }
-
-                actionElement.removeAttribute(__Hide);
-            }
-        }
-
-        /**
          * @name _onInput
          * @memberof platui.Input
          * @kind function
@@ -849,21 +498,20 @@ module platui {
          * @returns {void}
          */
         protected _onInput(): void {
-            let inputElement = this._inputElement,
-                value = inputElement.value,
-                strippedValue = this._stripInput(inputElement.value);
+            let element = this.element,
+                value = element.value,
+                strippedValue = this._stripInput(element.value);
 
             if (value !== strippedValue) {
-                value = inputElement.value = strippedValue;
+                value = element.value = strippedValue;
             }
 
             if (value === this.value) {
                 return;
             }
 
-            this.value = inputElement.value;
+            this.value = element.value;
             this.inputChanged(this.value);
-            this._actionHandler();
         }
 
         /**
@@ -880,13 +528,11 @@ module platui {
          * @returns {void}
          */
         protected _onInputChanged(newValue: string): void {
-            let inputElement = this._inputElement;
+            let element = this.element;
 
             newValue = this._stripInput(newValue);
-            inputElement.value = newValue;
-            this.value = inputElement.value;
-
-            this._actionHandler(true);
+            element.value = newValue;
+            this.value = element.value;
         }
 
         /**

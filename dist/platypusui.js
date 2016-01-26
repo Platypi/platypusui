@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.11.4 (https://platypi.io)
+ * PlatypusUI v0.12.0 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -3382,27 +3382,13 @@ var platui;
         function Input() {
             _super.apply(this, arguments);
             /**
-             * The HTML template represented as a string.
+             * Replaces the control's element with an HTMLInputElement.
              */
-            this.templateString = '<div class="plat-input-container">\n' +
-                '    <span class="plat-input-image"></span>\n' +
-                '    <input type="text" />\n' +
-                '    <span class="plat-input-action">\n' +
-                '        <span class="plat-action"></span>\n' +
-                '    </span>\n' +
-                '</div>\n';
+            this.replaceWith = 'input';
             /**
              * The current value.
              */
             this.value = '';
-            /**
-             * Whether the user is currently touching the screen.
-             */
-            this._inTouch = false;
-            /**
-             * Whether the user is currently in the process of performing the Input's action.
-             */
-            this._inAction = false;
         }
         /**
          * Sets the classes on the proper elements.
@@ -3424,52 +3410,14 @@ var platui;
          * Set all HTMLElement references and potential attribute controls.
          */
         Input.prototype.setTemplate = function () {
-            var element = this.element, image = this._imageElement = element.firstElementChild.firstElementChild, input = this._inputElement = image.nextElementSibling, attributes = this.attributes, keys = Object.keys(attributes), length = keys.length, controlInjectors = plat.dependency.injectors.control, hasPlaceholder = false, attrRegex = /plat-(?:control|hide|context)|class|style/, utils = this.utils, isNull = utils.isNull, delimit = utils.delimit, isString = utils.isString, key, name, value;
-            for (var i = 0; i < length; ++i) {
-                key = keys[i];
-                name = delimit(key, '-');
-                value = attributes[key];
-                if (!isString(value) || attrRegex.test(name) || !isNull(controlInjectors[name])) {
-                    if (name === __Disabled || name === __Readonly) {
-                        input.setAttribute(name, value);
-                    }
-                    continue;
-                }
-                else if (name === 'id') {
-                    element.removeAttribute(name);
-                    input.setAttribute(name, value);
-                }
-                else if (name === 'placeholder') {
-                    hasPlaceholder = true;
-                    input.placeholder = value;
-                }
-                else {
-                    input.setAttribute(name, value);
-                }
-            }
-            if (hasPlaceholder || isNull(this.innerTemplate)) {
-                return;
-            }
-            var placeholder = this.innerTemplate.textContent.replace(/\r|\n/g, '');
-            if (!utils.isEmpty(placeholder)) {
-                input.placeholder = placeholder;
-            }
+            this.dom.clearNode(this.element);
         };
         /**
          * Set the style and initialize the action.
          */
         Input.prototype.loaded = function () {
-            var _this = this;
-            var optionObj = this.options || {}, options = optionObj.value || {}, element = this.element, inputType = this._type = this.attributes['type'] || options.type || 'text', pattern = options.pattern, validation = options.validation, utils = this.utils, isString = utils.isString;
-            // in case of cloning 
-            this._imageElement = this._imageElement || element.firstElementChild.firstElementChild;
-            this._inputElement = this._inputElement || this._imageElement.nextElementSibling;
-            this.dom.addClass(element, __Plat + inputType);
-            var actionContainer = this._inputElement.nextElementSibling;
-            this.addEventListener(actionContainer, __$touchend, function () {
-                _this._inputElement.focus();
-            }, false);
-            this._actionElement = actionContainer.firstElementChild;
+            var optionObj = this.options || {}, options = optionObj.value || {}, pattern = options.pattern, validation = options.validation, isString = this.utils.isString;
+            this._type = this.attributes['type'] || options.type || 'text';
             if (isString(pattern) && pattern !== '') {
                 if (pattern[0] === '/' && pattern[pattern.length - 1] === '/') {
                     pattern = pattern.slice(1, -1);
@@ -3490,33 +3438,30 @@ var platui;
          * actions it returns true if the input is not empty.
          */
         Input.prototype.validate = function () {
-            return this._validation.test(this._inputElement.value);
+            return this._validation.test(this.element.value);
         };
         /**
          * Clears the user's input.
          */
         Input.prototype.clear = function () {
-            var inputElement = this._inputElement, value = inputElement.value;
+            var element = this.element, value = element.value;
             if (value === '') {
                 return;
             }
-            var actionElement = this._actionElement;
-            inputElement.value = this.value = '';
+            element.value = this.value = '';
             this.inputChanged(this.value, value);
-            actionElement.textContent = this._typeChar = '';
-            actionElement.setAttribute(__Hide, '');
         };
         /**
          * Focuses the input.
          */
         Input.prototype.focus = function () {
-            this._inputElement.focus();
+            this.element.focus();
         };
         /**
          * Blurs the input.
          */
         Input.prototype.blur = function () {
-            this._inputElement.blur();
+            this.element.blur();
         };
         /**
          * A function that allows this control to observe both the bound property itself as well as
@@ -3535,7 +3480,7 @@ var platui;
          * @param {boolean} firstTime? Whether or not this is the first call to bind the property.
          */
         Input.prototype._setBoundProperty = function (newValue, oldValue, identifier, firstTime) {
-            var value = this._inputElement.value;
+            var value = this.element.value;
             if (this.utils.isNull(newValue)) {
                 newValue = '';
                 if (firstTime === true) {
@@ -3554,42 +3499,29 @@ var platui;
          * Initializes the type.
          */
         Input.prototype._initializeType = function () {
-            var inputType = this._type, event = __$tap, actionElement = this._actionElement;
+            var inputType = this._type;
             switch (inputType) {
                 case 'text':
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
                 case 'email':
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._regex.validateEmail;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
                 case 'password':
-                    var hidePassword = this._handlePasswordHide;
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkPassword.bind(this);
-                    this._typeHandler = this._handlePasswordShow;
-                    this.addEventListener(actionElement, __$touchend, hidePassword);
-                    this.addEventListener(actionElement, __$trackend, hidePassword);
-                    event = __$touchstart;
                     break;
-                case 'tel':
                 case 'telephone':
+                    inputType = 'tel';
+                case 'tel':
                     this._pattern = this._pattern || this._regex.validateTelephone;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
                 case 'number':
                     this._pattern = this._pattern || /^[0-9\.,]*$/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     inputType = 'tel';
                     break;
                 case 'hidden':
@@ -3612,36 +3544,8 @@ var platui;
                     inputType = 'text';
                     this._pattern = this._pattern || /[\S\s]*/;
                     this._validation = this._validation || this._pattern;
-                    this._actionHandler = this._checkText.bind(this);
-                    this._typeHandler = this._erase;
                     break;
             }
-            this._inputElement.type = inputType;
-            actionElement.textContent = this._typeChar = '';
-            actionElement.setAttribute(__Hide, '');
-            this._addEventListeners(event);
-        };
-        /**
-         * Adds all event listeners to the input and action element.
-         * @param {string} event The primary action element's event.
-         */
-        Input.prototype._addEventListeners = function (event) {
-            var _this = this;
-            var actionElement = this._actionElement, input = this._inputElement, actionEnd = function () { return (_this._inAction = false); };
-            actionElement.setAttribute(__Hide, '');
-            this.addEventListener(actionElement, event, this._typeHandler, false);
-            this.addEventListener(actionElement, __$touchstart, function () { return (_this._inAction = true); }, false);
-            this.addEventListener(actionElement, __$touchend, actionEnd, false);
-            this.addEventListener(actionElement, __$trackend, actionEnd, false);
-            this.addEventListener(input, 'focus', function () {
-                actionElement.removeAttribute(__Hide);
-            }, false);
-            this.addEventListener(input, 'blur', function (ev) {
-                if (_this._inAction) {
-                    return;
-                }
-                actionElement.setAttribute(__Hide, '');
-            }, false);
             this._addTextEventListener();
         };
         /**
@@ -3649,7 +3553,7 @@ var platui;
          */
         Input.prototype._addTextEventListener = function () {
             var _this = this;
-            var input = this._inputElement, compat = this._compat, utils = this.utils, composing = false, timeout, eventListener = function () {
+            var input = this.element, compat = this._compat, utils = this.utils, composing = false, timeout, eventListener = function () {
                 if (composing) {
                     return;
                 }
@@ -3695,114 +3599,28 @@ var platui;
             this.addEventListener(input, 'change', eventListener, false);
         };
         /**
-         * Clears the user's input and focuses the input element.
-         */
-        Input.prototype._erase = function () {
-            this.clear();
-            this.focus();
-        };
-        /**
-         * The action handler for the "password" type when showing the
-         * password text.
-         */
-        Input.prototype._handlePasswordShow = function () {
-            this._inTouch = true;
-            this._inputElement.type = 'text';
-        };
-        /**
-         * The action handler for the "password" type when hiding the
-         * password text.
-         */
-        Input.prototype._handlePasswordHide = function () {
-            if (!this._inTouch) {
-                return;
-            }
-            this._inTouch = false;
-            var inputElement = this._inputElement;
-            inputElement.type = this._type;
-            inputElement.focus();
-        };
-        /**
-         * Checks the current state of the default action and handles accordingly.
-         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
-         */
-        Input.prototype._checkText = function (inputChanged) {
-            var char = this._typeChar;
-            if (char === 'x') {
-                if (this.value === '') {
-                    this._typeChar = '';
-                }
-            }
-            else if (this.value !== '') {
-                this._typeChar = 'x';
-            }
-            var newChar = this._typeChar;
-            if (char !== newChar) {
-                var actionElement = this._actionElement;
-                actionElement.textContent = newChar;
-                if (inputChanged === true) {
-                    return;
-                }
-                else if (newChar === '') {
-                    actionElement.setAttribute(__Hide, '');
-                    return;
-                }
-                actionElement.removeAttribute(__Hide);
-            }
-        };
-        /**
-         * Checks the current state of the password action and handles accordingly.
-         * @param {boolean} inputChanged? Whether this is the result of the input changing from code.
-         */
-        Input.prototype._checkPassword = function (inputChanged) {
-            var char = this._typeChar;
-            if (char === '?') {
-                if (this.value === '') {
-                    this._typeChar = '';
-                }
-            }
-            else if (this.value !== '') {
-                this._typeChar = '?';
-            }
-            var newChar = this._typeChar;
-            if (char !== newChar) {
-                var actionElement = this._actionElement;
-                actionElement.textContent = newChar;
-                if (inputChanged === true) {
-                    return;
-                }
-                else if (newChar === '') {
-                    actionElement.setAttribute(__Hide, '');
-                    return;
-                }
-                actionElement.removeAttribute(__Hide);
-            }
-        };
-        /**
          * The event handler upon user text input.
          */
         Input.prototype._onInput = function () {
-            var inputElement = this._inputElement, value = inputElement.value, strippedValue = this._stripInput(inputElement.value);
+            var element = this.element, value = element.value, strippedValue = this._stripInput(element.value);
             if (value !== strippedValue) {
-                value = inputElement.value = strippedValue;
+                value = element.value = strippedValue;
             }
             if (value === this.value) {
                 return;
             }
-            this.value = inputElement.value;
+            this.value = element.value;
             this.inputChanged(this.value);
-            this._actionHandler();
         };
         /**
          * The event handler upon bound text being changed.
          * @param {string} newValue The new value of the bound text.
          */
         Input.prototype._onInputChanged = function (newValue) {
-            var inputElement = this._inputElement;
+            var element = this.element;
             newValue = this._stripInput(newValue);
-            inputElement.value = newValue;
-            this.value = inputElement.value;
-            this._actionHandler(true);
+            element.value = newValue;
+            this.value = element.value;
         };
         /**
          * Parses the input and strips it of characters that don't fit its pattern.
@@ -7304,11 +7122,13 @@ var platui;
          */
         Image.prototype._setSrc = function (url, oldUrl) {
             var _this = this;
-            var img = this._img, element = this.element, dom = this.dom, imageLoadClass = __Plat + "load-image", loader = this._loader;
-            dom.addClass(img, imageLoadClass);
+            var img = this._img, element = this.element, dom = this.dom, imageLoad = __Plat + "load-image", imageError = __Image + "-error", loader = this._loader;
+            dom.addClass(img, imageLoad);
             img.src = url;
             img.onload = function () {
                 _this.utils.requestAnimationFrame(function () {
+                    // remove error class in case image failed and then decides to load 
+                    dom.removeClass(element, imageError);
                     if (_this._isBackground) {
                         element.style.backgroundImage = "url(\"" + url + "\")";
                         if (element.contains(img)) {
@@ -7319,8 +7139,7 @@ var platui;
                         }
                         return;
                     }
-                    // remove error class in case image decides to load 
-                    dom.removeClass(img, __Image + "-error " + imageLoadClass);
+                    dom.removeClass(img, imageLoad);
                     if (element.contains(loader)) {
                         element.removeChild(loader);
                     }
@@ -7328,7 +7147,7 @@ var platui;
             };
             img.onerror = function () {
                 _this.utils.requestAnimationFrame(function () {
-                    dom.addClass(element, __Image + "-error");
+                    dom.addClass(element, imageError);
                     if (element.contains(img)) {
                         element.removeChild(img);
                     }
