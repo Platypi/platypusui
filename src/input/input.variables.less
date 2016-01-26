@@ -32,143 +32,71 @@
 
             & when (@prop = border-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        .plat-input-action {
-                            color: darken(@value, 25%);;
-                        }
-                    }
+                    border-color: @value;
 
-                    &:not(.input-outline) {
-                        .plat-input-container {
-                            input {
-                                border-bottom-color: @value;
-
-                                &:focus {
-                                    border-bottom-color: darken(@value, 25%);;
-                                }
-                            }
-                        }
-                    }
-
-                /// ============== Secondary Input =============== ///
-
-                    &.input-outline {
-                        .plat-input-container {
-                            input {
-                                border-color: @value;
-                            }
-                        }
+                    &:focus {
+                        border-color: darken(@value, 25%);
                     }
                 }
             }
             & when (@prop = border-bottom-width) {
                 &.plat-input {
                     &:not(.input-outline) {
-                        .plat-input-container {
-                            input {
-                                border-bottom-width: @value;
-                            }
-                        }
+                        border-bottom-width: @value;
                     }
                 }
             }
             & when (@prop = border-bottom) {
                 &.plat-input {
                     &:not(.input-outline) {
-                        .plat-input-container {
-                            input {
-                                border-bottom: @value;
-                            }
-                        }
+                        border-bottom: @value;
                     }
                 }
             }
             & when (@prop = outline-border-width) {
                 &.plat-input {
                     &.input-outline {
-                        .plat-input-container {
-                            input {
-                                border-width: @value;
-                            }
-                        }
+                        border-width: @value;
                     }
                 }
             }
             & when (@prop = outline-border) {
                 &.plat-input {
                     &.input-outline {
-                        .plat-input-container {
-                            input {
-                                border: @value;
-                            }
-                        }
+                        border: @value;
                     }
                 }
             }
             & when (@prop = outline-border-radius) {
                 &.plat-input {
                     &.input-outline {
-                        .plat-input-container {
-                            input {
-                                .border-radius(@value);
-                            }
-                        }
+                        .border-radius(@value);
                     }
                 }
             }
             & when (@prop = text-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        input {
-                            color: @value;
-                        }
-                    }
+                    color: @value;
                 }
             }
             & when (@prop = background-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        input {
-                            background-color: @value;
-                        }
-                    }
+                    background-color: @value;
                 }
             }
             & when (@prop = placeholder-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        input {
-                /// =========== Placeholder Styling =========== ///
-
-                            &::-webkit-input-placeholder {
-                                color: @value;
-                            }
-
-                            &::-moz-input-placeholder {
-                                color: @value;
-                            }
-
-                            &:-moz-input-placeholder {
-                                color: @value;
-                            }
-
-                            &:-ms-input-placeholder {
-                                color: @value;
-                            }
-                        }
+                    &::-webkit-input-placeholder,
+                    &::-moz-input-placeholder,
+                    &:-moz-input-placeholder,
+                    &:-ms-input-placeholder {
+                        color: @value;
                     }
                 }
             }
             & when (@prop = height) {
                 &.plat-input {
                     height: @value;
-
-                    .plat-input-container {
-                        .plat-input-action {
-                            height: @value;
-                            line-height: @value;
-                        }
-                    }
                 }
             }
             & when (@prop = width) {
@@ -191,203 +119,101 @@
                 &.plat-input {
                     width: @width;
                     height: @height;
-
-                    .plat-input-container {
-                        input {
-                            background-color: @background-color;
-                            color: @text-color;
+                    background-color: @background-color;
+                    color: @text-color;
 
                 /// =========== Placeholder Styling =========== ///
 
-                            &::-webkit-input-placeholder {
-                                color: @placeholder-color;
-                            }
-
-                            &::-moz-input-placeholder {
-                                color: @placeholder-color;
-                            }
-
-                            &:-moz-input-placeholder {
-                                color: @placeholder-color;
-                            }
-
-                            &:-ms-input-placeholder {
-                                color: @placeholder-color;
-                            }
-                        }
-
-                /// =============== Input Icon =============== ///
-
-                        .plat-input-action {
-                            height: @height;
-                            line-height: @height;
-                            color: @border-color-accent;
-                        }
+                    &::-webkit-input-placeholder,
+                    &::-moz-input-placeholder,
+                    &:-moz-input-placeholder,
+                    &:-ms-input-placeholder {
+                        color: @placeholder-color;
                     }
 
                     &:not(.input-outline) {
-                        .plat-input-container {
-                            input {
-                                border-bottom: @border-bottom;
-
-                                &:focus {
-                                    border-color: @border-color-accent;
-                                }
-                            }
-                        }
+                        border-bottom: @border-bottom;
                     }
 
                 /// ============== Secondary Input =============== ///
 
                     &.input-outline {
-                        .plat-input-container {
-                            input {
-                                .border-radius(@outline-border-radius);
-                                border: @outline-border;
-                            }
-                        }
+                        .border-radius(@outline-border-radius);
+                        border: @outline-border;
+                    }
+
+                    &:focus {
+                        border-color: @border-color-accent;
                     }
                 }
             }
             & when (@prop = border-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        .plat-input-action {
-                            color: darken(@value, 25%);;
-                        }
-                    }
+                    border-color: @value;
 
-                    &:not(.input-outline) {
-                        .plat-input-container {
-                            input {
-                                border-bottom-color: @value;
-
-                                &:focus {
-                                    border-bottom-color: darken(@value, 25%);;
-                                }
-                            }
-                        }
-                    }
-
-                /// ============== Secondary Input =============== ///
-
-                    &.input-outline {
-                        .plat-input-container {
-                            input {
-                                border-color: @value;
-                            }
-                        }
+                    &:focus {
+                        border-color: darken(@value, 25%);
                     }
                 }
             }
             & when (@prop = border-bottom-width) {
                 &.plat-input {
                     &:not(.input-outline) {
-                        .plat-input-container {
-                            input {
-                                border-bottom-width: @value;
-                            }
-                        }
+                        border-bottom-width: @value;
                     }
                 }
             }
             & when (@prop = border-bottom) {
                 &.plat-input {
                     &:not(.input-outline) {
-                        .plat-input-container {
-                            input {
-                                border-bottom: @value;
-                            }
-                        }
+                        border-bottom: @value;
                     }
                 }
             }
             & when (@prop = outline-border-width) {
                 &.plat-input {
                     &.input-outline {
-                        .plat-input-container {
-                            input {
-                                border-width: @value;
-                            }
-                        }
+                        border-width: @value;
                     }
                 }
             }
             & when (@prop = outline-border) {
                 &.plat-input {
                     &.input-outline {
-                        .plat-input-container {
-                            input {
-                                border: @value;
-                            }
-                        }
+                        border: @value;
                     }
                 }
             }
             & when (@prop = outline-border-radius) {
                 &.plat-input {
                     &.input-outline {
-                        .plat-input-container {
-                            input {
-                                .border-radius(@value);
-                            }
-                        }
+                        .border-radius(@value);
                     }
                 }
             }
             & when (@prop = text-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        input {
-                            color: @value;
-                        }
-                    }
+                    color: @value;
                 }
             }
             & when (@prop = background-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        input {
-                            background-color: @value;
-                        }
-                    }
+                    background-color: @value;
                 }
             }
             & when (@prop = placeholder-color) {
                 &.plat-input {
-                    .plat-input-container {
-                        input {
-                /// =========== Placeholder Styling =========== ///
-
-                            &::-webkit-input-placeholder {
-                                color: @value;
-                            }
-
-                            &::-moz-input-placeholder {
-                                color: @value;
-                            }
-
-                            &:-moz-input-placeholder {
-                                color: @value;
-                            }
-
-                            &:-ms-input-placeholder {
-                                color: @value;
-                            }
-                        }
+                    &::-webkit-input-placeholder,
+                    &::-moz-input-placeholder,
+                    &:-moz-input-placeholder,
+                    &:-ms-input-placeholder {
+                        color: @value;
                     }
                 }
             }
             & when (@prop = height) {
                 &.plat-input {
                     height: @value;
-
-                    .plat-input-container {
-                        .plat-input-action {
-                            height: @value;
-                            line-height: @value;
-                        }
-                    }
                 }
             }
             & when (@prop = width) {

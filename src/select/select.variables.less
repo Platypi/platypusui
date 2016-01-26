@@ -39,6 +39,11 @@
                     }
                 }
             }
+            & when (@prop = height) {
+                &.plat-select {
+                    height: @value;
+                }
+            }
             & when (@prop = border-radius) {
                 &.plat-select {
                     .border-radius(@value);
@@ -66,10 +71,14 @@
             & when (@prop = undefined), (@value = undefined) {
                 &.plat-select {
                     .border-radius(@border-radius);
+                    height: @height;
                     color: @color;
                     background-color: @background-color;
-                    border-width: @border-width;
-                    border-color: @border-color;
+                    border: @border-width solid @border-color;
+
+                    &:focus {
+                        border-color: darken(@border-color, 25%);
+                    }
 
                     &::-ms-value {
                         color: @color;
@@ -93,6 +102,11 @@
                     &::-ms-value {
                         color: @value;
                     }
+                }
+            }
+            & when (@prop = height) {
+                &.plat-select {
+                    height: @value;
                 }
             }
             & when (@prop = border-radius) {
