@@ -8,7 +8,6 @@
         #platui > #variables;
         #platui > #Input;
         @border-color-accent: darken(@border-color, 25%);
-        @action-padding: 2.5em;
     }
 }
 
@@ -19,189 +18,83 @@
     #platui > #__Input;
 
     .plat-input {
+        .border-radius(0px);
         .box-sizing(border-box);
+        .appearance(none);
         display: inline-block;
         width: @width;
         height: @height;
-        cursor: text;
+        background-color: @background-color;
+        color: @text-color;
+        border: none;
+        padding: 0;
 
-        .plat-input-container {
-            .fill();
-            .box-sizing(border-box);
-            position: relative;
+        &::-ms-clear,
+        &::-ms-reveal {
+            display: none;
+        }
 
-            input {
-                .box-sizing(border-box);
-                .border-radius(0px);
-                .appearance(none);
-                position: absolute;
-                height: 100%;
-                width: 100%;
-                left: 0;
-                bottom: 0;
-                padding: 0 @action-padding 0 0;
-                background-color: @background-color;
-                color: @text-color;
-                outline: none;
-                border: none;
-
-                &::-ms-clear,
-                &::-ms-reveal {
-                    display: none;
-                }
-
-                &::-webkit-outer-spin-button,
-                &::-webkit-inner-spin-button {
-                    -webkit-appearance: none;
-                    margin: 0;
-                }
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
 
     /// =========== Placeholder Styling =========== ///
 
-                &::-webkit-input-placeholder,
-                &::-moz-input-placeholder,
-                &:-moz-input-placeholder,
-                &:-ms-input-placeholder {
-                    color: @placeholder-color;
-                }
-            }
-
-    /// =============== Input Icon =============== ///
-
-            .plat-input-action {
-                .box-sizing(content-box);
-                display: inline-block;
-                position: absolute;
-                right: 0;
-                bottom: 0;
-                width: @action-padding;
-                height: @height;
-                line-height: @height;
-                text-align: right;
-                color: @border-color-accent;
-
-                .plat-action {
-                    display: inline-block;
-                    min-width: 20px;
-                    cursor: pointer;
-                }
-            }
-
-            input[disabled],
-            input:disabled {
-                & + .plat-input-action {
-                    display: none;
-                }
-            }
-        }
-
-        &.input-no-action {
-            .plat-input-container {
-                input {
-                    padding-right: 0;
-                }
-
-                .plat-input-action {
-                    display: none;
-                }
-            }
+        &::-webkit-input-placeholder,
+        &::-moz-input-placeholder,
+        &:-moz-input-placeholder,
+        &:-ms-input-placeholder {
+            color: @placeholder-color;
         }
 
         &:not(.input-outline) {
-            .plat-input-container {
-                input {
-                    border-bottom: @border-bottom;
-
-                    &:focus {
-                        border-bottom-color: @border-color-accent;
-                    }
-                }
-            }
+            border-bottom: @border-bottom;
         }
 
     /// ============== Secondary Input =============== ///
 
         &.input-outline {
-            .plat-input-container {
-                input {
-                    .border-radius(@outline-border-radius);
-                    border: @outline-border;
-                    padding-left: 0.5em;
-                }
+            .border-radius(@outline-border-radius);
+            border: @outline-border;
+            padding-left: 0.5em;
+            padding-right: 0.5em;
+        }
 
-                .plat-input-action {
-                    right: 6px;
-                }
-            }
-
-            &.input-no-action {
-                .plat-input-container {
-                    input {
-                        padding-right: 0.5em;
-                    }
-                }
-            }
+        &:focus {
+            border-color: @border-color-accent;
         }
 
     /// ============== Input Types =============== ///
 
         &.input-primary {
-            .plat-input-container {
-                input:focus {
-                    border-color: @primary-color;
-                }
-
-                .plat-input-action {
-                    color: @primary-color;
-                }
+            &:focus {
+                border-color: @primary-color;
             }
         }
 
         &.input-secondary {
-            .plat-input-container {
-                input:focus {
-                    border-color: @secondary-color;
-                }
-
-                .plat-input-action {
-                    color: @secondary-color;
-                }
+            &:focus {
+                border-color: @secondary-color;
             }
         }
 
         &.input-success {
-            .plat-input-container {
-                input:focus {
-                    border-color: @success-color;
-                }
-
-                .plat-input-action {
-                    color: @success-color;
-                }
+            &:focus {
+                border-color: @success-color;
             }
         }
 
         &.input-caution {
-            .plat-input-container {
-                input:focus {
-                    border-color: @caution-color;
-                }
-
-                .plat-input-action {
-                    color: @caution-color;
-                }
+            &:focus {
+                border-color: @caution-color;
             }
         }
 
         &.input-danger {
-            .plat-input-container {
-                input:focus {
-                    border-color: @danger-color;
-                }
-
-                .plat-input-action {
-                    color: @danger-color;
-                }
+            &:focus {
+                border-color: @danger-color;
             }
         }
     }
@@ -213,22 +106,29 @@
     #platui > #__Input;
 
     .input-group {
-        [class*="col-"] {
-            padding: 0;
-        }
-
         .plat-input {
             width: 100%;
-            position: relative;
-            margin-top: -3px;
 
-            input {
-                padding-left: 8px;
-                padding-right: @action-padding + 0.5em;
+            &:not(.input-outline) {
+                &:not(:first-child) {
+                    padding-left: 0.5em;
+                }
+
+                &:not(:last-child) {
+                    padding-right: 0.5em;
+                }
             }
+        }
 
-            .plat-input-action {
-                right: 0.25em;
+        [class*="col-"]:not(:first-child) {
+            .plat-input:not(.input-outline) {
+                padding-left: 0.5em;
+            }
+        }
+
+        [class*="col-"]:not(:last-child) {
+            .plat-input:not(.input-outline) {
+                padding-right: 0.5em;
             }
         }
     }

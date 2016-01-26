@@ -221,14 +221,18 @@ module platui {
             let img = this._img,
                 element = this.element,
                 dom = this.dom,
-                imageLoadClass = `${__Plat}load-image`,
+                imageLoad = `${__Plat}load-image`,
+                imageError = `${__Image}-error`,
                 loader = this._loader;
 
-            dom.addClass(img, imageLoadClass);
+            dom.addClass(img, imageLoad);
 
             img.src = url;
             img.onload = (): void => {
                 this.utils.requestAnimationFrame((): void => {
+                    // remove error class in case image failed and then decides to load
+                    dom.removeClass(element, imageError);
+
                     if (this._isBackground) {
                         element.style.backgroundImage = `url("${url}")`;
                         if (element.contains(img)) {
@@ -241,8 +245,7 @@ module platui {
                         return;
                     }
 
-                    // remove error class in case image decides to load
-                    dom.removeClass(img, `${__Image}-error ${imageLoadClass}`);
+                    dom.removeClass(img, imageLoad);
                     if (element.contains(loader)) {
                         element.removeChild(loader);
                     }
@@ -251,7 +254,8 @@ module platui {
 
             img.onerror = (): void => {
                 this.utils.requestAnimationFrame((): void => {
-                    dom.addClass(element, `${__Image}-error`);
+                    dom.addClass(element, imageError);
+
                     if (element.contains(img)) {
                         element.removeChild(img);
                     }
