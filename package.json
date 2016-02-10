@@ -59,6 +59,7 @@
   "typescript": {
     "definition": "dist/platypusui.d.ts"
   },
+  "typings": "dist/platypusui-local.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/Platypi/dist-platypusui.git"
