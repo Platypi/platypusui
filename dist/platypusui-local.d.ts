@@ -1,4 +1,4 @@
-/// <reference path="../node_modules/platypus/dist/platypus.d.ts" />
+import * as plat from 'platypus';
 /**
   * An interface a control should implement if they plan on using
   * class based CSS to style the UI.
