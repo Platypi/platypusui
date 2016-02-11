@@ -4,5 +4,8 @@
   "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
   "main": "dist/platypusui.d.ts",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "ambientDependencies": {
+    "platypus": "npm:platypus"
+  }
 }
