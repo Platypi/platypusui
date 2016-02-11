@@ -195,3 +195,4 @@ FakesAssemblies/
 !build/*.js
 !build/options/*.js
 !dist/*
+typings
