@@ -102,12 +102,56 @@ function getDtsLib() {
     return '/// <reference path="../../platypus/dist/platypus.d.ts" />\r\n';
 }
 
+function getDtsImport() {
+    return 'import * as plat from \'platypus\';\r\n';
+}
+
 function prependLib(data) {
 	return getCompileLib() + data;
 }
 
+function prependImport(data) {
+    return getDtsImport() + data;
+}
+
 function removeLib(data, replace) {
 	return data.replace(getCompileLib(), replace ? getDtsLib() : '');
+}
+
+function localize(data) {
+    var plat, trim;
+
+    data.some(function (line, index) {
+        trim = line.trim();
+
+        if (trim.indexOf('module platui ') > -1) {
+            plat = index;
+        }
+    });
+
+    data.splice(plat, 2);
+
+    for (var i = data.length - 1; i >= 0; --i) {
+        trim = data[i].trim();
+        if (trim.indexOf('}') > -1) {
+            plat = i;
+            break;
+        }
+    }
+
+    data.splice(plat, 4);
+
+    data = data.map(function (line, index) {
+        if (line.indexOf('typeof window !== \'undefined\'') > -1) {
+            plat = index;
+        }
+
+        return line.replace(/([^_])platui\./g, '$1');
+    });
+
+    data.splice(plat, 9);
+
+    return data;
 }
 
 module.exports = function(config, grunt) {
@@ -123,6 +167,16 @@ module.exports = function(config, grunt) {
             src: config.build.dest.ts,
             dest: config.build.dest.ts
         },
+        local: {
+            options: {
+                process: function (data) {
+                    return localize(data.split(/\r\n|\n/))
+                        .join('\r\n');
+                }
+            },
+            src: config.build.dest.ts,
+            dest: config.build.dest.tslocal
+        },
         rmLibs: {
             options: {
                 process: function (data, filename) {
@@ -132,6 +186,7 @@ module.exports = function(config, grunt) {
 			expand: true,
             files: [
                 { src: config.build.dest.dts, dest: config.build.dest.dts },
+                { src: config.build.dest.dtslocal, dest: config.build.dest.dtslocal },
                 { src: config.build.dest.js, dest: config.build.dest.js }
             ]
         },
@@ -145,6 +200,15 @@ module.exports = function(config, grunt) {
             },
             src: config.build.dest.dts,
             dest: config.build.dest.dts
+        },
+        typingslocal: {
+            options: {
+                process: function (data) {
+                    return prependImport(normalizeBlockComments(data.split(/\r\n|\n/)));
+                }
+            },
+            src: config.build.dest.dtslocal,
+            dest: config.build.dest.dtslocal
         },
 		fonts: {
 			expand: true,

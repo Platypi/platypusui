@@ -31,9 +31,13 @@ var config = {
     build: {
         dest: {
             ts: 'dist/platypusui.ts',
+            tslocal: 'dist/platypusui-local.ts',
             dts: 'dist/platypusui.d.ts',
+            dtslocal: 'dist/platypusui-local.d.ts',
             js: 'dist/platypusui.js',
+            jslocal: 'dist/platypusui-local.js',
             min: 'dist/platypusui.min.js',
+            minlocal: 'dist/platypusui-local.min.js',
             less: 'dist/platypus.less',
             css: 'dist/platypus.css',
             mincss: 'dist/platypus.min.css'
@@ -66,18 +70,20 @@ module.exports = function load(grunt) {
         'lessCompile:main',
         'cssmin',
         'copy:main',
+        'copy:local',
         'ts',
         'copy:rmLibs',
         'uglify',
         'copy:typings',
+        'copy:typingslocal',
         'copy:fonts',
         'clean:after'
     ]);
-    
+
     grunt.registerTask('docs', [
         'clean',
         'bundle'
     ]);
-    
-    grunt.registerTask('examples', ['lessCompile:examples', 'watch']);  
+
+    grunt.registerTask('examples', ['lessCompile:examples', 'watch']);
 };

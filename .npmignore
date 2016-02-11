@@ -12,7 +12,6 @@ test
 gruntfile.js
 karma.conf.js
 license.txt
-tsd.test.json
-tslint.json
 CONTRIBUTE.md
 bower.json
+typings

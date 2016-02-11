@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.12.1 (https://platypi.io) 
+ * PlatypusUI v0.13.1 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -905,7 +905,7 @@
             .transform(rotate(@deg); @vendor-list);
         }
 
-        .scale(@factor: .5) {
+        .scale(@factor: 0.5) {
             .transform(scale(@factor));
         }
         .scale(@factor; @vendor-list) {
@@ -925,6 +925,14 @@
         }
         .perspective(@value; @vendor-list) {
             #platui > #__mixins > .vendor-loop(perspective; @value; @vendor-list);
+        }
+
+        .transform-style(@value: flat) {
+            #platui > #variables;
+            .transform-style(@value; @webkit-list);
+        }
+        .transform-style(@value; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform-style; @value; @vendor-list);
         }
 
         .translate(@x; @y) {
@@ -10633,7 +10641,6 @@
     .plat-modal {
         .fill();
         .box-sizing(border-box);
-        .backface-visibility(hidden);
         position: absolute;
         top: 0;
         left: 0;

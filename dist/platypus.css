@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.12.1 (https://platypi.io) 
+ * PlatypusUI v0.13.1 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -3355,8 +3355,6 @@ h6 {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
   position: absolute;
   top: 0;
   left: 0;

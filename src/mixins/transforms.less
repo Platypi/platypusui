@@ -36,7 +36,7 @@
             .transform(rotate(@deg); @vendor-list);
         }
 
-        .scale(@factor: .5) {
+        .scale(@factor: 0.5) {
             .transform(scale(@factor));
         }
         .scale(@factor; @vendor-list) {
@@ -56,6 +56,14 @@
         }
         .perspective(@value; @vendor-list) {
             #platui > #__mixins > .vendor-loop(perspective; @value; @vendor-list);
+        }
+
+        .transform-style(@value: flat) {
+            #platui > #variables;
+            .transform-style(@value; @webkit-list);
+        }
+        .transform-style(@value; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(transform-style; @value; @vendor-list);
         }
 
         .translate(@x; @y) {
