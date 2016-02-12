@@ -53,58 +53,56 @@
                 @unfilled-color-0: fade(@value, 10%);
                 @unfilled-color-1: fade(@value, 15%);
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            border-left-color: @fill-color;
-                            border-top-color: @unfilled-color-0;
-                            border-right-color: @unfilled-color-0;
-                            border-bottom-color: @unfilled-color-0;
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        border-left-color: @fill-color;
+                        border-top-color: @unfilled-color-0;
+                        border-right-color: @unfilled-color-0;
+                        border-bottom-color: @unfilled-color-0;
+                    }
+                }
+
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .plat-animated-child-0::before {
+                            background-color: fade(@value, 75%);
+                        }
+
+                        .plat-animated-child-0::after {
+                            background-color: fade(@value, 60%);
+                        }
+
+                        .plat-animated-child-1::before {
+                            background-color: fade(@value, 45%);
+                        }
+
+                        .plat-animated-child-1::after {
+                            background-color: fade(@value, 30%);
+                        }
+
+                        .plat-animated-child-2::before {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-2::after {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-3::before {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-3::after {
+                            background-color: @unfilled-color-1;
                         }
                     }
+                }
 
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .plat-animated-child-0::before {
-                                background-color: fade(@value, 75%);
-                            }
-
-                            .plat-animated-child-0::after {
-                                background-color: fade(@value, 60%);
-                            }
-
-                            .plat-animated-child-1::before {
-                                background-color: fade(@value, 45%);
-                            }
-
-                            .plat-animated-child-1::after {
-                                background-color: fade(@value, 30%);
-                            }
-
-                            .plat-animated-child-2::before {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-2::after {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-3::before {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-3::after {
-                                background-color: @unfilled-color-1;
-                            }
-                        }
-                    }
-
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    background-color: @fill-color;
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                background-color: @fill-color;
                             }
                         }
                     }
@@ -113,40 +111,34 @@
             & when (@prop = diameter) {
                 @thickness: @value / 10;
 
-                &.plat-ring {
-                    width: @value;
-                    height: @value;
+                width: @value;
+                height: @value;
 
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            border-width: @thickness;
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        border-width: @thickness;
                     }
                 }
             }
             & when (@prop = spin-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
+                }
 
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
                 }
             }
             & when (@prop = fade-delay-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-name(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-name(@value);
                             }
                         }
                     }
@@ -155,91 +147,89 @@
             & when (@prop = spin-frequency) {
                 @delay-step: @spin-frequency / 12;
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
+                }
 
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
+                }
 
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-duration(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-duration(@value);
                             }
+                        }
 
-                            .plat-animated-child-1 {
-                                &::before {
-                                    .animation-delay(-@value + @delay-step);
-                                }
+                        .plat-animated-child-1 {
+                            &::before {
+                                .animation-delay(-@value + @delay-step);
                             }
+                        }
 
-                            .plat-animated-child-2 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 2));
-                                }
+                        .plat-animated-child-2 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 2));
                             }
+                        }
 
-                            .plat-animated-child-3 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 3));
-                                }
+                        .plat-animated-child-3 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 3));
                             }
+                        }
 
-                            .plat-animated-child-4 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 4));
-                                }
+                        .plat-animated-child-4 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 4));
                             }
+                        }
 
-                            .plat-animated-child-5 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 5));
-                                }
+                        .plat-animated-child-5 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 5));
                             }
+                        }
 
-                            .plat-animated-child-6 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 6));
-                                }
+                        .plat-animated-child-6 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 6));
                             }
+                        }
 
-                            .plat-animated-child-7 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 7));
-                                }
+                        .plat-animated-child-7 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 7));
                             }
+                        }
 
-                            .plat-animated-child-8 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 8));
-                                }
+                        .plat-animated-child-8 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 8));
                             }
+                        }
 
-                            .plat-animated-child-9 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 9));
-                                }
+                        .plat-animated-child-9 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 9));
                             }
+                        }
 
-                            .plat-animated-child-10 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 10));
-                                }
+                        .plat-animated-child-10 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 10));
                             }
+                        }
 
-                            .plat-animated-child-11 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 11));
-                                }
+                        .plat-animated-child-11 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 11));
                             }
                         }
                     }
@@ -256,46 +246,38 @@
                 @fill-color: fade(@value, 80%);
                 @unfilled-color-0: fade(@value, 10%);
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            border-left-color: @fill-color;
-                            border-top-color: @unfilled-color-0;
-                            border-right-color: @unfilled-color-0;
-                            border-bottom-color: @unfilled-color-0;
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        border-left-color: @fill-color;
+                        border-top-color: @unfilled-color-0;
+                        border-right-color: @unfilled-color-0;
+                        border-bottom-color: @unfilled-color-0;
                     }
                 }
             }
             & when (@prop = diameter) {
                 @thickness: @value / 10;
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        width: @value;
-                        height: @value;
+                &.plat-ring-0 {
+                    width: @value;
+                    height: @value;
 
-                        .plat-animated-ring {
-                            border-width: @thickness;
-                        }
+                    .plat-animated-ring {
+                        border-width: @thickness;
                     }
                 }
             }
             & when (@prop = spin-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
                 }
             }
             & when (@prop = spin-frequency) {
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
                 }
             }
@@ -309,67 +291,59 @@
             & when (@prop = color) {
                 @unfilled-color-1: fade(@value, 15%);
 
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .plat-animated-child-0::before {
-                                background-color: fade(@value, 75%);
-                            }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .plat-animated-child-0::before {
+                            background-color: fade(@value, 75%);
+                        }
 
-                            .plat-animated-child-0::after {
-                                background-color: fade(@value, 60%);
-                            }
+                        .plat-animated-child-0::after {
+                            background-color: fade(@value, 60%);
+                        }
 
-                            .plat-animated-child-1::before {
-                                background-color: fade(@value, 45%);
-                            }
+                        .plat-animated-child-1::before {
+                            background-color: fade(@value, 45%);
+                        }
 
-                            .plat-animated-child-1::after {
-                                background-color: fade(@value, 30%);
-                            }
+                        .plat-animated-child-1::after {
+                            background-color: fade(@value, 30%);
+                        }
 
-                            .plat-animated-child-2::before {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-2::before {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-2::after {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-2::after {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-3::before {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-3::before {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-3::after {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-3::after {
+                            background-color: @unfilled-color-1;
                         }
                     }
                 }
             }
             & when (@prop = diameter) {
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        width: @value;
-                        height: @value;
-                    }
+                &.plat-ring-1 {
+                    width: @value;
+                    height: @value;
                 }
             }
             & when (@prop = spin-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
                 }
             }
             & when (@prop = spin-frequency) {
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
                 }
             }
@@ -383,34 +357,28 @@
             & when (@prop = color) {
                 @fill-color: fade(@value, 80%);
 
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    background-color: @fill-color;
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                background-color: @fill-color;
                             }
                         }
                     }
                 }
             }
             & when (@prop = diameter) {
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        width: @value;
-                        height: @value;
-                    }
+                &.plat-ring-2 {
+                    width: @value;
+                    height: @value;
                 }
             }
             & when (@prop = fade-delay-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-name(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-name(@value);
                             }
                         }
                     }
@@ -419,79 +387,77 @@
             & when (@prop = spin-frequency) {
                 @delay-step: @spin-frequency / 12;
 
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-duration(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-duration(@value);
                             }
+                        }
 
-                            .plat-animated-child-1 {
-                                &::before {
-                                    .animation-delay(-@value + @delay-step);
-                                }
+                        .plat-animated-child-1 {
+                            &::before {
+                                .animation-delay(-@value + @delay-step);
                             }
+                        }
 
-                            .plat-animated-child-2 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 2));
-                                }
+                        .plat-animated-child-2 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 2));
                             }
+                        }
 
-                            .plat-animated-child-3 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 3));
-                                }
+                        .plat-animated-child-3 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 3));
                             }
+                        }
 
-                            .plat-animated-child-4 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 4));
-                                }
+                        .plat-animated-child-4 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 4));
                             }
+                        }
 
-                            .plat-animated-child-5 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 5));
-                                }
+                        .plat-animated-child-5 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 5));
                             }
+                        }
 
-                            .plat-animated-child-6 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 6));
-                                }
+                        .plat-animated-child-6 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 6));
                             }
+                        }
 
-                            .plat-animated-child-7 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 7));
-                                }
+                        .plat-animated-child-7 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 7));
                             }
+                        }
 
-                            .plat-animated-child-8 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 8));
-                                }
+                        .plat-animated-child-8 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 8));
                             }
+                        }
 
-                            .plat-animated-child-9 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 9));
-                                }
+                        .plat-animated-child-9 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 9));
                             }
+                        }
 
-                            .plat-animated-child-10 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 10));
-                                }
+                        .plat-animated-child-10 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 10));
                             }
+                        }
 
-                            .plat-animated-child-11 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 11));
-                                }
+                        .plat-animated-child-11 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 11));
                             }
                         }
                     }
@@ -513,135 +479,133 @@
                 @thickness: @diameter / 10;
                 @delay-step: @spin-frequency / 12;
 
-                &.plat-ring {
-                    width: @diameter;
-                    height: @diameter;
+                width: @diameter;
+                height: @diameter;
 
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-name(@spin-animation-name);
-                            .animation-duration(@spin-frequency);
-                            border-width: @thickness;
-                            border-left-color: @fill-color;
-                            border-top-color: @unfilled-color-0;
-                            border-right-color: @unfilled-color-0;
-                            border-bottom-color: @unfilled-color-0;
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-name(@spin-animation-name);
+                        .animation-duration(@spin-frequency);
+                        border-width: @thickness;
+                        border-left-color: @fill-color;
+                        border-top-color: @unfilled-color-0;
+                        border-right-color: @unfilled-color-0;
+                        border-bottom-color: @unfilled-color-0;
+                    }
+                }
+
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-name(@spin-animation-name);
+                        .animation-duration(@spin-frequency);
+
+                        .plat-animated-child-0::before {
+                            background-color: fade(@color, 75%);
+                        }
+
+                        .plat-animated-child-0::after {
+                            background-color: fade(@color, 60%);
+                        }
+
+                        .plat-animated-child-1::before {
+                            background-color: fade(@color, 45%);
+                        }
+
+                        .plat-animated-child-1::after {
+                            background-color: fade(@color, 30%);
+                        }
+
+                        .plat-animated-child-2::before {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-2::after {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-3::before {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-3::after {
+                            background-color: @unfilled-color-1;
                         }
                     }
+                }
 
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-name(@spin-animation-name);
-                            .animation-duration(@spin-frequency);
-
-                            .plat-animated-child-0::before {
-                                background-color: fade(@color, 75%);
-                            }
-
-                            .plat-animated-child-0::after {
-                                background-color: fade(@color, 60%);
-                            }
-
-                            .plat-animated-child-1::before {
-                                background-color: fade(@color, 45%);
-                            }
-
-                            .plat-animated-child-1::after {
-                                background-color: fade(@color, 30%);
-                            }
-
-                            .plat-animated-child-2::before {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-2::after {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-3::before {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-3::after {
-                                background-color: @unfilled-color-1;
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-name(@fade-delay-animation-name);
+                                .animation-duration(@spin-frequency);
+                                background-color: @fill-color;
                             }
                         }
-                    }
 
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-name(@fade-delay-animation-name);
-                                    .animation-duration(@spin-frequency);
-                                    background-color: @fill-color;
-                                }
+                        .plat-animated-child-1 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + @delay-step);
                             }
+                        }
 
-                            .plat-animated-child-1 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + @delay-step);
-                                }
+                        .plat-animated-child-2 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 2));
                             }
+                        }
 
-                            .plat-animated-child-2 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 2));
-                                }
+                        .plat-animated-child-3 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 3));
                             }
+                        }
 
-                            .plat-animated-child-3 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 3));
-                                }
+                        .plat-animated-child-4 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 4));
                             }
+                        }
 
-                            .plat-animated-child-4 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 4));
-                                }
+                        .plat-animated-child-5 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 5));
                             }
+                        }
 
-                            .plat-animated-child-5 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 5));
-                                }
+                        .plat-animated-child-6 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 6));
                             }
+                        }
 
-                            .plat-animated-child-6 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 6));
-                                }
+                        .plat-animated-child-7 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 7));
                             }
+                        }
 
-                            .plat-animated-child-7 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 7));
-                                }
+                        .plat-animated-child-8 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 8));
                             }
+                        }
 
-                            .plat-animated-child-8 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 8));
-                                }
+                        .plat-animated-child-9 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 9));
                             }
+                        }
 
-                            .plat-animated-child-9 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 9));
-                                }
+                        .plat-animated-child-10 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 10));
                             }
+                        }
 
-                            .plat-animated-child-10 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 10));
-                                }
-                            }
-
-                            .plat-animated-child-11 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 11));
-                                }
+                        .plat-animated-child-11 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 11));
                             }
                         }
                     }
@@ -652,58 +616,56 @@
                 @unfilled-color-0: fade(@value, 10%);
                 @unfilled-color-1: fade(@value, 15%);
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            border-left-color: @fill-color;
-                            border-top-color: @unfilled-color-0;
-                            border-right-color: @unfilled-color-0;
-                            border-bottom-color: @unfilled-color-0;
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        border-left-color: @fill-color;
+                        border-top-color: @unfilled-color-0;
+                        border-right-color: @unfilled-color-0;
+                        border-bottom-color: @unfilled-color-0;
+                    }
+                }
+
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .plat-animated-child-0::before {
+                            background-color: fade(@value, 75%);
+                        }
+
+                        .plat-animated-child-0::after {
+                            background-color: fade(@value, 60%);
+                        }
+
+                        .plat-animated-child-1::before {
+                            background-color: fade(@value, 45%);
+                        }
+
+                        .plat-animated-child-1::after {
+                            background-color: fade(@value, 30%);
+                        }
+
+                        .plat-animated-child-2::before {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-2::after {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-3::before {
+                            background-color: @unfilled-color-1;
+                        }
+
+                        .plat-animated-child-3::after {
+                            background-color: @unfilled-color-1;
                         }
                     }
+                }
 
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .plat-animated-child-0::before {
-                                background-color: fade(@value, 75%);
-                            }
-
-                            .plat-animated-child-0::after {
-                                background-color: fade(@value, 60%);
-                            }
-
-                            .plat-animated-child-1::before {
-                                background-color: fade(@value, 45%);
-                            }
-
-                            .plat-animated-child-1::after {
-                                background-color: fade(@value, 30%);
-                            }
-
-                            .plat-animated-child-2::before {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-2::after {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-3::before {
-                                background-color: @unfilled-color-1;
-                            }
-
-                            .plat-animated-child-3::after {
-                                background-color: @unfilled-color-1;
-                            }
-                        }
-                    }
-
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    background-color: @fill-color;
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                background-color: @fill-color;
                             }
                         }
                     }
@@ -712,40 +674,34 @@
             & when (@prop = diameter) {
                 @thickness: @value / 10;
 
-                &.plat-ring {
-                    width: @value;
-                    height: @value;
+                width: @value;
+                height: @value;
 
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            border-width: @thickness;
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        border-width: @thickness;
                     }
                 }
             }
             & when (@prop = spin-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
+                }
 
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
                 }
             }
             & when (@prop = fade-delay-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-name(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-name(@value);
                             }
                         }
                     }
@@ -754,91 +710,89 @@
             & when (@prop = spin-frequency) {
                 @delay-step: @spin-frequency / 12;
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
+                }
 
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
+                }
 
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-duration(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-duration(@value);
                             }
+                        }
 
-                            .plat-animated-child-1 {
-                                &::before {
-                                    .animation-delay(-@value + @delay-step);
-                                }
+                        .plat-animated-child-1 {
+                            &::before {
+                                .animation-delay(-@value + @delay-step);
                             }
+                        }
 
-                            .plat-animated-child-2 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 2));
-                                }
+                        .plat-animated-child-2 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 2));
                             }
+                        }
 
-                            .plat-animated-child-3 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 3));
-                                }
+                        .plat-animated-child-3 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 3));
                             }
+                        }
 
-                            .plat-animated-child-4 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 4));
-                                }
+                        .plat-animated-child-4 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 4));
                             }
+                        }
 
-                            .plat-animated-child-5 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 5));
-                                }
+                        .plat-animated-child-5 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 5));
                             }
+                        }
 
-                            .plat-animated-child-6 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 6));
-                                }
+                        .plat-animated-child-6 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 6));
                             }
+                        }
 
-                            .plat-animated-child-7 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 7));
-                                }
+                        .plat-animated-child-7 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 7));
                             }
+                        }
 
-                            .plat-animated-child-8 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 8));
-                                }
+                        .plat-animated-child-8 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 8));
                             }
+                        }
 
-                            .plat-animated-child-9 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 9));
-                                }
+                        .plat-animated-child-9 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 9));
                             }
+                        }
 
-                            .plat-animated-child-10 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 10));
-                                }
+                        .plat-animated-child-10 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 10));
                             }
+                        }
 
-                            .plat-animated-child-11 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 11));
-                                }
+                        .plat-animated-child-11 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 11));
                             }
                         }
                     }
@@ -856,20 +810,18 @@
                 @unfilled-color-0: fade(@color, 10%);
                 @thickness: @diameter / 10;
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        width: @diameter;
-                        height: @diameter;
+                &.plat-ring-0 {
+                    width: @diameter;
+                    height: @diameter;
 
-                        .plat-animated-ring {
-                            .animation-name(@spin-animation-name);
-                            .animation-duration(@spin-frequency);
-                            border-width: @thickness;
-                            border-left-color: @fill-color;
-                            border-top-color: @unfilled-color-0;
-                            border-right-color: @unfilled-color-0;
-                            border-bottom-color: @unfilled-color-0;
-                        }
+                    .plat-animated-ring {
+                        .animation-name(@spin-animation-name);
+                        .animation-duration(@spin-frequency);
+                        border-width: @thickness;
+                        border-left-color: @fill-color;
+                        border-top-color: @unfilled-color-0;
+                        border-right-color: @unfilled-color-0;
+                        border-bottom-color: @unfilled-color-0;
                     }
                 }
             }
@@ -877,46 +829,38 @@
                 @fill-color: fade(@value, 80%);
                 @unfilled-color-0: fade(@value, 10%);
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            border-left-color: @fill-color;
-                            border-top-color: @unfilled-color-0;
-                            border-right-color: @unfilled-color-0;
-                            border-bottom-color: @unfilled-color-0;
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        border-left-color: @fill-color;
+                        border-top-color: @unfilled-color-0;
+                        border-right-color: @unfilled-color-0;
+                        border-bottom-color: @unfilled-color-0;
                     }
                 }
             }
             & when (@prop = diameter) {
                 @thickness: @value / 10;
 
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        width: @value;
-                        height: @value;
+                &.plat-ring-0 {
+                    width: @value;
+                    height: @value;
 
-                        .plat-animated-ring {
-                            border-width: @thickness;
-                        }
+                    .plat-animated-ring {
+                        border-width: @thickness;
                     }
                 }
             }
             & when (@prop = spin-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
                 }
             }
             & when (@prop = spin-frequency) {
-                &.plat-ring {
-                    &.plat-ring-0 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-0 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
                 }
             }
@@ -930,46 +874,44 @@
             & when (@prop = undefined), (@value = undefined) {
                 @unfilled-color-1: fade(@color, 15%);
 
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        width: @diameter;
-                        height: @diameter;
+                &.plat-ring-1 {
+                    width: @diameter;
+                    height: @diameter;
 
-                        .plat-animated-ring {
-                            .animation-name(@spin-animation-name);
-                            .animation-duration(@spin-frequency);
+                    .plat-animated-ring {
+                        .animation-name(@spin-animation-name);
+                        .animation-duration(@spin-frequency);
 
-                            .plat-animated-child-0::before {
-                                background-color: fade(@color, 75%);
-                            }
+                        .plat-animated-child-0::before {
+                            background-color: fade(@color, 75%);
+                        }
 
-                            .plat-animated-child-0::after {
-                                background-color: fade(@color, 60%);
-                            }
+                        .plat-animated-child-0::after {
+                            background-color: fade(@color, 60%);
+                        }
 
-                            .plat-animated-child-1::before {
-                                background-color: fade(@color, 45%);
-                            }
+                        .plat-animated-child-1::before {
+                            background-color: fade(@color, 45%);
+                        }
 
-                            .plat-animated-child-1::after {
-                                background-color: fade(@color, 30%);
-                            }
+                        .plat-animated-child-1::after {
+                            background-color: fade(@color, 30%);
+                        }
 
-                            .plat-animated-child-2::before {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-2::before {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-2::after {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-2::after {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-3::before {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-3::before {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-3::after {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-3::after {
+                            background-color: @unfilled-color-1;
                         }
                     }
                 }
@@ -977,67 +919,59 @@
             & when (@prop = color) {
                 @unfilled-color-1: fade(@value, 15%);
 
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .plat-animated-child-0::before {
-                                background-color: fade(@value, 75%);
-                            }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .plat-animated-child-0::before {
+                            background-color: fade(@value, 75%);
+                        }
 
-                            .plat-animated-child-0::after {
-                                background-color: fade(@value, 60%);
-                            }
+                        .plat-animated-child-0::after {
+                            background-color: fade(@value, 60%);
+                        }
 
-                            .plat-animated-child-1::before {
-                                background-color: fade(@value, 45%);
-                            }
+                        .plat-animated-child-1::before {
+                            background-color: fade(@value, 45%);
+                        }
 
-                            .plat-animated-child-1::after {
-                                background-color: fade(@value, 30%);
-                            }
+                        .plat-animated-child-1::after {
+                            background-color: fade(@value, 30%);
+                        }
 
-                            .plat-animated-child-2::before {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-2::before {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-2::after {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-2::after {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-3::before {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-3::before {
+                            background-color: @unfilled-color-1;
+                        }
 
-                            .plat-animated-child-3::after {
-                                background-color: @unfilled-color-1;
-                            }
+                        .plat-animated-child-3::after {
+                            background-color: @unfilled-color-1;
                         }
                     }
                 }
             }
             & when (@prop = diameter) {
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        width: @value;
-                        height: @value;
-                    }
+                &.plat-ring-1 {
+                    width: @value;
+                    height: @value;
                 }
             }
             & when (@prop = spin-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-name(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-name(@value);
                     }
                 }
             }
             & when (@prop = spin-frequency) {
-                &.plat-ring {
-                    &.plat-ring-1 {
-                        .plat-animated-ring {
-                            .animation-duration(@value);
-                        }
+                &.plat-ring-1 {
+                    .plat-animated-ring {
+                        .animation-duration(@value);
                     }
                 }
             }
@@ -1052,84 +986,82 @@
                 @fill-color: fade(@color, 80%);
                 @delay-step: @spin-frequency / 12;
 
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        width: @diameter;
-                        height: @diameter;
+                &.plat-ring-2 {
+                    width: @diameter;
+                    height: @diameter;
 
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-name(@fade-delay-animation-name);
-                                    .animation-duration(@spin-frequency);
-                                    background-color: @fill-color;
-                                }
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-name(@fade-delay-animation-name);
+                                .animation-duration(@spin-frequency);
+                                background-color: @fill-color;
                             }
+                        }
 
-                            .plat-animated-child-1 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + @delay-step);
-                                }
+                        .plat-animated-child-1 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + @delay-step);
                             }
+                        }
 
-                            .plat-animated-child-2 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 2));
-                                }
+                        .plat-animated-child-2 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 2));
                             }
+                        }
 
-                            .plat-animated-child-3 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 3));
-                                }
+                        .plat-animated-child-3 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 3));
                             }
+                        }
 
-                            .plat-animated-child-4 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 4));
-                                }
+                        .plat-animated-child-4 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 4));
                             }
+                        }
 
-                            .plat-animated-child-5 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 5));
-                                }
+                        .plat-animated-child-5 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 5));
                             }
+                        }
 
-                            .plat-animated-child-6 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 6));
-                                }
+                        .plat-animated-child-6 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 6));
                             }
+                        }
 
-                            .plat-animated-child-7 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 7));
-                                }
+                        .plat-animated-child-7 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 7));
                             }
+                        }
 
-                            .plat-animated-child-8 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 8));
-                                }
+                        .plat-animated-child-8 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 8));
                             }
+                        }
 
-                            .plat-animated-child-9 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 9));
-                                }
+                        .plat-animated-child-9 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 9));
                             }
+                        }
 
-                            .plat-animated-child-10 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 10));
-                                }
+                        .plat-animated-child-10 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 10));
                             }
+                        }
 
-                            .plat-animated-child-11 {
-                                &::before {
-                                    .animation-delay(-@spin-frequency + (@delay-step * 11));
-                                }
+                        .plat-animated-child-11 {
+                            &::before {
+                                .animation-delay(-@spin-frequency + (@delay-step * 11));
                             }
                         }
                     }
@@ -1138,34 +1070,28 @@
             & when (@prop = color) {
                 @fill-color: fade(@value, 80%);
 
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    background-color: @fill-color;
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                background-color: @fill-color;
                             }
                         }
                     }
                 }
             }
             & when (@prop = diameter) {
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        width: @value;
-                        height: @value;
-                    }
+                &.plat-ring-2 {
+                    width: @value;
+                    height: @value;
                 }
             }
             & when (@prop = fade-delay-animation-name) {
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-name(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-name(@value);
                             }
                         }
                     }
@@ -1174,79 +1100,77 @@
             & when (@prop = spin-frequency) {
                 @delay-step: @spin-frequency / 12;
 
-                &.plat-ring {
-                    &.plat-ring-2 {
-                        .plat-animated-ring {
-                            .plat-animated-child {
-                                &::before {
-                                    .animation-duration(@value);
-                                }
+                &.plat-ring-2 {
+                    .plat-animated-ring {
+                        .plat-animated-child {
+                            &::before {
+                                .animation-duration(@value);
                             }
+                        }
 
-                            .plat-animated-child-1 {
-                                &::before {
-                                    .animation-delay(-@value + @delay-step);
-                                }
+                        .plat-animated-child-1 {
+                            &::before {
+                                .animation-delay(-@value + @delay-step);
                             }
+                        }
 
-                            .plat-animated-child-2 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 2));
-                                }
+                        .plat-animated-child-2 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 2));
                             }
+                        }
 
-                            .plat-animated-child-3 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 3));
-                                }
+                        .plat-animated-child-3 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 3));
                             }
+                        }
 
-                            .plat-animated-child-4 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 4));
-                                }
+                        .plat-animated-child-4 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 4));
                             }
+                        }
 
-                            .plat-animated-child-5 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 5));
-                                }
+                        .plat-animated-child-5 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 5));
                             }
+                        }
 
-                            .plat-animated-child-6 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 6));
-                                }
+                        .plat-animated-child-6 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 6));
                             }
+                        }
 
-                            .plat-animated-child-7 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 7));
-                                }
+                        .plat-animated-child-7 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 7));
                             }
+                        }
 
-                            .plat-animated-child-8 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 8));
-                                }
+                        .plat-animated-child-8 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 8));
                             }
+                        }
 
-                            .plat-animated-child-9 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 9));
-                                }
+                        .plat-animated-child-9 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 9));
                             }
+                        }
 
-                            .plat-animated-child-10 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 10));
-                                }
+                        .plat-animated-child-10 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 10));
                             }
+                        }
 
-                            .plat-animated-child-11 {
-                                &::before {
-                                    .animation-delay(-@value + (@delay-step * 11));
-                                }
+                        .plat-animated-child-11 {
+                            &::before {
+                                .animation-delay(-@value + (@delay-step * 11));
                             }
                         }
                     }

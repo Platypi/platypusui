@@ -60,14 +60,12 @@
             #platui > #mixins;
 
             & when (@prop = enter-animation-name) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter {
-                                        .animation-name(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter {
+                                    .animation-name(@value);
                                 }
                             }
                         }
@@ -75,14 +73,12 @@
                 }
             }
             & when (@prop = enter-animation-duration) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter {
-                                        .animation-duration(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter {
+                                    .animation-duration(@value);
                                 }
                             }
                         }
@@ -90,14 +86,12 @@
                 }
             }
             & when (@prop = leave-animation-name) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-leave {
-                                        .animation-name(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-leave {
+                                    .animation-name(@value);
                                 }
                             }
                         }
@@ -105,14 +99,12 @@
                 }
             }
             & when (@prop = leave-animation-duration) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-leave {
-                                        .animation-duration(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-leave {
+                                    .animation-duration(@value);
                                 }
                             }
                         }
@@ -120,32 +112,26 @@
                 }
             }
             & when (@prop = manipulated-viewport-background-color) {
-                &.plat-listview {
-                    .plat-listview-viewport {
-                        &.plat-manipulation-prep {
-                            background-color: @value;
-                        }
+                .plat-listview-viewport {
+                    &.plat-manipulation-prep {
+                        background-color: @value;
                     }
                 }
             }
             & when (@prop = refresh-transition-time) {
-                &.plat-listview {
-                    .plat-listview-viewport {
-                        &.plat-transition-init {
-                            .transition-duration(@value);
-                        }
+                .plat-listview-viewport {
+                    &.plat-transition-init {
+                        .transition-duration(@value);
                     }
                 }
             }
             & when (@prop = enter-init) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter-init {
-                                        @value();
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter-init {
+                                    @value();
                                 }
                             }
                         }
@@ -153,14 +139,12 @@
                 }
             }
             & when (@prop = enter-animation) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter {
-                                        .animation(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter {
+                                    .animation(@value);
                                 }
                             }
                         }
@@ -168,14 +152,12 @@
                 }
             }
             & when (@prop = leave-animation) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-leave {
-                                        .animation(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-leave {
+                                    .animation(@value);
                                 }
                             }
                         }
@@ -192,32 +174,30 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (value = undefined) {
-                &.plat-listview {
-                    .plat-listview-viewport {
-                        &.plat-manipulation-prep {
-                            background-color: @manipulated-viewport-background-color;
-                        }
-
-                        &.plat-transition-init {
-                            .transition-duration(@refresh-transition-time);
-                        }
+                .plat-listview-viewport {
+                    &.plat-manipulation-prep {
+                        background-color: @manipulated-viewport-background-color;
                     }
 
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter-init {
-                                        @enter-init();
-                                    }
+                    &.plat-transition-init {
+                        .transition-duration(@refresh-transition-time);
+                    }
+                }
 
-                                    .plat-enter {
-                                        .animation(@enter-animation);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter-init {
+                                    @enter-init();
+                                }
 
-                                    .plat-leave {
-                                        .animation(@leave-animation);
-                                    }
+                                .plat-enter {
+                                    .animation(@enter-animation);
+                                }
+
+                                .plat-leave {
+                                    .animation(@leave-animation);
                                 }
                             }
                         }
@@ -225,14 +205,12 @@
                 }
             }
             & when (@prop = enter-animation-name) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter {
-                                        .animation-name(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter {
+                                    .animation-name(@value);
                                 }
                             }
                         }
@@ -240,14 +218,12 @@
                 }
             }
             & when (@prop = enter-animation-duration) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter {
-                                        .animation-duration(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter {
+                                    .animation-duration(@value);
                                 }
                             }
                         }
@@ -255,14 +231,12 @@
                 }
             }
             & when (@prop = leave-animation-name) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-leave {
-                                        .animation-name(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-leave {
+                                    .animation-name(@value);
                                 }
                             }
                         }
@@ -270,14 +244,12 @@
                 }
             }
             & when (@prop = leave-animation-duration) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-leave {
-                                        .animation-duration(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-leave {
+                                    .animation-duration(@value);
                                 }
                             }
                         }
@@ -285,32 +257,26 @@
                 }
             }
             & when (@prop = manipulated-viewport-background-color) {
-                &.plat-listview {
-                    .plat-listview-viewport {
-                        &.plat-manipulation-prep {
-                            background-color: @value;
-                        }
+                .plat-listview-viewport {
+                    &.plat-manipulation-prep {
+                        background-color: @value;
                     }
                 }
             }
             & when (@prop = refresh-transition-time) {
-                &.plat-listview {
-                    .plat-listview-viewport {
-                        &.plat-transition-init {
-                            .transition-duration(@value);
-                        }
+                .plat-listview-viewport {
+                    &.plat-transition-init {
+                        .transition-duration(@value);
                     }
                 }
             }
             & when (@prop = enter-init) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter-init {
-                                        @value();
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter-init {
+                                    @value();
                                 }
                             }
                         }
@@ -318,14 +284,12 @@
                 }
             }
             & when (@prop = enter-animation) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-enter {
-                                        .animation(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-enter {
+                                    .animation(@value);
                                 }
                             }
                         }
@@ -333,14 +297,12 @@
                 }
             }
             & when (@prop = leave-animation) {
-                &.plat-listview {
-                    &.plat-animated {
-                        .plat-listview-viewport {
-                            .plat-scroll-container {
-                                .plat-container {
-                                    .plat-leave {
-                                        .animation(@value);
-                                    }
+                &.plat-animated {
+                    .plat-listview-viewport {
+                        .plat-scroll-container {
+                            .plat-container {
+                                .plat-leave {
+                                    .animation(@value);
                                 }
                             }
                         }

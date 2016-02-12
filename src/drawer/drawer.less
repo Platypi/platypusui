@@ -78,6 +78,8 @@
     .plat-drawer-root {
         .backface-visibility(hidden);
         .perspective(none);
+        position: relative;
+        z-index: 1;
 
         &.plat-drawer-transition-left,
         &.plat-drawer-transition-right,
@@ -92,7 +94,7 @@
                 position: absolute;
                 background-color: transparent;
                 overflow: hidden;
-                z-index: 999999;
+                z-index: @global-max-z-index;
             }
         }
 

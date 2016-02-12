@@ -4,26 +4,29 @@
     #Toggle {
         #dependencies {
             #platui > #variables;
-            @color-off: lighten(@neutral-color, 10%);
-            @color-on: @success-color;
+            @inactive-color: lighten(@neutral-color, 10%);
+            @active-color: @success-color;
         }
 
         #platui > #Toggle > #dependencies;
 
     /// =========== Toggle Colors =========== ///
 
-        @background-color-off: @color-off;
-        @border-color-off: darken(@color-off, 3%);
-        @background-color-on: @color-on;
-        @border-color-on: darken(@color-on, 5%);
-        @toggle-thin-color-off: darken(@neutral-color, 10%);
+        @background-color: @inactive-color;
+        @border-color: darken(@inactive-color, 3%);
+        @toggle-thin-background-color: darken(@neutral-color, 10%);
+        @knob-color: @white;
+
+    /// =========== Active Toggle Colors =========== ///
+
+        @active-background-color: @active-color;
+        @active-border-color: darken(@active-color, 5%);
 
     /// ============ Toggle Size ============ ///
 
-        @width: 3.25em;
-        @ratio: 1/2;
-        @toggle-thin-ratio: 1/4;
-        @toggle-thin-knob-ratio: 1/2;
+        @height: @global-touch-diameter;
+        @width-ratio: 2/1;
+        @toggle-thin-ratio: 1/2;
 
     /// ============= Toggle Transition ============= ///
 
@@ -34,131 +37,138 @@
         .plat-toggle(@prop; @value) {
             #platui > #mixins;
 
-            & when (@prop = color-off) {
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        background-color: @value;
-                        border-color: darken(@value, 3%);
-                    }
+            & when (@prop = inactive-color) {
+                .plat-toggle-container {
+                    background-color: @value;
+                    border-color: darken(@value, 3%);
                 }
             }
-            & when (@prop = color-on) {
-                &.plat-toggle {
+            & when (@prop = active-color) {
+                .plat-toggle-container {
+                    &.plat-slide {
+                        border-color: darken(@value, 5%);
+                        background-color: @value;
+                    }
+                }
+
+                &.toggle-thin {
                     .plat-toggle-container {
                         &.plat-slide {
-                            border-color: darken(@value, 5%);
                             background-color: @value;
                         }
                     }
+                }
+            }
+            & when (@prop = background-color) {
+                .plat-toggle-container {
+                    background-color: @value;
+                }
+            }
+            & when (@prop = border-color) {
+                .plat-toggle-container {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = active-background-color) {
+                .plat-toggle-container {
+                    &.plat-slide {
+                        background-color: @value;
+                    }
+                }
 
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            &.plat-slide {
-                                background-color: @value;
-                            }
+                &.toggle-thin {
+                    .plat-toggle-container {
+                        &.plat-slide {
+                            background-color: @value;
                         }
                     }
                 }
             }
-            & when (@prop = background-color-off) {
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        background-color: @value;
-                    }
-                }
-            }
-            & when (@prop = border-color-off) {
-                &.plat-toggle {
-                    .plat-toggle-container {
+            & when (@prop = active-border-color) {
+                .plat-toggle-container {
+                    &.plat-slide {
                         border-color: @value;
                     }
                 }
             }
-            & when (@prop = background-color-on) {
-                &.plat-toggle {
+            & when (@prop = toggle-thin-background-color) {
+                &.toggle-thin {
                     .plat-toggle-container {
-                        &.plat-slide {
-                            background-color: @value;
-                        }
+                        background-color: @value;
                     }
+                }
+            }
+            & when (@prop = knob-color) {
+                .plat-toggle-container {
+                    .plat-knob {
+                        background-color: @value;
+                    }
+                }
 
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            &.plat-slide {
-                                background-color: @value;
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = border-color-on) {
-                &.plat-toggle {
+                &.toggle-thin {
                     .plat-toggle-container {
-                        &.plat-slide {
-                            border-color: @value;
+                        .plat-knob {
+                            border-color: darken(@value, 15%);
                         }
                     }
                 }
             }
-            & when (@prop = toggle-thin-color-off) {
-                &.plat-toggle {
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            background-color: @value;
-                        }
-                    }
-                }
-            }
-            & when (@prop = width) {
+            & when (@prop = height) {
                 #platui > #Toggle;
-                @height: @value * @ratio;
-                @toggle-thin-height: @value * @toggle-thin-ratio;
+                @width: @height * @width-ratio;
+                @toggle-thin-height: @height * @toggle-thin-ratio;
                 @half-thin-height: @toggle-thin-height / 2;
-                @toggle-thin-knob-radius: (@value * @toggle-thin-knob-ratio) / 2;
+                @toggle-thin-knob-radius: @height / 2;
 
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        .border-radius(@height);
+                .plat-toggle-container {
+                    .border-radius(@value);
+                    width: @width;
+                    height: @value;
+
+                    .plat-knob {
+                        height: @value;
                         width: @value;
-                        height: @height;
+                    }
+
+                    &.plat-slide {
+                        .plat-knob {
+                            left: @width - @value;
+                        }
+                    }
+                }
+
+                &.toggle-thin {
+                    .plat-toggle-container {
+                        height: @toggle-thin-height;
 
                         .plat-knob {
-                            height: @height;
-                            width: @height;
+                            top: @half-thin-height - @toggle-thin-knob-radius;
                         }
 
                         &.plat-slide {
                             .plat-knob {
-                                left: (@value - @height) * 1.05;
-                            }
-                        }
-                    }
-
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            height: @toggle-thin-height;
-
-                            .plat-knob {
-                                top: @half-thin-height - @toggle-thin-knob-radius;
+                                left: (@width - @value) * 1.05;
                             }
                         }
                     }
                 }
             }
-            & when (@prop = ratio) {
+            & when (@prop = width-ratio) {
                 #platui > #Toggle;
-                @height: @width * @value;
+                @width: @height * @value;
 
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        .border-radius(@height);
-                        height: @height;
+                .plat-toggle-container {
+                    width: @width;
 
+                    &.plat-slide {
                         .plat-knob {
-                            height: @height;
-                            width: @height;
+                            left: @width - @height;
                         }
+                    }
+                }
 
+                &.toggle-thin {
+                    .plat-toggle-container {
                         &.plat-slide {
                             .plat-knob {
                                 left: (@width - @height) * 1.05;
@@ -169,46 +179,26 @@
             }
             & when (@prop = toggle-thin-ratio) {
                 #platui > #Toggle;
-                @toggle-thin-height: @width * @value;
+                @toggle-thin-height: @height * @value;
                 @half-thin-height: @toggle-thin-height / 2;
-                @toggle-thin-knob-radius: (@width * @toggle-thin-knob-ratio) / 2;
+                @toggle-thin-knob-radius: @height / 2;
 
-                &.plat-toggle {
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            height: @toggle-thin-height;
+                &.toggle-thin {
+                    .plat-toggle-container {
+                        height: @toggle-thin-height;
 
-                            .plat-knob {
-                                top: @half-thin-height - @toggle-thin-knob-radius;
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = toggle-thin-knob-ratio) {
-                #platui > #Toggle;
-                @toggle-thin-height: @width * @toggle-thin-ratio;
-                @half-thin-height: @toggle-thin-height / 2;
-                @toggle-thin-knob-radius: (@width * @value) / 2;
-
-                &.plat-toggle {
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            .plat-knob {
-                                top: @half-thin-height - @toggle-thin-knob-radius;
-                            }
+                        .plat-knob {
+                            top: @half-thin-height - @toggle-thin-knob-radius;
                         }
                     }
                 }
             }
             & when (@prop = transition-time) {
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        .transition(~'background-color @{value}, border-color @{value}');
+                .plat-toggle-container {
+                    .transition(~'background-color @{value}, border-color @{value}');
 
-                        .plat-knob {
-                            .transition-duration(@value);
-                        }
+                    .plat-knob {
+                        .transition-duration(@value);
                     }
                 }
             }
@@ -222,177 +212,188 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                @height: @width * @ratio;
-                @toggle-thin-height: @width * @toggle-thin-ratio;
+                @width: @height * @width-ratio;
+                @toggle-thin-height: @height * @toggle-thin-ratio;
                 @half-thin-height: @toggle-thin-height / 2;
-                @toggle-thin-knob-radius: (@width * @toggle-thin-knob-ratio) / 2;
+                @toggle-thin-knob-radius: @height / 2;
 
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        .border-radius(@height);
-                        .transition(~'background-color @{transition-time}, border-color @{transition-time}');
-                        width: @width;
+                .plat-toggle-container {
+                    .border-radius(@height);
+                    .transition(~'background-color @{transition-time}, border-color @{transition-time}');
+                    width: @width;
+                    height: @height;
+                    background-color: @background-color;
+                    border-color: @border-color;
+
+                    .plat-knob {
+                        .transition-duration(@transition-time);
                         height: @height;
-                        background-color: @background-color-off;
-                        border-color: @border-color-off;
+                        width: @height;
+                        background-color: @knob-color;
+                    }
+
+                    &.plat-slide {
+                        border-color: @active-border-color;
+                        background-color: @active-background-color;
 
                         .plat-knob {
-                            .transition-duration(@transition-time);
-                            height: @height;
-                            width: @height;
+                            left: @width - @height;
+                        }
+                    }
+                }
+
+                &.toggle-thin {
+                    .plat-toggle-container {
+                        height: @toggle-thin-height;
+                        background-color: @toggle-thin-background-color;
+
+                        .plat-knob {
+                            top: @half-thin-height - @toggle-thin-knob-radius;
+                            border-color: darken(@knob-color, 15%);
                         }
 
                         &.plat-slide {
-                            border-color: @border-color-on;
-                            background-color: @background-color-on;
+                            background-color: @active-background-color;
 
                             .plat-knob {
                                 left: (@width - @height) * 1.05;
                             }
                         }
                     }
-
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            height: @toggle-thin-height;
-                            background-color: @toggle-thin-color-off;
-
-                            .plat-knob {
-                                top: @half-thin-height - @toggle-thin-knob-radius;
-                            }
-
-                            &.plat-slide {
-                                background-color: @background-color-on;
-                            }
-                        }
-                    }
                 }
             }
-            & when (@prop = color-off) {
-                &.plat-toggle {
-                    .plat-toggle-container {
+            & when (@prop = inactive-color) {
+                .plat-toggle-container {
+                    background-color: @value;
+                    border-color: darken(@value, 3%);
+                }
+            }
+            & when (@prop = active-color) {
+                .plat-toggle-container {
+                    &.plat-slide {
+                        border-color: darken(@value, 5%);
                         background-color: @value;
-                        border-color: darken(@value, 3%);
                     }
                 }
-            }
-            & when (@prop = color-on) {
-                &.plat-toggle {
+
+                &.toggle-thin {
                     .plat-toggle-container {
                         &.plat-slide {
-                            border-color: darken(@value, 5%);
                             background-color: @value;
                         }
                     }
+                }
+            }
+            & when (@prop = background-color) {
+                .plat-toggle-container {
+                    background-color: @value;
+                }
+            }
+            & when (@prop = border-color) {
+                .plat-toggle-container {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = active-background-color) {
+                .plat-toggle-container {
+                    &.plat-slide {
+                        background-color: @value;
+                    }
+                }
 
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            &.plat-slide {
-                                background-color: @value;
-                            }
+                &.toggle-thin {
+                    .plat-toggle-container {
+                        &.plat-slide {
+                            background-color: @value;
                         }
                     }
                 }
             }
-            & when (@prop = background-color-off) {
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        background-color: @value;
-                    }
-                }
-            }
-            & when (@prop = border-color-off) {
-                &.plat-toggle {
-                    .plat-toggle-container {
+            & when (@prop = active-border-color) {
+                .plat-toggle-container {
+                    &.plat-slide {
                         border-color: @value;
                     }
                 }
             }
-            & when (@prop = background-color-on) {
-                &.plat-toggle {
+            & when (@prop = toggle-thin-background-color) {
+                &.toggle-thin {
                     .plat-toggle-container {
-                        &.plat-slide {
-                            background-color: @value;
-                        }
+                        background-color: @value;
                     }
+                }
+            }
+            & when (@prop = knob-color) {
+                .plat-toggle-container {
+                    .plat-knob {
+                        background-color: @value;
+                    }
+                }
 
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            &.plat-slide {
-                                background-color: @value;
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = border-color-on) {
-                &.plat-toggle {
+                &.toggle-thin {
                     .plat-toggle-container {
-                        &.plat-slide {
-                            border-color: @value;
+                        .plat-knob {
+                            border-color: darken(@value, 15%);
                         }
                     }
                 }
             }
-            & when (@prop = toggle-thin-color-off) {
-                &.plat-toggle {
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            background-color: @value;
-                        }
-                    }
-                }
-            }
-            & when (@prop = width) {
+            & when (@prop = height) {
                 #platui > #Toggle;
-                @height: @value * @ratio;
-                @toggle-thin-height: @value * @toggle-thin-ratio;
+                @width: @height * @width-ratio;
+                @toggle-thin-height: @height * @toggle-thin-ratio;
                 @half-thin-height: @toggle-thin-height / 2;
-                @toggle-thin-knob-radius: (@value * @toggle-thin-knob-ratio) / 2;
+                @toggle-thin-knob-radius: @height / 2;
 
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        .border-radius(@height);
+                .plat-toggle-container {
+                    .border-radius(@value);
+                    width: @width;
+                    height: @value;
+
+                    .plat-knob {
+                        height: @value;
                         width: @value;
-                        height: @height;
+                    }
+
+                    &.plat-slide {
+                        .plat-knob {
+                            left: @width - @value;
+                        }
+                    }
+                }
+
+                &.toggle-thin {
+                    .plat-toggle-container {
+                        height: @toggle-thin-height;
 
                         .plat-knob {
-                            height: @height;
-                            width: @height;
+                            top: @half-thin-height - @toggle-thin-knob-radius;
                         }
 
                         &.plat-slide {
                             .plat-knob {
-                                left: (@value - @height) * 1.05;
-                            }
-                        }
-                    }
-
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            height: @toggle-thin-height;
-
-                            .plat-knob {
-                                top: @half-thin-height - @toggle-thin-knob-radius;
+                                left: (@width - @value) * 1.05;
                             }
                         }
                     }
                 }
             }
-            & when (@prop = ratio) {
+            & when (@prop = width-ratio) {
                 #platui > #Toggle;
-                @height: @width * @value;
+                @width: @height * @value;
 
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        .border-radius(@height);
-                        height: @height;
+                .plat-toggle-container {
+                    width: @width;
 
+                    &.plat-slide {
                         .plat-knob {
-                            height: @height;
-                            width: @height;
+                            left: @width - @height;
                         }
+                    }
+                }
 
+                &.toggle-thin {
+                    .plat-toggle-container {
                         &.plat-slide {
                             .plat-knob {
                                 left: (@width - @height) * 1.05;
@@ -403,46 +404,26 @@
             }
             & when (@prop = toggle-thin-ratio) {
                 #platui > #Toggle;
-                @toggle-thin-height: @width * @value;
+                @toggle-thin-height: @height * @value;
                 @half-thin-height: @toggle-thin-height / 2;
-                @toggle-thin-knob-radius: (@width * @toggle-thin-knob-ratio) / 2;
+                @toggle-thin-knob-radius: @height / 2;
 
-                &.plat-toggle {
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            height: @toggle-thin-height;
+                &.toggle-thin {
+                    .plat-toggle-container {
+                        height: @toggle-thin-height;
 
-                            .plat-knob {
-                                top: @half-thin-height - @toggle-thin-knob-radius;
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = toggle-thin-knob-ratio) {
-                #platui > #Toggle;
-                @toggle-thin-height: @width * @toggle-thin-ratio;
-                @half-thin-height: @toggle-thin-height / 2;
-                @toggle-thin-knob-radius: (@width * @value) / 2;
-
-                &.plat-toggle {
-                    &.toggle-thin {
-                        .plat-toggle-container {
-                            .plat-knob {
-                                top: @half-thin-height - @toggle-thin-knob-radius;
-                            }
+                        .plat-knob {
+                            top: @half-thin-height - @toggle-thin-knob-radius;
                         }
                     }
                 }
             }
             & when (@prop = transition-time) {
-                &.plat-toggle {
-                    .plat-toggle-container {
-                        .transition(~'background-color @{value}, border-color @{value}');
+                .plat-toggle-container {
+                    .transition(~'background-color @{value}, border-color @{value}');
 
-                        .plat-knob {
-                            .transition-duration(@value);
-                        }
+                    .plat-knob {
+                        .transition-duration(@value);
                     }
                 }
             }

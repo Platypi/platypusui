@@ -5,7 +5,7 @@
         <input type="checkbox" id="loaders">
         <label for="loaders"></label>
         <div class="demo-stage">
-            <plat-ring></plat-ring>
+            <plat-ring class="red-ring"></plat-ring>
             <plat-ring plat-options="{ style: 1 }"></plat-ring>
             <plat-ring plat-options="{ style: 2 }"></plat-ring>
         </div>
@@ -629,7 +629,7 @@
         <plat-button class="button-primary" plat-tap="toggleModal('modal1')">Continue</plat-button>
     </div>
 </plat-modal>
-<plat-modal plat-name="modal2" plat-options="{ transition: 'down' }" plat-bind="modals.modal2" class="modal-prompt">
+<plat-modal plat-name="modal2" plat-options="{ transition: 'right' }" plat-bind="modals.modal2" class="modal-prompt">
     <div class="prompt-title">Once Again</div>
     <div class="prompt-body">
         <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
@@ -639,7 +639,7 @@
         <plat-button class="button-suggested" plat-tap="toggleModal('modal2')">Continue</plat-button>
     </div>
 </plat-modal>
-<plat-modal plat-name="modal3" plat-options="{ transition: 'up' }" plat-bind="modals.modal3">
+<plat-modal plat-name="modal3" plat-options="{ transition: 'up' }" plat-bind="modals.modal3" class="modal-prompt">
     <div class="prompt-title">Once Again</div>
     <div class="prompt-body">
         <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>
@@ -649,7 +649,7 @@
         <plat-button class="button-danger" plat-tap="toggleModal('modal3')">Cancel</plat-button>
     </div>
 </plat-modal>
-<plat-modal plat-name="modal4" plat-options="{ transition: 'left' }" plat-bind="modals.modal4">
+<plat-modal plat-name="modal4" plat-options="{ transition: 'left' }" plat-bind="modals.modal4" class="modal-prompt">
     <div class="prompt-title">Once Again</div>
     <div class="prompt-body">
         <p>We suggest checking yourself because the trajectory you're are on leads to wrecking yourself.</p>

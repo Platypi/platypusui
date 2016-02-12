@@ -34,13 +34,14 @@
             max-height: @diameter;
             background-color: @background-color;
             overflow: hidden;
-            border: 1px solid @border-color;
+            border: @border-width solid @border-color;
 
     /// ============ Checkmark Symbol ============ ///
 
             &.plat-check,
             &.plat-x {
-                background-color: @border-color;
+                background-color: @active-background-color;
+                border-color: @active-border-color;
 
                 .plat-mark::before,
                 .plat-mark::after {
@@ -48,7 +49,7 @@
                     content: "";
                     position: absolute;
                     height: 2px;
-                    background-color: @white;
+                    background-color: @mark-color;
                 }
             }
 
@@ -90,7 +91,7 @@
 
         &.checkbox-square {
             .plat-checkbox-container {
-                .border-radius(2px);
+                .border-radius(@global-border-radius);
             }
         }
 

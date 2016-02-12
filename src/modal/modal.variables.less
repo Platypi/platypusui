@@ -4,8 +4,9 @@
     #Modal {
         #dependencies {
            #platui > #variables;
-	       @prompt-body-color: @pale-grey;
+	       @prompt-background-color: @pale-grey;
            @transition-time: 500ms;
+           @fade-transition-time: 300ms;
         }
 
         #platui > #Modal > #dependencies;
@@ -13,6 +14,7 @@
     /// =========== Modal Colors =========== ///
 
         @color: @default-font-color;
+        @backdrop-color: @transparent;
         @background-color: @white;
 
     /// =========== Modal Sizes =========== ///
@@ -40,134 +42,125 @@
         @right-transition: left @transition-time;
         @up-transition: bottom @transition-time;
         @down-transition: top @transition-time;
-        @fade-transition: opacity (@transition-time - 200ms);
+        @fade-transition: opacity @fade-transition-time;
 
     /// =========== Modal Prompt =========== ///
 
 	    @prompt-top: 20%;
-	    @prompt-accent-color: darken(@prompt-body-color, 4%);
+        @prompt-width: 80%;
+        @prompt-max-width: 30em;
+        @prompt-backdrop-color: rgba(0,0,0,0.6);
+        @prompt-title-color: @prompt-background-color;
+        @prompt-title-background-color: @primary-color;
+        @prompt-body-background-color: @prompt-background-color;
+        @prompt-action-background-color: @prompt-background-color;
+	    @prompt-accent-color: darken(@prompt-background-color, 5%);
 	    @prompt-border-radius: 8px;
+        @prompt-up-transition: top @transition-time;
 
     /// =========== Variable Modal Styles =========== ///
 
         .plat-modal(@prop; @value) {
             #platui > #mixins;
 
-            & when (@prop = transition-time) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            .transition-duration(@value);
-                        }
+            & when (@prop = transition-time), (@prop = fade-transition-time) {
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        .transition-duration(@value);
                     }
                 }
             }
             & when (@prop = left-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-left {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-left {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = right-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-right {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-right {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = up-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-up {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-up {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = down-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-down {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-down {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = fade-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-fade {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-fade {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = color) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        color: @value;
-                    }
+                .plat-modal-container {
+                    color: @value;
                 }
             }
+            & when (@prop = backdrop-color) {
+                background-color: @value;
+            }
             & when (@prop = background-color) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        background-color: @value;
-                    }
+                .plat-modal-container {
+                    background-color: @value;
                 }
             }
             & when (@prop = custom-height_height) {
-                &.plat-modal {
-                    &.modal-custom-height {
-                        .plat-modal-container {
-                            height: @value;
-                        }
+                &.modal-custom-height {
+                    .plat-modal-container {
+                        height: @value;
                     }
                 }
             }
             & when (@prop = custom-height_y-offset) {
-                &.plat-modal {
-                    &.modal-custom-height {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom-height {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            top: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            &.plat-right {
                                 top: @value;
                             }
 
-                            &.plat-modal-transition {
-                                &.plat-right {
+                            &.plat-left {
+                                top: @value;
+                            }
+
+                            &.plat-down {
+                                &.plat-activate {
                                     top: @value;
                                 }
+                            }
 
-                                &.plat-left {
-                                    top: @value;
-                                }
-
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
-
-                                &.plat-up {
-                                    &.plat-activate {
-                                        bottom: @value;
-                                    }
+                            &.plat-up {
+                                &.plat-activate {
+                                    bottom: @value;
                                 }
                             }
                         }
@@ -175,146 +168,134 @@
                 }
             }
             & when (@prop = custom-width_width) {
-                &.plat-modal {
-                    &.modal-custom-width {
-                        .plat-modal-container {
-                            width: @value;
-                        }
+                &.modal-custom-width {
+                    .plat-modal-container {
+                        width: @value;
                     }
                 }
             }
             & when (@prop = custom-width_x-offset) {
-                &.plat-modal {
-                    &.modal-custom-width {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom-width {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            left: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            &.plat-right {
+                                &.plat-activate {
+                                    left: @value;
+                                }
+                            }
+
+                            &.plat-left {
+                                &.plat-activate {
+                                    right: @value;
+                                }
+                            }
+
+                            &.plat-down {
                                 left: @value;
                             }
 
-                            &.plat-modal-transition {
-                                &.plat-right {
-                                    &.plat-activate {
-                                        left: @value;
-                                    }
-                                }
-
-                                &.plat-left {
-                                    &.plat-activate {
-                                        right: @value;
-                                    }
-                                }
-
-                                &.plat-down {
-                                    left: @value;
-                                }
-
-                                &.plat-up {
-                                    left: @value;
-                                }
+                            &.plat-up {
+                                left: @value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_width) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            width: @value;
+                &.modal-custom {
+                    .plat-modal-container {
+                        width: @value;
 
-                            &.plat-modal-transition {
-                                &.plat-left {
-                                    right: -@value;
-                                }
+                        &.plat-modal-transition {
+                            &.plat-left {
+                                right: -@value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_height) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            height: @value;
+                &.modal-custom {
+                    .plat-modal-container {
+                        height: @value;
 
-                            &.plat-modal-transition {
-                                &.plat-down {
-                                    top: -@value;
-                                }
+                        &.plat-modal-transition {
+                            &.plat-down {
+                                top: -@value;
+                            }
 
-                                &.plat-up {
-                                    bottom: -@value;
-                                }
+                            &.plat-up {
+                                bottom: -@value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_x-offset) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            left: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            .plat-right {
+                                left: -@value;
+
+                                &.plat-activate {
+                                    left: @value;
+                                }
+                            }
+
+                            &.plat-left {
+                                &.plat-activate {
+                                    right: @value;
+                                }
+                            }
+
+                            &.plat-down {
                                 left: @value;
                             }
 
-                            &.plat-modal-transition {
-                                .plat-right {
-                                    left: -@value;
-
-                                    &.plat-activate {
-                                        left: @value;
-                                    }
-                                }
-
-                                &.plat-left {
-                                    &.plat-activate {
-                                        right: @value;
-                                    }
-                                }
-
-                                &.plat-down {
-                                    left: @value;
-                                }
-
-                                &.plat-up {
-                                    left: @value;
-                                }
+                            &.plat-up {
+                                left: @value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_y-offset) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            top: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            .plat-right {
                                 top: @value;
                             }
 
-                            &.plat-modal-transition {
-                                .plat-right {
+                            &.plat-left {
+                                top: @value;
+                            }
+
+                            &.plat-down {
+                                &.plat-activate {
                                     top: @value;
                                 }
+                            }
 
-                                &.plat-left {
-                                    top: @value;
-                                }
-
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
-
-                                &.plat-up {
-                                    &.plat-activate {
-                                        bottom: @value;
-                                    }
+                            &.plat-up {
+                                &.plat-activate {
+                                    bottom: @value;
                                 }
                             }
                         }
@@ -328,42 +309,17 @@
         .plat-modal-prompt(@prop; @value) {
             #platui > #mixins;
 
-            & when (@prop = prompt-body-color) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            & .prompt-title {
-                                border-bottom-color: darken(@value, 4%);
-                            }
+            & when (@prop = color) {
+                .plat-modal-container {
+                    color: @value;
 
-                            & .prompt-body {
-                                background-color: @value;
-                            }
+                    .prompt-action {
+                        &.button-group {
+                            & > button {
+                                color: lighten(@value, 20%);
 
-                            & .prompt-action {
-                                background-color: @value;
-
-                                &.button-group {
-                                    & > button {
-                                        border-top-color: darken(@value, 4%);
-
-                                        &:last-child {
-                                            border-left-color: darken(@value, 4%);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = down-transition) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            &.plat-modal-transition {
-                                &.plat-up {
-                                    .transition(@value);
+                                &.button-suggested {
+                                    color: @value;
                                 }
                             }
                         }
@@ -371,30 +327,72 @@
                 }
             }
             & when (@prop = prompt-top) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                .plat-modal-container {
+                    &.plat-no-transition,
+                    &.plat-modal-transition.plat-fade,
+                    &.plat-modal-transition.plat-right,
+                    &.plat-modal-transition.plat-left {
+                        top: @value;
+                    }
+
+                    &.plat-modal-transition {
+                        &.plat-down {
+                            &.plat-activate {
                                 top: @value;
                             }
+                        }
 
-                            &.plat-modal-transition {
-                                &.plat-up {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
+                        &.plat-up {
+                            &.plat-activate {
+                                top: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = prompt-width) {
+                .plat-modal-container {
+                    width: @value;
+                }
+            }
+            & when (@prop = prompt-max-width) {
+                .plat-modal-container {
+                    max-width: @value;
+                }
+            }
+            & when (@prop = prompt-backdrop-color) {
+                background-color: @prompt-backdrop-color;
+            }
+            & when (@prop = prompt-title-color) {
+                .plat-modal-container {
+                    .prompt-title {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = prompt-title-background-color) {
+                .plat-modal-container {
+                    .prompt-title {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = prompt-body-background-color) {
+                .plat-modal-container {
+                    .prompt-body {
+                        background-color: @prompt-body-background-color;
+                    }
+                }
+            }
+            & when (@prop = prompt-action-background-color) {
+                .plat-modal-container {
+                    .prompt-action {
+                        background-color: @value;
 
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
-
-                                &.plat-left,
-                                &.plat-right {
-                                    top: @value;
+                        &.button-group {
+                            & > button {
+                                &:active {
+                                    background-color: darken(@value, 10%);
                                 }
                             }
                         }
@@ -402,22 +400,18 @@
                 }
             }
             & when (@prop = prompt-accent-color) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            & .prompt-title {
-                                border-bottom-color: @value;
-                            }
+                .plat-modal-container {
+                    .prompt-title {
+                        border-bottom-color: @value;
+                    }
 
-                            & .prompt-action {
-                                &.button-group {
-                                    & > button {
-                                        border-top-color: @value;
+                    .prompt-action {
+                        &.button-group {
+                            & > button {
+                                border-top-color: @value;
 
-                                        &:last-child {
-                                            border-left-color: @value;
-                                        }
-                                    }
+                                &:not(:first-child) {
+                                    border-left-color: @value;
                                 }
                             }
                         }
@@ -425,10 +419,15 @@
                 }
             }
             & when (@prop = prompt-border-radius) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            .border-radius(@value);
+                .plat-modal-container {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = prompt-up-transition) {
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-up {
+                            .transition(@value);
                         }
                     }
                 }
@@ -443,273 +442,256 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                &.plat-modal {
+                background-color: @backdrop-color;
+
+                .plat-modal-container {
+                    background-color: @background-color;
+                    color: @color;
+
+                    &.plat-modal-transition {
+                        &.plat-right {
+                            .transition(@right-transition);
+                        }
+
+                        &.plat-left {
+                            .transition(@left-transition);
+                        }
+
+                        &.plat-down {
+                            .transition(@down-transition);
+                        }
+
+                        &.plat-up {
+                            .transition(@up-transition);
+                        }
+
+                        &.plat-fade {
+                            .transition(@fade-transition);
+                        }
+                    }
+                }
+
+                &.modal-custom-width {
+                    #platui > #Modal > #custom-width;
+
                     .plat-modal-container {
-                        background-color: @background-color;
-                        color: @color;
+                        width: @width;
+
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            left: @x-offset;
+                        }
 
                         &.plat-modal-transition {
                             &.plat-right {
-                                .transition(@right-transition);
+                                &.plat-activate {
+                                    left: @x-offset;
+                                }
                             }
 
                             &.plat-left {
-                                .transition(@left-transition);
+                                &.plat-activate {
+                                    right: @x-offset;
+                                }
                             }
 
                             &.plat-down {
-                                .transition(@down-transition);
+                                left: @x-offset;
                             }
 
                             &.plat-up {
-                                .transition(@up-transition);
-                            }
-
-                            &.plat-fade {
-                                .transition(@fade-transition);
-                            }
-                        }
-                    }
-
-                    &.modal-custom-width {
-                        #platui > #Modal > #custom-width;
-
-                        .plat-modal-container {
-                            width: @width;
-
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
                                 left: @x-offset;
                             }
-
-                            &.plat-modal-transition {
-                                &.plat-right {
-                                    &.plat-activate {
-                                        left: @x-offset;
-                                    }
-                                }
-
-                                &.plat-left {
-                                    &.plat-activate {
-                                        right: @x-offset;
-                                    }
-                                }
-
-                                &.plat-down {
-                                    left: @x-offset;
-                                }
-
-                                &.plat-up {
-                                    left: @x-offset;
-                                }
-                            }
                         }
                     }
+                }
 
-                    &.modal-custom-height {
-                        #platui > #Modal > #custom-height;
+                &.modal-custom-height {
+                    #platui > #Modal > #custom-height;
 
-                        .plat-modal-container {
-                            height: @height;
+                    .plat-modal-container {
+                        height: @height;
 
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            top: @y-offset;
+                        }
+
+                        &.plat-modal-transition {
+                            &.plat-right {
                                 top: @y-offset;
                             }
 
-                            &.plat-modal-transition {
-                                &.plat-right {
+                            &.plat-left {
+                                top: @y-offset;
+                            }
+
+                            &.plat-down {
+                                &.plat-activate {
                                     top: @y-offset;
                                 }
+                            }
 
-                                &.plat-left {
-                                    top: @y-offset;
-                                }
-
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @y-offset;
-                                    }
-                                }
-
-                                &.plat-up {
-                                    &.plat-activate {
-                                        bottom: @y-offset;
-                                    }
+                            &.plat-up {
+                                &.plat-activate {
+                                    bottom: @y-offset;
                                 }
                             }
                         }
                     }
+                }
 
-                    &.modal-custom {
-                        #platui > #Modal > #custom;
+                &.modal-custom {
+                    #platui > #Modal > #custom;
 
-                        .plat-modal-container {
-                            width: @width;
-                            height: @height;
+                    .plat-modal-container {
+                        width: @width;
+                        height: @height;
 
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            top: @y-offset;
+                            left: @x-offset;
+                        }
+
+                        &.plat-modal-transition {
+                            .plat-right {
                                 top: @y-offset;
-                                left: @x-offset;
+                                left: -@x-offset;
+
+                                &.plat-activate {
+                                    left: @x-offset;
+                                }
                             }
 
-                            &.plat-modal-transition {
-                                .plat-right {
+                            &.plat-left {
+                                top: @y-offset;
+                                right: -@width;
+
+                                &.plat-activate {
+                                    right: @x-offset;
+                                }
+                            }
+
+                            &.plat-down {
+                                top: -@height;
+                                left: @x-offset;
+
+                                &.plat-activate {
                                     top: @y-offset;
-                                    left: -@x-offset;
-
-                                    &.plat-activate {
-                                        left: @x-offset;
-                                    }
                                 }
+                            }
 
-                                &.plat-left {
-                                    top: @y-offset;
-                                    right: -@width;
+                            &.plat-up {
+                                bottom: -@height;
+                                left: @x-offset;
 
-                                    &.plat-activate {
-                                        right: @x-offset;
-                                    }
-                                }
-
-                                &.plat-down {
-                                    top: -@height;
-                                    left: @x-offset;
-
-                                    &.plat-activate {
-                                        top: @y-offset;
-                                    }
-                                }
-
-                                &.plat-up {
-                                    bottom: -@height;
-                                    left: @x-offset;
-
-                                    &.plat-activate {
-                                        bottom: @y-offset;
-                                    }
+                                &.plat-activate {
+                                    bottom: @y-offset;
                                 }
                             }
                         }
                     }
                 }
             }
-            & when (@prop = transition-time) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            .transition-duration(@value);
-                        }
+            & when (@prop = transition-time), (@prop = fade-transition-time) {
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        .transition-duration(@value);
                     }
                 }
             }
             & when (@prop = left-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-left {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-left {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = right-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-right {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-right {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = up-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-up {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-up {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = down-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-down {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-down {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = fade-transition) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        &.plat-modal-transition {
-                            &.plat-fade {
-                                .transition(@value);
-                            }
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-fade {
+                            .transition(@value);
                         }
                     }
                 }
             }
             & when (@prop = color) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        color: @value;
-                    }
+                .plat-modal-container {
+                    color: @value;
                 }
             }
+            & when (@prop = backdrop-color) {
+                background-color: @value;
+            }
             & when (@prop = background-color) {
-                &.plat-modal {
-                    .plat-modal-container {
-                        background-color: @value;
-                    }
+                .plat-modal-container {
+                    background-color: @value;
                 }
             }
             & when (@prop = custom-height_height) {
-                &.plat-modal {
-                    &.modal-custom-height {
-                        .plat-modal-container {
-                            height: @value;
-                        }
+                &.modal-custom-height {
+                    .plat-modal-container {
+                        height: @value;
                     }
                 }
             }
             & when (@prop = custom-height_y-offset) {
-                &.plat-modal {
-                    &.modal-custom-height {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom-height {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            top: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            &.plat-right {
                                 top: @value;
                             }
 
-                            &.plat-modal-transition {
-                                &.plat-right {
+                            &.plat-left {
+                                top: @value;
+                            }
+
+                            &.plat-down {
+                                &.plat-activate {
                                     top: @value;
                                 }
+                            }
 
-                                &.plat-left {
-                                    top: @value;
-                                }
-
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
-
-                                &.plat-up {
-                                    &.plat-activate {
-                                        bottom: @value;
-                                    }
+                            &.plat-up {
+                                &.plat-activate {
+                                    bottom: @value;
                                 }
                             }
                         }
@@ -717,146 +699,134 @@
                 }
             }
             & when (@prop = custom-width_width) {
-                &.plat-modal {
-                    &.modal-custom-width {
-                        .plat-modal-container {
-                            width: @value;
-                        }
+                &.modal-custom-width {
+                    .plat-modal-container {
+                        width: @value;
                     }
                 }
             }
             & when (@prop = custom-width_x-offset) {
-                &.plat-modal {
-                    &.modal-custom-width {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom-width {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            left: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            &.plat-right {
+                                &.plat-activate {
+                                    left: @value;
+                                }
+                            }
+
+                            &.plat-left {
+                                &.plat-activate {
+                                    right: @value;
+                                }
+                            }
+
+                            &.plat-down {
                                 left: @value;
                             }
 
-                            &.plat-modal-transition {
-                                &.plat-right {
-                                    &.plat-activate {
-                                        left: @value;
-                                    }
-                                }
-
-                                &.plat-left {
-                                    &.plat-activate {
-                                        right: @value;
-                                    }
-                                }
-
-                                &.plat-down {
-                                    left: @value;
-                                }
-
-                                &.plat-up {
-                                    left: @value;
-                                }
+                            &.plat-up {
+                                left: @value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_width) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            width: @value;
+                &.modal-custom {
+                    .plat-modal-container {
+                        width: @value;
 
-                            &.plat-modal-transition {
-                                &.plat-left {
-                                    right: -@value;
-                                }
+                        &.plat-modal-transition {
+                            &.plat-left {
+                                right: -@value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_height) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            height: @value;
+                &.modal-custom {
+                    .plat-modal-container {
+                        height: @value;
 
-                            &.plat-modal-transition {
-                                &.plat-down {
-                                    top: -@value;
-                                }
+                        &.plat-modal-transition {
+                            &.plat-down {
+                                top: -@value;
+                            }
 
-                                &.plat-up {
-                                    bottom: -@value;
-                                }
+                            &.plat-up {
+                                bottom: -@value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_x-offset) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            left: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            .plat-right {
+                                left: -@value;
+
+                                &.plat-activate {
+                                    left: @value;
+                                }
+                            }
+
+                            &.plat-left {
+                                &.plat-activate {
+                                    right: @value;
+                                }
+                            }
+
+                            &.plat-down {
                                 left: @value;
                             }
 
-                            &.plat-modal-transition {
-                                .plat-right {
-                                    left: -@value;
-
-                                    &.plat-activate {
-                                        left: @value;
-                                    }
-                                }
-
-                                &.plat-left {
-                                    &.plat-activate {
-                                        right: @value;
-                                    }
-                                }
-
-                                &.plat-down {
-                                    left: @value;
-                                }
-
-                                &.plat-up {
-                                    left: @value;
-                                }
+                            &.plat-up {
+                                left: @value;
                             }
                         }
                     }
                 }
             }
             & when (@prop = custom_y-offset) {
-                &.plat-modal {
-                    &.modal-custom {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                &.modal-custom {
+                    .plat-modal-container {
+                        &.plat-no-transition,
+                        &.plat-modal-transition.plat-fade {
+                            top: @value;
+                        }
+
+                        &.plat-modal-transition {
+                            .plat-right {
                                 top: @value;
                             }
 
-                            &.plat-modal-transition {
-                                .plat-right {
+                            &.plat-left {
+                                top: @value;
+                            }
+
+                            &.plat-down {
+                                &.plat-activate {
                                     top: @value;
                                 }
+                            }
 
-                                &.plat-left {
-                                    top: @value;
-                                }
-
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
-
-                                &.plat-up {
-                                    &.plat-activate {
-                                        bottom: @value;
-                                    }
+                            &.plat-up {
+                                &.plat-activate {
+                                    bottom: @value;
                                 }
                             }
                         }
@@ -871,98 +841,83 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            .border-radius(@prompt-border-radius);
+                background-color: @prompt-backdrop-color;
 
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                .plat-modal-container {
+                    .border-radius(@prompt-border-radius);
+                    width: @prompt-width;
+                    max-width: @prompt-max-width;
+                    // need this here for strange painting issue with prompt title and border-radius
+                    background-color: @prompt-title-background-color;
+
+                    &.plat-no-transition,
+                    &.plat-modal-transition.plat-fade,
+                    &.plat-modal-transition.plat-right,
+                    &.plat-modal-transition.plat-left {
+                        top: @prompt-top;
+                    }
+
+                    &.plat-modal-transition {
+                        &.plat-down {
+                            &.plat-activate {
                                 top: @prompt-top;
                             }
+                        }
 
-                            &.plat-modal-transition {
-                                &.plat-up {
-                                    .transition(@down-transition);
+                        &.plat-up {
+                            .transition(@prompt-up-transition);
 
-                                    &.plat-activate {
-                                        top: @prompt-top;
-                                    }
+                            &.plat-activate {
+                                top: @prompt-top;
+                            }
+                        }
+                    }
+
+                    .prompt-title {
+                        border-bottom-color: @prompt-accent-color;
+                        color: @prompt-title-color;
+                        background-color: @prompt-title-background-color;
+                    }
+
+                    .prompt-body {
+                        background-color: @prompt-body-background-color;
+                    }
+
+                    .prompt-action {
+                        background-color: @prompt-action-background-color;
+
+                        &.button-group {
+                            & > button {
+                                border-top-color: @prompt-accent-color;
+                                color: lighten(@color, 20%);
+
+                                &:not(:first-child) {
+                                    border-left-color: @prompt-accent-color;
                                 }
 
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @prompt-top;
-                                    }
+                                &:active {
+                                    background-color: darken(@prompt-action-background-color, 10%);
                                 }
 
-                                &.plat-left,
-                                &.plat-right {
-                                    top: @prompt-top;
-                                }
-                            }
-
-                            & .prompt-title {
-                                border-bottom-color: @prompt-accent-color;
-                            }
-
-                            & .prompt-body {
-                                background-color: @prompt-body-color;
-                            }
-
-                            & .prompt-action {
-                                background-color: @prompt-body-color;
-
-                                &.button-group {
-                                    & > button {
-                                        border-top-color: @prompt-accent-color;
-
-                                        &:last-child {
-                                            border-left-color: @prompt-accent-color;
-                                        }
-                                    }
+                                &.button-suggested {
+                                    color: @color;
                                 }
                             }
                         }
                     }
                 }
             }
-            & when (@prop = prompt-body-color) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            & .prompt-title {
-                                border-bottom-color: darken(@value, 4%);
-                            }
+            & when (@prop = color) {
+                .plat-modal-container {
+                    color: @value;
 
-                            & .prompt-body {
-                                background-color: @value;
-                            }
+                    .prompt-action {
+                        &.button-group {
+                            & > button {
+                                color: lighten(@value, 20%);
 
-                            & .prompt-action {
-                                background-color: @value;
-
-                                &.button-group {
-                                    & > button {
-                                        border-top-color: darken(@value, 4%);
-
-                                        &:last-child {
-                                            border-left-color: darken(@value, 4%);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = down-transition) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            &.plat-modal-transition {
-                                &.plat-up {
-                                    .transition(@value);
+                                &.button-suggested {
+                                    color: @value;
                                 }
                             }
                         }
@@ -970,30 +925,72 @@
                 }
             }
             & when (@prop = prompt-top) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            &.plat-no-transition,
-                            &.plat-modal-transition.plat-fade {
+                .plat-modal-container {
+                    &.plat-no-transition,
+                    &.plat-modal-transition.plat-fade,
+                    &.plat-modal-transition.plat-right,
+                    &.plat-modal-transition.plat-left {
+                        top: @value;
+                    }
+
+                    &.plat-modal-transition {
+                        &.plat-down {
+                            &.plat-activate {
                                 top: @value;
                             }
+                        }
 
-                            &.plat-modal-transition {
-                                &.plat-up {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
+                        &.plat-up {
+                            &.plat-activate {
+                                top: @value;
+                            }
+                        }
+                    }
+                }
+            }
+            & when (@prop = prompt-width) {
+                .plat-modal-container {
+                    width: @value;
+                }
+            }
+            & when (@prop = prompt-max-width) {
+                .plat-modal-container {
+                    max-width: @value;
+                }
+            }
+            & when (@prop = prompt-backdrop-color) {
+                background-color: @prompt-backdrop-color;
+            }
+            & when (@prop = prompt-title-color) {
+                .plat-modal-container {
+                    .prompt-title {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = prompt-title-background-color) {
+                .plat-modal-container {
+                    .prompt-title {
+                        background-color: @value;
+                    }
+                }
+            }
+            & when (@prop = prompt-body-background-color) {
+                .plat-modal-container {
+                    .prompt-body {
+                        background-color: @prompt-body-background-color;
+                    }
+                }
+            }
+            & when (@prop = prompt-action-background-color) {
+                .plat-modal-container {
+                    .prompt-action {
+                        background-color: @value;
 
-                                &.plat-down {
-                                    &.plat-activate {
-                                        top: @value;
-                                    }
-                                }
-
-                                &.plat-left,
-                                &.plat-right {
-                                    top: @value;
+                        &.button-group {
+                            & > button {
+                                &:active {
+                                    background-color: darken(@value, 10%);
                                 }
                             }
                         }
@@ -1001,22 +998,18 @@
                 }
             }
             & when (@prop = prompt-accent-color) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            & .prompt-title {
-                                border-bottom-color: @value;
-                            }
+                .plat-modal-container {
+                    .prompt-title {
+                        border-bottom-color: @value;
+                    }
 
-                            & .prompt-action {
-                                &.button-group {
-                                    & > button {
-                                        border-top-color: @value;
+                    .prompt-action {
+                        &.button-group {
+                            & > button {
+                                border-top-color: @value;
 
-                                        &:last-child {
-                                            border-left-color: @value;
-                                        }
-                                    }
+                                &:not(:first-child) {
+                                    border-left-color: @value;
                                 }
                             }
                         }
@@ -1024,10 +1017,15 @@
                 }
             }
             & when (@prop = prompt-border-radius) {
-                &.plat-modal {
-                    &.modal-prompt {
-                        .plat-modal-container {
-                            .border-radius(@value);
+                .plat-modal-container {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = prompt-up-transition) {
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-up {
+                            .transition(@value);
                         }
                     }
                 }

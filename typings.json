@@ -1,0 +1,9 @@
+{
+  "name": "platypusui",
+  "main": "dist/platypusui.d.ts",
+  "author": "Platypi <support@platypi.io>",
+  "description": "A suite of controls built using PlatypusTS",
+  "dependencies": {},
+  "devDependencies": {},
+  "ambientDependencies": {}
+}

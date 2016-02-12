@@ -1,21 +1,11 @@
 ﻿@import (reference) '../mixins/helpers.less';
 @import (reference) 'input.variables.less';
 
-/// ============= Input Constants ============= ///
-
-#platui {
-    #__Input {
-        #platui > #variables;
-        #platui > #Input;
-        @border-color-accent: darken(@border-color, 25%);
-    }
-}
-
 /// =========== Input Declaration =========== ///
 
 & {
     #platui > #mixins;
-    #platui > #__Input;
+    #platui > #Input;
 
     .plat-input {
         .border-radius(0px);
@@ -50,20 +40,24 @@
         }
 
         &:not(.input-outline) {
-            border-bottom: @border-bottom;
+            border-bottom: @border-bottom-width @border-style @border-bottom-color;
+
+            &:focus {
+                border-color: @border-bottom-fade;
+            }
         }
 
     /// ============== Secondary Input =============== ///
 
         &.input-outline {
             .border-radius(@outline-border-radius);
-            border: @outline-border;
+            border: @outline-border-width @border-style @outline-border-color;
             padding-left: 0.5em;
             padding-right: 0.5em;
-        }
 
-        &:focus {
-            border-color: @border-color-accent;
+            &:focus {
+                border-color: @outline-border-fade;
+            }
         }
 
     /// ============== Input Types =============== ///
@@ -103,8 +97,6 @@
 /// =========== Input Group Declaration =========== ///
 
 & {
-    #platui > #__Input;
-
     .input-group {
         .plat-input {
             width: 100%;
