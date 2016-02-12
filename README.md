@@ -47,20 +47,19 @@ to use `platui` on `window`, you can include it in your `index.html`:
 
 ## Use with TypeScript
 
-The packaged version of this library includes two declaration files, as well as the source `.ts` file. You
-can use the `.ts` file if you want to modify it (e.g. compile it for AMD). If you are
-using `platui` on the window, you will want to reference the `platypusui-node.d.ts`
-declaration file:
+This package includes a declaration file, as well as the source `.js` and `.min.js` file. If you are
+using TypeScript >= 1.6.0 everything will be handled for you. Otherwise you can use one of the following
+methods.
 
-```ts
-/// <reference path="/node_modules/platypusui/platypusui.d.ts" />
+### with Typings
+
+```shell
+typings install --save npm:platypusui
 ```
 
-or
+### without Typings
 
-```ts
-/// <reference path="/bower_components/platypusui/platypusui.d.ts" />
-```
+Reference `/node_modules/platypusui/dist/platypusui.d.ts` from your `tsconfig.json`
 
 ## Use with LESS
 The packaged version of this library includes a single platypus.less file. We recommend using a single

@@ -1,9 +1,11 @@
 {
   "name": "platypusui",
-  "main": "dist/platypusui.d.ts",
   "author": "Platypi <support@platypi.io>",
-  "description": "A suite of controls built using PlatypusTS",
+  "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
+  "main": "dist/platypusui.d.ts",
   "dependencies": {},
   "devDependencies": {},
-  "ambientDependencies": {}
+  "ambientDependencies": {
+    "platypus": "npm:platypus"
+  }
 }

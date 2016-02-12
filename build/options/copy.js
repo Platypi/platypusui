@@ -102,8 +102,16 @@ function getDtsLib() {
     return '/// <reference path="../../platypus/dist/platypus.d.ts" />\r\n';
 }
 
+function getDtsImport() {
+    return 'import * as plat from \'platypus\';\r\n';
+}
+
 function prependLib(data) {
 	return getCompileLib() + data;
+}
+
+function prependImport(data) {
+    return getDtsImport() + data;
 }
 
 function removeLib(data, replace) {
@@ -178,6 +186,7 @@ module.exports = function(config, grunt) {
 			expand: true,
             files: [
                 { src: config.build.dest.dts, dest: config.build.dest.dts },
+                { src: config.build.dest.dtslocal, dest: config.build.dest.dtslocal },
                 { src: config.build.dest.js, dest: config.build.dest.js }
             ]
         },
@@ -195,7 +204,7 @@ module.exports = function(config, grunt) {
         typingslocal: {
             options: {
                 process: function (data) {
-                    return normalizeBlockComments(data.split(/\r\n|\n/));
+                    return prependImport(normalizeBlockComments(data.split(/\r\n|\n/)));
                 }
             },
             src: config.build.dest.dtslocal,
