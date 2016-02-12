@@ -46,254 +46,214 @@
             #platui > #mixins;
 
             & when (@prop = padding) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-left: @value;
-                                padding-right: @value;
-                                padding-top: @value;
-                                padding-bottom: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-left: @value;
+                            padding-right: @value;
+                            padding-top: @value;
+                            padding-bottom: @value;
                         }
                     }
                 }
             }
             & when (@prop = background-color) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            background-color: @value;
-                        }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        background-color: @value;
                     }
                 }
             }
             & when (@prop = arrow-color) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = arrow-active-color) {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        &:active,
+                        &:hover {
                             color: @value;
                         }
                     }
                 }
             }
-            & when (@prop = arrow-active-color) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            &:active,
-                            &:hover {
-                                color: @value;
-                            }
-                        }
-                    }
-                }
-            }
             & when (@prop = arrow-font-size) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            font-size: @value;
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        font-size: @value;
                     }
                 }
             }
             & when (@prop = arrow-font-family) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                font-family: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            font-family: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-font-weight) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                font-weight: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            font-weight: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-down) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down::before { content: @value; }
                     }
                 }
             }
             & when (@prop = arrow-left) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-left::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-left::before { content: @value; }
                     }
                 }
             }
             & when (@prop = arrow-right) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-right::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-right::before { content: @value; }
                     }
                 }
             }
             & when (@prop = arrow-up) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-up::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-up::before { content: @value; }
                     }
                 }
             }
             & when (@prop = padding-left) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-left: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-left: @value;
                         }
                     }
                 }
             }
             & when (@prop = padding-right) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-right: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-right: @value;
                         }
                     }
                 }
             }
             & when (@prop = padding-top) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-top: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-top: @value;
                         }
                     }
                 }
             }
             & when (@prop = padding-bottom) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-bottom: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-bottom: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-perpendicular-length) {
-                &.plat-carousel {
-                    &.plat-horizontal {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                height: @value;
-                            }
+                &.plat-horizontal {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            height: @value;
                         }
                     }
+                }
 
-                    &.plat-vertical {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                width: @value;
-                            }
+                &.plat-vertical {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            width: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-parallel-length) {
-                &.plat-carousel {
-                    &.plat-horizontal {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                width: @value;
-                            }
+                &.plat-horizontal {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            width: @value;
                         }
                     }
+                }
 
-                    &.plat-vertical {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                height: @value;
-                            }
+                &.plat-vertical {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            height: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-icon-width) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                width: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            width: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-icon-height) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                height: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            height: @value;
                         }
                     }
                 }
             }
             & when (@prop = transition-time) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            &.plat-transition-init {
-                                .transition-duration(@value);
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        &.plat-transition-init {
+                            .transition-duration(@value);
                         }
                     }
                 }
@@ -308,320 +268,278 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            background-color: @background-color;
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        background-color: @background-color;
 
-                            .plat-carousel-item {
-                                padding-left: @padding-left;
-                                padding-right: @padding-right;
-                                padding-top: @padding-top;
-                                padding-bottom: @padding-bottom;
-                            }
-
-                            &.plat-transition-init {
-                                .transition-duration(@transition-time);
-                            }
+                        .plat-carousel-item {
+                            padding-left: @padding-left;
+                            padding-right: @padding-right;
+                            padding-top: @padding-top;
+                            padding-bottom: @padding-bottom;
                         }
 
+                        &.plat-transition-init {
+                            .transition-duration(@transition-time);
+                        }
+                    }
+
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        color: @arrow-color;
+                        font-size: @arrow-font-size;
+
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            height: @arrow-icon-height;
+                            width: @arrow-icon-width;
+                            font-family: @arrow-font-family;
+                            font-weight: @arrow-font-weight;
+                        }
+
+                        .plat-icon-arrow-down::before { content: @arrow-down; }
+                        .plat-icon-arrow-left::before { content: @arrow-left; }
+                        .plat-icon-arrow-right::before { content: @arrow-right; }
+                        .plat-icon-arrow-up::before { content: @arrow-up; }
+
+                        &:active,
+                        &:hover {
+                            color: @arrow-active-color;
+                        }
+                    }
+                }
+
+                &.plat-horizontal {
+                    .plat-carousel-viewport {
                         .plat-back-arrow,
                         .plat-forward-arrow {
-                            color: @arrow-color;
-                            font-size: @arrow-font-size;
-
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                height: @arrow-icon-height;
-                                width: @arrow-icon-width;
-                                font-family: @arrow-font-family;
-                                font-weight: @arrow-font-weight;
-                            }
-
-                            .plat-icon-arrow-down::before { content: @arrow-down; }
-                            .plat-icon-arrow-left::before { content: @arrow-left; }
-                            .plat-icon-arrow-right::before { content: @arrow-right; }
-                            .plat-icon-arrow-up::before { content: @arrow-up; }
-
-                            &:active,
-                            &:hover {
-                                color: @arrow-active-color;
-                            }
+                            width: @arrow-parallel-length;
+                            height: @arrow-perpendicular-length;
                         }
                     }
+                }
 
-                    &.plat-horizontal {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                width: @arrow-parallel-length;
-                                height: @arrow-perpendicular-length;
-                            }
-                        }
-                    }
-
-                    &.plat-vertical {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                width: @arrow-perpendicular-length;
-                                height: @arrow-parallel-length;
-                            }
+                &.plat-vertical {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            width: @arrow-perpendicular-length;
+                            height: @arrow-parallel-length;
                         }
                     }
                 }
             }
             & when (@prop = padding) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-left: @value;
-                                padding-right: @value;
-                                padding-top: @value;
-                                padding-bottom: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-left: @value;
+                            padding-right: @value;
+                            padding-top: @value;
+                            padding-bottom: @value;
                         }
                     }
                 }
             }
             & when (@prop = background-color) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            background-color: @value;
-                        }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        background-color: @value;
                     }
                 }
             }
             & when (@prop = arrow-color) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = arrow-active-color) {
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        &:active,
+                        &:hover {
                             color: @value;
                         }
                     }
                 }
             }
-            & when (@prop = arrow-active-color) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            &:active,
-                            &:hover {
-                                color: @value;
-                            }
-                        }
-                    }
-                }
-            }
             & when (@prop = arrow-font-size) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            font-size: @value;
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        font-size: @value;
                     }
                 }
             }
             & when (@prop = arrow-font-family) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                font-family: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            font-family: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-font-weight) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                font-weight: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            font-weight: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-down) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down::before { content: @value; }
                     }
                 }
             }
             & when (@prop = arrow-left) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-left::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-left::before { content: @value; }
                     }
                 }
             }
             & when (@prop = arrow-right) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-right::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-right::before { content: @value; }
                     }
                 }
             }
             & when (@prop = arrow-up) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-up::before { content: @value; }
-                        }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-up::before { content: @value; }
                     }
                 }
             }
             & when (@prop = padding-left) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-left: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-left: @value;
                         }
                     }
                 }
             }
             & when (@prop = padding-right) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-right: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-right: @value;
                         }
                     }
                 }
             }
             & when (@prop = padding-top) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-top: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-top: @value;
                         }
                     }
                 }
             }
             & when (@prop = padding-bottom) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            .plat-carousel-item {
-                                padding-bottom: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            padding-bottom: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-perpendicular-length) {
-                &.plat-carousel {
-                    &.plat-horizontal {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                height: @value;
-                            }
+                &.plat-horizontal {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            height: @value;
                         }
                     }
+                }
 
-                    &.plat-vertical {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                width: @value;
-                            }
+                &.plat-vertical {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            width: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-parallel-length) {
-                &.plat-carousel {
-                    &.plat-horizontal {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                width: @value;
-                            }
+                &.plat-horizontal {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            width: @value;
                         }
                     }
+                }
 
-                    &.plat-vertical {
-                        .plat-carousel-viewport {
-                            .plat-back-arrow,
-                            .plat-forward-arrow {
-                                height: @value;
-                            }
+                &.plat-vertical {
+                    .plat-carousel-viewport {
+                        .plat-back-arrow,
+                        .plat-forward-arrow {
+                            height: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-icon-width) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                width: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            width: @value;
                         }
                     }
                 }
             }
             & when (@prop = arrow-icon-height) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-back-arrow,
-                        .plat-forward-arrow {
-                            .plat-icon-arrow-down,
-                            .plat-icon-arrow-up,
-                            .plat-icon-arrow-left,
-                            .plat-icon-arrow-right {
-                                height: @value;
-                            }
+                .plat-carousel-viewport {
+                    .plat-back-arrow,
+                    .plat-forward-arrow {
+                        .plat-icon-arrow-down,
+                        .plat-icon-arrow-up,
+                        .plat-icon-arrow-left,
+                        .plat-icon-arrow-right {
+                            height: @value;
                         }
                     }
                 }
             }
             & when (@prop = transition-time) {
-                &.plat-carousel {
-                    .plat-carousel-viewport {
-                        .plat-carousel-container {
-                            &.plat-transition-init {
-                                .transition-duration(@value);
-                            }
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        &.plat-transition-init {
+                            .transition-duration(@value);
                         }
                     }
                 }

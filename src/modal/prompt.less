@@ -10,109 +10,115 @@
     #platui > #mixins;
     #platui > #Modal;
 
-    .plat-modal {
-        &.modal-prompt {
-            background-color: rgba(0,0,0,0.6);
+    .modal-prompt {
+        background-color: @prompt-backdrop-color;
 
-            .plat-modal-container {
-                .border-radius(@prompt-border-radius);
-                margin: 0 auto;
-                width: 80%;
-                max-width: 30em;
-                height: auto;
+        .plat-modal-container {
+            .border-radius(@prompt-border-radius);
+            width: @prompt-width;
+            max-width: @prompt-max-width;
+            height: auto;
+            // need this here for strange painting issue with prompt title and border-radius
+            background-color: @prompt-title-background-color;
 
-                &.plat-no-transition,
-                &.plat-modal-transition.plat-fade {
-                    top: @prompt-top;
-                    left: 0;
-                    right: 0;
-                    margin-left: auto;
-                    margin-right: auto;
-                }
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade,
+            &.plat-modal-transition.plat-right,
+            &.plat-modal-transition.plat-left {
+                top: @prompt-top;
+            }
 
-                &.plat-modal-transition {
-                    &.plat-up, &.plat-down {
-                        left: 0;
-                        right: 0;
-                        margin-left: auto;
-                        margin-right: auto;
-                    }
+            &.plat-no-transition,
+            &.plat-modal-transition.plat-fade,
+            &.plat-modal-transition.plat-down,
+            &.plat-modal-transition.plat-up {
+                .translate-accelerate(-50%;0);
+                left: 50%;
+            }
 
-                    &.plat-up {
-                        .transition(@down-transition);
-                        top: 100%;
-
-                        &.plat-activate {
-                            top: @prompt-top;
-                        }
-                    }
-
-                    &.plat-down {
-                        &.plat-activate {
-                            top: @prompt-top;
-                        }
-                    }
-
-                    &.plat-left,
-                    &.plat-right {
+            &.plat-modal-transition {
+                &.plat-down {
+                    &.plat-activate {
                         top: @prompt-top;
-
-                        &.plat-activate {
-                            left: 0;
-                            right: 0;
-                            margin-left: auto;
-                            margin-right: auto;
-                        }
                     }
                 }
 
-                & .prompt-title {
-                    padding: 1em 2em;
-                    border-bottom: 1px solid @prompt-accent-color;
-                    text-align: center;
-                    font-size: 110%;
+                &.plat-up {
+                    .transition(@prompt-up-transition);
+                    top: 100%;
+                    bottom: unset;
+
+                    &.plat-activate {
+                        top: @prompt-top;
+                        bottom: unset;
+                    }
                 }
 
-                & .prompt-body {
-                    padding: 1em 2em;
-                    text-align: center;
-                    background-color: @prompt-body-color;
+                &.plat-right {
+                    .translate-accelerate(-50%;0);
+
+                    &.plat-activate {
+                        left: 50%;
+                    }
                 }
 
-                & .prompt-action {
-                    text-align: center;
-                    padding: 1em 2em;
-                    background-color: @prompt-body-color;
+                &.plat-left {
+                    .translate-accelerate(50%;0);
 
-                    &.button-group {
-                        .flexbox();
-                        padding-left: 0;
-                        padding-right: 0;
-                        padding-bottom: 0;
-                        width: 100%;
+                    &.plat-activate {
+                        right: 50%;
+                    }
+                }
+            }
 
-                        & > button {
-                            .flex(1);
-                            height: 100%;
-                            padding-top: 1em;
-                            padding-bottom: 1em;
-                            font-size: 110%;
-                            border-width: 0;
-                            border-top: 2px solid @prompt-accent-color;
-                            background-color: transparent;
-                            color: lighten(@default-font-color, 20%);
+            .prompt-title {
+                padding: 1em 2em;
+                border-bottom: 1px solid @prompt-accent-color;
+                text-align: center;
+                font-size: 110%;
+                color: @prompt-title-color;
+                background-color: @prompt-title-background-color;
+            }
 
-                            &:last-child {
-                                border-left: 2px solid @prompt-accent-color;
-                            }
+            .prompt-body {
+                padding: 1em 2em;
+                text-align: center;
+                background-color: @prompt-body-background-color;
+            }
 
-                            &:hover {
-                                opacity: 1;
-                            }
+            .prompt-action {
+                text-align: center;
+                padding: 1em 2em;
+                background-color: @prompt-action-background-color;
 
-                            &.button-suggested {
-                                color: @default-font-color;
-                            }
+                &.button-group {
+                    .flexbox();
+                    padding-left: 0;
+                    padding-right: 0;
+                    padding-bottom: 0;
+                    width: 100%;
+
+                    & > button {
+                        .flex(1);
+                        height: 100%;
+                        padding-top: 1em;
+                        padding-bottom: 1em;
+                        font-size: 110%;
+                        border: none;
+                        border-top: 2px solid @prompt-accent-color;
+                        background-color: @transparent;
+                        color: lighten(@color, 20%);
+
+                        &:not(:first-child) {
+                            border-left: 2px solid @prompt-accent-color;
+                        }
+
+                        &:active {
+                            background-color: darken(@prompt-action-background-color, 10%);
+                        }
+
+                        &.button-suggested {
+                            color: @color;
                         }
                     }
                 }

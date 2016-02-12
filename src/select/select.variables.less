@@ -22,42 +22,30 @@
             #platui > #mixins;
 
             & when (@prop = background-color) {
-                &.plat-select {
-                    background-color: @value;
+                background-color: @value;
 
-                    &::-ms-value {
-                        background-color: @value;
-                    }
+                &::-ms-value {
+                    background-color: @value;
                 }
             }
             & when (@prop = color) {
-                &.plat-select {
-                    color: @value;
+                color: @value;
 
-                    &::-ms-value {
-                        color: @value;
-                    }
+                &::-ms-value {
+                    color: @value;
                 }
             }
             & when (@prop = height) {
-                &.plat-select {
-                    height: @value;
-                }
+                height: @value;
             }
             & when (@prop = border-radius) {
-                &.plat-select {
-                    .border-radius(@value);
-                }
+                .border-radius(@value);
             }
             & when (@prop = border-color) {
-                &.plat-select {
-                    border-color: @value;
-                }
+                border-color: @value;
             }
             & when (@prop = border-width) {
-                &.plat-select {
-                    border-width: @value;
-                }
+                border-width: @value;
             }
         }
     }
@@ -69,60 +57,46 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                &.plat-select {
-                    .border-radius(@border-radius);
-                    height: @height;
+                .border-radius(@border-radius);
+                height: @height;
+                color: @color;
+                background-color: @background-color;
+                border: @border-width solid @border-color;
+
+                &:focus {
+                    border-color: darken(@border-color, 25%);
+                }
+
+                &::-ms-value {
                     color: @color;
                     background-color: @background-color;
-                    border: @border-width solid @border-color;
-
-                    &:focus {
-                        border-color: darken(@border-color, 25%);
-                    }
-
-                    &::-ms-value {
-                        color: @color;
-                        background-color: @background-color;
-                    }
                 }
             }
             & when (@prop = background-color) {
-                &.plat-select {
-                    background-color: @value;
+                background-color: @value;
 
-                    &::-ms-value {
-                        background-color: @value;
-                    }
+                &::-ms-value {
+                    background-color: @value;
                 }
             }
             & when (@prop = color) {
-                &.plat-select {
-                    color: @value;
+                color: @value;
 
-                    &::-ms-value {
-                        color: @value;
-                    }
+                &::-ms-value {
+                    color: @value;
                 }
             }
             & when (@prop = height) {
-                &.plat-select {
-                    height: @value;
-                }
+                height: @value;
             }
             & when (@prop = border-radius) {
-                &.plat-select {
-                    .border-radius(@value);
-                }
+                .border-radius(@value);
             }
             & when (@prop = border-color) {
-                &.plat-select {
-                    border-color: @value;
-                }
+                border-color: @value;
             }
             & when (@prop = border-width) {
-                &.plat-select {
-                    border-width: @value;
-                }
+                border-width: @value;
             }
         }
     }

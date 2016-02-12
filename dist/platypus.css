@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.13.1 (https://platypi.io) 
+ * PlatypusUI v0.14.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1310,18 +1310,18 @@ h6 {
   cursor: pointer;
 }
 .plat-checkbox > span {
-  line-height: 1.3em;
+  line-height: 1.2em;
 }
 .plat-checkbox > span:first-of-type {
   padding-left: 0.4em;
 }
 .plat-checkbox .plat-checkbox-container {
-  -webkit-box-flex: 0 0 1.3em;
-  -webkit-flex: 0 0 1.3em;
-  -moz-box-flex: 0 0 1.3em;
-  -moz-flex: 0 0 1.3em;
-  -ms-flex: 0 0 1.3em;
-  flex: 0 0 1.3em;
+  -webkit-box-flex: 0 0 1.2em;
+  -webkit-flex: 0 0 1.2em;
+  -moz-box-flex: 0 0 1.2em;
+  -moz-flex: 0 0 1.2em;
+  -ms-flex: 0 0 1.2em;
+  flex: 0 0 1.2em;
   -webkit-border-top-left-radius: 50%;
   border-top-left-radius: 50%;
   -webkit-border-top-right-radius: 50%;
@@ -1335,10 +1335,10 @@ h6 {
   box-sizing: content-box;
   position: relative;
   display: inline-block;
-  width: 1.3em;
-  max-width: 1.3em;
-  height: 1.3em;
-  max-height: 1.3em;
+  width: 1.2em;
+  max-width: 1.2em;
+  height: 1.2em;
+  max-height: 1.2em;
   background-color: transparent;
   overflow: hidden;
   border: 1px solid #c8c7cd;
@@ -1346,6 +1346,7 @@ h6 {
 .plat-checkbox .plat-checkbox-container.plat-check,
 .plat-checkbox .plat-checkbox-container.plat-x {
   background-color: #c8c7cd;
+  border-color: #c8c7cd;
 }
 .plat-checkbox .plat-checkbox-container.plat-check .plat-mark::before,
 .plat-checkbox .plat-checkbox-container.plat-x .plat-mark::before,
@@ -1371,7 +1372,7 @@ h6 {
   transform: rotate(45deg);
   left: 13%;
   top: 55%;
-  width: 0.5em;
+  width: 0.46153846em;
 }
 .plat-checkbox .plat-checkbox-container.plat-check .plat-mark::after {
   -webkit-transform: rotate(-45deg);
@@ -1380,13 +1381,13 @@ h6 {
   transform: rotate(-45deg);
   left: 34%;
   top: 47%;
-  width: 0.76470588em;
+  width: 0.70588235em;
 }
 .plat-checkbox .plat-checkbox-container.plat-x .plat-mark::before,
 .plat-checkbox .plat-checkbox-container.plat-x .plat-mark::after {
   left: 18%;
   top: 48%;
-  width: 0.86666667em;
+  width: 0.8em;
 }
 .plat-checkbox .plat-checkbox-container.plat-x .plat-mark::before {
   -webkit-transform: rotate(45deg);
@@ -1489,6 +1490,8 @@ h6 {
   -moz-perspective: none;
   -ms-perspective: none;
   perspective: none;
+  position: relative;
+  z-index: 1;
 }
 .plat-drawer-root.plat-drawer-transition-left,
 .plat-drawer-root.plat-drawer-transition-right,
@@ -1560,16 +1563,16 @@ h6 {
   visibility: hidden;
   position: absolute;
   top: 0;
-  left: -9999px;
+  left: -99999px;
 }
 .plat-file .plat-file-container .plat-file-input {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-border-top-left-radius: 4px;
-  border-top-left-radius: 4px;
-  -webkit-border-bottom-left-radius: 4px;
-  border-bottom-left-radius: 4px;
+  -webkit-border-top-left-radius: 2px;
+  border-top-left-radius: 2px;
+  -webkit-border-bottom-left-radius: 2px;
+  border-bottom-left-radius: 2px;
   -webkit-border-top-right-radius: 0px;
   border-top-right-radius: 0px;
   -webkit-border-bottom-right-radius: 0px;
@@ -1601,10 +1604,10 @@ h6 {
   border-top-left-radius: 0px;
   -webkit-border-bottom-left-radius: 0px;
   border-bottom-left-radius: 0px;
-  -webkit-border-top-right-radius: 4px;
-  border-top-right-radius: 4px;
-  -webkit-border-bottom-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+  -webkit-border-top-right-radius: 2px;
+  border-top-right-radius: 2px;
+  -webkit-border-bottom-right-radius: 2px;
+  border-bottom-right-radius: 2px;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
   position: absolute;
@@ -2904,6 +2907,9 @@ h6 {
 .plat-input:not(.input-outline) {
   border-bottom: 2px solid #c8c7cd;
 }
+.plat-input:not(.input-outline):focus {
+  border-color: #868491;
+}
 .plat-input.input-outline {
   -webkit-border-top-left-radius: 2px;
   border-top-left-radius: 2px;
@@ -2917,7 +2923,7 @@ h6 {
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
-.plat-input:focus {
+.plat-input.input-outline:focus {
   border-color: #868491;
 }
 .plat-input.input-primary:focus {
@@ -3062,6 +3068,8 @@ h6 {
   position: relative;
 }
 .plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite .plat-listview-ring {
+  width: 2em;
+  height: 2em;
   position: absolute;
   -webkit-transform: translate(-50%, 0);
   -moz-transform: translate(-50%, 0);
@@ -3075,11 +3083,7 @@ h6 {
   margin-bottom: 0.25em;
   left: 50%;
 }
-.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite .plat-listview-ring.plat-ring {
-  width: 2em;
-  height: 2em;
-}
-.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
+.plat-listview.plat-vertical .plat-listview-viewport .plat-scroll-container .plat-listview-container .plat-infinite .plat-listview-ring.plat-ring-0 .plat-animated-ring {
   border-width: 0.2em;
 }
 .plat-listview.plat-vertical .plat-refresh,
@@ -3090,6 +3094,8 @@ h6 {
 }
 .plat-listview.plat-vertical .plat-refresh .plat-listview-ring,
 .plat-listview.plat-vertical .plat-incremental .plat-listview-ring {
+  width: 2em;
+  height: 2em;
   position: absolute;
   -webkit-transform: translate(-50%, 0);
   -moz-transform: translate(-50%, 0);
@@ -3103,13 +3109,8 @@ h6 {
   margin-bottom: 0.25em;
   left: 50%;
 }
-.plat-listview.plat-vertical .plat-refresh .plat-listview-ring.plat-ring,
-.plat-listview.plat-vertical .plat-incremental .plat-listview-ring.plat-ring {
-  width: 2em;
-  height: 2em;
-}
-.plat-listview.plat-vertical .plat-refresh .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring,
-.plat-listview.plat-vertical .plat-incremental .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
+.plat-listview.plat-vertical .plat-refresh .plat-listview-ring.plat-ring-0 .plat-animated-ring,
+.plat-listview.plat-vertical .plat-incremental .plat-listview-ring.plat-ring-0 .plat-animated-ring {
   border-width: 0.2em;
 }
 .plat-listview.plat-vertical .plat-refresh {
@@ -3224,6 +3225,8 @@ h6 {
 }
 .plat-listview.plat-horizontal .plat-refresh .plat-listview-ring,
 .plat-listview.plat-horizontal .plat-incremental .plat-listview-ring {
+  width: 2em;
+  height: 2em;
   position: absolute;
   -webkit-transform: translate(0, -50%);
   -moz-transform: translate(0, -50%);
@@ -3237,13 +3240,8 @@ h6 {
   margin-right: 0.25em;
   top: 50%;
 }
-.plat-listview.plat-horizontal .plat-refresh .plat-listview-ring.plat-ring,
-.plat-listview.plat-horizontal .plat-incremental .plat-listview-ring.plat-ring {
-  width: 2em;
-  height: 2em;
-}
-.plat-listview.plat-horizontal .plat-refresh .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring,
-.plat-listview.plat-horizontal .plat-incremental .plat-listview-ring.plat-ring.plat-ring-0 .plat-animated-ring {
+.plat-listview.plat-horizontal .plat-refresh .plat-listview-ring.plat-ring-0 .plat-animated-ring,
+.plat-listview.plat-horizontal .plat-incremental .plat-listview-ring.plat-ring-0 .plat-animated-ring {
   border-width: 0.2em;
 }
 .plat-listview.plat-horizontal .plat-refresh {
@@ -3360,6 +3358,7 @@ h6 {
   left: 0;
   overflow: hidden;
   z-index: 999999;
+  background-color: transparent;
 }
 .plat-modal .plat-modal-container {
   width: 100%;
@@ -3801,10 +3800,10 @@ h6 {
   -ms-flex-pack: end;
   justify-content: flex-end;
 }
-.plat-modal.modal-prompt {
+.modal-prompt {
   background-color: rgba(0, 0, 0, 0.6);
 }
-.plat-modal.modal-prompt .plat-modal-container {
+.modal-prompt .plat-modal-container {
   -webkit-border-top-left-radius: 8px;
   border-top-left-radius: 8px;
   -webkit-border-top-right-radius: 8px;
@@ -3813,66 +3812,90 @@ h6 {
   border-bottom-left-radius: 8px;
   -webkit-border-bottom-right-radius: 8px;
   border-bottom-right-radius: 8px;
-  margin: 0 auto;
   width: 80%;
   max-width: 30em;
   height: auto;
+  background-color: #2d97d2;
 }
-.plat-modal.modal-prompt .plat-modal-container.plat-no-transition,
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-fade {
+.modal-prompt .plat-modal-container.plat-no-transition,
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-fade,
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-right,
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-left {
   top: 20%;
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
 }
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-up,
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-down {
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
+.modal-prompt .plat-modal-container.plat-no-transition,
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-fade,
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-down,
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-up {
+  -webkit-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+  -webkit-transform: translate3d(-50%, 0, 0);
+  -moz-transform: translate3d(-50%, 0, 0);
+  -ms-transform: translate3d(-50%, 0, 0);
+  transform: translate3d(-50%, 0, 0);
+  left: 50%;
 }
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-up {
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-down.plat-activate {
+  top: 20%;
+}
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-up {
   -webkit-transition: top 500ms;
   -moz-transition: top 500ms;
   transition: top 500ms;
   top: 100%;
+  bottom: unset;
 }
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-up.plat-activate {
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-up.plat-activate {
   top: 20%;
+  bottom: unset;
 }
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-down.plat-activate {
-  top: 20%;
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-right {
+  -webkit-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+  -webkit-transform: translate3d(-50%, 0, 0);
+  -moz-transform: translate3d(-50%, 0, 0);
+  -ms-transform: translate3d(-50%, 0, 0);
+  transform: translate3d(-50%, 0, 0);
 }
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-left,
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-right {
-  top: 20%;
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-right.plat-activate {
+  left: 50%;
 }
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-left.plat-activate,
-.plat-modal.modal-prompt .plat-modal-container.plat-modal-transition.plat-right.plat-activate {
-  left: 0;
-  right: 0;
-  margin-left: auto;
-  margin-right: auto;
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-left {
+  -webkit-transform: translate(50%, 0);
+  -moz-transform: translate(50%, 0);
+  -ms-transform: translate(50%, 0);
+  transform: translate(50%, 0);
+  -webkit-transform: translate3d(50%, 0, 0);
+  -moz-transform: translate3d(50%, 0, 0);
+  -ms-transform: translate3d(50%, 0, 0);
+  transform: translate3d(50%, 0, 0);
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-title {
+.modal-prompt .plat-modal-container.plat-modal-transition.plat-left.plat-activate {
+  right: 50%;
+}
+.modal-prompt .plat-modal-container .prompt-title {
   padding: 1em 2em;
-  border-bottom: 1px solid #e3e2e2;
+  border-bottom: 1px solid #e1dfdf;
   text-align: center;
   font-size: 110%;
+  color: #edecec;
+  background-color: #2d97d2;
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-body {
+.modal-prompt .plat-modal-container .prompt-body {
   padding: 1em 2em;
   text-align: center;
   background-color: #edecec;
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-action {
+.modal-prompt .plat-modal-container .prompt-action {
   text-align: center;
   padding: 1em 2em;
   background-color: #edecec;
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-action.button-group {
+.modal-prompt .plat-modal-container .prompt-action.button-group {
   display: -webkit-box;
   display: -webkit-flex;
   display: -moz-flex;
@@ -3883,7 +3906,7 @@ h6 {
   padding-bottom: 0;
   width: 100%;
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-action.button-group > button {
+.modal-prompt .plat-modal-container .prompt-action.button-group > button {
   -webkit-box-flex: 1;
   -webkit-flex: 1;
   -moz-box-flex: 1;
@@ -3894,18 +3917,18 @@ h6 {
   padding-top: 1em;
   padding-bottom: 1em;
   font-size: 110%;
-  border-width: 0;
-  border-top: 2px solid #e3e2e2;
+  border: none;
+  border-top: 2px solid #e1dfdf;
   background-color: transparent;
   color: #777777;
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-action.button-group > button:last-child {
-  border-left: 2px solid #e3e2e2;
+.modal-prompt .plat-modal-container .prompt-action.button-group > button:not(:first-child) {
+  border-left: 2px solid #e1dfdf;
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-action.button-group > button:hover {
-  opacity: 1;
+.modal-prompt .plat-modal-container .prompt-action.button-group > button:active {
+  background-color: #d4d2d2;
 }
-.plat-modal.modal-prompt .plat-modal-container .prompt-action.button-group > button.button-suggested {
+.modal-prompt .plat-modal-container .prompt-action.button-group > button.button-suggested {
   color: #444444;
 }
 .plat-progress {
@@ -3929,7 +3952,7 @@ h6 {
   -webkit-box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.13);
   box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.13);
   position: relative;
-  height: 8px;
+  height: 0.5em;
   width: 100%;
   background-color: #e2e2e5;
   overflow: hidden;
@@ -4408,8 +4431,8 @@ h6 {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.15);
-  box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: inset 0px 1px 1px 0px #c8c7cd;
+  box-shadow: inset 0px 1px 1px 0px #c8c7cd;
   position: relative;
   background-color: #e2e2e5;
   overflow: visible;
@@ -4445,21 +4468,21 @@ h6 {
   border-bottom-left-radius: 50%;
   -webkit-border-bottom-right-radius: 50%;
   border-bottom-right-radius: 50%;
-  -webkit-box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.25);
-  box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.25);
+  -webkit-box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.15);
+  box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.15);
   position: absolute;
-  width: 1.6em;
-  height: 1.6em;
+  width: 1.5em;
+  height: 1.5em;
   background-color: #ffffff;
-  border: 1px solid #e1dfdf;
+  border: 1px solid #d9d9d9;
   cursor: pointer;
 }
 .plat-range.plat-horizontal,
 .plat-range.plat-horizontal-reversed {
   -ms-touch-action: pan-y;
   touch-action: pan-y;
-  height: 1.6em;
-  padding: 0 0.8em;
+  height: 1.5em;
+  padding: 0 0.75em;
 }
 .plat-range.plat-horizontal .plat-range-container,
 .plat-range.plat-horizontal-reversed .plat-range-container {
@@ -4483,23 +4506,23 @@ h6 {
 .plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track .plat-lower-knob,
 .plat-range.plat-horizontal .plat-range-container .plat-range-track .plat-upper-knob,
 .plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track .plat-upper-knob {
-  -webkit-transform: translate(0, -0.8em);
-  -moz-transform: translate(0, -0.8em);
-  -ms-transform: translate(0, -0.8em);
-  transform: translate(0, -0.8em);
-  -webkit-transform: translate3d(0, -0.8em, 0);
-  -moz-transform: translate3d(0, -0.8em, 0);
-  -ms-transform: translate3d(0, -0.8em, 0);
-  transform: translate3d(0, -0.8em, 0);
+  -webkit-transform: translate(0, -0.75em);
+  -moz-transform: translate(0, -0.75em);
+  -ms-transform: translate(0, -0.75em);
+  transform: translate(0, -0.75em);
+  -webkit-transform: translate3d(0, -0.75em, 0);
+  -moz-transform: translate3d(0, -0.75em, 0);
+  -ms-transform: translate3d(0, -0.75em, 0);
+  transform: translate3d(0, -0.75em, 0);
   top: 0.25em;
 }
 .plat-range.plat-horizontal .plat-range-container .plat-range-track .plat-lower-knob,
 .plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track .plat-lower-knob {
-  left: -0.8em;
+  left: -0.75em;
 }
 .plat-range.plat-horizontal .plat-range-container .plat-range-track .plat-upper-knob,
 .plat-range.plat-horizontal-reversed .plat-range-container .plat-range-track .plat-upper-knob {
-  right: -0.8em;
+  right: -0.75em;
 }
 .plat-range.plat-horizontal .plat-range-container .plat-range-track {
   left: 0;
@@ -4529,8 +4552,8 @@ h6 {
 .plat-range.plat-vertical-reversed {
   -ms-touch-action: pan-x;
   touch-action: pan-x;
-  width: 1.6em;
-  padding: 0.8em 0;
+  width: 1.5em;
+  padding: 0.75em 0;
 }
 .plat-range.plat-vertical .plat-range-container,
 .plat-range.plat-vertical-reversed .plat-range-container {
@@ -4543,7 +4566,7 @@ h6 {
   -ms-transform: translate3d(-0.25em, 0, 0);
   transform: translate3d(-0.25em, 0, 0);
   left: 50%;
-  top: 0.8em;
+  top: 0.75em;
   width: 0.5em;
 }
 .plat-range.plat-vertical .plat-range-container .plat-range-track,
@@ -4555,23 +4578,23 @@ h6 {
 .plat-range.plat-vertical-reversed .plat-range-container .plat-range-track .plat-lower-knob,
 .plat-range.plat-vertical .plat-range-container .plat-range-track .plat-upper-knob,
 .plat-range.plat-vertical-reversed .plat-range-container .plat-range-track .plat-upper-knob {
-  -webkit-transform: translate(-0.8em, 0);
-  -moz-transform: translate(-0.8em, 0);
-  -ms-transform: translate(-0.8em, 0);
-  transform: translate(-0.8em, 0);
-  -webkit-transform: translate3d(-0.8em, 0, 0);
-  -moz-transform: translate3d(-0.8em, 0, 0);
-  -ms-transform: translate3d(-0.8em, 0, 0);
-  transform: translate3d(-0.8em, 0, 0);
+  -webkit-transform: translate(-0.75em, 0);
+  -moz-transform: translate(-0.75em, 0);
+  -ms-transform: translate(-0.75em, 0);
+  transform: translate(-0.75em, 0);
+  -webkit-transform: translate3d(-0.75em, 0, 0);
+  -moz-transform: translate3d(-0.75em, 0, 0);
+  -ms-transform: translate3d(-0.75em, 0, 0);
+  transform: translate3d(-0.75em, 0, 0);
   left: 0.25em;
 }
 .plat-range.plat-vertical .plat-range-container .plat-range-track .plat-lower-knob,
 .plat-range.plat-vertical-reversed .plat-range-container .plat-range-track .plat-lower-knob {
-  bottom: -0.8em;
+  bottom: -0.75em;
 }
 .plat-range.plat-vertical .plat-range-container .plat-range-track .plat-upper-knob,
 .plat-range.plat-vertical-reversed .plat-range-container .plat-range-track .plat-upper-knob {
-  top: -0.8em;
+  top: -0.75em;
 }
 .plat-range.plat-vertical .plat-range-container .plat-range-track {
   bottom: 0;
@@ -4710,8 +4733,8 @@ h6 {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.15);
-  box-shadow: inset 0px 1px 1px 0px rgba(0, 0, 0, 0.15);
+  -webkit-box-shadow: inset 0px 1px 1px 0px #c8c7cd;
+  box-shadow: inset 0px 1px 1px 0px #c8c7cd;
   position: relative;
   background-color: #e2e2e5;
   overflow: visible;
@@ -4746,21 +4769,21 @@ h6 {
   border-bottom-left-radius: 50%;
   -webkit-border-bottom-right-radius: 50%;
   border-bottom-right-radius: 50%;
-  -webkit-box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.25);
-  box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.25);
+  -webkit-box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.15);
+  box-shadow: 0px 1px 2px 0px rgba(50, 50, 50, 0.15);
   position: absolute;
-  width: 1.6em;
-  height: 1.6em;
+  width: 1.5em;
+  height: 1.5em;
   background-color: #ffffff;
-  border: 1px solid #e1dfdf;
+  border: 1px solid #d9d9d9;
   cursor: pointer;
 }
 .plat-slider.plat-horizontal,
 .plat-slider.plat-horizontal-reversed {
   -ms-touch-action: pan-y;
   touch-action: pan-y;
-  height: 1.6em;
-  padding: 0 0.8em;
+  height: 1.5em;
+  padding: 0 0.75em;
 }
 .plat-slider.plat-horizontal .plat-slider-container,
 .plat-slider.plat-horizontal-reversed .plat-slider-container {
@@ -4782,14 +4805,14 @@ h6 {
 }
 .plat-slider.plat-horizontal .plat-slider-container .plat-slider-track .plat-knob,
 .plat-slider.plat-horizontal-reversed .plat-slider-container .plat-slider-track .plat-knob {
-  -webkit-transform: translate(0, -0.8em);
-  -moz-transform: translate(0, -0.8em);
-  -ms-transform: translate(0, -0.8em);
-  transform: translate(0, -0.8em);
-  -webkit-transform: translate3d(0, -0.8em, 0);
-  -moz-transform: translate3d(0, -0.8em, 0);
-  -ms-transform: translate3d(0, -0.8em, 0);
-  transform: translate3d(0, -0.8em, 0);
+  -webkit-transform: translate(0, -0.75em);
+  -moz-transform: translate(0, -0.75em);
+  -ms-transform: translate(0, -0.75em);
+  transform: translate(0, -0.75em);
+  -webkit-transform: translate3d(0, -0.75em, 0);
+  -moz-transform: translate3d(0, -0.75em, 0);
+  -ms-transform: translate3d(0, -0.75em, 0);
+  transform: translate3d(0, -0.75em, 0);
   top: 0.25em;
 }
 .plat-slider.plat-horizontal .plat-slider-container .plat-slider-track.plat-transition-init,
@@ -4806,20 +4829,20 @@ h6 {
   left: 0;
 }
 .plat-slider.plat-horizontal .plat-slider-container .plat-slider-track .plat-knob {
-  right: -0.8em;
+  right: -0.75em;
 }
 .plat-slider.plat-horizontal-reversed .plat-slider-container .plat-slider-track {
   right: 0;
 }
 .plat-slider.plat-horizontal-reversed .plat-slider-container .plat-slider-track .plat-knob {
-  left: -0.8em;
+  left: -0.75em;
 }
 .plat-slider.plat-vertical,
 .plat-slider.plat-vertical-reversed {
   -ms-touch-action: pan-x;
   touch-action: pan-x;
-  width: 1.6em;
-  padding: 0.8em 0;
+  width: 1.5em;
+  padding: 0.75em 0;
 }
 .plat-slider.plat-vertical .plat-slider-container,
 .plat-slider.plat-vertical-reversed .plat-slider-container {
@@ -4832,7 +4855,7 @@ h6 {
   -ms-transform: translate3d(-0.25em, 0, 0);
   transform: translate3d(-0.25em, 0, 0);
   left: 50%;
-  top: 0.8em;
+  top: 0.75em;
   width: 0.5em;
 }
 .plat-slider.plat-vertical .plat-slider-container .plat-slider-track,
@@ -4842,14 +4865,14 @@ h6 {
 }
 .plat-slider.plat-vertical .plat-slider-container .plat-slider-track .plat-knob,
 .plat-slider.plat-vertical-reversed .plat-slider-container .plat-slider-track .plat-knob {
-  -webkit-transform: translate(-0.8em, 0);
-  -moz-transform: translate(-0.8em, 0);
-  -ms-transform: translate(-0.8em, 0);
-  transform: translate(-0.8em, 0);
-  -webkit-transform: translate3d(-0.8em, 0, 0);
-  -moz-transform: translate3d(-0.8em, 0, 0);
-  -ms-transform: translate3d(-0.8em, 0, 0);
-  transform: translate3d(-0.8em, 0, 0);
+  -webkit-transform: translate(-0.75em, 0);
+  -moz-transform: translate(-0.75em, 0);
+  -ms-transform: translate(-0.75em, 0);
+  transform: translate(-0.75em, 0);
+  -webkit-transform: translate3d(-0.75em, 0, 0);
+  -moz-transform: translate3d(-0.75em, 0, 0);
+  -ms-transform: translate3d(-0.75em, 0, 0);
+  transform: translate3d(-0.75em, 0, 0);
   left: 0.25em;
 }
 .plat-slider.plat-vertical .plat-slider-container .plat-slider-track.plat-transition-init,
@@ -4866,13 +4889,13 @@ h6 {
   bottom: 0;
 }
 .plat-slider.plat-vertical .plat-slider-container .plat-slider-track .plat-knob {
-  top: -0.8em;
+  top: -0.75em;
 }
 .plat-slider.plat-vertical-reversed .plat-slider-container .plat-slider-track {
   top: 0;
 }
 .plat-slider.plat-vertical-reversed .plat-slider-container .plat-slider-track .plat-knob {
-  bottom: -0.8em;
+  bottom: -0.75em;
 }
 .plat-slider.slider-primary .plat-slider-container .plat-slider-track {
   -webkit-box-shadow: inset 0px 1px 1px 0px #2479a8;
@@ -4907,14 +4930,14 @@ h6 {
   cursor: pointer;
 }
 .plat-toggle .plat-toggle-container {
-  -webkit-border-top-left-radius: 1.625em;
-  border-top-left-radius: 1.625em;
-  -webkit-border-top-right-radius: 1.625em;
-  border-top-right-radius: 1.625em;
-  -webkit-border-bottom-left-radius: 1.625em;
-  border-bottom-left-radius: 1.625em;
-  -webkit-border-bottom-right-radius: 1.625em;
-  border-bottom-right-radius: 1.625em;
+  -webkit-border-top-left-radius: 1.5em;
+  border-top-left-radius: 1.5em;
+  -webkit-border-top-right-radius: 1.5em;
+  border-top-right-radius: 1.5em;
+  -webkit-border-bottom-left-radius: 1.5em;
+  border-bottom-left-radius: 1.5em;
+  -webkit-border-bottom-right-radius: 1.5em;
+  border-bottom-right-radius: 1.5em;
   -webkit-box-sizing: content-box;
   -moz-box-sizing: content-box;
   box-sizing: content-box;
@@ -4925,8 +4948,8 @@ h6 {
   -webkit-transition: background-color 250ms, border-color 250ms;
   -moz-transition: background-color 250ms, border-color 250ms;
   transition: background-color 250ms, border-color 250ms;
-  width: 3.25em;
-  height: 1.625em;
+  width: 3em;
+  height: 1.5em;
   position: relative;
   overflow: hidden;
   background-color: #e2e2e5;
@@ -4941,8 +4964,6 @@ h6 {
   border-bottom-left-radius: 50%;
   -webkit-border-bottom-right-radius: 50%;
   border-bottom-right-radius: 50%;
-  -webkit-box-shadow: inset -1px 0px 3px 0px #edecec;
-  box-shadow: inset -1px 0px 3px 0px #edecec;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -4956,8 +4977,8 @@ h6 {
   position: absolute;
   top: 0;
   left: 0;
-  height: 1.625em;
-  width: 1.625em;
+  height: 1.5em;
+  width: 1.5em;
   background-color: #ffffff;
 }
 .plat-toggle .plat-toggle-container.plat-slide {
@@ -4965,9 +4986,7 @@ h6 {
   background-color: #53c670;
 }
 .plat-toggle .plat-toggle-container.plat-slide .plat-knob {
-  -webkit-box-shadow: inset 1px -2px 3px 0px #edecec;
-  box-shadow: inset 1px -2px 3px 0px #edecec;
-  left: 1.70625em;
+  left: 1.5em;
 }
 .plat-toggle.toggle-square .plat-toggle-container {
   -webkit-border-top-left-radius: 2px;
@@ -4990,24 +5009,24 @@ h6 {
   border-bottom-right-radius: 2px;
 }
 .plat-toggle.toggle-thin .plat-toggle-container {
-  height: 0.8125em;
+  height: 0.75em;
   overflow: visible;
   background-color: #aeacb5;
   border: none;
 }
 .plat-toggle.toggle-thin .plat-toggle-container .plat-knob {
-  -webkit-box-shadow: 2px 1px 2px 0px rgba(50, 50, 50, 0.24);
-  box-shadow: 2px 1px 2px 0px rgba(50, 50, 50, 0.24);
-  top: -0.40625em;
-  background-color: #ffffff;
-  border: 1px solid #edecec;
+  -webkit-box-shadow: 2px 1px 2px 0px rgba(50, 50, 50, 0.15);
+  box-shadow: 2px 1px 2px 0px rgba(50, 50, 50, 0.15);
+  top: -0.375em;
+  border: 1px solid #d9d9d9;
 }
 .plat-toggle.toggle-thin .plat-toggle-container.plat-slide {
   background-color: #53c670;
 }
 .plat-toggle.toggle-thin .plat-toggle-container.plat-slide .plat-knob {
-  -webkit-box-shadow: -2px 1px 2px 0px rgba(50, 50, 50, 0.24);
-  box-shadow: -2px 1px 2px 0px rgba(50, 50, 50, 0.24);
+  -webkit-box-shadow: -2px 1px 2px 0px rgba(50, 50, 50, 0.15);
+  box-shadow: -2px 1px 2px 0px rgba(50, 50, 50, 0.15);
+  left: 1.575em;
 }
 .plat-toggle.toggle-primary .plat-toggle-container.plat-slide {
   background-color: #2d97d2;

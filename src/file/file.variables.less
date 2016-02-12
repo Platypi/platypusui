@@ -17,7 +17,7 @@
         @height: 2.5em;
         @width: 16em;
         @button-width: 6em;
-        @border-radius: 4px;
+        @border-radius: @global-border-radius;
 
     /// =========== Variable File Styles =========== ///
 
@@ -25,109 +25,91 @@
             #platui > #mixins;
 
             & when (@prop = text-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        color: @value;
                     }
                 }
             }
             & when (@prop = input-background-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            background-color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        background-color: @value;
                     }
                 }
             }
             & when (@prop = input-border-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            border-color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        border-color: @value;
                     }
                 }
             }
             & when (@prop = button-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-button {
-                            color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-button {
+                        color: @value;
                     }
                 }
             }
             & when (@prop = button-background-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-button {
+                .plat-file-container {
+                    .plat-file-button {
+                        background-color: @value;
+                        border-color: @value;
+
+                        &:active {
+                            background-color: darken(@value, 10%);
+                        }
+
+                        &[disabled],
+                        &:disabled {
                             background-color: @value;
-                            border-color: @value;
-
-                            &:active {
-                                background-color: darken(@value, 10%);
-                            }
-
-                            &[disabled],
-                            &:disabled {
-                                background-color: @value;
-                            }
                         }
                     }
+                }
 
-                    &.file-outline {
-                        .plat-file-button {
-                            border-color: @value;
+                &.file-outline {
+                    .plat-file-button {
+                        border-color: @value;
+                        color: @value;
+
+                        &:active {
+                            background-color: @value;
+                        }
+
+                        &[disabled],
+                        &:disabled {
                             color: @value;
-
-                            &:active {
-                                background-color: @value;
-                            }
-
-                            &[disabled],
-                            &:disabled {
-                                color: @value;
-                            }
                         }
                     }
                 }
             }
             & when (@prop = height) {
-                &.plat-file {
-                    height: @value;
-                }
+                height: @value;
             }
             & when (@prop = width) {
-                &.plat-file {
-                    width: @value;
-                }
+                width: @value;
             }
             & when (@prop = button-width) {
-                &.plat-file {
-                    .plat-file-container {
-                        padding-right: @value;
+                .plat-file-container {
+                    padding-right: @value;
 
-                        .plat-file-button {
-                            width: @value;
-                        }
+                    .plat-file-button {
+                        width: @value;
                     }
                 }
             }
             & when (@prop = border-radius) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            .border-top-left-radius(@value);
-                            .border-bottom-left-radius(@value);
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        .border-top-left-radius(@value);
+                        .border-bottom-left-radius(@value);
+                    }
 
-                        .plat-file-button {
-                            .border-top-right-radius(@value);
-                            .border-bottom-right-radius(@value);
-                        }
+                    .plat-file-button {
+                        .border-top-right-radius(@value);
+                        .border-bottom-right-radius(@value);
                     }
                 }
             }
@@ -141,161 +123,141 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                &.plat-file {
-                    height: @height;
-                    width: @width;
+                height: @height;
+                width: @width;
 
-                    .plat-file-container {
-                        padding-right: @button-width;
+                .plat-file-container {
+                    padding-right: @button-width;
 
-                        .plat-file-input {
-                            .border-top-left-radius(@border-radius);
-                            .border-bottom-left-radius(@border-radius);
-                            background-color: @input-background-color;
-                            color: @text-color;
-                            border-color: @input-border-color;
-                        }
-
-                        .plat-file-button {
-                            .border-top-right-radius(@border-radius);
-                            .border-bottom-right-radius(@border-radius);
-                            width: @button-width;
-                            background-color: @button-background-color;
-                            color: @button-color;
-                            border-color: @button-background-color;
-
-                            &:active {
-                                background-color: darken(@button-background-color, 10%);
-                            }
-
-                            &[disabled],
-                            &:disabled {
-                                background-color: @button-background-color;
-                            }
-                        }
+                    .plat-file-input {
+                        .border-top-left-radius(@border-radius);
+                        .border-bottom-left-radius(@border-radius);
+                        background-color: @input-background-color;
+                        color: @text-color;
+                        border-color: @input-border-color;
                     }
 
-                    &.file-outline {
-                        .plat-file-button {
-                            border-color: @button-background-color;
+                    .plat-file-button {
+                        .border-top-right-radius(@border-radius);
+                        .border-bottom-right-radius(@border-radius);
+                        width: @button-width;
+                        background-color: @button-background-color;
+                        color: @button-color;
+                        border-color: @button-background-color;
+
+                        &:active {
+                            background-color: darken(@button-background-color, 10%);
+                        }
+
+                        &[disabled],
+                        &:disabled {
+                            background-color: @button-background-color;
+                        }
+                    }
+                }
+
+                &.file-outline {
+                    .plat-file-button {
+                        border-color: @button-background-color;
+                        color: @button-background-color;
+
+                        &:active {
+                            background-color: @button-background-color;
+                        }
+
+                        &[disabled],
+                        &:disabled {
                             color: @button-background-color;
-
-                            &:active {
-                                background-color: @button-background-color;
-                            }
-
-                            &[disabled],
-                            &:disabled {
-                                color: @button-background-color;
-                            }
                         }
                     }
                 }
             }
             & when (@prop = text-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        color: @value;
                     }
                 }
             }
             & when (@prop = input-background-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            background-color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        background-color: @value;
                     }
                 }
             }
             & when (@prop = input-border-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            border-color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        border-color: @value;
                     }
                 }
             }
             & when (@prop = button-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-button {
-                            color: @value;
-                        }
+                .plat-file-container {
+                    .plat-file-button {
+                        color: @value;
                     }
                 }
             }
             & when (@prop = button-background-color) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-button {
+                .plat-file-container {
+                    .plat-file-button {
+                        background-color: @value;
+                        border-color: @value;
+
+                        &:active {
+                            background-color: darken(@value, 10%);
+                        }
+
+                        &[disabled],
+                        &:disabled {
                             background-color: @value;
-                            border-color: @value;
-
-                            &:active {
-                                background-color: darken(@value, 10%);
-                            }
-
-                            &[disabled],
-                            &:disabled {
-                                background-color: @value;
-                            }
                         }
                     }
+                }
 
-                    &.file-outline {
-                        .plat-file-button {
-                            border-color: @value;
+                &.file-outline {
+                    .plat-file-button {
+                        border-color: @value;
+                        color: @value;
+
+                        &:active {
+                            background-color: @value;
+                        }
+
+                        &[disabled],
+                        &:disabled {
                             color: @value;
-
-                            &:active {
-                                background-color: @value;
-                            }
-
-                            &[disabled],
-                            &:disabled {
-                                color: @value;
-                            }
                         }
                     }
                 }
             }
             & when (@prop = height) {
-                &.plat-file {
-                    height: @value;
-                }
+                height: @value;
             }
             & when (@prop = width) {
-                &.plat-file {
-                    width: @value;
-                }
+                width: @value;
             }
             & when (@prop = button-width) {
-                &.plat-file {
-                    .plat-file-container {
-                        padding-right: @value;
+                .plat-file-container {
+                    padding-right: @value;
 
-                        .plat-file-button {
-                            width: @value;
-                        }
+                    .plat-file-button {
+                        width: @value;
                     }
                 }
             }
             & when (@prop = border-radius) {
-                &.plat-file {
-                    .plat-file-container {
-                        .plat-file-input {
-                            .border-top-left-radius(@value);
-                            .border-bottom-left-radius(@value);
-                        }
+                .plat-file-container {
+                    .plat-file-input {
+                        .border-top-left-radius(@value);
+                        .border-bottom-left-radius(@value);
+                    }
 
-                        .plat-file-button {
-                            .border-top-right-radius(@value);
-                            .border-bottom-right-radius(@value);
-                        }
+                    .plat-file-button {
+                        .border-top-right-radius(@value);
+                        .border-bottom-right-radius(@value);
                     }
                 }
             }

@@ -7,11 +7,11 @@
     /// =========== Progress Bar Colors =========== ///
 
         @fill-color: darken(@neutral-color, 10%);
-        @unfilled-color: lighten(@neutral-color, 10%);
+        @empty-color: lighten(@neutral-color, 10%);
 
     /// =========== Progress Bar Properties =========== ///
 
-        @height: 8px;
+        @height: 0.5em;
         @border: none;
         @border-radius: 8px;
         @fill-radius: 4px;
@@ -27,69 +27,53 @@
             #platui > #mixins;
 
             & when (@prop = fill-color) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            background-color: @value;
-                        }
-                    }
-                }
-            }
-            & when (@prop = unfilled-color) {
-                &.plat-progress {
-                    .plat-progress-container {
+                .plat-progress-container {
+                    .plat-animated-bar {
                         background-color: @value;
                     }
                 }
             }
+            & when (@prop = empty-color) {
+                .plat-progress-container {
+                    background-color: @value;
+                }
+            }
             & when (@prop = height) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        height: @value;
-                    }
+                .plat-progress-container {
+                    height: @value;
                 }
             }
             & when (@prop = border) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        border: @value;
-                    }
+                .plat-progress-container {
+                    border: @value;
                 }
             }
             & when (@prop = border-radius) {
-                &.plat-progress {
-                    .plat-progress-container {
+                .plat-progress-container {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = fill-radius) {
+                .plat-progress-container {
+                    .plat-animated-bar {
                         .border-radius(@value);
                     }
                 }
             }
-            & when (@prop = fill-radius) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            .border-radius(@value);
-                        }
-                    }
-                }
-            }
             & when (@prop = transition-time) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            &.plat-transition-init {
-                                .transition-duration(@value);
-                            }
+                .plat-progress-container {
+                    .plat-animated-bar {
+                        &.plat-transition-init {
+                            .transition-duration(@value);
                         }
                     }
                 }
             }
             & when (@prop = transition-function) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            &.plat-transition-init {
-                                .transition-timing-function(@value);
-                            }
+                .plat-progress-container {
+                    .plat-animated-bar {
+                        &.plat-transition-init {
+                            .transition-timing-function(@value);
                         }
                     }
                 }
@@ -104,89 +88,71 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .border-radius(@border-radius);
-                        height: @height;
-                        background-color: @unfilled-color;
-                        border: @border;
+                .plat-progress-container {
+                    .border-radius(@border-radius);
+                    height: @height;
+                    background-color: @empty-color;
+                    border: @border;
 
-                        .plat-animated-bar {
-                            .border-radius(@fill-radius);
-                            background-color: @fill-color;
+                    .plat-animated-bar {
+                        .border-radius(@fill-radius);
+                        background-color: @fill-color;
 
-                            &.plat-transition-init {
-                                .transition-duration(@transition-time);
-                                .transition-timing-function(@transition-function);
-                            }
+                        &.plat-transition-init {
+                            .transition-duration(@transition-time);
+                            .transition-timing-function(@transition-function);
                         }
                     }
                 }
             }
             & when (@prop = fill-color) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            background-color: @value;
-                        }
-                    }
-                }
-            }
-            & when (@prop = unfilled-color) {
-                &.plat-progress {
-                    .plat-progress-container {
+                .plat-progress-container {
+                    .plat-animated-bar {
                         background-color: @value;
                     }
                 }
             }
+            & when (@prop = empty-color) {
+                .plat-progress-container {
+                    background-color: @value;
+                }
+            }
             & when (@prop = height) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        height: @value;
-                    }
+                .plat-progress-container {
+                    height: @value;
                 }
             }
             & when (@prop = border) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        border: @value;
-                    }
+                .plat-progress-container {
+                    border: @value;
                 }
             }
             & when (@prop = border-radius) {
-                &.plat-progress {
-                    .plat-progress-container {
+                .plat-progress-container {
+                    .border-radius(@value);
+                }
+            }
+            & when (@prop = fill-radius) {
+                .plat-progress-container {
+                    .plat-animated-bar {
                         .border-radius(@value);
                     }
                 }
             }
-            & when (@prop = fill-radius) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            .border-radius(@value);
-                        }
-                    }
-                }
-            }
             & when (@prop = transition-time) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            &.plat-transition-init {
-                                .transition-duration(@value);
-                            }
+                .plat-progress-container {
+                    .plat-animated-bar {
+                        &.plat-transition-init {
+                            .transition-duration(@value);
                         }
                     }
                 }
             }
             & when (@prop = transition-function) {
-                &.plat-progress {
-                    .plat-progress-container {
-                        .plat-animated-bar {
-                            &.plat-transition-init {
-                                .transition-timing-function(@value);
-                            }
+                .plat-progress-container {
+                    .plat-animated-bar {
+                        &.plat-transition-init {
+                            .transition-timing-function(@value);
                         }
                     }
                 }

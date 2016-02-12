@@ -5,8 +5,6 @@
         #dependencies {
             #platui > #variables;
             @border-color: @neutral-color;
-            @border-bottom-width: 2px;
-            @outline-border-width: 1px;
         }
 
         #platui > #Input > #dependencies;
@@ -21,8 +19,13 @@
 
         @height: 2.5em;
         @width: 18em;
-        @border-bottom: @border-bottom-width solid @border-color;
-        @outline-border: @outline-border-width solid @border-color;
+        @border-style: solid;
+        @border-bottom-width: 2px;
+        @border-bottom-color: @border-color;
+        @border-bottom-fade: darken(@border-color, 25%);
+        @outline-border-width: 1px;
+        @outline-border-color: @border-color;
+        @outline-border-fade: darken(@border-color, 25%);
         @outline-border-radius: @global-border-radius;
 
     /// =========== Variable Input Styles =========== ///
@@ -31,7 +34,8 @@
             #platui > #mixins;
 
             & when (@prop = border-color) {
-                &.plat-input {
+                &:not(.input-outline),
+                &.input-outline {
                     border-color: @value;
 
                     &:focus {
@@ -39,70 +43,70 @@
                     }
                 }
             }
-            & when (@prop = border-bottom-width) {
-                &.plat-input {
-                    &:not(.input-outline) {
-                        border-bottom-width: @value;
-                    }
+            & when (@prop = border-style) {
+                &:not(.input-outline),
+                &.input-outline {
+                    border-style: @value;
                 }
             }
-            & when (@prop = border-bottom) {
-                &.plat-input {
-                    &:not(.input-outline) {
-                        border-bottom: @value;
+            & when (@prop = border-bottom-width) {
+                &:not(.input-outline) {
+                    border-width: @value;
+                }
+            }
+            & when (@prop = border-bottom-color) {
+                &:not(.input-outline) {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-bottom-fade) {
+                &:not(.input-outline) {
+                    &:focus {
+                        border-color: @value;
                     }
                 }
             }
             & when (@prop = outline-border-width) {
-                &.plat-input {
-                    &.input-outline {
-                        border-width: @value;
-                    }
+                &.input-outline {
+                    border-width: @value;
                 }
             }
-            & when (@prop = outline-border) {
-                &.plat-input {
-                    &.input-outline {
-                        border: @value;
+            & when (@prop = outline-border-color) {
+                &.input-outline {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = outline-border-fade) {
+                &.input-outline {
+                    &:focus {
+                        border-color: @value;
                     }
                 }
             }
             & when (@prop = outline-border-radius) {
-                &.plat-input {
-                    &.input-outline {
-                        .border-radius(@value);
-                    }
+                &.input-outline {
+                    .border-radius(@value);
                 }
             }
             & when (@prop = text-color) {
-                &.plat-input {
+                color: @value;
+            }
+            & when (@prop = background-color) {
+                background-color: @value;
+            }
+            & when (@prop = placeholder-color) {
+                &::-webkit-input-placeholder,
+                &::-moz-input-placeholder,
+                &:-moz-input-placeholder,
+                &:-ms-input-placeholder {
                     color: @value;
                 }
             }
-            & when (@prop = background-color) {
-                &.plat-input {
-                    background-color: @value;
-                }
-            }
-            & when (@prop = placeholder-color) {
-                &.plat-input {
-                    &::-webkit-input-placeholder,
-                    &::-moz-input-placeholder,
-                    &:-moz-input-placeholder,
-                    &:-ms-input-placeholder {
-                        color: @value;
-                    }
-                }
-            }
             & when (@prop = height) {
-                &.plat-input {
-                    height: @value;
-                }
+                height: @value;
             }
             & when (@prop = width) {
-                &.plat-input {
-                    width: @value;
-                }
+                width: @value;
             }
         }
     }
@@ -114,41 +118,42 @@
             #platui > #mixins;
 
             & when (@prop = undefined), (@value = undefined) {
-                @border-color-accent: darken(@border-color, 25%);
+                width: @width;
+                height: @height;
+                background-color: @background-color;
+                color: @text-color;
 
-                &.plat-input {
-                    width: @width;
-                    height: @height;
-                    background-color: @background-color;
-                    color: @text-color;
+            /// =========== Placeholder Styling =========== ///
 
-                /// =========== Placeholder Styling =========== ///
+                &::-webkit-input-placeholder,
+                &::-moz-input-placeholder,
+                &:-moz-input-placeholder,
+                &:-ms-input-placeholder {
+                    color: @placeholder-color;
+                }
 
-                    &::-webkit-input-placeholder,
-                    &::-moz-input-placeholder,
-                    &:-moz-input-placeholder,
-                    &:-ms-input-placeholder {
-                        color: @placeholder-color;
-                    }
-
-                    &:not(.input-outline) {
-                        border-bottom: @border-bottom;
-                    }
-
-                /// ============== Secondary Input =============== ///
-
-                    &.input-outline {
-                        .border-radius(@outline-border-radius);
-                        border: @outline-border;
-                    }
+                &:not(.input-outline) {
+                    border-bottom: @border-bottom-width @border-style @border-bottom-color;
 
                     &:focus {
-                        border-color: @border-color-accent;
+                        border-color: @border-bottom-fade;
+                    }
+                }
+
+            /// ============== Secondary Input =============== ///
+
+                &.input-outline {
+                    .border-radius(@outline-border-radius);
+                    border: @outline-border-width @border-style @outline-border-color;
+
+                    &:focus {
+                        border-color: @outline-border-fade;
                     }
                 }
             }
             & when (@prop = border-color) {
-                &.plat-input {
+                &:not(.input-outline),
+                &.input-outline {
                     border-color: @value;
 
                     &:focus {
@@ -156,70 +161,70 @@
                     }
                 }
             }
-            & when (@prop = border-bottom-width) {
-                &.plat-input {
-                    &:not(.input-outline) {
-                        border-bottom-width: @value;
-                    }
+            & when (@prop = border-style) {
+                &:not(.input-outline),
+                &.input-outline {
+                    border-style: @value;
                 }
             }
-            & when (@prop = border-bottom) {
-                &.plat-input {
-                    &:not(.input-outline) {
-                        border-bottom: @value;
+            & when (@prop = border-bottom-width) {
+                &:not(.input-outline) {
+                    border-width: @value;
+                }
+            }
+            & when (@prop = border-bottom-color) {
+                &:not(.input-outline) {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-bottom-fade) {
+                &:not(.input-outline) {
+                    &:focus {
+                        border-color: @value;
                     }
                 }
             }
             & when (@prop = outline-border-width) {
-                &.plat-input {
-                    &.input-outline {
-                        border-width: @value;
-                    }
+                &.input-outline {
+                    border-width: @value;
                 }
             }
-            & when (@prop = outline-border) {
-                &.plat-input {
-                    &.input-outline {
-                        border: @value;
+            & when (@prop = outline-border-color) {
+                &.input-outline {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = outline-border-fade) {
+                &.input-outline {
+                    &:focus {
+                        border-color: @value;
                     }
                 }
             }
             & when (@prop = outline-border-radius) {
-                &.plat-input {
-                    &.input-outline {
-                        .border-radius(@value);
-                    }
+                &.input-outline {
+                    .border-radius(@value);
                 }
             }
             & when (@prop = text-color) {
-                &.plat-input {
+                color: @value;
+            }
+            & when (@prop = background-color) {
+                background-color: @value;
+            }
+            & when (@prop = placeholder-color) {
+                &::-webkit-input-placeholder,
+                &::-moz-input-placeholder,
+                &:-moz-input-placeholder,
+                &:-ms-input-placeholder {
                     color: @value;
                 }
             }
-            & when (@prop = background-color) {
-                &.plat-input {
-                    background-color: @value;
-                }
-            }
-            & when (@prop = placeholder-color) {
-                &.plat-input {
-                    &::-webkit-input-placeholder,
-                    &::-moz-input-placeholder,
-                    &:-moz-input-placeholder,
-                    &:-ms-input-placeholder {
-                        color: @value;
-                    }
-                }
-            }
             & when (@prop = height) {
-                &.plat-input {
-                    height: @value;
-                }
+                height: @value;
             }
             & when (@prop = width) {
-                &.plat-input {
-                    width: @value;
-                }
+                width: @value;
             }
         }
     }
