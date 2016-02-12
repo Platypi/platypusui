@@ -7,7 +7,7 @@
     /// =========== Progress Bar Colors =========== ///
 
         @fill-color: darken(@neutral-color, 10%);
-        @unfilled-color: lighten(@neutral-color, 10%);
+        @empty-color: lighten(@neutral-color, 10%);
 
     /// =========== Progress Bar Properties =========== ///
 
@@ -33,7 +33,7 @@
                     }
                 }
             }
-            & when (@prop = unfilled-color) {
+            & when (@prop = empty-color) {
                 .plat-progress-container {
                     background-color: @value;
                 }
@@ -91,7 +91,7 @@
                 .plat-progress-container {
                     .border-radius(@border-radius);
                     height: @height;
-                    background-color: @unfilled-color;
+                    background-color: @empty-color;
                     border: @border;
 
                     .plat-animated-bar {
@@ -112,7 +112,7 @@
                     }
                 }
             }
-            & when (@prop = unfilled-color) {
+            & when (@prop = empty-color) {
                 .plat-progress-container {
                     background-color: @value;
                 }

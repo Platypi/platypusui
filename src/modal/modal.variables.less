@@ -63,10 +63,24 @@
         .plat-modal(@prop; @value) {
             #platui > #mixins;
 
-            & when (@prop = transition-time), (@prop = fade-transition-time) {
+            & when (@prop = transition-time) {
                 .plat-modal-container {
                     &.plat-modal-transition {
-                        .transition-duration(@value);
+                        &.plat-down
+                        &.plat-up,
+                        &.plat-left,
+                        &.plat-right {
+                            .transition-duration(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = fade-transition-time) {
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-fade {
+                            .transition-duration(@value);
+                        }
                     }
                 }
             }
@@ -594,10 +608,24 @@
                     }
                 }
             }
-            & when (@prop = transition-time), (@prop = fade-transition-time) {
+            & when (@prop = transition-time) {
                 .plat-modal-container {
                     &.plat-modal-transition {
-                        .transition-duration(@value);
+                        &.plat-down
+                        &.plat-up,
+                        &.plat-left,
+                        &.plat-right {
+                            .transition-duration(@value);
+                        }
+                    }
+                }
+            }
+            & when (@prop = fade-transition-time) {
+                .plat-modal-container {
+                    &.plat-modal-transition {
+                        &.plat-fade {
+                            .transition-duration(@value);
+                        }
                     }
                 }
             }
