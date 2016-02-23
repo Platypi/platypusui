@@ -22,10 +22,10 @@
         @border-style: solid;
         @border-bottom-width: 2px;
         @border-bottom-color: @border-color;
-        @border-bottom-fade: darken(@border-color, 25%);
+        @border-bottom-focus: darken(@border-color, 25%);
         @outline-border-width: 1px;
         @outline-border-color: @border-color;
-        @outline-border-fade: darken(@border-color, 25%);
+        @outline-border-focus: darken(@border-color, 25%);
         @outline-border-radius: @global-border-radius;
 
     /// =========== Variable Input Styles =========== ///
@@ -59,7 +59,7 @@
                     border-color: @value;
                 }
             }
-            & when (@prop = border-bottom-fade) {
+            & when (@prop = border-bottom-focus) {
                 &:not(.input-outline) {
                     &:focus {
                         border-color: @value;
@@ -76,7 +76,7 @@
                     border-color: @value;
                 }
             }
-            & when (@prop = outline-border-fade) {
+            & when (@prop = outline-border-focus) {
                 &.input-outline {
                     &:focus {
                         border-color: @value;
@@ -136,7 +136,7 @@
                     border-bottom: @border-bottom-width @border-style @border-bottom-color;
 
                     &:focus {
-                        border-color: @border-bottom-fade;
+                        border-color: @border-bottom-focus;
                     }
                 }
 
@@ -147,7 +147,7 @@
                     border: @outline-border-width @border-style @outline-border-color;
 
                     &:focus {
-                        border-color: @outline-border-fade;
+                        border-color: @outline-border-focus;
                     }
                 }
             }
@@ -177,7 +177,7 @@
                     border-color: @value;
                 }
             }
-            & when (@prop = border-bottom-fade) {
+            & when (@prop = border-bottom-focus) {
                 &:not(.input-outline) {
                     &:focus {
                         border-color: @value;
@@ -194,7 +194,7 @@
                     border-color: @value;
                 }
             }
-            & when (@prop = outline-border-fade) {
+            & when (@prop = outline-border-focus) {
                 &.input-outline {
                     &:focus {
                         border-color: @value;
