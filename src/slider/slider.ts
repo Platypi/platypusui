@@ -704,16 +704,16 @@ module platui {
 
             if (position <= 0) {
                 value = this.min;
-                if (value - this.value >= 0) {
-                    return;
-                }
                 position = 0;
+                if (value - this.value >= 0) {
+                    return position;
+                }
             } else if (position >= maxOffset) {
                 value = this.max;
-                if (value - this.value <= 0) {
-                    return;
-                }
                 position = maxOffset;
+                if (value - this.value <= 0) {
+                    return position;
+                }
             } else {
                 value = this._calculateValue(position);
             }
