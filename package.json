@@ -23,7 +23,6 @@
     "nodemon": "latest",
     "platypus": "latest",
     "rimraf": "latest",
-    "tsd": "latest",
     "typescript": "latest"
   },
   "scripts": {

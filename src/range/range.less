@@ -56,6 +56,11 @@
                     background-color: @knob-color;
                     border: @knob-border-width solid @knob-border-color;
                     cursor: pointer;
+                    z-index: 0;
+
+                    &.plat-top {
+                        z-index: 1;
+                    }
                 }
             }
         }

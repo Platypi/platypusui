@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "ES5",
+		"module": "system",
+		"target": "es5",
 		"noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "out": "dist/platypusui.js",
+        "outFile": "dist/platypusui.js",
         "sourceMap": false,
 		"watch": false
 	},
