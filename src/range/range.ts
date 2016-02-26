@@ -762,13 +762,13 @@ module platui {
 
             let target = <HTMLElement>ev.currentTarget,
                 lastTouch = this._lastTouch;
-            if (!this.utils.isNull(lastTouch)) {
-                if (lastTouch.target !== target) {
-                    lastTouch.target.style.zIndex = '0';
-                    target.style.zIndex = '1';
-                }
-            } else {
-                target.style.zIndex = '1';
+
+            if (this.utils.isNull(lastTouch)) {
+                this.dom.addClass(target, `${__Plat}top`);
+            } else if (lastTouch.target !== target) {
+                let dom = this.dom;
+                dom.addClass(target, `${__Plat}top`);
+                dom.removeClass(lastTouch.target, `${__Plat}top`);
             }
 
             this._lastTouch = {

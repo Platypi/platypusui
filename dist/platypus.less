@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.14.2 (https://platypi.io) 
+ * PlatypusUI v0.14.3 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -3134,9 +3134,18 @@
                 background-color: @value;
             }
             & when (@prop = placeholder-color) {
-                &::-webkit-input-placeholder,
-                &::-moz-input-placeholder,
-                &:-moz-input-placeholder,
+                &::-webkit-input-placeholder {
+                    color: @value;
+                }
+
+                &::-moz-input-placeholder {
+                    color: @value;
+                }
+
+                &:-moz-input-placeholder {
+                    color: @value;
+                }
+
                 &:-ms-input-placeholder {
                     color: @value;
                 }
@@ -3164,9 +3173,18 @@
 
             /// =========== Placeholder Styling =========== ///
 
-                &::-webkit-input-placeholder,
-                &::-moz-input-placeholder,
-                &:-moz-input-placeholder,
+                &::-webkit-input-placeholder {
+                    color: @placeholder-color;
+                }
+
+                &::-moz-input-placeholder {
+                    color: @placeholder-color;
+                }
+
+                &:-moz-input-placeholder {
+                    color: @placeholder-color;
+                }
+
                 &:-ms-input-placeholder {
                     color: @placeholder-color;
                 }
@@ -3252,9 +3270,18 @@
                 background-color: @value;
             }
             & when (@prop = placeholder-color) {
-                &::-webkit-input-placeholder,
-                &::-moz-input-placeholder,
-                &:-moz-input-placeholder,
+                &::-webkit-input-placeholder {
+                    color: @value;
+                }
+
+                &::-moz-input-placeholder {
+                    color: @value;
+                }
+
+                &:-moz-input-placeholder {
+                    color: @value;
+                }
+
                 &:-ms-input-placeholder {
                     color: @value;
                 }
@@ -9926,9 +9953,18 @@
 
     /// =========== Placeholder Styling =========== ///
 
-        &::-webkit-input-placeholder,
-        &::-moz-input-placeholder,
-        &:-moz-input-placeholder,
+        &::-webkit-input-placeholder {
+            color: @placeholder-color;
+        }
+
+        &::-moz-input-placeholder {
+            color: @placeholder-color;
+        }
+
+        &:-moz-input-placeholder {
+            color: @placeholder-color;
+        }
+
         &:-ms-input-placeholder {
             color: @placeholder-color;
         }
@@ -11270,6 +11306,11 @@
                     background-color: @knob-color;
                     border: @knob-border-width solid @knob-border-color;
                     cursor: pointer;
+                    z-index: 0;
+
+                    &.plat-top {
+                        z-index: 1;
+                    }
                 }
             }
         }

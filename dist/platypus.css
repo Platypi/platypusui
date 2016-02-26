@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.14.2 (https://platypi.io) 
+ * PlatypusUI v0.14.3 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -2898,9 +2898,15 @@ h6 {
   -webkit-appearance: none;
   margin: 0;
 }
-.plat-input::-webkit-input-placeholder,
-.plat-input::-moz-input-placeholder,
-.plat-input:-moz-input-placeholder,
+.plat-input::-webkit-input-placeholder {
+  color: #c8c7cd;
+}
+.plat-input::-moz-input-placeholder {
+  color: #c8c7cd;
+}
+.plat-input:-moz-input-placeholder {
+  color: #c8c7cd;
+}
 .plat-input:-ms-input-placeholder {
   color: #c8c7cd;
 }
@@ -4476,6 +4482,11 @@ h6 {
   background-color: #ffffff;
   border: 1px solid #d9d9d9;
   cursor: pointer;
+  z-index: 0;
+}
+.plat-range .plat-range-container .plat-range-track .plat-lower-knob.plat-top,
+.plat-range .plat-range-container .plat-range-track .plat-upper-knob.plat-top {
+  z-index: 1;
 }
 .plat-range.plat-horizontal,
 .plat-range.plat-horizontal-reversed {

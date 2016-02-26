@@ -32,9 +32,18 @@
 
     /// =========== Placeholder Styling =========== ///
 
-        &::-webkit-input-placeholder,
-        &::-moz-input-placeholder,
-        &:-moz-input-placeholder,
+        &::-webkit-input-placeholder {
+            color: @placeholder-color;
+        }
+
+        &::-moz-input-placeholder {
+            color: @placeholder-color;
+        }
+
+        &:-moz-input-placeholder {
+            color: @placeholder-color;
+        }
+
         &:-ms-input-placeholder {
             color: @placeholder-color;
         }
