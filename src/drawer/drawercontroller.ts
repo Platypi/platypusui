@@ -1715,7 +1715,8 @@ module platui {
          * @returns {boolean} Whether or not this control is valid.
          */
         protected _controllerIsValid(position: string): boolean {
-            let isNull = this.utils.isNull;
+            let utils = this.utils,
+                isNull = utils.isNull;
 
             if (isNull(this._drawerElement)) {
                 this._log.debug(`Could not find a corresponding control such as "${__Drawer}" for this "${this.type}."`);
@@ -1749,6 +1750,8 @@ module platui {
             this._clickEater = this._document.createElement('div');
             this._clickEater.className = `${__Plat}clickeater`;
 
+            this._styleRootElement();
+
             return true;
         }
 
@@ -1781,17 +1784,38 @@ module platui {
                 element = parent;
             }
 
+            return element;
+        }
+
+        /**
+         * @name _styleRootElement
+         * @memberof platui.DrawerController
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Handles root element styling
+         *
+         * @returns {void}
+         */
+        protected _styleRootElement(): void {
             let _window = this._window,
-                computedStyle = _window.getComputedStyle(element),
-                style = element.style,
+                utils = this.utils,
+                drawer = this._drawer,
+                rootElement = this._rootElement,
+                parent = rootElement.parentElement,
+                computedStyle = _window.getComputedStyle(rootElement),
+                style = rootElement.style,
                 position = computedStyle.position,
                 zIndex = Number(computedStyle.zIndex),
                 rootElementStyle: {
-                    position?: string; zIndex?: string; rootElement?: HTMLElement;
-                    parentOverflow?: { key: string; value: string; }
+                    position?: string;
+                    zIndex?: string;
+                    rootElement?: HTMLElement;
+                    parentOverflow?: { key: string; value: string; };
                 } = {
-                        rootElement: element
-                    };
+                    rootElement: rootElement
+                };
 
             if (position === 'static') {
                 rootElementStyle.position = style.position;
@@ -1803,7 +1827,7 @@ module platui {
                 style.zIndex = '1';
             }
 
-            if (isNode(parent)) {
+            if (utils.isNode(parent)) {
                 let computedParentStyle = _window.getComputedStyle(parent),
                     overflow = computedParentStyle.overflow;
 
@@ -1832,8 +1856,6 @@ module platui {
             }
 
             drawer.storedProperties = rootElementStyle;
-
-            return element;
         }
 
         /**
