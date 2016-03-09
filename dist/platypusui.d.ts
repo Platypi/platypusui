@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.14.3 (https://platypi.io)
+  * PlatypusUI v0.14.4 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -987,6 +987,10 @@ declare module platui {
           * Obtains the root element to translate.
           */
         protected _getRootElement(): HTMLElement;
+        /**
+          * Handles root element styling
+          */
+        protected _styleRootElement(): void;
         /**
           * Uninitializes the root element.
           */

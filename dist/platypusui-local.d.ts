@@ -977,6 +977,10 @@ export declare class DrawerController extends plat.ui.BindControl implements IUi
       */
     protected _getRootElement(): HTMLElement;
     /**
+      * Handles root element styling
+      */
+    protected _styleRootElement(): void;
+    /**
       * Uninitializes the root element.
       */
     protected _cleanRootElement(): void;
