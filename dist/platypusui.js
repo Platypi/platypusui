@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.14.3 (https://platypi.io)
+ * PlatypusUI v0.14.4 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1829,7 +1829,7 @@ var platui;
          * @param {string} position The position of the Drawer.
          */
         DrawerController.prototype._controllerIsValid = function (position) {
-            var isNull = this.utils.isNull;
+            var utils = this.utils, isNull = utils.isNull;
             if (isNull(this._drawerElement)) {
                 this._log.debug("Could not find a corresponding control such as \"" + __Drawer + "\" for this \"" + this.type + ".\"");
                 return false;
@@ -1857,6 +1857,7 @@ var platui;
             this._directionalTransitionPrep = __Drawer + "-transition-" + position;
             this._clickEater = this._document.createElement('div');
             this._clickEater.className = __Plat + "clickeater";
+            this._styleRootElement();
             return true;
         };
         /**
@@ -1871,8 +1872,14 @@ var platui;
             while (isNode(parent = element.parentElement) && !parent.contains(drawerEl)) {
                 element = parent;
             }
-            var _window = this._window, computedStyle = _window.getComputedStyle(element), style = element.style, position = computedStyle.position, zIndex = Number(computedStyle.zIndex), rootElementStyle = {
-                rootElement: element
+            return element;
+        };
+        /**
+         * Handles root element styling
+         */
+        DrawerController.prototype._styleRootElement = function () {
+            var _window = this._window, utils = this.utils, drawer = this._drawer, rootElement = this._rootElement, parent = rootElement.parentElement, computedStyle = _window.getComputedStyle(rootElement), style = rootElement.style, position = computedStyle.position, zIndex = Number(computedStyle.zIndex), rootElementStyle = {
+                rootElement: rootElement
             };
             if (position === 'static') {
                 rootElementStyle.position = style.position;
@@ -1882,7 +1889,7 @@ var platui;
                 rootElementStyle.zIndex = style.zIndex;
                 style.zIndex = '1';
             }
-            if (isNode(parent)) {
+            if (utils.isNode(parent)) {
                 var computedParentStyle = _window.getComputedStyle(parent), overflow = computedParentStyle.overflow;
                 if (overflow !== 'hidden') {
                     var computedDirectionalOverflow = void 0, key = void 0;
@@ -1905,7 +1912,6 @@ var platui;
                 }
             }
             drawer.storedProperties = rootElementStyle;
-            return element;
         };
         /**
          * Uninitializes the root element.
