@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.14.4 (https://platypi.io) 
+ * PlatypusUI v0.14.5 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -3821,7 +3821,7 @@ h6 {
   width: 80%;
   max-width: 30em;
   height: auto;
-  background-color: #2d97d2;
+  background-color: transparent;
 }
 .modal-prompt .plat-modal-container.plat-no-transition,
 .modal-prompt .plat-modal-container.plat-modal-transition.plat-fade,

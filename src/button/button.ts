@@ -40,6 +40,19 @@ module platui {
         replaceWith: string = 'button';
 
         /**
+         * @name replaceWith
+         * @memberof platui.Button
+         * @kind property
+         * @access public
+         *
+         * @type {HTMLButtonElement}
+         *
+         * @description
+         * The {@link platui.Button|Button Control}'s element type.
+         */
+        element: HTMLButtonElement;
+
+        /**
          * @name options
          * @memberof platui.Button
          * @kind property

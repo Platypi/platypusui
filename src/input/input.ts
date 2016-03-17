@@ -20,19 +20,6 @@ module platui {
         };
 
         /**
-         * @name element
-         * @memberof platui.Input
-         * @kind property
-         * @access public
-         *
-         * @type {HTMLInputElement}
-         *
-         * @description
-         * The {@link platui.Input|Input Control}'s element type.
-         */
-        element: HTMLInputElement;
-
-        /**
          * @name replaceWith
          * @memberof platui.Input
          * @kind property
@@ -44,6 +31,19 @@ module platui {
          * Replaces the control's element with an HTMLInputElement.
          */
         replaceWith: string = 'input';
+
+        /**
+         * @name element
+         * @memberof platui.Input
+         * @kind property
+         * @access public
+         *
+         * @type {HTMLInputElement}
+         *
+         * @description
+         * The {@link platui.Input|Input Control}'s element type.
+         */
+        element: HTMLInputElement;
 
         /**
          * @name options
