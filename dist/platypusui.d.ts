@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.14.4 (https://platypi.io)
+  * PlatypusUI v0.14.5 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -52,6 +52,10 @@ declare module platui {
           * a <button> node.
           */
         replaceWith: string;
+        /**
+          * The Button Control's element type.
+          */
+        element: HTMLButtonElement;
         /**
           * The evaluated plat-options object.
           */
@@ -1874,13 +1878,13 @@ declare module platui {
     class Input extends plat.ui.BindControl implements IUiControl, IFormControl {
         protected static _inject: any;
         /**
-          * The Input Control's element type.
-          */
-        element: HTMLInputElement;
-        /**
           * Replaces the control's element with an HTMLInputElement.
           */
         replaceWith: string;
+        /**
+          * The Input Control's element type.
+          */
+        element: HTMLInputElement;
         /**
           * The evaluated plat-options object.
           */

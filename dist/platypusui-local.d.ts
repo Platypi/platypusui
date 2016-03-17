@@ -42,6 +42,10 @@ export declare class Button extends plat.ui.BindControl implements IUiControl {
       */
     replaceWith: string;
     /**
+      * The Button Control's element type.
+      */
+    element: HTMLButtonElement;
+    /**
       * The evaluated plat-options object.
       */
     options: plat.observable.IObservableProperty<IButtonOptions>;
@@ -1863,13 +1867,13 @@ export interface ISelectOptions {
 export declare class Input extends plat.ui.BindControl implements IUiControl, IFormControl {
     protected static _inject: any;
     /**
-      * The Input Control's element type.
-      */
-    element: HTMLInputElement;
-    /**
       * Replaces the control's element with an HTMLInputElement.
       */
     replaceWith: string;
+    /**
+      * The Input Control's element type.
+      */
+    element: HTMLInputElement;
     /**
       * The evaluated plat-options object.
       */
