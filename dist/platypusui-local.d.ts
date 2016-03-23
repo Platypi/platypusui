@@ -1073,6 +1073,10 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
       */
     protected _scrollRemover: plat.IRemoveListener;
     /**
+      * A function to stop listening for DOM presence.
+      */
+    protected _presenceRemover: plat.IRemoveListener;
+    /**
       * The current scroll position of the modal.
       */
     protected _scrollTop: number;

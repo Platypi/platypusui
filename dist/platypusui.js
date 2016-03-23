@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.14.5 (https://platypi.io)
+ * PlatypusUI v0.14.6 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1979,6 +1979,10 @@ var platui;
              */
             this._scrollRemover = noop;
             /**
+             * A function to stop listening for DOM presence.
+             */
+            this._presenceRemover = noop;
+            /**
              * The current scroll position of the modal.
              */
             this._scrollTop = 0;
@@ -2033,10 +2037,10 @@ var platui;
          * Check for a transition and initialize it if necessary.
          */
         Modal.prototype.loaded = function () {
-            var options = this.options.value, transition = options.transition;
+            var options = this.options.value, transition = options.transition, element = this.element;
             // in case of cloning 
-            this._container = this._container || this.element.firstElementChild;
-            this._injectElement();
+            this._container = this._container || element.firstElementChild;
+            this._presenceRemover = this.dom.whenPresent(this._injectElement.bind(this), element);
             if (!this.utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._container, __Plat + "no-transition");
                 return;
@@ -2059,6 +2063,7 @@ var platui;
         Modal.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
             this._scrollRemover();
+            this._presenceRemover();
             if (this.utils.isFunction(this.__rejectFn)) {
                 this.__rejectFn();
                 this.__rejectFn = this.__resolveFn = null;

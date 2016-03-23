@@ -165,6 +165,19 @@ module platui {
         protected _scrollRemover: plat.IRemoveListener = noop;
 
         /**
+         * @name _presenceRemover
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.IRemoveListener}
+         *
+         * @description
+         * A function to stop listening for DOM presence.
+         */
+        protected _presenceRemover: plat.IRemoveListener = noop;
+
+        /**
          * @name _scrollTop
          * @memberof platui.Modal
          * @kind property
@@ -329,12 +342,12 @@ module platui {
          */
         loaded(): void {
             let options = this.options.value,
-                transition = options.transition;
+                transition = options.transition,
+                element = this.element;
 
             // in case of cloning
-            this._container = this._container || <HTMLElement>this.element.firstElementChild;
-
-            this._injectElement();
+            this._container = this._container || <HTMLElement>element.firstElementChild;
+            this._presenceRemover = this.dom.whenPresent(this._injectElement.bind(this), element);
 
             if (!this.utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._container, `${__Plat}no-transition`);
@@ -368,6 +381,7 @@ module platui {
         dispose(): void {
             super.dispose();
             this._scrollRemover();
+            this._presenceRemover();
 
             if (this.utils.isFunction(this.__rejectFn)) {
                 this.__rejectFn();
