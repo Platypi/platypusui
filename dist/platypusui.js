@@ -2033,9 +2033,9 @@ var platui;
          * Check for a transition and initialize it if necessary.
          */
         Modal.prototype.loaded = function () {
-            var options = this.options.value, transition = options.transition;
+            var options = this.options.value, transition = options.transition, element = this.element;
             // in case of cloning 
-            this._container = this._container || this.element.firstElementChild;
+            this._container = this._container || element.firstElementChild;
             this._injectElement();
             if (!this.utils.isString(transition) || transition === 'none') {
                 this.dom.addClass(this._container, __Plat + "no-transition");
@@ -2052,6 +2052,7 @@ var platui;
             }
             this._transitionEnd = animationEvents.$transitionEnd;
             this.dom.addClass(this._container, (__Plat + transition) + " " + __Plat + "modal-transition");
+            this.dom.whenPresent(this._injectElement.bind(this), element);
         };
         /**
          * Clean up the auto scroll.
