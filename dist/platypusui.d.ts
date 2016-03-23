@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.14.5 (https://platypi.io)
+  * PlatypusUI v0.14.6 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -1083,6 +1083,10 @@ declare module platui {
           * A function to stop listening to scroll events.
           */
         protected _scrollRemover: plat.IRemoveListener;
+        /**
+          * A function to stop listening for DOM presence.
+          */
+        protected _presenceRemover: plat.IRemoveListener;
         /**
           * The current scroll position of the modal.
           */
