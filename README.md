@@ -93,4 +93,4 @@ using `window.platui`.
 
 ## Documentation
 
-Documentation is available on the [Platypi website](http://getplatypi.com/docs).
+Documentation is available on the [Platypi Developers Website](https://developers.platypi.io).
