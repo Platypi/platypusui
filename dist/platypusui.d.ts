@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.14.6 (https://platypi.io)
+  * PlatypusUI v0.14.7 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -161,6 +161,10 @@ declare module platui {
           * Adds a listener for the tap event.
           */
         loaded(): void;
+        /**
+          * Toggles the active state of the control.
+          */
+        toggle(): void;
         /**
           * A function that allows this control to observe both the bound property itself as well as
           * potential child properties if being bound to an object.

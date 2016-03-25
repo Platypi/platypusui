@@ -151,6 +151,10 @@ export declare class Toggle extends plat.ui.BindControl implements IUiControl {
       */
     loaded(): void;
     /**
+      * Toggles the active state of the control.
+      */
+    toggle(): void;
+    /**
       * A function that allows this control to observe both the bound property itself as well as
       * potential child properties if being bound to an object.
       * @param {plat.observable.IImplementTwoWayBinding} binder The control that facilitates the

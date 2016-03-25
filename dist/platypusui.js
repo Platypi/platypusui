@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.14.6 (https://platypi.io)
+ * PlatypusUI v0.14.7 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -243,6 +243,12 @@ var platui;
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
             this._convertChecked();
+        };
+        /**
+         * Toggles the active state of the control.
+         */
+        Toggle.prototype.toggle = function () {
+            this._toggle(true);
         };
         /**
          * A function that allows this control to observe both the bound property itself as well as
