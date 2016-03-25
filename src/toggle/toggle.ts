@@ -122,6 +122,21 @@ module platui {
         }
 
         /**
+         * @name toggle
+         * @memberof platui.Toggle
+         * @kind function
+         * @access public
+         *
+         * @description
+         * Toggles the active state of the control.
+         *
+         * @returns {void}
+         */
+        toggle(): void {
+            this._toggle(true);
+        }
+
+        /**
          * @name observeProperties
          * @memberof platui.Toggle
          * @kind function
@@ -216,7 +231,7 @@ module platui {
          */
         protected _convertAttribute(newValue: any, oldValue?: any): void {
             let utils = this.utils;
-            
+
             if (utils.isBoolean(newValue)) {
                 return this._setBoundProperty(newValue, oldValue, null, true);
             } else if (!utils.isString(newValue)) {
