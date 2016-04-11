@@ -5,12 +5,12 @@
     #mixins {
         /// Animations
 
-        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @mode: none) {
+        .animate(@name; @duration: 200ms; @function: ease; @delay: 0s; @count: 1; @direction: normal; @fill-mode: none; @play-state: running) {
             #platui > #variables;
-            .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @webkit-moz-list);
+            .animate(@name; @duration; @function; @delay; @count; @direction; @fill-mode; @play-state; @webkit-moz-list);
         }
-        .animate(@name; @duration; @function; @delay; @count; @direction; @mode; @vendor-list) {
-            #platui > #__mixins > .vendor-loop(animation; @name @duration @function @delay @count @direction @mode; @vendor-list);
+        .animate(@name; @duration; @function; @delay; @count; @direction; @fill-mode; @play-state: running; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation; @name @duration @function @delay @count @direction @fill-mode @play-state; @vendor-list);
         }
 
         .animation(@args) {
@@ -45,12 +45,12 @@
             #platui > #__mixins > .vendor-loop(animation-duration; @duration; @vendor-list);
         }
 
-        .animation-fill-mode(@mode) {
+        .animation-fill-mode(@fill-mode) {
             #platui > #variables;
-            .animation-fill-mode(@mode; @webkit-moz-list);
+            .animation-fill-mode(@fill-mode; @webkit-moz-list);
         }
-        .animation-fill-mode(@mode; @vendor-list) {
-            #platui > #__mixins > .vendor-loop(animation-fill-mode; @mode; @vendor-list);
+        .animation-fill-mode(@fill-mode; @vendor-list) {
+            #platui > #__mixins > .vendor-loop(animation-fill-mode; @fill-mode; @vendor-list);
         }
 
         .animation-iteration-count(@count) {

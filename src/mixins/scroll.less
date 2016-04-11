@@ -18,8 +18,10 @@
             }
         }
 
-        .scrollbar(@size; @foreground-color; @background-color) {
+        .scrollbar(@size; @foreground-color; @background-color; @border-radius: 0) {
+            #platui > #mixins;
             .scrollbar-size(@size);
+            .scrollbar-border-radius(@border-radius);
             .scrollbar-foreground-color(@foreground-color);
             .scrollbar-background-color(@background-color);
         }
@@ -28,6 +30,13 @@
             ::-webkit-scrollbar {
                 width: @size;
                 height: @size;
+            }
+        }
+
+        .scrollbar-border-radius(@radius) {
+            ::-webkit-scrollbar-track,
+            ::-webkit-scrollbar-thumb {
+                #platui > #mixins > .border-radius(@radius);
             }
         }
 
@@ -41,7 +50,7 @@
 
         .scrollbar-background-color(@background-color) {
             scrollbar-track-color: @background-color;
-            
+
             ::-webkit-scrollbar-track {
                 background: @background-color;
             }
