@@ -23,31 +23,121 @@
 
         .transform-style(@style) {
             #platui > #variables;
-            .transform-style(@style; @webkit-moz-ms-list);
+            .transform-style(@style; @webkit-moz-list);
         }
         .transform-style(@style; @vendor-list) {
             #platui > #__mixins > .vendor-loop(transform-style; @style; @vendor-list);
         }
 
-        .rotate(@deg: 45deg) {
-            .transform(rotate(@deg));
+        .matrix(@args) {
+            .transform(matrix(@args));
         }
-        .rotate(@deg; @vendor-list) {
-            .transform(rotate(@deg); @vendor-list);
+        .matrix(@args; @vendor-list) {
+            .transform(matrix(@args); @vendor-list);
         }
 
-        .scale(@factor: 0.5) {
+        .matrix3d(@args) {
+            .transform(matrix3d(@args));
+        }
+        .matrix3d(@args; @vendor-list) {
+            .transform(matrix3d(@args); @vendor-list);
+        }
+
+        .rotate(@a) {
+            .transform(rotate(@a));
+        }
+        .rotate(@a; @vendor-list) {
+            .transform(rotate(@a); @vendor-list);
+        }
+
+        .rotateX(@a) {
+            .transform(rotateX(@a));
+        }
+        .rotateX(@a; @vendor-list) {
+            .transform(rotateX(@a); @vendor-list);
+        }
+
+        .rotateY(@a) {
+            .transform(rotateY(@a));
+        }
+        .rotateY(@a; @vendor-list) {
+            .transform(rotateY(@a); @vendor-list);
+        }
+
+        .rotateZ(@a) {
+            .transform(rotateZ(@a));
+        }
+        .rotateZ(@a; @vendor-list) {
+            .transform(rotateZ(@a); @vendor-list);
+        }
+
+        .rotate3d(@x; @y; @z; @a) {
+            .transform(rotate3d(@x, @y, @z, @a));
+        }
+        .rotate3d(@x; @y; @z; @a; @vendor-list) {
+            .transform(rotate3d(@x, @y, @z, @a); @vendor-list);
+        }
+
+        .scale(@factor) {
             .transform(scale(@factor));
         }
-        .scale(@factor; @vendor-list) {
-            .transform(scale(@factor); @vendor-list);
+        .scale(@factor1; @factor2) {
+            .transform(scale(@factor1, @factor2));
+        }
+        .scale(@factor1; @factor2; @vendor-list) {
+            .transform(scale(@factor1, @factor2); @vendor-list);
         }
 
-        .skew(@deg; @deg2) {
-            .transform(skew(@deg, @deg2));
+        .scaleX(@factor) {
+            .transform(scaleX(@factor));
         }
-        .skew(@deg; @deg2; @vendor-list) {
-            .transform(skew(@deg, @deg2); @vendor-list);
+        .scaleX(@factor; @vendor-list) {
+            .transform(scaleX(@factor); @vendor-list);
+        }
+
+        .scaleY(@factor) {
+            .transform(scaleY(@factor));
+        }
+        .scaleY(@factor; @vendor-list) {
+            .transform(scaleY(@factor); @vendor-list);
+        }
+
+        .scaleZ(@factor) {
+            .transform(scaleZ(@factor));
+        }
+        .scaleZ(@factor; @vendor-list) {
+            .transform(scaleZ(@factor); @vendor-list);
+        }
+
+        .scale3d(@x; @y; @z) {
+            .transform(scale3d(@x, @y, @z));
+        }
+        .scale3d(@x; @y; @z; @vendor-list) {
+            .transform(scale3d(@x, @y, @z); @vendor-list);
+        }
+
+        .skew(@a) {
+            .transform(skew(@a));
+        }
+        .skew(@a1; @a2) {
+            .transform(skew(@a1, @a2));
+        }
+        .skew(@a1; @a2; @vendor-list) {
+            .transform(skew(@a1, @a2); @vendor-list);
+        }
+
+        .skewX(@a) {
+            .transform(skewX(@a));
+        }
+        .skewX(@a; @vendor-list) {
+            .transform(skewX(@a); @vendor-list);
+        }
+
+        .skewY(@a) {
+            .transform(skewY(@a));
+        }
+        .skewY(@a; @vendor-list) {
+            .transform(skewY(@a); @vendor-list);
         }
 
         .perspective(@value: none) {
@@ -56,14 +146,6 @@
         }
         .perspective(@value; @vendor-list) {
             #platui > #__mixins > .vendor-loop(perspective; @value; @vendor-list);
-        }
-
-        .transform-style(@value: flat) {
-            #platui > #variables;
-            .transform-style(@value; @webkit-list);
-        }
-        .transform-style(@value; @vendor-list) {
-            #platui > #__mixins > .vendor-loop(transform-style; @value; @vendor-list);
         }
 
         .translate(@x; @y) {
