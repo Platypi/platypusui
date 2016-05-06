@@ -1,4 +1,3 @@
-"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -6,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.14.8 (https://platypi.io)
+ * PlatypusUI v0.15.0 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -194,7 +193,7 @@ var platui;
             _document: __Document
         };
         return Button;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.Button = Button;
     plat.register.control(__Button, Button);
     /**
@@ -357,7 +356,7 @@ var platui;
             this.dom.toggleClass(element, __Plat + this._targetType);
         };
         return Toggle;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.Toggle = Toggle;
     plat.register.control(__Toggle, Toggle);
     /**
@@ -451,7 +450,7 @@ var platui;
             _document: __Document
         };
         return Checkbox;
-    }(Toggle));
+    })(Toggle);
     platui.Checkbox = Checkbox;
     plat.register.control(__Checkbox, Checkbox);
     /**
@@ -564,9 +563,9 @@ var platui;
             if (this.isActive) {
                 var name_1 = this.groupName;
                 this.dispatchEvent(__RadioPrefix + name_1, plat.events.EventManager.DIRECT);
-                var remover_1 = this._removeListener = this.on(__RadioPrefix + name_1, function () {
+                var remover = this._removeListener = this.on(__RadioPrefix + name_1, function () {
                     _this._toggle();
-                    remover_1();
+                    remover();
                 });
             }
         };
@@ -600,7 +599,7 @@ var platui;
             return element.hasAttribute('value') ? element.getAttribute('value').trim() : element.textContent.trim();
         };
         return Radio;
-    }(Checkbox));
+    })(Checkbox);
     platui.Radio = Radio;
     plat.register.control(__Radio, Radio);
     /**
@@ -661,7 +660,7 @@ var platui;
             this.element.firstElementChild.insertBefore(fragment, null);
         };
         return ProgressRing;
-    }(plat.ui.TemplateControl));
+    })(plat.ui.TemplateControl);
     platui.ProgressRing = ProgressRing;
     plat.register.control(__ProgressRing, ProgressRing);
     /**
@@ -758,7 +757,7 @@ var platui;
             _animator: __Animator
         };
         return ProgressBar;
-    }(plat.ui.TemplateControl));
+    })(plat.ui.TemplateControl);
     platui.ProgressBar = ProgressBar;
     plat.register.control(__ProgressBar, ProgressBar);
     /**
@@ -1028,10 +1027,10 @@ var platui;
         Drawer.prototype._checkPreInit = function () {
             var _this = this;
             if (this._preInitializedValue) {
-                var utils_1 = this.utils;
-                utils_1.postpone(function () {
+                var utils = this.utils;
+                utils.postpone(function () {
                     var controller = _this._controllers[0];
-                    if (!utils_1.isNull(controller)) {
+                    if (!utils.isNull(controller)) {
                         controller.open();
                     }
                 });
@@ -1041,7 +1040,7 @@ var platui;
             _Promise: __Promise
         };
         return Drawer;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.Drawer = Drawer;
     plat.register.control(__Drawer, Drawer);
     /**
@@ -1459,7 +1458,7 @@ var platui;
                 this._addSwipeClose();
             }
             if (this._isTrack = (types.indexOf('track') !== -1)) {
-                var trackFn = this._track, trackDirection = void 0, clickEater = this._clickEater;
+                var trackFn = this._track, trackDirection, clickEater = this._clickEater;
                 switch (position) {
                     case 'left':
                     case 'right':
@@ -1474,14 +1473,14 @@ var platui;
                     default:
                         return;
                 }
-                var primaryTrack = __$track + __transitionNegate[trackDirection], secondaryTrack = __$track + trackDirection, removePrimaryTrack_1 = this.addEventListener(element, primaryTrack, trackFn, false), removeSecondaryTrack_1 = this.addEventListener(element, secondaryTrack, trackFn, false), openTrackPrimaryRemover_1 = this.addEventListener(clickEater, primaryTrack, trackFn, false), openTrackSecondaryRemover_1 = this.addEventListener(clickEater, secondaryTrack, trackFn, false);
+                var primaryTrack = __$track + __transitionNegate[trackDirection], secondaryTrack = __$track + trackDirection, removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false), removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false), openTrackPrimaryRemover = this.addEventListener(clickEater, primaryTrack, trackFn, false), openTrackSecondaryRemover = this.addEventListener(clickEater, secondaryTrack, trackFn, false);
                 this._removeTrack = function () {
-                    removePrimaryTrack_1();
-                    removeSecondaryTrack_1();
+                    removePrimaryTrack();
+                    removeSecondaryTrack();
                 };
                 this._openTrackRemover = function () {
-                    openTrackPrimaryRemover_1();
-                    openTrackSecondaryRemover_1();
+                    openTrackPrimaryRemover();
+                    openTrackSecondaryRemover();
                 };
                 if (isNull(this._lastTouch)) {
                     var touchStart = this._touchStart, touchEnd = this._touchEnd;
@@ -1898,7 +1897,7 @@ var platui;
             if (utils.isNode(parent)) {
                 var computedParentStyle = _window.getComputedStyle(parent), overflow = computedParentStyle.overflow;
                 if (overflow !== 'hidden') {
-                    var computedDirectionalOverflow = void 0, key = void 0;
+                    var computedDirectionalOverflow, key;
                     if (this._isVertical) {
                         key = 'overflowY';
                         computedDirectionalOverflow = computedParentStyle.overflowY;
@@ -1958,7 +1957,7 @@ var platui;
             _Promise: __Promise
         };
         return DrawerController;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.DrawerController = DrawerController;
     plat.register.control(__DrawerController, DrawerController);
     /**
@@ -2266,7 +2265,7 @@ var platui;
             _Promise: __Promise
         };
         return Modal;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.Modal = Modal;
     plat.register.control(__Modal, Modal);
     /**
@@ -2695,7 +2694,7 @@ var platui;
             _animator: __Animator
         };
         return Slider;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.Slider = Slider;
     plat.register.control(__Slider, Slider);
     /**
@@ -3357,7 +3356,7 @@ var platui;
             _animator: __Animator
         };
         return Range;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.Range = Range;
     plat.register.control(__Range, Range);
     /**
@@ -3387,7 +3386,7 @@ var platui;
             this.setClasses();
         };
         return Select;
-    }(plat.ui.controls.Select));
+    })(plat.ui.controls.Select);
     platui.Select = Select;
     plat.register.control(__Select, Select);
     /**
@@ -3664,7 +3663,7 @@ var platui;
             _regex: __Regex
         };
         return Input;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.Input = Input;
     plat.register.control(__Input, Input);
     /**
@@ -3919,7 +3918,7 @@ var platui;
             _compat: __Compat
         };
         return File;
-    }(plat.ui.BindControl));
+    })(plat.ui.BindControl);
     platui.File = File;
     plat.register.control(__File, File);
     /**
@@ -4094,12 +4093,30 @@ var platui;
             }
             // since we're extending the ForEach, we must set this animate to false as it refers to item manipulation. 
             this._animate = false;
-            var optionObj = this.options || {}, options = optionObj.value || {}, index = options.index, isNumber = utils.isNumber, orientation = this._validateOrientation(options.orientation), interval = options.interval, intervalNum = this._interval = isNumber(interval) ? Math.abs(interval) : 3000, suspend = options.suspend, dom = this.dom, element = this.element, viewport = this._viewport = element.firstElementChild;
+            var optionObj = this.options || {}, options = optionObj.value || {}, index = options.index, isNumber = utils.isNumber, orientation = this._validateOrientation(options.orientation), interval = options.interval, intervalNum = this._interval = isNumber(interval) ? Math.abs(interval) : 3000, suspend = options.suspend, dom = this.dom, element = this.element, transition, viewport = this._viewport = element.firstElementChild;
+            switch (options.transition) {
+                case 'fade':
+                    transition = 'fade';
+                    this._fade = 1;
+                    break;
+                case 'fade-in':
+                    transition = 'fade';
+                    this._fade = 2;
+                    break;
+                case 'fade-out':
+                    transition = 'fade';
+                    this._fade = 3;
+                    break;
+                default:
+                    transition = 'translate';
+                    this._fade = 0;
+                    break;
+            }
             this._container = viewport.firstElementChild;
             this._type = options.type || 'track swipe';
             this._isInfinite = options.infinite === true;
             this._suspend = Math.abs(isNumber(suspend) ? intervalNum - suspend : intervalNum - 3000);
-            dom.addClass(element, __Plat + orientation);
+            dom.addClass(element, (__Plat + orientation) + " " + (__Plat + transition));
             this._onLoad = function () {
                 var setIndex = _this._index;
                 index = isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : null;
@@ -4242,6 +4259,9 @@ var platui;
          * Resets the position of the Carousel to its current state.
          */
         Carousel.prototype._reset = function () {
+            if (this._fade) {
+                return;
+            }
             var animationOptions = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
@@ -4255,7 +4275,9 @@ var platui;
                 if (!this.utils.isUndefined(index)) {
                     this.inputChanged((this._index = undefined), index);
                 }
-                this._container.style[this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                if (!this._fade) {
+                    this._container.style[this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                }
                 this._removeEventListeners();
                 this._checkArrows();
                 return;
@@ -4313,28 +4335,10 @@ var platui;
                 if (!length) {
                     return _this.goToIndex(_this._nextIndex, true);
                 }
-                return _this._cancelCurrentAnimations().then(function () {
-                    if (!_this._outerEnd) {
-                        _this._initializeOuterNodes();
-                    }
-                    var animationOptions = {};
-                    animationOptions[_this._transform] = _this._calculateStaticTranslation(-length);
-                    var animation = _this._initiateAnimation({ properties: animationOptions }), nextIndex;
-                    if (reset) {
-                        _this._index = nextIndex = 0;
-                    }
-                    else {
-                        nextIndex = ++_this._index;
-                    }
-                    if (!inputChanged) {
-                        _this.inputChanged(_this._index, index);
-                    }
-                    return animation.then(function () {
-                        _this._handleNext(nextIndex, length);
-                        _this._checkArrows();
-                        return true;
-                    });
-                });
+                else if (_this._fade) {
+                    return _this._fadeNext(inputChanged, reset);
+                }
+                return _this._translateNext(length, inputChanged, reset);
             });
         };
         /**
@@ -4355,28 +4359,10 @@ var platui;
                 if (!length) {
                     return _this.goToIndex(_this._previousIndex, true);
                 }
-                return _this._cancelCurrentAnimations().then(function () {
-                    if (!_this._outerStart) {
-                        _this._initializeOuterNodes();
-                    }
-                    var animationOptions = {};
-                    animationOptions[_this._transform] = _this._calculateStaticTranslation(length);
-                    var animation = _this._initiateAnimation({ properties: animationOptions }), previousIndex;
-                    if (reset) {
-                        _this._index = previousIndex = _this._itemNodes.length - 1;
-                    }
-                    else {
-                        previousIndex = --_this._index;
-                    }
-                    if (!inputChanged) {
-                        _this.inputChanged(_this._index, index);
-                    }
-                    return animation.then(function () {
-                        _this._handlePrevious(previousIndex, -length);
-                        _this._checkArrows();
-                        return true;
-                    });
-                });
+                else if (_this._fade) {
+                    return _this._fadePrevious(inputChanged, reset);
+                }
+                return _this._translatePrevious(length, inputChanged, reset);
             });
         };
         /**
@@ -4502,13 +4488,101 @@ var platui;
             });
         };
         /**
+         * Executes the translation animation for going to the next item.
+         * @param {number} length The length to translate.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         */
+        Carousel.prototype._translateNext = function (length, inputChanged, reset) {
+            var _this = this;
+            return this._cancelCurrentAnimations().then(function () {
+                if (!_this._outerEnd) {
+                    _this._initializeOuterNodes();
+                }
+                var animationOptions = {};
+                animationOptions[_this._transform] = _this._calculateStaticTranslation(-length);
+                var animation = _this._initiateAnimation({ properties: animationOptions }), index = _this._index, nextIndex;
+                if (reset) {
+                    _this._index = nextIndex = 0;
+                }
+                else {
+                    nextIndex = ++_this._index;
+                }
+                if (!inputChanged) {
+                    _this.inputChanged(_this._index, index);
+                }
+                return animation.then(function () {
+                    _this._handleNext(nextIndex, length);
+                    _this._checkArrows();
+                    return true;
+                });
+            });
+        };
+        /**
+         * Executes the fade animations for going to the next item.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         */
+        Carousel.prototype._fadeNext = function (inputChanged, reset) {
+            var _this = this;
+            return this._cancelCurrentAnimations().then(function () {
+                if (!_this._outerEnd) {
+                    _this._initializeOuterNodes();
+                }
+                var index = _this._index, nextIndex, animator = _this._animator, dom = _this.dom, container = _this._container, childNodes = Array.prototype.slice.call(container.childNodes), nodeCount = childNodes.length, currentNode = childNodes[nodeCount - 5], nextNode = childNodes[nodeCount - 2], fadeType = _this._fade, animation, nextAnimation, endFn;
+                if (fadeType === 2) {
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.addClass(currentNode, __Plat + "middle");
+                    dom.addClass(nextNode, __Plat + "top");
+                    endFn = function () {
+                        dom.removeClass(currentNode, __Plat + "top");
+                        dom.removeClass(currentNode, __Plat + "middle");
+                    };
+                }
+                else if (fadeType === 3) {
+                    animation = animator.animate(currentNode, __Transition);
+                    dom.addClass(nextNode, __Plat + "top");
+                    dom.toggleClass(currentNode, __Plat + "top " + __Plat + "middle");
+                    endFn = function () {
+                        dom.removeClass(currentNode, __Plat + "middle");
+                    };
+                }
+                else {
+                    animation = animator.animate(currentNode, __Transition);
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.toggleClass(currentNode, __Plat + "top " + __Plat + "middle");
+                    dom.addClass(nextNode, __Plat + "top");
+                    endFn = function () {
+                        dom.removeClass(currentNode, __Plat + "middle");
+                    };
+                }
+                if (reset) {
+                    _this._index = nextIndex = 0;
+                }
+                else {
+                    nextIndex = ++_this._index;
+                }
+                if (!inputChanged) {
+                    _this.inputChanged(_this._index, index);
+                }
+                _this._nextAnimationThenable = nextAnimation;
+                _this._animationThenable = animation;
+                return _this._Promise.all([nextAnimation, animation]).then(function () {
+                    endFn();
+                    _this._handleNext(nextIndex, length);
+                    _this._checkArrows();
+                    return true;
+                });
+            });
+        };
+        /**
          * Handles swapping and translating nodes for a "next" operation.
          * @param {number} index The new index at the time of the animation.
          * @param {number} length The length to statically transition back to.
          */
         Carousel.prototype._handleNext = function (index, length) {
-            var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
-            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isArray = this.utils.isArray;
+            if (isInfinite && (nodeLength < 3 || isArray(this._preClonedNodes) || isArray(this._postClonedNodes))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -4516,8 +4590,10 @@ var platui;
             if (this._outerStart) {
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
-                    container.style[this._transform] = this._calculateStaticTranslation(length);
-                    this._forceRepaint(container);
+                    if (!this._fade) {
+                        container.style[this._transform] = this._calculateStaticTranslation(length);
+                        this._forceRepaint(container);
+                    }
                 }
             }
             else {
@@ -4530,13 +4606,101 @@ var platui;
             container.insertBefore(itemNodes[this._nextIndex], null);
         };
         /**
+         * Executes the translation animation for going to the previous item.
+         * @param {number} length The length to translate.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         */
+        Carousel.prototype._translatePrevious = function (length, inputChanged, reset) {
+            var _this = this;
+            return this._cancelCurrentAnimations().then(function () {
+                if (!_this._outerStart) {
+                    _this._initializeOuterNodes();
+                }
+                var animationOptions = {};
+                animationOptions[_this._transform] = _this._calculateStaticTranslation(length);
+                var animation = _this._initiateAnimation({ properties: animationOptions }), previousIndex, index = _this._index;
+                if (reset) {
+                    _this._index = previousIndex = _this._itemNodes.length - 1;
+                }
+                else {
+                    previousIndex = --_this._index;
+                }
+                if (!inputChanged) {
+                    _this.inputChanged(_this._index, index);
+                }
+                return animation.then(function () {
+                    _this._handlePrevious(previousIndex, -length);
+                    _this._checkArrows();
+                    return true;
+                });
+            });
+        };
+        /**
+         * Executes the fade animations for going to the previous item.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         */
+        Carousel.prototype._fadePrevious = function (inputChanged, reset) {
+            var _this = this;
+            return this._cancelCurrentAnimations().then(function () {
+                if (!_this._outerStart) {
+                    _this._initializeOuterNodes();
+                }
+                var index = _this._index, previousIndex, animator = _this._animator, dom = _this.dom, container = _this._container, childNodes = Array.prototype.slice.call(container.childNodes), currentNode = childNodes[4], nextNode = childNodes[1], fadeType = _this._fade, animation, nextAnimation, endFn;
+                if (fadeType === 2) {
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.addClass(currentNode, __Plat + "middle");
+                    dom.addClass(nextNode, __Plat + "top");
+                    endFn = function () {
+                        dom.removeClass(currentNode, __Plat + "top");
+                        dom.removeClass(currentNode, __Plat + "middle");
+                    };
+                }
+                else if (fadeType === 3) {
+                    animation = animator.animate(currentNode, __Transition);
+                    dom.addClass(nextNode, __Plat + "top");
+                    dom.toggleClass(currentNode, __Plat + "top " + __Plat + "middle");
+                    endFn = function () {
+                        dom.removeClass(currentNode, __Plat + "middle");
+                    };
+                }
+                else {
+                    animation = animator.animate(currentNode, __Transition);
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.toggleClass(currentNode, __Plat + "top " + __Plat + "middle");
+                    dom.addClass(nextNode, __Plat + "top");
+                    endFn = function () {
+                        dom.removeClass(currentNode, __Plat + "middle");
+                    };
+                }
+                if (reset) {
+                    _this._index = previousIndex = _this._itemNodes.length - 1;
+                }
+                else {
+                    previousIndex = --_this._index;
+                }
+                if (!inputChanged) {
+                    _this.inputChanged(_this._index, index);
+                }
+                _this._nextAnimationThenable = nextAnimation;
+                _this._animationThenable = animation;
+                return _this._Promise.all([nextAnimation, animation]).then(function () {
+                    endFn();
+                    _this._handlePrevious(previousIndex, -length);
+                    _this._checkArrows();
+                    return true;
+                });
+            });
+        };
+        /**
          * Handles swapping and translating nodes for a "previous" operation.
          * @param {number} index The new index at the time of the animation.
          * @param {number} length The length to statically transition back to.
          */
         Carousel.prototype._handlePrevious = function (index, length) {
-            var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isNode = this.utils.isNode;
-            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            var isInfinite = this._isInfinite, itemNodes = this._itemNodes, nodeLength = itemNodes.length, isArray = this.utils.isArray;
+            if (isInfinite && (nodeLength < 3 || isArray(this._preClonedNodes) || isArray(this._postClonedNodes))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -4554,6 +4718,9 @@ var platui;
                 return;
             }
             container.insertBefore(itemNodes[this._previousIndex], container.firstChild);
+            if (this._fade) {
+                return;
+            }
             container.style[this._transform] = this._calculateStaticTranslation(length);
             this._forceRepaint(container);
         };
@@ -4607,10 +4774,17 @@ var platui;
             if (!innerNodesCleared) {
                 return false;
             }
+            var isFade = this._fade, fragment = this._itemNodes[index];
+            if (isFade) {
+                var node = fragment.childNodes[1];
+                this.dom.addClass(node, __Plat + "top");
+            }
             var container = this._container;
-            container.insertBefore(this._itemNodes[index], null);
-            container.style[this._transform] = this._calculateStaticTranslation(-this._currentOffset);
-            this._forceRepaint(container);
+            container.insertBefore(fragment, null);
+            if (!isFade) {
+                container.style[this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                this._forceRepaint(container);
+            }
             this._initializeOuterNodes();
             this._checkArrows();
             return true;
@@ -4645,8 +4819,10 @@ var platui;
                         nodeToInsert = itemNodes[this._previousIndex];
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
-                            container.style[this._transform] = this._calculateStaticTranslation(-length);
-                            this._forceRepaint(container);
+                            if (!this._fade) {
+                                container.style[this._transform] = this._calculateStaticTranslation(-length);
+                                this._forceRepaint(container);
+                            }
                             this._outerStart = true;
                         }
                     }
@@ -4705,6 +4881,9 @@ var platui;
             if (types.indexOf('auto') !== -1) {
                 this._initializeAuto();
             }
+            if (this._fade) {
+                return;
+            }
             var fired = false;
             this.addEventListener(this._window, 'resize', function () {
                 if (fired) {
@@ -4750,32 +4929,48 @@ var platui;
             if (outerStart && outerEnd) {
                 return;
             }
-            var container = this._container;
+            var container = this._container, doc = this._document, startNode, endNode, clone;
             if (!outerEnd) {
-                var postClone = this._postClonedNode = container.firstElementChild.cloneNode(true);
-                container.insertBefore(postClone, null);
+                startNode = doc.createComment(__Carousel + " clone: start node");
+                endNode = doc.createComment(__Carousel + " clone: end node");
+                clone = container.firstElementChild.cloneNode(true);
+                this._postClonedNodes = [startNode, clone, endNode];
+                container.insertBefore(startNode, null);
+                container.insertBefore(clone, null);
+                container.insertBefore(endNode, null);
                 this._outerEnd = true;
             }
             if (!outerStart) {
-                var preClone = this._preClonedNode = container.lastElementChild.cloneNode(true);
-                container.insertBefore(preClone, container.firstChild);
-                container.style[this._transform] = this._calculateStaticTranslation(length);
-                this._forceRepaint(container);
+                startNode = doc.createComment(__Carousel + " clone: start node");
+                endNode = doc.createComment(__Carousel + " clone: end node");
+                clone = container.lastElementChild.cloneNode(true);
+                this._preClonedNodes = [startNode, clone, endNode];
+                container.insertBefore(endNode, container.firstChild);
+                container.insertBefore(clone, container.firstChild);
+                container.insertBefore(startNode, container.firstChild);
                 this._outerStart = true;
+                if (!this._fade) {
+                    container.style[this._transform] = this._calculateStaticTranslation(length);
+                    this._forceRepaint(container);
+                }
             }
         };
         /**
          * Removes the clones for infinite scrolling.
          */
         Carousel.prototype._removeClones = function () {
-            var container = this._container, preClone = this._preClonedNode, postClone = this._postClonedNode, isNode = this.utils.isNode;
-            if (isNode(preClone) && container.contains(preClone)) {
-                container.removeChild(preClone);
+            var container = this._container, preClones = this._preClonedNodes, postClones = this._postClonedNodes, isArray = this.utils.isArray;
+            if (isArray(preClones)) {
+                container.removeChild(preClones[0]);
+                container.removeChild(preClones[1]);
+                container.removeChild(preClones[2]);
             }
-            if (isNode(postClone) && container.contains(postClone)) {
-                container.removeChild(postClone);
+            if (isArray(postClones)) {
+                container.removeChild(postClones[0]);
+                container.removeChild(postClones[1]);
+                container.removeChild(postClones[2]);
             }
-            this._preClonedNode = this._postClonedNode = null;
+            this._preClonedNodes = this._postClonedNodes = null;
         };
         /**
          * Adds all necessary elements and event listeners to setup auto scroll.
@@ -5016,6 +5211,10 @@ var platui;
             if (!this._inTouch) {
                 return;
             }
+            else if (this._fade) {
+                this._hasMoved = true;
+                return;
+            }
             else if (!this._hasMoved) {
                 this._cancelCurrentAnimations().then(function () {
                     if (!(_this._outerStart && _this._outerEnd)) {
@@ -5144,6 +5343,16 @@ var platui;
          * Cancels the current animation.
          */
         Carousel.prototype._cancelCurrentAnimations = function () {
+            if (this._fade) {
+                var isNull = this.utils.isNull, animation, nextAnimation;
+                if (!isNull(this._nextAnimationThenable)) {
+                    nextAnimation = this._nextAnimationThenable.cancel();
+                }
+                if (!isNull(this._animationThenable)) {
+                    animation = this._animationThenable.cancel();
+                }
+                return this._Promise.all([animation, nextAnimation]);
+            }
             if (this.utils.isNull(this._animationThenable)) {
                 return this._Promise.resolve();
             }
@@ -5170,7 +5379,7 @@ var platui;
             _TemplateControlFactory: __TemplateControlFactory
         };
         return Carousel;
-    }(plat.ui.controls.ForEach));
+    })(plat.ui.controls.ForEach);
     platui.Carousel = Carousel;
     plat.register.control(__Carousel, Carousel);
     /**
@@ -5575,17 +5784,17 @@ var platui;
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
             this._createItems(0, (group.items || []).length, groupHash, 0);
             if (animate) {
-                var animationQueue_1 = this._defaultGroup.animationQueue, animation_1 = {
+                var animationQueue = this._defaultGroup.animationQueue, animation = {
                     animation: this._animator.enter(fragment, __Enter, this._container).then(function () {
-                        var index = animationQueue_1.indexOf(animation_1);
+                        var index = animationQueue.indexOf(animation);
                         if (index > -1) {
-                            animationQueue_1.splice(index, 1);
+                            animationQueue.splice(index, 1);
                         }
                         utils.requestAnimationFrame(_this._setGroupContainerPadding.bind(_this, groupContainer));
                     }),
                     op: null
                 };
-                animationQueue_1.push(animation_1);
+                animationQueue.push(animation);
                 return;
             }
             this._container.insertBefore(fragment, null);
@@ -5768,17 +5977,17 @@ var platui;
                 return;
             }
             else if (animate === true) {
-                var animationQueue_2 = opGroup.animationQueue, animation_2 = {
+                var animationQueue = opGroup.animationQueue, animation = {
                     animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then(function () {
-                        var animationIndex = animationQueue_2.indexOf(animation_2);
+                        var animationIndex = animationQueue.indexOf(animation);
                         if (animationIndex === -1) {
                             return;
                         }
-                        animationQueue_2.splice(animationIndex, 1);
+                        animationQueue.splice(animationIndex, 1);
                     }),
                     op: null
                 };
-                animationQueue_2.push(animation_2);
+                animationQueue.push(animation);
             }
             else {
                 opGroup.itemContainer.insertBefore(node, null);
@@ -5920,21 +6129,21 @@ var platui;
             var progressRingContainer;
             switch (this._loading) {
                 case 'infinite':
-                    var removeScroll_1, removeRequest_1 = noop;
-                    removeScroll_1 = this.addEventListener(this._scrollContainer, 'scroll', function () {
+                    var removeScroll, removeRequest = noop;
+                    removeScroll = this.addEventListener(this._scrollContainer, 'scroll', function () {
                         if (!_this._scrollReady) {
                             return;
                         }
                         _this._scrollReady = false;
-                        removeRequest_1 = _this.utils.requestAnimationFrame(function () {
+                        removeRequest = _this.utils.requestAnimationFrame(function () {
                             _this._scrollReady = true;
                             _this._onScroll();
                         });
                     }, false);
                     this._removeScroll = function () {
                         _this._scrollReady = false;
-                        removeRequest_1();
-                        removeScroll_1();
+                        removeRequest();
+                        removeScroll();
                     };
                     if (showRing) {
                         progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
@@ -5983,22 +6192,22 @@ var platui;
                 return;
             }
             else if (this._scrollPosition >= scrollLength) {
-                var utils_2 = this.utils, itemsRemain = this._requestItems();
+                var utils = this.utils, itemsRemain = this._requestItems();
                 if (itemsRemain === false) {
                     this._removeScroll();
                 }
-                else if (utils_2.isPromise(itemsRemain)) {
-                    var progressRing_1 = this._loadingProgressRing, showProgress_1 = !utils_2.isNull(progressRing_1), container_1 = this._container;
+                else if (utils.isPromise(itemsRemain)) {
+                    var progressRing = this._loadingProgressRing, showProgress = !utils.isNull(progressRing), container = this._container;
                     this._scrollReady = false;
-                    if (showProgress_1) {
-                        utils_2.requestAnimationFrame(function () {
-                            container_1.insertBefore(progressRing_1, null);
+                    if (showProgress) {
+                        utils.requestAnimationFrame(function () {
+                            container.insertBefore(progressRing, null);
                         });
                     }
                     itemsRemain.then(function (moreItemsRemain) {
-                        if (showProgress_1) {
-                            utils_2.requestAnimationFrame(function () {
-                                container_1.removeChild(progressRing_1);
+                        if (showProgress) {
+                            utils.requestAnimationFrame(function () {
+                                container.removeChild(progressRing);
                             });
                         }
                         if (moreItemsRemain === false) {
@@ -6008,7 +6217,7 @@ var platui;
                     });
                 }
                 else {
-                    utils_2.postpone(function () {
+                    utils.postpone(function () {
                         _this.itemsLoaded.then(function () {
                             if (_this._scrollReady) {
                                 _this._handleScroll();
@@ -6168,7 +6377,7 @@ var platui;
             }
             var animationOptions = {}, dom = this.dom, viewport = this._viewport, progressRing = refreshing ? this._refreshProgressRing : this._loadingProgressRing, isActionState = state === 3, nextTranslation;
             if (isActionState) {
-                var offset = void 0;
+                var offset;
                 if (this._isVertical) {
                     offset = refreshing ? progressRing.offsetHeight : -progressRing.offsetHeight;
                     nextTranslation = "translate3d(0," + offset + "px,0)";
@@ -6223,7 +6432,7 @@ var platui;
                 return;
             }
             if (!this._isLoading) {
-                var scrollContainer = this._scrollContainer, scrollLength = void 0, threshold = void 0;
+                var scrollContainer = this._scrollContainer, scrollLength, threshold;
                 if (this._isVertical) {
                     if (ev.direction.y !== 'up') {
                         return;
@@ -6475,7 +6684,7 @@ var platui;
                 if (animating) {
                     this._cancelCurrentAnimations();
                 }
-                var newLength = change.object.length, itemCount_1 = currentLength - newLength;
+                var newLength = change.object.length, itemCount = currentLength - newLength;
                 if (newLength > currentLength) {
                     if (utils.isFunction(this._templateSelector)) {
                         if (utils.isNull(change.index)) {
@@ -6487,24 +6696,24 @@ var platui;
                         return;
                     }
                     // itemCount will be negative 
-                    this._createItems(currentLength, -itemCount_1, opGroup, 0);
+                    this._createItems(currentLength, -itemCount, opGroup, 0);
                 }
                 else if (currentLength > newLength) {
-                    if (opGroup.itemCount >= itemCount_1) {
-                        opGroup.itemCount -= itemCount_1;
+                    if (opGroup.itemCount >= itemCount) {
+                        opGroup.itemCount -= itemCount;
                     }
                     else {
                         opGroup.itemCount = 0;
                     }
                     this._Promise.all(addQueue).then(function () {
-                        _this._removeItems(currentLength - itemCount_1, itemCount_1, opGroup);
+                        _this._removeItems(currentLength - itemCount, itemCount, opGroup);
                     });
                 }
                 return;
             }
             var removeCount = change.removed.length, animationQueue = opGroup.animationQueue;
             if (addCount > removeCount) {
-                var itemAddCount = addCount - removeCount, animationCount = void 0;
+                var itemAddCount = addCount - removeCount, animationCount;
                 if (utils.isFunction(this._templateSelector)) {
                     if (utils.isNull(change.index)) {
                         this.rerender(opGroup);
@@ -6529,23 +6738,23 @@ var platui;
                 this._createItems(change.object.length - itemAddCount, itemAddCount, opGroup, animationCount);
             }
             else if (removeCount > addCount) {
-                var adding_1 = addCount > 0;
-                if (animating && !adding_1 && addQueue.length === 0) {
+                var adding = addCount > 0;
+                if (animating && !adding && addQueue.length === 0) {
                     addQueue = addQueue.concat([this._animateItems(change.index, removeCount, __Leave, opGroup, 'clone', true)]);
                 }
-                var deleteCount_1 = removeCount - addCount;
-                if (opGroup.itemCount >= deleteCount_1) {
-                    opGroup.itemCount -= deleteCount_1;
+                var deleteCount = removeCount - addCount;
+                if (opGroup.itemCount >= deleteCount) {
+                    opGroup.itemCount -= deleteCount;
                 }
                 else {
                     opGroup.itemCount = 0;
                 }
                 this._Promise.all(addQueue).then(function () {
-                    if (animating && adding_1) {
+                    if (animating && adding) {
                         var animLength = animationQueue.length;
                         _this._animateItems(change.index, addCount, __Enter, opGroup, null, animLength > 0 && animationQueue[animLength - 1].op === 'clone');
                     }
-                    _this._removeItems(currentLength - deleteCount_1, deleteCount_1, opGroup);
+                    _this._removeItems(currentLength - deleteCount, deleteCount, opGroup);
                 });
             }
         };
@@ -6851,7 +7060,7 @@ var platui;
             _TemplateControlFactory: __TemplateControlFactory
         };
         return Listview;
-    }(plat.ui.TemplateControl));
+    })(plat.ui.TemplateControl);
     platui.Listview = Listview;
     plat.register.control(__Listview, Listview);
     /**
@@ -7067,7 +7276,7 @@ var platui;
             _document: __Document
         };
         return Navbar;
-    }(plat.ui.TemplateControl));
+    })(plat.ui.TemplateControl);
     platui.Navbar = Navbar;
     plat.register.control(__Navbar, Navbar, null, true);
     /**
@@ -7182,7 +7391,7 @@ var platui;
             _NodeManagerStatic: __NodeManagerStatic
         };
         return Image;
-    }(plat.ui.TemplateControl));
+    })(plat.ui.TemplateControl);
     platui.Image = Image;
     plat.register.control(__Image, Image);
 })(platui || (platui = {}));

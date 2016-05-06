@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.14.8 (https://platypi.io) 
+ * PlatypusUI v0.15.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -6541,11 +6541,13 @@
 
         @fill-color: darken(@neutral-color, 10%);
         @empty-color: lighten(@neutral-color, 10%);
+        @outline-border-color: lighten(@neutral-color, 10%);
 
     /// ================= Range Size ================== ///
 
         @thickness: 0.5em;
         @border-radius: 4px;
+        @outline-border-width: 1px;
 
     /// ================= Range Knob Properties ================== ///
 
@@ -6584,8 +6586,18 @@
             }
             & when (@prop = empty-color) {
                 .plat-range-container {
-                    .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
                     background-color: @value;
+                }
+
+                &:not(.range-outline) {
+                    .plat-range-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                    }
+                }
+            }
+            & when (@prop = outline-border-color) {
+                .plat-range-container {
+                    border-color: @value;
                 }
             }
             & when (@prop = knob-color) {
@@ -6625,6 +6637,11 @@
                     .plat-range-track {
                         .border-radius(@value);
                     }
+                }
+            }
+            & when (@prop = outline-border-width) {
+                .plat-range-container {
+                    border-width: @value;
                 }
             }
             & when (@prop = thickness) {
@@ -6752,8 +6769,6 @@
 
                 .plat-range-container {
                     .border-radius(@border-radius);
-                    .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
-                    background-color: @empty-color;
 
                     .plat-range-track {
                         .box-shadow(inset 0px 1px 1px 0px darken(@fill-color, 10%));
@@ -6768,6 +6783,20 @@
                             border-color: @knob-border-color;
                             border-width: @knob-border-width;
                         }
+                    }
+                }
+
+                &:not(.range-outline) {
+                    .plat-range-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
+                        background-color: @empty-color;
+                    }
+                }
+
+                &.range-outline {
+                    .plat-range-container {
+                        border-color: @outline-border-color;
+                        border-width: @outline-border-width;
                     }
                 }
 
@@ -6857,8 +6886,18 @@
             }
             & when (@prop = empty-color) {
                 .plat-range-container {
-                    .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
                     background-color: @value;
+                }
+
+                &:not(.range-outline) {
+                    .plat-range-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                    }
+                }
+            }
+            & when (@prop = outline-border-color) {
+                .plat-range-container {
+                    border-color: @value;
                 }
             }
             & when (@prop = knob-color) {
@@ -6898,6 +6937,11 @@
                     .plat-range-track {
                         .border-radius(@value);
                     }
+                }
+            }
+            & when (@prop = outline-border-width) {
+                .plat-range-container {
+                    border-width: @value;
                 }
             }
             & when (@prop = thickness) {
@@ -7129,11 +7173,13 @@
 
         @fill-color: darken(@neutral-color, 10%);
         @empty-color: lighten(@neutral-color, 10%);
+        @outline-border-color: lighten(@neutral-color, 10%);
 
     /// ================= Slider Size ================== ///
 
         @thickness: 0.5em;
         @border-radius: 4px;
+        @outline-border-width: 1px;
 
     /// ================= Slider Knob Properties ================== ///
 
@@ -7171,8 +7217,18 @@
             }
             & when (@prop = empty-color) {
                 .plat-slider-container {
-                    .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
                     background-color: @value;
+                }
+
+                &:not(.slider-outline) {
+                    .plat-slider-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                    }
+                }
+            }
+            & when (@prop = outline-border-color) {
+                .plat-slider-container {
+                    border-color: @value;
                 }
             }
             & when (@prop = knob-color) {
@@ -7209,6 +7265,11 @@
                     .plat-slider-track {
                         .border-radius(@value);
                     }
+                }
+            }
+            & when (@prop = outline-border-width) {
+                .plat-slider-container {
+                    border-width: @value;
                 }
             }
             & when (@prop = thickness) {
@@ -7355,8 +7416,6 @@
 
                 .plat-slider-container {
                     .border-radius(@border-radius);
-                    .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
-                    background-color: @empty-color;
 
                     .plat-slider-track {
                         .box-shadow(inset 0px 1px 1px 0px darken(@fill-color, 10%));
@@ -7370,6 +7429,20 @@
                             border-color: @knob-border-color;
                             border-width: @knob-border-width;
                         }
+                    }
+                }
+
+                &:not(.slider-outline) {
+                    .plat-slider-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
+                        background-color: @empty-color;
+                    }
+                }
+
+                &.slider-outline {
+                    .plat-slider-container {
+                        border-width: @outline-border-width;
+                        border-color: @outline-border-color;
                     }
                 }
 
@@ -7482,8 +7555,18 @@
             }
             & when (@prop = empty-color) {
                 .plat-slider-container {
-                    .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
                     background-color: @value;
+                }
+
+                &:not(.slider-outline) {
+                    .plat-slider-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                    }
+                }
+            }
+            & when (@prop = outline-border-color) {
+                .plat-slider-container {
+                    border-color: @value;
                 }
             }
             & when (@prop = knob-color) {
@@ -7520,6 +7603,11 @@
                     .plat-slider-track {
                         .border-radius(@value);
                     }
+                }
+            }
+            & when (@prop = outline-border-width) {
+                .plat-slider-container {
+                    border-width: @value;
                 }
             }
             & when (@prop = thickness) {
@@ -9017,12 +9105,6 @@
                     white-space: normal;
                     line-height: normal;
                 }
-
-                &.plat-transition-init {
-                    -webkit-transition: -webkit-transform @transition-time;
-                    -moz-transition: -moz-transform @transition-time;
-                    transition: transform @transition-time;
-                }
             }
 
             .plat-back-arrow,
@@ -9034,6 +9116,7 @@
                 color: @arrow-color;
                 cursor: pointer;
                 font-size: @arrow-font-size;
+                z-index: 100;
 
                 .plat-icon-arrow-down,
                 .plat-icon-arrow-up,
@@ -9074,12 +9157,6 @@
             .touch-action(pan-y);
 
             .plat-carousel-viewport {
-                .plat-carousel-container {
-                    .plat-carousel-item {
-                        display: inline-block;
-                    }
-                }
-
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     top: 0;
@@ -9101,12 +9178,6 @@
             .touch-action(pan-x);
 
             .plat-carousel-viewport {
-                .plat-carousel-container {
-                    .plat-carousel-item {
-                        display: block;
-                    }
-                }
-
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     left: 0;
@@ -9120,6 +9191,66 @@
 
                 .plat-forward-arrow {
                     bottom: 0;
+                }
+            }
+        }
+
+        &.plat-fade {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        display: block;
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        z-index: 0;
+                        opacity: 0;
+
+                        &.plat-middle {
+                            z-index: 1;
+                        }
+
+                        &.plat-top {
+                            opacity: 1;
+                            z-index: 2;
+                        }
+
+                        &.plat-transition-init {
+                            .transition(opacity @transition-time);
+                        }
+                    }
+                }
+            }
+        }
+
+        &.plat-translate {
+            &.plat-horizontal {
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            display: inline-block;
+                        }
+                    }
+                }
+            }
+
+            &.plat-vertical {
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            display: block;
+                        }
+                    }
+                }
+            }
+
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    &.plat-transition-init {
+                        -webkit-transition: -webkit-transform @transition-time;
+                        -moz-transition: -moz-transform @transition-time;
+                        transition: transform @transition-time;
+                    }
                 }
             }
         }
@@ -11373,9 +11504,7 @@
             .fill();
             .border-radius(@border-radius);
             .box-sizing(border-box);
-            .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
             position: relative;
-            background-color: @empty-color;
             overflow: visible;
 
             .plat-range-track {
@@ -11403,6 +11532,19 @@
                         z-index: 1;
                     }
                 }
+            }
+        }
+
+        &:not(.range-outline) {
+            .plat-range-container {
+                .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
+                background-color: @empty-color;
+            }
+        }
+
+        &.range-outline {
+            .plat-range-container {
+                border: @outline-border-width solid @outline-border-color;
             }
         }
 
@@ -11667,9 +11809,7 @@
             .fill();
             .border-radius(@border-radius);
             .box-sizing(border-box);
-            .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
             position: relative;
-            background-color: @empty-color;
             overflow: visible;
 
             .plat-slider-track {
@@ -11691,6 +11831,19 @@
                     border: @knob-border-width solid @knob-border-color;
                     cursor: pointer;
                 }
+            }
+        }
+
+        &:not(.slider-outline) {
+            .plat-slider-container {
+                .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
+                background-color: @empty-color;
+            }
+        }
+
+        &.slider-outline {
+            .plat-slider-container {
+                border: @outline-border-width solid @outline-border-color;
             }
         }
 

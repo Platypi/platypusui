@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.14.8 (https://platypi.io)
+  * PlatypusUI v0.15.0 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -2167,6 +2167,11 @@ declare module platui {
           */
         protected _isVertical: boolean;
         /**
+          * An number value specifying the fade transition type. 0 is no fade, 1 is fade (or fade-in-and-out),
+          * 2 is fade-in, 3 is fade-out.
+          */
+        protected _fade: number;
+        /**
           * The type of the control (i.e. how it is scrolled).
           */
         protected _type: string;
@@ -2224,6 +2229,11 @@ declare module platui {
           */
         protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
         /**
+          * The most recent next animation thenable. Used to cancel the current fade animation if another needs
+          * to begin.
+          */
+        protected _nextAnimationThenable: plat.ui.animations.IAnimationThenable<void>;
+        /**
           * A function to call once items are loaded and the Carousel is set.
           */
         protected _onLoad: () => void;
@@ -2268,13 +2278,13 @@ declare module platui {
           */
         protected _itemNodes: Array<Node>;
         /**
-          * The index `-1` node used for infinite scrolling.
+          * The `index - 1` nodes used for infinite scrolling.
           */
-        protected _preClonedNode: HTMLElement;
+        protected _preClonedNodes: Array<Node>;
         /**
-          * The index `length` node used for infinite scrolling.
+          * The `index + 1` nodes used for infinite scrolling.
           */
-        protected _postClonedNode: HTMLElement;
+        protected _postClonedNodes: Array<Node>;
         /**
           * A reference to the forward arrow element.
           */
@@ -2417,11 +2427,37 @@ declare module platui {
           */
         protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.IThenable<boolean>;
         /**
+          * Executes the translation animation for going to the next item.
+          * @param {number} length The length to translate.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+          */
+        protected _translateNext(length: number, inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
+        /**
+          * Executes the fade animations for going to the next item.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+          */
+        protected _fadeNext(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
+        /**
           * Handles swapping and translating nodes for a "next" operation.
           * @param {number} index The new index at the time of the animation.
           * @param {number} length The length to statically transition back to.
           */
         protected _handleNext(index: number, length: number): void;
+        /**
+          * Executes the translation animation for going to the previous item.
+          * @param {number} length The length to translate.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+          */
+        protected _translatePrevious(length: number, inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
+        /**
+          * Executes the fade animations for going to the previous item.
+          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+          */
+        protected _fadePrevious(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
         /**
           * Handles swapping and translating nodes for a "previous" operation.
           * @param {number} index The new index at the time of the animation.
@@ -2570,10 +2606,15 @@ declare module platui {
       */
     interface ICarouselOptions {
         /**
-          * Specifies how the Carousel should change. Multiple types can be combined by making it space delimited.
+          * Specifies the interaction for changing the current Carousel item.
+          * Multiple types can be combined by making it space delimited.
           * The default behavior is "track swipe".
           */
         type?: string;
+        /**
+          * Specifies the transition that occurs when a Carousel item changes.
+          */
+        transition?: string;
         /**
           * The swipe direction of the Carousel.
           * The default value is "horizontal".

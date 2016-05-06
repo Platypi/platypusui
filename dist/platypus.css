@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.14.8 (https://platypi.io) 
+ * PlatypusUI v0.15.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1178,11 +1178,6 @@ h6 {
   white-space: normal;
   line-height: normal;
 }
-.plat-carousel .plat-carousel-viewport .plat-carousel-container.plat-transition-init {
-  -webkit-transition: -webkit-transform 300ms;
-  -moz-transition: -moz-transform 300ms;
-  transition: transform 300ms;
-}
 .plat-carousel .plat-carousel-viewport .plat-back-arrow,
 .plat-carousel .plat-carousel-viewport .plat-forward-arrow {
   -webkit-box-sizing: border-box;
@@ -1195,6 +1190,7 @@ h6 {
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   font-size: 400%;
+  z-index: 100;
 }
 .plat-carousel .plat-carousel-viewport .plat-back-arrow .plat-icon-arrow-down,
 .plat-carousel .plat-carousel-viewport .plat-forward-arrow .plat-icon-arrow-down,
@@ -1255,9 +1251,6 @@ h6 {
   -ms-touch-action: pan-y;
   touch-action: pan-y;
 }
-.plat-carousel.plat-horizontal .plat-carousel-viewport .plat-carousel-container .plat-carousel-item {
-  display: inline-block;
-}
 .plat-carousel.plat-horizontal .plat-carousel-viewport .plat-back-arrow,
 .plat-carousel.plat-horizontal .plat-carousel-viewport .plat-forward-arrow {
   top: 0;
@@ -1274,9 +1267,6 @@ h6 {
   -ms-touch-action: pan-x;
   touch-action: pan-x;
 }
-.plat-carousel.plat-vertical .plat-carousel-viewport .plat-carousel-container .plat-carousel-item {
-  display: block;
-}
 .plat-carousel.plat-vertical .plat-carousel-viewport .plat-back-arrow,
 .plat-carousel.plat-vertical .plat-carousel-viewport .plat-forward-arrow {
   left: 0;
@@ -1288,6 +1278,37 @@ h6 {
 }
 .plat-carousel.plat-vertical .plat-carousel-viewport .plat-forward-arrow {
   bottom: 0;
+}
+.plat-carousel.plat-fade .plat-carousel-viewport .plat-carousel-container .plat-carousel-item {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;
+  opacity: 0;
+}
+.plat-carousel.plat-fade .plat-carousel-viewport .plat-carousel-container .plat-carousel-item.plat-middle {
+  z-index: 1;
+}
+.plat-carousel.plat-fade .plat-carousel-viewport .plat-carousel-container .plat-carousel-item.plat-top {
+  opacity: 1;
+  z-index: 2;
+}
+.plat-carousel.plat-fade .plat-carousel-viewport .plat-carousel-container .plat-carousel-item.plat-transition-init {
+  -webkit-transition: opacity 300ms;
+  -moz-transition: opacity 300ms;
+  transition: opacity 300ms;
+}
+.plat-carousel.plat-translate.plat-horizontal .plat-carousel-viewport .plat-carousel-container .plat-carousel-item {
+  display: inline-block;
+}
+.plat-carousel.plat-translate.plat-vertical .plat-carousel-viewport .plat-carousel-container .plat-carousel-item {
+  display: block;
+}
+.plat-carousel.plat-translate .plat-carousel-viewport .plat-carousel-container.plat-transition-init {
+  -webkit-transition: -webkit-transform 300ms;
+  -moz-transition: -moz-transform 300ms;
+  transition: transform 300ms;
 }
 .plat-carousel.carousel-no-arrows .plat-carousel-viewport .plat-back-arrow,
 .plat-carousel.carousel-no-arrows .plat-carousel-viewport .plat-forward-arrow {
@@ -4437,10 +4458,7 @@ h6 {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-box-shadow: inset 0px 1px 1px 0px #c8c7cd;
-  box-shadow: inset 0px 1px 1px 0px #c8c7cd;
   position: relative;
-  background-color: #e2e2e5;
   overflow: visible;
 }
 .plat-range .plat-range-container .plat-range-track {
@@ -4487,6 +4505,14 @@ h6 {
 .plat-range .plat-range-container .plat-range-track .plat-lower-knob.plat-top,
 .plat-range .plat-range-container .plat-range-track .plat-upper-knob.plat-top {
   z-index: 1;
+}
+.plat-range:not(.range-outline) .plat-range-container {
+  -webkit-box-shadow: inset 0px 1px 1px 0px #c8c7cd;
+  box-shadow: inset 0px 1px 1px 0px #c8c7cd;
+  background-color: #e2e2e5;
+}
+.plat-range.range-outline .plat-range-container {
+  border: 1px solid #e2e2e5;
 }
 .plat-range.plat-horizontal,
 .plat-range.plat-horizontal-reversed {
@@ -4744,10 +4770,7 @@ h6 {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-box-shadow: inset 0px 1px 1px 0px #c8c7cd;
-  box-shadow: inset 0px 1px 1px 0px #c8c7cd;
   position: relative;
-  background-color: #e2e2e5;
   overflow: visible;
 }
 .plat-slider .plat-slider-container .plat-slider-track {
@@ -4788,6 +4811,14 @@ h6 {
   background-color: #ffffff;
   border: 1px solid #d9d9d9;
   cursor: pointer;
+}
+.plat-slider:not(.slider-outline) .plat-slider-container {
+  -webkit-box-shadow: inset 0px 1px 1px 0px #c8c7cd;
+  box-shadow: inset 0px 1px 1px 0px #c8c7cd;
+  background-color: #e2e2e5;
+}
+.plat-slider.slider-outline .plat-slider-container {
+  border: 1px solid #e2e2e5;
 }
 .plat-slider.plat-horizontal,
 .plat-slider.plat-horizontal-reversed {
