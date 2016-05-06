@@ -34,7 +34,7 @@ module app {
                 modal2: false,
                 modal3: false
             },
-            carouselItems: [{ text: 'test0' }, { text: 'test1' }, { text: 'test2' }],
+            carouselItems: [{ text: 'test0', bg: 'rgba(255,0,0,0.4)' }, { text: 'test1', bg: 'rgba(0,255,0,0.4)' }, { text: 'test2', bg: 'rgba(0,0,255,0.4)' }],
             //listview: [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
             listview: [10, 9, 8],
             groupedlistview: <Array<platui.IListviewGroup>>[

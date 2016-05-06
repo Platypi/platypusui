@@ -48,12 +48,6 @@
                     white-space: normal;
                     line-height: normal;
                 }
-
-                &.plat-transition-init {
-                    -webkit-transition: -webkit-transform @transition-time;
-                    -moz-transition: -moz-transform @transition-time;
-                    transition: transform @transition-time;
-                }
             }
 
             .plat-back-arrow,
@@ -65,6 +59,7 @@
                 color: @arrow-color;
                 cursor: pointer;
                 font-size: @arrow-font-size;
+                z-index: 100;
 
                 .plat-icon-arrow-down,
                 .plat-icon-arrow-up,
@@ -105,12 +100,6 @@
             .touch-action(pan-y);
 
             .plat-carousel-viewport {
-                .plat-carousel-container {
-                    .plat-carousel-item {
-                        display: inline-block;
-                    }
-                }
-
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     top: 0;
@@ -132,12 +121,6 @@
             .touch-action(pan-x);
 
             .plat-carousel-viewport {
-                .plat-carousel-container {
-                    .plat-carousel-item {
-                        display: block;
-                    }
-                }
-
                 .plat-back-arrow,
                 .plat-forward-arrow {
                     left: 0;
@@ -151,6 +134,66 @@
 
                 .plat-forward-arrow {
                     bottom: 0;
+                }
+            }
+        }
+
+        &.plat-fade {
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    .plat-carousel-item {
+                        display: block;
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        z-index: 0;
+                        opacity: 0;
+
+                        &.plat-middle {
+                            z-index: 1;
+                        }
+
+                        &.plat-top {
+                            opacity: 1;
+                            z-index: 2;
+                        }
+
+                        &.plat-transition-init {
+                            .transition(opacity @transition-time);
+                        }
+                    }
+                }
+            }
+        }
+
+        &.plat-translate {
+            &.plat-horizontal {
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            display: inline-block;
+                        }
+                    }
+                }
+            }
+
+            &.plat-vertical {
+                .plat-carousel-viewport {
+                    .plat-carousel-container {
+                        .plat-carousel-item {
+                            display: block;
+                        }
+                    }
+                }
+            }
+
+            .plat-carousel-viewport {
+                .plat-carousel-container {
+                    &.plat-transition-init {
+                        -webkit-transition: -webkit-transform @transition-time;
+                        -moz-transition: -moz-transform @transition-time;
+                        transition: transform @transition-time;
+                    }
                 }
             }
         }

@@ -146,6 +146,20 @@ module platui {
         protected _isVertical: boolean = false;
 
         /**
+         * @name _fade
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         *
+         * @type {number}
+         *
+         * @description
+         * An number value specifying the fade transition type. 0 is no fade, 1 is fade (or fade-in-and-out),
+         * 2 is fade-in, 3 is fade-out.
+         */
+        protected _fade: number;
+
+        /**
          * @name _type
          * @memberof platui.Carousel
          * @kind property
@@ -329,6 +343,20 @@ module platui {
         protected _animationThenable: plat.ui.animations.IAnimationThenable<void>;
 
         /**
+         * @name _nextAnimationThenable
+         * @memberof platui.Carousel
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.ui.animations.IAnimationThenable<void>}
+         *
+         * @description
+         * The most recent next animation thenable. Used to cancel the current fade animation if another needs
+         * to begin.
+         */
+        protected _nextAnimationThenable: plat.ui.animations.IAnimationThenable<void>;
+
+        /**
          * @name _onLoad
          * @memberof platui.Carousel
          * @kind property
@@ -477,12 +505,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {HTMLElement}
+         * @type {Array<Node>}
          *
          * @description
-         * The index `-1` node used for infinite scrolling.
+         * The `index - 1` nodes used for infinite scrolling.
          */
-        protected _preClonedNode: HTMLElement;
+        protected _preClonedNodes: Array<Node>;
 
         /**
          * @name _preClonedNode
@@ -490,12 +518,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {HTMLElement}
+         * @type {Array<Node>}
          *
          * @description
-         * The index `length` node used for infinite scrolling.
+         * The `index + 1` nodes used for infinite scrolling.
          */
-        protected _postClonedNode: HTMLElement;
+        protected _postClonedNodes: Array<Node>;
 
         /**
          * @name _forwardArrow
@@ -700,14 +728,34 @@ module platui {
                 suspend = options.suspend,
                 dom = this.dom,
                 element = this.element,
+                transition: string,
                 viewport = this._viewport = <HTMLElement>element.firstElementChild;
+
+            switch (options.transition) {
+                case 'fade':
+                    transition = 'fade';
+                    this._fade = 1;
+                    break;
+                case 'fade-in':
+                    transition = 'fade';
+                    this._fade = 2;
+                    break;
+                case 'fade-out':
+                    transition = 'fade';
+                    this._fade = 3;
+                    break;
+                default:
+                    transition = 'translate';
+                    this._fade = 0;
+                    break;
+            }
 
             this._container = <HTMLElement>viewport.firstElementChild;
             this._type = options.type || 'track swipe';
             this._isInfinite = options.infinite === true;
             this._suspend = Math.abs(isNumber(suspend) ? intervalNum - suspend : intervalNum - 3000);
 
-            dom.addClass(element, __Plat + orientation);
+            dom.addClass(element, `${__Plat + orientation} ${__Plat + transition}`);
 
             this._onLoad = (): void => {
                 let setIndex = this._index;
@@ -971,6 +1019,10 @@ module platui {
          * @returns {void}
          */
         protected _reset(): void {
+            if (this._fade) {
+                return;
+            }
+
             let animationOptions: plat.IObject<string> = {};
             animationOptions[this._transform] = this._calculateStaticTranslation(0);
             this._initiateAnimation({ properties: animationOptions });
@@ -995,7 +1047,11 @@ module platui {
                 if (!this.utils.isUndefined(index)) {
                     this.inputChanged((this._index = undefined), index);
                 }
-                this._container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+
+                if (!this._fade) {
+                    this._container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                }
+
                 this._removeEventListeners();
                 this._checkArrows();
                 return;
@@ -1076,35 +1132,11 @@ module platui {
                 let length = this._getLength();
                 if (!length) {
                     return this.goToIndex(this._nextIndex, true);
+                } else if (this._fade) {
+                    return this._fadeNext(inputChanged, reset);
                 }
 
-                return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
-                    if (!this._outerEnd) {
-                        this._initializeOuterNodes();
-                    }
-
-                    let animationOptions: plat.IObject<string> = {};
-                    animationOptions[this._transform] = this._calculateStaticTranslation(-length);
-
-                    let animation = this._initiateAnimation({ properties: animationOptions }),
-                        nextIndex: number;
-
-                    if (reset) {
-                        this._index = nextIndex = 0;
-                    } else {
-                        nextIndex = ++this._index;
-                    }
-
-                    if (!inputChanged) {
-                        this.inputChanged(this._index, index);
-                    }
-
-                    return animation.then((): boolean => {
-                        this._handleNext(nextIndex, length);
-                        this._checkArrows();
-                        return true;
-                    });
-                });
+                return this._translateNext(length, inputChanged, reset);
             });
         }
 
@@ -1136,35 +1168,11 @@ module platui {
                 let length = this._getLength();
                 if (!length) {
                     return this.goToIndex(this._previousIndex, true);
+                } else if (this._fade) {
+                    return this._fadePrevious(inputChanged, reset);
                 }
 
-                return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
-                    if (!this._outerStart) {
-                        this._initializeOuterNodes();
-                    }
-
-                    let animationOptions: plat.IObject<string> = {};
-                    animationOptions[this._transform] = this._calculateStaticTranslation(length);
-
-                    let animation = this._initiateAnimation({ properties: animationOptions }),
-                        previousIndex: number;
-
-                    if (reset) {
-                        this._index = previousIndex = this._itemNodes.length - 1;
-                    } else {
-                        previousIndex = --this._index;
-                    }
-
-                    if (!inputChanged) {
-                        this.inputChanged(this._index, index);
-                    }
-
-                    return animation.then((): boolean => {
-                        this._handlePrevious(previousIndex, -length);
-                        this._checkArrows();
-                        return true;
-                    });
-                });
+                return this._translatePrevious(length, inputChanged, reset);
             });
         }
 
@@ -1331,6 +1339,133 @@ module platui {
         }
 
         /**
+         * @name _translateNext
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Executes the translation animation for going to the next item.
+         *
+         * @param {number} length The length to translate.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         *
+         * @returns {plat.async.IThenable<boolean>} Resolves with true when the translation animation is complete.
+         */
+        protected _translateNext(length: number, inputChanged: boolean, reset: boolean) {
+            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+                if (!this._outerEnd) {
+                    this._initializeOuterNodes();
+                }
+
+                let animationOptions: plat.IObject<string> = {};
+                animationOptions[this._transform] = this._calculateStaticTranslation(-length);
+
+                let animation = this._initiateAnimation({ properties: animationOptions }),
+                    index = this._index,
+                    nextIndex: number;
+
+                if (reset) {
+                    this._index = nextIndex = 0;
+                } else {
+                    nextIndex = ++this._index;
+                }
+
+                if (!inputChanged) {
+                    this.inputChanged(this._index, index);
+                }
+
+                return animation.then((): boolean => {
+                    this._handleNext(nextIndex, length);
+                    this._checkArrows();
+                    return true;
+                });
+            });
+        }
+
+        /**
+         * @name _fadeNext
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Executes the fade animations for going to the next item.
+         *
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         *
+         * @returns {plat.async.IThenable<boolean>} Resolves with true when the fade animation is complete.
+         */
+        protected _fadeNext(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean> {
+            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+                if (!this._outerEnd) {
+                    this._initializeOuterNodes();
+                }
+
+                let index = this._index,
+                    nextIndex: number,
+                    animator = this._animator,
+                    dom = this.dom,
+                    container = this._container,
+                    childNodes: Array<Node> = Array.prototype.slice.call(container.childNodes),
+                    nodeCount = childNodes.length,
+                    currentNode = <HTMLElement>childNodes[nodeCount - 5],
+                    nextNode = <HTMLElement>childNodes[nodeCount - 2],
+                    fadeType = this._fade,
+                    animation: plat.ui.animations.IAnimationThenable<any>,
+                    nextAnimation: plat.ui.animations.IAnimationThenable<any>,
+                    endFn: () => void;
+
+                if (fadeType === 2) {
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.addClass(currentNode, `${__Plat}middle`);
+                    dom.addClass(nextNode, `${__Plat}top`);
+                    endFn = (): void => {
+                        dom.removeClass(currentNode, `${__Plat}top`);
+                        dom.removeClass(currentNode, `${__Plat}middle`);
+                    };
+                } else if (fadeType === 3) {
+                    animation = animator.animate(currentNode, __Transition);
+                    dom.addClass(nextNode, `${__Plat}top`);
+                    dom.toggleClass(currentNode, `${__Plat}top ${__Plat}middle`);
+                    endFn = (): void => {
+                        dom.removeClass(currentNode, `${__Plat}middle`);
+                    };
+                } else {
+                    animation = animator.animate(currentNode, __Transition);
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.toggleClass(currentNode, `${__Plat}top ${__Plat}middle`);
+                    dom.addClass(nextNode, `${__Plat}top`);
+                    endFn = (): void => {
+                        dom.removeClass(currentNode, `${__Plat}middle`);
+                    };
+                }
+
+                if (reset) {
+                    this._index = nextIndex = 0;
+                } else {
+                    nextIndex = ++this._index;
+                }
+
+                if (!inputChanged) {
+                    this.inputChanged(this._index, index);
+                }
+
+                this._nextAnimationThenable = nextAnimation;
+                this._animationThenable = animation;
+
+                return this._Promise.all([nextAnimation, animation]).then((): boolean => {
+                    endFn();
+                    this._handleNext(nextIndex, length);
+                    this._checkArrows();
+                    return true;
+                });
+            });
+        }
+
+        /**
          * @name _handleNext
          * @memberof platui.Carousel
          * @kind function
@@ -1348,9 +1483,9 @@ module platui {
             let isInfinite = this._isInfinite,
                 itemNodes = this._itemNodes,
                 nodeLength = itemNodes.length,
-                isNode = this.utils.isNode;
+                isArray = this.utils.isArray;
 
-            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isArray(this._preClonedNodes) || isArray(this._postClonedNodes))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -1359,8 +1494,10 @@ module platui {
             if (this._outerStart) {
                 if (isInfinite || index > 1) {
                     this.dom.insertBefore(itemNodes[this._previousIndex], Array.prototype.slice.call(container.childNodes, 0, 3));
-                    container.style[<any>this._transform] = this._calculateStaticTranslation(length);
-                    this._forceRepaint(container);
+                    if (!this._fade) {
+                        container.style[<any>this._transform] = this._calculateStaticTranslation(length);
+                        this._forceRepaint(container);
+                    }
                 }
             } else {
                 this._outerStart = true;
@@ -1373,6 +1510,132 @@ module platui {
             }
 
             container.insertBefore(itemNodes[this._nextIndex], null);
+        }
+
+        /**
+         * @name _translatePrevious
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Executes the translation animation for going to the previous item.
+         *
+         * @param {number} length The length to translate.
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         *
+         * @returns {plat.async.IThenable<boolean>} Resolves with true when the translation animation is complete.
+         */
+        protected _translatePrevious(length: number, inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean> {
+            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+                if (!this._outerStart) {
+                    this._initializeOuterNodes();
+                }
+
+                let animationOptions: plat.IObject<string> = {};
+                animationOptions[this._transform] = this._calculateStaticTranslation(length);
+
+                let animation = this._initiateAnimation({ properties: animationOptions }),
+                    previousIndex: number,
+                    index = this._index;
+
+                if (reset) {
+                    this._index = previousIndex = this._itemNodes.length - 1;
+                } else {
+                    previousIndex = --this._index;
+                }
+
+                if (!inputChanged) {
+                    this.inputChanged(this._index, index);
+                }
+
+                return animation.then((): boolean => {
+                    this._handlePrevious(previousIndex, -length);
+                    this._checkArrows();
+                    return true;
+                });
+            });
+        }
+
+        /**
+         * @name _fadePrevious
+         * @memberof platui.Carousel
+         * @kind function
+         * @access protected
+         *
+         * @description
+         * Executes the fade animations for going to the previous item.
+         *
+         * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
+         * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
+         *
+         * @returns {plat.async.IThenable<boolean>} Resolves with true when the fade animation is complete.
+         */
+        protected _fadePrevious(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean> {
+            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+                if (!this._outerStart) {
+                    this._initializeOuterNodes();
+                }
+
+                let index = this._index,
+                    previousIndex: number,
+                    animator = this._animator,
+                    dom = this.dom,
+                    container = this._container,
+                    childNodes: Array<Node> = Array.prototype.slice.call(container.childNodes),
+                    currentNode = <HTMLElement>childNodes[4],
+                    nextNode = <HTMLElement>childNodes[1],
+                    fadeType = this._fade,
+                    animation: plat.ui.animations.IAnimationThenable<any>,
+                    nextAnimation: plat.ui.animations.IAnimationThenable<any>,
+                    endFn: () => void;
+
+                if (fadeType === 2) {
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.addClass(currentNode, `${__Plat}middle`);
+                    dom.addClass(nextNode, `${__Plat}top`);
+                    endFn = (): void => {
+                        dom.removeClass(currentNode, `${__Plat}top`);
+                        dom.removeClass(currentNode, `${__Plat}middle`);
+                    };
+                } else if (fadeType === 3) {
+                    animation = animator.animate(currentNode, __Transition);
+                    dom.addClass(nextNode, `${__Plat}top`);
+                    dom.toggleClass(currentNode, `${__Plat}top ${__Plat}middle`);
+                    endFn = (): void => {
+                        dom.removeClass(currentNode, `${__Plat}middle`);
+                    };
+                } else {
+                    animation = animator.animate(currentNode, __Transition);
+                    nextAnimation = animator.animate(nextNode, __Transition);
+                    dom.toggleClass(currentNode, `${__Plat}top ${__Plat}middle`);
+                    dom.addClass(nextNode, `${__Plat}top`);
+                    endFn = (): void => {
+                        dom.removeClass(currentNode, `${__Plat}middle`);
+                    };
+                }
+
+                if (reset) {
+                    this._index = previousIndex = this._itemNodes.length - 1;
+                } else {
+                    previousIndex = --this._index;
+                }
+
+                if (!inputChanged) {
+                    this.inputChanged(this._index, index);
+                }
+
+                this._nextAnimationThenable = nextAnimation;
+                this._animationThenable = animation;
+
+                return this._Promise.all([nextAnimation, animation]).then((): boolean => {
+                    endFn();
+                    this._handlePrevious(previousIndex, -length);
+                    this._checkArrows();
+                    return true;
+                });
+            });
         }
 
         /**
@@ -1393,9 +1656,9 @@ module platui {
             let isInfinite = this._isInfinite,
                 itemNodes = this._itemNodes,
                 nodeLength = itemNodes.length,
-                isNode = this.utils.isNode;
+                isArray = this.utils.isArray;
 
-            if (isInfinite && (nodeLength < 3 || isNode(this._preClonedNode) || isNode(this._postClonedNode))) {
+            if (isInfinite && (nodeLength < 3 || isArray(this._preClonedNodes) || isArray(this._postClonedNodes))) {
                 this._initializeIndex(index);
                 return;
             }
@@ -1416,6 +1679,11 @@ module platui {
             }
 
             container.insertBefore(itemNodes[this._previousIndex], container.firstChild);
+
+            if (this._fade) {
+                return;
+            }
+
             container.style[<any>this._transform] = this._calculateStaticTranslation(length);
             this._forceRepaint(container);
         }
@@ -1499,10 +1767,21 @@ module platui {
                 return false;
             }
 
+            let isFade = this._fade,
+                fragment = this._itemNodes[index];
+
+            if (isFade) {
+                let node = <HTMLElement>fragment.childNodes[1];
+                this.dom.addClass(node, `${__Plat}top`);
+            }
+
             let container = this._container;
-            container.insertBefore(this._itemNodes[index], null);
-            container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
-            this._forceRepaint(container);
+            container.insertBefore(fragment, null);
+
+            if (!isFade) {
+                container.style[<any>this._transform] = this._calculateStaticTranslation(-this._currentOffset);
+                this._forceRepaint(container);
+            }
 
             this._initializeOuterNodes();
             this._checkArrows();
@@ -1552,8 +1831,12 @@ module platui {
                         nodeToInsert = itemNodes[this._previousIndex];
                         if (isNode(nodeToInsert)) {
                             container.insertBefore(nodeToInsert, container.firstChild);
-                            container.style[<any>this._transform] = this._calculateStaticTranslation(-length);
-                            this._forceRepaint(container);
+
+                            if (!this._fade) {
+                                container.style[<any>this._transform] = this._calculateStaticTranslation(-length);
+                                this._forceRepaint(container);
+                            }
+
                             this._outerStart = true;
                         }
                     }
@@ -1648,6 +1931,10 @@ module platui {
                 this._initializeAuto();
             }
 
+            if (this._fade) {
+                return;
+            }
+
             let fired = false;
             this.addEventListener(this._window, 'resize', (): void => {
                 if (fired) {
@@ -1726,19 +2013,37 @@ module platui {
                 return;
             }
 
-            let container = this._container;
+            let container = this._container,
+                doc = this._document,
+                startNode: Node,
+                endNode: Node,
+                clone: Node;
+
             if (!outerEnd) {
-                let postClone = this._postClonedNode = <HTMLElement>container.firstElementChild.cloneNode(true);
-                container.insertBefore(postClone, null);
+                startNode = doc.createComment(`${__Carousel} clone: start node`);
+                endNode = doc.createComment(`${__Carousel} clone: end node`);
+                clone = container.firstElementChild.cloneNode(true);
+                this._postClonedNodes = [startNode, clone, endNode];
+                container.insertBefore(startNode, null);
+                container.insertBefore(clone, null);
+                container.insertBefore(endNode, null);
                 this._outerEnd = true;
             }
 
             if (!outerStart) {
-                let preClone = this._preClonedNode = <HTMLElement>container.lastElementChild.cloneNode(true);
-                container.insertBefore(preClone, container.firstChild);
-                container.style[<any>this._transform] = this._calculateStaticTranslation(length);
-                this._forceRepaint(container);
+                startNode = doc.createComment(`${__Carousel} clone: start node`);
+                endNode = doc.createComment(`${__Carousel} clone: end node`);
+                clone = container.lastElementChild.cloneNode(true);
+                this._preClonedNodes = [startNode, clone, endNode];
+                container.insertBefore(endNode, container.firstChild);
+                container.insertBefore(clone, container.firstChild);
+                container.insertBefore(startNode, container.firstChild);
                 this._outerStart = true;
+
+                if (!this._fade) {
+                    container.style[<any>this._transform] = this._calculateStaticTranslation(length);
+                    this._forceRepaint(container);
+                }
             }
         }
 
@@ -1755,19 +2060,23 @@ module platui {
          */
         protected _removeClones(): void {
             let container = this._container,
-                preClone = this._preClonedNode,
-                postClone = this._postClonedNode,
-                isNode = this.utils.isNode;
+                preClones = this._preClonedNodes,
+                postClones = this._postClonedNodes,
+                isArray = this.utils.isArray;
 
-            if (isNode(preClone) && container.contains(preClone)) {
-                container.removeChild(preClone);
+            if (isArray(preClones)) {
+                container.removeChild(preClones[0]);
+                container.removeChild(preClones[1]);
+                container.removeChild(preClones[2]);
             }
 
-            if (isNode(postClone) && container.contains(postClone)) {
-                container.removeChild(postClone);
+            if (isArray(postClones)) {
+                container.removeChild(postClones[0]);
+                container.removeChild(postClones[1]);
+                container.removeChild(postClones[2]);
             }
 
-            this._preClonedNode = this._postClonedNode = null;
+            this._preClonedNodes = this._postClonedNodes = null;
         }
 
         /**
@@ -2147,6 +2456,9 @@ module platui {
         protected _track(ev: plat.ui.IGestureEvent): void {
             if (!this._inTouch) {
                 return;
+            } else if (this._fade) {
+                this._hasMoved = true;
+                return;
             } else if (!this._hasMoved) {
                 this._cancelCurrentAnimations().then((): void => {
                     if (!(this._outerStart && this._outerEnd)) {
@@ -2366,6 +2678,22 @@ module platui {
          * @returns {plat.async.IThenable<any>} A promise that resolves when the animation is canceled.
          */
         protected _cancelCurrentAnimations(): plat.async.IThenable<any> {
+            if (this._fade) {
+                let isNull = this.utils.isNull,
+                    animation: plat.ui.animations.IAnimationThenable<void>,
+                    nextAnimation: plat.ui.animations.IAnimationThenable<void>;
+
+                if (!isNull(this._nextAnimationThenable)) {
+                    nextAnimation = this._nextAnimationThenable.cancel();
+                }
+
+                if (!isNull(this._animationThenable)) {
+                    animation = this._animationThenable.cancel();
+                }
+
+                return this._Promise.all([animation, nextAnimation]);
+            }
+
             if (this.utils.isNull(this._animationThenable)) {
                 return this._Promise.resolve();
             }
@@ -2422,7 +2750,8 @@ module platui {
          * @type {string}
          *
          * @description
-         * Specifies how the {@link platui.Carousel|Carousel} should change. Multiple types can be combined by making it space delimited.
+         * Specifies the interaction for changing the current {@link platui.Carousel|Carousel} item.
+         * Multiple types can be combined by making it space delimited.
          * The default behavior is "track swipe".
          *
          * @remarks
@@ -2433,6 +2762,26 @@ module platui {
          * default: The carousel changes when it is dragged or swiped.
          */
         type?: string;
+
+        /**
+         * @name transition
+         * @memberof platui.ICarouselOptions
+         * @kind property
+         * @access public
+         *
+         * @type {string}
+         *
+         * @description
+         * Specifies the transition that occurs when a {@link platui.Carousel|Carousel} item changes.
+         *
+         * @remarks
+         * "translate": The carousel items translate to the previous and next.
+         * "fade": The carousel items fade in and out.
+         * "fade-in": The next carousel item fades in over the current carousel item.
+         * "fade-out": The current carousel item fades out with the next carousel item behind it.
+         * default: The carousel items "translate".
+         */
+        transition?: string;
 
         /**
          * @name orientation
