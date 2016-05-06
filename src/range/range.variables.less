@@ -13,11 +13,13 @@
 
         @fill-color: darken(@neutral-color, 10%);
         @empty-color: lighten(@neutral-color, 10%);
+        @outline-border-color: lighten(@neutral-color, 10%);
 
     /// ================= Range Size ================== ///
 
         @thickness: 0.5em;
         @border-radius: 4px;
+        @outline-border-width: 1px;
 
     /// ================= Range Knob Properties ================== ///
 
@@ -56,8 +58,18 @@
             }
             & when (@prop = empty-color) {
                 .plat-range-container {
-                    .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
                     background-color: @value;
+                }
+
+                &:not(.range-outline) {
+                    .plat-range-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                    }
+                }
+            }
+            & when (@prop = outline-border-color) {
+                .plat-range-container {
+                    border-color: @value;
                 }
             }
             & when (@prop = knob-color) {
@@ -97,6 +109,11 @@
                     .plat-range-track {
                         .border-radius(@value);
                     }
+                }
+            }
+            & when (@prop = outline-border-width) {
+                .plat-range-container {
+                    border-width: @value;
                 }
             }
             & when (@prop = thickness) {
@@ -224,8 +241,6 @@
 
                 .plat-range-container {
                     .border-radius(@border-radius);
-                    .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
-                    background-color: @empty-color;
 
                     .plat-range-track {
                         .box-shadow(inset 0px 1px 1px 0px darken(@fill-color, 10%));
@@ -240,6 +255,20 @@
                             border-color: @knob-border-color;
                             border-width: @knob-border-width;
                         }
+                    }
+                }
+
+                &:not(.range-outline) {
+                    .plat-range-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
+                        background-color: @empty-color;
+                    }
+                }
+
+                &.range-outline {
+                    .plat-range-container {
+                        border-color: @outline-border-color;
+                        border-width: @outline-border-width;
                     }
                 }
 
@@ -329,8 +358,18 @@
             }
             & when (@prop = empty-color) {
                 .plat-range-container {
-                    .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
                     background-color: @value;
+                }
+
+                &:not(.range-outline) {
+                    .plat-range-container {
+                        .box-shadow(inset 0px 1px 1px 0px darken(@value, 10%));
+                    }
+                }
+            }
+            & when (@prop = outline-border-color) {
+                .plat-range-container {
+                    border-color: @value;
                 }
             }
             & when (@prop = knob-color) {
@@ -370,6 +409,11 @@
                     .plat-range-track {
                         .border-radius(@value);
                     }
+                }
+            }
+            & when (@prop = outline-border-width) {
+                .plat-range-container {
+                    border-width: @value;
                 }
             }
             & when (@prop = thickness) {

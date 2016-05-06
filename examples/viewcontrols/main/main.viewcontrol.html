@@ -208,7 +208,7 @@
                 <plat-slider plat-bind="sliders.slider3" style="width: 400px;" class="slider-secondary"></plat-slider>
             </div>
             <div class="demo-item">
-                <plat-slider plat-bind="sliders.slider4" style="width: 400px;" class="slider-success"></plat-slider>
+                <plat-slider plat-bind="sliders.slider4" style="width: 400px;" class="slider-outline"></plat-slider>
             </div>
             <p>Range</p>
             <div class="demo-item">
@@ -222,7 +222,7 @@
                     <plat-range plat-bind="ranges.range3" style="width: 400px;" class="range-caution"></plat-range>
                 </div>
                 <div class="demo-item">
-                    <plat-range plat-bind="ranges.range4" style="width: 400px;" class="range-danger"></plat-range>
+                    <plat-range plat-bind="ranges.range4" style="width: 400px;" class="range-outline"></plat-range>
                 </div>
             </div>
 
@@ -597,7 +597,7 @@
         <label for="carousel"></label>
         <div class="demo-stage">
             <plat-carousel plat-context="carouselItems" style="width: 800px; height: 400px;" plat-options="{type:'tap', infinite: true}">
-                <div style="width: 100%; height: 100%; text-align: center; vertical-align: middle; background-color: lightblue;">
+                <div class="carousel-item" plat-style="background-color: {{bg}};">
                     <span>{{text}}</span>
                 </div>
             </plat-carousel>

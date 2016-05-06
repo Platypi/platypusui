@@ -32,9 +32,7 @@
             .fill();
             .border-radius(@border-radius);
             .box-sizing(border-box);
-            .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
             position: relative;
-            background-color: @empty-color;
             overflow: visible;
 
             .plat-range-track {
@@ -62,6 +60,19 @@
                         z-index: 1;
                     }
                 }
+            }
+        }
+
+        &:not(.range-outline) {
+            .plat-range-container {
+                .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
+                background-color: @empty-color;
+            }
+        }
+
+        &.range-outline {
+            .plat-range-container {
+                border: @outline-border-width solid @outline-border-color;
             }
         }
 
