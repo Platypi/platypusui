@@ -32,9 +32,7 @@
             .fill();
             .border-radius(@border-radius);
             .box-sizing(border-box);
-            .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
             position: relative;
-            background-color: @empty-color;
             overflow: visible;
 
             .plat-slider-track {
@@ -56,6 +54,19 @@
                     border: @knob-border-width solid @knob-border-color;
                     cursor: pointer;
                 }
+            }
+        }
+
+        &:not(.slider-outline) {
+            .plat-slider-container {
+                .box-shadow(inset 0px 1px 1px 0px darken(@empty-color, 10%));
+                background-color: @empty-color;
+            }
+        }
+
+        &.slider-outline {
+            .plat-slider-container {
+                border: @outline-border-width solid @outline-border-color;
             }
         }
 
