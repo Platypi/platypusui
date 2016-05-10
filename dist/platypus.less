@@ -1567,6 +1567,54 @@
     }
 }
 
+#platui {
+    #mixins {
+        /// Typography mixins
+        .headings() {
+            padding: 0;
+            font-weight: 600;
+        }
+
+        .type(@type; @size; @lineHeight) {
+            @{type} {
+                font-size: @size;
+                line-height: @lineHeight;
+            }
+        }
+
+        .type-headings(@base: 1) {
+            #platui > #media;
+
+            /// Phone
+            .type(p, @base * 1em, @base * 1.30em);
+            .type(h1, @base * 2em, @base * 1.5874em);
+            .type(h2, @base * 1.625em, @base * 1.1538em);
+            .type(h3, @base * 1.375em, @base * 1.1363em);
+            .type(h4, @base * 1.125em, @base * 1.1111em);
+            .type(h5, @base * 0.925em, @base * 1.0974em);
+            .type(h6, @base * 0.775em, @base * 1.0783em);
+
+            /// Tablet
+            .tab({
+                .type(p, @base * 1em, @base * 1.412em);
+                .type(h1, @base * 2.5em, @base * 1.37em);
+                .type(h2, @base * 2em, @base * 1.25em);
+                .type(h3, @base * 1.5em, @base * 1.25em);
+                .type(h4, @base * 1.125em, @base * 1.2222em);
+            });
+
+            /// Desktop
+            .dsk({
+                .type(h1, @base * 3em, @base * 1.3em);
+                .type(h2, @base * 2.25em, @base * 1.25em);
+                .type(h3, @base * 1.75em, @base * 1.25em);
+                .type(h5, @base * 1em, @base * 1.1111em);
+                .type(h6, @base * 0.925em, @base * 1.1111em);
+            });
+        }
+    }
+}
+
 /// ======= Control Variables ======== ///
 
 #platui {
@@ -8544,18 +8592,6 @@
     /* are set in global/variables.less. Measurements adapted from Robert Bringhurst's */
     /* classic and exhaustive work The Elements of Typographic Style. */
 
-    .headings() {
-        padding: 0;
-        font-weight: 600;
-    }
-
-    .type(@type; @size; @lineHeight) {
-        @{type} {
-            font-size: @size;
-            line-height: @lineHeight;
-        }
-    }
-
     @typography-margin: 0.67em;
 
     h1 {
@@ -8630,32 +8666,7 @@
         }
     }
 
-    /// Phone
-	.type(p, 1em, 1.30em);
-	.type(h1, 2em, 1.5874em);
-	.type(h2, 1.625em, 1.1538em);
-	.type(h3, 1.375em, 1.1363em);
-	.type(h4, 1.125em, 1.1111em);
-	.type(h5, 0.925em, 1.0974em);
-	.type(h6, 0.775em, 1.0783em);
-
-    /// Tablet
-    .tab({
-	    .type(p, 1em, 1.412em);
-	    .type(h1, 2.5em, 1.37em);
-	    .type(h2, 2em, 1.25em);
-	    .type(h3, 1.5em, 1.25em);
-	    .type(h4, 1.125em, 1.2222em);
-    });
-
-    /// Desktop
-    .dsk({
-	    .type(h1, 3em, 1.3em);
-	    .type(h2, 2.25em, 1.25em);
-	    .type(h3, 1.75em, 1.25em);
-	    .type(h5, 1em, 1.1111em);
-	    .type(h6, 0.925em, 1.1111em);
-    });
+    .type-headings();
 }
 
 /// ======= Globally-Available Animations ======== ///

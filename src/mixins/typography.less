@@ -1,0 +1,50 @@
+@import (reference) '../global/variables.less';
+@import (reference) './media.less';
+
+#platui {
+    #mixins {
+        /// Typography mixins
+        .headings() {
+            padding: 0;
+            font-weight: 600;
+        }
+
+        .type(@type; @size; @lineHeight) {
+            @{type} {
+                font-size: @size;
+                line-height: @lineHeight;
+            }
+        }
+
+        .type-headings(@modifier: 1) {
+            #platui > #media;
+
+            /// Phone
+            .type(p, @modifier * 1em, @modifier * 1.30em);
+            .type(h1, @modifier * 2em, @modifier * 1.5874em);
+            .type(h2, @modifier * 1.625em, @modifier * 1.1538em);
+            .type(h3, @modifier * 1.375em, @modifier * 1.1363em);
+            .type(h4, @modifier * 1.125em, @modifier * 1.1111em);
+            .type(h5, @modifier * 0.925em, @modifier * 1.0974em);
+            .type(h6, @modifier * 0.775em, @modifier * 1.0783em);
+
+            /// Tablet
+            .tab({
+                .type(p, @modifier * 1em, @modifier * 1.412em);
+                .type(h1, @modifier * 2.5em, @modifier * 1.37em);
+                .type(h2, @modifier * 2em, @modifier * 1.25em);
+                .type(h3, @modifier * 1.5em, @modifier * 1.25em);
+                .type(h4, @modifier * 1.125em, @modifier * 1.2222em);
+            });
+
+            /// Desktop
+            .dsk({
+                .type(h1, @modifier * 3em, @modifier * 1.3em);
+                .type(h2, @modifier * 2.25em, @modifier * 1.25em);
+                .type(h3, @modifier * 1.75em, @modifier * 1.25em);
+                .type(h5, @modifier * 1em, @modifier * 1.1111em);
+                .type(h6, @modifier * 0.925em, @modifier * 1.1111em);
+            });
+        }
+    }
+}
