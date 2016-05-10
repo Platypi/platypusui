@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -193,7 +194,7 @@ var platui;
             _document: __Document
         };
         return Button;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.Button = Button;
     plat.register.control(__Button, Button);
     /**
@@ -356,7 +357,7 @@ var platui;
             this.dom.toggleClass(element, __Plat + this._targetType);
         };
         return Toggle;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.Toggle = Toggle;
     plat.register.control(__Toggle, Toggle);
     /**
@@ -450,7 +451,7 @@ var platui;
             _document: __Document
         };
         return Checkbox;
-    })(Toggle);
+    }(Toggle));
     platui.Checkbox = Checkbox;
     plat.register.control(__Checkbox, Checkbox);
     /**
@@ -563,9 +564,9 @@ var platui;
             if (this.isActive) {
                 var name_1 = this.groupName;
                 this.dispatchEvent(__RadioPrefix + name_1, plat.events.EventManager.DIRECT);
-                var remover = this._removeListener = this.on(__RadioPrefix + name_1, function () {
+                var remover_1 = this._removeListener = this.on(__RadioPrefix + name_1, function () {
                     _this._toggle();
-                    remover();
+                    remover_1();
                 });
             }
         };
@@ -599,7 +600,7 @@ var platui;
             return element.hasAttribute('value') ? element.getAttribute('value').trim() : element.textContent.trim();
         };
         return Radio;
-    })(Checkbox);
+    }(Checkbox));
     platui.Radio = Radio;
     plat.register.control(__Radio, Radio);
     /**
@@ -660,7 +661,7 @@ var platui;
             this.element.firstElementChild.insertBefore(fragment, null);
         };
         return ProgressRing;
-    })(plat.ui.TemplateControl);
+    }(plat.ui.TemplateControl));
     platui.ProgressRing = ProgressRing;
     plat.register.control(__ProgressRing, ProgressRing);
     /**
@@ -757,7 +758,7 @@ var platui;
             _animator: __Animator
         };
         return ProgressBar;
-    })(plat.ui.TemplateControl);
+    }(plat.ui.TemplateControl));
     platui.ProgressBar = ProgressBar;
     plat.register.control(__ProgressBar, ProgressBar);
     /**
@@ -1027,10 +1028,10 @@ var platui;
         Drawer.prototype._checkPreInit = function () {
             var _this = this;
             if (this._preInitializedValue) {
-                var utils = this.utils;
-                utils.postpone(function () {
+                var utils_1 = this.utils;
+                utils_1.postpone(function () {
                     var controller = _this._controllers[0];
-                    if (!utils.isNull(controller)) {
+                    if (!utils_1.isNull(controller)) {
                         controller.open();
                     }
                 });
@@ -1040,7 +1041,7 @@ var platui;
             _Promise: __Promise
         };
         return Drawer;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.Drawer = Drawer;
     plat.register.control(__Drawer, Drawer);
     /**
@@ -1458,7 +1459,7 @@ var platui;
                 this._addSwipeClose();
             }
             if (this._isTrack = (types.indexOf('track') !== -1)) {
-                var trackFn = this._track, trackDirection, clickEater = this._clickEater;
+                var trackFn = this._track, trackDirection = void 0, clickEater = this._clickEater;
                 switch (position) {
                     case 'left':
                     case 'right':
@@ -1473,14 +1474,14 @@ var platui;
                     default:
                         return;
                 }
-                var primaryTrack = __$track + __transitionNegate[trackDirection], secondaryTrack = __$track + trackDirection, removePrimaryTrack = this.addEventListener(element, primaryTrack, trackFn, false), removeSecondaryTrack = this.addEventListener(element, secondaryTrack, trackFn, false), openTrackPrimaryRemover = this.addEventListener(clickEater, primaryTrack, trackFn, false), openTrackSecondaryRemover = this.addEventListener(clickEater, secondaryTrack, trackFn, false);
+                var primaryTrack = __$track + __transitionNegate[trackDirection], secondaryTrack = __$track + trackDirection, removePrimaryTrack_1 = this.addEventListener(element, primaryTrack, trackFn, false), removeSecondaryTrack_1 = this.addEventListener(element, secondaryTrack, trackFn, false), openTrackPrimaryRemover_1 = this.addEventListener(clickEater, primaryTrack, trackFn, false), openTrackSecondaryRemover_1 = this.addEventListener(clickEater, secondaryTrack, trackFn, false);
                 this._removeTrack = function () {
-                    removePrimaryTrack();
-                    removeSecondaryTrack();
+                    removePrimaryTrack_1();
+                    removeSecondaryTrack_1();
                 };
                 this._openTrackRemover = function () {
-                    openTrackPrimaryRemover();
-                    openTrackSecondaryRemover();
+                    openTrackPrimaryRemover_1();
+                    openTrackSecondaryRemover_1();
                 };
                 if (isNull(this._lastTouch)) {
                     var touchStart = this._touchStart, touchEnd = this._touchEnd;
@@ -1897,7 +1898,7 @@ var platui;
             if (utils.isNode(parent)) {
                 var computedParentStyle = _window.getComputedStyle(parent), overflow = computedParentStyle.overflow;
                 if (overflow !== 'hidden') {
-                    var computedDirectionalOverflow, key;
+                    var computedDirectionalOverflow = void 0, key = void 0;
                     if (this._isVertical) {
                         key = 'overflowY';
                         computedDirectionalOverflow = computedParentStyle.overflowY;
@@ -1957,7 +1958,7 @@ var platui;
             _Promise: __Promise
         };
         return DrawerController;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.DrawerController = DrawerController;
     plat.register.control(__DrawerController, DrawerController);
     /**
@@ -2265,7 +2266,7 @@ var platui;
             _Promise: __Promise
         };
         return Modal;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.Modal = Modal;
     plat.register.control(__Modal, Modal);
     /**
@@ -2694,7 +2695,7 @@ var platui;
             _animator: __Animator
         };
         return Slider;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.Slider = Slider;
     plat.register.control(__Slider, Slider);
     /**
@@ -3356,7 +3357,7 @@ var platui;
             _animator: __Animator
         };
         return Range;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.Range = Range;
     plat.register.control(__Range, Range);
     /**
@@ -3386,7 +3387,7 @@ var platui;
             this.setClasses();
         };
         return Select;
-    })(plat.ui.controls.Select);
+    }(plat.ui.controls.Select));
     platui.Select = Select;
     plat.register.control(__Select, Select);
     /**
@@ -3663,7 +3664,7 @@ var platui;
             _regex: __Regex
         };
         return Input;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.Input = Input;
     plat.register.control(__Input, Input);
     /**
@@ -3918,7 +3919,7 @@ var platui;
             _compat: __Compat
         };
         return File;
-    })(plat.ui.BindControl);
+    }(plat.ui.BindControl));
     platui.File = File;
     plat.register.control(__File, File);
     /**
@@ -5344,7 +5345,7 @@ var platui;
          */
         Carousel.prototype._cancelCurrentAnimations = function () {
             if (this._fade) {
-                var isNull = this.utils.isNull, animation, nextAnimation;
+                var isNull = this.utils.isNull, animation = void 0, nextAnimation = void 0;
                 if (!isNull(this._nextAnimationThenable)) {
                     nextAnimation = this._nextAnimationThenable.cancel();
                 }
@@ -5379,7 +5380,7 @@ var platui;
             _TemplateControlFactory: __TemplateControlFactory
         };
         return Carousel;
-    })(plat.ui.controls.ForEach);
+    }(plat.ui.controls.ForEach));
     platui.Carousel = Carousel;
     plat.register.control(__Carousel, Carousel);
     /**
@@ -5784,17 +5785,17 @@ var platui;
             removeMutationListener = control.observeArray(this._executeChildEvent.bind(this, name), items);
             this._createItems(0, (group.items || []).length, groupHash, 0);
             if (animate) {
-                var animationQueue = this._defaultGroup.animationQueue, animation = {
+                var animationQueue_1 = this._defaultGroup.animationQueue, animation_1 = {
                     animation: this._animator.enter(fragment, __Enter, this._container).then(function () {
-                        var index = animationQueue.indexOf(animation);
+                        var index = animationQueue_1.indexOf(animation_1);
                         if (index > -1) {
-                            animationQueue.splice(index, 1);
+                            animationQueue_1.splice(index, 1);
                         }
                         utils.requestAnimationFrame(_this._setGroupContainerPadding.bind(_this, groupContainer));
                     }),
                     op: null
                 };
-                animationQueue.push(animation);
+                animationQueue_1.push(animation_1);
                 return;
             }
             this._container.insertBefore(fragment, null);
@@ -5977,17 +5978,17 @@ var platui;
                 return;
             }
             else if (animate === true) {
-                var animationQueue = opGroup.animationQueue, animation = {
+                var animationQueue_2 = opGroup.animationQueue, animation_2 = {
                     animation: this._animator.enter(node, __Enter, opGroup.itemContainer).then(function () {
-                        var animationIndex = animationQueue.indexOf(animation);
+                        var animationIndex = animationQueue_2.indexOf(animation_2);
                         if (animationIndex === -1) {
                             return;
                         }
-                        animationQueue.splice(animationIndex, 1);
+                        animationQueue_2.splice(animationIndex, 1);
                     }),
                     op: null
                 };
-                animationQueue.push(animation);
+                animationQueue_2.push(animation_2);
             }
             else {
                 opGroup.itemContainer.insertBefore(node, null);
@@ -6129,21 +6130,21 @@ var platui;
             var progressRingContainer;
             switch (this._loading) {
                 case 'infinite':
-                    var removeScroll, removeRequest = noop;
-                    removeScroll = this.addEventListener(this._scrollContainer, 'scroll', function () {
+                    var removeScroll_1, removeRequest_1 = noop;
+                    removeScroll_1 = this.addEventListener(this._scrollContainer, 'scroll', function () {
                         if (!_this._scrollReady) {
                             return;
                         }
                         _this._scrollReady = false;
-                        removeRequest = _this.utils.requestAnimationFrame(function () {
+                        removeRequest_1 = _this.utils.requestAnimationFrame(function () {
                             _this._scrollReady = true;
                             _this._onScroll();
                         });
                     }, false);
                     this._removeScroll = function () {
                         _this._scrollReady = false;
-                        removeRequest();
-                        removeScroll();
+                        removeRequest_1();
+                        removeScroll_1();
                     };
                     if (showRing) {
                         progressRingContainer = this._loadingProgressRing = this._document.createElement('div');
@@ -6192,22 +6193,22 @@ var platui;
                 return;
             }
             else if (this._scrollPosition >= scrollLength) {
-                var utils = this.utils, itemsRemain = this._requestItems();
+                var utils_2 = this.utils, itemsRemain = this._requestItems();
                 if (itemsRemain === false) {
                     this._removeScroll();
                 }
-                else if (utils.isPromise(itemsRemain)) {
-                    var progressRing = this._loadingProgressRing, showProgress = !utils.isNull(progressRing), container = this._container;
+                else if (utils_2.isPromise(itemsRemain)) {
+                    var progressRing_1 = this._loadingProgressRing, showProgress_1 = !utils_2.isNull(progressRing_1), container_1 = this._container;
                     this._scrollReady = false;
-                    if (showProgress) {
-                        utils.requestAnimationFrame(function () {
-                            container.insertBefore(progressRing, null);
+                    if (showProgress_1) {
+                        utils_2.requestAnimationFrame(function () {
+                            container_1.insertBefore(progressRing_1, null);
                         });
                     }
                     itemsRemain.then(function (moreItemsRemain) {
-                        if (showProgress) {
-                            utils.requestAnimationFrame(function () {
-                                container.removeChild(progressRing);
+                        if (showProgress_1) {
+                            utils_2.requestAnimationFrame(function () {
+                                container_1.removeChild(progressRing_1);
                             });
                         }
                         if (moreItemsRemain === false) {
@@ -6217,7 +6218,7 @@ var platui;
                     });
                 }
                 else {
-                    utils.postpone(function () {
+                    utils_2.postpone(function () {
                         _this.itemsLoaded.then(function () {
                             if (_this._scrollReady) {
                                 _this._handleScroll();
@@ -6377,7 +6378,7 @@ var platui;
             }
             var animationOptions = {}, dom = this.dom, viewport = this._viewport, progressRing = refreshing ? this._refreshProgressRing : this._loadingProgressRing, isActionState = state === 3, nextTranslation;
             if (isActionState) {
-                var offset;
+                var offset = void 0;
                 if (this._isVertical) {
                     offset = refreshing ? progressRing.offsetHeight : -progressRing.offsetHeight;
                     nextTranslation = "translate3d(0," + offset + "px,0)";
@@ -6432,7 +6433,7 @@ var platui;
                 return;
             }
             if (!this._isLoading) {
-                var scrollContainer = this._scrollContainer, scrollLength, threshold;
+                var scrollContainer = this._scrollContainer, scrollLength = void 0, threshold = void 0;
                 if (this._isVertical) {
                     if (ev.direction.y !== 'up') {
                         return;
@@ -6684,7 +6685,7 @@ var platui;
                 if (animating) {
                     this._cancelCurrentAnimations();
                 }
-                var newLength = change.object.length, itemCount = currentLength - newLength;
+                var newLength = change.object.length, itemCount_1 = currentLength - newLength;
                 if (newLength > currentLength) {
                     if (utils.isFunction(this._templateSelector)) {
                         if (utils.isNull(change.index)) {
@@ -6696,24 +6697,24 @@ var platui;
                         return;
                     }
                     // itemCount will be negative 
-                    this._createItems(currentLength, -itemCount, opGroup, 0);
+                    this._createItems(currentLength, -itemCount_1, opGroup, 0);
                 }
                 else if (currentLength > newLength) {
-                    if (opGroup.itemCount >= itemCount) {
-                        opGroup.itemCount -= itemCount;
+                    if (opGroup.itemCount >= itemCount_1) {
+                        opGroup.itemCount -= itemCount_1;
                     }
                     else {
                         opGroup.itemCount = 0;
                     }
                     this._Promise.all(addQueue).then(function () {
-                        _this._removeItems(currentLength - itemCount, itemCount, opGroup);
+                        _this._removeItems(currentLength - itemCount_1, itemCount_1, opGroup);
                     });
                 }
                 return;
             }
             var removeCount = change.removed.length, animationQueue = opGroup.animationQueue;
             if (addCount > removeCount) {
-                var itemAddCount = addCount - removeCount, animationCount;
+                var itemAddCount = addCount - removeCount, animationCount = void 0;
                 if (utils.isFunction(this._templateSelector)) {
                     if (utils.isNull(change.index)) {
                         this.rerender(opGroup);
@@ -6738,23 +6739,23 @@ var platui;
                 this._createItems(change.object.length - itemAddCount, itemAddCount, opGroup, animationCount);
             }
             else if (removeCount > addCount) {
-                var adding = addCount > 0;
-                if (animating && !adding && addQueue.length === 0) {
+                var adding_1 = addCount > 0;
+                if (animating && !adding_1 && addQueue.length === 0) {
                     addQueue = addQueue.concat([this._animateItems(change.index, removeCount, __Leave, opGroup, 'clone', true)]);
                 }
-                var deleteCount = removeCount - addCount;
-                if (opGroup.itemCount >= deleteCount) {
-                    opGroup.itemCount -= deleteCount;
+                var deleteCount_1 = removeCount - addCount;
+                if (opGroup.itemCount >= deleteCount_1) {
+                    opGroup.itemCount -= deleteCount_1;
                 }
                 else {
                     opGroup.itemCount = 0;
                 }
                 this._Promise.all(addQueue).then(function () {
-                    if (animating && adding) {
+                    if (animating && adding_1) {
                         var animLength = animationQueue.length;
                         _this._animateItems(change.index, addCount, __Enter, opGroup, null, animLength > 0 && animationQueue[animLength - 1].op === 'clone');
                     }
-                    _this._removeItems(currentLength - deleteCount, deleteCount, opGroup);
+                    _this._removeItems(currentLength - deleteCount_1, deleteCount_1, opGroup);
                 });
             }
         };
@@ -7060,7 +7061,7 @@ var platui;
             _TemplateControlFactory: __TemplateControlFactory
         };
         return Listview;
-    })(plat.ui.TemplateControl);
+    }(plat.ui.TemplateControl));
     platui.Listview = Listview;
     plat.register.control(__Listview, Listview);
     /**
@@ -7276,7 +7277,7 @@ var platui;
             _document: __Document
         };
         return Navbar;
-    })(plat.ui.TemplateControl);
+    }(plat.ui.TemplateControl));
     platui.Navbar = Navbar;
     plat.register.control(__Navbar, Navbar, null, true);
     /**
@@ -7391,7 +7392,7 @@ var platui;
             _NodeManagerStatic: __NodeManagerStatic
         };
         return Image;
-    })(plat.ui.TemplateControl);
+    }(plat.ui.TemplateControl));
     platui.Image = Image;
     plat.register.control(__Image, Image);
 })(platui || (platui = {}));
