@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.15.0 (https://platypi.io) 
+ * PlatypusUI v0.15.1 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1582,34 +1582,34 @@
             }
         }
 
-        .type-headings(@base: 1) {
+        .type-headings(@modifier: 1) {
             #platui > #media;
 
             /// Phone
-            .type(p, @base * 1em, @base * 1.30em);
-            .type(h1, @base * 2em, @base * 1.5874em);
-            .type(h2, @base * 1.625em, @base * 1.1538em);
-            .type(h3, @base * 1.375em, @base * 1.1363em);
-            .type(h4, @base * 1.125em, @base * 1.1111em);
-            .type(h5, @base * 0.925em, @base * 1.0974em);
-            .type(h6, @base * 0.775em, @base * 1.0783em);
+            .type(p, @modifier * 1em, @modifier * 1.30em);
+            .type(h1, @modifier * 2em, @modifier * 1.5874em);
+            .type(h2, @modifier * 1.625em, @modifier * 1.1538em);
+            .type(h3, @modifier * 1.375em, @modifier * 1.1363em);
+            .type(h4, @modifier * 1.125em, @modifier * 1.1111em);
+            .type(h5, @modifier * 0.925em, @modifier * 1.0974em);
+            .type(h6, @modifier * 0.775em, @modifier * 1.0783em);
 
             /// Tablet
             .tab({
-                .type(p, @base * 1em, @base * 1.412em);
-                .type(h1, @base * 2.5em, @base * 1.37em);
-                .type(h2, @base * 2em, @base * 1.25em);
-                .type(h3, @base * 1.5em, @base * 1.25em);
-                .type(h4, @base * 1.125em, @base * 1.2222em);
+                .type(p, @modifier * 1em, @modifier * 1.412em);
+                .type(h1, @modifier * 2.5em, @modifier * 1.37em);
+                .type(h2, @modifier * 2em, @modifier * 1.25em);
+                .type(h3, @modifier * 1.5em, @modifier * 1.25em);
+                .type(h4, @modifier * 1.125em, @modifier * 1.2222em);
             });
 
             /// Desktop
             .dsk({
-                .type(h1, @base * 3em, @base * 1.3em);
-                .type(h2, @base * 2.25em, @base * 1.25em);
-                .type(h3, @base * 1.75em, @base * 1.25em);
-                .type(h5, @base * 1em, @base * 1.1111em);
-                .type(h6, @base * 0.925em, @base * 1.1111em);
+                .type(h1, @modifier * 3em, @modifier * 1.3em);
+                .type(h2, @modifier * 2.25em, @modifier * 1.25em);
+                .type(h3, @modifier * 1.75em, @modifier * 1.25em);
+                .type(h5, @modifier * 1em, @modifier * 1.1111em);
+                .type(h6, @modifier * 0.925em, @modifier * 1.1111em);
             });
         }
     }
