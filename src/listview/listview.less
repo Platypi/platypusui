@@ -283,11 +283,13 @@
                         }
 
                         .plat-enter {
-                            .animation(@enter-animation);
+                            .animation-name(@enter-animation-name);
+                            .animation-duration(@enter-animation-duration);
                         }
 
                         .plat-leave {
-                            .animation(@leave-animation);
+                            .animation-name(@leave-animation-name);
+                            .animation-duration(@leave-animation-duration);
                         }
                     }
                 }

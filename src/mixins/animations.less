@@ -10,7 +10,15 @@
             .animate(@name; @duration; @function; @delay; @count; @direction; @fill-mode; @play-state; @webkit-moz-list);
         }
         .animate(@name; @duration; @function; @delay; @count; @direction; @fill-mode; @play-state: running; @vendor-list) {
-            #platui > #__mixins > .vendor-loop(animation; @name @duration @function @delay @count @direction @fill-mode @play-state; @vendor-list);
+            // need to call these separately due to iOS 9 animation issue
+            .animation-name(@name; @vendor-list);
+            .animation-duration(@duration; @vendor-list);
+            .animation-timing-function(@function; @vendor-list);
+            .animation-delay(@delay; @vendor-list);
+            .animation-iteration-count(@count; @vendor-list);
+            .animation-direction(@direction; @vendor-list);
+            .animation-fill-mode(@fill-mode; @vendor-list);
+            .animation-play-state(@play-state; @vendor-list);
         }
 
         .animation(@args) {

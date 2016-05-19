@@ -3,15 +3,7 @@
 
 #platui {
     #Listview {
-        #dependencies {
-            @enter-animation-name: LISTVIEW_ITEM_ENTER;
-            @enter-animation-duration: 300ms;
-            @leave-animation-name: LISTVIEW_ITEM_LEAVE;
-            @leave-animation-duration: 300ms;
-        }
-
         #platui > #variables;
-        #platui > #Listview > #dependencies;
 
     /// =========== Listview Colors =========== ///
 
@@ -25,8 +17,10 @@
             opacity: 0;
         };
 
-        @enter-animation: @enter-animation-name @enter-animation-duration;
-        @leave-animation: @leave-animation-name @leave-animation-duration;
+        @enter-animation-name: LISTVIEW_ITEM_ENTER;
+        @enter-animation-duration: 300ms;
+        @leave-animation-name: LISTVIEW_ITEM_LEAVE;
+        @leave-animation-duration: 300ms;
 
     /// =========== Listview Animation Mixins =========== ///
 
@@ -138,32 +132,6 @@
                     }
                 }
             }
-            & when (@prop = enter-animation) {
-                &.plat-animated {
-                    .plat-listview-viewport {
-                        .plat-scroll-container {
-                            .plat-container {
-                                .plat-enter {
-                                    .animation(@value);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = leave-animation) {
-                &.plat-animated {
-                    .plat-listview-viewport {
-                        .plat-scroll-container {
-                            .plat-container {
-                                .plat-leave {
-                                    .animation(@value);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 
@@ -193,11 +161,13 @@
                                 }
 
                                 .plat-enter {
-                                    .animation(@enter-animation);
+                                    .animation-name(@enter-animation-name);
+                                    .animation-duration(@enter-animation-duration);
                                 }
 
                                 .plat-leave {
-                                    .animation(@leave-animation);
+                                    .animation-name(@leave-animation-name);
+                                    .animation-duration(@leave-animation-duration);
                                 }
                             }
                         }
@@ -277,32 +247,6 @@
                             .plat-container {
                                 .plat-enter-init {
                                     @value();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = enter-animation) {
-                &.plat-animated {
-                    .plat-listview-viewport {
-                        .plat-scroll-container {
-                            .plat-container {
-                                .plat-enter {
-                                    .animation(@value);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            & when (@prop = leave-animation) {
-                &.plat-animated {
-                    .plat-listview-viewport {
-                        .plat-scroll-container {
-                            .plat-container {
-                                .plat-leave {
-                                    .animation(@value);
                                 }
                             }
                         }
