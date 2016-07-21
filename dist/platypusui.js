@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.15.2 (https://platypi.io)
+ * PlatypusUI v0.15.3 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -525,16 +525,32 @@ var platui;
          * the property if we need to toggle the mark.
          */
         Radio.prototype._setBoundProperty = function (newValue, oldValue, identifier, setProperty) {
+            var utils = this.utils;
             if (newValue === oldValue) {
                 return;
             }
-            else if (setProperty === true && this.utils.isNull(newValue)) {
+            else if (setProperty === true && utils.isNull(newValue)) {
                 this.inputChanged();
                 return;
             }
-            var isChecked = newValue === this._getValue(), wasChecked = this.isActive;
-            if (isChecked === wasChecked) {
-                return;
+            var value = this._getValue(), isChecked = newValue === value, wasChecked = this.isActive;
+            if (isChecked) {
+                if (wasChecked) {
+                    return;
+                }
+            }
+            else {
+                var newValueStr = utils.isFunction(newValue.toString) ? newValue.toString() : Object.prototype.toString.call(newValue);
+                if (wasChecked) {
+                    if (newValueStr === value) {
+                        return;
+                    }
+                }
+                else {
+                    if (newValueStr !== value) {
+                        return;
+                    }
+                }
             }
             this._toggle(setProperty);
         };
