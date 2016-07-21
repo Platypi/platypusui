@@ -165,18 +165,33 @@ module platui {
          * @returns {void}
          */
         protected _setBoundProperty(newValue: any, oldValue: any, identifier: string, setProperty?: boolean): void {
+            let utils = this.utils;
             if (newValue === oldValue) {
                 return;
-            } else if (setProperty === true && this.utils.isNull(newValue)) {
+            } else if (setProperty === true && utils.isNull(newValue)) {
                 this.inputChanged();
                 return;
             }
 
-            let isChecked = newValue === this._getValue(),
+            let value = this._getValue(),
+                isChecked = newValue === value,
                 wasChecked = this.isActive;
 
-            if (isChecked === wasChecked) {
-                return;
+            if (isChecked) {
+                if (wasChecked) {
+                    return;
+                }
+            } else {
+                let newValueStr = utils.isFunction(newValue.toString) ? newValue.toString() : Object.prototype.toString.call(newValue);
+                if (wasChecked) {
+                    if (newValueStr === value) {
+                        return;
+                    }
+                } else {
+                    if (newValueStr !== value) {
+                        return;
+                    }
+                }
             }
 
             this._toggle(setProperty);
