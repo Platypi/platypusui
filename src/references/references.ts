@@ -99,6 +99,7 @@ let __prefix = '$',
      * Misc
      */
     __Reversed = '-reversed',
+    __NAME_ATTRIBUTE = 'name',
     __LITERAL_RESOURCE = 'literal',
     __transitionNegate: plat.IObject<string> = {
         right: 'left',

@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.15.3 (https://platypi.io)
+ * PlatypusUI v0.15.4 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -50,7 +50,7 @@ var platui;
     __$tap = '$tap', __$touchstart = '$touchstart', __$touchend = '$touchend', __$touchcancel = '$touchcancel', __$swipe = '$swipe', __$track = '$track', __$trackend = '$trackend', __ButtonPrefix = '__plat-button-', __RadioPrefix = '__plat-radio-', __DrawerControllerInitEvent = '__platDrawerControllerInit', __DrawerControllerFetchEvent = '__platDrawerControllerFetch', __DrawerFoundEvent = '__platDrawerFound', 
     /**
      */
-    __Reversed = '-reversed', __LITERAL_RESOURCE = 'literal', __transitionNegate = {
+    __Reversed = '-reversed', __NAME_ATTRIBUTE = 'name', __LITERAL_RESOURCE = 'literal', __transitionNegate = {
         right: 'left',
         left: 'right',
         up: 'down',
@@ -236,6 +236,30 @@ var platui;
             this.setClasses();
         };
         /**
+         * Adds the inner template to the DOM making sure to wrap text nodes in spans.
+         */
+        Toggle.prototype.setTemplate = function () {
+            var isNull = this.utils.isNull, innerTemplate = this.innerTemplate;
+            if (isNull(innerTemplate)) {
+                return;
+            }
+            var _document = this._document, element = this.element, childNodes = Array.prototype.slice.call(innerTemplate.childNodes), childNode, span, match;
+            while (childNodes.length > 0) {
+                childNode = childNodes.shift();
+                if (childNode.nodeType === Node.TEXT_NODE) {
+                    match = childNode.textContent.trim().match(/[^\r\n]/g);
+                    if (match !== null && match.length > 0) {
+                        span = _document.createElement('span');
+                        span.insertBefore(childNode, null);
+                        element.insertBefore(span, null);
+                    }
+                }
+                else {
+                    element.insertBefore(childNode, null);
+                }
+            }
+        };
+        /**
          * Adds a listener for the tap event.
          */
         Toggle.prototype.loaded = function () {
@@ -356,6 +380,9 @@ var platui;
         Toggle.prototype._activate = function (element) {
             this.dom.toggleClass(element, __Plat + this._targetType);
         };
+        Toggle._inject = {
+            _document: __Document
+        };
         return Toggle;
     }(plat.ui.BindControl));
     platui.Toggle = Toggle;
@@ -387,30 +414,6 @@ var platui;
          */
         Checkbox.prototype.setClasses = function (className, element) {
             this.dom.addClass(element || this.element, __Checkbox + " " + (className || ''));
-        };
-        /**
-         * Adds the inner template to the DOM making sure to wrap text nodes in spans.
-         */
-        Checkbox.prototype.setTemplate = function () {
-            var isNull = this.utils.isNull, innerTemplate = this.innerTemplate;
-            if (isNull(innerTemplate)) {
-                return;
-            }
-            var _document = this._document, element = this.element, childNodes = Array.prototype.slice.call(innerTemplate.childNodes), childNode, span, match;
-            while (childNodes.length > 0) {
-                childNode = childNodes.shift();
-                if (childNode.nodeType === Node.TEXT_NODE) {
-                    match = childNode.textContent.trim().match(/[^\r\n]/g);
-                    if (match !== null && match.length > 0) {
-                        span = _document.createElement('span');
-                        span.insertBefore(childNode, null);
-                        element.insertBefore(span, null);
-                    }
-                }
-                else {
-                    element.insertBefore(childNode, null);
-                }
-            }
         };
         /**
          * Checks for checked attributes and handles them accordingly. Also,
@@ -446,9 +449,6 @@ var platui;
                 return;
             }
             this._targetTypeSet = true;
-        };
-        Checkbox._inject = {
-            _document: __Document
         };
         return Checkbox;
     }(Toggle));
@@ -497,8 +497,8 @@ var platui;
             var element = this.element;
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
-            if (element.hasAttribute('name')) {
-                this.groupName = element.getAttribute('name');
+            if (element.hasAttribute(__NAME_ATTRIBUTE)) {
+                this.groupName = element.getAttribute(__NAME_ATTRIBUTE);
             }
             else if (!this.utils.isNull(this.attributes[__CamelBind])) {
                 this.groupName = this.attributes[__CamelBind];

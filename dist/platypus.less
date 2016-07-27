@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.15.3 (https://platypi.io) 
+ * PlatypusUI v0.15.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -7901,6 +7901,7 @@
                 @width: @height * @value;
 
                 .plat-toggle-container {
+                    .flex(0 0 @width);
                     width: @width;
 
                     &.plat-slide {
@@ -7961,6 +7962,7 @@
                 @toggle-thin-knob-radius: @height / 2;
 
                 .plat-toggle-container {
+                    .flex(0 0 @width);
                     .border-radius(@height);
                     .transition(~'background-color @{transition-time}, border-color @{transition-time}');
                     width: @width;
@@ -8126,6 +8128,7 @@
                 @width: @height * @value;
 
                 .plat-toggle-container {
+                    .flex(0 0 @width);
                     width: @width;
 
                     &.plat-slide {
@@ -11987,18 +11990,24 @@
     #platui > #__Toggle;
 
     .plat-toggle {
+        .flex-vertical-center(true);
         .box-sizing(border-box);
-        display: inline-block;
         cursor: pointer;
 
+        & > span:first-of-type {
+            padding-left: 0.4em;
+        }
+
         .plat-toggle-container {
+            .flex(0 0 @width);
             .border-radius(@height);
             .box-sizing(content-box);
             .translateZ(0);
             .transition(~'background-color @{transition-time}, border-color @{transition-time}');
+            position: relative;
+            display: inline-block;
             width: @width;
             height: @height;
-            position: relative;
             overflow: hidden;
             background-color: @background-color;
             border: 1px solid @border-color;

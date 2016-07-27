@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.15.3 (https://platypi.io)
+  * PlatypusUI v0.15.4 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -129,6 +129,7 @@ declare module platui {
       * An BindControl that simulates a toggle switch.
       */
     class Toggle extends plat.ui.BindControl implements IUiControl {
+        protected static _inject: any;
         /**
           * The HTML template represented as a string.
           */
@@ -137,6 +138,10 @@ declare module platui {
           * A boolean value indicating whether the control is actively selected.
           */
         isActive: boolean;
+        /**
+          * Reference to the Document injectable.
+          */
+        protected _document: Document;
         /**
           * The type of the control's activated element.
           */
@@ -157,6 +162,10 @@ declare module platui {
           * Set the class name.
           */
         initialize(): void;
+        /**
+          * Adds the inner template to the DOM making sure to wrap text nodes in spans.
+          */
+        setTemplate(): void;
         /**
           * Adds a listener for the tap event.
           */
@@ -221,7 +230,6 @@ declare module platui {
       * An IBindablePropertyControl that standardizes the HTML5 checkbox.
       */
     class Checkbox extends Toggle {
-        protected static _inject: any;
         /**
           * The HTML template represented as a string.
           */
@@ -230,10 +238,6 @@ declare module platui {
           * The evaluated plat-options object.
           */
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
-        /**
-          * Reference to the Document injectable.
-          */
-        protected _document: Document;
         /**
           * Whether the target type has been set already or not.
           */
@@ -246,10 +250,6 @@ declare module platui {
           * the control's element if not specified.
           */
         setClasses(className?: string, element?: Element): void;
-        /**
-          * Adds the inner template to the DOM making sure to wrap text nodes in spans.
-          */
-        setTemplate(): void;
         /**
           * Checks for checked attributes and handles them accordingly. Also,
           * initializes the mark and adds a listener for the tap event.

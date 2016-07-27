@@ -158,6 +158,7 @@
                 @width: @height * @value;
 
                 .plat-toggle-container {
+                    .flex(0 0 @width);
                     width: @width;
 
                     &.plat-slide {
@@ -218,6 +219,7 @@
                 @toggle-thin-knob-radius: @height / 2;
 
                 .plat-toggle-container {
+                    .flex(0 0 @width);
                     .border-radius(@height);
                     .transition(~'background-color @{transition-time}, border-color @{transition-time}');
                     width: @width;
@@ -383,6 +385,7 @@
                 @width: @height * @value;
 
                 .plat-toggle-container {
+                    .flex(0 0 @width);
                     width: @width;
 
                     &.plat-slide {
