@@ -118,6 +118,7 @@ export interface IButtonOptions {
   * An BindControl that simulates a toggle switch.
   */
 export declare class Toggle extends plat.ui.BindControl implements IUiControl {
+    protected static _inject: any;
     /**
       * The HTML template represented as a string.
       */
@@ -126,6 +127,10 @@ export declare class Toggle extends plat.ui.BindControl implements IUiControl {
       * A boolean value indicating whether the control is actively selected.
       */
     isActive: boolean;
+    /**
+      * Reference to the Document injectable.
+      */
+    protected _document: Document;
     /**
       * The type of the control's activated element.
       */
@@ -146,6 +151,10 @@ export declare class Toggle extends plat.ui.BindControl implements IUiControl {
       * Set the class name.
       */
     initialize(): void;
+    /**
+      * Adds the inner template to the DOM making sure to wrap text nodes in spans.
+      */
+    setTemplate(): void;
     /**
       * Adds a listener for the tap event.
       */
@@ -210,7 +219,6 @@ export declare class Toggle extends plat.ui.BindControl implements IUiControl {
   * An IBindablePropertyControl that standardizes the HTML5 checkbox.
   */
 export declare class Checkbox extends Toggle {
-    protected static _inject: any;
     /**
       * The HTML template represented as a string.
       */
@@ -219,10 +227,6 @@ export declare class Checkbox extends Toggle {
       * The evaluated plat-options object.
       */
     options: plat.observable.IObservableProperty<ICheckboxOptions>;
-    /**
-      * Reference to the Document injectable.
-      */
-    protected _document: Document;
     /**
       * Whether the target type has been set already or not.
       */
@@ -235,10 +239,6 @@ export declare class Checkbox extends Toggle {
       * the control's element if not specified.
       */
     setClasses(className?: string, element?: Element): void;
-    /**
-      * Adds the inner template to the DOM making sure to wrap text nodes in spans.
-      */
-    setTemplate(): void;
     /**
       * Checks for checked attributes and handles them accordingly. Also,
       * initializes the mark and adds a listener for the tap event.
