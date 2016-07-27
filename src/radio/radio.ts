@@ -117,8 +117,8 @@ module platui {
             this._targetElement = element.firstElementChild;
             this.addEventListener(element, __$tap, this._onTap);
 
-            if (element.hasAttribute('name')) {
-                this.groupName = element.getAttribute('name');
+            if (element.hasAttribute(__NAME_ATTRIBUTE)) {
+                this.groupName = element.getAttribute(__NAME_ATTRIBUTE);
             } else if (!this.utils.isNull(this.attributes[__CamelBind])) {
                 this.groupName = this.attributes[__CamelBind];
             }

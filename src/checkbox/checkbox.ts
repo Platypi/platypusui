@@ -12,10 +12,6 @@ module platui {
      * An {@link plat.ui.IBindablePropertyControl|IBindablePropertyControl} that standardizes the HTML5 checkbox.
      */
     export class Checkbox extends Toggle {
-        protected static _inject: any = {
-            _document: __Document
-        };
-
         /**
          * @name templateString
          * @memberof platui.Checkbox
@@ -44,19 +40,6 @@ module platui {
          * The evaluated {@link plat.controls.Options|plat-options} object.
          */
         options: plat.observable.IObservableProperty<ICheckboxOptions>;
-
-        /**
-         * @name _document
-         * @memberof platui.Checkbox
-         * @kind property
-         * @access protected
-         *
-         * @type {Document}
-         *
-         * @description
-         * Reference to the Document injectable.
-         */
-        protected _document: Document;
 
         /**
          * @name _targetTypeSet
@@ -89,47 +72,6 @@ module platui {
          */
         setClasses(className?: string, element?: Element): void {
             this.dom.addClass(element || this.element, `${__Checkbox} ${(className || '')}`);
-        }
-
-        /**
-         * @name setTemplate
-         * @memberof platui.Checkbox
-         * @kind function
-         * @access public
-         *
-         * @description
-         * Adds the inner template to the DOM making sure to wrap text nodes in spans.
-         *
-         * @returns {void}
-         */
-        setTemplate(): void {
-            let isNull = this.utils.isNull,
-                innerTemplate = this.innerTemplate;
-
-            if (isNull(innerTemplate)) {
-                return;
-            }
-
-            let _document = this._document,
-                element = this.element,
-                childNodes = Array.prototype.slice.call(innerTemplate.childNodes),
-                childNode: Node,
-                span: HTMLSpanElement,
-                match: Array<string>;
-
-            while (childNodes.length > 0) {
-                childNode = childNodes.shift();
-                if (childNode.nodeType === Node.TEXT_NODE) {
-                    match = childNode.textContent.trim().match(/[^\r\n]/g);
-                    if (match !== null && match.length > 0) {
-                        span = _document.createElement('span');
-                        span.insertBefore(childNode, null);
-                        element.insertBefore(span, null);
-                    }
-                } else {
-                    element.insertBefore(childNode, null);
-                }
-            }
         }
 
         /**
