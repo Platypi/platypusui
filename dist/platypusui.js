@@ -2239,10 +2239,9 @@ var platui;
          */
         Modal.prototype._bindInnerTemplate = function () {
             var _this = this;
-            var innerTemplate = this.innerTemplate, bindableTemplates = this.bindableTemplates, modal = 'modal';
-            bindableTemplates.add(modal, innerTemplate);
+            var innerTemplate = this.innerTemplate;
             this.innerTemplate = null;
-            return bindableTemplates.bind(modal).then(function (template) {
+            return this.bindableTemplates.once(innerTemplate).then(function (template) {
                 _this._container.insertBefore(template, null);
                 if (_this.utils.isFunction(_this.__resolveFn)) {
                     _this.__resolveFn();
