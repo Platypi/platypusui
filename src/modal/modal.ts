@@ -655,14 +655,10 @@ module platui {
          * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
          */
         protected _bindInnerTemplate(): plat.async.IThenable<void> {
-            let innerTemplate = this.innerTemplate,
-                bindableTemplates = this.bindableTemplates,
-                modal = 'modal';
-
-            bindableTemplates.add(modal, innerTemplate);
+            let innerTemplate = this.innerTemplate;
             this.innerTemplate = null;
 
-            return bindableTemplates.bind(modal).then((template): plat.async.IThenable<void> => {
+            return this.bindableTemplates.once(innerTemplate).then((template): plat.async.IThenable<void> => {
                 this._container.insertBefore(template, null);
 
                 if (this.utils.isFunction(this.__resolveFn)) {
