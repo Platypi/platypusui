@@ -181,6 +181,10 @@ module platui {
                 if (wasChecked) {
                     return;
                 }
+            } else if (utils.isNull(newValue)) {
+                if (!wasChecked) {
+                    return;
+                }
             } else {
                 let newValueStr = utils.isFunction(newValue.toString) ? newValue.toString() : Object.prototype.toString.call(newValue);
                 if (wasChecked) {
