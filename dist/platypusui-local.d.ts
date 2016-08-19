@@ -74,10 +74,6 @@ export declare class Button extends plat.ui.BindControl implements IUiControl {
       */
     initialize(): void;
     /**
-      * Wrap all inner text nodes in spans.
-      */
-    setTemplate(): void;
-    /**
       * Determine the button style and apply the proper classes.
       */
     loaded(): void;
