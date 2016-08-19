@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.15.5 (https://platypi.io) 
+ * PlatypusUI v0.16.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -4796,6 +4796,20 @@ h6 {
 .plat-select::-ms-value {
   color: #444444;
   background-color: transparent;
+}
+.plat-select.select-light {
+  color: #ffffff;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAUCAYAAACeXl35AAAA80lEQVRIS73UYRWCMBiF4XsbGMEI2kAbaANpoEm0gTTQBtpAIxiBBp/n2xkcQNjmNuA/Pme+uxAzP1RPRDZzuCSfNXgGcJwYLUkWBrSnfAFYTYS+AWxJVm1wCUDRRWa0spiiaEB7yh2AW2awIFnWv9kBLZqzp+nWPsAPmLFn0y0ETO3Z6eYFM/TsdAsCE3reSe7HLt5gw9Y2dSKPP/b5AbDWvUWB9pT6MVA0ZJ+Kmb1FgxY9ALh69nkiefFt2PmXtl8WEQUVHnqc3YIvTQ8c6+ntFgU6enq7RYMDPYO6JYEWNR94196Sbmn/ZRExE3HtbQz8AtOmYhUhBb2SAAAAAElFTkSuQmCC");
+  border-color: #ffffff;
+}
+.plat-select.select-light:focus {
+  border-color: #ffffff;
+}
+.plat-select.select-light::-ms-value {
+  color: #ffffff;
+}
+.plat-select.select-light option {
+  color: #444444;
 }
 .plat-select option:checked {
   color: #ffffff;
