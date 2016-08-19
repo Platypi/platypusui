@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.16.0 (https://platypi.io)
+  * PlatypusUI v0.16.1 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -84,10 +84,6 @@ declare module platui {
           * Sets default classes.
           */
         initialize(): void;
-        /**
-          * Wrap all inner text nodes in spans.
-          */
-        setTemplate(): void;
         /**
           * Determine the button style and apply the proper classes.
           */
