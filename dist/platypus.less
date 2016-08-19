@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.15.5 (https://platypi.io) 
+ * PlatypusUI v0.16.0 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -7060,13 +7060,21 @@
 
 #platui {
     #Select {
-        #platui > #variables;
+        #dependencies {
+            #platui > #variables;
+            @border-color: @neutral-color;
+        }
+
+        #platui > #Select > #dependencies;
 
     /// =========== Select Colors =========== ///
 
         @background-color: @transparent;
         @color: @default-font-color;
-        @border-color: @neutral-color;
+        @border-color-focus: darken(@border-color, 25%);
+        @color-light: @white;
+        @border-color-light: @white;
+        @border-color-light-focus: @white;
 
     /// =========== Select Sizes =========== ///
 
@@ -7074,11 +7082,23 @@
         @border-radius: @global-border-radius;
         @border-width: 1px;
 
+    /// =========== Properties =========== ///
+
+        @caret: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAUCAYAAACeXl35AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAShJREFUeNq8lc0RgjAQhfOnXCkFbx61BDvQDvTo0QosQTvQDrQDPXrTDuSuEN9GcDIYQJH4ZnbYyUIe7AcLY38Wz46DP/nt82SJ0FwIL0F7I1b2E5IOQspIKNXqI6VJwtL7/Yh0iIiFVRuhGOs0bc2M9oJZjHRCZrRmG16okNxuOFO3Ymj2YmyGOOZrsnDOCRHizvpo7+9mWq+RLlxvaVE/8Sxys2ui5JrGPF3cPjFszNPFzVYVqCdPrT/mmd3gFum8btKUKUTswDKqM824UWd6rlbWtTSXYUFMqniiC2Rm2FeZfaMx7auCwBmccwI9bXvwrmguvpk9Z+XGx6QPzfep1MuMcqyds5oXRYir7HS07Hbzv0Dk+59mePriVqaNL25VPBtxewgwABxVrJXnt4pwAAAAAElFTkSuQmCC";
+        @caret-light: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAUCAYAAACeXl35AAAA80lEQVRIS73UYRWCMBiF4XsbGMEI2kAbaANpoEm0gTTQBtpAIxiBBp/n2xkcQNjmNuA/Pme+uxAzP1RPRDZzuCSfNXgGcJwYLUkWBrSnfAFYTYS+AWxJVm1wCUDRRWa0spiiaEB7yh2AW2awIFnWv9kBLZqzp+nWPsAPmLFn0y0ETO3Z6eYFM/TsdAsCE3reSe7HLt5gw9Y2dSKPP/b5AbDWvUWB9pT6MVA0ZJ+Kmb1FgxY9ALh69nkiefFt2PmXtl8WEQUVHnqc3YIvTQ8c6+ntFgU6enq7RYMDPYO6JYEWNR94196Sbmn/ZRExE3HtbQz8AtOmYhUhBb2SAAAAAElFTkSuQmCC";
+
     /// =========== Variable Select Styles =========== ///
 
         .plat-select(@prop; @value) {
             #platui > #mixins;
 
+            & when (@prop = border-color) {
+                border-color: @value;
+
+                &:focus {
+                    border-color: @value;
+                }
+            }
             & when (@prop = background-color) {
                 background-color: @value;
 
@@ -7096,14 +7116,45 @@
             & when (@prop = height) {
                 height: @value;
             }
+            & when (@prop = border-color-focus) {
+                &:focus {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = color-light) {
+                &.select-light {
+                    color: @value;
+
+                    &::-ms-value {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-color-light) {
+                &.select-light {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-color-light-focus) {
+                &.select-light {
+                    &:focus {
+                        border-color: @value;
+                    }
+                }
+            }
             & when (@prop = border-radius) {
                 .border-radius(@value);
             }
-            & when (@prop = border-color) {
-                border-color: @value;
-            }
             & when (@prop = border-width) {
                 border-width: @value;
+            }
+            & when (@prop = caret) {
+                background-image: url(@value);
+            }
+            & when (@prop = caret-light) {
+                &.select-light {
+                    background-image: url(@value);
+                }
             }
         }
     }
@@ -7120,14 +7171,40 @@
                 color: @color;
                 background-color: @background-color;
                 border: @border-width solid @border-color;
+                background-image: url(@caret);
 
                 &:focus {
-                    border-color: darken(@border-color, 25%);
+                    border-color: @border-color-focus;
                 }
 
                 &::-ms-value {
                     color: @color;
                     background-color: @background-color;
+                }
+
+                &.select-light {
+                    color: @color-light;
+                    background-image: url(@caret-light);
+                    border-color: @border-color-light;
+
+                    &:focus {
+                        border-color: @border-color-light-focus;
+                    }
+
+                    &::-ms-value {
+                        color: @color-light;
+                    }
+
+                    option {
+                        color: @color;
+                    }
+                }
+            }
+            & when (@prop = border-color) {
+                border-color: @value;
+
+                &:focus {
+                    border-color: @value;
                 }
             }
             & when (@prop = background-color) {
@@ -7147,14 +7224,45 @@
             & when (@prop = height) {
                 height: @value;
             }
+            & when (@prop = border-color-focus) {
+                &:focus {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = color-light) {
+                &.select-light {
+                    color: @value;
+
+                    &::-ms-value {
+                        color: @value;
+                    }
+                }
+            }
+            & when (@prop = border-color-light) {
+                &.select-light {
+                    border-color: @value;
+                }
+            }
+            & when (@prop = border-color-light-focus) {
+                &.select-light {
+                    &:focus {
+                        border-color: @value;
+                    }
+                }
+            }
             & when (@prop = border-radius) {
                 .border-radius(@value);
             }
-            & when (@prop = border-color) {
-                border-color: @value;
-            }
             & when (@prop = border-width) {
                 border-width: @value;
+            }
+            & when (@prop = caret) {
+                background-image: url(@value);
+            }
+            & when (@prop = caret-light) {
+                &.select-light {
+                    background-image: url(@value);
+                }
             }
         }
     }
@@ -11718,10 +11826,10 @@
         background-position: calc(~'100% - 0.5em') 50%;
         background-repeat: no-repeat;
         background-size: 0.7em;
-        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAUCAYAAACeXl35AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAShJREFUeNq8lc0RgjAQhfOnXCkFbx61BDvQDvTo0QosQTvQDrQDPXrTDuSuEN9GcDIYQJH4ZnbYyUIe7AcLY38Wz46DP/nt82SJ0FwIL0F7I1b2E5IOQspIKNXqI6VJwtL7/Yh0iIiFVRuhGOs0bc2M9oJZjHRCZrRmG16okNxuOFO3Ymj2YmyGOOZrsnDOCRHizvpo7+9mWq+RLlxvaVE/8Sxys2ui5JrGPF3cPjFszNPFzVYVqCdPrT/mmd3gFum8btKUKUTswDKqM824UWd6rlbWtTSXYUFMqniiC2Rm2FeZfaMx7auCwBmccwI9bXvwrmguvpk9Z+XGx6QPzfep1MuMcqyds5oXRYir7HS07Hbzv0Dk+59mePriVqaNL25VPBtxewgwABxVrJXnt4pwAAAAAElFTkSuQmCC");
+        background-image: url(@caret);
 
         &:focus {
-            border-color: darken(@border-color, 25%);
+            border-color: @border-color-focus;
         }
 
         &::-ms-expand {
@@ -11731,6 +11839,24 @@
         &::-ms-value {
             color: @color;
             background-color: @background-color;
+        }
+
+        &.select-light {
+            color: @color-light;
+            background-image: url(@caret-light);
+            border-color: @border-color-light;
+
+            &:focus {
+                border-color: @border-color-light-focus;
+            }
+
+            &::-ms-value {
+                color: @color-light;
+            }
+
+            option {
+                color: @color;
+            }
         }
 
         option:checked {
