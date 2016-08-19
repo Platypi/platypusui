@@ -140,39 +140,6 @@ module platui {
         }
 
         /**
-         * @name setTemplate
-         * @memberof platui.Button
-         * @kind function
-         * @access public
-         *
-         * @description
-         * Wrap all inner text nodes in spans.
-         *
-         * @returns {void}
-         */
-        setTemplate(): void {
-            let _document = this._document,
-                element = this.element,
-                childNodes = Array.prototype.slice.call(element.childNodes),
-                childNode: Node,
-                span: HTMLSpanElement,
-                isEmpty = this.utils.isEmpty;
-
-            while (childNodes.length > 0) {
-                childNode = childNodes.shift();
-                if (childNode.nodeType === Node.TEXT_NODE) {
-                    if (!isEmpty(childNode.textContent.trim().match(/[^\r\n]/g))) {
-                        span = _document.createElement('span');
-                        span.insertBefore(childNode, null);
-                        element.insertBefore(span, null);
-                    }
-                } else {
-                    element.insertBefore(childNode, null);
-                }
-            }
-        }
-
-        /**
          * @name loaded
          * @memberof platui.Button
          * @kind function

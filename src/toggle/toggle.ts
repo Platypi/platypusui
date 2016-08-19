@@ -139,26 +139,9 @@ module platui {
                 return;
             }
 
-            let _document = this._document,
-                element = this.element,
-                childNodes = Array.prototype.slice.call(innerTemplate.childNodes),
-                childNode: Node,
-                span: HTMLSpanElement,
-                match: Array<string>;
-
-            while (childNodes.length > 0) {
-                childNode = childNodes.shift();
-                if (childNode.nodeType === Node.TEXT_NODE) {
-                    match = childNode.textContent.trim().match(/[^\r\n]/g);
-                    if (match !== null && match.length > 0) {
-                        span = _document.createElement('span');
-                        span.insertBefore(childNode, null);
-                        element.insertBefore(span, null);
-                    }
-                } else {
-                    element.insertBefore(childNode, null);
-                }
-            }
+            let span = this._document.createElement('span');
+            this.dom.appendChildren(innerTemplate.childNodes, span);
+            this.element.insertBefore(span, null);
         }
 
         /**
