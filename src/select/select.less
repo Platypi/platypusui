@@ -40,10 +40,10 @@
         background-position: calc(~'100% - 0.5em') 50%;
         background-repeat: no-repeat;
         background-size: 0.7em;
-        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAUCAYAAACeXl35AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAShJREFUeNq8lc0RgjAQhfOnXCkFbx61BDvQDvTo0QosQTvQDrQDPXrTDuSuEN9GcDIYQJH4ZnbYyUIe7AcLY38Wz46DP/nt82SJ0FwIL0F7I1b2E5IOQspIKNXqI6VJwtL7/Yh0iIiFVRuhGOs0bc2M9oJZjHRCZrRmG16okNxuOFO3Ymj2YmyGOOZrsnDOCRHizvpo7+9mWq+RLlxvaVE/8Sxys2ui5JrGPF3cPjFszNPFzVYVqCdPrT/mmd3gFum8btKUKUTswDKqM824UWd6rlbWtTSXYUFMqniiC2Rm2FeZfaMx7auCwBmccwI9bXvwrmguvpk9Z+XGx6QPzfep1MuMcqyds5oXRYir7HS07Hbzv0Dk+59mePriVqaNL25VPBtxewgwABxVrJXnt4pwAAAAAElFTkSuQmCC");
+        background-image: url(@caret);
 
         &:focus {
-            border-color: darken(@border-color, 25%);
+            border-color: @border-color-focus;
         }
 
         &::-ms-expand {
@@ -65,6 +65,15 @@
         option:hover {
             color: @checked-option-hover-color;
             background-color: @checked-option-hover-background-color;
+        }
+
+        &.select-light {
+            background-image: url(@caret-light);
+            border-color: @border-color-light;
+
+            &:focus {
+                border-color: @border-color-light-focus;
+            }
         }
     }
 }
