@@ -55,6 +55,24 @@
             background-color: @background-color;
         }
 
+        &.select-light {
+            color: @color-light;
+            background-image: url(@caret-light);
+            border-color: @border-color-light;
+
+            &:focus {
+                border-color: @border-color-light-focus;
+            }
+
+            &::-ms-value {
+                color: @color-light;
+            }
+
+            option {
+                color: @color;
+            }
+        }
+
         option:checked {
             color: lighten(@checked-option-hover-color, 15%);
             background-color: lighten(@checked-option-hover-background-color, 15%);
@@ -65,15 +83,6 @@
         option:hover {
             color: @checked-option-hover-color;
             background-color: @checked-option-hover-background-color;
-        }
-
-        &.select-light {
-            background-image: url(@caret-light);
-            border-color: @border-color-light;
-
-            &:focus {
-                border-color: @border-color-light-focus;
-            }
         }
     }
 }

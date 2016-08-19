@@ -14,6 +14,7 @@
         @background-color: @transparent;
         @color: @default-font-color;
         @border-color-focus: darken(@border-color, 25%);
+        @color-light: @white;
         @border-color-light: @white;
         @border-color-light-focus: @white;
 
@@ -60,6 +61,15 @@
             & when (@prop = border-color-focus) {
                 &:focus {
                     border-color: @value;
+                }
+            }
+            & when (@prop = color-light) {
+                &.select-light {
+                    color: @value;
+
+                    &::-ms-value {
+                        color: @value;
+                    }
                 }
             }
             & when (@prop = border-color-light) {
@@ -115,11 +125,20 @@
                 }
 
                 &.select-light {
+                    color: @color-light;
                     background-image: url(@caret-light);
                     border-color: @border-color-light;
 
                     &:focus {
                         border-color: @border-color-light-focus;
+                    }
+
+                    &::-ms-value {
+                        color: @color-light;
+                    }
+
+                    option {
+                        color: @color;
                     }
                 }
             }
@@ -150,6 +169,15 @@
             & when (@prop = border-color-focus) {
                 &:focus {
                     border-color: @value;
+                }
+            }
+            & when (@prop = color-light) {
+                &.select-light {
+                    color: @value;
+
+                    &::-ms-value {
+                        color: @value;
+                    }
                 }
             }
             & when (@prop = border-color-light) {
