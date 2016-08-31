@@ -296,6 +296,10 @@ module platui {
          * @returns {void}
          */
         protected _onTap(ev: plat.ui.IGestureEvent): void {
+            if (this.element.hasAttribute('disabled')) {
+                return;
+            }
+            
             this._toggle(true);
             this._trigger('change');
         }

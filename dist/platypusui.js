@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.16.1 (https://platypi.io)
+ * PlatypusUI v0.16.2 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -310,6 +310,9 @@ var platui;
          * @param {plat.ui.IGestureEvent} ev The tap event object.
          */
         Toggle.prototype._onTap = function (ev) {
+            if (this.element.hasAttribute('disabled')) {
+                return;
+            }
             this._toggle(true);
             this._trigger('change');
         };
