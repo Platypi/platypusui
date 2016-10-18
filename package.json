@@ -61,7 +61,7 @@
   "typings": "dist/platypusui-local.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Platypi/dist-platypusui.git"
+    "url": "https://github.com/Platypi/platypusui.git"
   },
   "license": "MIT"
 }
