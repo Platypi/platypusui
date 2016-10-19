@@ -331,33 +331,28 @@
         & > .button {
             .border-radius(0px);
             margin: 0;
-            border-right-width: 0;
-            border-left-width: 0;
             float: left;
         }
 
-        & > .plat-button:nth-of-type(1),
-        & > .button:nth-of-type(1) {
-            .border-top-left-radius(@border-radius);
-            .border-bottom-left-radius(@border-radius);
-            border-left-width: 1px;
-            border-right-width: 1px;
-
-            &.button-outline {
-                border-left-width: 2px;
-                border-right-width: 2px;
-            }
+        & > .plat-button:nth-of-type(2n),
+        & > .button:nth-of-type(2n) {
+            border-right-width: 0;
+            border-left-width: 0;
         }
 
-        & > .plat-button:nth-last-of-type(1),
-        & > .button:nth-last-of-type(1) {
+        & > .plat-button:first-of-type,
+        & > .button:first-of-type {
+            .border-top-left-radius(@border-radius);
+            .border-bottom-left-radius(@border-radius);
+        }
+
+        & > .plat-button:last-of-type,
+        & > .button:last-of-type {
             .border-top-right-radius(@border-radius);
             .border-bottom-right-radius(@border-radius);
-            border-left-width: 1px;
             border-right-width: 1px;
 
             &.button-outline {
-                border-left-width: 2px;
                 border-right-width: 2px;
             }
         }
