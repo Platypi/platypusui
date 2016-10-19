@@ -1,5 +1,5 @@
 /**
- * PlatypusUI v0.16.3 (https://platypi.io) 
+ * PlatypusUI v0.16.4 (https://platypi.io) 
  * Copyright 2015 Platypi, LLC. All rights reserved. 
  * 
  * PlatypusUI is licensed under the MIT license found at  
@@ -1091,36 +1091,30 @@ h6 {
   -webkit-border-bottom-right-radius: 0px;
   border-bottom-right-radius: 0px;
   margin: 0;
-  border-right-width: 0;
-  border-left-width: 0;
   float: left;
 }
-.button-group > .plat-button:nth-of-type(1),
-.button-group > .button:nth-of-type(1) {
+.button-group > .plat-button:nth-of-type(2n),
+.button-group > .button:nth-of-type(2n) {
+  border-right-width: 0;
+  border-left-width: 0;
+}
+.button-group > .plat-button:first-of-type,
+.button-group > .button:first-of-type {
   -webkit-border-top-left-radius: 2px;
   border-top-left-radius: 2px;
   -webkit-border-bottom-left-radius: 2px;
   border-bottom-left-radius: 2px;
-  border-left-width: 1px;
-  border-right-width: 1px;
 }
-.button-group > .plat-button:nth-of-type(1).button-outline,
-.button-group > .button:nth-of-type(1).button-outline {
-  border-left-width: 2px;
-  border-right-width: 2px;
-}
-.button-group > .plat-button:nth-last-of-type(1),
-.button-group > .button:nth-last-of-type(1) {
+.button-group > .plat-button:last-of-type,
+.button-group > .button:last-of-type {
   -webkit-border-top-right-radius: 2px;
   border-top-right-radius: 2px;
   -webkit-border-bottom-right-radius: 2px;
   border-bottom-right-radius: 2px;
-  border-left-width: 1px;
   border-right-width: 1px;
 }
-.button-group > .plat-button:nth-last-of-type(1).button-outline,
-.button-group > .button:nth-last-of-type(1).button-outline {
-  border-left-width: 2px;
+.button-group > .plat-button:last-of-type.button-outline,
+.button-group > .button:last-of-type.button-outline {
   border-right-width: 2px;
 }
 .plat-carousel {

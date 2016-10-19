@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.16.3 (https://platypi.io)
+ * PlatypusUI v0.16.4 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -169,7 +169,7 @@ var platui;
             this.dom.addClass(element, __Plat + "selected");
             this.dispatchEvent(__ButtonPrefix + this._group, plat.events.EventManager.DIRECT);
             this._isSelected = true;
-            this.inputChanged(element.textContent);
+            this.inputChanged(element.hasAttribute('value') ? element.getAttribute('value').trim() : element.textContent.trim());
         };
         Button._inject = {
             _document: __Document
