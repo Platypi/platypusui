@@ -262,7 +262,7 @@ module platui {
             this.dom.addClass(element, `${__Plat}selected`);
             this.dispatchEvent(__ButtonPrefix + this._group, plat.events.EventManager.DIRECT);
             this._isSelected = true;
-            this.inputChanged(element.textContent);
+            this.inputChanged(element.hasAttribute('value') ? element.getAttribute('value').trim() : element.textContent.trim());
         }
     }
 
