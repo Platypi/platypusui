@@ -21,6 +21,19 @@ module platui {
         };
 
         /**
+         * @name __templateString
+         * @memberof platui.Modal
+         * @kind property
+         * @access private
+         *
+         * @type {string}
+         *
+         * @description
+         * The private template string used to check for a template overwrite.
+         */
+        private __templateString: string = '<div class="plat-modal-container"></div>\n';
+
+        /**
          * @name templateString
          * @memberof platui.Modal
          * @kind property
@@ -178,6 +191,32 @@ module platui {
         protected _presenceRemover: plat.IRemoveListener = noop;
 
         /**
+         * @name _showingPromise
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.async.IThenable<void>}
+         *
+         * @description
+         * A promise that resolves when the modal is finished showing
+         */
+        protected _showingPromise: plat.async.IThenable<void>;
+
+        /**
+         * @name _hidingPromise
+         * @memberof platui.Modal
+         * @kind property
+         * @access protected
+         *
+         * @type {plat.async.IThenable<void>}
+         *
+         * @description
+         * A promise that resolves when the modal is finished hiding
+         */
+        protected _hidingPromise: plat.async.IThenable<void>;
+
+        /**
          * @name _scrollTop
          * @memberof platui.Modal
          * @kind property
@@ -208,19 +247,6 @@ module platui {
             right: true,
             fade: true
         };
-
-        /**
-         * @name __templateString
-         * @memberof platui.Modal
-         * @kind property
-         * @access private
-         *
-         * @type {string}
-         *
-         * @description
-         * The private template string used to check for a template overwrite.
-         */
-        private __templateString: string = '<div class="plat-modal-container"></div>\n';
 
         /**
          * @name __resolveFn
@@ -261,7 +287,11 @@ module platui {
          */
         constructor() {
             super();
-            this.modalLoaded = new this._Promise<void>((resolve, reject): void => {
+            let Promise = this._Promise;
+
+            this._showingPromise = Promise.resolve();
+            this._hidingPromise = Promise.resolve();
+            this.modalLoaded = new Promise<void>((resolve, reject): void => {
                 this.__resolveFn = resolve;
                 this.__rejectFn = reject;
             }).catch(noop);
@@ -374,7 +404,7 @@ module platui {
          * @access public
          *
          * @description
-         * Clean up the auto scroll.
+         * Clean up modal functionality like the auto scroll.
          *
          * @returns {void}
          */
@@ -387,6 +417,8 @@ module platui {
                 this.__rejectFn();
                 this.__rejectFn = this.__resolveFn = null;
             }
+
+            this._hidingPromise = this._showingPromise = null;
         }
 
         /**
@@ -548,11 +580,13 @@ module platui {
 
             if (!utils.isNull(this.innerTemplate)) {
                 return this._bindInnerTemplate();
+            } else if (this._isVisible) {
+                return this._showingPromise;
             }
 
             this._isVisible = true;
 
-            return new this._Promise<void>((resolve): void => {
+            return this._showingPromise = new this._Promise<void>((resolve): void => {
                 utils.requestAnimationFrame((): void => {
                     this._alignModal();
                     dom.removeClass(this.element, __Hide);
@@ -620,6 +654,10 @@ module platui {
                 utils = this.utils,
                 promise: plat.async.IThenable<void>;
 
+            if (!this._isVisible) {
+                return this._hidingPromise;
+            }
+
             this._scrollRemover();
             this._scrollRemover = noop;
 
@@ -639,7 +677,7 @@ module platui {
                 });
             }
 
-            return promise;
+            return this._hidingPromise = promise;
         }
 
         /**
