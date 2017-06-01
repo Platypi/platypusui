@@ -1028,6 +1028,10 @@ export interface IDrawerControllerHandshakeEvent extends IHandshakeEvent {
 export declare class Modal extends plat.ui.BindControl implements IUiControl {
     protected static _inject: any;
     /**
+      * The private template string used to check for a template overwrite.
+      */
+    private __templateString;
+    /**
       * The HTML template represented as a string.
       */
     templateString: string;
@@ -1077,6 +1081,14 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
       */
     protected _presenceRemover: plat.IRemoveListener;
     /**
+      * A promise that resolves when the modal is finished showing
+      */
+    protected _showingPromise: plat.async.IThenable<void>;
+    /**
+      * A promise that resolves when the modal is finished hiding
+      */
+    protected _hidingPromise: plat.async.IThenable<void>;
+    /**
       * The current scroll position of the modal.
       */
     protected _scrollTop: number;
@@ -1084,10 +1096,6 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
       * A hash for validating available transitions.
       */
     protected _transitionHash: plat.IObject<boolean>;
-    /**
-      * The private template string used to check for a template overwrite.
-      */
-    private __templateString;
     /**
       * The resolve function for the modalLoaded Promise.
       */
@@ -1121,7 +1129,7 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
       */
     loaded(): void;
     /**
-      * Clean up the auto scroll.
+      * Clean up modal functionality like the auto scroll.
       */
     dispose(): void;
     /**
