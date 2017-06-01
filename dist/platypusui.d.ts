@@ -1,5 +1,5 @@
 /**
-  * PlatypusUI v0.16.4 (https://platypi.io)
+  * PlatypusUI v0.16.5 (https://platypi.io)
   * Copyright 2015 Platypi, LLC. All rights reserved.
   *
   * PlatypusUI is licensed under the MIT license found at
@@ -1039,6 +1039,10 @@ declare module platui {
     class Modal extends plat.ui.BindControl implements IUiControl {
         protected static _inject: any;
         /**
+          * The private template string used to check for a template overwrite.
+          */
+        private __templateString;
+        /**
           * The HTML template represented as a string.
           */
         templateString: string;
@@ -1088,6 +1092,14 @@ declare module platui {
           */
         protected _presenceRemover: plat.IRemoveListener;
         /**
+          * A promise that resolves when the modal is finished showing
+          */
+        protected _showingPromise: plat.async.IThenable<void>;
+        /**
+          * A promise that resolves when the modal is finished hiding
+          */
+        protected _hidingPromise: plat.async.IThenable<void>;
+        /**
           * The current scroll position of the modal.
           */
         protected _scrollTop: number;
@@ -1095,10 +1107,6 @@ declare module platui {
           * A hash for validating available transitions.
           */
         protected _transitionHash: plat.IObject<boolean>;
-        /**
-          * The private template string used to check for a template overwrite.
-          */
-        private __templateString;
         /**
           * The resolve function for the modalLoaded Promise.
           */
@@ -1132,7 +1140,7 @@ declare module platui {
           */
         loaded(): void;
         /**
-          * Clean up the auto scroll.
+          * Clean up modal functionality like the auto scroll.
           */
         dispose(): void;
         /**

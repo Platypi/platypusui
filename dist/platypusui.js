@@ -6,7 +6,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 /* tslint:disable */
 /**
- * PlatypusUI v0.16.4 (https://platypi.io)
+ * PlatypusUI v0.16.5 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -1966,6 +1966,10 @@ var platui;
             var _this = this;
             _super.call(this);
             /**
+             * The private template string used to check for a template overwrite.
+             */
+            this.__templateString = '<div class="plat-modal-container"></div>\n';
+            /**
              * The HTML template represented as a string.
              */
             this.templateString = this.__templateString;
@@ -1995,11 +1999,10 @@ var platui;
                 right: true,
                 fade: true
             };
-            /**
-             * The private template string used to check for a template overwrite.
-             */
-            this.__templateString = '<div class="plat-modal-container"></div>\n';
-            this.modalLoaded = new this._Promise(function (resolve, reject) {
+            var Promise = this._Promise;
+            this._showingPromise = Promise.resolve();
+            this._hidingPromise = Promise.resolve();
+            this.modalLoaded = new Promise(function (resolve, reject) {
                 _this.__resolveFn = resolve;
                 _this.__rejectFn = reject;
             }).catch(noop);
@@ -2057,7 +2060,7 @@ var platui;
             this.dom.addClass(this._container, (__Plat + transition) + " " + __Plat + "modal-transition");
         };
         /**
-         * Clean up the auto scroll.
+         * Clean up modal functionality like the auto scroll.
          */
         Modal.prototype.dispose = function () {
             _super.prototype.dispose.call(this);
@@ -2067,6 +2070,7 @@ var platui;
                 this.__rejectFn();
                 this.__rejectFn = this.__resolveFn = null;
             }
+            this._hidingPromise = this._showingPromise = null;
         };
         /**
          * Shows the Modal.
@@ -2149,8 +2153,11 @@ var platui;
             if (!utils.isNull(this.innerTemplate)) {
                 return this._bindInnerTemplate();
             }
+            else if (this._isVisible) {
+                return this._showingPromise;
+            }
             this._isVisible = true;
-            return new this._Promise(function (resolve) {
+            return this._showingPromise = new this._Promise(function (resolve) {
                 utils.requestAnimationFrame(function () {
                     _this._alignModal();
                     dom.removeClass(_this.element, __Hide);
@@ -2190,6 +2197,9 @@ var platui;
         Modal.prototype._hide = function () {
             var _this = this;
             var dom = this.dom, utils = this.utils, promise;
+            if (!this._isVisible) {
+                return this._hidingPromise;
+            }
             this._scrollRemover();
             this._scrollRemover = noop;
             this._isVisible = false;
@@ -2208,7 +2218,7 @@ var platui;
                     });
                 });
             }
-            return promise;
+            return this._hidingPromise = promise;
         };
         /**
          * Adds the innerTemplate to BindableTemplates, binds it,
