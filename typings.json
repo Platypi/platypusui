@@ -5,7 +5,7 @@
   "main": "dist/platypusui.d.ts",
   "dependencies": {},
   "devDependencies": {},
-  "ambientDependencies": {
+  "globalDependencies": {
     "platypus": "npm:platypus"
   }
 }

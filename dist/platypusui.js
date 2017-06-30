@@ -1,12 +1,17 @@
 "use strict";
-var __extends = (this && this.__extends) || function (d, b) {
-    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-};
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 /* tslint:disable */
 /**
- * PlatypusUI v0.16.5 (https://platypi.io)
+ * PlatypusUI v0.16.6 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
@@ -74,16 +79,17 @@ var platui;
     var Button = (function (_super) {
         __extends(Button, _super);
         function Button() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * Replaces the <plat-button> node with
              * a <button> node.
              */
-            this.replaceWith = 'button';
+            _this.replaceWith = 'button';
             /**
              * A boolean value showing the selected state of this Button.
              */
-            this._isSelected = false;
+            _this._isSelected = false;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -184,21 +190,22 @@ var platui;
     var Toggle = (function (_super) {
         __extends(Toggle, _super);
         function Toggle() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-toggle-container">\n' +
+            _this.templateString = '<div class="plat-toggle-container">\n' +
                 '    <div class="plat-knob"></div>\n' +
                 '</div>\n';
             /**
              * A boolean value indicating whether the control is actively selected.
              */
-            this.isActive = false;
+            _this.isActive = false;
             /**
              * The type of the control's activated element.
              */
-            this._targetType = 'slide';
+            _this._targetType = 'slide';
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -365,17 +372,18 @@ var platui;
     var Checkbox = (function (_super) {
         __extends(Checkbox, _super);
         function Checkbox() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-checkbox-container">\n' +
+            _this.templateString = '<div class="plat-checkbox-container">\n' +
                 '    <span class="plat-mark"></span>\n' +
                 '</div>\n';
             /**
              * Whether the target type has been set already or not.
              */
-            this._targetTypeSet = false;
+            _this._targetTypeSet = false;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -432,25 +440,26 @@ var platui;
     var Radio = (function (_super) {
         __extends(Radio, _super);
         function Radio() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-radio-container">\n' +
+            _this.templateString = '<div class="plat-radio-container">\n' +
                 '    <div class="plat-mark"></div>\n' +
                 '</div>\n';
             /**
              * The radio groups name if a radio group is present.
              */
-            this.groupName = '';
+            _this.groupName = '';
             /**
              * The check type to be placed in the element.
              */
-            this._targetType = 'bullet';
+            _this._targetType = 'bullet';
             /**
              * Whether the target type has been set already or not.
              */
-            this._targetTypeSet = true;
+            _this._targetTypeSet = true;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -602,11 +611,12 @@ var platui;
     var ProgressRing = (function (_super) {
         __extends(ProgressRing, _super);
         function ProgressRing() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-animated-ring"></div>';
+            _this.templateString = '<div class="plat-animated-ring"></div>';
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -663,17 +673,18 @@ var platui;
     var ProgressBar = (function (_super) {
         __extends(ProgressBar, _super);
         function ProgressBar() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-progress-container">\n' +
+            _this.templateString = '<div class="plat-progress-container">\n' +
                 '    <div class="plat-animated-bar"></div>\n' +
                 '</div>\n';
             /**
              * A function that will stop listening for visibility if applicable.
              */
-            this._removeVisibilityListener = noop;
+            _this._removeVisibilityListener = noop;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -759,32 +770,33 @@ var platui;
      */
     var Drawer = (function (_super) {
         __extends(Drawer, _super);
+        /**
+         * The constructor for a Drawer. Creates the ready Promise.
+         */
         function Drawer() {
-            _super.apply(this, arguments);
-            /**
-             * A promise that signifies the Drawer is ready for a pairing.
-             */
-            this.ready = this._Promise.resolve();
+            var _this = _super.call(this) || this;
             /**
              * References to all the DrawerControllers used to control this Drawer.
              */
-            this._controllers = [];
+            _this._controllers = [];
             /**
              * Whether or not the this control has been paired with a corresponding Drawer.
              */
-            this._isInitialized = false;
+            _this._isInitialized = false;
             /**
              * A bound value that may have come through prior to initialization.
              */
-            this._preInitializedValue = false;
+            _this._preInitializedValue = false;
             /**
              * A private variable that tells the Drawer its last open or closed state.
              */
-            this.__state = false;
+            _this.__state = false;
             /**
              * A private variable that tells the Drawer its next open or closed state.
              */
-            this.__nextState = false;
+            _this.__nextState = false;
+            _this.ready = _this._Promise.resolve();
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -1043,39 +1055,40 @@ var platui;
     var DrawerController = (function (_super) {
         __extends(DrawerController, _super);
         function DrawerController() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * Whether or not the user has swiped.
              */
-            this._hasSwiped = false;
+            _this._hasSwiped = false;
             /**
              * Whether or not the user has tapped.
              */
-            this._hasTapped = false;
+            _this._hasTapped = false;
             /**
              * Whether or not the Drawer is open.
              */
-            this._isOpen = false;
+            _this._isOpen = false;
             /**
              * An enum denoting the current touch state of the user.
              */
-            this._touchState = 0;
+            _this._touchState = 0;
             /**
              * Whether the corresponding Drawer is vertical or horizontal.
              */
-            this._isVertical = false;
+            _this._isVertical = false;
             /**
              * A function for removing the click eater scroll listening event.
              */
-            this._removeClickEaterListener = noop;
+            _this._removeClickEaterListener = noop;
             /**
              * A function to remove the toggle delay if present.
              */
-            this._toggleDelay = noop;
+            _this._toggleDelay = noop;
             /**
              * Whether or not the this control has been paired with a corresponding Drawer.
              */
-            this._isInitialized = false;
+            _this._isInitialized = false;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -1713,7 +1726,7 @@ var platui;
                         position = drawerArg.position;
                     }
                     else {
-                        _this._log.debug(("\"position\" is incorrectly defined for a control such as \"" + __Drawer + "\" ") +
+                        _this._log.debug("\"position\" is incorrectly defined for a control such as \"" + __Drawer + "\" " +
                             ("or \"" + _this.type + ".\" Please ensure it is a string."));
                         return;
                     }
@@ -1963,49 +1976,46 @@ var platui;
          * The constructor for a Modal. Creates the modalLoaded Promise.
          */
         function Modal() {
-            var _this = this;
-            _super.call(this);
-            /**
-             * The private template string used to check for a template overwrite.
-             */
-            this.__templateString = '<div class="plat-modal-container"></div>\n';
-            /**
-             * The HTML template represented as a string.
-             */
-            this.templateString = this.__templateString;
+            var _this = _super.call(this) || this;
             /**
              * Whether or not the modal is currently visible.
              */
-            this._isVisible = false;
+            _this._isVisible = false;
             /**
              * A function to stop listening to scroll events.
              */
-            this._scrollRemover = noop;
+            _this._scrollRemover = noop;
             /**
              * A function to stop listening for DOM presence.
              */
-            this._presenceRemover = noop;
+            _this._presenceRemover = noop;
             /**
              * The current scroll position of the modal.
              */
-            this._scrollTop = 0;
+            _this._scrollTop = 0;
             /**
              * A hash for validating available transitions.
              */
-            this._transitionHash = {
+            _this._transitionHash = {
                 up: true,
                 down: true,
                 left: true,
                 right: true,
                 fade: true
             };
-            var Promise = this._Promise;
-            this._showingPromise = Promise.resolve();
-            this._hidingPromise = Promise.resolve();
-            this.modalLoaded = new Promise(function (resolve, reject) {
+            /**
+             * The private template string used to check for a template overwrite.
+             */
+            _this.__templateString = '<div class="plat-modal-container"></div>\n';
+            _this.templateString = _this.__templateString;
+            var Promise = _this._Promise;
+            _this._showingPromise = Promise.resolve();
+            _this._hidingPromise = Promise.resolve();
+            _this.modalLoaded = new Promise(function (resolve, reject) {
                 _this.__resolveFn = resolve;
                 _this.__rejectFn = reject;
             }).catch(noop);
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -2057,7 +2067,7 @@ var platui;
                 return;
             }
             this._transitionEnd = animationEvents.$transitionEnd;
-            this.dom.addClass(this._container, (__Plat + transition) + " " + __Plat + "modal-transition");
+            this.dom.addClass(this._container, __Plat + transition + " " + __Plat + "modal-transition");
         };
         /**
          * Clean up modal functionality like the auto scroll.
@@ -2277,11 +2287,11 @@ var platui;
     var Slider = (function (_super) {
         __extends(Slider, _super);
         function Slider() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-slider-container">\n' +
+            _this.templateString = '<div class="plat-slider-container">\n' +
                 '    <div class="plat-slider-track">\n' +
                 '        <div class="plat-knob"></div>\n' +
                 '    </div>\n' +
@@ -2289,19 +2299,20 @@ var platui;
             /**
              * Whether the control is vertical or horizontal.
              */
-            this._isVertical = false;
+            _this._isVertical = false;
             /**
              * The current knob offset.
              */
-            this._knobOffset = 0;
+            _this._knobOffset = 0;
             /**
              * An enum denoting the current touch state of the user.
              */
-            this._touchState = 0;
+            _this._touchState = 0;
             /**
              * A function that will stop listening for visibility if applicable.
              */
-            this._removeVisibilityListener = noop;
+            _this._removeVisibilityListener = noop;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -2707,11 +2718,11 @@ var platui;
     var Range = (function (_super) {
         __extends(Range, _super);
         function Range() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-range-container">\n' +
+            _this.templateString = '<div class="plat-range-container">\n' +
                 '    <div class="plat-range-track">\n' +
                 '        <div class="plat-lower-knob"></div>\n' +
                 '        <div class="plat-upper-knob"></div>\n' +
@@ -2720,19 +2731,20 @@ var platui;
             /**
              * Whether the control is vertical or horizontal.
              */
-            this._isVertical = false;
+            _this._isVertical = false;
             /**
              * An enum denoting the current touch state of the user.
              */
-            this._touchState = 0;
+            _this._touchState = 0;
             /**
              * A function that will stop listening for visibility if applicable.
              */
-            this._removeVisibilityListener = noop;
+            _this._removeVisibilityListener = noop;
             /**
              * A boolean value that forces a one-time trigger upon the first bound value change.
              */
-            this._forceFirstTime = false;
+            _this._forceFirstTime = false;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -3369,7 +3381,7 @@ var platui;
     var Select = (function (_super) {
         __extends(Select, _super);
         function Select() {
-            _super.apply(this, arguments);
+            return _super !== null && _super.apply(this, arguments) || this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -3399,15 +3411,16 @@ var platui;
     var Input = (function (_super) {
         __extends(Input, _super);
         function Input() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * Replaces the control's element with an HTMLInputElement.
              */
-            this.replaceWith = 'input';
+            _this.replaceWith = 'input';
             /**
              * The current value.
              */
-            this.value = '';
+            _this.value = '';
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -3676,11 +3689,11 @@ var platui;
     var File = (function (_super) {
         __extends(File, _super);
         function File() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-file-container">\n' +
+            _this.templateString = '<div class="plat-file-container">\n' +
                 '    <input type="file" class="plat-file-hidden" />\n' +
                 '    <input type="text" class="plat-file-input" plat-keydown="_onKeyDown" />\n' +
                 '    <button class="plat-file-button" plat-tap="_selectFiles"></button>\n' +
@@ -3688,7 +3701,8 @@ var platui;
             /**
              * A function for removing the 'change' event listener.
              */
-            this._removeListener = noop;
+            _this._removeListener = noop;
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -3931,99 +3945,100 @@ var platui;
     var Carousel = (function (_super) {
         __extends(Carousel, _super);
         function Carousel() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-carousel-viewport">\n' +
+            _this.templateString = '<div class="plat-carousel-viewport">\n' +
                 '    <div class="plat-carousel-container"></div>\n' +
                 '</div>\n';
             /**
              * The set of functions added externally that listens
              * for property changes.
              */
-            this._listeners = [];
+            _this._listeners = [];
             /**
              * Whether the control is vertical or horizontal.
              */
-            this._isVertical = false;
+            _this._isVertical = false;
             /**
              * Whether or not the user has swiped.
              */
-            this._hasSwiped = false;
+            _this._hasSwiped = false;
             /**
              * Whether or not the user is currently touching the screen.
              */
-            this._inTouch = false;
+            _this._inTouch = false;
             /**
              * Whether or not the user is currently touching the screen and has moved.
              */
-            this._hasMoved = false;
+            _this._hasMoved = false;
             /**
              * The last touch start recorded.
              */
-            this._lastTouch = { x: 0, y: 0 };
+            _this._lastTouch = { x: 0, y: 0 };
             /**
              * Whether or not the control has been loaded based on its context being an Array.
              */
-            this._loaded = false;
+            _this._loaded = false;
             /**
              * The current index seen in the Carousel.
              */
-            this._index = -1;
+            _this._index = -1;
             /**
              * The previous index of the Carousel in relation to the item nodes.
              */
-            this._previousIndex = -1;
+            _this._previousIndex = -1;
             /**
              * The next index of the Carousel in relation to the item nodes.
              */
-            this._nextIndex = -1;
+            _this._nextIndex = -1;
             /**
              * The current offset of the translated Carousel's sliding element.
              */
-            this._currentOffset = 0;
+            _this._currentOffset = 0;
             /**
              * The function used to clear the auto scroll interval.
              */
-            this._removeInterval = noop;
+            _this._removeInterval = noop;
             /**
              * The function used to clear the suspended auto scroll interval.
              */
-            this._removeSuspend = noop;
+            _this._removeSuspend = noop;
             /**
              * Whether or not automatic scrolling is enabled.
              */
-            this._isAuto = false;
+            _this._isAuto = false;
             /**
              * Whether or not automatic scrolling is currently paused.
              */
-            this._isPaused = false;
+            _this._isPaused = false;
             /**
              * Whether or not the control is responsible for pausing itself.
              */
-            this._selfPause = false;
+            _this._selfPause = false;
             /**
              * An Array of all the current nodes in the control.
              */
-            this._itemNodes = [];
+            _this._itemNodes = [];
             /**
              * A collection of remove listeners to stop listening for events.
              */
-            this._removeListeners = [];
+            _this._removeListeners = [];
             /**
              * Whether or not the start outer item node has been initialized.
              */
-            this._outerStart = false;
+            _this._outerStart = false;
             /**
              * Whether or not the end outer item node has been initialized.
              */
-            this._outerEnd = false;
+            _this._outerEnd = false;
             /**
              * An interval constant used to regulate the speed of the auto scroll
              * when the goToIndex function is called and is not direct.
              */
-            this._goToIntervalConstant = 125;
+            _this._goToIntervalConstant = 125;
+            return _this;
         }
         Object.defineProperty(Carousel.prototype, "index", {
             /**
@@ -4119,7 +4134,7 @@ var platui;
             this._type = options.type || 'track swipe';
             this._isInfinite = options.infinite === true;
             this._suspend = Math.abs(isNumber(suspend) ? intervalNum - suspend : intervalNum - 3000);
-            dom.addClass(element, (__Plat + orientation) + " " + (__Plat + transition));
+            dom.addClass(element, __Plat + orientation + " " + (__Plat + transition));
             this._onLoad = function () {
                 var setIndex = _this._index;
                 index = isNumber(index) && index >= 0 ? index < context.length ? index : (context.length - 1) : null;
@@ -5395,18 +5410,13 @@ var platui;
          * The constructor for a Listview. Creates the itemsLoaded Promise.
          */
         function Listview() {
-            var _this = this;
-            _super.call(this);
-            /**
-             * The HTML template represented as a string.
-             */
-            this.templateString = this.__templateString;
+            var _this = _super.call(this) || this;
             /**
              * Used to hold the alias tokens for the built-in aliases. You
              * can overwrite these with the options for
              * the Listview control.
              */
-            this._aliases = {
+            _this._aliases = {
                 index: __listviewAliasOptions.index,
                 even: __listviewAliasOptions.even,
                 odd: __listviewAliasOptions.odd,
@@ -5418,59 +5428,59 @@ var platui;
              * An object containing the node names of the Listview's defined templates and
              * their corresponding template node.
              */
-            this._templates = {};
+            _this._templates = {};
             /**
              * Whether the control is vertical or horizontal.
              */
-            this._isVertical = true;
+            _this._isVertical = true;
             /**
              * Whether or not the scroll function is ready to be handled.
              */
-            this._scrollReady = true;
+            _this._scrollReady = true;
             /**
              * Whether or not the user is currently performing a load operation.
              */
-            this._isLoading = false;
+            _this._isLoading = false;
             /**
              * The current scroll position of the container.
              */
-            this._scrollPosition = 0;
+            _this._scrollPosition = 0;
             /**
              * A function that removes the scroll event listener.
              */
-            this._removeScroll = noop;
+            _this._removeScroll = noop;
             /**
              * Whether or not the user is currently performing a refresh operation.
              */
-            this._isRefreshing = false;
+            _this._isRefreshing = false;
             /**
              * An enumeration value signifying the current touch state.
              */
-            this._touchState = 0;
+            _this._touchState = 0;
             /**
              * Whether the user is tracking in a fashion that attempts to refresh the list.
              */
-            this._hasMoved = false;
+            _this._hasMoved = false;
             /**
              * The last touch start recorded.
              */
-            this._lastTouch = { x: 0, y: 0 };
+            _this._lastTouch = { x: 0, y: 0 };
             /**
              * A regular expression for normalizing a node name by removing potential special characters.
              */
-            this._nodeNormalizeRegex = /-|\.|_/g;
+            _this._nodeNormalizeRegex = /-|\.|_/g;
             /**
              * Whether or not the select is grouped.
              */
-            this._isGrouped = false;
+            _this._isGrouped = false;
             /**
              * A set of functions to remove all visibility listeners.
              */
-            this._visibilityRemoveListeners = [];
+            _this._visibilityRemoveListeners = [];
             /**
              * The private template string used to check for a template overwrite.
              */
-            this.__templateString = '<div class="plat-listview-viewport">\n' +
+            _this.__templateString = '<div class="plat-listview-viewport">\n' +
                 '    <div class="plat-scroll-container">\n' +
                 '        <div class="plat-listview-container"></div>\n' +
                 '    </div>\n' +
@@ -5478,11 +5488,13 @@ var platui;
             /**
              * Whether or not the main Array listener has been set.
              */
-            this.__listenerSet = false;
-            this.itemsLoaded = new this._Promise(function (resolve, reject) {
+            _this.__listenerSet = false;
+            _this.templateString = _this.__templateString;
+            _this.itemsLoaded = new _this._Promise(function (resolve, reject) {
                 _this.__resolveFn = resolve;
                 _this.__rejectFn = reject;
             }).catch(noop);
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -7072,11 +7084,11 @@ var platui;
     var Navbar = (function (_super) {
         __extends(Navbar, _super);
         function Navbar() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div class="plat-navbar-left">\n' +
+            _this.templateString = '<div class="plat-navbar-left">\n' +
                 '    <div class="plat-navbar-items" plat-control="' + __ForEach + '" plat-context="left">\n' +
                 '        <div class="plat-navbar-item" plat-control="' + __Html + '" plat-options="{ html: content, compile: true }" plat-tap="leftAction(@index)"></div>\n' +
                 '    </div>\n' +
@@ -7094,7 +7106,7 @@ var platui;
             /**
              * The Navbar control's context.
              */
-            this.context = {
+            _this.context = {
                 left: [{
                         content: '',
                         action: noop
@@ -7111,16 +7123,17 @@ var platui;
             /**
              * Specifies that the Navbar defines it's own context.
              */
-            this.hasOwnContext = true;
+            _this.hasOwnContext = true;
             /**
              * An object specifying whether a particular section of the Navbar
              * has been overridden.
              */
-            this._overrides = {
+            _this._overrides = {
                 left: false,
                 center: false,
                 right: false
             };
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.
@@ -7288,19 +7301,20 @@ var platui;
     var Image = (function (_super) {
         __extends(Image, _super);
         function Image() {
-            _super.apply(this, arguments);
+            var _this = _super !== null && _super.apply(this, arguments) || this;
             /**
              * The HTML template represented as a string.
              */
-            this.templateString = '<div plat-control="' + __ProgressRing + '" class="plat-image-ring"></div>\n';
+            _this.templateString = '<div plat-control="' + __ProgressRing + '" class="plat-image-ring"></div>\n';
             /**
              * The image is a CSS background image. Defaults to false.
              */
-            this._isBackground = false;
+            _this._isBackground = false;
             /**
              * The HTMLImageElement use to source the image.
              */
-            this._img = this._document.createElement('img');
+            _this._img = _this._document.createElement('img');
+            return _this;
         }
         /**
          * Sets the classes on the proper elements.

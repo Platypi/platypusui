@@ -33,7 +33,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString: string = this.__templateString;
+        templateString: string;
 
         /**
          * @name options
@@ -697,6 +697,8 @@ module platui {
          */
         constructor() {
             super();
+            this.templateString = this.__templateString;
+
             this.itemsLoaded = new this._Promise<void>((resolve, reject): void => {
                 this.__resolveFn = resolve;
                 this.__rejectFn = reject;
