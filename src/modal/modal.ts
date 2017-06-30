@@ -21,19 +21,6 @@ module platui {
         };
 
         /**
-         * @name __templateString
-         * @memberof platui.Modal
-         * @kind property
-         * @access private
-         *
-         * @type {string}
-         *
-         * @description
-         * The private template string used to check for a template overwrite.
-         */
-        private __templateString: string = '<div class="plat-modal-container"></div>\n';
-
-        /**
          * @name templateString
          * @memberof platui.Modal
          * @kind property
@@ -44,7 +31,7 @@ module platui {
          * @description
          * The HTML template represented as a string.
          */
-        templateString: string = this.__templateString;
+        templateString: string;
 
         /**
          * @name options
@@ -249,6 +236,19 @@ module platui {
         };
 
         /**
+         * @name __templateString
+         * @memberof platui.Modal
+         * @kind property
+         * @access private
+         *
+         * @type {string}
+         *
+         * @description
+         * The private template string used to check for a template overwrite.
+         */
+        private __templateString: string = '<div class="plat-modal-container"></div>\n';
+
+        /**
          * @name __resolveFn
          * @memberof platui.Modal
          * @kind property
@@ -287,6 +287,9 @@ module platui {
          */
         constructor() {
             super();
+
+            this.templateString = this.__templateString;
+
             let Promise = this._Promise;
 
             this._showingPromise = Promise.resolve();

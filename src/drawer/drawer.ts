@@ -60,7 +60,7 @@ module platui {
          * @description
          * A promise that signifies the {@link platui.Drawer|Drawer} is ready for a pairing.
          */
-        ready: plat.async.IThenable<void> = this._Promise.resolve();
+        ready: plat.async.IThenable<void>;
 
         /**
          * @name _Promise
@@ -103,7 +103,7 @@ module platui {
 
         /**
          * @name _isInitialized
-         * @memberof platui.DrawerController
+         * @memberof platui.Drawer
          * @kind property
          * @access protected
          *
@@ -116,7 +116,7 @@ module platui {
 
         /**
          * @name _preInitializedValue
-         * @memberof platui.DrawerController
+         * @memberof platui.Drawer
          * @kind property
          * @access protected
          *
@@ -129,7 +129,7 @@ module platui {
 
         /**
          * @name __state
-         * @memberof platui.DrawerController
+         * @memberof platui.Drawer
          * @kind property
          * @access protected
          *
@@ -142,7 +142,7 @@ module platui {
 
         /**
          * @name __status
-         * @memberof platui.DrawerController
+         * @memberof platui.Drawer
          * @kind property
          * @access protected
          *
@@ -152,6 +152,22 @@ module platui {
          * A private variable that tells the {@link platui.Drawer|Drawer} its next open or closed state.
          */
         private __nextState: boolean = false;
+
+        /**
+         * @name constructor
+         * @memberof platui.Drawer
+         * @kind function
+         * @access public
+         *
+         * @description
+         * The constructor for a {@link platui.Drawer|Drawer}. Creates the ready Promise.
+         *
+         * @returns {platui.Drawer} A {@link platui.Drawer|Drawer} instance.
+         */
+        constructor() {
+            super();
+            this.ready = this._Promise.resolve();
+        }
 
         /**
          * @name setClasses

@@ -491,6 +491,10 @@ export declare class Drawer extends plat.ui.BindControl implements IUiControl {
       */
     private __nextState;
     /**
+      * The constructor for a Drawer. Creates the ready Promise.
+      */
+    constructor();
+    /**
       * Sets the classes on the proper elements.
       * @param {string} className? An optional, additional class name or class names to set on the control
       * in addition to its standard set.
@@ -1028,10 +1032,6 @@ export interface IDrawerControllerHandshakeEvent extends IHandshakeEvent {
 export declare class Modal extends plat.ui.BindControl implements IUiControl {
     protected static _inject: any;
     /**
-      * The private template string used to check for a template overwrite.
-      */
-    private __templateString;
-    /**
       * The HTML template represented as a string.
       */
     templateString: string;
@@ -1096,6 +1096,10 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
       * A hash for validating available transitions.
       */
     protected _transitionHash: plat.IObject<boolean>;
+    /**
+      * The private template string used to check for a template overwrite.
+      */
+    private __templateString;
     /**
       * The resolve function for the modalLoaded Promise.
       */
@@ -2133,7 +2137,7 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
     /**
       * The current index of the Carousel.
       */
-    index: number;
+    readonly index: number;
     /**
       * Reference to the Compat injectable.
       */
@@ -2598,6 +2602,10 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
   * The available options for the Carousel control.
   */
 export interface ICarouselOptions {
+    /**
+      * Used to specify alternative alias tokens for the built-in control aliases.
+      */
+    aliases?: plat.ui.controls.IForEachAliasOptions;
     /**
       * Specifies the interaction for changing the current Carousel item.
       * Multiple types can be combined by making it space delimited.
