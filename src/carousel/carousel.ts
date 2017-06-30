@@ -2742,6 +2742,18 @@ module platui {
      */
     export interface ICarouselOptions {
         /**
+         * @name aliases
+         * @memberof plat.ui.controls.IForEachOptions
+         * @kind property
+         *
+         * @type {plat.ui.controls.IForEachAliasOptions}
+         *
+         * @description
+         * Used to specify alternative alias tokens for the built-in control aliases.
+         */
+        aliases?: plat.ui.controls.IForEachAliasOptions;
+
+        /**
          * @name type
          * @memberof platui.ICarouselOptions
          * @kind property
