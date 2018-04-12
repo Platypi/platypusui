@@ -637,10 +637,10 @@ module platui {
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        open(): plat.async.IThenable<void> {
+        open(): plat.async.Promise<void> {
             let wasClosed = !this._isOpen,
                 utils = this.utils;
 
@@ -673,10 +673,10 @@ module platui {
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        close(): plat.async.IThenable<void> {
+        close(): plat.async.Promise<void> {
             let wasOpen = this._isOpen,
                 utils = this.utils;
 
@@ -710,10 +710,10 @@ module platui {
          * @description
          * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
-        toggle(): plat.async.IThenable<void> {
+        toggle(): plat.async.Promise<void> {
             if (this._isOpen) {
                 return this.close();
             }
@@ -749,9 +749,9 @@ module platui {
          * @param {string} name The template name to bind.
          * @param {Node} node The node to add as a bindable template.
          *
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been bound and inserted.
+         * @returns {plat.async.Promise<void>} A promise that fulfills when the template has been bound and inserted.
          */
-        bindTemplate(name: string, node: Node): plat.async.IThenable<void> {
+        bindTemplate(name: string, node: Node): plat.async.Promise<void> {
             let bindableTemplates = this.bindableTemplates;
             bindableTemplates.add(name, node);
             return bindableTemplates.bind(name).then((template): void => {
@@ -849,10 +849,10 @@ module platui {
          *
          * @param {boolean} reset? Whether the open is being called to reset the open state.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        protected _open(reset?: boolean): plat.async.IThenable<void> {
+        protected _open(reset?: boolean): plat.async.Promise<void> {
             let rootElement = this._rootElement,
                 isNode = this.utils.isNode,
                 isOpen = this._isOpen,
@@ -909,10 +909,10 @@ module platui {
          *
          * @param {boolean} reset? Whether the open is being called to reset the open state.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        protected _close(reset?: boolean): plat.async.IThenable<void> {
+        protected _close(reset?: boolean): plat.async.Promise<void> {
             let rootElement = this._rootElement,
                 isNode = this.utils.isNode,
                 isClosed = !this._isOpen;
@@ -948,10 +948,10 @@ module platui {
          * @description
          * Resets the {@link platui.Drawer|Drawer} to it's current open/closed state.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer's} state is reset and the animation is complete.
          */
-        protected _reset(): plat.async.IThenable<void> {
+        protected _reset(): plat.async.Promise<void> {
             if (this._isOpen) {
                 return this._open(true);
             }
@@ -1660,13 +1660,13 @@ module platui {
          * @param {Node} fragment? A Node to insert as the {@link platui.Drawer|Drawer's} HTML template
          * if no templateUrl is present on this {@link platui.DrawerController|DrawerController}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been determined.
+         * @returns {plat.async.Promise<void>} A promise that fulfills when the template has been determined.
          */
-        protected _determineTemplate(fragment?: Node): plat.async.IThenable<void> {
+        protected _determineTemplate(fragment?: Node): plat.async.Promise<void> {
             let utils = this.utils;
 
             if (utils.isString(this._templateUrl)) {
-                return plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template): plat.async.IThenable<void> => {
+                return plat.ui.TemplateControl.determineTemplate(this, this._templateUrl).then((template): plat.async.Promise<void> => {
                     return this.bindTemplate('drawer', template);
                 });
             } else if (utils.isNode(fragment)) {

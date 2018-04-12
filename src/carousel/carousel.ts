@@ -782,10 +782,10 @@ module platui {
          * @description
          * Advances the position of the {@link platui.Carousel|Carousel} to the next state.
          *
-         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the next index has been
+         * @returns {plat.async.Promise<boolean>} A promise that resolves when the next index has been
          * reached and the animation is complete. The promise resolves with true if successful.
          */
-        goToNext(): plat.async.IThenable<boolean> {
+        goToNext(): plat.async.Promise<boolean> {
             return this._goToNext(false);
         }
 
@@ -798,10 +798,10 @@ module platui {
          * @description
          * Changes the position of the {@link platui.Carousel|Carousel} to the previous state.
          *
-         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the previous index has been
+         * @returns {plat.async.Promise<boolean>} A promise that resolves when the previous index has been
          * reached and the animation is complete. The promise resolves with true if successful.
          */
-        goToPrevious(): plat.async.IThenable<boolean> {
+        goToPrevious(): plat.async.Promise<boolean> {
             return this._goToPrevious(false);
         }
 
@@ -818,10 +818,10 @@ module platui {
          * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
          * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
          *
-         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the index has been
+         * @returns {plat.async.Promise<boolean>} A promise that resolves when the index has been
          * reached and the animation is complete. The promise resolves with true if successful.
          */
-        goToIndex(index: number, direct?: boolean): plat.async.IThenable<boolean> {
+        goToIndex(index: number, direct?: boolean): plat.async.Promise<boolean> {
             return this._goToIndex(index, false, direct);
         }
 
@@ -1112,11 +1112,11 @@ module platui {
          *
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          *
-         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the next index has been reached.
+         * @returns {plat.async.Promise<boolean>} A promise that resolves when the next index has been reached.
          * Resolves with true if successful.
          */
-        protected _goToNext(inputChanged: boolean): plat.async.IThenable<boolean> {
-            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
+        protected _goToNext(inputChanged: boolean): plat.async.Promise<boolean> {
+            return this._Promise.all(this._addQueue).then((): plat.async.Promise<boolean> => {
                 let index = this._index,
                     reset = false;
 
@@ -1151,11 +1151,11 @@ module platui {
          *
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          *
-         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the previous index has been
+         * @returns {plat.async.Promise<boolean>} A promise that resolves when the previous index has been
          * reached and the animation is complete. The promise resolves with true if successful.
          */
-        protected _goToPrevious(inputChanged: boolean): plat.async.IThenable<boolean> {
-            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
+        protected _goToPrevious(inputChanged: boolean): plat.async.Promise<boolean> {
+            return this._Promise.all(this._addQueue).then((): plat.async.Promise<boolean> => {
                 let index = this._index,
                     reset = false;
 
@@ -1190,11 +1190,11 @@ module platui {
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
          *
-         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the index has been
+         * @returns {plat.async.Promise<boolean>} A promise that resolves when the index has been
          * reached and the animation is complete. The promise resolves with true if successful.
          */
-        protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.IThenable<boolean> {
-            return this._Promise.all(this._addQueue).then((): plat.async.IThenable<boolean> => {
+        protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.Promise<boolean> {
+            return this._Promise.all(this._addQueue).then((): plat.async.Promise<boolean> => {
                 let oldIndex = this._index;
 
                 if (this.utils.isUndefined(oldIndex)) {
@@ -1254,10 +1254,10 @@ module platui {
          * @param {number} index The new index of the {@link platui.Carousel|Carousel}.
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          *
-         * @returns {plat.async.IThenable<boolean>} A promise that resolves when the index has been reached.
+         * @returns {plat.async.Promise<boolean>} A promise that resolves when the index has been reached.
          * Resolves with true if successful.
          */
-        protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.IThenable<boolean> {
+        protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.Promise<boolean> {
             let oldIndex = this._index;
 
             if (index === oldIndex || index < 0 || index >= this.context.length) {
@@ -1273,7 +1273,7 @@ module platui {
 
             let _Promise = this._Promise,
                 defer = this.utils.defer,
-                move: (inputChanged: boolean) => plat.async.IThenable<boolean>,
+                move: (inputChanged: boolean) => plat.async.Promise<boolean>,
                 diff: number,
                 reverseDiff: number;
 
@@ -1304,7 +1304,7 @@ module platui {
             }
 
             move = move.bind(this);
-            let promises = <Array<plat.async.IThenable<boolean>>>[],
+            let promises = <Array<plat.async.Promise<boolean>>>[],
                 removeListeners = this._removeListeners,
                 constant = this._goToIntervalConstant,
                 interval = 0,
@@ -1351,10 +1351,10 @@ module platui {
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
          *
-         * @returns {plat.async.IThenable<boolean>} Resolves with true when the translation animation is complete.
+         * @returns {plat.async.Promise<boolean>} Resolves with true when the translation animation is complete.
          */
         protected _translateNext(length: number, inputChanged: boolean, reset: boolean) {
-            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+            return this._cancelCurrentAnimations().then((): plat.async.Promise<boolean> => {
                 if (!this._outerEnd) {
                     this._initializeOuterNodes();
                 }
@@ -1396,10 +1396,10 @@ module platui {
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
          *
-         * @returns {plat.async.IThenable<boolean>} Resolves with true when the fade animation is complete.
+         * @returns {plat.async.Promise<boolean>} Resolves with true when the fade animation is complete.
          */
-        protected _fadeNext(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean> {
-            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+        protected _fadeNext(inputChanged: boolean, reset: boolean): plat.async.Promise<boolean> {
+            return this._cancelCurrentAnimations().then((): plat.async.Promise<boolean> => {
                 if (!this._outerEnd) {
                     this._initializeOuterNodes();
                 }
@@ -1525,10 +1525,10 @@ module platui {
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
          *
-         * @returns {plat.async.IThenable<boolean>} Resolves with true when the translation animation is complete.
+         * @returns {plat.async.Promise<boolean>} Resolves with true when the translation animation is complete.
          */
-        protected _translatePrevious(length: number, inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean> {
-            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+        protected _translatePrevious(length: number, inputChanged: boolean, reset: boolean): plat.async.Promise<boolean> {
+            return this._cancelCurrentAnimations().then((): plat.async.Promise<boolean> => {
                 if (!this._outerStart) {
                     this._initializeOuterNodes();
                 }
@@ -1570,10 +1570,10 @@ module platui {
          * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
          * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
          *
-         * @returns {plat.async.IThenable<boolean>} Resolves with true when the fade animation is complete.
+         * @returns {plat.async.Promise<boolean>} Resolves with true when the fade animation is complete.
          */
-        protected _fadePrevious(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean> {
-            return this._cancelCurrentAnimations().then((): plat.async.IThenable<boolean> => {
+        protected _fadePrevious(inputChanged: boolean, reset: boolean): plat.async.Promise<boolean> {
+            return this._cancelCurrentAnimations().then((): plat.async.Promise<boolean> => {
                 if (!this._outerStart) {
                     this._initializeOuterNodes();
                 }
@@ -1858,9 +1858,9 @@ module platui {
          * @param {plat.IObject<string>} animationOptions An object containing key-value pairs
          * of properties to animate.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the animation is complete.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the animation is complete.
          */
-        protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): plat.async.IThenable<void> {
+        protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): plat.async.Promise<void> {
                 return this._animationThenable =
                     <plat.ui.animations.IAnimationThenable<any>>this._animator.animate(this._container, __Transition, animationOptions);
         }
@@ -2675,9 +2675,9 @@ module platui {
          * @description
          * Cancels the current animation.
          *
-         * @returns {plat.async.IThenable<any>} A promise that resolves when the animation is canceled.
+         * @returns {plat.async.Promise<any>} A promise that resolves when the animation is canceled.
          */
-        protected _cancelCurrentAnimations(): plat.async.IThenable<any> {
+        protected _cancelCurrentAnimations(): plat.async.Promise<any> {
             if (this._fade) {
                 let isNull = this.utils.isNull,
                     animation: plat.ui.animations.IAnimationThenable<void>,

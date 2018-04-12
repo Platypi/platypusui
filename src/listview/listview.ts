@@ -80,12 +80,12 @@ module platui {
          * @kind property
          * @access public
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A Promise that fulfills when the items are loaded.
          */
-        itemsLoaded: plat.async.IThenable<void>;
+        itemsLoaded: plat.async.Promise<void>;
 
         /**
          * @name _window
@@ -298,12 +298,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {plat.async.IThenable<any>}
+         * @type {plat.async.Promise<any>}
          *
          * @description
          * A promise that denotes that items are currently being rendered.
          */
-        protected _templateSelectorPromise: plat.async.IThenable<any>;
+        protected _templateSelectorPromise: plat.async.Promise<any>;
 
         /**
          * @name _templateSelectorKeys
@@ -607,12 +607,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A promise that resolves when the group template has been created.
          */
-        protected _headerTemplatePromise: plat.async.IThenable<void>;
+        protected _headerTemplatePromise: plat.async.Promise<void>;
 
         /**
          * @name _visibilityRemoveListeners
@@ -760,7 +760,7 @@ module platui {
                 let fragment = this.dom.serializeHtml(this.__templateString),
                     element = this.element;
 
-                this.innerTemplate = this.dom.appendChildren(element.childNodes);
+                this.innerTemplate = <DocumentFragment>this.dom.appendChildren(element.childNodes);
                 element.appendChild(fragment);
             }
         }
@@ -851,7 +851,7 @@ module platui {
                 element: element,
                 index: null,
                 itemCount: 0,
-                addQueue: <Array<plat.async.IThenable<void>>>[],
+                addQueue: <Array<plat.async.Promise<void>>>[],
                 animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
             };
 
@@ -1105,17 +1105,17 @@ module platui {
          * @description
          * Construct the group template and add it to bindable templates.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when
+         * @returns {plat.async.Promise<void>} A promise that resolves when
          * the group template has been added to bindable templates.
          */
-        protected _createGroupTemplate(): plat.async.IThenable<void> {
+        protected _createGroupTemplate(): plat.async.Promise<void> {
             let _document = this._document,
                 bindableTemplates = this.bindableTemplates,
                 headerTemplate = this._headerTemplate,
                 listviewGroup = `${__Listview}-group`,
                 group = _document.createElement('div'),
                 itemContainer = _document.createElement('div'),
-                headerPromise: plat.async.IThenable<void>;
+                headerPromise: plat.async.Promise<void>;
 
             group.className = listviewGroup;
             itemContainer.className = `${__Listview}-items`;
@@ -1147,12 +1147,12 @@ module platui {
          * @param {number} index The point in the array to start adding groups.
          * @param {number} animateItems The number of groups to animate.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when all groups have been added to the DOM.
+         * @returns {plat.async.Promise<void>} A promise that resolves when all groups have been added to the DOM.
          */
-        protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.IThenable<void> {
+        protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.Promise<void> {
             let initialIndex = index,
                 max = +(index + numberOfGroups),
-                promises = <Array<plat.async.IThenable<DocumentFragment>>>[];
+                promises = <Array<plat.async.Promise<DocumentFragment>>>[];
 
             while (index < max) {
                 promises.push(this._bindGroup(index++));
@@ -1197,7 +1197,7 @@ module platui {
                     itemContainer: itemContainer,
                     control: control,
                     itemCount: 0,
-                    addQueue: <Array<plat.async.IThenable<void>>>[],
+                    addQueue: <Array<plat.async.Promise<void>>>[],
                     animationQueue: <Array<{ animation: plat.ui.animations.IAnimationThenable<any>; op: string; }>>[]
                 },
                 items = 'items',
@@ -1263,9 +1263,9 @@ module platui {
          *
          * @param {number} index The index of the group in context.
          *
-         * @returns {plat.async.IThenable<DocumentFragment>}
+         * @returns {plat.async.Promise<DocumentFragment>}
          */
-        protected _bindGroup(index: number): plat.async.IThenable<DocumentFragment> {
+        protected _bindGroup(index: number): plat.async.Promise<DocumentFragment> {
             return this.bindableTemplates.bind(`${__Listview}-group`, index, this._getAliases(this.context, index));
         }
 
@@ -1305,7 +1305,7 @@ module platui {
             }
 
             let addQueue = opGroup.addQueue,
-                addPromise: plat.async.IThenable<void>,
+                addPromise: plat.async.Promise<void>,
                 postLoad = (): void => {
                     let indexOf = addQueue.indexOf(addPromise);
                     if (indexOf !== -1) {
@@ -1329,14 +1329,14 @@ module platui {
                 };
 
             if (utils.isFunction(this._templateSelector)) {
-                let promises: Array<plat.async.IThenable<any>> = [];
+                let promises: Array<plat.async.Promise<any>> = [];
                 opGroup.itemCount += count;
 
                 for (let i = 0; i < count; ++i, ++index) {
                     promises.push(this._renderUsingFunction(index, opGroup));
                 }
 
-                let itemsLoaded = this.itemsLoaded = <plat.async.IThenable<any>>this._Promise.all(promises)
+                let itemsLoaded = this.itemsLoaded = <plat.async.Promise<any>>this._Promise.all(promises)
                 .then((nodes: Array<any>): void => {
                     let length = nodes.length;
                     for (let ii = 0; ii < length; ++ii) {
@@ -1374,14 +1374,14 @@ module platui {
          * @param {platui.IGroupHash} group The group that we're performing this operation on.
          * @param {number} animateItems The number of items to animate.
          *
-         * @returns {plat.async.IThenable<void>} The itemsLoaded promise.
+         * @returns {plat.async.Promise<void>} The itemsLoaded promise.
          */
-        protected _addItems(index: number, numberOfItems: number, group: IGroupHash, animateItems: number): plat.async.IThenable<void> {
+        protected _addItems(index: number, numberOfItems: number, group: IGroupHash, animateItems: number): plat.async.Promise<void> {
             let opGroup = group || this._defaultGroup,
                 control = opGroup.control,
                 container = opGroup.itemContainer,
                 max = +(index + numberOfItems),
-                promises: Array<plat.async.IThenable<DocumentFragment>> = [],
+                promises: Array<plat.async.Promise<DocumentFragment>> = [],
                 itemTemplate = this._itemTemplate,
                 bindableTemplates = control.bindableTemplates,
                 initialIndex = index,
@@ -1445,9 +1445,9 @@ module platui {
          * @param {number} index The starting index to render.
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          *
-         * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
+         * @returns {plat.async.Promise<any>} The promise that fulfills when all items have been rendered.
          */
-        protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.IThenable<any> {
+        protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.Promise<any> {
             let _Promise = this._Promise,
                 utils = this.utils,
                 opGroup = group || this._defaultGroup,
@@ -1465,9 +1465,9 @@ module platui {
                 groupName = opGroup.name;
             }
 
-            return _Promise.resolve(this._templateSelectorPromise).then((): plat.async.IThenable<any> => {
+            return _Promise.resolve(this._templateSelectorPromise).then((): plat.async.Promise<any> => {
                 return this._templateSelectorPromise = _Promise.resolve<string>(this._templateSelector(context[index], index, groupName));
-            }).then((selectedTemplate): plat.async.IThenable<any> => {
+            }).then((selectedTemplate): plat.async.Promise<any> => {
                 let bindableTemplates = control.bindableTemplates,
                     templates = bindableTemplates.templates,
                     controls = <Array<plat.ui.TemplateControl>>control.controls,
@@ -1487,7 +1487,7 @@ module platui {
                         }
 
                         templateKeys[index] = key;
-                        return <plat.async.IThenable<any>>bindableTemplates.replace(index, key, identifier,
+                        return <plat.async.Promise<any>>bindableTemplates.replace(index, key, identifier,
                             this._getAliases(context, index));
                     }
 
@@ -1515,7 +1515,7 @@ module platui {
          * @param {platui.IGroupHash} group? The group that we're performing this operation on.
          * @param {boolean} animate? Whether or not to animate the new item.
          *
-         * @returns {plat.async.IThenable<any>} The promise that fulfills when all items have been rendered.
+         * @returns {plat.async.Promise<any>} The promise that fulfills when all items have been rendered.
          */
         protected _appendRenderedItem(node: any, group?: IGroupHash, animate?: boolean): void {
             let utils = this.utils,
@@ -2155,7 +2155,7 @@ module platui {
             animationOptions[this._transform] = nextTranslation;
             this._touchAnimationThenable = this._animator.animate(viewport, __Transition, {
                 properties: animationOptions
-            }).then((): plat.async.IThenable<void> => {
+            }).then((): plat.async.Promise<void> => {
                 this._touchState = 4;
                 this._hasMoved = false;
                 this._touchAnimationThenable = null;
@@ -2512,7 +2512,7 @@ module platui {
                 opGroup.itemCount--;
             }
 
-            this._Promise.all(addQueue).then((): plat.async.IThenable<void> => {
+            this._Promise.all(addQueue).then((): plat.async.Promise<void> => {
                 if (this._animate) {
                     this._animateItems(start, 1, __Leave, opGroup, 'leave', false).then((): void => {
                         this._removeItems(removeIndex, 1, opGroup);
@@ -2725,10 +2725,10 @@ module platui {
          * @param {string} animationOp Denotes animation operation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          *
-         * @returns {plat.ui.async.IThenable<void>} A promise that resolves when all animations are complete.
+         * @returns {plat.ui.async.Promise<void>} A promise that resolves when all animations are complete.
          */
         protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string,
-            cancel: boolean): plat.async.IThenable<void> {
+            cancel: boolean): plat.async.Promise<void> {
             switch (animationOp) {
                 case 'clone':
                     return this._handleClonedContainerAnimation(this._getAnimatedNodes(startIndex, numberOfItems, group),
@@ -2803,9 +2803,9 @@ module platui {
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          *
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete.
+         * @returns {plat.async.Promise<void>} A promise that fulfills when the animation is complete.
          */
-        protected _handleSimpleAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void> {
+        protected _handleSimpleAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.Promise<void> {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
@@ -2860,10 +2860,10 @@ module platui {
          * @param {string} key The animation key/type.
          * @param {IGroupHash} group The group performing the animation.
          *
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both
+         * @returns {plat.async.Promise<void>} A promise that fulfills when the animation is complete and both
          * the cloned item has been removed and the original item has been put back.
          */
-        protected _handleLeave(nodes: Array<Node>, key: string, group: IGroupHash): plat.async.IThenable<void> {
+        protected _handleLeave(nodes: Array<Node>, key: string, group: IGroupHash): plat.async.Promise<void> {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
@@ -2907,11 +2907,11 @@ module platui {
          * @param {IGroupHash} group The group performing the animation.
          * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
          *
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the animation is complete and both
+         * @returns {plat.async.Promise<void>} A promise that fulfills when the animation is complete and both
          * the cloned container has been removed and the original container has been put back.
          */
         protected _handleClonedContainerAnimation(nodes: Array<Node>, key: string, group: IGroupHash,
-            cancel: boolean): plat.async.IThenable<void> {
+            cancel: boolean): plat.async.Promise<void> {
             if (nodes.length === 0) {
                 return this._Promise.resolve();
             }
@@ -2938,7 +2938,7 @@ module platui {
 
                     parentNode.replaceChild(container, clonedContainer);
                 }),
-                callback = (): plat.async.IThenable<void> => {
+                callback = (): plat.async.Promise<void> => {
                     parentNode = container.parentNode;
                     if (isNull(parentNode) || animationPromise.isCanceled()) {
                         return animationPromise;
@@ -2977,10 +2977,10 @@ module platui {
          *
          * @param {platui.IGroupHash} The object representing the current group.
          *
-         * @returns {plat.async.IThenable<any>} A promise that resolves when
+         * @returns {plat.async.Promise<any>} A promise that resolves when
          * all current animations have been canceled.
          */
-        protected _cancelCurrentAnimations(group?: IGroupHash): plat.async.IThenable<any> {
+        protected _cancelCurrentAnimations(group?: IGroupHash): plat.async.Promise<any> {
             let animationQueue = (group || this._defaultGroup).animationQueue,
                 animations = <Array<plat.ui.animations.IAnimationThenable<any>>>[],
                 length = animationQueue.length;
@@ -3485,12 +3485,12 @@ module platui {
          * @kind property
          * @access public
          *
-         * @type {Array<plat.async.IThenable<void>>}
+         * @type {Array<plat.async.Promise<void>>}
          *
          * @description
          * An Array of promises denoting items being added to this group.
          */
-        addQueue: Array<plat.async.IThenable<void>>;
+        addQueue: Array<plat.async.Promise<void>>;
 
         /**
          * @name itemCount

@@ -76,7 +76,7 @@ var platui;
     /**
      * An BindControl that standardizes an HTML5 button.
      */
-    var Button = (function (_super) {
+    var Button = /** @class */ (function (_super) {
         __extends(Button, _super);
         function Button() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -187,7 +187,7 @@ var platui;
     /**
      * An BindControl that simulates a toggle switch.
      */
-    var Toggle = (function (_super) {
+    var Toggle = /** @class */ (function (_super) {
         __extends(Toggle, _super);
         function Toggle() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -369,7 +369,7 @@ var platui;
     /**
      * An IBindablePropertyControl that standardizes the HTML5 checkbox.
      */
-    var Checkbox = (function (_super) {
+    var Checkbox = /** @class */ (function (_super) {
         __extends(Checkbox, _super);
         function Checkbox() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -437,7 +437,7 @@ var platui;
     /**
      * An IBindablePropertyControl that standardizes the HTML5 radio button.
      */
-    var Radio = (function (_super) {
+    var Radio = /** @class */ (function (_super) {
         __extends(Radio, _super);
         function Radio() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -608,7 +608,7 @@ var platui;
     /**
      * An ITemplateControl for showing indeterminate progress.
      */
-    var ProgressRing = (function (_super) {
+    var ProgressRing = /** @class */ (function (_super) {
         __extends(ProgressRing, _super);
         function ProgressRing() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -670,7 +670,7 @@ var platui;
     /**
      * An ITemplateControl for showing incremental progress.
      */
-    var ProgressBar = (function (_super) {
+    var ProgressBar = /** @class */ (function (_super) {
         __extends(ProgressBar, _super);
         function ProgressBar() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -768,7 +768,7 @@ var platui;
     /**
      * An BindControl that acts as a global drawer.
      */
-    var Drawer = (function (_super) {
+    var Drawer = /** @class */ (function (_super) {
         __extends(Drawer, _super);
         /**
          * The constructor for a Drawer. Creates the ready Promise.
@@ -1052,7 +1052,7 @@ var platui;
     /**
      * An BindControl that manipulates and controls a global drawer.
      */
-    var DrawerController = (function (_super) {
+    var DrawerController = /** @class */ (function (_super) {
         __extends(DrawerController, _super);
         function DrawerController() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -1970,7 +1970,7 @@ var platui;
     /**
      * An BindControl for showing a templated and animated overlay.
      */
-    var Modal = (function (_super) {
+    var Modal = /** @class */ (function (_super) {
         __extends(Modal, _super);
         /**
          * The constructor for a Modal. Creates the modalLoaded Promise.
@@ -2284,7 +2284,7 @@ var platui;
     /**
      * An BindControl that standardizes an HTML5 input[type="range"].
      */
-    var Slider = (function (_super) {
+    var Slider = /** @class */ (function (_super) {
         __extends(Slider, _super);
         function Slider() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -2715,7 +2715,7 @@ var platui;
      * A BindControl that allows for a lower and upper value,
      * thus creating a variable range of included values.
      */
-    var Range = (function (_super) {
+    var Range = /** @class */ (function (_super) {
         __extends(Range, _super);
         function Range() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -3378,7 +3378,7 @@ var platui;
      * An ITemplateControl that allows for databinding a select box and adds
      * custom styling to make it look consistent across all platforms.
      */
-    var Select = (function (_super) {
+    var Select = /** @class */ (function (_super) {
         __extends(Select, _super);
         function Select() {
             return _super !== null && _super.apply(this, arguments) || this;
@@ -3408,7 +3408,7 @@ var platui;
      * An BindControl that standardizes and styles
      * an HTML input element of various types.
      */
-    var Input = (function (_super) {
+    var Input = /** @class */ (function (_super) {
         __extends(Input, _super);
         function Input() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -3686,7 +3686,7 @@ var platui;
      * An BindControl that standardizes and styles
      * an HTML input[type="file"] element.
      */
-    var File = (function (_super) {
+    var File = /** @class */ (function (_super) {
         __extends(File, _super);
         function File() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -3942,7 +3942,7 @@ var platui;
      * An extension of the ForEach that acts as a HTML template carousel
      * and can bind the selected index to a value.
      */
-    var Carousel = (function (_super) {
+    var Carousel = /** @class */ (function (_super) {
         __extends(Carousel, _super);
         function Carousel() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -5404,7 +5404,7 @@ var platui;
      * An ITemplateControl for creating a complex list of items with
      * extensive functionality.
      */
-    var Listview = (function (_super) {
+    var Listview = /** @class */ (function (_super) {
         __extends(Listview, _super);
         /**
          * The constructor for a Listview. Creates the itemsLoaded Promise.
@@ -7081,7 +7081,7 @@ var platui;
     /**
      * An ITemplateControl that acts as a global navigation bar that defines its own context.
      */
-    var Navbar = (function (_super) {
+    var Navbar = /** @class */ (function (_super) {
         __extends(Navbar, _super);
         function Navbar() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
@@ -7298,7 +7298,7 @@ var platui;
     /**
      * An TemplateControl that keeps track of a loading image.
      */
-    var Image = (function (_super) {
+    var Image = /** @class */ (function (_super) {
         __extends(Image, _super);
         function Image() {
             var _this = _super !== null && _super.apply(this, arguments) || this;

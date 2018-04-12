@@ -198,10 +198,10 @@ module platui {
          * @param {number} value The decimal number between 0 and 1 to set as the
          * bar percentage (e.g. - 0.5 would be 50% complete).
          *
-         * @returns {plat.async.IThenable<void>} A Promise that resolves when the
+         * @returns {plat.async.Promise<void>} A Promise that resolves when the
          * progress loader has shown the progress update.
          */
-        setProgress(value: number): plat.async.IThenable<void> {
+        setProgress(value: number): plat.async.Promise<void> {
             return new this._Promise<void>((resolve, reject) => {
                 if (!this.utils.isNumber(value) || value > 1 || value < 0) {
                     let msg = `The value of a "${this.type}" control must be a number between 0 and 1.`;
