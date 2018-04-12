@@ -21,7 +21,7 @@
     "load-grunt-tasks": "latest",
     "lodash": "latest",
     "nodemon": "latest",
-    "platypus": "latest",
+    "platypus": "^0.26.1",
     "rimraf": "latest",
     "typescript": "latest"
   },

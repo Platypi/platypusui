@@ -52,13 +52,13 @@ module platui {
          * @kind property
          * @access public
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A Promise that fulfills when the modal is loaded and rejects if the {@link platui.Modal|Modal}
          * gets disposed before it loads content.
          */
-        modalLoaded: plat.async.IThenable<void>;
+        modalLoaded: plat.async.Promise<void>;
 
         /**
          * @name _window
@@ -183,12 +183,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A promise that resolves when the modal is finished showing
          */
-        protected _showingPromise: plat.async.IThenable<void>;
+        protected _showingPromise: plat.async.Promise<void>;
 
         /**
          * @name _hidingPromise
@@ -196,12 +196,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A promise that resolves when the modal is finished hiding
          */
-        protected _hidingPromise: plat.async.IThenable<void>;
+        protected _hidingPromise: plat.async.Promise<void>;
 
         /**
          * @name _scrollTop
@@ -357,7 +357,7 @@ module platui {
                     element = this.element,
                     modalContainer = this._container = <HTMLElement>fragment.firstChild;
 
-                this.innerTemplate = dom.appendChildren(element.childNodes);
+                this.innerTemplate = <DocumentFragment>dom.appendChildren(element.childNodes);
                 element.appendChild(fragment);
             }
         }
@@ -433,9 +433,9 @@ module platui {
          * @description
          * Shows the {@link platui.Modal|Modal}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the control is shown.
          */
-        show(): plat.async.IThenable<void> {
+        show(): plat.async.Promise<void> {
             let wasHidden = !this._isVisible,
                 promise = this._show();
 
@@ -455,9 +455,9 @@ module platui {
          * @description
          * Hides the {@link platui.Modal|Modal}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the control is hidden.
          */
-        hide(): plat.async.IThenable<void> {
+        hide(): plat.async.Promise<void> {
             let wasVisible = this.isVisible,
                 promise = this._hide();
 
@@ -477,9 +477,9 @@ module platui {
          * @description
          * Toggles the visibility of the {@link platui.Modal|Modal}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is toggled.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the control is toggled.
          */
-        toggle(): plat.async.IThenable<void> {
+        toggle(): plat.async.Promise<void> {
             if (this._isVisible) {
                 return this.hide();
             }
@@ -575,9 +575,9 @@ module platui {
          * @description
          * Shows the {@link platui.Modal|Modal}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the control is shown.
          */
-        protected _show(): plat.async.IThenable<void> {
+        protected _show(): plat.async.Promise<void> {
             let dom = this.dom,
                 utils = this.utils;
 
@@ -650,12 +650,12 @@ module platui {
          * @description
          * Hides the {@link platui.Modal|Modal}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the control is hidden.
          */
-        protected _hide(): plat.async.IThenable<void> {
+        protected _hide(): plat.async.Promise<void> {
             let dom = this.dom,
                 utils = this.utils,
-                promise: plat.async.IThenable<void>;
+                promise: plat.async.Promise<void>;
 
             if (!this._isVisible) {
                 return this._hidingPromise;
@@ -693,13 +693,13 @@ module platui {
          * Adds the innerTemplate to {@link plat.ui.BindableTemplates|BindableTemplates}, binds it,
          * and adds it to the DOM.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is shown.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the control is shown.
          */
-        protected _bindInnerTemplate(): plat.async.IThenable<void> {
+        protected _bindInnerTemplate(): plat.async.Promise<void> {
             let innerTemplate = this.innerTemplate;
             this.innerTemplate = null;
 
-            return this.bindableTemplates.once(innerTemplate).then((template): plat.async.IThenable<void> => {
+            return this.bindableTemplates.once(innerTemplate).then((template): plat.async.Promise<void> => {
                 this._container.insertBefore(template, null);
 
                 if (this.utils.isFunction(this.__resolveFn)) {
@@ -744,9 +744,9 @@ module platui {
          * @description
          * Listens for the transition to end and hides the element after it is finished.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves when the control is hidden.
+         * @returns {plat.async.Promise<void>} A promise that resolves when the control is hidden.
          */
-        protected _addHideOnTransitionEnd(): plat.async.IThenable<void> {
+        protected _addHideOnTransitionEnd(): plat.async.Promise<void> {
             return new this._Promise<void>((resolve): void => {
                 let element = this.element,
                     remove = this.addEventListener(element, this._transitionEnd,(): void => {

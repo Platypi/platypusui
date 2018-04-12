@@ -317,12 +317,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A Promise that indicates {@link platui.Slider|Slider} visibility.
          */
-        protected _sliderVisible: plat.async.IThenable<void>;
+        protected _sliderVisible: plat.async.Promise<void>;
 
         /**
          * @name setClasses

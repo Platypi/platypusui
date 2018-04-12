@@ -55,12 +55,12 @@ module platui {
          * @kind property
          * @access public
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A promise that signifies the {@link platui.Drawer|Drawer} is ready for a pairing.
          */
-        ready: plat.async.IThenable<void>;
+        ready: plat.async.Promise<void>;
 
         /**
          * @name _Promise
@@ -217,7 +217,7 @@ module platui {
          * @returns {void}
          */
         setTemplate(): void {
-            this.innerTemplate = this.dom.appendChildren(this.element.childNodes);
+            this.innerTemplate = <DocumentFragment>this.dom.appendChildren(this.element.childNodes);
         }
 
         /**
@@ -264,10 +264,10 @@ module platui {
          * @description
          * Opens the {@link platui.Drawer|Drawer}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is open and the animation is complete.
          */
-        open(): plat.async.IThenable<void> {
+        open(): plat.async.Promise<void> {
             let controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
                 this._log.debug(`No controller, such as a ${__DrawerController}, found for the ${this.type} attempting to open.`);
@@ -286,10 +286,10 @@ module platui {
          * @description
          * Closes the {@link platui.Drawer|Drawer}.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer} is closed and the animation is complete.
          */
-        close(): plat.async.IThenable<void> {
+        close(): plat.async.Promise<void> {
             let controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
                 this._log.debug(`No controller, such as a ${__DrawerController}, found for the ${this.type} attempting to close.`);
@@ -308,10 +308,10 @@ module platui {
          * @description
          * Toggles the {@link platui.Drawer|Drawer's} open/closed state.
          *
-         * @returns {plat.async.IThenable<void>} A promise that resolves
+         * @returns {plat.async.Promise<void>} A promise that resolves
          * when the {@link platui.Drawer|Drawer's} state is toggled and the animation is complete.
          */
-        toggle(): plat.async.IThenable<void> {
+        toggle(): plat.async.Promise<void> {
             let controller = this._controllers[0];
             if (this.utils.isNull(controller)) {
                 this._log.debug(`No controller, such as a ${__DrawerController}, found for the ${this.type} attempting to toggle.`);
@@ -354,9 +354,9 @@ module platui {
          * @param {string} name The template name to both add and bind.
          * @param {Node} node The node to add as a bindable template.
          *
-         * @returns {plat.async.IThenable<void>} A promise that fulfills when the template has been bound and inserted.
+         * @returns {plat.async.Promise<void>} A promise that fulfills when the template has been bound and inserted.
          */
-        bindTemplate(name: string, node: Node): plat.async.IThenable<void> {
+        bindTemplate(name: string, node: Node): plat.async.Promise<void> {
             let bindableTemplates = this.bindableTemplates;
 
             bindableTemplates.add(name, node);

@@ -384,12 +384,12 @@ module platui {
          * @kind property
          * @access protected
          *
-         * @type {plat.async.IThenable<void>}
+         * @type {plat.async.Promise<void>}
          *
          * @description
          * A Promise that indicates {@link platui.Range|Range} visibility.
          */
-        protected _rangeVisible: plat.async.IThenable<void>;
+        protected _rangeVisible: plat.async.Promise<void>;
 
         /**
          * @name _forceFirstTime

@@ -434,7 +434,7 @@ export declare class ProgressBar extends plat.ui.TemplateControl implements IUiC
       * @param {number} value The decimal number between 0 and 1 to set as the
       * bar percentage (e.g. - 0.5 would be 50% complete).
       */
-    setProgress(value: number): plat.async.IThenable<void>;
+    setProgress(value: number): plat.async.Promise<void>;
 }
 /**
   * An BindControl that acts as a global drawer.
@@ -461,7 +461,7 @@ export declare class Drawer extends plat.ui.BindControl implements IUiControl {
     /**
       * A promise that signifies the Drawer is ready for a pairing.
       */
-    ready: plat.async.IThenable<void>;
+    ready: plat.async.Promise<void>;
     /**
       * Reference to the IPromise injectable.
       */
@@ -518,15 +518,15 @@ export declare class Drawer extends plat.ui.BindControl implements IUiControl {
     /**
       * Opens the Drawer.
       */
-    open(): plat.async.IThenable<void>;
+    open(): plat.async.Promise<void>;
     /**
       * Closes the Drawer.
       */
-    close(): plat.async.IThenable<void>;
+    close(): plat.async.Promise<void>;
     /**
       * Toggles the Drawer's open/closed state.
       */
-    toggle(): plat.async.IThenable<void>;
+    toggle(): plat.async.Promise<void>;
     /**
       * Indicates whether the Drawer is currently open.
       */
@@ -536,7 +536,7 @@ export declare class Drawer extends plat.ui.BindControl implements IUiControl {
       * @param {string} name The template name to both add and bind.
       * @param {Node} node The node to add as a bindable template.
       */
-    bindTemplate(name: string, node: Node): plat.async.IThenable<void>;
+    bindTemplate(name: string, node: Node): plat.async.Promise<void>;
     /**
       * Returns the number of DrawerControllers linked to this
       * Drawer.
@@ -836,15 +836,15 @@ export declare class DrawerController extends plat.ui.BindControl implements IUi
     /**
       * Opens the Drawer.
       */
-    open(): plat.async.IThenable<void>;
+    open(): plat.async.Promise<void>;
     /**
       * Closes the Drawer.
       */
-    close(): plat.async.IThenable<void>;
+    close(): plat.async.Promise<void>;
     /**
       * Toggles the Drawer's open/closed state.
       */
-    toggle(): plat.async.IThenable<void>;
+    toggle(): plat.async.Promise<void>;
     /**
       * Indicates whether the Drawer is currently open.
       */
@@ -855,7 +855,7 @@ export declare class DrawerController extends plat.ui.BindControl implements IUi
       * @param {string} name The template name to bind.
       * @param {Node} node The node to add as a bindable template.
       */
-    bindTemplate(name: string, node: Node): plat.async.IThenable<void>;
+    bindTemplate(name: string, node: Node): plat.async.Promise<void>;
     /**
       * A function that allows this control to observe both the bound property itself as well as
       * potential child properties if being bound to an object.
@@ -875,16 +875,16 @@ export declare class DrawerController extends plat.ui.BindControl implements IUi
       * Opens the Drawer.
       * @param {boolean} reset? Whether the open is being called to reset the open state.
       */
-    protected _open(reset?: boolean): plat.async.IThenable<void>;
+    protected _open(reset?: boolean): plat.async.Promise<void>;
     /**
       * Closes the Drawer.
       * @param {boolean} reset? Whether the open is being called to reset the open state.
       */
-    protected _close(reset?: boolean): plat.async.IThenable<void>;
+    protected _close(reset?: boolean): plat.async.Promise<void>;
     /**
       * Resets the Drawer to it's current open/closed state.
       */
-    protected _reset(): plat.async.IThenable<void>;
+    protected _reset(): plat.async.Promise<void>;
     /**
       * Adds a click eater when tracking and closing an open Drawer.
       */
@@ -970,7 +970,7 @@ export declare class DrawerController extends plat.ui.BindControl implements IUi
       * @param {Node} fragment? A Node to insert as the Drawer's HTML template
       * if no templateUrl is present on this DrawerController.
       */
-    protected _determineTemplate(fragment?: Node): plat.async.IThenable<void>;
+    protected _determineTemplate(fragment?: Node): plat.async.Promise<void>;
     /**
       * Obtains the current browser's transform property value.
       */
@@ -1043,7 +1043,7 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
       * A Promise that fulfills when the modal is loaded and rejects if the Modal
       * gets disposed before it loads content.
       */
-    modalLoaded: plat.async.IThenable<void>;
+    modalLoaded: plat.async.Promise<void>;
     /**
       * Reference to the Window injectable.
       */
@@ -1083,11 +1083,11 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
     /**
       * A promise that resolves when the modal is finished showing
       */
-    protected _showingPromise: plat.async.IThenable<void>;
+    protected _showingPromise: plat.async.Promise<void>;
     /**
       * A promise that resolves when the modal is finished hiding
       */
-    protected _hidingPromise: plat.async.IThenable<void>;
+    protected _hidingPromise: plat.async.Promise<void>;
     /**
       * The current scroll position of the modal.
       */
@@ -1139,15 +1139,15 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
     /**
       * Shows the Modal.
       */
-    show(): plat.async.IThenable<void>;
+    show(): plat.async.Promise<void>;
     /**
       * Hides the Modal.
       */
-    hide(): plat.async.IThenable<void>;
+    hide(): plat.async.Promise<void>;
     /**
       * Toggles the visibility of the Modal.
       */
-    toggle(): plat.async.IThenable<void>;
+    toggle(): plat.async.Promise<void>;
     /**
       * Whether or not the Modal is currently visible.
       */
@@ -1170,7 +1170,7 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
     /**
       * Shows the Modal.
       */
-    protected _show(): plat.async.IThenable<void>;
+    protected _show(): plat.async.Promise<void>;
     /**
       * Aligns the control to the top of the viewport.
       * @param {Event} ev? The scroll event object.
@@ -1179,12 +1179,12 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
     /**
       * Hides the Modal.
       */
-    protected _hide(): plat.async.IThenable<void>;
+    protected _hide(): plat.async.Promise<void>;
     /**
       * Adds the innerTemplate to BindableTemplates, binds it,
       * and adds it to the DOM.
       */
-    protected _bindInnerTemplate(): plat.async.IThenable<void>;
+    protected _bindInnerTemplate(): plat.async.Promise<void>;
     /**
       * Removes itself from the DOM and inserts itself into the body to work with
       * absolute positioning.
@@ -1193,7 +1193,7 @@ export declare class Modal extends plat.ui.BindControl implements IUiControl {
     /**
       * Listens for the transition to end and hides the element after it is finished.
       */
-    protected _addHideOnTransitionEnd(): plat.async.IThenable<void>;
+    protected _addHideOnTransitionEnd(): plat.async.Promise<void>;
 }
 /**
   * The available options for the Modal control.
@@ -1306,7 +1306,7 @@ export declare class Slider extends plat.ui.BindControl implements IUiControl {
     /**
       * A Promise that indicates Slider visibility.
       */
-    protected _sliderVisible: plat.async.IThenable<void>;
+    protected _sliderVisible: plat.async.Promise<void>;
     /**
       * Sets the classes on the proper elements.
       * @param {string} className? An optional, additional class name or class names to set on the control
@@ -1575,7 +1575,7 @@ export declare class Range extends plat.ui.BindControl implements IUiControl {
     /**
       * A Promise that indicates Range visibility.
       */
-    protected _rangeVisible: plat.async.IThenable<void>;
+    protected _rangeVisible: plat.async.Promise<void>;
     /**
       * A boolean value that forces a one-time trigger upon the first bound value change.
       */
@@ -2336,18 +2336,18 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
     /**
       * Advances the position of the Carousel to the next state.
       */
-    goToNext(): plat.async.IThenable<boolean>;
+    goToNext(): plat.async.Promise<boolean>;
     /**
       * Changes the position of the Carousel to the previous state.
       */
-    goToPrevious(): plat.async.IThenable<boolean>;
+    goToPrevious(): plat.async.Promise<boolean>;
     /**
       * Changes the position of the Carousel to the state
       * specified by the input index.
       * @param {number} index The new index of the Carousel.
       * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
       */
-    goToIndex(index: number, direct?: boolean): plat.async.IThenable<boolean>;
+    goToIndex(index: number, direct?: boolean): plat.async.Promise<boolean>;
     /**
       * Stops auto scrolling if auto scrolling is enabled.
       */
@@ -2402,12 +2402,12 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
       * Advances the position of the Carousel to the next state.
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       */
-    protected _goToNext(inputChanged: boolean): plat.async.IThenable<boolean>;
+    protected _goToNext(inputChanged: boolean): plat.async.Promise<boolean>;
     /**
       * Changes the position of the Carousel to the previous state.
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       */
-    protected _goToPrevious(inputChanged: boolean): plat.async.IThenable<boolean>;
+    protected _goToPrevious(inputChanged: boolean): plat.async.Promise<boolean>;
     /**
       * Changes the position of the Carousel to the state
       * specified by the input index.
@@ -2415,27 +2415,27 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       * @param {boolean} direct? If true, will go straight to the specified index without transitioning.
       */
-    protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.IThenable<boolean>;
+    protected _goToIndex(index: number, inputChanged: boolean, direct?: boolean): plat.async.Promise<boolean>;
     /**
       * Changes the position of the Carousel to the state
       * specified by the input index.
       * @param {number} index The new index of the Carousel.
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       */
-    protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.IThenable<boolean>;
+    protected _handleGoToIndex(index: number, inputChanged: boolean): plat.async.Promise<boolean>;
     /**
       * Executes the translation animation for going to the next item.
       * @param {number} length The length to translate.
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
       */
-    protected _translateNext(length: number, inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
+    protected _translateNext(length: number, inputChanged: boolean, reset: boolean): plat.async.Promise<boolean>;
     /**
       * Executes the fade animations for going to the next item.
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
       */
-    protected _fadeNext(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
+    protected _fadeNext(inputChanged: boolean, reset: boolean): plat.async.Promise<boolean>;
     /**
       * Handles swapping and translating nodes for a "next" operation.
       * @param {number} index The new index at the time of the animation.
@@ -2448,13 +2448,13 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
       */
-    protected _translatePrevious(length: number, inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
+    protected _translatePrevious(length: number, inputChanged: boolean, reset: boolean): plat.async.Promise<boolean>;
     /**
       * Executes the fade animations for going to the previous item.
       * @param {boolean} inputChanged Whether or not this was the result of a bound input change.
       * @param {boolean} reset? Whether or not the index needs to be reset back to the beginning.
       */
-    protected _fadePrevious(inputChanged: boolean, reset: boolean): plat.async.IThenable<boolean>;
+    protected _fadePrevious(inputChanged: boolean, reset: boolean): plat.async.Promise<boolean>;
     /**
       * Handles swapping and translating nodes for a "previous" operation.
       * @param {number} index The new index at the time of the animation.
@@ -2479,7 +2479,7 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
       * @param {plat.IObject<string>} animationOptions An object containing key-value pairs
       * of properties to animate.
       */
-    protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): plat.async.IThenable<void>;
+    protected _initiateAnimation(animationOptions: plat.ui.animations.ISimpleCssTransitionOptions): plat.async.Promise<void>;
     /**
       * Initializes the control and adds all event listeners.
       */
@@ -2591,7 +2591,7 @@ export declare class Carousel extends plat.ui.controls.ForEach implements plat.o
     /**
       * Cancels the current animation.
       */
-    protected _cancelCurrentAnimations(): plat.async.IThenable<any>;
+    protected _cancelCurrentAnimations(): plat.async.Promise<any>;
     /**
       * Forces a repaint / reflow.
       * @param {HTMLElement} element The element to force the repaint / reflow on.
@@ -2666,7 +2666,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
     /**
       * A Promise that fulfills when the items are loaded.
       */
-    itemsLoaded: plat.async.IThenable<void>;
+    itemsLoaded: plat.async.Promise<void>;
     /**
       * Reference to the Window injectable.
       */
@@ -2733,7 +2733,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
     /**
       * A promise that denotes that items are currently being rendered.
       */
-    protected _templateSelectorPromise: plat.async.IThenable<any>;
+    protected _templateSelectorPromise: plat.async.Promise<any>;
     /**
       * An object containing template keys of groups associated with an index.
       */
@@ -2835,7 +2835,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
     /**
       * A promise that resolves when the group template has been created.
       */
-    protected _headerTemplatePromise: plat.async.IThenable<void>;
+    protected _headerTemplatePromise: plat.async.Promise<void>;
     /**
       * A set of functions to remove all visibility listeners.
       */
@@ -2931,7 +2931,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
     /**
       * Construct the group template and add it to bindable templates.
       */
-    protected _createGroupTemplate(): plat.async.IThenable<void>;
+    protected _createGroupTemplate(): plat.async.Promise<void>;
     /**
       * Adds new groups to the control's element when items are added to
       * the context.
@@ -2939,7 +2939,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
       * @param {number} index The point in the array to start adding groups.
       * @param {number} animateItems The number of groups to animate.
       */
-    protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.IThenable<void>;
+    protected _addGroups(numberOfGroups: number, index: number, animateItems: number): plat.async.Promise<void>;
     /**
       * Adds new group to the control's element.
       * @param {number} index The index of the group.
@@ -2951,7 +2951,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
       * Handle binding of a single group.
       * @param {number} index The index of the group in context.
       */
-    protected _bindGroup(index: number): plat.async.IThenable<DocumentFragment>;
+    protected _bindGroup(index: number): plat.async.Promise<DocumentFragment>;
     /**
       * Creates a specified number of items.
       * @param {number} index The index to start creating items.
@@ -2968,7 +2968,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
       * @param {IGroupHash} group The group that we're performing this operation on.
       * @param {number} animateItems The number of items to animate.
       */
-    protected _addItems(index: number, numberOfItems: number, group: IGroupHash, animateItems: number): plat.async.IThenable<void>;
+    protected _addItems(index: number, numberOfItems: number, group: IGroupHash, animateItems: number): plat.async.Promise<void>;
     /**
       * Render items using a defined render function starting at a given index and continuing
       * through for a set number of items. If undefined or null is returned from the function,
@@ -2976,7 +2976,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
       * @param {number} index The starting index to render.
       * @param {IGroupHash} group? The group that we're performing this operation on.
       */
-    protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.IThenable<any>;
+    protected _renderUsingFunction(index: number, group?: IGroupHash): plat.async.Promise<any>;
     /**
       * Appends the rendered item from the defined render function.
       * @param {any} node The node to place into the item container if available.
@@ -3154,7 +3154,7 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
       * @param {string} animationOp Denotes animation operation.
       * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
       */
-    protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string, cancel: boolean): plat.async.IThenable<void>;
+    protected _animateItems(startIndex: number, numberOfItems: number, key: string, group: IGroupHash, animationOp: string, cancel: boolean): plat.async.Promise<void>;
     /**
       * Translates the items to be animated into the nodes to be animated.
       * @param {number} startIndex The starting index of items to animate.
@@ -3169,14 +3169,14 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
       * @param {IGroupHash} group The group performing the animation.
       * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
       */
-    protected _handleSimpleAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void>;
+    protected _handleSimpleAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.Promise<void>;
     /**
       * Handles a simple animation of a block of elements.
       * @param {Array<Node>} nodes The Array of nodes to animate.
       * @param {string} key The animation key/type.
       * @param {IGroupHash} group The group performing the animation.
       */
-    protected _handleLeave(nodes: Array<Node>, key: string, group: IGroupHash): plat.async.IThenable<void>;
+    protected _handleLeave(nodes: Array<Node>, key: string, group: IGroupHash): plat.async.Promise<void>;
     /**
       * Handles a simple animation of a block of elements.
       * @param {Array<Node>} nodes The Array of nodes to animate.
@@ -3184,12 +3184,12 @@ export declare class Listview extends plat.ui.TemplateControl implements IUiCont
       * @param {IGroupHash} group The group performing the animation.
       * @param {boolean} cancel Whether or not to cancel the current animation before beginning this one.
       */
-    protected _handleClonedContainerAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.IThenable<void>;
+    protected _handleClonedContainerAnimation(nodes: Array<Node>, key: string, group: IGroupHash, cancel: boolean): plat.async.Promise<void>;
     /**
       * Cancels all current animations.
       * @param {IGroupHash} The object representing the current group.
       */
-    protected _cancelCurrentAnimations(group?: IGroupHash): plat.async.IThenable<any>;
+    protected _cancelCurrentAnimations(group?: IGroupHash): plat.async.Promise<any>;
     /**
       * Normalizes template names by removing special characters.
       * @param {string} templateName The name to normalize.
@@ -3307,7 +3307,7 @@ export interface IGroupHash {
     /**
       * An Array of promises denoting items being added to this group.
       */
-    addQueue: Array<plat.async.IThenable<void>>;
+    addQueue: Array<plat.async.Promise<void>>;
     /**
       * The current number of synchronous items in the group.
       */
