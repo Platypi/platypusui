@@ -1,5 +1,16 @@
 import * as plat from 'platypus';
 /**
+  * PlatypusUI v0.16.7 (https://platypi.io)
+  * Copyright 2015 Platypi, LLC. All rights reserved.
+  *
+  * PlatypusUI is licensed under the MIT license found at
+  * https://github.com/Platypi/platypusui/blob/master/LICENSE
+  *
+  */
+/**
+  * The entry point into the platypus UI controls library.
+  */
+/**
   * An interface a control should implement if they plan on using
   * class based CSS to style the UI.
   */

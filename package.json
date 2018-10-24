@@ -1,67 +1,67 @@
 {
-  "name": "platypusui",
-  "version": "0.16.7",
-  "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
-  "main": "dist/platypusui.js",
-  "devDependencies": {
-    "concurrently": "latest",
-    "glob": "latest",
-    "grunt": "latest",
-    "grunt-cli": "latest",
-    "grunt-contrib-clean": "latest",
-    "grunt-contrib-copy": "latest",
-    "grunt-contrib-cssmin": "latest",
-    "grunt-contrib-less": "latest",
-    "grunt-contrib-uglify": "latest",
-    "grunt-contrib-watch": "latest",
-    "grunt-less-bundle": "latest",
-    "grunt-ts": "latest",
-    "grunt-ts-bundle": "latest",
-    "http-server": "latest",
-    "load-grunt-tasks": "latest",
-    "lodash": "latest",
-    "nodemon": "latest",
-    "platypus": "latest",
-    "rimraf": "latest",
-    "typescript": "latest"
-  },
-  "scripts": {
-    "prepublish": "npm run deploy",
-    "build:all": "npm run build:examples && npm run build:src",
-    "build:examples": "tsc -p build/tsc/examples",
-    "build:src": "tsc -p build/tsc/src",
-    "clean:all": "npm run clean:examples && npm run clean:src",
-    "clean:examples": "rimraf -p examples/app.*",
-    "clean:src": "rimraf -p dist/*",
-    "deploy": "grunt",
-    "start": "concurrent -r \"npm run watch:less\" \"npm run watch:examples\" \"npm run server:examples\"",
-    "less:examples": "grunt lessCompile:examples",
-    "server:examples": "http-server -p 3000",
-    "watch:examples": "npm run build:examples -- -w",
-    "watch:less": "nodemon -q -w src -e less -x npm run less:examples",
-    "watch:src": "npm run build:src -- -w"
-  },
-  "keywords": [
-    "platypi",
-    "platypus",
-    "platui",
-    "platypusui",
-    "typescript",
-    "ui",
-    "controls"
-  ],
-  "author": "Platypi <support@platypi.io> (https://platypi.io)",
-  "bugs": {
-    "url": "https://github.com/Platypi/platypusui/issues"
-  },
-  "homepage": "https://platypi.io",
-  "typescript": {
-    "definition": "dist/platypusui.d.ts"
-  },
-  "typings": "dist/platypusui-local.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Platypi/platypusui.git"
-  },
-  "license": "MIT"
+    "name": "platypusui",
+    "version": "0.16.7",
+    "description": "A front-end set of UI controls for PlatypusTS written in TypeScript",
+    "main": "dist/platypusui.js",
+    "devDependencies": {
+        "concurrently": "^4.0.1",
+        "glob": "^7.1.3",
+        "grunt": "^1.0.3",
+        "grunt-cli": "^1.3.1",
+        "grunt-contrib-clean": "^2.0.0",
+        "grunt-contrib-copy": "^1.0.0",
+        "grunt-contrib-cssmin": "^3.0.0",
+        "grunt-contrib-less": "^2.0.0",
+        "grunt-contrib-uglify": "^4.0.0",
+        "grunt-contrib-watch": "^1.1.0",
+        "grunt-less-bundle": "^0.1.1",
+        "grunt-ts": "^6.0.0-beta.21",
+        "grunt-ts-bundle": "^0.2.0",
+        "http-server": "^0.11.1",
+        "load-grunt-tasks": "^4.0.0",
+        "lodash": "^4.17.11",
+        "nodemon": "^1.18.4",
+        "platypus": "^0.28.0",
+        "rimraf": "^2.6.2",
+        "typescript": "^3.1.3"
+    },
+    "scripts": {
+        "prepublish": "npm run deploy",
+        "build:all": "npm run build:examples && npm run build:src",
+        "build:examples": "tsc -p build/tsc/examples",
+        "build:src": "tsc -p build/tsc/src",
+        "clean:all": "npm run clean:examples && npm run clean:src",
+        "clean:examples": "rimraf -p examples/app.*",
+        "clean:src": "rimraf -p dist/*",
+        "deploy": "grunt",
+        "start": "concurrently -r \"npm run watch:less\" \"npm run watch:examples\" \"npm run server:examples\"",
+        "less:examples": "grunt lessCompile:examples",
+        "server:examples": "http-server -p 3000",
+        "watch:examples": "npm run build:examples -- -w",
+        "watch:less": "nodemon -q -w src -e less -x npm run less:examples",
+        "watch:src": "npm run build:src -- -w"
+    },
+    "keywords": [
+        "platypi",
+        "platypus",
+        "platui",
+        "platypusui",
+        "typescript",
+        "ui",
+        "controls"
+    ],
+    "author": "Platypi <support@platypi.io> (https://platypi.io)",
+    "bugs": {
+        "url": "https://github.com/Platypi/platypusui/issues"
+    },
+    "homepage": "https://platypi.io",
+    "typescript": {
+        "definition": "dist/platypusui.d.ts"
+    },
+    "typings": "dist/platypusui-local.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Platypi/platypusui.git"
+    },
+    "license": "MIT"
 }
