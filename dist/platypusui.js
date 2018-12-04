@@ -14,7 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 /* tslint:disable */
 /**
- * PlatypusUI v0.16.8 (https://platypi.io)
+ * PlatypusUI v0.16.9 (https://platypi.io)
  * Copyright 2015 Platypi, LLC. All rights reserved.
  *
  * PlatypusUI is licensed under the MIT license found at
